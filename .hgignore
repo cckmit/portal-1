@@ -1,0 +1,10 @@
+path:
+.idea
+target
+
+
+syntax: glob
+
+**.iml
+**.orig
+

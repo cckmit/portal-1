@@ -1,0 +1,1 @@
+insert into sys_config(id, ownCompanyId) values (1,1);
