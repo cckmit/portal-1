@@ -50,7 +50,7 @@ public class MigratePersonAction implements MigrateAction {
     }
 
 
-    private String makeSql() {
+    private String makeSql(long fromId) {
         return " select p.*, p.strClient||'@'||p.strClientIP strCreatorID, \"resource\".func_getfullfio (p.strLastName,p.strFirstName,p.strPatronymic) fullFio," +
                 " prop.properties, cat.nCategoryID,cd.strValue category from \"resource\".tm_person p" +
                 " left outer join " +
@@ -63,6 +63,7 @@ public class MigratePersonAction implements MigrateAction {
                 "        ) prop on (prop.nPersonID=p.nID)" +
                 " left outer join \"resource\".tm_person2category cat on (cat.nPersonID=p.nID) " +
                 " left outer join \"resource\".tm_category cd on (cd.nID=cat.nCategoryID) " +
+                " where p.nID > " + fromId +
                 " order by p.nID ";
     }
 
@@ -70,7 +71,7 @@ public class MigratePersonAction implements MigrateAction {
     @Override
     public void migrate(Connection src, AbstractApplicationContext ctx) throws SQLException {
 
-        new BatchProcessTask<Person>(makeSql())
+        new BatchProcessTask<Person>(makeSql(dao.getMaxId()))
                 .process(src, dao, row -> {
                         Person x = new Person();
                         x.setId(((Number) row.get("nID")).longValue());

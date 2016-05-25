@@ -41,6 +41,9 @@ public class MigrateDevUnits implements MigrateAction {
 
         for (Map<String,Object> row : MigrateUtils.buildListForTable(src,"\"Resource\".Tm_Project", "strName")) {
 
+            if (unitDAO.getByCondition("UTYPE_ID=? and UNIT_NAME=?", En_DevUnitType.COMPONENT.getId(),row.get("strName")) != null)
+                continue;
+
             DevUnit u = new DevUnit(En_DevUnitType.COMPONENT.getId(), (String)row.get("strName"),(String)row.get("strInfo"));
             u.setCreated((Date)row.get("dtCreation"));
             u.setCreatorId(MigrateUtils.DEFAULT_CREATOR_ID);
@@ -58,6 +61,10 @@ public class MigrateDevUnits implements MigrateAction {
         // products
         stlist.clear();
         for (Map<String,Object> row : MigrateUtils.buildListForTable(src,"\"Resource\".Tm_Product", "nID")) {
+
+            if (unitDAO.getByCondition("UTYPE_ID=? and UNIT_NAME=?", En_DevUnitType.PRODUCT.getId(),row.get("strValue")) != null)
+                continue;
+
             DevUnit u = new DevUnit(En_DevUnitType.PRODUCT.getId(), (String)row.get("strValue"),(String)row.get("strInfo"));
             u.setCreated((Date)row.get("dtCreation"));
             u.setCreatorId(MigrateUtils.DEFAULT_CREATOR_ID);

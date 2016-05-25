@@ -2,6 +2,7 @@ package ru.protei.portal.tools.migrate.parts;
 
 import protei.sql.Tm_SqlHelper;
 import ru.protei.portal.tools.migrate.tools.MigrateAdapter;
+import ru.protei.portal.tools.migrate.tools.MigrateUtils;
 import ru.protei.portal.tools.migrate.tools.PostBatchProcess;
 import ru.protei.winter.jdbc.JdbcDAO;
 
@@ -25,8 +26,8 @@ public class BatchProcessTask<T> {
 
     private PostBatchProcess<T> _pp;
 
-    public BatchProcessTask (String tableName, String orderBy) {
-        this ("select * from " + tableName + " order by " + orderBy);
+    public BatchProcessTask (String tableName, String idFieldName, Long startFromId) {
+        this ("select * from " + tableName + " where " + idFieldName + " > " + MigrateUtils.nvl(startFromId,0L) + " order by " + idFieldName);
     }
 
     public BatchProcessTask (String query) {

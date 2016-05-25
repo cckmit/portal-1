@@ -8,12 +8,13 @@ import ru.protei.portal.core.model.dao.CaseTaskDAO;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.CaseTask;
-import ru.protei.portal.tools.migrate.tools.CaseIdMapper;
 import ru.protei.portal.tools.migrate.tools.MigrateAction;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -41,11 +42,11 @@ public class MigrateTasks implements MigrateAction {
 
         final Map<Long,Long> oldToNewStateMap = stateMatrixDAO.getOldToNewStateMap(En_CaseType.TASK);
 
-        final CaseIdMapper idMapper = new CaseIdMapper();
 
-        BatchProcessTask<CaseObject> t = new BatchProcessTask<CaseObject>("\"ToDoList\".Tm_Task", "nID");
+        BatchProcessTask<CaseObject> t = new BatchProcessTask<CaseObject>("\"ToDoList\".Tm_Task", "nID", caseDAO.getMaxValue("caseno", Long.class, "CASE_TYPE=?", En_CaseType.TASK.getId()));
         t.setBatchSize(1000);
-        t.setPostProcessor(idMapper);
+
+        List<CaseTask> tasks = new ArrayList<>();
 
         t.process(src, caseDAO, row -> {
                     CaseObject obj = new CaseObject();
@@ -76,12 +77,14 @@ public class MigrateTasks implements MigrateAction {
                     return obj;
                 });
 
+        Map<Long,Long> caseNumberToIdMapper = caseDAO.getNumberToIdMap(En_CaseType.TASK);
 
-        new BatchProcessTask<CaseTask>("\"ToDoList\".Tm_Task", "nID").process(
+        Long lastTimeFact = caseDAO.getMaxValue("caseno", Long.class, "case_type=? and exists (select * from case_task t where t.case_id=case_object.id)", En_CaseType.TASK.getId());
+        new BatchProcessTask<CaseTask>("\"ToDoList\".Tm_Task", "nID", lastTimeFact).process(
                 src, taskDAO, row -> {
                     CaseTask task = new CaseTask();
 
-                    task.setCaseId(idMapper.getRealId(En_CaseType.TASK, (Long)row.get("nID")));
+                    task.setCaseId(caseNumberToIdMapper.get((Long)row.get("nID")));
                     task.setCompleted((Date)row.get("dExpiryDate"));
                     task.setCreated((Date)row.get("dtCreation"));
                     task.setEstPersonId((Long)row.get("nExecutorId"));

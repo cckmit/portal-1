@@ -37,6 +37,8 @@ public class DevUnit {
     @JdbcColumn(name="UNIT_STATE")
     private int stateId;
 
+    @JdbcColumn(name = "old_id")
+    private Long oldId;
 
     public DevUnit () {
 
@@ -110,5 +112,13 @@ public class DevUnit {
 
     public void setStateId(int stateId) {
         this.stateId = stateId;
+    }
+
+    public Long getOldId() {
+        return oldId;
+    }
+
+    public void setOldId(Long oldId) {
+        this.oldId = oldId;
     }
 }

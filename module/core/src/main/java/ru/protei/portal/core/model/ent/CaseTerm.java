@@ -40,6 +40,9 @@ public class CaseTerm {
     @JdbcColumn(name = "STAGE_ID")
     private Long stageId;
 
+    @JdbcColumn(name = "old_id")
+    private Long oldId;
+
     public CaseTerm() {
     }
 
@@ -113,5 +116,13 @@ public class CaseTerm {
 
     public void setStageId(Long stageId) {
         this.stageId = stageId;
+    }
+
+    public Long getOldId() {
+        return oldId;
+    }
+
+    public void setOldId(Long oldId) {
+        this.oldId = oldId;
     }
 }

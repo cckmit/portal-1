@@ -16,24 +16,27 @@ public class CaseDocument {
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
 
-    @JdbcColumn(name="CASE_ID")
+    @JdbcColumn(name = "CASE_ID")
     private Long caseId;
 
-    @JdbcColumn(name="created")
+    @JdbcColumn(name = "created")
     private Date created;
 
-    @JdbcColumn(name="DOC_TYPE")
+    @JdbcColumn(name = "DOC_TYPE")
     private int typeId;
 
-    @JdbcColumn(name="REVISION")
+    @JdbcColumn(name = "REVISION")
     private int revision;
 
-    @JdbcColumn(name="AUTHOR")
+    @JdbcColumn(name = "AUTHOR")
     private Long authorId;
 
-    @JdbcColumn(name="DOC_BODY")
+    @JdbcColumn(name = "DOC_BODY")
     private String docBody;
 
+
+    @JdbcColumn(name = "old_id")
+    private Long oldId;
 
     public CaseDocument() {
     }
@@ -92,5 +95,13 @@ public class CaseDocument {
 
     public void setDocBody(String docBody) {
         this.docBody = docBody;
+    }
+
+    public Long getOldId() {
+        return oldId;
+    }
+
+    public void setOldId(Long oldId) {
+        this.oldId = oldId;
     }
 }

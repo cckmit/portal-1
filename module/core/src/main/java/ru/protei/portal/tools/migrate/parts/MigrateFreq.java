@@ -16,6 +16,7 @@ import ru.protei.portal.tools.migrate.tools.MigrateUtils;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -49,11 +50,7 @@ public class MigrateFreq implements MigrateAction {
 
         final Map<Long, Long> oldToNewStateMap = stateMatrixDAO.getOldToNewStateMap(En_CaseType.FREQ);
 
-
-        CaseIdMapper idMapper = new CaseIdMapper();
-
-        BatchProcessTask<CaseObject> t = new BatchProcessTask<CaseObject>("\"FREQ\".Tm_Requirement", "nID");
-        t.setPostProcessor(idMapper);
+        BatchProcessTask<CaseObject> t = new BatchProcessTask<CaseObject>("\"FREQ\".Tm_Requirement", "nID", caseDAO.getMaxValue("caseno", Long.class, "CASE_TYPE=?", En_CaseType.FREQ.getId()));
 
         t.process(src, caseDAO, row -> {
             CaseObject obj = new CaseObject();
@@ -91,11 +88,15 @@ public class MigrateFreq implements MigrateAction {
 
         System.out.println("FREQ import done");
 
-        new BatchProcessTask<CaseTerm>("\"FREQ\".Tm_ReqDeadline", "nID")
+        Map<Long,Long> caseNumberToIdMapper = caseDAO.getNumberToIdMap(En_CaseType.FREQ);
+
+        Long lastTermID = termDAO.getMaxValue("old_id",Long.class,"case_id in (select id from case_object where case_type=?)",En_CaseType.FREQ.getId());
+
+        new BatchProcessTask<CaseTerm>("\"FREQ\".Tm_ReqDeadline", "nID", lastTermID)
                 .process(src, termDAO, row -> {
                     CaseTerm c = new CaseTerm();
                     c.setCreated((Date) row.get("dtCreation"));
-                    c.setCaseId(idMapper.getRealId(En_CaseType.FREQ, (Long) row.get("nRequirementID")));
+                    c.setCaseId(caseNumberToIdMapper.get((Long) row.get("nRequirementID")));
                     c.setCreatorId((Long) row.get("nCreatorID"));
                     c.setEndTime((Date) row.get("dDeadline"));
                     c.setLabelText((String) row.get("strComment"));
@@ -108,12 +109,13 @@ public class MigrateFreq implements MigrateAction {
 
         System.out.println("FREQ terms import done");
 
+        Long lastDocID = documentDAO.getMaxValue("old_id",Long.class,"case_id in (select id from case_object where case_type=?)",En_CaseType.FREQ.getId());
 
-        new BatchProcessTask<CaseDocument>("\"FREQ\".Tm_ReqDocument", "nID")
+        new BatchProcessTask<CaseDocument>("\"FREQ\".Tm_ReqDocument", "nID", lastDocID)
                 .process(src, documentDAO, row -> {
                     CaseDocument cdoc = new CaseDocument();
                     cdoc.setCreated((Date) row.get("dtCreation"));
-                    cdoc.setCaseId(idMapper.getRealId(En_CaseType.FREQ, (Long) row.get("nRequirementID")));
+                    cdoc.setCaseId(caseNumberToIdMapper.get((Long) row.get("nRequirementID")));
                     cdoc.setAuthorId((Long)row.get("nCreatorID"));
                     cdoc.setDocBody((String)row.get("text"));
                     cdoc.setRevision(((Number)row.get("nVersion")).intValue());
@@ -124,13 +126,25 @@ public class MigrateFreq implements MigrateAction {
 
         System.out.println("FREQ doc import done");
 
-        new BatchProcessTask("\"FREQ\".Tm_ReqComment", "nID")
+        Long lastCommentID = commentDAO.getMaxValue("old_id",Long.class,"case_id in (select id from case_object where case_type=?)",En_CaseType.FREQ.getId());
+        System.out.println("start from comment-id: " + lastCommentID);
+
+        Map<Long,Long> lastStateMap = new HashMap<>();
+        new BatchProcessTask("\"FREQ\".Tm_ReqComment", "nID", lastCommentID)
                 .process(src, commentDAO, row -> {
                     CaseComment c = new CaseComment();
                     c.setCreated((Date) row.get("dtCreation"));
                     c.setAuthorId((Long) row.get("nCreatorID"));
-                    c.setCaseId(idMapper.getRealId(En_CaseType.FREQ, (Long) row.get("nRequirementID")));
+                    c.setCaseId(caseNumberToIdMapper.get((Long) row.get("nRequirementID")));
                     c.setCaseStateId(oldToNewStateMap.get(row.get("nStatusId")));
+
+                    if (c.getCaseStateId() != null) {
+                        lastStateMap.put(c.getCaseId(), c.getCaseStateId());
+                    }
+                    else {
+                        c.setCaseStateId(lastStateMap.get(c.getCaseId()));
+                    }
+
 //                    c.setClientIp((String)row.get("strClientIP"));
                     c.setReplyTo(null);
                     c.setText((String) row.get("strComment"));
@@ -138,6 +152,7 @@ public class MigrateFreq implements MigrateAction {
                     c.setOldId((Long)row.get("nID"));
                     return c;
                 });
+
         System.out.println("FREQ comments import done");
     }
 }

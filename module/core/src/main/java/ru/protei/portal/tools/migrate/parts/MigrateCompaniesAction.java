@@ -27,15 +27,16 @@ public class MigrateCompaniesAction implements MigrateAction {
     @Override
     public void migrate(Connection src, AbstractApplicationContext ctx) throws SQLException {
 
-        Company no_comp_rec = new Company();
-        no_comp_rec.setCreated(new Date());
-        no_comp_rec.setCname("no_company");
-        no_comp_rec.setId(-1L);
+        if (dao.get(-1L) == null) {
+            Company no_comp_rec = new Company();
+            no_comp_rec.setCreated(new Date());
+            no_comp_rec.setCname("no_company");
+            no_comp_rec.setId(-1L);
+            dao.persist(no_comp_rec);
+        }
 
-        dao.persist(no_comp_rec);
 
-
-        BatchProcessTask<Company> batchTask = new BatchProcessTask<Company>("\"resource\".tm_company", "nID");
+        BatchProcessTask<Company> batchTask = new BatchProcessTask<Company>("\"resource\".tm_company", "nID", dao.getMaxId());
         batchTask.process(src, dao, row -> {
                 Company x = new Company();
                 x.setAddressDejure((String) row.get("strDeJureAddress"));

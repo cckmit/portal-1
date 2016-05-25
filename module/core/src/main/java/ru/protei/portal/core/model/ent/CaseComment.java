@@ -40,6 +40,8 @@ public class CaseComment {
     @JdbcColumn(name="COMMENT_TEXT")
     private String text;
 
+    @JdbcColumn(name="old_id")
+    private Long oldId;
 
     public CaseComment() {
     }
@@ -114,5 +116,13 @@ public class CaseComment {
 
     public void setText(String text) {
         this.text = text;
+    }
+
+    public Long getOldId() {
+        return oldId;
+    }
+
+    public void setOldId(Long oldId) {
+        this.oldId = oldId;
     }
 }
