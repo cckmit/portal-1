@@ -46,6 +46,7 @@ public class MigrateDevUnits implements MigrateAction {
             u.setCreatorId(MigrateUtils.DEFAULT_CREATOR_ID);
             u.setLastUpdate(new Date());
             u.setStateId(En_DevUnitState.ACTIVE.getId());
+            u.setOldId((Long)row.get("nID"));
             stlist.add(u);
         }
 
@@ -62,6 +63,7 @@ public class MigrateDevUnits implements MigrateAction {
             u.setCreatorId(MigrateUtils.DEFAULT_CREATOR_ID);
             u.setLastUpdate(new Date());
             u.setStateId(En_DevUnitState.ACTIVE.getId());
+            u.setOldId((Long)row.get("nID"));
             stlist.add(u);
         }
 

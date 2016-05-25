@@ -93,6 +93,7 @@ public class MigrateBugs implements MigrateAction {
                     c.setStageId(null);
                     c.setTermOrder(((Long)row.get("nID")).intValue());
                     c.setTermTypeId(En_CaseTermType.DEADLINE.getId());
+                    c.setOldId((Long)row.get("nID"));
                     return c;
                 });
 
@@ -107,6 +108,7 @@ public class MigrateBugs implements MigrateAction {
                     c.setReplyTo(null);
                     c.setText((String)row.get("strInfo"));
                     c.setVroomId(null);
+                    c.setOldId((Long)row.get("nID"));
                     return c;
                 });
 

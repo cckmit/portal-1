@@ -102,6 +102,7 @@ public class MigrateFreq implements MigrateAction {
                     c.setStageId(null);
                     c.setTermOrder(((Long) row.get("nID")).intValue());
                     c.setTermTypeId(En_CaseTermType.DEADLINE.getId());
+                    c.setOldId((Long)row.get("nID"));
                     return c;
                 });
 
@@ -117,6 +118,7 @@ public class MigrateFreq implements MigrateAction {
                     cdoc.setDocBody((String)row.get("text"));
                     cdoc.setRevision(((Number)row.get("nVersion")).intValue());
                     cdoc.setTypeId(((Number)row.get("nDocTypeID")).intValue());
+                    cdoc.setOldId((Long)row.get("nID"));
                     return cdoc;
                 });
 
@@ -133,10 +135,9 @@ public class MigrateFreq implements MigrateAction {
                     c.setReplyTo(null);
                     c.setText((String) row.get("strComment"));
                     c.setVroomId(null);
+                    c.setOldId((Long)row.get("nID"));
                     return c;
                 });
         System.out.println("FREQ comments import done");
-
-
     }
 }
