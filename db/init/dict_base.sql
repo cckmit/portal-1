@@ -4,6 +4,9 @@ delete from admin_state;
 insert into admin_state(id,code) values (1,'locked');
 insert into admin_state(id,code) values (2,'unlocked');
 
+insert into user_role (id,role_code,role_info,ca_role_name) values (1,'employee','common-role', 'portal_employee');
+commit;
+
 delete from auth_type;
 insert into auth_type (id,at_code,at_info) values (1,'local','Local login and password stored in db');
 insert into auth_type (id,at_code,at_info) values (2,'ldap','Local LDAP');

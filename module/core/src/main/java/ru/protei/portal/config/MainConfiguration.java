@@ -2,13 +2,22 @@ package ru.protei.portal.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import ru.protei.portal.api.AuthController;
+import ru.protei.portal.api.AuthControllerImpl;
 import ru.protei.portal.api.WorkersController;
 import ru.protei.portal.api.WorkersControllerImpl;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
+import ru.protei.portal.core.utils.SessionIdGen;
+import ru.protei.portal.core.utils.SimpleSidGenerator;
 
 @Configuration
 public class MainConfiguration {
+
+    @Bean
+    public SessionIdGen getSessionIdGenerator () {
+        return new SimpleSidGenerator();
+    }
 
     @Bean
     public CompanyDAO getCompanyDAO () {
@@ -49,8 +58,30 @@ public class MainConfiguration {
     @Bean
     public CaseObjectDAO getCaseDAO () { return new CaseObjectDAO_Impl(); }
 
+
+    @Bean
+    public UserSessionDAO getUserSessionDAO () {
+        return new UserSessionDAO_Impl();
+    }
+
+    @Bean
+    public UserRoleDAO getUserRoleDAO () {
+        return new UserRoleDAO_impl();
+    }
+
+    @Bean
+    public UserLoginDAO getUserLoginDAO () {
+        return new UserLoginDAO_Impl();
+    }
+
     @Bean
     public WorkersController getWorkersController () {
         return new WorkersControllerImpl();
     }
+
+    @Bean
+    public AuthController getAuthController () {
+        return new AuthControllerImpl();
+    }
+
 }

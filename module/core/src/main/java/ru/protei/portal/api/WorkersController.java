@@ -1,20 +1,17 @@
 package ru.protei.portal.api;
 
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import ru.protei.portal.core.model.view.WorkerView;
-import ru.protei.winter.http.annotations.HttpMethod;
-import ru.protei.winter.http.annotations.HttpParam;
-import ru.protei.winter.http.annotations.HttpService;
-import ru.protei.winter.http.converter.HttpBodyConverterJson;
-
-import static ru.protei.winter.http.annotations.HttpParam.Mode.OPTIONAL;
 
 /**
  * Created by michael on 06.04.16.
  */
-@HttpService(baseUrl = "/controller")
+@RestController
 public interface WorkersController {
 
-    @HttpMethod(url = "/workers/list", resultConverter = HttpBodyConverterJson.class)
-    public HttpListResult<WorkerView> list(@HttpParam(name = "q", mode = OPTIONAL) String param);
+    @RequestMapping(path = "/api/workers/list")
+    public HttpListResult<WorkerView> list(@RequestParam(name = "q", defaultValue = "") String param);
 
 }

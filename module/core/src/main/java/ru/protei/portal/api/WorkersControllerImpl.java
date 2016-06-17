@@ -1,6 +1,7 @@
 package ru.protei.portal.api;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestParam;
 import ru.protei.portal.core.model.dao.CompanyDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.ent.Company;
@@ -23,7 +24,7 @@ public class WorkersControllerImpl implements WorkersController {
     CompanyDAO companyDAO;
 
     @Override
-    public HttpListResult<WorkerView> list(String param) {
+    public HttpListResult<WorkerView> list(@RequestParam(name = "q", defaultValue = "") String param) {
 
         // temp-hack, hardcoded company-id. must be replaced to sys_config.ownCompanyId
         Company our_comp = companyDAO.get(1L);

@@ -12,5 +12,36 @@
         <module>module/core</module>
     </modules>
 
+    <repositories>
+        <repository>
+            <id>spring-releases</id>
+            <name>spring-releases</name>
+            <url>https://repo.spring.io/libs-release</url>
+            <!--<snapshots>-->
+                <!--<enabled>false</enabled>-->
+            <!--</snapshots>-->
+            <!--<releases>-->
+                <!--<enabled>true</enabled>-->
+            <!--</releases>-->
+        </repository>
+
+        <repository>
+            <id>protei-central</id>
+            <name>protei-central</name>
+            <url>http://192.168.110.20:8081/artifactory/repo</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+
+    </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>spring-releases</id>
+            <name>spring-releases</name>
+            <url>https://repo.spring.io/libs-release</url>
+        </pluginRepository>
+    </pluginRepositories>
 
 </project>

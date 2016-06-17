@@ -11,7 +11,7 @@ public abstract class PortalBaseJdbcDAO<T> extends JdbcBaseDAO<Long,T> implement
     public static final Object[] EMPTY_ARG_SET = new Object[]{};
 
     public Long getMaxId () {
-        return getMaxValue(getIdColumnName(), Long.class, null, null);
+        return getMaxValue(getIdColumnName(), Long.class, null, (Object[])null);
     }
 
     public Long getMaxId (String cond, Object... args) {
