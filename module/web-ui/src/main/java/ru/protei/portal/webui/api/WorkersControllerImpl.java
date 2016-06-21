@@ -1,4 +1,4 @@
-package ru.protei.portal.api;
+package ru.protei.portal.webui.api;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestParam;

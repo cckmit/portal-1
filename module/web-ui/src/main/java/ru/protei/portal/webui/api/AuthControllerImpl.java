@@ -1,4 +1,4 @@
-package ru.protei.portal.api;
+package ru.protei.portal.webui.api;
 
 import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
