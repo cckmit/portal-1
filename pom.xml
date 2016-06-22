@@ -10,9 +10,19 @@
     <version>1.0-SNAPSHOT</version>
     <modules>
         <module>module/core</module>
+        <module>module/web-ui</module>
     </modules>
 
     <repositories>
+        <repository>
+            <id>protei-central</id>
+            <name>protei-central</name>
+            <url>http://192.168.110.20:8081/artifactory/repo</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+
         <repository>
             <id>spring-releases</id>
             <name>spring-releases</name>
@@ -25,17 +35,9 @@
             <!--</releases>-->
         </repository>
 
-        <repository>
-            <id>protei-central</id>
-            <name>protei-central</name>
-            <url>http://192.168.110.20:8081/artifactory/repo</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-
     </repositories>
 
+    <!--
     <pluginRepositories>
         <pluginRepository>
             <id>spring-releases</id>
@@ -43,5 +45,6 @@
             <url>https://repo.spring.io/libs-release</url>
         </pluginRepository>
     </pluginRepositories>
+    -->
 
 </project>

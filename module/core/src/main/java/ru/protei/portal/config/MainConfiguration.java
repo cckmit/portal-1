@@ -2,17 +2,23 @@ package ru.protei.portal.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import ru.protei.portal.api.AuthController;
-import ru.protei.portal.api.AuthControllerImpl;
-import ru.protei.portal.api.WorkersController;
-import ru.protei.portal.api.WorkersControllerImpl;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
+import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.utils.SessionIdGen;
 import ru.protei.portal.core.utils.SimpleSidGenerator;
+import ru.protei.winter.jdbc.JdbcDAO;
+import ru.protei.winter.jdbc.JdbcObjectMapper;
+import ru.protei.winter.jdbc.JdbcObjectMapperRegistrator;
+
+import javax.inject.Inject;
+import javax.inject.Named;
 
 @Configuration
 public class MainConfiguration {
+
+    @Inject
+    private JdbcObjectMapperRegistrator jdbcObjectMapperRegistrator;
 
     @Bean
     public SessionIdGen getSessionIdGenerator () {
@@ -20,7 +26,17 @@ public class MainConfiguration {
     }
 
     @Bean
-    public CompanyDAO getCompanyDAO () {
+    public JdbcObjectMapper<Company> getCompanyJdbcObjectMapper() {
+        return jdbcObjectMapperRegistrator.registerMapper(Company.class);
+    }
+
+    @Bean(name = "getCompanyDAO1")
+    public Object getCompanyDAO() {
+        return "";
+    }
+
+    @Bean(name = "getCompanyDAO2")
+    public JdbcDAO<Long, Company> getCompanyDAO (JdbcObjectMapperRegistrator df) {
         return new CompanyDAO_Impl();
     }
 
@@ -74,14 +90,5 @@ public class MainConfiguration {
         return new UserLoginDAO_Impl();
     }
 
-    @Bean
-    public WorkersController getWorkersController () {
-        return new WorkersControllerImpl();
-    }
-
-    @Bean
-    public AuthController getAuthController () {
-        return new AuthControllerImpl();
-    }
 
 }
