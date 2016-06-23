@@ -36,15 +36,6 @@ public class AuthControllerImpl {
             return ru.protei.winter.http.HttpUtils.makeResponse(HttpResponseStatus.UNAUTHORIZED);
         }
 
-        if (login.isLDAP_Auth()) {
-            //
-        }
-        else {
-           // check MD5
-        }
-
-
-        Person person = personDAO.get(login.getPersonId());
 
 
         UserSession exSession = sessionId == null ? null : sessionDAO.findBySID(sessionId);
@@ -56,16 +47,6 @@ public class AuthControllerImpl {
 //            }
         }
 
-        UserSession newSession = new UserSession();
-        newSession.setCreated(new Date());
-        newSession.setClientIp(clientIp);
-        newSession.setCompanyId(person.getCompanyId());
-        newSession.setLoginId(login.getId());
-        newSession.setPersonId(login.getPersonId());
-        newSession.setRoleId(login.getRoleId());
-        newSession.setSessionId(sidGen.generateId());
-
-        sessionDAO.persist(newSession);
 
         resp = ru.protei.winter.http.HttpUtils.makeResponse(HttpResponseStatus.OK);
 //        resp.addHeader("");

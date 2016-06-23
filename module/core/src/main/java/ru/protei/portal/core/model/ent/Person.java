@@ -297,4 +297,8 @@ public class Person {
     public void setDeleted(boolean deleted) {
         isDeleted = deleted;
     }
+
+    public String toDebugString () {
+        return this.getDisplayName();
+    }
 }

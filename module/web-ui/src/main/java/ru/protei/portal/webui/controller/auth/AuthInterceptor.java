@@ -58,6 +58,7 @@ public class AuthInterceptor implements HandlerInterceptor {
             log.debug(AUTH_HANDLER_LOG_PREFIX + ", pass to login controller");
             // provide client-ip for controller
             request.setAttribute(SecurityDefs.CLIENT_IP_REQ_ATTR, request.getRemoteAddr());
+            request.setAttribute(SecurityDefs.CLIENT_SESSION_ID_ATTR, request.getSession().getId());
             return true;
         }
 
