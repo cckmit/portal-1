@@ -62,32 +62,36 @@ public class Main {
 
     private static ServletContextHandler getServletContextHandler(WebApplicationContext context) throws IOException {
         //ServletContextHandler contextHandler = new ServletContextHandler();
-        WebAppContext contextHandler = new WebAppContext();
+        WebAppContext webapp = new WebAppContext();
 
-        contextHandler.setErrorHandler(null);
-        contextHandler.setContextPath(CONTEXT_PATH);
+        webapp.setErrorHandler(null);
+        webapp.setContextPath(CONTEXT_PATH);
 
         if (JSP_ENABLED) {
-            contextHandler.addServlet(jspServletHolder(), "*.jsp");
+            webapp.addServlet(jspServletHolder(), "*.jsp");
         }
 
 
         // SPRING servlet-dispatcher
         ServletHolder springHolder = springServletHolder(context);
-        contextHandler.addServlet(springHolder, MAPPING_URL);
-        contextHandler.addServlet(springHolder, API_SPACE_URL);
+        webapp.addServlet(springHolder, MAPPING_URL);
+        webapp.addServlet(springHolder, API_SPACE_URL);
 
-        contextHandler.addServlet(new ServletHolder("defaultServletHandler", new DefaultServlet()), "");
-        contextHandler.addEventListener(new ContextLoaderListener(context));
-        contextHandler.setResourceBase("module/web-ui/web");
+        webapp.addServlet(new ServletHolder("defaultServletHandler", new DefaultServlet()), "");
+        webapp.addEventListener(new ContextLoaderListener(context));
+        webapp.setDescriptor("module/web-ui/web/WEB-INF/web.xml");
+        webapp.setResourceBase("module/web-ui/web");
+
+        webapp.setInitParameter("org.eclipse.jetty.servlet.Default.dirAllowed", "false");
+        webapp.setWelcomeFiles(new String[]{"index.html", "login.html"});
 
         if (JSP_ENABLED) {
-            contextHandler.setAttribute(
+            webapp.setAttribute(
                     "org.eclipse.jetty.server.webapp.ContainerIncludeJarPattern",
                     ".*/[^/]*servlet-api-[^/]*\\.jar$|.*/javax.servlet.jsp.jstl-.*\\.jar$|.*/[^/]*taglibs.*\\.jar$");
         }
 
-        return contextHandler;
+        return webapp;
     }
 
 
