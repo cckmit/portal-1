@@ -43,7 +43,7 @@ public class PortalWebConfiguration extends WebMvcConfigurerAdapter {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(getAuthInterceptor())
                 .addPathPatterns("/**")
-                .excludePathPatterns("/login.html", "*.css", "*.js")
+                .excludePathPatterns("/pub/*", "*.css", "*.js", "/login.html")
                 ;
     }
 

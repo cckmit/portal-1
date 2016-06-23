@@ -7,7 +7,7 @@ import ru.protei.portal.core.utils.SessionIdGen;
 /**
  * Created by michael on 25.05.16.
  */
-public class AuthControllerImpl implements AuthController {
+public class AuthControllerImpl {
 
     @Autowired
     private UserLoginDAO uloginDAO;

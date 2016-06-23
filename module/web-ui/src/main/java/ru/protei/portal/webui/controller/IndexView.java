@@ -1,7 +1,6 @@
 package ru.protei.portal.webui.controller;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
@@ -9,15 +8,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
  */
 
 @Controller
+@RequestMapping("/")
 public class IndexView {
 
-    @RequestMapping(path = "/ws/index.html")
-    public String processIndexPage (Model m) {
+    @RequestMapping("/index.htm*")
+    public String processIndexPageHtml () {
+        return "redirect:ws-index";
+    }
 
-        System.out.println("Running index-page process");
-
-        m.addAttribute("msg", "Hello world!");
-
-        return "index";
+    @RequestMapping("/index.jsp")
+    public String processIndexPageJsp () {
+        return "redirect:ws-index";
     }
 }

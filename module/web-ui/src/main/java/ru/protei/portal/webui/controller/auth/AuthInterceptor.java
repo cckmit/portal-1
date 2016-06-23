@@ -2,6 +2,7 @@ package ru.protei.portal.webui.controller.auth;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 import ru.protei.portal.core.model.dao.*;
@@ -51,6 +52,14 @@ public class AuthInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
         log.debug(AUTH_HANDLER_LOG_PREFIX + ", on request to : " + request.getRequestURI());
+
+        // check if login-page
+        if (((HandlerMethod)handler).getBean() instanceof  LoginController) {
+            log.debug(AUTH_HANDLER_LOG_PREFIX + ", pass to login controller");
+            // provide client-ip for controller
+            request.setAttribute(SecurityDefs.CLIENT_IP_REQ_ATTR, request.getRemoteAddr());
+            return true;
+        }
 
         UserSessionDescriptor descriptor = getUserSessionDesc(request);
         if (descriptor == null) {

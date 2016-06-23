@@ -23,7 +23,7 @@ public class Main {
     private static final int DEFAULT_PORT = 8090;
     private static final String CONTEXT_PATH = "/";
     private static final String CONFIG_LOCATION = "ru.protei.portal.webui.app";
-    private static final String MAPPING_URL = "/ws/*";
+    private static final String MAPPING_URL = "/*";
     private static final String API_SPACE_URL = "/api/*";
     private static final String DEFAULT_PROFILE = "dev";
 
@@ -86,34 +86,20 @@ public class Main {
                     "org.eclipse.jetty.server.webapp.ContainerIncludeJarPattern",
                     ".*/[^/]*servlet-api-[^/]*\\.jar$|.*/javax.servlet.jsp.jstl-.*\\.jar$|.*/[^/]*taglibs.*\\.jar$");
         }
-/*
-        FilterHolder authFilterHolder = createAuthFilterHolder(context);
 
-        contextHandler.addFilter(authFilterHolder, MAPPING_URL, EnumSet.of(DispatcherType.REQUEST));
-        contextHandler.addFilter(authFilterHolder, API_SPACE_URL, EnumSet.of(DispatcherType.REQUEST));
-*/
         return contextHandler;
     }
-
-//    private static FilterHolder createAuthFilterHolder (WebApplicationContext context) {
-//        Filter filter = new AuthFilterImpl(); //(Filter)context.getBean("http-auth-filter");
-//        FilterHolder authFilterHolder = new FilterHolder(filter);
-//        return authFilterHolder;
-//    }
 
 
     private static WebApplicationContext getContext() {
         AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
         context.setConfigLocation(CONFIG_LOCATION);
         context.getEnvironment().setDefaultProfiles(DEFAULT_PROFILE);
-//        context.refresh();
         return context;
     }
 
     private static ServletHolder springServletHolder (WebApplicationContext context) {
-
         DispatcherServlet servlet = new DispatcherServlet(context);
-
         ServletHolder springHolder = new ServletHolder(servlet);
         springHolder.setInitOrder(2);
         return springHolder;
