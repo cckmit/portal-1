@@ -106,4 +106,8 @@ public class UserSession {
     public void setExpired(Date expired) {
         this.expired = expired;
     }
+
+    public boolean checkIsExpired () {
+        return expired != null && expired.getTime() < System.currentTimeMillis();
+    }
 }

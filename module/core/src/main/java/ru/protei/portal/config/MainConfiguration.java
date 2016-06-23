@@ -4,21 +4,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
-import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.utils.SessionIdGen;
 import ru.protei.portal.core.utils.SimpleSidGenerator;
-import ru.protei.winter.jdbc.JdbcDAO;
-import ru.protei.winter.jdbc.JdbcObjectMapper;
-import ru.protei.winter.jdbc.JdbcObjectMapperRegistrator;
-
-import javax.inject.Inject;
-import javax.inject.Named;
 
 @Configuration
 public class MainConfiguration {
-
-    @Inject
-    private JdbcObjectMapperRegistrator jdbcObjectMapperRegistrator;
 
     @Bean
     public SessionIdGen getSessionIdGenerator () {
@@ -26,19 +16,7 @@ public class MainConfiguration {
     }
 
     @Bean
-    public JdbcObjectMapper<Company> getCompanyJdbcObjectMapper() {
-        return jdbcObjectMapperRegistrator.registerMapper(Company.class);
-    }
-
-    @Bean(name = "getCompanyDAO1")
-    public Object getCompanyDAO() {
-        return "";
-    }
-
-    @Bean(name = "getCompanyDAO2")
-    public JdbcDAO<Long, Company> getCompanyDAO (JdbcObjectMapperRegistrator df) {
-        return new CompanyDAO_Impl();
-    }
+    public CompanyDAO getCompanyDAO () { return new CompanyDAO_Impl(); }
 
     @Bean
     public PersonDAO getPersonDAO () {
