@@ -1,15 +1,8 @@
 package ru.protei.portal.webui.api;
 
-import org.jboss.netty.handler.codec.http.HttpResponse;
-import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.core.model.dao.*;
-import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.model.ent.UserLogin;
-import ru.protei.portal.core.model.ent.UserSession;
 import ru.protei.portal.core.utils.SessionIdGen;
-
-import java.util.Date;
 
 /**
  * Created by michael on 25.05.16.
@@ -34,7 +27,7 @@ public class AuthControllerImpl implements AuthController {
     @Autowired
     private SessionIdGen sidGen;
 
-
+/*
     public HttpResponse login(String uname, String upass, String sessionId, String clientIp) {
         UserLogin login = uloginDAO.findByLogin(uname);
         HttpResponse resp = null;
@@ -91,4 +84,6 @@ public class AuthControllerImpl implements AuthController {
         System.out.println("Check for session " + webSessionId == null ? "-" : webSessionId);
         return resp;
     }
+
+    */
 }

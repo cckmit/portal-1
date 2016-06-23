@@ -1,37 +1,37 @@
-package ru.protei.portal.webui.app;
+    package ru.protei.portal.webui.app;
 
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.http.MediaType;
-import org.springframework.web.servlet.config.annotation.*;
-import ru.protei.winter.core.CoreConfigurationContext;
-import ru.protei.winter.jdbc.JdbcConfigurationContext;
+    import org.springframework.context.annotation.Bean;
+    import org.springframework.context.annotation.ComponentScan;
+    import org.springframework.context.annotation.Configuration;
+    import org.springframework.context.annotation.Import;
+    import org.springframework.http.MediaType;
+    import org.springframework.web.servlet.config.annotation.*;
+    import ru.protei.portal.config.MainConfiguration;
+    import ru.protei.portal.webui.controller.auth.AuthInterceptor;
+    import ru.protei.portal.webui.controller.dict.WorkersController;
+    import ru.protei.portal.webui.controller.dict.WorkersControllerImpl;
+    import ru.protei.winter.core.CoreConfigurationContext;
+    import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
-/**
+    /**
  * Created by michael on 20.06.16.
  */
 
 @Configuration
 @EnableWebMvc
-@Import({CoreConfigurationContext.class, JdbcConfigurationContext.class/*, MainConfiguration.class*/})
+@Import({CoreConfigurationContext.class, JdbcConfigurationContext.class, MainConfiguration.class})
 @ComponentScan(basePackages = "ru.protei.portal.webui.controller")
 public class PortalWebConfiguration extends WebMvcConfigurerAdapter {
 
-//    @Bean
-//    public WorkersController getWorkersController () {
-//        return new WorkersControllerImpl();
-//    }
-//
-//    @Bean
-//    public AuthController getAuthController () {
-//        return new AuthControllerImpl();
-//    }
+    @Bean
+    public WorkersController getWorkersController () {
+        return new WorkersControllerImpl();
+    }
 
-//    @Bean
-//    public IndexView createIndexView () {
-//        return new IndexView();
-//    }
+    @Bean
+    public AuthInterceptor getAuthInterceptor () {
+        return new AuthInterceptor();
+    }
 
 
     @Override
@@ -41,7 +41,10 @@ public class PortalWebConfiguration extends WebMvcConfigurerAdapter {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        //
+        registry.addInterceptor(getAuthInterceptor())
+                .addPathPatterns("/**")
+                .excludePathPatterns("/login.html", "*.css", "*.js")
+                ;
     }
 
     @Override

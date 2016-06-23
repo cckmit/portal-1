@@ -1,4 +1,4 @@
-package ru.protei.portal.webui.controller;
+package ru.protei.portal.webui.controller.dict;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -8,6 +8,7 @@ import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.view.WorkerView;
 import ru.protei.portal.webui.api.HttpListResult;
+import ru.protei.portal.webui.controller.dict.WorkersController;
 import ru.protei.winter.jdbc.JdbcSort;
 
 import java.util.ArrayList;
@@ -24,7 +25,6 @@ public class WorkersControllerImpl implements WorkersController {
     @Autowired
     CompanyDAO companyDAO;
 
-    @Override
     public HttpListResult<WorkerView> list(@RequestParam(name = "q", defaultValue = "") String param) {
 
         // temp-hack, hardcoded company-id. must be replaced to sys_config.ownCompanyId

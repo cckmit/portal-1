@@ -1,4 +1,4 @@
-package ru.protei.portal.webui.controller;
+package ru.protei.portal.webui.controller.dict;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -12,7 +12,7 @@ import ru.protei.portal.webui.api.HttpListResult;
 @RestController
 public interface WorkersController {
 
-    @RequestMapping(path = "/api/workers/list")
+    @RequestMapping(path = "/gate/workers/list")
     public HttpListResult<WorkerView> list(@RequestParam(name = "q", defaultValue = "") String param);
 
 }

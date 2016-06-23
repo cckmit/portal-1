@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class IndexView {
 
-    @RequestMapping(path = "/index.html")
+    @RequestMapping(path = "/ws/index.html")
     public String processIndexPage (Model m) {
 
         System.out.println("Running index-page process");
