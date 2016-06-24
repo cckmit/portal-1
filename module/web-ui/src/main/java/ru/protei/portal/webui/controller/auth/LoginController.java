@@ -88,7 +88,7 @@ public class LoginController {
 
         sessionDAO.persist(newSession);
 
-        return "redirect:ws-index";
+        return "redirect:/ws/";
         //return null;
     }
 

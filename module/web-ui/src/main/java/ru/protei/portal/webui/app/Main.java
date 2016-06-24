@@ -24,7 +24,7 @@ public class Main {
     private static final String CONTEXT_PATH = "/";
     private static final String CONFIG_LOCATION = "ru.protei.portal.webui.app";
     private static final String MAPPING_URL = "/*";
-    private static final String API_SPACE_URL = "/api/*";
+    //private static final String API_SPACE_URL = "/api/*";
     private static final String DEFAULT_PROFILE = "dev";
 
     public static void main(String[] args) {
@@ -72,13 +72,14 @@ public class Main {
         }
 
 
+        webapp.addEventListener(new ContextLoaderListener(context));
+
         // SPRING servlet-dispatcher
         ServletHolder springHolder = springServletHolder(context);
         webapp.addServlet(springHolder, MAPPING_URL);
-        webapp.addServlet(springHolder, API_SPACE_URL);
+//        webapp.addServlet(springHolder, API_SPACE_URL);
 
         webapp.addServlet(new ServletHolder("defaultServletHandler", new DefaultServlet()), "");
-        webapp.addEventListener(new ContextLoaderListener(context));
         webapp.setDescriptor("module/web-ui/web/WEB-INF/web.xml");
         webapp.setResourceBase("module/web-ui/web");
 

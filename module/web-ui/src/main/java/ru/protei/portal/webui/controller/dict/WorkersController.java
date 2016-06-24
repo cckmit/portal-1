@@ -10,6 +10,7 @@ import ru.protei.portal.webui.api.HttpListResult;
  * Created by michael on 06.04.16.
  */
 @RestController
+@RequestMapping(path = "/api")
 public interface WorkersController {
 
     @RequestMapping(path = "/gate/workers/list")
