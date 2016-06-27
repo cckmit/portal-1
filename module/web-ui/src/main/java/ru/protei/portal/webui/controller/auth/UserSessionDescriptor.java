@@ -36,6 +36,12 @@ public class UserSessionDescriptor {
         this.person = null;
     }
 
+    public int getTimeToLive () {
+        return this.session == null ? -1
+                : this.session.getExpired() == null ? 0
+                : (int)((this.session.getExpired().getTime()-System.currentTimeMillis())/1000L);
+    }
+
     public String getSessionId () {
         return this.session != null ? this.session.getSessionId() : null;
     }

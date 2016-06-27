@@ -7,9 +7,12 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.ent.UserSession;
+import ru.protei.portal.core.utils.SessionIdGen;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,8 +40,8 @@ public class AuthInterceptor implements HandlerInterceptor {
     @Autowired
     private UserSessionDAO sessionDAO;
 
-//    @Autowired
-//    private SessionIdGen sidGen;
+    @Autowired
+    private SessionIdGen sidGen;
 
     private Map<String, UserSessionDescriptor> sessionCache;
 
@@ -53,12 +56,20 @@ public class AuthInterceptor implements HandlerInterceptor {
 
         log.debug(AUTH_HANDLER_LOG_PREFIX + ", on request to : " + request.getRequestURI());
 
-        // check if login-page
+        // check if login-action
         if (((HandlerMethod)handler).getBean() instanceof  LoginController) {
             log.debug(AUTH_HANDLER_LOG_PREFIX + ", pass to login controller");
-            // provide client-ip for controller
-            request.setAttribute(SecurityDefs.CLIENT_IP_REQ_ATTR, request.getRemoteAddr());
-            request.setAttribute(SecurityDefs.CLIENT_SESSION_ID_ATTR, request.getSession().getId());
+            // create new user-session to provide for login-controller
+            UserSession s = new UserSession();
+            s.setClientIp(request.getRemoteAddr());
+            s.setCreated(new Date());
+            s.setSessionId(sidGen.generateId());
+
+            UserSessionDescriptor descriptor = new UserSessionDescriptor();
+            descriptor.init(s);
+
+            request.setAttribute(SecurityDefs.AUTH_SESSION_DESC, descriptor);
+
             return true;
         }
 
@@ -81,37 +92,73 @@ public class AuthInterceptor implements HandlerInterceptor {
 
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
+        // check if login-action
+        if (((HandlerMethod)handler).getBean() instanceof  LoginController) {
+            log.debug(AUTH_HANDLER_LOG_PREFIX + ", post-handle of login controller");
 
+            UserSessionDescriptor descriptor = (UserSessionDescriptor)request.getAttribute(SecurityDefs.AUTH_SESSION_DESC);
+            if (descriptor.isValid()) {
+                log.debug("login success, store session in cache");
+                sessionCache.put(descriptor.getSessionId(), descriptor);
+
+                Cookie cookie = new Cookie(SecurityDefs.APP_SESSION_ID_NAME, descriptor.getSessionId());
+                cookie.setPath("/");
+                cookie.setMaxAge(descriptor.getTimeToLive());
+                response.addCookie(cookie);
+            }
+        }
+        else if (((HandlerMethod)handler).getBean() instanceof  LogoutController) {
+            UserSessionDescriptor descriptor = (UserSessionDescriptor)request.getAttribute(SecurityDefs.AUTH_SESSION_DESC);
+            if (descriptor != null) {
+                sessionCache.remove(descriptor.getSessionId());
+                descriptor.close();
+            }
+        }
     }
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-
     }
 
 
     protected UserSessionDescriptor getUserSessionDesc(HttpServletRequest request) {
 
         // get from cache
-        UserSessionDescriptor descriptor = sessionCache.get(request.getSession().getId());
+
+        String appSessionId = null;
+        for (Cookie cookie : request.getCookies()) {
+            if (cookie.getName().equalsIgnoreCase(SecurityDefs.APP_SESSION_ID_NAME)) {
+                appSessionId = cookie.getValue();
+                log.debug("found app-session id:" + appSessionId);
+                break;
+            }
+        }
+
+        if (appSessionId == null) {
+            log.debug("no app-session found");
+            return null;
+        }
+
+
+        UserSessionDescriptor descriptor = sessionCache.get(appSessionId);
 
         if (descriptor == null) {
-            log.debug(AUTH_HANDLER_LOG_PREFIX + " no session found in cache, id=" + request.getSession().getId());
+            log.debug(AUTH_HANDLER_LOG_PREFIX + " no session found in cache, id=" + appSessionId);
 
             // try to restore from database
-            UserSession s = sessionDAO.findBySID(request.getSession().getId());
+            UserSession appSession = sessionDAO.findBySID(appSessionId);
 
-            if (s != null) {
+            if (appSession != null) {
                 //ok
                 descriptor = new UserSessionDescriptor();
-                descriptor.init(s);
-                descriptor.login(userloginDAO.get(s.getLoginId()),
-                        userRoleDAO.get((long) s.getRoleId()),
-                        personDAO.get(s.getPersonId()),
-                        companyDAO.get(s.getCompanyId())
+                descriptor.init(appSession);
+                descriptor.login(userloginDAO.get(appSession.getLoginId()),
+                        userRoleDAO.get((long) appSession.getRoleId()),
+                        personDAO.get(appSession.getPersonId()),
+                        companyDAO.get(appSession.getCompanyId())
                 );
 
-                sessionCache.put(s.getSessionId(), descriptor);
+                sessionCache.put(appSession.getSessionId(), descriptor);
             }
         }
 

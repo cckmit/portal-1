@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.protei.portal.core.model.dao.*;
+import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.ent.UserRole;
-import ru.protei.portal.core.model.ent.UserSession;
 
 import java.util.Date;
 
@@ -35,6 +35,9 @@ public class LoginController {
     @Autowired
     private UserRoleDAO userRoleDAO;
 
+    @Autowired
+    private CompanyDAO companyDAO;
+
 
     private String getLoginPageView () {
         return "redirect:/login.html";
@@ -43,11 +46,10 @@ public class LoginController {
     @RequestMapping(value = "/do.login", method = RequestMethod.POST)
     public String login (@RequestParam(name = "ulogin")String ulogin,
                          @RequestParam(name = "upass")String upass,
-                         @RequestAttribute(name=SecurityDefs.CLIENT_SESSION_ID_ATTR,required = true) String sessionId,
-                         @RequestAttribute(name=SecurityDefs.CLIENT_IP_REQ_ATTR,required = true) String clientIp
+                         @RequestAttribute(name=SecurityDefs.AUTH_SESSION_DESC,required = true) UserSessionDescriptor descriptor
                         ) {
 
-        logger.debug("invoke login process: " + ulogin + "@" + clientIp);
+        logger.debug("invoke login process: " + ulogin + "@" + descriptor.getSession().getClientIp());
 
 
 //        userLoginDAO.getByCondition("")
@@ -73,23 +75,22 @@ public class LoginController {
 
         Person person = personDAO.get(login.getPersonId());
         UserRole role = userRoleDAO.get((long)login.getRoleId());
+        Company company = companyDAO.get(person.getCompanyId());
 
         logger.debug("Auth success for " + ulogin + " / " + role.getCode() + "/" + person.toDebugString());
 
-        UserSession newSession = new UserSession();
-        newSession.setCreated(new Date());
-        newSession.setClientIp(clientIp);
-        newSession.setCompanyId(person.getCompanyId());
-        newSession.setLoginId(login.getId());
-        newSession.setPersonId(login.getPersonId());
-        newSession.setRoleId(login.getRoleId());
-        newSession.setSessionId(sessionId);
-        newSession.setExpired(DateUtils.addHours(new Date(), 3));
+        descriptor.getSession().setCompanyId(person.getCompanyId());
+        descriptor.getSession().setLoginId(login.getId());
+        descriptor.getSession().setPersonId(login.getPersonId());
+        descriptor.getSession().setRoleId(login.getRoleId());
+        descriptor.getSession().setExpired(DateUtils.addHours(new Date(), 3));
+        descriptor.login(login,role,person,company);
 
-        sessionDAO.persist(newSession);
+        sessionDAO.removeByCondition("client_ip=? and login_id=?", descriptor.getSession().getClientIp(),
+                login.getId());
+        sessionDAO.persist(descriptor.getSession());
 
         return "redirect:/ws/";
         //return null;
     }
-
 }

@@ -3,6 +3,7 @@ package ru.protei.portal.webui.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 import ru.protei.portal.webui.controller.auth.SecurityDefs;
 import ru.protei.portal.webui.controller.auth.UserSessionDescriptor;
@@ -12,6 +13,14 @@ import ru.protei.portal.webui.controller.auth.UserSessionDescriptor;
  */
 @Controller
 public class IndexViewController {
+
+    @RequestMapping("/index.html")
+    public String globRoot (@RequestAttribute(name = SecurityDefs.AUTH_SESSION_DESC,required = false)UserSessionDescriptor sd) {
+        if (sd != null && sd.isValid())
+            return "redirect:/ws/";
+
+        return "redirect:/login.html";
+    }
 
     @GetMapping("/ws/")
     public ModelAndView workspaceIndexPage (@RequestAttribute(name = SecurityDefs.AUTH_SESSION_DESC)UserSessionDescriptor sd) {
