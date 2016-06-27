@@ -1,0 +1,31 @@
+doctype html
+html
+    head
+        title Система управления персоналом
+        meta(charset='UTF-8')
+        link(rel='stylesheet', href='style.css')
+        //- +commonHead
+        //- +eventsShowingScript
+    body
+        .global
+            .signIn_block
+                .t_wrapper
+                    .tc_wrapper
+                        .block
+                            .head
+                                .company
+                                    span.logo
+                                    span.name PROTEI
+                            .body
+                                .signInForm
+                                    form(action="/")
+                                        .user
+                                            .button.empty.grayC
+                                                span.icon-user
+                                            input.inputField.sticky(type="text")
+                                        .password
+                                            .button.empty.grayC
+                                                span.icon-lock
+                                            input.inputField.sticky(type="password")
+                                        .submitBlock
+                                            button.button.blueC(type="submit") Войти
