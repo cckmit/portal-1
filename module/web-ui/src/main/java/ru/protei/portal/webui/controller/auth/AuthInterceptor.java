@@ -1,5 +1,6 @@
 package ru.protei.portal.webui.controller.auth;
 
+import org.apache.commons.lang3.time.DateUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.method.HandlerMethod;
@@ -64,11 +65,17 @@ public class AuthInterceptor implements HandlerInterceptor {
             s.setClientIp(request.getRemoteAddr());
             s.setCreated(new Date());
             s.setSessionId(sidGen.generateId());
+            s.setExpired(DateUtils.addSeconds(new Date(), SecurityDefs.DEF_APP_SESSION_LIVE_TIME));
 
             UserSessionDescriptor descriptor = new UserSessionDescriptor();
             descriptor.init(s);
 
             request.setAttribute(SecurityDefs.AUTH_SESSION_DESC, descriptor);
+
+            Cookie cookie = new Cookie(SecurityDefs.APP_SESSION_ID_NAME, descriptor.getSessionId());
+            cookie.setPath("/");
+            cookie.setMaxAge(descriptor.getTimeToLive());
+            response.addCookie(cookie);
 
             return true;
         }
@@ -81,7 +88,7 @@ public class AuthInterceptor implements HandlerInterceptor {
              * In case of direct call for our api there is no reason to redirect, just send http-status
              *
              */
-            response.sendRedirect("/login.html");
+            response.sendRedirect(SecurityDefs.LOGIN_PAGE_URI);
             return false;
         }
 
@@ -100,11 +107,6 @@ public class AuthInterceptor implements HandlerInterceptor {
             if (descriptor.isValid()) {
                 log.debug("login success, store session in cache");
                 sessionCache.put(descriptor.getSessionId(), descriptor);
-
-                Cookie cookie = new Cookie(SecurityDefs.APP_SESSION_ID_NAME, descriptor.getSessionId());
-                cookie.setPath("/");
-                cookie.setMaxAge(descriptor.getTimeToLive());
-                response.addCookie(cookie);
             }
         }
         else if (((HandlerMethod)handler).getBean() instanceof  LogoutController) {
