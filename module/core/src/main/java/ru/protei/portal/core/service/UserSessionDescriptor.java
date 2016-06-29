@@ -1,4 +1,4 @@
-package ru.protei.portal.webui.controller.auth;
+package ru.protei.portal.core.service;
 
 import ru.protei.portal.core.model.ent.*;
 
