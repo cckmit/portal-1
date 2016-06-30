@@ -1,4 +1,4 @@
-package ru.protei.portal.core.service;
+package ru.protei.portal.core.service.user;
 
 import ru.protei.portal.core.model.ent.*;
 

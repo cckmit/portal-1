@@ -1,21 +1,17 @@
 package ru.protei.portal.webui.controller.auth;
 
-import org.apache.commons.lang3.time.DateUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
-import ru.protei.portal.core.model.dao.*;
-import ru.protei.portal.core.model.ent.UserSession;
+import ru.protei.portal.core.service.user.AuthService;
+import ru.protei.portal.core.service.user.UserSessionDescriptor;
 import ru.protei.portal.core.utils.SessionIdGen;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by michael on 22.06.16.
@@ -27,28 +23,14 @@ public class AuthInterceptor implements HandlerInterceptor {
     private static Logger log = Logger.getLogger(AuthInterceptor.class);
 
     @Autowired
-    private UserLoginDAO userloginDAO;
-
-    @Autowired
-    private PersonDAO personDAO;
-
-    @Autowired
-    private CompanyDAO companyDAO;
-
-    @Autowired
-    private UserRoleDAO userRoleDAO;
-
-    @Autowired
-    private UserSessionDAO sessionDAO;
+    private AuthService authService;
 
     @Autowired
     private SessionIdGen sidGen;
 
-    private Map<String, UserSessionDescriptor> sessionCache;
-
 
     public AuthInterceptor() {
-        sessionCache = new HashMap<>();
+
     }
 
 
@@ -57,32 +39,18 @@ public class AuthInterceptor implements HandlerInterceptor {
 
         log.debug(AUTH_HANDLER_LOG_PREFIX + ", on request to : " + request.getRequestURI());
 
+        request.setAttribute(SecurityDefs.CLIENT_IP_REQ_ATTR, request.getRemoteAddr());
+        request.setAttribute(SecurityDefs.CLIENT_UA_REQ_ATTR, request.getHeader(SecurityDefs.USER_AGENT_HEADER));
+
+        UserSessionDescriptor descriptor = processSessionDesc(request, response);
+
         // check if login-action
         if (((HandlerMethod)handler).getBean() instanceof  LoginController) {
             log.debug(AUTH_HANDLER_LOG_PREFIX + ", pass to login controller");
-            // create new user-session to provide for login-controller
-            UserSession s = new UserSession();
-            s.setClientIp(request.getRemoteAddr());
-            s.setCreated(new Date());
-            s.setSessionId(sidGen.generateId());
-            s.setExpired(DateUtils.addSeconds(new Date(), SecurityDefs.DEF_APP_SESSION_LIVE_TIME));
-
-            UserSessionDescriptor descriptor = new UserSessionDescriptor();
-            descriptor.init(s);
-
-            request.setAttribute(SecurityDefs.AUTH_SESSION_DESC, descriptor);
-
-            Cookie cookie = new Cookie(SecurityDefs.APP_SESSION_ID_NAME, descriptor.getSessionId());
-            cookie.setPath("/");
-            cookie.setMaxAge(descriptor.getTimeToLive());
-            response.addCookie(cookie);
-
             return true;
         }
 
-        UserSessionDescriptor descriptor = getUserSessionDesc(request);
         if (descriptor == null) {
-
             /**
              * @TODO replace this to configurable implementation.
              * In case of direct call for our api there is no reason to redirect, just send http-status
@@ -99,23 +67,6 @@ public class AuthInterceptor implements HandlerInterceptor {
 
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-        // check if login-action
-        if (((HandlerMethod)handler).getBean() instanceof  LoginController) {
-            log.debug(AUTH_HANDLER_LOG_PREFIX + ", post-handle of login controller");
-
-            UserSessionDescriptor descriptor = (UserSessionDescriptor)request.getAttribute(SecurityDefs.AUTH_SESSION_DESC);
-            if (descriptor.isValid()) {
-                log.debug("login success, store session in cache");
-                sessionCache.put(descriptor.getSessionId(), descriptor);
-            }
-        }
-        else if (((HandlerMethod)handler).getBean() instanceof  LogoutController) {
-            UserSessionDescriptor descriptor = (UserSessionDescriptor)request.getAttribute(SecurityDefs.AUTH_SESSION_DESC);
-            if (descriptor != null) {
-                sessionCache.remove(descriptor.getSessionId());
-                descriptor.close();
-            }
-        }
     }
 
     @Override
@@ -123,80 +74,39 @@ public class AuthInterceptor implements HandlerInterceptor {
     }
 
 
-    protected UserSessionDescriptor getUserSessionDesc(HttpServletRequest request) {
-
-        // get from cache
+    protected UserSessionDescriptor processSessionDesc(HttpServletRequest request, HttpServletResponse response) {
 
         String appSessionId = null;
-        for (Cookie cookie : request.getCookies()) {
-            if (cookie.getName().equalsIgnoreCase(SecurityDefs.APP_SESSION_ID_NAME)) {
-                appSessionId = cookie.getValue();
+
+        for (Cookie c : request.getCookies()) {
+            if (c.getName().equalsIgnoreCase(SecurityDefs.APP_SESSION_ID_NAME)) {
+                appSessionId = c.getValue();
                 log.debug("found app-session id:" + appSessionId);
                 break;
             }
         }
 
         if (appSessionId == null) {
-            log.debug("no app-session found");
+            log.debug("no app-session found, generate id");
+            appSessionId = sidGen.generateId();
+
+            Cookie cookie = new Cookie(SecurityDefs.APP_SESSION_ID_NAME, appSessionId);
+            cookie.setPath("/");
+            cookie.setMaxAge(AuthService.DEF_APP_SESSION_LIVE_TIME);
+            response.addCookie(cookie);
             return null;
         }
 
 
-        UserSessionDescriptor descriptor = sessionCache.get(appSessionId);
+        UserSessionDescriptor descriptor = authService.findSession(appSessionId, request.getRemoteAddr(),
+                request.getHeader(SecurityDefs.USER_AGENT_HEADER));
 
-        if (descriptor == null) {
-            log.debug(AUTH_HANDLER_LOG_PREFIX + " no session found in cache, id=" + appSessionId);
-
-            // try to restore from database
-            UserSession appSession = sessionDAO.findBySID(appSessionId);
-
-            if (appSession != null) {
-                //ok
-                descriptor = new UserSessionDescriptor();
-                descriptor.init(appSession);
-                descriptor.login(userloginDAO.get(appSession.getLoginId()),
-                        userRoleDAO.get((long) appSession.getRoleId()),
-                        personDAO.get(appSession.getPersonId()),
-                        companyDAO.get(appSession.getCompanyId())
-                );
-
-                sessionCache.put(appSession.getSessionId(), descriptor);
-            }
-        }
-
-        // validate session
-        if (descriptor != null && descriptor.getSession() != null) {
-
-            if (!descriptor.isValid()) {
-                log.warn("invalid session " + descriptor.getSessionId());
-                closeSessionDesc(descriptor);
-                return null;
-            }
-
-            if (descriptor.isExpired()) {
-                log.warn("session with id " + descriptor.getSessionId() + " is expired, block request");
-                closeSessionDesc(descriptor);
-                return null;
-            }
-
-            if (!descriptor.getSession().getClientIp().equals(request.getRemoteAddr())) {
-                log.warn("Security exception, host " + request.getRemoteAddr() + " is trying to access session " + descriptor.getSessionId() + " created for " + descriptor.getSession().getClientIp());
-                return null;
-            }
-
-            // now, all is ok
+        if (descriptor != null) {
             request.setAttribute(SecurityDefs.AUTH_SESSION_DESC, descriptor);
-
-            return descriptor;
         }
 
-        return null;
+        return descriptor;
     }
 
-    private void closeSessionDesc(UserSessionDescriptor descriptor) {
-        sessionDAO.remove(descriptor.getSession());
-        sessionCache.remove(descriptor.getSessionId());
-        descriptor.close();
-    }
 
 }
