@@ -82,6 +82,7 @@ public class AuthInterceptor implements HandlerInterceptor {
             if (c.getName().equalsIgnoreCase(SecurityDefs.APP_SESSION_ID_NAME)) {
                 appSessionId = c.getValue();
                 log.debug("found app-session id:" + appSessionId);
+                request.setAttribute(SecurityDefs.APP_SESSION_ID_NAME, appSessionId);
                 break;
             }
         }
@@ -94,6 +95,7 @@ public class AuthInterceptor implements HandlerInterceptor {
             cookie.setPath("/");
             cookie.setMaxAge(AuthService.DEF_APP_SESSION_LIVE_TIME);
             response.addCookie(cookie);
+            request.setAttribute(SecurityDefs.APP_SESSION_ID_NAME, appSessionId);
             return null;
         }
 

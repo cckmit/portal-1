@@ -3,11 +3,9 @@ package ru.protei.portal.core.service.user;
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.util.DigestUtils;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.utils.SessionIdGen;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -18,9 +16,7 @@ import java.util.Map;
  */
 public class AuthServiceImpl implements AuthService {
 
-    @Autowired
-    @Qualifier("logger-security")
-    private Logger logger;
+    private Logger logger = Logger.getLogger("logger-security");
 
     @Autowired
     private UserLoginDAO userLoginDAO;
@@ -38,7 +34,7 @@ public class AuthServiceImpl implements AuthService {
     private CompanyDAO companyDAO;
 
     @Autowired
-    private SessionIdGen sidGen;
+    private LDAPAuthProvider ldapAuthProvider;
 
     private Map<String, UserSessionDescriptor> sessionCache;
 
@@ -124,6 +120,10 @@ public class AuthServiceImpl implements AuthService {
 
         if (login.isLDAP_Auth()) {
             // check by LDAP
+            En_AuthResult resultCode = ldapAuthProvider.checkAuth(ulogin, pwd);
+            if (resultCode != En_AuthResult.OK)
+                return new AuthResult(resultCode);
+
         } else {
             // check MD5
             String md5Hash = DigestUtils.md5DigestAsHex(pwd.getBytes());
