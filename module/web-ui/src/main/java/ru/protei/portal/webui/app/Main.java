@@ -11,7 +11,6 @@ import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
-import ru.protei.portal.core.model.ent.Company;
 
 import java.io.IOException;
 
@@ -30,8 +29,8 @@ public class Main {
     public static void main(String[] args) {
         Server server = null;
         try {
-            Company company = new Company();
-            System.out.println(company);
+//            Company company = new Company();
+//            System.out.println(company);
 
             server = createServer(DEFAULT_PORT);
             server.start();
