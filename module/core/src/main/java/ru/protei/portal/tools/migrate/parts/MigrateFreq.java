@@ -9,7 +9,6 @@ import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseDocument;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.CaseTerm;
-import ru.protei.portal.tools.migrate.tools.CaseIdMapper;
 import ru.protei.portal.tools.migrate.tools.MigrateAction;
 import ru.protei.portal.tools.migrate.tools.MigrateUtils;
 
@@ -72,7 +71,7 @@ public class MigrateFreq implements MigrateAction {
             obj.setName((String) row.get("strName"));
             obj.setManagerId((Long) row.get("nManagerId"));
             obj.setModified(new Date());
-            obj.setStateId(oldToNewStateMap.get((Long) row.get("nStatusID")));
+            obj.setStateId(oldToNewStateMap.get(row.get("nStatusID")));
 
 
             if (obj.getCreatorId() == null) {
@@ -96,7 +95,7 @@ public class MigrateFreq implements MigrateAction {
                 .process(src, termDAO, row -> {
                     CaseTerm c = new CaseTerm();
                     c.setCreated((Date) row.get("dtCreation"));
-                    c.setCaseId(caseNumberToIdMapper.get((Long) row.get("nRequirementID")));
+                    c.setCaseId(caseNumberToIdMapper.get(row.get("nRequirementID")));
                     c.setCreatorId((Long) row.get("nCreatorID"));
                     c.setEndTime((Date) row.get("dDeadline"));
                     c.setLabelText((String) row.get("strComment"));
@@ -115,7 +114,7 @@ public class MigrateFreq implements MigrateAction {
                 .process(src, documentDAO, row -> {
                     CaseDocument cdoc = new CaseDocument();
                     cdoc.setCreated((Date) row.get("dtCreation"));
-                    cdoc.setCaseId(caseNumberToIdMapper.get((Long) row.get("nRequirementID")));
+                    cdoc.setCaseId(caseNumberToIdMapper.get(row.get("nRequirementID")));
                     cdoc.setAuthorId((Long)row.get("nCreatorID"));
                     cdoc.setDocBody((String)row.get("text"));
                     cdoc.setRevision(((Number)row.get("nVersion")).intValue());
@@ -135,7 +134,7 @@ public class MigrateFreq implements MigrateAction {
                     CaseComment c = new CaseComment();
                     c.setCreated((Date) row.get("dtCreation"));
                     c.setAuthorId((Long) row.get("nCreatorID"));
-                    c.setCaseId(caseNumberToIdMapper.get((Long) row.get("nRequirementID")));
+                    c.setCaseId(caseNumberToIdMapper.get(row.get("nRequirementID")));
                     c.setCaseStateId(oldToNewStateMap.get(row.get("nStatusId")));
 
                     if (c.getCaseStateId() != null) {
