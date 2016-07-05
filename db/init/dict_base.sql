@@ -43,6 +43,19 @@ insert into case_doc_type (id,dt_code,dt_info,dt_label,displayorder) values (2,'
 insert into case_doc_type (id,dt_code,dt_info,dt_label,displayorder) values (3,'reldoc','Release Doc','Release',3);
 
 
+delete from Absence_Reason;
+insert into Absence_Reason(id, ar_code, old_id, ar_info, display_order) values (1, 'business_trip', 1, 'Командировка', 2);
+insert into Absence_Reason(id, ar_code, old_id, ar_info, display_order) values (2, 'vacation', 2, 'Отпуск', 5);
+insert into Absence_Reason(id, ar_code, old_id, ar_info, display_order) values (3, 'illness', 3, 'Болезнь', 6);
+insert into Absence_Reason(id, ar_code, old_id, ar_info, display_order) values (4, 'personal_reasons', 4, 'Личные дела', 1);
+insert into Absence_Reason(id, ar_code, old_id, ar_info, display_order) values (5, 'local_trip', 5, 'Местная командировка', 3);
+insert into Absence_Reason(id, ar_code, old_id, ar_info, display_order) values (6, 'studies', 6, 'Учеба', 4);
+insert into Absence_Reason(id, ar_code, old_id, ar_info, display_order) values (7, 'sick_leave', 7, 'Больничный лист', 7);
+insert into Absence_Reason(id, ar_code, old_id, ar_info, display_order) values (8, 'guest_card', 8, 'Гостевая карта', 8);
+insert into Absence_Reason(id, ar_code, old_id, ar_info, display_order) values (9, 'night_work', 9, 'Ночные работы', 9);
+insert into Absence_Reason(id, ar_code, old_id, ar_info, display_order) values (10, 'leave_without_pay', 10, 'Отпуск за свой счет', 10);
+
+
 --insert into company(id,cname) values (-1,'no_company');
 
 
