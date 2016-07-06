@@ -1,6 +1,7 @@
 package ru.protei.portal.webui.controller.dict;
 
 import org.springframework.web.bind.annotation.*;
+import ru.protei.portal.core.model.view.EmployeeDetailView;
 import ru.protei.portal.core.model.view.WorkerView;
 import ru.protei.portal.webui.api.struct.HttpListResult;
 
@@ -11,6 +12,10 @@ import ru.protei.portal.webui.api.struct.HttpListResult;
 @RequestMapping(path = "/api")
 public interface WorkersAPI {
 
-    @RequestMapping(path = "/gate/workers/list")
+    @RequestMapping(path = "/gate/employees/list")
     public HttpListResult<WorkerView> list(@RequestParam(name = "q", defaultValue = "") String param);
+
+
+    @GetMapping("/gate/employees/{id:[0-9]+}.json")
+    public EmployeeDetailView getEmployeeProfile (@PathVariable("id") Long id);
 }
