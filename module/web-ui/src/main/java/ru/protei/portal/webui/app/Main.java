@@ -66,6 +66,9 @@ public class Main {
         webapp.setErrorHandler(null);
         webapp.setContextPath(CONTEXT_PATH);
 
+        webapp.getMimeTypes().addMimeMapping("js","text/javascript;charset=utf-8");
+        System.out.println(webapp.getMimeTypes().getMimeByExtension("aaa.js"));
+
         if (JSP_ENABLED) {
             webapp.addServlet(jspServletHolder(), "*.jsp");
         }

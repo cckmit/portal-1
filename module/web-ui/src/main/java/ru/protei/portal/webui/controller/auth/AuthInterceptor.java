@@ -78,12 +78,15 @@ public class AuthInterceptor implements HandlerInterceptor {
 
         String appSessionId = null;
 
-        for (Cookie c : request.getCookies()) {
-            if (c.getName().equalsIgnoreCase(SecurityDefs.APP_SESSION_ID_NAME)) {
-                appSessionId = c.getValue();
-                log.debug("found app-session id:" + appSessionId);
-                request.setAttribute(SecurityDefs.APP_SESSION_ID_NAME, appSessionId);
-                break;
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null && cookies.length > 0) {
+            for (Cookie c : cookies) {
+                if (c.getName().equalsIgnoreCase(SecurityDefs.APP_SESSION_ID_NAME)) {
+                    appSessionId = c.getValue();
+                    log.debug("found app-session id:" + appSessionId);
+                    request.setAttribute(SecurityDefs.APP_SESSION_ID_NAME, appSessionId);
+                    break;
+                }
             }
         }
 

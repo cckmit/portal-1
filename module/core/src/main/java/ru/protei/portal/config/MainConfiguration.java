@@ -22,6 +22,9 @@ public class MainConfiguration {
     public MigrationEntryDAO getMigrationEntryDAO () { return  new MigrationEntryDAO_Impl(); }
 
     @Bean
+    public CompanyGroupHomeDAO getCompanyGroupHomeDAO () { return new CompanyGroupHomeDAO_Impl(); }
+
+    @Bean
     public AbsenceReasonDAO getAbsenceReasonDAO() {
         return new AbsenceReasonDAO_Impl();
     }
