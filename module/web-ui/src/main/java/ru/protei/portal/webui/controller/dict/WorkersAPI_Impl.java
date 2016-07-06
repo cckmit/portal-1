@@ -7,8 +7,7 @@ import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.view.WorkerView;
-import ru.protei.portal.webui.api.HttpListResult;
-import ru.protei.portal.webui.controller.dict.WorkersController;
+import ru.protei.portal.webui.api.struct.HttpListResult;
 import ru.protei.winter.jdbc.JdbcSort;
 
 import java.util.ArrayList;
@@ -17,7 +16,7 @@ import java.util.List;
 /**
  * Created by michael on 06.04.16.
  */
-public class WorkersControllerImpl implements WorkersController {
+public class WorkersAPI_Impl implements WorkersAPI {
 
     @Autowired
     PersonDAO personDAO;

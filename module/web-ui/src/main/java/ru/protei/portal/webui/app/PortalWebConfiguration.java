@@ -10,8 +10,8 @@ import org.springframework.web.servlet.view.freemarker.FreeMarkerConfig;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 import ru.protei.portal.config.MainConfiguration;
 import ru.protei.portal.webui.controller.auth.AuthInterceptor;
-import ru.protei.portal.webui.controller.dict.WorkersController;
-import ru.protei.portal.webui.controller.dict.WorkersControllerImpl;
+import ru.protei.portal.webui.controller.dict.WorkersAPI;
+import ru.protei.portal.webui.controller.dict.WorkersAPI_Impl;
 import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
@@ -26,8 +26,8 @@ import ru.protei.winter.jdbc.JdbcConfigurationContext;
 public class PortalWebConfiguration extends WebMvcConfigurerAdapter {
 
     @Bean
-    public WorkersController getWorkersController () {
-        return new WorkersControllerImpl();
+    public WorkersAPI getWorkersController () {
+        return new WorkersAPI_Impl();
     }
 
     @Bean
