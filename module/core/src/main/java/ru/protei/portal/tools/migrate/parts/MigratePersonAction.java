@@ -2,6 +2,7 @@ package ru.protei.portal.tools.migrate.parts;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.AbstractApplicationContext;
+import ru.protei.portal.core.model.dao.MigrationEntryDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.tools.migrate.tools.MigrateAction;
@@ -20,10 +21,14 @@ import java.util.regex.Pattern;
  */
 public class MigratePersonAction implements MigrateAction {
 
+    public static final String TM_PERSON_ITEM_CODE = "Tm_Person";
     private static Pattern PERSON_PROP = Pattern.compile("!begin!([^=]+)=(.*?)!end!;?", Pattern.DOTALL);
 
     @Autowired
     private PersonDAO dao;
+
+    @Autowired
+    private MigrationEntryDAO migrateDAO;
 
     @Override
     public int orderOfExec() {
@@ -71,7 +76,10 @@ public class MigratePersonAction implements MigrateAction {
     @Override
     public void migrate(Connection src, AbstractApplicationContext ctx) throws SQLException {
 
-        new BatchProcessTask<Person>(makeSql(dao.getMaxId()))
+
+        new BatchProcessTask<Person>(makeSql(migrateDAO.getLastMigratedID(TM_PERSON_ITEM_CODE, 0L)))
+                .withIdField("nID")
+                .onBatchEnd(lastIdValue -> migrateDAO.confirmMigratedID(TM_PERSON_ITEM_CODE,lastIdValue))
                 .process(src, dao, row -> {
                         Person x = new Person();
                         x.setId(((Number) row.get("nID")).longValue());
@@ -142,6 +150,7 @@ public class MigratePersonAction implements MigrateAction {
 
                         System.out.println(x.getId() + "/" + x.getDisplayName());
                         return x;
-                });
+                })
+                .dumpStats(TM_PERSON_ITEM_CODE);
     }
 }

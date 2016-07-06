@@ -2,10 +2,7 @@ package ru.protei.portal.tools.migrate.tools;
 
 import protei.sql.Tm_SqlHelper;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -31,21 +28,25 @@ public class MigrateUtils {
 
     public static List<Map<String,Object>> buildListForTable (Connection conn, String tableName, String orderBy) throws SQLException {
         String sql = "select * from " + tableName + " order by " + orderBy;
-        return mapSqlQuery(conn, sql);
+        return mapSqlQuery(conn, sql, (Object[]) null);
     }
 
 
-    public static List<Map<String, Object>> mapSqlQuery(Connection conn, String sql) throws SQLException {
+    public static List<Map<String, Object>> mapSqlQuery(Connection conn, String sql, Object... args) throws SQLException {
         List<Map<String,Object>> rez = new ArrayList<Map<String,Object>>();
         ResultSet rs = null;
 
         System.out.println("running query : " + sql);
 
-        try (Statement st = conn.createStatement(ResultSet.TYPE_FORWARD_ONLY,ResultSet.CONCUR_READ_ONLY)) {
+        try (PreparedStatement st = conn.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY,ResultSet.CONCUR_READ_ONLY)) {
 
             st.setFetchSize(1000);
 
-            rs = st.executeQuery(sql);
+            if (args != null && args.length > 0) {
+                Tm_SqlHelper.configureStatement(st, args);
+            }
+
+            rs = st.executeQuery();
 
 
             System.out.println("loop over result-set::begin");

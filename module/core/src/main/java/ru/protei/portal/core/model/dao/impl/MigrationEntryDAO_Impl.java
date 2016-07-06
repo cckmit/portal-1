@@ -32,6 +32,10 @@ public class MigrationEntryDAO_Impl extends PortalBaseJdbcDAO<MigrationEntry> im
         }
 
         entry.setLastId(id);
-        persist(entry);
+
+        if (entry.getId() == null)
+            persist(entry);
+        else
+            this.merge(entry);
     }
 }

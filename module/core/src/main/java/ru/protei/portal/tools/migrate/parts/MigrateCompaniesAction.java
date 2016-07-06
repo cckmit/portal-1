@@ -3,6 +3,7 @@ package ru.protei.portal.tools.migrate.parts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.AbstractApplicationContext;
 import ru.protei.portal.core.model.dao.CompanyDAO;
+import ru.protei.portal.core.model.dao.MigrationEntryDAO;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.tools.migrate.tools.MigrateAction;
 
@@ -15,9 +16,13 @@ import java.util.Date;
  */
 public class MigrateCompaniesAction implements MigrateAction {
 
+    public static final String TM_COMPANY_ITEM_CODE = "Tm_Company";
     @Autowired
     CompanyDAO dao;
 
+
+    @Autowired
+    private MigrationEntryDAO migrateDAO;
 
     @Override
     public int orderOfExec() {
@@ -36,20 +41,25 @@ public class MigrateCompaniesAction implements MigrateAction {
         }
 
 
-        BatchProcessTask<Company> batchTask = new BatchProcessTask<Company>("\"resource\".tm_company", "nID", dao.getMaxId());
-        batchTask.process(src, dao, row -> {
-                Company x = new Company();
-                x.setAddressDejure((String) row.get("strDeJureAddress"));
-                x.setAddressFact((String) row.get("strPhysicalAddress"));
-                x.setEmail((String) row.get("strE_mail"));
-                x.setFax(null);
-                x.setId(((Number) row.get("nID")).longValue());
-                x.setInfo((String) row.get("strInfo"));
-                x.setCname((String) row.get("strName"));
-                x.setPhone(null);
-                x.setCreated((Date) row.get("dtCreation"));
-                x.setWebsite((String) row.get("strHTTP_url"));
-                return x;
-        });
+        new BatchProcessTask<Company>(
+                "\"resource\".tm_company", "nID", migrateDAO.getLastMigratedID(TM_COMPANY_ITEM_CODE, 0L)
+        )
+                .onBatchEnd(lastIdValue -> migrateDAO.confirmMigratedID(TM_COMPANY_ITEM_CODE, lastIdValue))
+                .process(src, dao, row -> {
+                    Company x = new Company();
+                    x.setAddressDejure((String) row.get("strDeJureAddress"));
+                    x.setAddressFact((String) row.get("strPhysicalAddress"));
+                    x.setEmail((String) row.get("strE_mail"));
+                    x.setFax(null);
+                    x.setId(((Number) row.get("nID")).longValue());
+                    x.setInfo((String) row.get("strInfo"));
+                    x.setCname((String) row.get("strName"));
+                    x.setPhone(null);
+                    x.setCreated((Date) row.get("dtCreation"));
+                    x.setWebsite((String) row.get("strHTTP_url"));
+                    return x;
+                })
+                .dumpStats(TM_COMPANY_ITEM_CODE);
+
     }
 }

@@ -12,7 +12,7 @@ import ru.protei.winter.jdbc.annotations.JdbcId;
 public class MigrationEntry {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
-    private int id;
+    private Long id;
 
     @JdbcColumn(name = "entry_code")
     private String code;
@@ -24,11 +24,11 @@ public class MigrationEntry {
     public MigrationEntry() {
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

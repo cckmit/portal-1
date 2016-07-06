@@ -20,25 +20,27 @@ public class MigrateConfiguration {
         return new MigratePersonAction();
     }
 
-    @Bean
-    public MigrateAction getBugsMigrateAction () {
-        return new MigrateBugs();
-    }
 
-    @Bean
-    public MigrateAction getTaskMigrateAction () {
-        return new MigrateTasks();
-    }
+    @Bean MigrateAction getPersonAbsenceAction () { return new MigratePersonAbsenceAction(); }
+//    @Bean
+//    public MigrateAction getBugsMigrateAction () {
+//        return new MigrateBugs();
+//    }
+//
+//    @Bean
+//    public MigrateAction getTaskMigrateAction () {
+//        return new MigrateTasks();
+//    }
 
     @Bean
     public MigrateAction getDevUnitMigrateAction () {
         return new MigrateDevUnits();
     }
 
-    @Bean
-    public MigrateAction getFreqMigrateAction () {
-        return new MigrateFreq();
-    }
+//    @Bean
+//    public MigrateAction getFreqMigrateAction () {
+//        return new MigrateFreq();
+//    }
 
     @Bean
     public MigrateSetup getSetup () {
