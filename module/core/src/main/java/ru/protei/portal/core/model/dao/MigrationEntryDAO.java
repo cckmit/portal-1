@@ -7,8 +7,8 @@ import ru.protei.portal.core.model.ent.MigrationEntry;
  */
 public interface MigrationEntryDAO extends PortalBaseDAO<MigrationEntry> {
 
-    public Long getLastMigratedID (String code);
-    public Long getLastMigratedID (String code, Long defId);
-    public void confirmMigratedID (String code, Long id);
+    public Long getMigratedLastUpdate(String code);
+    public Long getMigratedLastUpdate(String code, Long defDate);
+    public void confirmMigratedLastUpdate(String code, Long date);
 
 }

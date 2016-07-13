@@ -11,10 +11,10 @@ import ru.protei.portal.tools.migrate.tools.MigrateAction;
 @Configuration
 public class MigrateConfiguration {
 
-    @Bean
-    public MigrateAction getCompanyMigrateAction () {
-        return new MigrateCompaniesAction();
-    }
+//    @Bean
+//    public MigrateAction getCompanyMigrateAction () {
+//        return new MigrateCompaniesAction();
+//    }
 
     @Bean MigrateAction getPersonMigrateAction () {
         return new MigratePersonAction();
@@ -32,10 +32,10 @@ public class MigrateConfiguration {
 //        return new MigrateTasks();
 //    }
 
-    @Bean
-    public MigrateAction getDevUnitMigrateAction () {
-        return new MigrateDevUnits();
-    }
+//    @Bean
+//    public MigrateAction getDevUnitMigrateAction () {
+//        return new MigrateDevUnits();
+//    }
 
 //    @Bean
 //    public MigrateAction getFreqMigrateAction () {

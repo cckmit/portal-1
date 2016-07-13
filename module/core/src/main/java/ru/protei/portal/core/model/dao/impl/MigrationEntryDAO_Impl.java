@@ -13,25 +13,25 @@ public class MigrationEntryDAO_Impl extends PortalBaseJdbcDAO<MigrationEntry> im
     }
 
     @Override
-    public Long getLastMigratedID(String code) {
-        return getLastMigratedID(code, null);
+    public Long getMigratedLastUpdate(String code) {
+        return getMigratedLastUpdate(code, null);
     }
 
     @Override
-    public Long getLastMigratedID(String code, Long defId) {
+    public Long getMigratedLastUpdate(String code, Long defDate) {
         MigrationEntry entry = getByCondition("entry_code=?", code);
-        return entry != null ? entry.getLastId() : defId;
+        return entry != null ? entry.getLastUpdate().getTime() : defDate;
     }
 
     @Override
-    public void confirmMigratedID(String code, Long id) {
+    public void confirmMigratedLastUpdate(String code, Long date) {
         MigrationEntry entry = getByCondition("entry_code=?", code);
         if (entry == null) {
             entry = new MigrationEntry();
             entry.setCode(code);
         }
 
-        entry.setLastId(id);
+        entry.setLastUpdate(date);
 
         if (entry.getId() == null)
             persist(entry);

@@ -36,31 +36,64 @@ $(document.body).ready(function () {
     });
 
     // sign-in function
-   $(".signInForm .submitBlock").click(function () {
+   //$(".signInForm .submitBlock").click(function () {
+   //
+   //    var req = {
+   //        ulogin : $(".signInForm input[name=ulogin]").val(),
+   //        upass : $(".signInForm input[name=upass]").val()
+   //    };
+   //
+   //    var message = {
+   //        url : $(this).attr('action'),
+   //        method : "POST",
+   //        data : req,
+   //        dataType : "json",
+   //        success : function (resp) {
+   //
+   //            new ServerResponse (resp).process ({
+   //                onFailRedirect : false,
+   //                error : function () {
+   //                    $(".signInForm input[name=upass]").val("");
+   //                }
+   //            });
+   //        }
+   //    };
+   //
+   //    $.ajax(message);
+   //
+   //});
 
-       var req = {
-           ulogin : $(".signInForm input[name=ulogin]").val(),
-           upass : $(".signInForm input[name=upass]").val()
-       };
 
-       var message = {
-           url : $(this).attr('action'),
-           method : "POST",
-           data : req,
-           dataType : "json",
-           success : function (resp) {
+    // sign-in function
+    $("#loginForm").submit(function (event) {
+        event.preventDefault();
+        var elem = $(this);
 
-               new ServerResponse (resp).process ({
-                   onFailRedirect : false,
-                   error : function () {
-                       $(".signInForm input[name=upass]").val("");
-                   }
-               });
-           }
-       };
+        var req = {
+            ulogin : elem.find('input[name=ulogin]').val(),
+            upass : elem.find('input[name=upass]').val()
+        };
 
-       $.ajax(message);
+        var message = {
+            url : elem.attr('action'),
+            method : "POST",
+            data : req,
+            dataType : "json",
+            success : function (resp) {
 
-   });
+                new ServerResponse (resp).process ({
+                    onFailRedirect : false,
+                    error : function () {
+                        elem.find('input[name=upass]').val("");
+                    }
+                });
+            }
+        };
+
+        $.ajax(message);
+
+    });
+
+
 
 });

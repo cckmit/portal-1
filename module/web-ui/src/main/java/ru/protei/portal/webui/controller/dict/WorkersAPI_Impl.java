@@ -16,7 +16,12 @@ import ru.protei.portal.webui.api.struct.HttpListResult;
 import ru.protei.winter.jdbc.JdbcSort;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+
+
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
 /**
  * Created by michael on 06.04.16.
@@ -36,8 +41,22 @@ public class WorkersAPI_Impl implements WorkersAPI {
     PersonAbsenceDAO absenceDAO;
 
 
+
+    @GetMapping(path = "/gate/employees/{id:[0-9]+}/absences.json", params = {"from", "till"})
+    public EmployeeDetailView getEmployeeAbsences(@PathVariable("id") Long id, @RequestParam("from") Long tFrom, @RequestParam("till") Long tTill){
+
+        Person p = personDAO.get(id);
+        if (p == null || !groupHomeDAO.checkIfHome(p.getCompanyId())) {
+            return null;
+        }
+
+        return new EmployeeDetailView().fill(absenceDAO.getForRange(p.getId(), new Date(tFrom), new Date(tTill)));
+    }
+
+
+
     @GetMapping("/gate/employees/{id:[0-9]+}.json")
-    public EmployeeDetailView getEmployeeProfile(@PathVariable("id") Long id) {
+    public EmployeeDetailView getEmployeeProfile(@PathVariable("id") Long id){
 
         Person p = personDAO.get(id);
         if (p == null || !groupHomeDAO.checkIfHome(p.getCompanyId())) {

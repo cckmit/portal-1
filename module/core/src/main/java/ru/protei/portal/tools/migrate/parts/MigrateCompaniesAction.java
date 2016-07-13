@@ -40,11 +40,13 @@ public class MigrateCompaniesAction implements MigrateAction {
             dao.persist(no_comp_rec);
         }
 
+        long lastOldDateUpdate = migrateDAO.getMigratedLastUpdate(TM_COMPANY_ITEM_CODE, 0L);
+        migrateDAO.confirmMigratedLastUpdate(TM_COMPANY_ITEM_CODE, new Date().getTime());
 
         new BatchProcessTask<Company>(
-                "\"resource\".tm_company", "nID", migrateDAO.getLastMigratedID(TM_COMPANY_ITEM_CODE, 0L)
+                "\"resource\".tm_company", "dtLastUpdate", lastOldDateUpdate
         )
-                .onBatchEnd(lastIdValue -> migrateDAO.confirmMigratedID(TM_COMPANY_ITEM_CODE, lastIdValue))
+                .setLastUpdate(lastOldDateUpdate)
                 .process(src, dao, row -> {
                     Company x = new Company();
                     x.setAddressDejure((String) row.get("strDeJureAddress"));

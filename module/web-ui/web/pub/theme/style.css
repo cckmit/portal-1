@@ -280,11 +280,9 @@ body {
 .global .signIn_block .t_wrapper .tc_wrapper .block .body .password {
   margin-top: 7px;
 }
-.global .signIn_block .t_wrapper .tc_wrapper .block .body .submitBlock {
-  margin-top: 14px;
-}
 .global .signIn_block .t_wrapper .tc_wrapper .block .body .submitBlock .button {
   width: 100%;
+  margin-top: 14px;
 }
 .global >.leftBlock,
 .header_global >.leftBlock,
@@ -406,7 +404,7 @@ body {
   background-size: 30px 30px;
   animation: barberpole 0.5s linear infinite;
   transition-duration: 0.3s;
-  background-image: -webkit-linear-gradient(45deg, rgba(143,162,186,0.3) 25%, rgba(255,255,255,0.3) 25%, rgba(255,255,255,0.3) 50%, rgba(143,162,186,0.3) 50%, rgba(143,162,186,0.3) 75%, rgba(255,255,255,0.3) 75%, rgba(255,255,255,0.3));
+  background-image: linear-gradient(45deg, rgba(143,162,186,0.3) 25%, rgba(255,255,255,0.3) 25%, rgba(255,255,255,0.3) 50%, rgba(143,162,186,0.3) 50%, rgba(143,162,186,0.3) 75%, rgba(255,255,255,0.3) 75%, rgba(255,255,255,0.3));
 }
 .Loader.active {
   opacity: 1;
@@ -588,9 +586,6 @@ body {
 .button.active.switcher {
   cursor: pointer;
 }
-.button.active.switcher:hover {
-  background-image: linear-gradient( to bottom, #f8f8f8 0%, #eceaea 100% );;
-}
 .button.blueColor {
   border-color: #2177f0;
   color: #135fcb;
@@ -673,12 +668,10 @@ body {
   display: inline-block;
   border-radius: 50%;
   cursor: pointer;
-  background-image: linear-gradient( to bottom, #fff 0%, #e3e3e4 100% );;
   box-shadow: 0 0 5px 0 #95a2b3;
   box-sizing: border-box;
 }
 .radioButton.active {
-  background-image: linear-gradient( to bottom, #e4e4e5 0%, #fff 100% );;
   cursor: auto;
 }
 .radioButton.active:before {
@@ -902,6 +895,8 @@ body {
   color: #d7dce0;
 }
 .header_global >.rightBlock {
+  height: 59px;
+  overflow: hidden;
   background-color: #5481c1;
   border-bottom: 1px solid #e0e4e6;
 }
@@ -1037,6 +1032,11 @@ body {
 .header_global >.rightBlock .rightSide.searchBlock {
   width: 434px;
 }
+@media (max-width: 1600px) {
+  .header_global >.rightBlock .rightSide.searchBlock {
+    width: 260px;
+  }
+}
 .header_global >.rightBlock .globalSearch {
   width: 100%;
   display: inline-block;
@@ -1082,7 +1082,7 @@ body {
   vertical-align: -2px;
 }
 .header_global >.rightBlock .globalSearch .buttonsBlock .search_button:hover {
-  background-color: #de676b;
+  background-color: #82a9e1;
 }
 .header_global >.rightBlock .icons {
   color: #82a9e1;
@@ -2446,8 +2446,7 @@ body {
 .body_global .UserPassport .absences .timingDiagram table.diagram td:nth-child(7n-1) {
   background-color: rgba(49,65,87,0.06);
 }
-.body_global >.rightBlock .CaseList .timingDiagram table.diagram td.absence,
-.body_global .UserPassport .absences .timingDiagram table.diagram td.absence {
+.body_global >.rightBlock .CaseList .timingDiagram table.diagram td.absence{
   background-color: rgba(49,65,87,0.06);
 }
 .body_global >.rightBlock .CaseList .timingDiagram table.diagram tr.headers,
@@ -2466,7 +2465,7 @@ body {
 }
 .body_global >.rightBlock .CaseList .timingDiagram table.diagram tr.headers td.today,
 .body_global .UserPassport .absences .timingDiagram table.diagram tr.headers td.today {
-  color: #fff;
+  color: #fff !important;
   border-bottom: 1px solid #5c8dc6;
   background-image: linear-gradient(to bottom, #5d8dc6, #51a1eb);
   font-weight: bold;
@@ -3353,25 +3352,25 @@ body {
   display: table-cell;
 }
 .body_global >.rightBlock .caseListsBlock.diagram_showing >.t_wrapper .tc1_wrapper >.block table.caseList tr.case:first-child,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper >.block table.caseList tr.case:first-child,
+
 .body_global .Order >.body >.column-1 >.wrapper .caseListsBlock.diagram_showing >.block >.t_wrapper .tc1_wrapper >.block table.caseList tr.case:first-child {
   border-top: 1px solid #c7cad1;
 }
 .body_global >.rightBlock .caseListsBlock.diagram_showing >.t_wrapper .tc1_wrapper >.block table.caseList tr.case td.caseInfo-1,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper >.block table.caseList tr.case td.caseInfo-1,
+
 .body_global .Order >.body >.column-1 >.wrapper .caseListsBlock.diagram_showing >.block >.t_wrapper .tc1_wrapper >.block table.caseList tr.case td.caseInfo-1 {
   padding-left: 15px;
   position: relative;
 }
 .body_global >.rightBlock .caseListsBlock.diagram_showing >.t_wrapper .tc1_wrapper >.block table.caseList tr.case td.status,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper >.block table.caseList tr.case td.status,
+
 .body_global .Order >.body >.column-1 >.wrapper .caseListsBlock.diagram_showing >.block >.t_wrapper .tc1_wrapper >.block table.caseList tr.case td.status {
   padding-right: 30px;
   position: relative;
   font-weight: bold;
 }
 .body_global >.rightBlock .caseListsBlock.diagram_showing >.t_wrapper .tc1_wrapper >.block table.caseList tr.case td.caseInfo-2,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper >.block table.caseList tr.case td.caseInfo-2,
+
 .body_global .Order >.body >.column-1 >.wrapper .caseListsBlock.diagram_showing >.block >.t_wrapper .tc1_wrapper >.block table.caseList tr.case td.caseInfo-2,
 .body_global >.rightBlock .caseListsBlock.diagram_showing >.t_wrapper .tc1_wrapper >.block table.caseList tr.case td.executor,
 .body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper >.block table.caseList tr.case td.executor,
@@ -3388,7 +3387,7 @@ body {
   border-right: 1px solid #e8e8e8;
 }
 .body_global >.rightBlock .caseListsBlock.diagram_showing >.t_wrapper .tc1_wrapper >.block table.caseList tr.case td.timeEstimate.inactive,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper >.block table.caseList tr.case td.timeEstimate.inactive,
+
 .body_global .Order >.body >.column-1 >.wrapper .caseListsBlock.diagram_showing >.block >.t_wrapper .tc1_wrapper >.block table.caseList tr.case td.timeEstimate.inactive,
 .body_global >.rightBlock .caseListsBlock.diagram_showing >.t_wrapper .tc1_wrapper >.block table.caseList tr.case td.timeLeft.inactive,
 .body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper >.block table.caseList tr.case td.timeLeft.inactive,
@@ -3410,13 +3409,13 @@ body {
   width: 0;
 }
 .body_global >.rightBlock .caseListsBlock.diagram_showing >.t_wrapper .tc2_wrapper >.wrapper .keyWords,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc2_wrapper >.wrapper .keyWords,
+
 .body_global .Order >.body >.column-1 >.wrapper .caseListsBlock.diagram_showing >.block >.t_wrapper .tc2_wrapper >.wrapper .keyWords {
   position: absolute;
   top: 22px;
 }
 .body_global >.rightBlock .caseListsBlock.diagram_showing >.t_wrapper .tc2_wrapper >.wrapper .keyWords .word,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc2_wrapper >.wrapper .keyWords .word,
+
 .body_global .Order >.body >.column-1 >.wrapper .caseListsBlock.diagram_showing >.block >.t_wrapper .tc2_wrapper >.wrapper .keyWords .word {
   position: relative;
   margin: 14px;
@@ -3435,35 +3434,35 @@ body {
   left: auto;
 }
 .body_global >.rightBlock .caseListsBlock.diagram_showing >.t_wrapper .tc2_wrapper >.wrapper .keyWords .word.progress,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc2_wrapper >.wrapper .keyWords .word.progress,
+
 .body_global .Order >.body >.column-1 >.wrapper .caseListsBlock.diagram_showing >.block >.t_wrapper .tc2_wrapper >.wrapper .keyWords .word.progress {
   text-align: center;
   opacity: 0.4;
   background-color: #5481c1;
 }
 .body_global >.rightBlock .caseListsBlock.diagram_showing >.t_wrapper .tc2_wrapper >.wrapper .keyWords .word.progress:hover,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc2_wrapper >.wrapper .keyWords .word.progress:hover,
+
 .body_global .Order >.body >.column-1 >.wrapper .caseListsBlock.diagram_showing >.block >.t_wrapper .tc2_wrapper >.wrapper .keyWords .word.progress:hover {
   opacity: 1;
 }
 .body_global >.rightBlock .caseListsBlock.diagram_showing >.t_wrapper .tc2_wrapper >.wrapper .keyWords .word.estimate_button,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc2_wrapper >.wrapper .keyWords .word.estimate_button,
+
 .body_global .Order >.body >.column-1 >.wrapper .caseListsBlock.diagram_showing >.block >.t_wrapper .tc2_wrapper >.wrapper .keyWords .word.estimate_button {
   cursor: pointer;
 }
 .body_global >.rightBlock .caseListsBlock.diagram_showing >.t_wrapper .tc2_wrapper >.wrapper .keyWords .word.estimate_button .icon-addTime,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc2_wrapper >.wrapper .keyWords .word.estimate_button .icon-addTime,
+
 .body_global .Order >.body >.column-1 >.wrapper .caseListsBlock.diagram_showing >.block >.t_wrapper .tc2_wrapper >.wrapper .keyWords .word.estimate_button .icon-addTime {
   margin-right: 8px;
 }
 .body_global >.rightBlock .caseListsBlock.diagram_showing >.t_wrapper .tc2_wrapper >.wrapper .keyWords .word.estimate_button .icon-addTime:before,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc2_wrapper >.wrapper .keyWords .word.estimate_button .icon-addTime:before,
+
 .body_global .Order >.body >.column-1 >.wrapper .caseListsBlock.diagram_showing >.block >.t_wrapper .tc2_wrapper >.wrapper .keyWords .word.estimate_button .icon-addTime:before {
   content: "\e94e";
   vertical-align: 1px;
 }
 .body_global >.rightBlock .caseListsBlock.diagram_showing >.t_wrapper .tc2_wrapper >.wrapper .keyWords .word.estimate_button:hover,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc2_wrapper >.wrapper .keyWords .word.estimate_button:hover,
+
 .body_global .Order >.body >.column-1 >.wrapper .caseListsBlock.diagram_showing >.block >.t_wrapper .tc2_wrapper >.wrapper .keyWords .word.estimate_button:hover {
   background-color: #67be4e;
 }
@@ -3830,7 +3829,6 @@ body {
   width: 50px;
   height: 50px;
   margin: -25px auto 0;
-  background-image: linear-gradient( to bottom, #fff 30%, #e5e5e5 100% );;
   line-height: 75px;
   border-radius: 50%;
   box-shadow: 0 3px 4px 0 #cdcfd5;
@@ -3845,7 +3843,6 @@ body {
 }
 .body_global >.rightBlock .caseListsBlock.taskBoard .case >.menu:active .icon-down {
   box-shadow: 0 1px 1px 0 #d6dce5;
-  background-image: linear-gradient( to bottom, #e9e9e9 30%, #fdfdfd 100% );;
 }
 .body_global >.rightBlock .caseListsBlock.taskBoard .case:hover >.menu {
   opacity: 1;
@@ -4068,12 +4065,8 @@ body {
 .body_global >.rightBlock .caseListsBlock table.caseList.unconfirmed tr.case td {
   border-color: #f6d8ce !important;
 }
-.body_global >.rightBlock .caseListsBlock table.caseList.unconfirmed tr.case td .menuBlock {
-  background-image: linear-gradient( to right, transparent 0, #fcefe3 30px );;
-}
 .body_global >.rightBlock .caseListsBlock table.caseList.unconfirmed tr.case .delete_button {
   background-color: #d54d4d;
-  background-image: linear-gradient( to bottom, #e35c5c 0%, #b13030 100% );;
   border-color: #b23131;
 }
 .body_global >.rightBlock .caseListsBlock table.caseList.unconfirmed tr.case .delete_button,
@@ -4125,7 +4118,7 @@ body {
   padding: 5px 10px;
 }
 .body_global >.rightBlock .caseListsBlock table.caseList tr.headers td.column-8,
-.body_global .OrderList table.orders tr.headers td.column-8,
+
 .body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.headers td.column-8 {
   padding-right: 30px;
 }
@@ -4165,8 +4158,7 @@ body {
 .bottom_global table.activeCase td.column-1-1,
 .body_global >.rightBlock .caseListsBlock table.caseList tr.case td.column-2,
 .bottom_global table.activeCase td.column-2,
-.body_global >.rightBlock .caseListsBlock table.caseList tr.case td.column-8,
-.bottom_global table.activeCase td.column-8 {
+.body_global >.rightBlock .caseListsBlock table.caseList tr.case td.column-8{
   position: relative;
 }
 .body_global >.rightBlock .caseListsBlock table.caseList tr.case td.column-2,
@@ -4179,8 +4171,7 @@ body {
   padding-right: 0;
   vertical-align: top;
 }
-.body_global >.rightBlock .caseListsBlock table.caseList tr.case td.column-8,
-.bottom_global table.activeCase td.column-8 {
+.body_global >.rightBlock .caseListsBlock table.caseList tr.case td.column-8{
   line-height: 22px;
   vertical-align: top;
   padding: 0;
@@ -4191,15 +4182,14 @@ body {
 .body_global >.rightBlock .caseListsBlock table.caseList tr.case td.column-2,
 .bottom_global table.activeCase td.column-2,
 .body_global >.rightBlock .caseListsBlock table.caseList tr.case td.column-3,
-.bottom_global table.activeCase td.column-3,
+
 .body_global >.rightBlock .caseListsBlock table.caseList tr.case td.column-4,
-.bottom_global table.activeCase td.column-4,
+
 .body_global >.rightBlock .caseListsBlock table.caseList tr.case td.column-5,
-.bottom_global table.activeCase td.column-5,
+
 .body_global >.rightBlock .caseListsBlock table.caseList tr.case td.column-6,
-.bottom_global table.activeCase td.column-6,
-.body_global >.rightBlock .caseListsBlock table.caseList tr.case td.column-7,
-.bottom_global table.activeCase td.column-7 {
+
+.body_global >.rightBlock .caseListsBlock table.caseList tr.case td.column-7{
   border-right: 1px solid #e8e8e8;
   vertical-align: top;
 }
@@ -4208,21 +4198,19 @@ body {
 .body_global >.rightBlock .caseListsBlock table.caseList tr.case td.column-1-2,
 .bottom_global table.activeCase td.column-1-2,
 .body_global >.rightBlock .caseListsBlock table.caseList tr.case td.column-5,
-.bottom_global table.activeCase td.column-5,
+
 .body_global >.rightBlock .caseListsBlock table.caseList tr.case td.column-6,
-.bottom_global table.activeCase td.column-6,
+
 .body_global >.rightBlock .caseListsBlock table.caseList tr.case td.column-7,
-.bottom_global table.activeCase td.column-7,
+
 .body_global >.rightBlock .caseListsBlock table.caseList tr.case td.column-3,
-.bottom_global table.activeCase td.column-3,
-.body_global >.rightBlock .caseListsBlock table.caseList tr.case td.column-4,
-.bottom_global table.activeCase td.column-4 {
+
+.body_global >.rightBlock .caseListsBlock table.caseList tr.case td.column-4{
   line-height: 22px;
 }
 .body_global >.rightBlock .caseListsBlock table.caseList tr.case td.column-3,
-.bottom_global table.activeCase td.column-3,
-.body_global >.rightBlock .caseListsBlock table.caseList tr.case td.column-4,
-.bottom_global table.activeCase td.column-4 {
+
+.body_global >.rightBlock .caseListsBlock table.caseList tr.case td.column-4{
   padding: 0;
 }
 .body_global >.rightBlock .caseListsBlock table.caseList tr.case td.column-2,
@@ -4236,16 +4224,14 @@ body {
   display: inline-block;
   vertical-align: middle;
 }
-.body_global >.rightBlock .caseListsBlock table.caseList tr.case td .number,
-.bottom_global table.activeCase td .number {
+.body_global >.rightBlock .caseListsBlock table.caseList tr.case td .number{
   position: absolute;
   top: 1px;
   left: 3px;
   font-size: 8pt;
   cursor: move;
 }
-.body_global >.rightBlock .caseListsBlock table.caseList tr.case td .number.none,
-.bottom_global table.activeCase td .number.none {
+.body_global >.rightBlock .caseListsBlock table.caseList tr.case td .number.none{
   top: 0px;
   left: 0px;
   color: #fff;
@@ -4257,8 +4243,7 @@ body {
   text-align: center;
   box-sizing: border-box;
 }
-.body_global >.rightBlock .caseListsBlock table.caseList tr.case td .number.none:before,
-.bottom_global table.activeCase td .number.none:before {
+.body_global >.rightBlock .caseListsBlock table.caseList tr.case td .number.none:before{
   content: "?";
 }
 .body_global >.rightBlock .caseListsBlock table.caseList tr.case td .mover_button,
@@ -4282,7 +4267,6 @@ body {
 .bottom_global table.activeCase td .timerButton,
 .popupBlack .work .case .timerButton {
   background-color: #79d54d;
-  background-image: linear-gradient( to bottom, #79d54d 0%, #389928 100% );;
   border-color: #3d9e2b;
   vertical-align: baseline;
   color: #fff;
@@ -4476,8 +4460,8 @@ body {
 }
 .body_global >.rightBlock .caseListsBlock table.caseList tr.case td .right_block .markers,
 .bottom_global table.activeCase td .right_block .markers,
-.body_global >.rightBlock .productListsBlock.reportBlock >.block .productPassport .cases .caseListsBlock .caseList .case .column-2 >.right_block .markers,
-.body_global >.rightBlock .componentListsBlock.reportBlock >.block .componentPassport .cases .caseListsBlock .caseList .case .column-2 >.right_block .markers,
+
+
 .body_global >.rightBlock .caseListsBlock.taskBoard .case .markers,
 .caseListsBlock.taskBoard .case .markers {
   display: inline-block;
@@ -4485,8 +4469,8 @@ body {
 }
 .body_global >.rightBlock .caseListsBlock table.caseList tr.case td .right_block .markers .marker,
 .bottom_global table.activeCase td .right_block .markers .marker,
-.body_global >.rightBlock .productListsBlock.reportBlock >.block .productPassport .cases .caseListsBlock .caseList .case .column-2 >.right_block .markers .marker,
-.body_global >.rightBlock .componentListsBlock.reportBlock >.block .componentPassport .cases .caseListsBlock .caseList .case .column-2 >.right_block .markers .marker,
+
+
 .body_global >.rightBlock .caseListsBlock.taskBoard .case .markers .marker,
 .caseListsBlock.taskBoard .case .markers .marker {
   display: inline-block;
@@ -4503,8 +4487,8 @@ body {
 }
 .body_global >.rightBlock .caseListsBlock table.caseList tr.case td .right_block .markers .marker.type1,
 .bottom_global table.activeCase td .right_block .markers .marker.type1,
-.body_global >.rightBlock .productListsBlock.reportBlock >.block .productPassport .cases .caseListsBlock .caseList .case .column-2 >.right_block .markers .marker.type1,
-.body_global >.rightBlock .componentListsBlock.reportBlock >.block .componentPassport .cases .caseListsBlock .caseList .case .column-2 >.right_block .markers .marker.type1,
+
+
 .body_global >.rightBlock .caseListsBlock.taskBoard .case .markers .marker.type1,
 .caseListsBlock.taskBoard .case .markers .marker.type1 {
   background-color: #c07676;
@@ -4512,8 +4496,8 @@ body {
 }
 .body_global >.rightBlock .caseListsBlock table.caseList tr.case td .right_block .markers .marker.type2,
 .bottom_global table.activeCase td .right_block .markers .marker.type2,
-.body_global >.rightBlock .productListsBlock.reportBlock >.block .productPassport .cases .caseListsBlock .caseList .case .column-2 >.right_block .markers .marker.type2,
-.body_global >.rightBlock .componentListsBlock.reportBlock >.block .componentPassport .cases .caseListsBlock .caseList .case .column-2 >.right_block .markers .marker.type2,
+
+
 .body_global >.rightBlock .caseListsBlock.taskBoard .case .markers .marker.type2,
 .caseListsBlock.taskBoard .case .markers .marker.type2 {
   background-color: #9dbe21;
@@ -4521,8 +4505,8 @@ body {
 }
 .body_global >.rightBlock .caseListsBlock table.caseList tr.case td .right_block .markers .marker.type3,
 .bottom_global table.activeCase td .right_block .markers .marker.type3,
-.body_global >.rightBlock .productListsBlock.reportBlock >.block .productPassport .cases .caseListsBlock .caseList .case .column-2 >.right_block .markers .marker.type3,
-.body_global >.rightBlock .componentListsBlock.reportBlock >.block .componentPassport .cases .caseListsBlock .caseList .case .column-2 >.right_block .markers .marker.type3,
+
+
 .body_global >.rightBlock .caseListsBlock.taskBoard .case .markers .marker.type3,
 .caseListsBlock.taskBoard .case .markers .marker.type3 {
   background-color: #c05ebf;
@@ -4530,8 +4514,8 @@ body {
 }
 .body_global >.rightBlock .caseListsBlock table.caseList tr.case td .right_block .markers .marker.type4,
 .bottom_global table.activeCase td .right_block .markers .marker.type4,
-.body_global >.rightBlock .productListsBlock.reportBlock >.block .productPassport .cases .caseListsBlock .caseList .case .column-2 >.right_block .markers .marker.type4,
-.body_global >.rightBlock .componentListsBlock.reportBlock >.block .componentPassport .cases .caseListsBlock .caseList .case .column-2 >.right_block .markers .marker.type4,
+
+
 .body_global >.rightBlock .caseListsBlock.taskBoard .case .markers .marker.type4,
 .caseListsBlock.taskBoard .case .markers .marker.type4 {
   background-color: #30a0af;
@@ -4539,8 +4523,8 @@ body {
 }
 .body_global >.rightBlock .caseListsBlock table.caseList tr.case td .right_block .markers .marker.type5,
 .bottom_global table.activeCase td .right_block .markers .marker.type5,
-.body_global >.rightBlock .productListsBlock.reportBlock >.block .productPassport .cases .caseListsBlock .caseList .case .column-2 >.right_block .markers .marker.type5,
-.body_global >.rightBlock .componentListsBlock.reportBlock >.block .componentPassport .cases .caseListsBlock .caseList .case .column-2 >.right_block .markers .marker.type5,
+
+
 .body_global >.rightBlock .caseListsBlock.taskBoard .case .markers .marker.type5,
 .caseListsBlock.taskBoard .case .markers .marker.type5 {
   background-color: #d0941a;
@@ -4548,8 +4532,8 @@ body {
 }
 .body_global >.rightBlock .caseListsBlock table.caseList tr.case td .right_block .markers .marker:before,
 .bottom_global table.activeCase td .right_block .markers .marker:before,
-.body_global >.rightBlock .productListsBlock.reportBlock >.block .productPassport .cases .caseListsBlock .caseList .case .column-2 >.right_block .markers .marker:before,
-.body_global >.rightBlock .componentListsBlock.reportBlock >.block .componentPassport .cases .caseListsBlock .caseList .case .column-2 >.right_block .markers .marker:before,
+
+
 .body_global >.rightBlock .caseListsBlock.taskBoard .case .markers .marker:before,
 .caseListsBlock.taskBoard .case .markers .marker:before,
 .body_global >.rightBlock .caseListsBlock table.caseList tr.case td .right_block .markers .marker:after,
@@ -4566,8 +4550,8 @@ body {
 }
 .body_global >.rightBlock .caseListsBlock table.caseList tr.case td .right_block .markers .marker:before,
 .bottom_global table.activeCase td .right_block .markers .marker:before,
-.body_global >.rightBlock .productListsBlock.reportBlock >.block .productPassport .cases .caseListsBlock .caseList .case .column-2 >.right_block .markers .marker:before,
-.body_global >.rightBlock .componentListsBlock.reportBlock >.block .componentPassport .cases .caseListsBlock .caseList .case .column-2 >.right_block .markers .marker:before,
+
+
 .body_global >.rightBlock .caseListsBlock.taskBoard .case .markers .marker:before,
 .caseListsBlock.taskBoard .case .markers .marker:before {
   left: -10px;
@@ -4575,8 +4559,8 @@ body {
 }
 .body_global >.rightBlock .caseListsBlock table.caseList tr.case td .right_block .markers .marker:after,
 .bottom_global table.activeCase td .right_block .markers .marker:after,
-.body_global >.rightBlock .productListsBlock.reportBlock >.block .productPassport .cases .caseListsBlock .caseList .case .column-2 >.right_block .markers .marker:after,
-.body_global >.rightBlock .componentListsBlock.reportBlock >.block .componentPassport .cases .caseListsBlock .caseList .case .column-2 >.right_block .markers .marker:after,
+
+
 .body_global >.rightBlock .caseListsBlock.taskBoard .case .markers .marker:after,
 .caseListsBlock.taskBoard .case .markers .marker:after {
   right: 0;
@@ -4584,8 +4568,8 @@ body {
 }
 .body_global >.rightBlock .caseListsBlock table.caseList tr.case td .right_block .markers .marker+.marker,
 .bottom_global table.activeCase td .right_block .markers .marker+.marker,
-.body_global >.rightBlock .productListsBlock.reportBlock >.block .productPassport .cases .caseListsBlock .caseList .case .column-2 >.right_block .markers .marker+.marker,
-.body_global >.rightBlock .componentListsBlock.reportBlock >.block .componentPassport .cases .caseListsBlock .caseList .case .column-2 >.right_block .markers .marker+.marker,
+
+
 .body_global >.rightBlock .caseListsBlock.taskBoard .case .markers .marker+.marker,
 .caseListsBlock.taskBoard .case .markers .marker+.marker {
   margin-left: 4px;
@@ -4666,29 +4650,26 @@ body {
   box-sizing: border-box;
 }
 .body_global >.rightBlock .caseListsBlock table.caseList tr.case td .deadline,
-.bottom_global table.activeCase td .deadline,
+
 .body_global .OrderList table.orders tr.order td .timeLimit {
   color: #0a63df;
 }
 .body_global >.rightBlock .caseListsBlock table.caseList tr.case td .deadline.last,
-.bottom_global table.activeCase td .deadline.last,
+
 .body_global .OrderList table.orders tr.order td .timeLimit.last {
   color: #f41d24;
 }
-.body_global >.rightBlock .caseListsBlock table.caseList tr.case td .status,
-.bottom_global table.activeCase td .status {
+.body_global >.rightBlock .caseListsBlock table.caseList tr.case td .status{
   text-align: center;
   vertical-align: baseline;
   font-weight: bold;
   padding: 16px 10px;
 }
-.body_global >.rightBlock .caseListsBlock table.caseList tr.case td .status .progress,
-.bottom_global table.activeCase td .status .progress {
+.body_global >.rightBlock .caseListsBlock table.caseList tr.case td .status .progress{
   margin-left: 8px;
   color: #386db8;
 }
-.body_global >.rightBlock .caseListsBlock table.caseList tr.case td .status+.status,
-.bottom_global table.activeCase td .status+.status {
+.body_global >.rightBlock .caseListsBlock table.caseList tr.case td .status+.status{
   border-top: 1px solid #e8e8e8;
   box-sizing: border-box;
   color: #386db8;
@@ -4879,7 +4860,6 @@ body {
   height: 56px;
   line-height: 56px;
   padding-left: 35px;
-  background-image: linear-gradient( to right, transparent 0, #fff 25px );;
 }
 .body_global >.rightBlock .caseListsBlock table.caseList tr.case .checkbox {
   position: absolute;
@@ -7258,6 +7238,16 @@ body {
   transition-duration: 0.5s;
   transition-property: padding, border;
 }
+.body_global .OrganizationList .organizations .organization >.wrapper:after,
+.body_global .UserList.list_showing .users .user >.wrapper:after {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50px;
+  content: "";
+  right: 0;
+  background-image: linear-gradient(to right, transparent, #f6f7f8 25px);
+}
 .body_global .OrganizationList .organizations .organization >.wrapper .type {
   font-size: 12px;
 }
@@ -7274,6 +7264,7 @@ body {
   position: absolute;
   top: 29px;
   right: 6px;
+  z-index: 1;
 }
 .body_global .OrganizationList .organizations .organization >.wrapper .favorite_button,
 .body_global .UserList.list_showing .users .user >.wrapper .favorite_button {
@@ -7281,10 +7272,18 @@ body {
   position: absolute;
   top: 3px;
   right: 4px;
+  z-index: 1;
 }
-.body_global .OrganizationList .organizations .organization >.wrapper:hover {
+.body_global .OrganizationList .organizations .organization >.wrapper:hover,
+.body_global .UserList.list_showing .users .user >.wrapper:hover {
   background-color: #fff;
   cursor: pointer;
+}
+.body_global .OrganizationList .organizations .organization >.wrapper:hover:after,
+.body_global .UserList.list_showing .users .user >.wrapper:hover:after,
+.body_global .OrganizationList .organizations .organization.active >.wrapper:after,
+.body_global .UserList.list_showing .users .user.active >.wrapper:after {
+  background-image: linear-gradient(to right, transparent, #fff 25px);
 }
 .body_global .OrganizationList .organizations .organization.active >.wrapper,
 .body_global .UserList.list_showing .users .user.active >.wrapper {
@@ -7623,6 +7622,7 @@ body {
 }
 .body_global .UserList.list_showing .users {
   padding-right: 60px;
+  margin: -7px -7px 0 -7px;
 }
 .body_global .UserList.list_showing .users .user {
   padding: 7px;
@@ -7631,17 +7631,10 @@ body {
   box-sizing: border-box;
   vertical-align: top;
 }
-.body_global .UserList.list_showing .users .user:nth-child(3n-2) {
-  padding-left: 0;
-}
-.body_global .UserList.list_showing .users .user:nth-child(3n) {
-  padding-right: 0;
-}
-.body_global .UserList.list_showing .users .user:nth-child(-n+3) {
-  padding-top: 0;
-}
-.body_global .UserList.list_showing .users .user:nth-last-child(-n+3) {
-  padding-bottom: 0;
+@media (max-width: 1600px) {
+  .body_global .UserList.list_showing .users .user {
+    width: 50%;
+  }
 }
 .body_global .UserList.list_showing .users .user >.wrapper .ava {
   display: inline-block;
@@ -7821,10 +7814,6 @@ body {
 .body_global .UserList.list_showing .users .user >.wrapper .menu_button {
   top: 50px;
 }
-.body_global .UserList.list_showing .users .user >.wrapper:hover {
-  background-color: #fff;
-  cursor: pointer;
-}
 .body_global .UserList.list_showing .users .user.inactive:not(.active) >.wrapper {
   background-color: #dee4e5;
   box-shadow: none;
@@ -7855,6 +7844,10 @@ body {
 .body_global .UserList.list_showing >.footer {
   margin: 14px 0;
   padding-right: 60px;
+}
+.body_global .UserPassport {
+  margin-left: 7px;
+  margin-right: 7px;
 }
 .body_global .UserPassport >.head {
   margin-bottom: 28px;
@@ -7953,6 +7946,7 @@ body {
   background: #5b90cc;
   position: absolute;
   margin-left: inherit;
+  z-index: 2;
 }
 .body_global .UserPassport .absences .timingDiagram table.diagram tr.absenceLines {
   border-top: 1px solid #d0d4d7;
@@ -7961,17 +7955,55 @@ body {
   height: 55px;
   border-right: 1px solid #e5e6e7;
 }
+.body_global .UserPassport .absences .timingDiagram table.diagram tr.absenceLines td .line {
+  position: absolute;
+  margin-top: -4px;
+  box-sizing: border-box;
+  height: 8px;
+}
+.body_global .UserPassport .absences .timingDiagram table.diagram tr.absenceLines td .line:hover {
+  height: 12px;
+  margin-top: -6px;
+}
 .body_global .UserPassport .absences .timingDiagram table.diagram tr.absenceLines td .line.reason1 {
+  border: 1px solid #d02a2a;
+  background-image: linear-gradient(to bottom, #fe7e7e, #e53131);
+}
+.body_global .UserPassport .absences .timingDiagram table.diagram tr.absenceLines td .line.reason2 {
+  border: 1px solid #a33582;
+  background-image: linear-gradient(to bottom, #ff85da, #bf4f9d);
+}
+.body_global .UserPassport .absences .timingDiagram table.diagram tr.absenceLines td .line.reason3 {
+  border: 1px solid #c87b13;
+  background-image: linear-gradient(to bottom, #fcc605, #ef8919);
+}
+.body_global .UserPassport .absences .timingDiagram table.diagram tr.absenceLines td .line.reason4 {
   border: 1px solid #5481c1;
   background-image: linear-gradient(to bottom, #8fb2e5, #2ea2c4);
 }
-.body_global .UserPassport .absences .timingDiagram table.diagram tr.absenceLines td .line.reason2 {
-  border: 1px solid #c1a254;
-  background-image: linear-gradient(to bottom, #ffc759, #c99923);
+.body_global .UserPassport .absences .timingDiagram table.diagram tr.absenceLines td .line.reason5 {
+  border: 1px solid #ccb70b;
+  background-image: linear-gradient(to bottom, #fee255, #dcc500);
 }
-.body_global .UserPassport .absences .timingDiagram table.diagram tr.absenceLines td .line.reason3 {
-  border: 1px solid #8554c1;
-  background-image: linear-gradient(to bottom, #c87bf6, #8730d3);
+.body_global .UserPassport .absences .timingDiagram table.diagram tr.absenceLines td .line.reason6 {
+  border: 1px solid #1f9d0c;
+  background-image: linear-gradient(to bottom, #75d569, #30b142);
+}
+.body_global .UserPassport .absences .timingDiagram table.diagram tr.absenceLines td .line.reason7 {
+  border: 1px solid #7e18a5;
+  background-image: linear-gradient(to bottom, #c361f6, #9a23c8);
+}
+.body_global .UserPassport .absences .timingDiagram table.diagram tr.absenceLines td .line.reason8 {
+  border: 1px solid #099795;
+  background-image: linear-gradient(to bottom, #26dbcf, #06a6a9);
+}
+.body_global .UserPassport .absences .timingDiagram table.diagram tr.absenceLines td .line.reason9 {
+  border: 1px solid #666565;
+  background-image: linear-gradient(to bottom, #b4b2b2, #848484);
+}
+.body_global .UserPassport .absences .timingDiagram table.diagram tr.absenceLines td .line.reason10 {
+  border: 1px solid #709d0f;
+  background-image: linear-gradient(to bottom, #9fdf5e, #7fab1c);
 }
 .body_global .case >.head {
   line-height: 28px;
@@ -9040,7 +9072,6 @@ body {
 }
 .body_global .case >.body .descriptionBlock >.description.hidden:after {
   content: "";
-  background-image: linear-gradient( to bottom, transparent 0%, #fff 100% );;
   position: absolute;
   bottom: 0px;
   left: 0;
@@ -12224,7 +12255,7 @@ body {
   color: #8b98ab;
 }
 .CaseList .timingDiagram table.diagram tr.headers td.today {
-  color: #fff;
+  color: #fff !important;
   border-bottom: 1px solid #5c8dc6;
   background-image: linear-gradient(to bottom, #5d8dc6, #51a1eb);
   font-weight: bold;
@@ -13405,7 +13436,6 @@ body {
   width: 50px;
   height: 50px;
   margin: -25px auto 0;
-  background-image: linear-gradient( to bottom, #fff 30%, #e5e5e5 100% );;
   line-height: 75px;
   border-radius: 50%;
   box-shadow: 0 3px 4px 0 #cdcfd5;
@@ -13420,7 +13450,6 @@ body {
 }
 .caseListsBlock.taskBoard .case >.menu:active .icon-down {
   box-shadow: 0 1px 1px 0 #d6dce5;
-  background-image: linear-gradient( to bottom, #e9e9e9 30%, #fdfdfd 100% );;
 }
 .caseListsBlock.taskBoard .case:hover >.menu {
   opacity: 1;
@@ -13643,12 +13672,8 @@ body {
 .caseListsBlock table.caseList.unconfirmed tr.case td {
   border-color: #f6d8ce !important;
 }
-.caseListsBlock table.caseList.unconfirmed tr.case td .menuBlock {
-  background-image: linear-gradient( to right, transparent 0, #fcefe3 30px );;
-}
 .caseListsBlock table.caseList.unconfirmed tr.case .delete_button {
   background-color: #d54d4d;
-  background-image: linear-gradient( to bottom, #e35c5c 0%, #b13030 100% );;
   border-color: #b23131;
 }
 .caseListsBlock table.caseList.unconfirmed tr.case .delete_button,
@@ -13811,7 +13836,6 @@ body {
 }
 .caseListsBlock table.caseList tr.case td .timerButton {
   background-color: #79d54d;
-  background-image: linear-gradient( to bottom, #79d54d 0%, #389928 100% );;
   border-color: #3d9e2b;
   vertical-align: baseline;
   color: #fff;
@@ -14270,7 +14294,6 @@ body {
   height: 56px;
   line-height: 56px;
   padding-left: 35px;
-  background-image: linear-gradient( to right, transparent 0, #fff 25px );;
 }
 .caseListsBlock table.caseList tr.case .checkbox {
   position: absolute;
@@ -14450,13 +14473,11 @@ body {
   width: 100%;
 }
 .AbsenceList table.absences tr.absence td.type .typeName.reason1,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.mainBlock >.body .mainInfo .absenceReason_button.reason1,
-.absencePopup_block .info .absenceReason.reason1 {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.mainBlock >.body .mainInfo .absenceReason_button.reason1 {
   background-color: #589ac4;
 }
 .AbsenceList table.absences tr.absence td.type .typeName.reason2,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.mainBlock >.body .mainInfo .absenceReason_button.reason2,
-.absencePopup_block .info .absenceReason.reason2 {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.mainBlock >.body .mainInfo .absenceReason_button.reason2 {
   background-color: #dfac39;
 }
 .AbsenceList table.absences tr.absence td.type .typeName.reason2 .more_button {
@@ -15226,7 +15247,6 @@ body {
   right: 0;
   bottom: 0;
   width: 20px;
-  background-image: linear-gradient( to right, transparent 0, #f6f7f8 15px );;
 }
 .popup_backgroundBlock >.wrapper .popupBlock .popup.caseTimeFix .commitComponents .components table.wrapper td.component .componentName {
   display: inline-block;
@@ -15959,8 +15979,7 @@ body {
 }
 .popupBlack:before,
 .notifications:before,
-.globalSearchFilters:before,
-.previewFile_popup:before {
+.globalSearchFilters:before{
   content: "";
   top: 0;
   border-bottom: 12px solid #fff;
@@ -16025,7 +16044,6 @@ body {
   top: 0;
   bottom: 1px;
   width: 42px;
-  background-image: linear-gradient( to right, transparent 0, $popupBackgroundColor 28px );;
 }
 .popupBlack >.bottomButtons {
   padding: 0 14px 14px 14px;
@@ -16564,6 +16582,36 @@ body {
   padding: 0 12px;
   vertical-align: middle;
 }
+.absencePopup_block .info .absenceReason.reason1 {
+  background: #e53131;
+}
+.absencePopup_block .info .absenceReason.reason2 {
+  background: #bf4f9d;
+}
+.absencePopup_block .info .absenceReason.reason3 {
+  background: #ef8919;
+}
+.absencePopup_block .info .absenceReason.reason4 {
+  background: #6091d5;
+}
+.absencePopup_block .info .absenceReason.reason5 {
+  background: #dcc500;
+}
+.absencePopup_block .info .absenceReason.reason6 {
+  background: #30b142;
+}
+.absencePopup_block .info .absenceReason.reason7 {
+  background: #9a23c8;
+}
+.absencePopup_block .info .absenceReason.reason8 {
+  background: #06a6a9;
+}
+.absencePopup_block .info .absenceReason.reason9 {
+  background: #7e7e7e;
+}
+.absencePopup_block .info .absenceReason.reason10 {
+  background: #7fab1c;
+}
 .absencePopup_block .info .rightSide {
   line-height: 30px;
   margin-left: 14px;
@@ -16583,7 +16631,7 @@ body {
   width: 100%;
 }
 .absencePopup_block .schedule table td {
-  border-right: 1px solid #c4cee0;
+  border-right: 1px solid #c0cee9;
   line-height: 28px;
 }
 .absencePopup_block .schedule table td:last-child {
@@ -16595,7 +16643,7 @@ body {
   text-align: center;
 }
 .absencePopup_block .schedule table tr.week {
-  border-top: 1px solid #c4cee0;
+  border-top: 1px solid #c0cee9;
 }
 .absencePopup_block .schedule table tr.week td.weekParity {
   font-size: 11px;
@@ -16608,12 +16656,7 @@ body {
   min-width: 96px;
   text-align: center;
   color: #41567c;
-}
-.absencePopup_block .schedule table tr.week td.day .from {
-  padding-right: 5px;
-}
-.absencePopup_block .schedule table tr.week td.day .to {
-  padding-left: 5px;
+  word-spacing: 2px;
 }
 .absencePopup_block .comment {
   background: #f3f4f5;

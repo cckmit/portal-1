@@ -1,0 +1,2386 @@
+include WEB-INF/jade/coreForSearch
+doctype html
+html
+    head
+        title Система управления персоналом
+        +commonHead
+        +eventsShowingScript
+        +highcharts
+        +datePicker
+        +scrollbar
+        +jqueryUI
+        +scrollFixBlock
+
+        +popup('messaging')
+
+        script(src="/ws/resource/employees.js")
+
+    body
+        .global
+            .header_global
+                +headerContent('Сотрудники')
+
+            .body_global
+                .leftBlock
+                    +leftGlobalMenu
+
+
+                .rightBlock
+
+
+                    .UserList.list_showing
+
+
+                        .controlButtons
+
+                            .buttons_group
+                                #showLeaders_but.button Руководство компании
+                                #showMissing_but.button Отсутствующие
+                                #showBirthdatPeople_but.button День рождения
+
+
+                                script. 
+                                    var AJAX = new function(){
+                                        var message = {
+                                            url : null,
+                                            method : "POST",
+                                            data : null,
+                                            dataType : "json",
+                                            success: null,
+                                            error: null
+                                        };
+                                        this.getEmployee = function(data, successHandler, errorHandler){
+                                            message.url = '/api/gate/employees/'+ data +'.json';
+                                            message.data = null;
+                                            message.success = successHandler;
+                                            message.error = errorHandler;
+                                            message.method = "GET";
+
+                                           $.ajax(message);
+                                        };
+                                        this.getMissingEmployees = function(successHandler, errorHandler){
+                                            message.url = '/api/getMissingEmployees';
+                                            message.data = null;
+                                            message.success = successHandler;
+                                            message.error = errorHandler;
+                                            $.ajax(message);
+                                        }
+                                        this.getFavoriteEmployees = function(successHandler, errorHandler){
+                                            message.url = '/api/getFavoriteEmployees';
+                                            message.data = null;
+                                            message.success = successHandler;
+                                            message.error = errorHandler;
+                                            $.ajax(message);
+                                        }
+                                        this.getEmployeeAbsences = function(data, successHandler, errorHandler){
+                                            message.url = '/api/gate/employees/'+ data.id +'/absences.json?from='+ data.from +'&till='+ data.till;
+                                            message.data = null;
+                                            message.success = successHandler;
+                                            message.error = errorHandler;
+                                            $.ajax(message);
+                                        }
+                                    };
+
+
+                                    function ActionSequence(){ //последовательность действий при ajax запросе
+                                        var completed;
+                                        var actions = [];
+                                        var ajaxData;
+                                        this.than = function(func){
+                                            if(completed) // если ajax success ф-я закончена, то просто вызываем переданное действие
+                                                func(ajaxData);
+                                            else actions.push(func) // иначе помещаем в массив
+                                            return this;
+                                        }
+                                        this.run = function(data){ // доп String textStatus, jqXHR jqXHR
+                                            while(actions.length != 0){
+                                                actions.shift()(data); // выполняем следующее действие и удаляем его
+                                            }
+                                            ajaxData = data;
+                                            completed = true;
+                                        }
+                                    }
+
+
+                                    function Buttons(){
+                                        var users = employeeGenerator.users;
+                                        var showLeadersButton = $('#showLeaders_but');
+                                        var showMissingButton = $('#showMissing_but');
+                                        var showBirthdayPeopleButton = $('#showBirthdatPeople_but');
+                                        var showStartingWithLetterButton;
+                                        var sortingDirectionButton;
+
+                                        var lastActiveButton;
+
+
+
+                                        function showingButtonOperation(event){
+                                            if(userProducer){
+                                                userProducer.closeUserPassport();
+                                                userProducer.saveUserPassport();
+                                            }
+
+                                            //закрыть userPassport
+
+                                            var elem = $(event.currentTarget)
+                                            users.html('');
+                                            if(elem.hasClass('active')){
+                                                elem.removeClass('active')
+                                                employeeGenerator.generateAllUsers();
+                                            }else{
+                                                if(lastActiveButton)
+                                                    lastActiveButton.removeClass('active');
+                                                lastActiveButton = elem;
+
+                                                elem.addClass('active');
+                                                employeeGenerator.resetIndex();
+                                                var html = '';
+
+                                                switch (elem[0]){
+                                                    case showLeadersButton[0]:
+                                                        for(var i=0, count = 0; i<Employees.length; i++){
+                                                            if(Employees[i].leader){
+                                                                html += employeeGenerator.generate(Employees[i]);
+                                                                count++;
+                                                            }
+                                                        }
+                                                        break;
+                                                    case showMissingButton[0]:
+                                                        var missing = employeeGenerator.geMissing();
+                                                        for(var i=0, count = 0; i<Employees.length; i++){
+                                                            if(missing.indexOf(Employees[i].id)>=0){
+                                                                html += employeeGenerator.generate(Employees[i]);
+                                                                count++;
+                                                            }
+                                                        }
+                                                        break;
+                                                    case showBirthdayPeopleButton[0]:
+                                                        var today = getToday();
+                                                        for(var i=0, count = 0; i<Employees.length; i++){
+                                                            if(Employees[i].birthday == today){
+                                                                html += employeeGenerator.generate(Employees[i]);
+                                                                count++;
+                                                            }
+                                                        }
+                                                        break;
+                                                    case showStartingWithLetterButton[0]:
+                                                        for(var i=0, count = 0; i<Employees.length; i++){
+                                                            if(Employees[i].fio.indexOf(elem.text())==0){
+                                                                html += employeeGenerator.generate(Employees[i]);
+                                                                count++;
+                                                            }
+                                                        }
+                                                        break;
+                                                }
+
+                                                users.append(html);
+                                                employeeGenerator.setEmployeeCount(count);
+                                            }
+                                        }
+
+
+                                        showLeadersButton.click(function(event){
+
+
+                                            showingButtonOperation(event);
+
+                                            //var elem = $(event.currentTarget)
+                                            //users.html('');
+                                            //if(elem.hasClass('active')){
+                                            //    elem.removeClass('active')
+                                            //    employeeGenerator.generateAllUsers();
+                                            //}else{
+                                            //    elem.addClass('active');
+                                            //    employeeGenerator.resetIndex();
+                                            //    var html = '';
+                                            //    for(var i=0, count = 0; i<Employees.length; i++){
+                                            //        if(Employees[i].leader){
+                                            //            html += employeeGenerator.generate(Employees[i]);
+                                            //            count++;
+                                            //        }
+                                            //    }
+                                            //    users.append(html);
+                                            //    employeeGenerator.setEmployeeCount(count);
+                                            //}
+                                        });
+
+                                        showMissingButton.click(function(event){
+
+                                            showingButtonOperation(event);
+                                            //var elem = $(event.currentTarget)
+                                            //users.html('');
+                                            //if(elem.hasClass('active')){
+                                            //    elem.removeClass('active')
+                                            //    employeeGenerator.generateAllUsers();
+                                            //}else{
+                                            //    elem.addClass('active');
+                                            //    employeeGenerator.resetIndex();
+                                            //    var html = '';
+                                            //    var missing = employeeGenerator.geMissing();
+                                            //    for(var i=0, count = 0; i<Employees.length; i++){
+                                            //        if(missing.indexOf(Employees[i].id)>=0){
+                                            //            html += employeeGenerator.generate(Employees[i]);
+                                            //            count++;
+                                            //        }
+                                            //    }
+                                            //    users.append(html);
+                                            //    employeeGenerator.setEmployeeCount(count);
+                                            //}
+
+                                        });
+
+                                        showBirthdayPeopleButton.click(function(event){
+                                            showingButtonOperation(event);
+                                            //var elem = $(event.currentTarget)
+                                            //users.html('');
+                                            //if(elem.hasClass('active')){
+                                            //    elem.removeClass('active')
+                                            //    employeeGenerator.generateAllUsers();
+                                            //}else{
+                                            //    elem.addClass('active');
+                                            //    employeeGenerator.resetIndex();
+                                            //    var html = '';
+                                            //    var today = getToday();
+                                            //    for(var i=0, count = 0; i<Employees.length; i++){
+                                            //        if(Employees[i].birthday == today){
+                                            //            html += employeeGenerator.generate(Employees[i]);
+                                            //            count++;
+                                            //        }
+                                            //    }
+                                            //    users.append(html);
+                                            //    employeeGenerator.setEmployeeCount(count);
+                                            //}
+                                        });
+                                        this.showStartingWithLetter = function(event){
+                                            showStartingWithLetterButton = $(event.currentTarget);
+                                            if(showStartingWithLetterButton.hasClass('inactive'))
+                                                return;
+                                            showingButtonOperation(event);
+                                        }
+
+                                        //$('#sortingDirection_but').click(function(event){
+                                        //    var elem = $(event.currentTarget);
+                                        //    elem.toggleClass('active');
+                                        //    Employees.reverse();
+                                        //    employeeGenerator.generateAllUsers();
+                                        //});
+
+                                    };
+
+
+                                    var months = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь']
+
+
+                                    function getToday(){
+                                        var date = new Date();
+                                        return months[date.getMonth()] + ', ' + date.getDate();
+                                    }
+
+
+
+
+
+
+                            #departmentFilter.regulator
+                                input.inputField(placeholder="Подразделение")
+                                .button.sticky.empty.selected
+
+                            .buttons_group
+                                .regulator Сортировать по
+                                    #sorting_but.button.selected Фамилия
+                                    #sortingDirection_but.button.empty.switcher
+                                        span.icon-down
+
+
+                        #letters.letters.scrollFixBlock
+                            -var letters = "А Б В Г Д Е Ж З И К Л М Н О П Р С Т У Ф Х Ц Ч Ш Щ Э Ю Я".split(" ");
+                            -for(var id = 0; id < letters.length; id++)
+                                .button(onclick="showStartingWithLetter(event)") #{letters[id]}
+
+
+                        script.
+                            function LettersToolBar(){
+                                var lettersBlock = $('#letters');
+                                var letters = {};
+
+                                this.update = function(){
+                                    for(var letter in letters){
+                                        if(CaughtLetters.indexOf(letter)>=0)
+                                            letters[letter].removeClass('inactive')
+                                        else
+                                            letters[letter].addClass('inactive')
+                                    }
+                                };
+
+                                (function(){
+                                    var lArray = ["А","Б","В","Г","Д","Е","Ж","З","И","К","Л","М","Н","О","П","Р","С","Т","У","Ф","Х","Ц","Ч","Ш","Щ","Э","Ю","Я"];
+                                    var letterButtons = lettersBlock.find('.button');
+
+                                    for(var i=0; i<lArray.length; i++)
+                                        letters[lArray[i]] = letterButtons.eq(i);
+                                }());
+                                scrollFixBlock(lettersBlock, 114, 14);
+                            }
+
+                            var lettersToolBar = new LettersToolBar();
+
+
+
+
+                            function showStartingWithLetter(event){
+                                buttons.showStartingWithLetter(event);
+                            }
+
+
+                        .users
+
+
+
+                        script.
+                            function EmployeeGenerator(){
+                                this.users = $('.users');
+                                var index = 1;
+                                var favorites = [];
+                                var missing = [];
+                                var currentEmployeeCount = Employees.length;
+
+                                this.generate = function(employee){
+                                    var employeeHtml = '<div id="' + employee.id + '" class="user' + (employee.leader ? ' leader' : '') + (missing.indexOf(employee.id)>-1 ? ' inactive' : '') + '" onclick="activateUserPassport(event)" data-id="' + index + '">';
+                                    employeeHtml += '<div class="wrapper">';
+                                    employeeHtml += '<div class="ava user' + employee.id + '"></div>';
+                                    employeeHtml += '<div class="wrapper">';
+                                    employeeHtml += '<div class="post">' + employee.post + '</div>';
+                                    employeeHtml += '<div class="name">' + employee.fio + '</div>';
+                                    employeeHtml += '<div class="birthday">' + employee.birthday + (employee.birthday == getToday()?'<span class="today">Сегодня день рождения!</span>':'') + '</div>';
+                                    employeeHtml += '</div>';
+                                    employeeHtml += '<div class="menu_button" onclick="showUserMenu(event)"></div>';
+                                    employeeHtml += '<div class="favorite_button' + (favorites.indexOf(employee.id)>-1 ? ' active' : '') + '" onclick="switchFavorite(event)"></div>';
+                                    employeeHtml += '</div>';
+                                    employeeHtml += '</div>';
+                                    index++;
+                                    return employeeHtml
+                                }
+
+                                this.resetIndex = function(){
+                                    index = 1;
+                                }
+                                this.setFavorites = function(mass){
+                                    favorites = mass
+                                }
+                                this.setMissing = function(mass){
+                                    missing = mass
+                                }
+                                this.addMissing = function(id){
+                                    missing.push(id)
+                                }
+
+                                this.geMissing = function(){
+                                    return missing;
+                                }
+
+                                this.getEmployeeCount = function(){
+                                    return currentEmployeeCount;
+                                }
+                                this.setEmployeeCount = function(number){
+                                    currentEmployeeCount = number;
+                                }
+
+                                this.generateAllUsers = function(){
+                                    index = 1;
+                                    currentEmployeeCount = Employees.length;
+                                    this.users.html('');
+                                    var html = '';
+                                    for(var i=0; i<Employees.length; i++){
+                                        html += this.generate(Employees[i]);
+                                    }
+                                    this.users.append(html);
+                                }
+
+
+                                function addFavorite(id){
+                                    favorites.push(id)
+                                }
+                                function deleteFavorite(id) {
+                                    var pos = favorites.indexOf(id);
+                                    if(pos>=0)
+                                        delete favorites[pos];
+                                }
+                                this.switchFavorite = function(elem){
+                                    var userId = elem.parent().parent().attr('id');
+                                    if(elem.hasClass('active')){
+                                        elem.removeClass('active');
+                                        deleteFavorite(+userId)
+                                        messageGenerator.show('Сотрудник удалён из числа избранных');
+                                    }else{
+                                        elem.addClass('active');
+                                        addFavorite(+userId)
+                                        messageGenerator.show('Сотрудник добавлен в число избранных');
+                                    }
+                                }
+
+                            }
+
+
+
+
+                            function Sorting(){
+                                var reverseSoring = false;
+                                function stringSorting(a, b){
+                                    var c,d;
+                                    for(var i=0; i <Math.min(a.length, b.length); i++){
+                                        if(a[i] == "ё") c = "е"
+                                        else c = a[i]
+                                        if(b[i] == "ё") d = "е"
+                                        else d = b[i]
+
+                                        if(c > d) return 1;
+                                        else if(c < d) return -1;
+                                    }
+                                    return 0
+                                }
+
+                                function birthdaySorting(a, b){
+                                    a = a.birthday.split(', ')
+                                    b = b.birthday.split(', ')
+
+                                    var c = months.indexOf(a[0])
+                                    var d = months.indexOf(b[0])
+
+                                    if(c==d){
+                                        return a[1] - b[1];
+                                    }
+                                    else return c-d;
+                                }
+
+                                function idSorting(a, b){
+                                    return a.id -  b.id;
+                                }
+                                this.by = function(sortKey){
+                                    switch(sortKey){
+                                        case "Фамилия":
+                                            Employees.sort(function(a,b){
+                                                return stringSorting(a.fio, b.fio)
+                                            });
+                                            break;
+                                        case "Должность":
+                                            Employees.sort(function(a,b){
+                                                return stringSorting(a.post, b.post)
+                                            });
+                                            break;
+                                        case "Дата рождения":
+                                            Employees.sort(birthdaySorting);
+                                            break;
+                                        case "Id":
+                                            Employees.sort(idSorting);
+                                            break;
+                                        default:
+                                            return;
+                                    }
+                                    if(reverseSoring)
+                                        Employees.reverse();
+                                    employeeGenerator.generateAllUsers();
+                                }
+
+                                $('#sortingDirection_but').click(function(event){
+                                    $(event.currentTarget).toggleClass('active');
+                                    Employees.reverse();
+                                    reverseSoring = !reverseSoring;
+                                    employeeGenerator.generateAllUsers();
+                                });
+                            }
+
+
+
+                            var employeeGenerator = new EmployeeGenerator();
+                            var sorting = new Sorting();
+                            //var missing = [2,4,6,9,22];
+                            //var favorites = [1,2,6,15,20,24];
+                            //employeeGenerator.setMissing(missing);
+                            //employeeGenerator.setFavorites(favorites);
+
+                            //                            AJAX.getMissingEmployees(
+                            //                                function(data){
+                            //                                    employeeGenerator.setMissing(data);
+                            //                                },
+                            //                                messageGenerator.lateCall("Ошибка при получении отсутствующих сотрудников")
+                            //                            );
+                            //                            AJAX.getFavoriteEmployees(
+                            //                                function(data){
+                            //                                    employeeGenerator.setFavorites(data);
+                            //                                },
+                            //                                messageGenerator.lateCall("Ошибка при получении избранных сотрудников")
+                            //                            );
+
+                            var buttons;
+                            $(document).ready(function () {
+                                employeeGenerator.generateAllUsers();
+                                buttons = new Buttons();
+                                lettersToolBar.update();
+
+
+                                //setInterval(function(){
+                                //    AJAX.getMissingEmployees(
+                                //        function(data){
+                                //            employeeGenerator.setMissing(data);
+                                //            employeeGenerator.generateAllUsers();
+                                //        },
+                                //        messageGenerator.lateCall("Ошибка при получении отсутствующих сотрудников")
+                                //    );
+                                //}, 15 * 60 * 1000);
+                            });
+
+
+
+
+
+
+                            function switchFavorite(event){
+                                event.stopPropagation();
+                                employeeGenerator.switchFavorite($(event.currentTarget));
+                            }
+                            //                            function sortBy(sortKey){
+                            //                                employeeGenerator.sortBy(sortKey);
+                            //                            }
+
+
+                        .UserPassport
+                            .head
+                                .tabs
+                                    .tab.active Профиль
+                                    .tab План
+                                    .tab Инспектор
+                                    .tab Активность
+                                    .tab Подписки
+                                    .tab Права доступа
+                                    .tab Отчёт
+
+                            .mainInfo
+                                .sectionTitle Информация
+
+
+                            .absences
+                                .sectionTitle Отсутствия
+                                .controlButtons
+                                    //.button.empty.grayC
+                                        span.icon-help
+
+                                    //.buttons_group
+                                    #addAbsenceButton.button.greenC
+                                        span.icon-add
+                                        |Добавить отсутствие
+                                    #editAbsenceButton.button.blueC Просмотрщик отсутствий
+
+
+
+                                #absenceDiagram.timingDiagram
+                                    .Loader
+                                    .left_button
+
+                                    table.diagram
+
+                                        thead
+                                            tr.headers
+
+                                        tbody
+                                            tr.absenceLines
+
+                                    .right_button
+
+
+                        script.
+                            Date.prototype.getWeekNumber = function () {
+                                var d = new Date(this.getTime());
+                                d.setHours(0, 0, 0);
+                                d.setDate(d.getDate() + 4 - (d.getDay() || 7));
+                                var yearStart = new Date(d.getFullYear(), 0, 1);
+                                return Math.ceil(( ( (d - yearStart) / 86400000) + 1) / 7);
+                            }
+                            Date.prototype.getCorrectedDay = function () {
+                                var d = this.getDay() - 1;
+                                return d==-1?6:d;
+                            }
+                            Date.prototype.getUTCTime = function(){
+                                return this.getTime() - this.getTimezoneOffset() * 60000;
+                            }
+                            String.escapeSymbols = {
+                                "&": "&amp;",
+                                "<": "&lt;",
+                                ">": "&gt;",
+                                '"': '&quot;',
+                                "'": '&#39;',
+                                "/": '&#x2F;'
+                            };
+                            String.prototype.escapeHTML = function(){
+                                return this.replace(/[&<>"'\/]/g, function (s) {
+                                  return String.escapeSymbols[s];
+                                });
+                            }
+
+                            function DiagramProducer(){
+
+                                var today;
+                                var absenceDiagram = $('#absenceDiagram');
+                                var diagram = absenceDiagram.children('.diagram');
+                                var diagramThead = diagram.children('thead');//
+                                var diagramTbody = diagram.children('tbody');//
+                                var days = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
+                                var months = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
+                                var absenceReasons = ["Командировка", "Отпуск", "Болезнь", "Личные дела", "Местная командировка", "Учеба", "Больничный лист", "Гостевой пропуск", "Ночные работы", "Отпуск за свой счёт"]
+                                var changeFlag = true;
+                                var todayExistsFlag = false;
+                                var newAbsences;
+                                var todayCell;
+                                var daysBefore; //  кол-во дней, которые были добавлены до today в диаграмму при первом построении
+
+                                var diagramFrom; // дата начала диагрыммы
+                                var diagramTill; // дата конца диагрыммы
+                                var commonDayCount; // кол-во дней в диаграмме (diagramTill - diagramFrom)
+
+                                var currentStartPoint; // дата С которой будут добавлены новые отсутствия
+                                var currentEndPoint; // // дата ДО которой будут добавлены новые отсутствия
+
+                                var schedules = {}; //сохранённые расписания
+
+                                var absenceTooltip = $('#absenceTooltip');
+                                var absenceInfo = $('#absenceInfo');
+                                var absencePopupBuilder;
+
+                                var diagramLoader = absenceDiagram.children('.Loader'); // лоадер
+
+                                function AbsencePopupBuilder(){
+                                    var lastScheduleToday;
+                                    var lastAbsenceLine;
+
+                                    var mainInfo = absenceInfo.children('.info');
+                                    var scheduleInfo = absenceInfo.children('.schedule');
+                                    var commentInfo = absenceInfo.children('.comment');
+                                    var absenceDates = mainInfo.children('.date');
+                                    var dates = {
+                                        from:{
+                                            date: absenceDates.eq(0).children('.dateNumber'),
+                                            month: absenceDates.eq(0).find('.month'),
+                                            time: absenceDates.eq(0).find('.time')
+                                        },
+                                        till:{
+                                            date: absenceDates.eq(1).children('.dateNumber'),
+                                            month: absenceDates.eq(1).find('.month'),
+                                            time: absenceDates.eq(1).find('.time')
+                                        }
+                                    }
+                                    var absenceReason = mainInfo.children('.absenceReason');
+                                    var commentText = commentInfo.children('.text');
+                                    var headerWeekTd = scheduleInfo.find('.headers').children('td:first-child'); // пустой td в headers, который нужно либо показывать , либо скрывать в зависимости от кол-ва недель
+                                    var weekSelector = scheduleInfo.find('.week');
+                                    var weeks = [weekSelector.eq(0).children('td'), weekSelector.eq(1).children('td')];
+
+
+                                    function twoValuedNumber(number){
+                                        return number<10?'0'+number:number;
+                                    }
+
+                                    function setAbsenceDate(date, dateObject) {
+                                        var hoursAndMinutes = twoValuedNumber(dateObject.getUTCHours()) + ':' + twoValuedNumber(dateObject.getUTCMinutes());
+                                        var timeLimit = date=='from'?'00:00':'23:59';
+                                        dates[date].time.text(hoursAndMinutes == timeLimit ? '' : hoursAndMinutes);
+                                        dates[date].date.text(twoValuedNumber(dateObject.getUTCDate()));
+                                        dates[date].month.text(months[dateObject.getUTCMonth()]);
+                                    }
+                                    function buildScheduleTable(week, schedule){
+                                        for(var i=1; i<8; i++){
+                                            var day = week.eq(i).attr('data-day');
+                                            week.eq(i).text( schedule.hasOwnProperty(day) ? schedule[day].replace('-',' — ') : '' );
+                                        }
+                                    }
+                                    function showScheduleBlock(schedule, absenceLine, leftOffset){
+                                        var parentCellDate = absenceLine.parent().attr('data-date').split('.');
+                                        var absenceDateFrom = new Date(+parentCellDate[2], +parentCellDate[1], +parentCellDate[0]);
+
+                                        var width = parseInt(absenceLine.css('width'));
+                                        var marginLeft = parseInt(absenceLine.css('margin-left'));
+
+                                        if(schedule.length == 1){ // одна неделя
+                                            headerWeekTd.hide();
+
+                                            weeks[0].eq(0).hide(); //скрываем 2 колонки с чётностью недель
+                                            weeks[1].eq(0).hide();
+
+                                            buildScheduleTable(weeks[0], schedule);
+                                        }else{ // две недели
+                                            headerWeekTd.show();
+
+                                            weeks[0].eq(0).show();
+                                            weeks[1].eq(0).show();
+
+                                            buildScheduleTable(weeks[0], schedule['чёт']);
+                                            buildScheduleTable(weeks[1], schedule['нечёт']);
+                                        }
+
+                                        if(lastScheduleToday)
+                                            lastScheduleToday.removeClass('today');
+
+                                        var dayOffset = Math.floor((leftOffset + marginLeft)/192);
+                                        var todayDay = absenceDateFrom.getCorrectedDay() + dayOffset;
+
+                                        if(schedule.length==1 || absenceDateFrom.getWeekNumber() % 2 == 0){ //чёт, либо одна неделя
+                                            lastScheduleToday = weeks[0].eq(todayDay);
+                                        }else{
+                                            lastScheduleToday = weeks[1].eq(todayDay); // нечёт
+                                        }
+
+                                        lastScheduleToday.addClass('today');
+                                    }
+
+                                    this.showAbsenceInfo = function(event, timeFrom, timeTill, absenceId, comment){
+                                        var absenceLine = $(event.currentTarget);
+                                        if(lastAbsenceLine)
+                                            lastAbsenceLine.removeClass('active');
+
+                                        var dateFrom = new Date(timeFrom * 1000);
+                                        var dateTill = new Date(timeTill * 1000);
+
+                                        setAbsenceDate('from', dateFrom);
+                                        setAbsenceDate('till', dateTill);
+
+                                        absenceReason[0].className = 'absenceReason reason' + absenceId;
+                                        absenceReason.text(absenceReasons[absenceId - 1]);
+
+                                        if(absenceId==6){ //если учёба , значит расписание
+                                            var schedule = diagramProducer.getScheduleByTimeFrom(timeFrom);
+
+                                            var leftOffset = event.offsetX || event.clientX - absenceLine.offset().left;
+                                            leftOffset = leftOffset<0?0:leftOffset
+
+                                            showScheduleBlock(schedule, absenceLine, leftOffset)
+                                            scheduleInfo.show();
+                                        }else
+                                            scheduleInfo.hide();
+
+                                        if(comment){
+                                            commentInfo.show();
+                                            commentText.text(comment);
+                                        }else
+                                            commentInfo.hide();
+
+                                        var pointerWidth = 58; // toLeft/toRight offset + row.width/2
+                                        setPopupPosition(event, absenceInfo, pointerWidth, 28);
+
+                                        absenceLine.addClass('active');
+                                        lastAbsenceLine = absenceLine;
+
+                                        event.stopPropagation();
+                                        bindDocumentKillingClick(absenceInfo, absenceLine, function(){
+                                            absenceInfo.hide();
+                                            absenceLine.removeClass('active');
+                                        })
+
+                                        absenceInfo.show();
+                                        absenceTooltip.hide();
+
+                                    }
+                                }
+
+                                function Schedule(schedule, absenceFrom, absenceTill, lineGenerator){
+
+                                    var diagramFrom = currentStartPoint; // дата начала диагрыммы
+                                    var diagramTill = currentEndPoint; // дата конца диагрыммы
+                                    var diagramDayCount = (+currentEndPoint - +currentStartPoint) / 1000 / 60 / 60 / 24; //количество дней в строящемся участке
+
+                                    var absenceStartPos; // позиция, с которой начнётся итерация в lines
+                                    var diagramStartPos; // позиция, с которой начнётся итерация диаграммы
+                                    var diagramEndPos; // позиция, на которой закончится итерация диаграммы
+
+
+                                    var lines = [];
+                                    var count = 0; //количество дней в расписании (7 или 14)
+                                    var twoWeeks = []; //заполняется только если в расписании задействованы 2 недели
+
+                                    this.buildOneScheduleCycle = function(absences){
+
+                                        var week
+                                        var weekParity
+
+                                        if (absences.hasOwnProperty("чёт")) {
+                                            weekParity = +(absenceFrom.getWeekNumber() % 2 == 0); // 0 - нечёт, 1 - чёт
+                                            twoWeeks = [absences['нечёт'], absences['чёт']];
+                                            week = twoWeeks[weekParity];
+                                            count = 14;
+                                        } else {
+                                            week = absences;
+                                            count = 7;
+                                        }
+
+
+                                        var todayDay = 1; //начинаем с понедельника
+
+                                        for (var i = 0; i < count; i++) {
+
+                                            if (todayDay >= 7) {
+                                                todayDay = 0; // вс
+                                                if (twoWeeks) {
+                                                    weekParity = +!weekParity; // меняем чётность на противопололожную
+                                                    week = twoWeeks[weekParity];
+                                                }
+                                            }
+
+                                            if (week.hasOwnProperty(days[todayDay])) {
+                                                var dayName = days[todayDay]
+                                                var times = week[dayName].split('-')
+                                                var from = times[0].split(':'); //hours and minutes
+                                                var till = times[1];
+
+                                                var marginLeft = ((from[0] * 4) + (from[1] / 4)) * 2
+                                                var width = 0 - marginLeft;
+
+                                                var thisDayIndex = lines.push(marginLeft) - 1;
+
+                                                while (true) {
+                                                    if (till == '23:59') {
+                                                        width += 192;
+                                                        if ((i + 1 < count) && week.hasOwnProperty(days[todayDay + 1]) && week[days[todayDay + 1]].indexOf('00:00') == 0) { // если есть следующий день и он начинается с 00:00, то продолжаем линию
+                                                            todayDay++
+                                                            i++;
+                                                            till = week[days[todayDay]].substr(6); // till следующего дня
+                                                            lines.push(true); // занят полностью
+                                                        } else
+                                                            break;
+                                                    } else {
+                                                        till = till.split(':');
+                                                        width += ((till[0] * 4) + (till[1] / 4)) * 2;
+                                                        break;
+                                                    }
+                                                }
+                                                lines[thisDayIndex] += ';' + width;
+
+                                            } else
+                                                lines.push(false);
+                                            todayDay++;
+                                        }
+                                    }
+
+
+
+                                    this.getStartPosition = function(diff){
+                                        if (diff <= 0) { // если расписание началось раньше начала диаграммы
+                                            absenceStartPos = diagramFrom.getCorrectedDay();
+                                            diagramStartPos = 0;
+
+                                            if (twoWeeks) {
+                                                if (diagramFrom.getWeekNumber() % 2 != absenceFrom.getWeekNumber() % 2) { //если чётности начальной недели диаграммы и начальной недели расписания отличаются
+                                                    absenceStartPos+=7;
+                                                }
+                                            }
+
+                                        } else { // если расписание началось позже начала диаграммы
+                                            absenceStartPos = (diagramFrom.getCorrectedDay()+diff) % 7;
+                                            diagramStartPos = diff;
+                                        }
+                                    }
+
+                                    this.getEndPosition = function(diff){
+                                        if (diff > 0) { // конец расписания выходит за рамки диаграммы
+                                            diagramEndPos = diagramDayCount
+                                        } else { // расписание закончится раньше диаграммы или в один день
+                                            diagramEndPos = diagramDayCount - Math.abs(Math.ceil(diff));
+                                        }
+                                    }
+
+
+                                    this.duplicateLines = function(){
+                                        //тирражируем неделю расписания или 2 недели (в зависимости от наличия чётности) на всё кол-во дней
+
+                                        var dayCount = count - absenceStartPos + diagramStartPos; // кол-во уже занятных дней
+
+                                        while (dayCount < diagramEndPos) {
+                                            for (var i = 0; i < count; i++)
+                                                lines.push(lines[i]);
+                                            dayCount += count;
+                                        }
+                                    }
+
+                                    this.boundAbove = function(diff, aboveTop){
+                                        var dayNumber = absenceStartPos % 7;
+
+                                        if(dayNumber != 0 && lines[absenceStartPos]){
+
+                                            var occupiedDays = 0;
+                                            while (dayNumber>=0) {
+                                                if (lines[dayNumber] === true) { // если занят целый день, который занят под одну большую линию
+                                                    occupiedDays++;
+                                                    dayNumber--;
+
+                                                } else if (lines[dayNumber]) { // если неполный день
+                                                    var firstAbsenceDay = lines[dayNumber];
+                                                    firstAbsenceDay = firstAbsenceDay.split(';');
+                                                    var marginLeft = +firstAbsenceDay[0];
+                                                    var width = +firstAbsenceDay[1];
+
+                                                    if(diff>0 && occupiedDays>0){ //начало расписания приходится на true день
+                                                        width = width - (192 - marginLeft)
+                                                        lines[absenceStartPos] = (occupiedDays-1) * -192 + ';' + width;
+
+                                                    }else if(aboveTop && diff<=0){ //начала диаграммы перекрывает одно из отсутствий
+                                                        if (width + marginLeft >= 192) {
+                                                            lines[absenceStartPos] = occupiedDays * -192 + marginLeft + ';' + width;
+                                                        }
+                                                    }
+                                                    break;
+
+                                                }else
+                                                    break;
+                                            }
+
+                                        }
+                                    }
+
+
+
+                                    this.boundBottom = function(diff, bellowBottom){
+
+                                        if(!bellowBottom && diff> 0)
+                                            var absenceTillDay = diagramTill.getCorrectedDay();
+                                        else
+                                            absenceTillDay = absenceTill.getCorrectedDay();
+
+                                        // ограничение снизу, имеет смысл если последнее отсутствие выходит за рамки конечного диапазона расписания, такое расписание надо обрезать
+                                        //if(Math.abs(Math.ceil(diff))<=7 && absenceTillDay != 4){ // 4 - это пятница, т.к на сб и вс нельзя сделать отсутствие
+                                        if(Math.ceil(diff)<=7 && absenceTillDay != 4){ // без abs
+
+                                            absenceTillDay = lines.length + absenceTillDay;
+                                            if(twoWeeks && absenceFrom.getWeekNumber()%2 == 0) {
+                                                absenceTillDay-=14;
+                                            }else {
+                                                absenceTillDay-=7;
+                                            }
+                                            var occupiedDays = 0;
+                                            while (absenceTillDay>0) {
+                                                if (lines[absenceTillDay] === true) { // если занят целый день, который занят под одну большую линию
+                                                    occupiedDays++;
+                                                    absenceTillDay--;
+                                                } else if (lines[absenceTillDay]) { // если неполный день
+                                                    var lastAbsenceDay = lines[absenceTillDay];
+                                                    lastAbsenceDay = lastAbsenceDay.split(';');
+                                                    var marginLeft = +lastAbsenceDay[0];
+                                                    var width = +lastAbsenceDay[1];
+
+
+                                                    if(!bellowBottom && diff > 0 && marginLeft + width > 192 * (occupiedDays+1)){
+                                                        lines[absenceTillDay] = false;
+                                                    }else if (width + marginLeft >= 192) {
+                                                        var conjecturalWidth = (192 - marginLeft) + 192*occupiedDays
+                                                        lines[absenceTillDay] = marginLeft + ';' + (conjecturalWidth>width?width:conjecturalWidth);
+                                                    }
+                                                    break;
+
+                                                }else
+                                                    break;
+                                            }
+
+                                        }
+                                    }
+
+
+                                    this.getAbsenceLines = function(aboveTop, bellowBottom){
+
+                                        this.buildOneScheduleCycle(schedule);
+
+                                        var diffFrom = (+absenceFrom - +diagramFrom) / 1000 / 60 / 60 / 24; // отношение между первым днём расписания и первым днём диаграммы, в днях
+                                        this.getStartPosition(diffFrom);
+
+                                        var diffTill = (+absenceTill - +diagramTill) / 1000 / 60 / 60 / 24; // отношение между последним днём расписания и последним днём диаграммы, в днях
+                                        this.getEndPosition(diffTill);
+
+                                        this.duplicateLines();
+
+                                        this.boundAbove(diffFrom, aboveTop);
+                                        this.boundBottom(diffTill, bellowBottom);
+
+                                        var absences = {}
+
+                                        var diagramStartCell = new Date(+diagramFrom)
+                                        var prevI = 0
+                                        for (var i = diagramStartPos; i < diagramEndPos; i++) {
+                                            if (lines[absenceStartPos] && lines[absenceStartPos] !== true) {
+                                                diagramStartCell.setDate(diagramStartCell.getDate() + i - prevI);
+
+                                                var line = lines[absenceStartPos].split(';')
+                                                var marginLeft =  line[0];
+                                                var width =  line[1];
+
+                                                absences[diagramStartCell.getDate() + '.' + diagramStartCell.getMonth() + '.' + (diagramStartCell.getFullYear() - 2000)] = lineGenerator(width, marginLeft)
+
+                                                prevI = i;
+                                            }
+                                            absenceStartPos++
+                                        }
+
+                                        return absences;
+
+                                    }
+
+                                }
+
+
+
+                                this.buildDays = function(dayCount){
+
+                                    var dDate = currentStartPoint.getDate(); // date Date
+                                    var dDay = currentStartPoint.getDay(); // date Day
+                                    var dMonth = currentStartPoint.getMonth(); //date Month
+                                    var dYear = currentStartPoint.getFullYear() - 2000; //date Year
+
+                                    var daysInMonth = new Date(currentStartPoint.getFullYear(), currentStartPoint.getMonth() + 1, 0).getDate();
+                                    var diff = daysInMonth - dDate + 1;
+
+                                    var htmlHeaders = '';
+                                    var htmlLines = '';
+
+                                    for (var i = 0; i < dayCount; i++) {
+                                        htmlHeaders += '<td';
+
+                                        if (diff-- == 0) {
+                                            dDate = 1
+                                            diff = new Date(currentStartPoint.getFullYear(), currentStartPoint.getMonth() + 2, 0).getDate() - 1;
+                                            dMonth++
+                                        }
+
+                                        //*******************  установить today и/или newMonth
+                                        if(dDate == 1 || (!todayExistsFlag && dDate==today.getDate())){
+                                            htmlHeaders += ' class="';
+                                            if(!todayExistsFlag && dDate==today.getDate()){
+                                                htmlHeaders +='today';
+                                                todayExistsFlag = true; // устанавливаем только один раз
+                                            }
+
+                                            if(dDate==1)
+                                                htmlHeaders += ' newMonth">'+ months[dMonth % 12] +' ';
+                                            else
+                                                htmlHeaders += '">'
+                                        }else{
+                                            htmlHeaders += '>';
+                                        }
+                                        //*******************
+
+
+                                        htmlHeaders += dDate +', '+ days[dDay++ % 7] +'</td>';
+                                        var dataDate = dDate +'.'+ dMonth +'.'+ dYear
+                                        htmlLines += '<td data-date="'+ dataDate +'">';
+                                        if(newAbsences.hasOwnProperty(dataDate))
+                                            htmlLines += newAbsences[dataDate];
+                                        htmlLines += '</td>';
+                                        dDate++;
+                                    }
+
+                                    return [htmlHeaders, htmlLines];
+                                }
+
+
+
+
+                                this.buildLine = function(timeFrom, timeTill, comment, absenceId, width, marginLeft){
+                                    return '<div onclick="showAbsenceInfo(event,'+ timeFrom +','+ timeTill +','+ absenceId +','+ (comment?'\''+ comment.escapeHTML() +'\'':'null') +')" style="width:'+ width +'px; margin-left:'+ marginLeft +'px" data-title="'+ absenceReasons[absenceId - 1] +'" class="line reason'+ absenceId +'"></div>';
+                                }
+
+                                this.downloadAbsences = function(timeFrom, timeTill, successAction){
+                                    AJAX.getEmployeeAbsences(
+                                        {
+                                            id: userProducer.getOpenedUserId(),
+                                            from: +timeFrom,
+                                            till: +timeTill
+                                            //from: +timeFrom  + 10800000,
+                                            //till: +timeTill  + 10800000
+                                        },
+                                        successAction,
+                                        messageGenerator.lateCall("Ошибка! Не удалось подгрузить отсутствия")
+                                    );
+                                }
+
+                                this.buildLines = function(absences, aboveTop,  bellowBottom){
+                                    //var openedUser = window["Employee" + userProducer.getOpenedUserId()];
+                                    //if(!openedUser["absenceFlag"]){
+                                    //    absences = openedUser["absences"];
+                                    //    openedUser.absenceFlag = true;
+                                    //}
+
+
+
+
+                                    var absences2 = jQuery.extend(true, {}, absences);
+                                    for(var a in absences2){
+                                        absences2[a].dateFrom = new Date(absences2[a].dateFrom);
+                                        absences2[a].dateTill = new Date(absences2[a].dateTill);
+                                    }
+                                    log(absences2);
+                                    log("======================================");
+
+
+
+
+
+
+                                    function addAbsence(cellDate, line){
+                                        if(newAbsences.hasOwnProperty(cellDate))
+                                            newAbsences[cellDate] += line
+                                        else
+                                            newAbsences[cellDate] = line;
+                                    }
+
+                                    for(var i=0; i<absences.length; i++){
+                                        absences[i]['dateFrom'] = (absences[i]['dateFrom'] + 10800000)/1000;
+                                        absences[i]['dateTill'] = (absences[i]['dateTill'] + 10800000)/1000;
+
+                                        //STOP();
+                                        if(absences[i]['dateTill']*1000 < currentStartPoint && absences[i]['dateTill']*1000 < currentEndPoint)
+                                            continue; // отсутствие полностью выходит за рамки диаграммы
+
+                                        var cellDate;
+
+                                        if(absences[i]['schedule']){
+
+                                            if(!schedules.hasOwnProperty(absences[i]['dateFrom']))
+                                                schedules[absences[i]['dateFrom']] = absences[i]['schedule']; // сохраняем расписание, чтобы можно было потом обратиться к нему при вызове showScheduleData
+
+                                            var schedule = new Schedule(
+                                                absences[i]['schedule'],
+                                                new Date((absences[i]['dateFrom'] - 10800) * 1000),
+                                                new Date((absences[i]['dateTill'] - 10800) * 1000),
+                                                this.buildLine.bind(null,
+                                                        absences[i]['dateFrom'],
+                                                        absences[i]['dateTill'],
+                                                        absences[i]['comment'],
+                                                        absences[i].reason
+                                                )
+                                            );
+
+                                            var scheduleAbsenceLines = schedule.getAbsenceLines(aboveTop, bellowBottom);
+                                            for(cellDate in scheduleAbsenceLines){
+                                                addAbsence(cellDate, scheduleAbsenceLines[cellDate]);
+                                            }
+
+
+                                        }else {
+                                            var from = new Date(absences[i]['dateFrom'] * 1000);
+
+                                            var width = (absences[i]['dateTill'] - absences[i]['dateFrom']) / 60 / 60 * 4 * 2; // в пикселах
+                                            //STOP();
+                                            var marginLeft = ((from.getUTCHours() * 4) + (from.getUTCMinutes() / 15)) * 2; // в пикселах
+                                            //if(marginLeft != 0)
+                                            //    marginLeft = ((from.getHours() * 4) + (from.getMinutes() / 4)) * 2; // в пикселах
+
+                                            var diffTill = absences[i]['dateTill'] - currentEndPoint.getUTCTime()/1000;
+                                            if(!bellowBottom && diffTill>0){
+                                                continue; // удаляем нижнее отсутствие
+                                            }
+
+                                            var diffFrom = absences[i]['dateFrom'] - currentStartPoint.getUTCTime()/1000;
+                                            if(aboveTop && diffFrom<0){ //если отсутствие началось раньше диаграммы. добавляем верхнее отсутствие
+                                                diffFrom = Math.abs(diffFrom) / 60 / 60 * 4 * 2; //в пикселах
+                                                cellDate = currentStartPoint.getDate() + '.' + currentStartPoint.getMonth() + '.' + (currentStartPoint.getFullYear() - 2000);
+                                                marginLeft = -diffFrom;
+                                            }else
+                                                cellDate = from.getUTCDate() + '.' + from.getUTCMonth() + '.' + (from.getUTCFullYear() - 2000);
+
+
+                                            var line = this.buildLine(
+                                                    absences[i]['dateFrom'],
+                                                    absences[i]['dateTill'],
+                                                    absences[i]['comment'],
+                                                    absences[i].reason,
+                                                    width, //width
+                                                    marginLeft //marginLeft
+                                            );
+
+                                            addAbsence(cellDate, line)
+
+                                        }
+                                    }
+
+                                }
+
+                                this.build = function(dayCount){
+                                    today = new Date();
+                                    //STOP();
+                                    daysBefore = 14 + today.getDay() - 1; // + 14 дней + дней до понедельника
+                                    var emoloyeeAbsences = window["Employee" + userProducer.getOpenedUserId()].absences;
+
+                                    if(changeFlag){ //если при прошлом открытии паспорта ячейки добавлялись, то очищаем всё и строем всё заново
+                                        commonDayCount = 0;
+
+                                        diagramFrom = new Date(today.getFullYear(), today.getMonth(), today.getDate() - daysBefore);
+                                        diagramTill = new Date(+diagramFrom); // copy
+
+                                        diagramThead.children('.headers').remove();
+                                        diagramTbody.children('.absenceLines').remove();
+
+                                        diagramThead.append('<tr class="headers"></tr>');
+                                        diagramTbody.append('<tr class="absenceLines"></tr>');
+
+                                        todayExistsFlag = false;
+                                        this.completeCellsAfter(dayCount, true, true, emoloyeeAbsences)
+                                        todayCell = diagramThead.find('.today');
+
+                                        changeFlag = false;
+
+                                    }else{ // иначе стрираем только линии отсутсвия
+                                        diagramTbody.children('.absenceLines').find('.line').remove();
+                                        newAbsences = {};
+
+
+                                        if(emoloyeeAbsences) {
+                                            this.buildLines(emoloyeeAbsences, true, true);
+                                            var absenceLines = diagramTbody.children('.absenceLines')
+                                            for (var absence in newAbsences) {
+                                                absenceLines.find('[data-date="' + absence + '"]').append(newAbsences[absence]);
+                                            }
+                                        }
+
+                                    }
+
+                                    var timeOffset = ((today.getHours()*4) + Math.floor(today.getMinutes()/15)) *2;
+                                    todayCell.css('margin-left', timeOffset);
+
+                                }
+
+                                this.diagramToCenter = function(){ //центрирует диаграмму так, чтобы текущий день был посередине
+                                    diagram.css('margin-left', daysBefore * -192 + absenceDiagram.width()/2 - 96); // 192 = ширина ячейки, 96 = 192/2
+                                }
+
+                                this.completeCellsAfter = function(dayCount, aboveTop, bellowBottom, absences){
+                                    commonDayCount += dayCount;
+                                    newAbsences = {};
+
+                                    currentStartPoint = new Date(+diagramTill);
+                                    diagramTill.setDate(diagramTill.getDate() + dayCount);
+                                    currentEndPoint = diagramTill;
+
+
+                                    log("currentStartPoint"+ currentStartPoint);
+                                    log("currentEndPoint"+ currentEndPoint);
+
+                                    var seq = new ActionSequence();
+                                    seq.than(
+                                        function(data){
+                                            var absences = data.absences;
+
+                                            if(absences != null)
+                                                this.buildLines(absences, aboveTop, bellowBottom);
+
+                                            var html = this.buildDays(dayCount);
+                                            diagramThead.children('.headers').append(html[0]);
+                                            diagramTbody.children('.absenceLines').append(html[1]);
+
+                                            changeFlag = true;
+                                        }.bind(this)
+                                    );
+
+                                    if(absences !== undefined)
+                                        seq.run({'absences': absences});
+                                    else
+                                        this.downloadAbsences(currentStartPoint, currentEndPoint, seq.run);
+                                    return seq;
+                                }
+
+
+                                this.completeCellsBefore = function(dayCount, aboveTop, bellowBottom){
+                                    commonDayCount += dayCount;
+                                    newAbsences = {};
+
+                                    currentEndPoint = new Date(+diagramFrom);
+                                    diagramFrom.setDate(diagramFrom.getDate() - dayCount);
+                                    currentStartPoint = diagramFrom;
+
+
+                                    log("currentStartPoint"+ currentStartPoint);
+                                    log("currentEndPoint"+ currentEndPoint);
+
+                                    var seq = new ActionSequence();
+                                    seq.than(
+                                        function(data){
+                                            var absences = data.absences;
+
+                                            if(absences != null)
+                                                this.buildLines(absences, aboveTop, bellowBottom);
+
+                                            var html = this.buildDays(dayCount);
+                                            diagramThead.children('.headers').prepend(html[0]);
+                                            diagramTbody.children('.absenceLines').prepend(html[1]);
+
+                                            changeFlag = true;
+                                        }.bind(this)
+                                    );
+
+                                    this.downloadAbsences(currentStartPoint, currentEndPoint, seq.run);
+                                    return seq;
+                                }
+
+
+                                this.getScheduleByTimeFrom = function(timeFrom){
+                                    return schedules[timeFrom];
+                                }
+
+
+                                this.showAbsenceInfoPopup = function(event, timeFrom, timeTill, absenceId, comment){
+                                    if (!absencePopupBuilder)
+                                        absencePopupBuilder = new AbsencePopupBuilder();
+                                    absencePopupBuilder.showAbsenceInfo(event, timeFrom, timeTill, absenceId, comment);
+                                }
+
+                                function trackAbsenceLineHover(){
+                                   absenceDiagram.mouseover(function(event){
+                                        var elem = $(event.target);
+
+                                        if(elem.hasClass('line') && !elem.hasClass('active')) {
+                                            absenceTooltip.text(elem.attr('data-title'))
+                                            var elemOffset = elem.offset();
+                                            var tooltipHalfWidth = absenceTooltip.outerWidth() / 2;
+                                            absenceTooltip.css('top', elemOffset.top + 28).css('left', event.clientX - tooltipHalfWidth);
+                                            absenceTooltip.show();
+
+
+                                            var moveTooltip
+                                            elem.mousemove(moveTooltip = function(event){
+                                                absenceTooltip.css('left', event.clientX - tooltipHalfWidth);
+                                            });
+
+                                            elem.mouseleave(function func() {
+                                                absenceTooltip.hide();
+                                                elem.off('mouseleave', func).off('mousemove', moveTooltip);
+                                            });
+                                        }
+
+                                    });
+                                }
+
+                                function activateDiagramNavigation() {
+                                    function navigateDiagramGantt(event) {
+                                        var offsetNumber = 20; // начальное смещение
+                                        var offset = parseInt(diagram.css('margin-left'));
+                                        var breakTimeoutFlag;
+                                        var timeoutId;
+
+                                        // скрываем попапы, если они открыты
+                                        absenceTooltip.hide();
+                                        absenceInfo.hide();
+
+                                        $(document.body).on('mouseup', function func(event) {
+                                            breakTimeoutFlag = true;
+                                            $(event.currentTarget).off('mouseup', func);
+                                        });
+                                        changeOffset();
+                                        timeoutId = setInterval(changeOffset, 100);
+                                        function changeOffset() {
+                                            if (tryCompleteCell(offset)){
+                                                clearInterval(timeoutId);
+                                                return;
+                                            }
+                                            diagram.css('margin-left', offset);
+
+                                            // увеличиваем на четверть текущего смещения
+                                            offsetNumber += offsetNumber > 100 ? 0 : (offsetNumber / 4); // где 100 максимальное смещение пикселей каждые 100 мс
+
+                                            offset += offsetNumber * event.data.direction;
+                                            if (breakTimeoutFlag) clearInterval(timeoutId);
+                                        }
+                                    }
+
+                                    function tryCompleteCell(offset) {
+                                        if (offset >= 0) {
+                                            diagramLoader.addClass('active');
+                                            diagram.css('transition', 'none');
+                                            diagramProducer.completeCellsBefore(14, true, false).than(
+                                                function () {
+                                                    STOP();
+                                                    diagram.css('margin-left', 14 * -192);
+                                                    setTimeout(function () {
+                                                        diagramLoader.removeClass('active');
+                                                        diagram.css('transition', '');
+                                                    }, 800);
+                                                }
+                                            );
+                                            return true;
+                                        } else if (offset <= (diagram.width() * -1) + absenceDiagram.width()) {
+                                            diagramLoader.addClass('active');
+                                            diagramProducer.completeCellsAfter(14, false, true).than(
+                                                function() {
+                                                    setTimeout(function () {
+                                                        diagramLoader.removeClass('active');
+                                                    }, 800);
+                                                }
+                                            );
+                                            return true;
+                                        }
+                                        return false;
+                                    }
+
+                                    function navigateDiagramGanttOnWheel(event) {
+                                        var offset = parseInt(diagram.css('margin-left')) + (200 * (event.originalEvent.deltaY > 0 ? -1 : 1)); // 200 смещение в пикселях при прокрутке
+
+                                        // скрываем попапы
+                                        absenceTooltip.hide();
+                                        absenceInfo.hide();
+
+                                        if (tryCompleteCell(offset))
+                                            return
+                                        diagram.css('margin-left', offset);
+                                        event.preventDefault();
+                                    }
+
+                                    absenceDiagram.children('.left_button').on('mousedown', null, {direction: 1}, navigateDiagramGantt);
+                                    absenceDiagram.children('.right_button').on('mousedown', null, {direction: -1}, navigateDiagramGantt);
+                                    diagram.on('wheel', navigateDiagramGanttOnWheel);
+                                }
+
+                                trackAbsenceLineHover();
+                                activateDiagramNavigation();
+
+                            }
+
+                        //.footer
+                            .btn ещё 10
+                            .btn ещё 20
+                            .btn ещё 30
+
+
+
+
+
+
+
+            #absenceTooltip.tooltipPopup_block
+
+            #absenceInfo.absencePopup_block
+                .info
+                    .date
+                        .dateNumber
+                        .monthTime
+                            .month
+                            .time
+                    |—
+                    .date
+                        .dateNumber
+                        .monthTime
+                            .month
+                            .time
+
+
+                    .absenceReason
+
+
+                    .rightSide
+                        span.delete_button
+                        span.edit_button
+                        span.duplicate_button
+
+
+                .schedule
+                    table
+                        tr.headers
+                            td
+                            td.day.mo Пн
+                            td.day.tu Вт
+                            td.day.we Ср
+                            td.day.th Чт
+                            td.day.fr Пт
+
+                        tr.week
+                            td.weekParity Чётная неделя
+                            td.day(data-day="Пн")
+                            td.day(data-day="Вт")
+                            td.day(data-day="Ср")
+                            td.day(data-day="Чт")
+                            td.day(data-day="Пт")
+
+                        tr.week
+                            td.weekParity Нечётная неделя
+                            td.day(data-day="Пн")
+                            td.day(data-day="Вт")
+                            td.day(data-day="Ср")
+                            td.day(data-day="Чт")
+                            td.day(data-day="Пт")
+
+                .comment
+                    span.icon-comment
+                    span.text
+
+
+
+
+            #absenceViewer.popup_backgroundBlock
+                .wrapper
+                    .popupBlock
+                        .popup.absenceViewer(style="display: none")
+                            .head Просмотрщик отсутствий
+                                .rightSide
+                                    #clsAbsenceViewerBut1.close_button
+                            .body
+                                .solidDatePicker.blueC
+                                    .top_button
+                                    .wrapper
+                                        -var days = ['Вт','Ср','Чт','Пт','Сб','Вс','Пн'];
+                                        -for(var i=31; i>0; i--)
+
+                                            if(i==31)
+                                                .date.today #{i} мая, #{days[i % 7]}
+                                            else if(i==23)
+                                                .date.active #{i} мая, #{days[i % 7]}
+                                            else if(i==29 || i==27 || i==24 || i==20 || i==16 || i==17)
+                                                .date.exists #{i} мая, #{days[i % 7]}
+                                            else if(i==26 || i==25 || i==19 || i==18 || i==12 || i==11)
+                                                .date.weekend #{i} мая, #{days[i % 7]}
+                                            else
+                                                .date #{i} мая, #{days[i % 7]}
+                                    .bottom_button
+
+
+                                .controlButtons
+                                    .button Активные
+                                    .button Завершённые
+                                    .buttons_group
+                                        .button.selected Все типы отсутствий
+
+                                    .rightSide
+                                        .button.greenC
+                                            span.icon-add
+                                            |Новое отсутствие
+
+                                .AbsenceList
+
+                                    table.absences
+
+                                        tr.headers
+                                            td.control Управление
+                                            td.dateCreation Дата создания
+                                            td.dateUpdate Дата обновления
+                                            td.creator Создатель
+                                            td.absenceRange Время отсутствия
+                                            td.type Тип отсутствия
+                                            td.comment Комментарий
+
+
+                                        -var reasons = [1,3,3,2,4,1,4,1,1,2,1,1,1,3,3,2,4,1,4,1,1,2,1,1,1,3,3,2,4,1,4,1,1,2,1,1]
+                                        -var creator = [1,0,0,1,1,1,0,1,1,1,1,1,1,0,0,1,1,1,0,1,1,1,1,1,1,0,0,1,1,1,0,1,1,1,1,1]
+                                        -for(var b=0; b<9; b++)
+                                            tr.absence
+                                                td.control
+                                                    span.edit_button
+                                                    span.duplicate_button
+                                                    span.delete_button
+                                                td.dateCreation
+                                                    .dateTime 12.09.12 12:30
+                                                td.dateUpdate
+                                                    .dateTime 12.09.12 12:30
+                                                if(creator[b]==1)
+                                                    td.creator.me Я
+                                                else
+                                                    td.creator
+                                                        span.link Фамилия И.О.
+                                                td.absenceRange
+                                                    //span.from 12.09.12 12:30
+                                                    //span.to 13.09.12
+                                                    //span.timeCount
+
+                                                    .from
+                                                        .dateNumber 18
+                                                        .monthTime
+                                                            .month Май
+                                                            .time 13:00
+
+                                                    .to
+                                                        .dateNumber 01
+                                                        .monthTime
+                                                            .month Сентябрь
+                                                            .time 13:00
+
+                                                td.type
+                                                    if(reasons[b]==1)
+                                                        span.typeName.reason1 Личные дела
+                                                    else if(reasons[b]==2)
+                                                        span.typeName.reason2 Расписание
+                                                            .more_button
+                                                    else if(reasons[b]==3)
+                                                        span.typeName.reason3 Командировка
+                                                    else if(reasons[b]==4)
+                                                        span.typeName.reason4 Отпуск
+                                                td.comment
+                                                    .relativeBlock
+                                                        .text Здесь будет комментарий комментарий комментарий
+
+
+                                    .footer
+                                        .btn ещё 5
+                                        .btn ещё 10
+                                        .btn ещё 15
+
+                            .footer
+                                .button.greenC Сохранить
+                                #clsAbsenceViewerBut2.button.grayC Отмена
+
+
+                        .popup.absenceEditing
+
+                            .body
+                                .t_wrapper
+                                    .tc_wrapper.datePickerBlock
+                                        .datePicker
+                                            #2date-rangeWrap
+                                    .tc_wrapper.mainBlock
+                                        .head Новое отсутствие
+                                            .rightSide
+                                                #clsAbsenceViewerBut1.close_button
+                                        .body
+                                            .mainInfo
+                                                span#2twoRange.dateTime
+                                                    span.from
+                                                        span#2date-range1.date 23.05.16
+                                                        span#amount.time с начала дня
+                                                    |—
+                                                    span.to
+                                                        span#2date-range2.date 23.05.16
+                                                        span#amount2.time до конца дня
+
+                                                .rightSide
+                                                    #absenceReason_but.absenceReason_button.reason2 Расписание
+
+                                            .timePicker
+
+                                                .twoDays
+                                                    .slider.toRight
+                                                        #slider-range-max
+                                                    .slider.toLeft
+                                                        #slider-range-min
+                                                .oneDay
+                                                    .slider
+                                                        #slider-range
+
+                                            .comment
+                                                textarea.text(placeholder="Комментарий")
+
+
+                                    #scheduleBlock.tc_wrapper.scheduleBlock
+                                        .dimension_wrapper
+                                            .schedule
+                                                .head Расписание
+                                                    .rightSide
+                                                        .weekParity_button 2нед.
+                                                .body
+                                                    table
+                                                        thead
+                                                            tr.headers
+                                                                td.day
+                                                                td.week Чётная неделя
+                                                                td.week Нечётная неделя
+                                                        tbody
+                                                            +loop(5)
+                                                                tr
+                                                                    td.day Пн
+                                                                    td.week
+                                                                        span.time
+                                                                            span.from 12:00
+                                                                            | —
+                                                                            span.to 18:00
+                                                                        span.delete_button
+
+                                                                    td.week
+                                                                        .add_button
+
+
+
+
+                            script.
+                                $(function () {
+                                    $('#2twoRange').dateRangePicker(
+                                        {
+                                            singleMonth: true,
+                                            inline: true,
+                                            format: 'DD.MM.YY',
+                                            showShortcuts: false,
+                                            showTopbar: false,
+                                            //startDate: "27.10.15",
+                                            startOfWeek: "monday",
+                                            //                    showTopbar: false,
+                                            separator: '  ',
+                                            getValue: function () {
+                                                //                        if ($('#date-range200').val() && $('#date-range201').val() )
+                                                //  				return $('#date-range200').val() + ' to ' + $('#date-range201').val();
+                                                //                            return '';
+                                                //                        else
+                                                return '';
+                                            },
+                                            setValue: function (s, s1, s2) {
+                                                $('#2date-range1').html(s1);
+                                                $('#2date-range2').html(s2);
+                                            },
+                                            alwaysOpen: true,
+                                            container: '#2date-rangeWrap'
+                                        }
+                                    );
+                                    //$('#2twoRange').data('dateRangePicker').setDateRange('23-05-16', '23-05-16');
+
+
+                                    function generateTime(elem, e, ui){
+
+                                        var hours = Math.floor(ui.value / 60);
+                                        var minutes = ui.value - (hours * 60);
+
+                                        if (hours == 0 && minutes==0) {
+                                            elem[0].html( 'с начала дня' );
+                                            return;
+                                        }
+                                        else if(hours==24){
+                                            elem[0].html( 'до конца дня' );
+                                            return
+                                        }
+
+                                        if (hours < 10) hours = '0' + hours;
+                                        if (minutes < 10) minutes = '0' + minutes;
+
+                                        elem[0].html( hours + ':' + minutes );
+
+
+                                    }
+
+
+                                    $( "#slider-range-max" ).slider({
+                                        range: "max",
+                                        min: 0,
+                                        max: 1425,
+                                        step: 15,
+                                        slide: generateTime.bind(null, [$("#amount")])
+                                    });
+
+
+                                    $( "#slider-range-min" ).slider({
+                                        range: "min",
+                                        min: 15,
+                                        max: 1440,
+                                        step: 15,
+                                        value: 1440,
+                                        slide: generateTime.bind(null, [$("#amount2")])
+                                    });
+
+                                    $( "#slider-range" ).slider({
+                                        range: true,
+                                        min: 0,
+                                        max: 1440,
+                                        step: 15,
+                                        values: [0,1440],
+                                        slide: function(e, ui) {
+                                            generateTime([$("#amount")], null, {value: ui.values[0]});
+                                            generateTime([$("#amount2")], null, {value: ui.values[1]});
+                                        }
+                                    });
+
+
+
+                                    $('#absenceReason_but').click(function(event){
+                                        var absenceEditing = $('#absenceViewer').find('.absenceEditing');
+                                        if(absenceEditing.hasClass('schedule_showing')){
+                                            $('#absenceViewer').find('.scheduleBlock').removeClass('active');
+                                            absenceEditing.removeClass('schedule_showing');
+                                        }
+                                        else {
+                                            absenceEditing.addClass('schedule_showing');
+                                            setTimeout(function(){
+                                                $('#absenceViewer').find('.scheduleBlock').addClass('active');
+                                            }, 300);
+                                        }
+                                    });
+
+
+                                });
+
+                            .footer
+                                .button.greenC Сохранить
+                                #clsAbsenceViewerBut2.button.grayC Отмена
+
+
+
+
+
+            script.
+                function setPopupPosition(event, popup, innerOffset, outerTopOffset){
+                    var width = popup.outerWidth();
+
+                    if(event.clientX + width > $(document).width())
+                        popup.removeClass('toLeft').addClass('toRight').css('left', (event.clientX - width + innerOffset));
+                    else
+                        popup.removeClass('toRight').addClass('toLeft').css('left', event.clientX - innerOffset);
+
+                    popup.css('top', $(event.currentTarget).offset().top + outerTopOffset);
+                }
+
+                function bindDocumentKillingClick(freeElem1, freeElem2, handler){
+                    $(document.body).click(
+                        function func(event) {
+                            var elem = event.target;
+                            if (freeElem1.has(elem).length <= 0 && freeElem2.has(elem).length <= 0) {
+                                handler();
+                                $(document.body).off('click', func);
+                            }
+                        }
+                    );
+                }
+
+
+                function showAbsenceInfo(event, timeFrom, timeTill, absenceId, comment){
+                    //var elem = $(event.currentTarget);
+                    diagramProducer.showAbsenceInfoPopup(event, timeFrom, timeTill, absenceId, comment);
+                }
+
+
+                function activateUserPassport(event) {
+                    if (!userProducer)
+                        userProducer = new UserProducer();
+
+                    userProducer.showUserFor($(event.currentTarget));
+                }
+
+
+
+                var userProducer;
+
+                function UserProducer(){
+                    var expectsOpening = false;
+                    var userPassport = $('.UserPassport');
+                    var lastActiveUserPassport;
+                    var mainInfo = userPassport.children('.mainInfo');
+                    var currentOpenUserId;
+                    var insertionOrder = [
+                        {name: "post", handler: function(data){
+                            return '<td>Должность</td><td><span class="link" onclick="fastSearch(\'Должность:'+ data +'\')">'+ data +'</span></td>';
+                        }},
+                        {name: "department", handler: function(data){
+                            return '<td>Подразделение</td><td><span class="link" onclick="fastSearch(\'Подразделение:'+ data +'\')">'+ data +'</span></td>';
+                        }},
+                        {name: "birthday", handler: function(data){
+                            return '<td>День рождения</td><td>'+ data +'</td>';
+                        }},
+                        {name: "ip", handler: function(data){
+                            var html = '<td>IP</td><td>';
+                            if($.isArray(data)){
+                                html+= data[0];
+                                for(var i=1; i<data.length; i++)
+                                    html+= '<br>' + data[i];
+                            }else
+                                html += data;
+                            return html + '</td>';
+                        }},
+                        {name: "workPhone", handler: function(data){
+                            return '<td>Телефон рабочий</td><td>'+ data +'</td>';
+                        }},
+                        {name: "mobilePhone", handler: function(data){
+                            return '<td>Телефон мобильный</td><td>'+ data +'</td>';
+                        }},
+                        {name: "homePhone", handler: function(data){
+                            return '<td>Телефон домашний</td><td>'+ data +'</td>';
+                        }},
+                        {name: "email", handler: function(data){
+                            return '<td>Email</td><td><a href="mailto:'+ data +'" class="link">'+ data +'</a></td>';
+                        }},
+                        {name: "icq", handler: function(data){
+                            return '<td>ICQ</td><td>'+ data +'</td>';
+                        }},
+                        {name: "jid", handler: function(data){
+                            return '<td>JID</td><td>'+ data +'</td>';
+                        }},
+                        {name: "fax", handler: function(data){
+                            return '<td>Fax</td><td>'+ data +'</td>';
+                        }},
+                        {name: "homeFax", handler: function(data){
+                            return '<td>Fax домашний</td><td>'+ data +'</td>';
+                        }}
+                    ]
+
+                    this.saveUserPassport = function(){
+                        $(document.body).append(userPassport);
+                    }
+
+                    function buildUserPassport(employeeData){
+                        var html = '';
+
+                        for(var propIndex=i=0; i<insertionOrder.length; i++){
+                            var propName = insertionOrder[i].name;
+                            if(employeeData.hasOwnProperty(propName)
+                                    && employeeData[propName] != null
+                                    && employeeData[propName] != "") {
+                                if(propIndex % 4 == 0)
+                                    html += '<table class="userData">';
+
+                                html += '<tr class="' + propName + '">' + insertionOrder[i].handler(employeeData[propName]) + '</tr>';
+
+                                propIndex++;
+                                if(propIndex % 4 == 0)
+                                    html += '</table>';
+                            }
+                        }
+
+                        if(propIndex % 4 != 0);
+                        html += '</table>';
+
+                        mainInfo.html('');
+                        mainInfo.append(html);
+                    }
+
+
+                    function downloadEmployeeData(userBlock, successHandler, errorHandler){
+                        var id = userBlock.attr('id');
+                        var employee = 'Employee' + id;
+                        if(window[employee])
+                            successHandler();
+                        else{
+
+                            AJAX.getEmployee(
+                                id,
+                                function(data){
+                                    window[employee] = data;
+                                    var addData = userBlock.children('.wrapper').children('.wrapper');
+                                    window[employee].post = addData.children('.post').text();
+                                    window[employee].birthday = addData.children('.birthday').text();
+                                    buildUserPassport(window[employee]);
+                                    successHandler();
+                                },
+                                errorHandler
+                            );
+
+                            //var link = document.createElement('script');
+                            //link.onload = function(){
+                            //    var addData = userBlock.children('.wrapper').children('.wrapper');
+                            //    window[employee].post = addData.children('.post').text();
+                            //    window[employee].birthday = addData.children('.birthday').text();
+                            //    buildUserPassport(window[employee]);
+                            //    successHandler();
+                            //}
+                            //link.onerror = errorHandler;
+                            //link.src = '/pm/web/scripts/data/'+ employee +'.js';
+                            //document.body.appendChild(link);
+                            //document.body.removeChild(link);
+                        }
+                    }
+
+
+                    this.closeUserPassport = function(){
+                        if(lastActiveUserPassport)
+                            lastActiveUserPassport.removeClass('active');
+                        userPassport.slideUp().hide();
+                        setTimeout(userPassport.show, 300);
+                    }
+
+
+                    this.getOpenedUserId = function(){
+                        return currentOpenUserId;
+                    }
+
+
+                    this.showUserFor = function(userBlock){
+                        if(expectsOpening)
+                            return;
+
+                        var id = userBlock.data('id');
+                        currentOpenUserId = userBlock.attr('id');
+
+                        var passportsInRow = $(document.body).width()<1600 ? 2 : 3; //mediaQuery
+                        var prevUserPassportId = Math.ceil(id/passportsInRow)*passportsInRow; // id профиля, перед которым нужно вставить orgPassport
+
+                        if(prevUserPassportId > employeeGenerator.getEmployeeCount())
+                            prevUserPassportId = employeeGenerator.getEmployeeCount()
+
+                        var prevUserPassport = $('.user[data-id="'+ prevUserPassportId +'"');
+
+                        var timeDelay;
+                        if(lastActiveUserPassport) {
+                            userPassport.slideUp(); // предудущий
+                            if (userBlock.hasClass('active')) { // закрываем тот же, что и открыли
+                                lastActiveUserPassport.removeClass('active');
+                                lastActiveUserPassport = null;
+                                return;
+                            }
+                            lastActiveUserPassport.removeClass('active');
+                            timeDelay = 400; // время на то, чтобы закрыть предыдущий паспорт
+                        }else{
+                            timeDelay = 0;
+                        }
+
+                        expectsOpening = true;
+                        setTimeout(
+                            function(){
+                                downloadEmployeeData(userBlock,
+                                    function(){
+                                        userBlock.addClass('active')
+                                        prevUserPassport.after(userPassport);
+                                        userPassport.slideDown()
+
+                                        if(!diagramProducer)
+                                            diagramProducer = new DiagramProducer();
+                                        diagramProducer.build(60);
+                                        diagramProducer.diagramToCenter();
+
+                                        lastActiveUserPassport = userBlock;
+                                        expectsOpening = false;
+                                    },
+                                    function(){
+                                        messageGenerator.show("Ошибка при загрузке данных")
+                                        expectsOpening = false;
+                                    }
+                                )
+                            },
+                        timeDelay);
+
+                    }
+
+                }
+
+
+
+
+
+            script.
+                $('#editAbsenceButton').click(function () {
+                    var popupBlock = $('#absenceViewer');
+                    popupBlock.css('display', 'block');
+                    setTimeout(function () {
+                        popupBlock.addClass('active'),
+                                activateTimeFixerDiagram();
+                                //$('#absenceSchedule').perfectScrollbar();
+                                //$('#absenceSchedule').perfectScrollbar();
+                    }, 200);
+                    $('#clsAbsenceViewerBut1,#clsAbsenceViewerBut2').click(
+                        function func(event) {
+                            popupBlock.removeClass('active')
+                            setTimeout(function () {
+                                popupBlock.css('display', '')
+                            }, 200);
+                            $(event.target).off('click', func);
+                        }
+                    );
+                });
+
+
+            #selectList.selectList
+                .wrapper
+
+            script.
+                var departmentFilter = $('#departmentFilter');
+                var selectList = $('#selectList');
+                var selectListWrap = selectList.children('.wrapper');
+
+
+                var departments = [
+                    "1инженер-программист",
+                    "2инженер-программист",
+                    "3инженер-программист",
+                    "4инженер-программист",
+                    "5инженер-программист",
+                    "6инженер-программист",
+                    "7инженер-программист",
+                    "11инженер-программист",
+                    "11инженер-программист",
+                    "11инженер-программист",
+                    "11инженер-программист",
+                    "11инженер-программист",
+                    "11инженер-программист",
+                    "11инженер-программист",
+                    "11инженер-программист"
+                ]
+
+
+
+
+
+
+
+
+
+
+
+
+
+                function BinderSelectList(){
+
+
+                    this.hi; //hover index
+                    this.items;
+                    this.visibleItemsIndex;
+
+                    var t = this;
+
+
+                    this.initialize = function (){
+                        t.items = selectListWrap.find('.item');
+                        t.visibleItemsIndex = [];
+                        for (var i = 0; i < t.items.length; i++)
+                            t.visibleItemsIndex[i] = i;
+                    }
+
+                    function makeItemHover(i){
+                        t.hi = i;
+                        t.items.eq(i).addClass('hover');
+                    }
+
+                    function activeSelectList(elem, dataList){
+                        selectList.css('min-width', elem.outerWidth());
+                        var elemOffset = elem.offset();
+                        selectList.css('left', elemOffset.left).css('top', elemOffset.top + 28 + 4); // 4 = visual padding
+                        elem.addClass('checked')
+                        selectList.show();
+
+                        selectListWrap.html('');
+                        var html = '';
+                        for(var i = 0; i<dataList.length; i++){
+                            html += '<div class="item show">'+ dataList[i] +'</div>';
+                        }
+                        selectListWrap.append(html);
+                    }
+
+                    function closeSelectList(elem){
+                        elem.removeClass('checked')
+                        selectList.hide();
+                    }
+
+                    function keyDownTracking(event){
+                        var elemOffset;
+                        var marginTop
+                        var elem
+
+                        switch (event.which) {
+                            case 13: // enter
+
+                                log('ENTER')
+
+                                break;
+                            case 38: // up
+
+                                if (t.hi != 0) {
+                                    t.items.eq(t.visibleItemsIndex[t.hi]).removeClass('hover');
+                                    t.hi--
+                                    t.items.eq(t.visibleItemsIndex[t.hi]).addClass('hover');
+                                    elem = t.items.eq(t.visibleItemsIndex[t.hi]);
+
+                                    elemOffset = elem.position();
+                                    marginTop = parseInt(selectListWrap.css('margin-top'));
+
+                                    if (marginTop != 0 && elemOffset.top+29 < 173) {
+                                        selectListWrap.css('margin-top', marginTop + 29);
+                                    }
+                                }
+                                break;
+                            case 40: // down
+
+                                if(t.hi<t.visibleItemsIndex.length-1){
+                                    t.items.eq(t.visibleItemsIndex[t.hi]).removeClass('hover');
+                                    t.hi++
+                                    t.items.eq(t.visibleItemsIndex[t.hi]).addClass('hover');
+                                    elem = t.items.eq(t.visibleItemsIndex[t.hi]);
+
+                                    elemOffset = elem.position();
+                                    marginTop = parseInt( selectListWrap.css('margin-top') );
+
+                                    var wrapHeight = selectListWrap.height();
+
+                                    if(elemOffset.top >= 173 && (wrapHeight+marginTop-319) > 0){
+                                        selectListWrap.css('margin-top', marginTop - 29);
+                                    }
+                                }
+
+                                break;
+                            default:
+                                return; // exit this handler for other keys
+                        }
+                        event.preventDefault();
+                    }
+
+
+                    this.bindSimpleSelect = function(selector, dataList, handler){
+
+                        var documentClick;
+
+                        function close(){
+                            closeSelectList(selector);
+                            //$(document).off('keydown', keyDownTracking).off('click', documentClick);
+                            $(document).off('click', documentClick);
+                        }
+
+                        selector.click(function(){
+                            if(selector.hasClass('checked')){
+                                close();
+                            }else{
+                                activeSelectList(selector, dataList);
+                                t.initialize();
+                                makeItemHover(dataList.indexOf(selector.text()));
+
+                                $(document).click(
+                                    documentClick = function(event){
+                                        var elem = event.target;
+                                        if(selectList.has(elem).length<=0 && !selector.is(elem)){
+                                            close();
+                                        }else if(selectList.has(elem).length>0 && !$(elem).hasClass('hover')){
+                                            handler(elem.textContent);
+                                            selector.text(elem.textContent)
+                                            close();
+                                        }
+                                    }
+                                );
+                            }
+                        });
+                    }
+
+                    this.bindComboSelect = function(selector, dataList){
+
+                        var documentClick;
+                        var changeInputField;
+                        var input = selector.children('.inputField');
+                        var button = selector.children('.button');
+                        var onWheel
+
+                        var t = this;
+
+
+
+                        function close(){
+                            closeSelectList(selector);
+                            $(document).off('keydown', keyDownTracking).off('click', documentClick);
+                            input.off('input', changeInputField);
+                            selectList.off('wheel', onWheel);
+                        }
+
+
+                        input.focus(function(event){
+
+                            if (selector.hasClass('checked')) {
+                                close();
+                                return;
+                            }
+
+                            activeSelectList(selector, dataList);
+                            t.initialize();
+                            makeItemHover(0)
+
+                            input.on('input', changeInputField = function (e){
+                                var text = $(e.currentTarget).val();
+                                t.items.eq(t.visibleItemsIndex[t.hi]).removeClass('hover');
+
+                                t.visibleItemsIndex = [];
+                                $.each(t.items, function(i, e){
+                                    e = $(e);
+                                    if(e.text().toLowerCase().indexOf(text)>=0){
+                                        e.addClass('show');
+                                        t.visibleItemsIndex.push(i);
+                                    }else{
+                                        e.removeClass('show');
+                                    }
+                                });
+
+                                t.hi = 0;
+                                t.items.eq(t.visibleItemsIndex[0]).addClass('hover');
+                                selectListWrap.css('margin-top', 0)
+                            });
+
+
+
+                            onWheel = function(event) {
+
+                                var offset = parseInt(selectListWrap.css('margin-top')) + (29 * (event.originalEvent.deltaY > 0 ? -1 : 1)); // 200 смещение в пикселях при прокрутке
+
+                                if(offset>0)
+                                    offset = 0
+                                else if(offset < selectList.height() - selectListWrap.height()){
+                                    event.preventDefault();
+                                    return
+                                }
+
+                                selectListWrap.css('margin-top', offset);
+                                event.preventDefault();
+                            }
+
+
+
+                            selectList.on('wheel', onWheel);
+
+                            $(document).keydown(keyDownTracking).click(
+                                documentClick = function(event){
+                                    var elem = event.target;
+                                    if(selectList.has(elem).length<=0 && selector.has(elem).length<=0){
+                                        close();
+                                    }
+                                }
+                            );
+
+
+
+
+
+                        }).focusout(close);
+
+                        button.click(function func(){
+                            if(selector.hasClass('checked')){
+                                close();
+                                return
+                            }
+                            input.focus();
+                        });
+
+
+                    }
+
+
+                    this.setComboSelect = function(){
+                        this.comboFlag = true;
+                        return this;
+                    }
+
+
+                    this.resetComboSelect = function(){
+                        this.comboFlag = false;
+                        return this;
+                    }
+
+                }
+
+                var binderSelectList = new BinderSelectList();
+
+                binderSelectList.bindComboSelect(departmentFilter, departments);
+                binderSelectList.bindSimpleSelect($('#sorting_but'), [
+                    "Id",
+                    "Фамилия",
+                    "Должность",
+                    "Дата рождения"
+                ], sorting.by);
+
+
+            #userMenuPopup.menu_popup
+                .menu
+                    .item Отправить email
+                    .item Добавить в избранные
+                    .item Добавить отсутствие
+
+            script.
+                function showUserMenu(event){
+                    var elem = $(event.currentTarget);
+                    var popup = $('#userMenuPopup');
+
+                    if(elem.hasClass('active')){
+                        elem.removeClass('active');
+                        popup.hide();
+                    }else {
+                        elem.addClass('active');
+                        var diff = event.clientX - elem.offset().left;
+                        setPopupPosition(event, popup, 18, 24);
+                        popup.show();
+                        bindDocumentKillingClick(popup, popup, function () {
+                            popup.hide();
+                            elem.removeClass('active');
+                        });
+                    }
+                    event.stopPropagation();
+                }
+
+
+
+
+                var diagramProducer;
+
+
+            +popup('timeFixer')
+            +popup('globalSearchFilters')
+            +popup('notifications')
+            +popup('fixTime')
+            +popup('user')
+

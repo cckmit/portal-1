@@ -21,6 +21,9 @@ public class EmployeeDetailView {
     private String workPhone;
 
     @JsonProperty
+    private String homePhone;
+
+    @JsonProperty
     private String jid;
 
     @JsonProperty
@@ -31,6 +34,9 @@ public class EmployeeDetailView {
 
     @JsonProperty
     private String icq;
+
+    @JsonProperty
+    private String fax;
 
     @JsonProperty
     private AbsenceEntryView[] absences;
@@ -44,10 +50,12 @@ public class EmployeeDetailView {
         this.department = p.getPosition();
         this.mobilePhone = p.getMobilePhone();
         this.workPhone = p.getWorkPhone();
+        this.homePhone = p.getHomePhone();
         this.jid = p.getJabber();
         this.ip = p.getIpAddress() != null ? new String[] {p.getIpAddress()} : null;
         this.email = p.getEmail();
         this.icq = p.getIcq();
+        this.fax = p.getFax();
         return this;
     }
 

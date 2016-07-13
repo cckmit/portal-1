@@ -54,11 +54,13 @@ public class Person {
     @JdbcColumn(name="phone_mobile")
     private String mobilePhone;
 
+
     @JdbcColumn(name="email")
     private String email;
 
     @JdbcColumn(name="email_own")
     private String email_own;
+
 
     @JdbcColumn(name="fax")
     private String fax;

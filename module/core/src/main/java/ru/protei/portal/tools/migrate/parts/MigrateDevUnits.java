@@ -34,7 +34,7 @@ public class MigrateDevUnits implements MigrateAction {
     private DevUnitVersionDAO versionDAO;
 
     @Autowired
-    private MigrationEntryDAO migrationDAO;
+    private MigrationEntryDAO migrateDAO;
 
 
 
@@ -43,17 +43,20 @@ public class MigrateDevUnits implements MigrateAction {
 
 //        List<DevUnit> stlist = new ArrayList<>();
 
+       long lastOldDateUpdate = migrateDAO.getMigratedLastUpdate(TM_PROJECT_ITEM_CODE, 0L);
+       migrateDAO.confirmMigratedLastUpdate(TM_PROJECT_ITEM_CODE, new Date().getTime());
 
-        new BatchProcessTask<DevUnit>("\"Resource\".Tm_Project", "nID", migrationDAO.getLastMigratedID(TM_PROJECT_ITEM_CODE, 0L))
-                .onBatchEnd( lastIdValue -> migrationDAO.confirmMigratedID(TM_PROJECT_ITEM_CODE, lastIdValue) )
+
+        new BatchProcessTask<DevUnit>("\"Resource\".Tm_Project", "dtLastUpdate", lastOldDateUpdate)
+                .setLastUpdate(lastOldDateUpdate)
                 .process(src, unitDAO, row -> {
-                    DevUnit u = new DevUnit(En_DevUnitType.COMPONENT.getId(), (String)row.get("strName"),(String)row.get("strInfo"));
-                    u.setCreated((Date)row.get("dtCreation"));
-                    u.setCreatorId(MigrateUtils.DEFAULT_CREATOR_ID);
-                    u.setLastUpdate(new Date());
-                    u.setStateId(En_DevUnitState.ACTIVE.getId());
-                    u.setOldId((Long)row.get("nID"));
-                    return u;
+                   DevUnit u = new DevUnit(En_DevUnitType.COMPONENT.getId(), (String) row.get("strName"), (String) row.get("strInfo"));
+                   u.setCreated((Date) row.get("dtCreation"));
+                   u.setCreatorId(MigrateUtils.DEFAULT_CREATOR_ID);
+                   u.setLastUpdate(new Date());
+                   u.setStateId(En_DevUnitState.ACTIVE.getId());
+                   u.setOldId((Long) row.get("nID"));
+                   return u;
                 }).dumpStats(TM_PROJECT_ITEM_CODE);
 
 
@@ -79,16 +82,20 @@ public class MigrateDevUnits implements MigrateAction {
 
         // products
 
-        new BatchProcessTask<DevUnit>("\"Resource\".Tm_Product", "nID", migrationDAO.getLastMigratedID(TM_PRODUCT_ITEM_CODE, 0L))
-                .onBatchEnd(lastIdValue -> migrationDAO.confirmMigratedID(TM_PRODUCT_ITEM_CODE, lastIdValue))
-                .process(src,unitDAO, row -> {
-                    DevUnit u = new DevUnit(En_DevUnitType.PRODUCT.getId(), (String)row.get("strValue"),(String)row.get("strInfo"));
-                    u.setCreated((Date)row.get("dtCreation"));
-                    u.setCreatorId(MigrateUtils.DEFAULT_CREATOR_ID);
-                    u.setLastUpdate(new Date());
-                    u.setStateId(En_DevUnitState.ACTIVE.getId());
-                    u.setOldId((Long)row.get("nID"));
-                    return u;
+
+       lastOldDateUpdate = migrateDAO.getMigratedLastUpdate(TM_PRODUCT_ITEM_CODE, 0L);
+       migrateDAO.confirmMigratedLastUpdate(TM_PRODUCT_ITEM_CODE, new Date().getTime());
+
+        new BatchProcessTask<DevUnit>("\"Resource\".Tm_Product", "dtLastUpdate", lastOldDateUpdate)
+                .setLastUpdate(lastOldDateUpdate)
+                .process(src, unitDAO, row -> {
+                   DevUnit u = new DevUnit(En_DevUnitType.PRODUCT.getId(), (String) row.get("strValue"), (String) row.get("strInfo"));
+                   u.setCreated((Date) row.get("dtCreation"));
+                   u.setCreatorId(MigrateUtils.DEFAULT_CREATOR_ID);
+                   u.setLastUpdate(new Date());
+                   u.setStateId(En_DevUnitState.ACTIVE.getId());
+                   u.setOldId((Long) row.get("nID"));
+                   return u;
                 })
                 .dumpStats(TM_PRODUCT_ITEM_CODE);
 

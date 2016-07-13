@@ -11,6 +11,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -20,21 +21,20 @@ public class BatchProcessTask<T> {
 
     String query;
 
-
     int fetchSize = 1000;
     int batchSize = 1000;
 
-    String idFieldName;
+    //String idFieldName;
 
-    Long lastIdValue;
+    //Long lastIdValue;
 
-    EndOfBatch _onBatchEnd;
+    //EndOfBatch _onBatchEnd;
 
+    long lastUpdate;
     private long records_handled = 0L;
 
-    public BatchProcessTask (String tableName, String idFieldName, Long startFromId) {
-        this ("select * from " + tableName + " where " + idFieldName + " > " + MigrateUtils.nvl(startFromId,0L) + " order by " + idFieldName);
-        withIdField(idFieldName);
+    public BatchProcessTask (String tableName, String idFieldName, Long lastUpdate) {
+        this ("select * from " + tableName + " where " + idFieldName + " > " + "DATEADD(ss, "+ lastUpdate/1000 +",'1/1/1970')");
     }
 
     public BatchProcessTask (String query) {
@@ -42,13 +42,19 @@ public class BatchProcessTask<T> {
     }
 
 
-    public BatchProcessTask<T> withIdField (String idFieldName) {
-        this.idFieldName = idFieldName;
-        return this;
-    }
+//    public BatchProcessTask<T> withIdField (String idFieldName) {
+//        this.idFieldName = idFieldName;
+//        return this;
+//    }
 
-    public BatchProcessTask<T> onBatchEnd (EndOfBatch cb) {
-        this._onBatchEnd = cb;
+//    public BatchProcessTask<T> onBatchEnd (EndOfBatch cb) {
+//        this._onBatchEnd = cb;
+//        return this;
+//    }
+
+
+    public BatchProcessTask setLastUpdate(long lastUpdate){
+        this.lastUpdate = lastUpdate;
         return this;
     }
 
@@ -57,9 +63,11 @@ public class BatchProcessTask<T> {
 
         System.out.println("running query : " + query);
 
-        List<T> batchSet = new ArrayList<>(batchSize);
+        List<T> insertBatchSet = new ArrayList<>(batchSize);
+        List<T> updateBatchSet = new ArrayList<>(batchSize);
 
-        long handled = 0;
+        long handledWithInserting = 0;
+        long handledWithUpdating = 0;
         try (Statement st = conn.createStatement(ResultSet.TYPE_FORWARD_ONLY,ResultSet.CONCUR_READ_ONLY)) {
 
             st.setFetchSize(fetchSize);
@@ -69,24 +77,38 @@ public class BatchProcessTask<T> {
             System.out.println("loop over result-set::begin");
 
             while (rs.next()) {
-                handled++;
                 records_handled++;
 
-                if (this.idFieldName != null) {
-                    lastIdValue = rs.getLong(this.idFieldName);
+                //if (this.idFieldName != null) {
+                //    lastIdValue = rs.getLong(this.idFieldName);
+                //}
+
+//                if(rs.getDate("dtCreation").getTime() > lastUpdate){
+//                    handledWithInserting++;
+//                    insertBatchSet.add(adapter.createEntity(Tm_SqlHelper.fetchRowAsMap(rs)));
+//                }else{
+                    handledWithUpdating++;
+                    updateBatchSet.add(adapter.createEntity(Tm_SqlHelper.fetchRowAsMap(rs)));
+//                }
+
+                if (insertBatchSet.size() >= batchSize) {
+                    processBatch(dao, insertBatchSet, true);
+                    System.out.println("Handled insert rows : " + handledWithInserting);
                 }
-
-                batchSet.add(adapter.createEntity(Tm_SqlHelper.fetchRowAsMap(rs)));
-
-                if (batchSet.size() >= batchSize) {
-                    processBatch(dao, batchSet);
-                    System.out.println("Handled rows : " + handled);
+                if (updateBatchSet.size() >= batchSize) {
+                    processBatch(dao, updateBatchSet, false);
+                    System.out.println("Handled update rows : " + handledWithUpdating);
                 }
             }
 
-            if (!batchSet.isEmpty()) {
-                processBatch(dao, batchSet);
-                System.out.println("Handled rows : " + handled);
+            if (!insertBatchSet.isEmpty()) {
+                processBatch(dao, insertBatchSet, true);
+                System.out.println("Handled inset rows : " + handledWithInserting);
+            }
+
+            if (!updateBatchSet.isEmpty()) {
+                processBatch(dao, updateBatchSet, false);
+                System.out.println("Handled update rows : " + handledWithUpdating);
             }
 
             System.out.println("loop over result-set::end");
@@ -102,12 +124,17 @@ public class BatchProcessTask<T> {
         System.out.println(String.format(item + ", imported: %d", records_handled));
     }
 
-    private void processBatch(JdbcDAO<Long, T> dao, List<T> batchSet) {
-        dao.persistBatch(batchSet);
+    private void processBatch(JdbcDAO<Long, T> dao, List<T> batchSet, boolean isNew) {
+        if(isNew)
+            dao.persistBatch(batchSet);
+        else
+            dao.mergeBatch(batchSet);
+
         batchSet.clear();
-        if (_onBatchEnd != null) {
-            _onBatchEnd.onBatchEnd(this.lastIdValue);
-        }
+
+//        if (_onBatchEnd != null) {
+//            _onBatchEnd.onBatchEnd(this.lastIdValue);
+//        }
     }
 
     public String getQuery() {

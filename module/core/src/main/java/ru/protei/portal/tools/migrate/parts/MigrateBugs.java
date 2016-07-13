@@ -25,100 +25,105 @@ import java.util.Map;
  */
 public class MigrateBugs implements MigrateAction {
 
-    @Autowired
-    private CaseObjectDAO caseDAO;
+   @Autowired
+   private CaseObjectDAO caseDAO;
 
-    @Autowired
-    private CaseCommentDAO commentDAO;
+   @Autowired
+   private CaseCommentDAO commentDAO;
 
-    @Autowired
-    private CaseTermDAO termDAO;
+   @Autowired
+   private CaseTermDAO termDAO;
 
-    @Autowired
-    private CaseStateMatrixDAO stateMatrixDAO;
+   @Autowired
+   private CaseStateMatrixDAO stateMatrixDAO;
 
 
-    @Override
-    public int orderOfExec() {
-        return 10;
-    }
+   @Override
+   public int orderOfExec() {
+      return 10;
+   }
 
-    @Override
-    public void migrate(Connection src, AbstractApplicationContext ctx) throws SQLException {
+   @Override
+   public void migrate(Connection src, AbstractApplicationContext ctx) throws SQLException {
 
-        final Map<Long,Long> oldToNewStateMap = stateMatrixDAO.getOldToNewStateMap(En_CaseType.BUG);
+      final Map<Long, Long> oldToNewStateMap = stateMatrixDAO.getOldToNewStateMap(En_CaseType.BUG);
 
-        BatchProcessTask<CaseObject> t = new BatchProcessTask<CaseObject>("\"BugTracking\".Tm_Bug", "nID", caseDAO.getMaxValue("caseno", Long.class, "CASE_TYPE=?", En_CaseType.BUG.getId()));
-        t.process(src, caseDAO, row -> {
-                    CaseObject obj = new CaseObject();
-                    obj.setId(null);
-                    obj.setTypeId(En_CaseType.BUG.getId());
-                    obj.setCreated((Date)row.get("dtCreation"));
-                    obj.setCaseNumber((Long)row.get("nID"));
-                    obj.setCreatorId((Long)row.get("nSubmitterID"));
-                    obj.setCreatorIp((String)row.get("strClientIp"));
-                    obj.setCreatorInfo((String)row.get("strClient"));
-                    obj.setEmails(null);
-                    obj.setExtId(En_CaseType.BUG.makeGUID(obj.getCaseNumber()));
-                    obj.setImpLevel(((Number)row.get("nCriticalityId")).intValue());
-                    obj.setInfo((String)row.get("strInfo"));
-                    obj.setInitiatorId((Long)row.get("nDeclarantId"));
-                    obj.setKeywords((String)row.get("strKeyWord"));
-                    obj.setLocal(row.get("lIsLocal") == null ? 1 : ((Number)row.get("lIsLocal")).intValue());
-                    obj.setName((String)row.get("strSubject"));
-                    obj.setManagerId(obj.getCreatorId());
-                    obj.setModified(new Date());
-                    obj.setStateId(oldToNewStateMap.get((Long)row.get("nStatusID")));
+      long lastOldDateUpdate = 0; // получаем
+      //migrateDAO.confirmMigratedLastUpdate(, new Date().getTime());
 
-                    if (obj.getCreatorId() == null) {
-                        obj.setCreatorId((Long)MigrateUtils.nvl(obj.getInitiatorId(),row.get("nAccepterID")));
-                    }
+      BatchProcessTask<CaseObject> t = new BatchProcessTask<CaseObject>("\"BugTracking\".Tm_Bug", "nID", caseDAO.getMaxValue("caseno", Long.class, "CASE_TYPE=?", En_CaseType.BUG.getId()));
+      t.setLastUpdate(lastOldDateUpdate)
+      .process(src, caseDAO, row -> {
+         CaseObject obj = new CaseObject();
+         obj.setId(null);
+         obj.setTypeId(En_CaseType.BUG.getId());
+         obj.setCreated((Date) row.get("dtCreation"));
+         obj.setCaseNumber((Long) row.get("nID"));
+         obj.setCreatorId((Long) row.get("nSubmitterID"));
+         obj.setCreatorIp((String) row.get("strClientIp"));
+         obj.setCreatorInfo((String) row.get("strClient"));
+         obj.setEmails(null);
+         obj.setExtId(En_CaseType.BUG.makeGUID(obj.getCaseNumber()));
+         obj.setImpLevel(((Number) row.get("nCriticalityId")).intValue());
+         obj.setInfo((String) row.get("strInfo"));
+         obj.setInitiatorId((Long) row.get("nDeclarantId"));
+         obj.setKeywords((String) row.get("strKeyWord"));
+         obj.setLocal(row.get("lIsLocal") == null ? 1 : ((Number) row.get("lIsLocal")).intValue());
+         obj.setName((String) row.get("strSubject"));
+         obj.setManagerId(obj.getCreatorId());
+         obj.setModified(new Date());
+         obj.setStateId(oldToNewStateMap.get((Long) row.get("nStatusID")));
 
-                    return obj;
-                });
+         if (obj.getCreatorId() == null) {
+            obj.setCreatorId((Long) MigrateUtils.nvl(obj.getInitiatorId(), row.get("nAccepterID")));
+         }
 
-        Map<Long,Long> caseNumberToIdMapper = caseDAO.getNumberToIdMap(En_CaseType.BUG);
+         return obj;
+      });
 
-        Long lastTermID = termDAO.getMaxValue("old_id",Long.class,"case_id in (select id from case_object where case_type=?)",En_CaseType.BUG.getId());
-        new BatchProcessTask<CaseTerm>("\"BugTracking\".Tm_BugDeadline", "nID", lastTermID)
-                .process(src, termDAO, row -> {
-                    CaseTerm c = new CaseTerm();
-                    c.setCreated((Date)row.get("dtCreation"));
-                    c.setCaseId(caseNumberToIdMapper.get((Long)row.get("nBugID")));
-                    c.setCreatorId((Long)row.get("nSubmitterId"));
-                    c.setEndTime((Date)row.get("dDeadline"));
-                    c.setLabelText((String)row.get("strComment"));
-                    c.setStageId(null);
-                    c.setTermOrder(((Long)row.get("nID")).intValue());
-                    c.setTermTypeId(En_CaseTermType.DEADLINE.getId());
-                    c.setOldId((Long)row.get("nID"));
-                    return c;
-                });
+      Map<Long, Long> caseNumberToIdMapper = caseDAO.getNumberToIdMap(En_CaseType.BUG);
 
-        Long lastCommentID = commentDAO.getMaxValue("old_id",Long.class,"case_id in (select id from case_object where case_type=?)",En_CaseType.BUG.getId());
-        System.out.println("start from comment-id: " + lastCommentID);
+      Long lastTermID = termDAO.getMaxValue("old_id", Long.class, "case_id in (select id from case_object where case_type=?)", En_CaseType.BUG.getId());
+      new BatchProcessTask<CaseTerm>("\"BugTracking\".Tm_BugDeadline", "nID", lastTermID)
+              .setLastUpdate(lastOldDateUpdate)
+              .process(src, termDAO, row -> {
+                 CaseTerm c = new CaseTerm();
+                 c.setCreated((Date) row.get("dtCreation"));
+                 c.setCaseId(caseNumberToIdMapper.get((Long) row.get("nBugID")));
+                 c.setCreatorId((Long) row.get("nSubmitterId"));
+                 c.setEndTime((Date) row.get("dDeadline"));
+                 c.setLabelText((String) row.get("strComment"));
+                 c.setStageId(null);
+                 c.setTermOrder(((Long) row.get("nID")).intValue());
+                 c.setTermTypeId(En_CaseTermType.DEADLINE.getId());
+                 c.setOldId((Long) row.get("nID"));
+                 return c;
+              });
 
-        Map<Long,Long> lastStateMap = new HashMap<>();
-        new BatchProcessTask<CaseComment>("\"BugTracking\".Tm_BugComment", "nID", lastCommentID)
-                .process(src, commentDAO, row -> {
-                    CaseComment c = new CaseComment();
-                    c.setCreated((Date)row.get("dtCreation"));
-                    c.setAuthorId((Long)row.get("nSubmitterId"));
-                    c.setCaseId(caseNumberToIdMapper.get((Long)row.get("nBugID")));
-                    c.setCaseStateId(oldToNewStateMap.get(row.get("nStatusId")));
-                    if (c.getCaseStateId() != null) {
-                        lastStateMap.put(c.getCaseId(), c.getCaseStateId());
-                    }
-                    else {
-                        c.setCaseStateId(lastStateMap.get(c.getCaseId()));
-                    }
-                    c.setClientIp((String)row.get("strClientIP"));
-                    c.setReplyTo(null);
-                    c.setText((String)row.get("strInfo"));
-                    c.setVroomId(null);
-                    c.setOldId((Long)row.get("nID"));
-                    return c;
-                });
+      Long lastCommentID = commentDAO.getMaxValue("old_id", Long.class, "case_id in (select id from case_object where case_type=?)", En_CaseType.BUG.getId());
+      System.out.println("start from comment-id: " + lastCommentID);
 
-    }
+      Map<Long, Long> lastStateMap = new HashMap<>();
+      new BatchProcessTask<CaseComment>("\"BugTracking\".Tm_BugComment", "nID", lastCommentID)
+              .setLastUpdate(lastOldDateUpdate)
+              .process(src, commentDAO, row -> {
+                 CaseComment c = new CaseComment();
+                 c.setCreated((Date) row.get("dtCreation"));
+                 c.setAuthorId((Long) row.get("nSubmitterId"));
+                 c.setCaseId(caseNumberToIdMapper.get((Long) row.get("nBugID")));
+                 c.setCaseStateId(oldToNewStateMap.get(row.get("nStatusId")));
+                 if (c.getCaseStateId() != null) {
+                    lastStateMap.put(c.getCaseId(), c.getCaseStateId());
+                 } else {
+                    c.setCaseStateId(lastStateMap.get(c.getCaseId()));
+                 }
+                 c.setClientIp((String) row.get("strClientIP"));
+                 c.setReplyTo(null);
+                 c.setText((String) row.get("strInfo"));
+                 c.setVroomId(null);
+                 c.setOldId((Long) row.get("nID"));
+                 return c;
+              });
+
+   }
 }

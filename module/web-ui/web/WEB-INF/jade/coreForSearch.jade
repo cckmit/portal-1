@@ -1,0 +1,2036 @@
+mixin loop(count, startVal)
+    - if(startVal === undefined) startVal = 0;
+    if block
+        -for(var i = startVal; i<count;  i++)
+            block
+    else
+        p No content provided
+
+mixin scrollFixBlock()
+    script(src='/pub/scripts/lib/scrollFixBlock.js')
+
+
+mixin commonHead()
+    meta(charset='UTF-8')
+    link(rel='stylesheet', href='/pub/theme/style.css')
+    script(src='/pub/scripts/jquery-2.1.4.min.js')
+
+    script.
+        /** my lib **/
+        function replaceClass(elem, from, to){
+            elem.removeClass(from).addClass(to);
+            return elem;
+        }
+
+        function log(e){
+            console.log(e)
+        }
+
+        function STOP(){
+            debugger;
+        }
+
+
+mixin chartJs()
+    script(src='/pub/scripts/Chart.min.js')
+    script(src='/pub/scripts/Chart.config.js')
+
+mixin highcharts()
+    script(src="/pub/scripts/highchart/highcharts.js")
+    script(src="/pub/scripts/highchart/exporting.js")
+
+mixin datePicker()
+    link(rel='stylesheet', href='/pub/theme/lib/daterangepicker.css')
+    script(src='/pub/scripts/lib/moment.min.js')
+    script(src='/pub/scripts/lib/jquery.daterangepicker.js')
+
+mixin scrollbar()
+    script(src='/pub/scripts/lib/perfect-scrollbar.jquery.min.js')
+    link(rel='stylesheet', href='/pub/theme/lib/perfect-scrollbar.min.css')
+
+mixin jqueryUI()
+    script(src='/pub/scripts/jquery-ui.min.js')
+    link(rel='stylesheet', href='/pub/theme/jquery-ui.min.css')
+
+mixin eventsShowingScript()
+    script.
+        (function($) {
+            $.eventReport = function(selector, root) {
+                var s = [];
+                $(selector || '*', root).addBack().each(function() {
+                    // the following line is the only change
+                    var e = $._data(this, 'events');
+                    if(!e) return;
+                    s.push(this.tagName);
+                    if(this.id) s.push('#', this.id);
+                    if(this.className) s.push('.', this.className.replace(/ +/g, '.'));
+                    for(var p in e) {
+                        var r = e[p],
+                                h = r.length - r.delegateCount;
+                        if(h)
+                            s.push('\n', h, ' ', p, ' handler', h > 1 ? 's' : '');
+                        if(r.delegateCount) {
+                            for(var q = 0; q < r.length; q++)
+                                if(r[q].selector) s.push('\n', p, ' for ', r[q].selector);
+                        }
+                    }
+                    s.push('\n\n');
+                });
+                return s.join('');
+            }
+            $.fn.eventReport = function(selector) {
+                return $.eventReport(selector, this);
+            }
+        })(jQuery);
+
+
+mixin headerContent(title)
+    .leftBlock
+        .company
+            span.logo(onclick="alert($.eventReport())")
+            span.name PROTEI
+        #hideLeftBlock.hideBar_button
+    .rightBlock
+
+
+        if title == 'Сотрудники'
+            .topicTitle.employees
+                .title Сотрудники
+
+        if title == 'План'
+            .topicTitle.myPlan
+                .title Мой план
+
+        if title == 'Управление по сотрудникам'
+            .topicTitle.employeesReport
+                .title Управление по сотрудникам
+
+        if title == 'Управление по компонентам'
+            .topicTitle.componentReport
+                .title Управление по компонентам
+
+        if title == 'Управление по продуктам'
+            .topicTitle.productReport
+                .title Управление по продуктам
+
+        if title == 'Продукты'
+            .topicTitle.products
+                .title Продукты
+
+        if title == 'Инспектор'
+            .topicTitle.inspector
+                .title Инспектор
+
+
+        if title == 'Профиль'
+            .topicTitle.profile
+                .title Профиль
+
+        if title == 'Заказы'
+            .topicTitle.orders
+                .title Заказы
+
+        if title == 'Проекты'
+            .topicTitle.projects
+                .title Проекты
+
+        if title == 'Задачи'
+            .topicTitle.tasks
+                .title Задачи
+
+
+        if title == 'Группы'
+            .topicTitle.groups
+                .title Группы задач
+
+
+        if title == 'Организации'
+            .topicTitle.organizations
+                .title Организации
+
+        if title == 'Избранные'
+            .topicTitle.profile
+                .title Избранные
+
+        if title == 'Компоненты'
+            .topicTitle.products
+                .title Компоненты
+
+
+        if title == 'Freq'
+            .topicTitle.freq
+                .title Freq #1234567
+
+        if title == 'Order'
+            .topicTitle.order
+                .title Order #1234567
+
+        if title == 'Project'
+            .topicTitle.project
+                .title Project #1234567
+
+
+        .currentTask
+            span.case Freq
+                span.id 7823289
+            .timer
+                span.time
+                    span.hours 01
+                    span.timeDelimiter :
+                    span.minutes 12
+                span#stopCurrentTask.stop_button
+
+        #runTimeFixer.completeWorkSession
+            span.icon-time
+            |Таймфиксер
+
+        .rightSide
+            .icons
+                //#userProfile.userProfile
+                    span.icon-user
+                #globalNotifications.notifications_button.active
+                #globalSettings.settings_button
+                #globalHelper.helper_button
+                #globalExit.exit_button
+
+
+        .rightSide.searchBlock
+            form.globalSearch
+                input#globalSearch.searchInput(placeholder='Поиск по объектам', type='text', autocomplete="off")
+                //#p4.searchInput(contenteditable="true")
+                    span 11
+                    span 22
+                        span 33
+                .buttonsBlock
+                    label.search_button
+                        input(type="submit" value="Поиск")
+                    //label.icon-resetButton
+                        input(type="reset" value="Сброс")
+
+mixin leftGlobalMenu(elem)
+    .noScrolling
+        .scrolling
+            .mainButtons
+
+            .menuList
+
+                .menu
+                    .title Рабочее место
+
+                    .list
+                        .item
+                            span.icon-plan
+                            | Мой план
+
+                        .item
+                            span.icon-created
+                            | Инспектор
+
+                        .item
+                            span.icon-activity
+                            | Моя активность
+
+                        .item
+                            span.icon-subscription
+                            | Мои подписки
+
+                        .item
+                            span.icon-favorites
+                            | Мои избранные
+
+                .menu
+                    .title Компания
+                    .list
+                        .item
+                            span.icon-employees
+                            | Сотрудники
+
+                        .item
+                            span.icon-me
+                            | Мой паспорт
+
+                .menu
+                    .title
+                        //span.icon-savedQueries
+                        | Объекты системы
+                    .list.active(style="max-height: 500px")
+                        //.slideWrapper
+                        .item
+                            span.icon-component
+                            |Компоненты
+                        .item
+                            span.icon-product
+                            |Продукты
+                        .item
+                            span.icon-case
+                            |Задачи
+                        .item
+                            span.icon-order
+                            |Группы задач
+                        .item
+                            span.icon-order
+                            |Заказы
+                        .item
+                            span.icon-project
+                            |Проекты
+                        .item
+                            span.icon-organization
+                            |Организации
+
+
+                .menu
+                    .title
+                        //span.icon-savedQueries
+                        | Управление и отчёты
+                    .list
+                        //.slideWrapper
+                        .item
+                            span.icon-employees
+                            |Сотрудники
+                        .item
+                            span.icon-component
+                            |Компоненты
+                        .item
+                            span.icon-product
+                            |Продукты
+
+
+
+
+
+
+
+
+    script.
+        $('#hideLeftBlock').click(function(){
+            $('.header_global >.leftBlock,.body_global >.leftBlock').addClass('inactive');
+            $('.body_global >.leftBlock').click(function func(){
+                $('.header_global >.leftBlock,.body_global >.leftBlock').removeClass('inactive');
+                $('.body_global >.leftBlock').off()
+            })
+        })
+
+mixin commonBottom()
+    .bottom_global
+        table.activeCase
+            tr.case
+                td.column-1-1
+                    .animationWrapper
+                        .timerButton.active
+                            span.icon-right
+                        .timeSpent
+                            .hours
+                            .timeDelimiter :
+                            .minutes
+                    .caseType Bug
+                td.column-1-2
+                    .caseId 32158
+                    .caseCriticality.critical
+                td.column-2
+                    span.productTag Portal Protei
+                    .description Здесь будет описание описание описание описание описание описание описание
+                    .menuBlock
+                        span.icon-menu
+
+    script.
+        $('.bottom_global').click(function(event){
+            $(event.target).toggleClass('active');
+        });
+        function displayTimer(){
+            var timeSpentElem = $('.timeSpent');
+            var hoursElem = timeSpentElem.children('.hours')
+            var minutesElem = timeSpentElem.children('.minutes')
+            function changeTimeSpent(){
+                var dateObj = new Date();
+                hoursElem.text(dateObj.getHours());
+                minutesElem.text(dateObj.getMinutes());
+            }
+            changeTimeSpent();
+            setInterval(
+                    function(){
+                        changeTimeSpent();
+                    }, 1000 * 60);
+        }
+        displayTimer();
+
+mixin loader()
+    .loaderBlock
+        .wrapper
+            .wrapper
+                .loader
+                    .loader
+
+
+
+
+
+
+
+mixin popup(type)
+    case type
+        when 'fixTime'
+            #taskTimeFixer.popup_backgroundBlock
+                .wrapper
+                    .popupBlock
+                        .popup.caseTimeFix
+                            .head
+                                .caseType
+                                    span.title Фиксация времени
+                                    span.content Freq (Запрос на доработку)
+                                        span.caseId 1234566
+
+                                .status
+                                    span.title Статус
+                                    span.content active 13%
+
+
+                            .body
+                                .caseReportElection
+
+                                    .dateStart
+                                        .header Время начала
+                                        .content Сегодня, 08:20
+
+                                    .dateStop
+                                        .header Время фиксации
+                                        .content Сегодня, 13:20
+
+                                    .timeSpent
+                                        .header Время затрачено
+                                        .content
+                                            span.time 05 : 00
+                                            span.icon-edit
+
+                                    .timeLeft
+                                        .header Время осталось
+                                        .content
+                                            span.time 13 : 00
+                                            span.icon-edit
+
+                                    .timeEstimate
+                                        .header Оценка
+                                        .content
+                                            span.time 28 : 00
+                                            span.icon-edit
+
+
+                                .commitComponents
+                                    .title Укажите над какими компонентами вы работали:
+                                        //.rightSide
+                                        //    .button Редактировать компоненты
+                                        //    .button.greenColor Показать все
+                                    .components
+                                        table.wrapper
+                                            tr
+                                                td.component
+                                                    .checkbox
+                                                    .componentName LoooongComponentName_A
+                                                td.component
+                                                    .checkbox
+                                                    .componentName Component_B
+                                                td.component
+                                                    .checkbox
+                                                    .componentName Component_C
+                                                td.component
+                                                    .checkbox
+                                                    .componentName Component_D
+                                            tr
+                                                td.component
+                                                    .checkbox
+                                                    .componentName Component_A
+                                                td.component
+                                                    .checkbox
+                                                    .componentName Component_B
+
+
+
+                                .commentBlock
+                                    //.icon-edit
+                                    textarea.inputField(type="text" placeholder="Комментарий")
+
+                            .footer
+                                .buttons
+                                    .leftSide
+                                        #replayTimer.button.grayC Продолжить
+                                    .button.blueC Сбросить
+                                    .button.greenC Зафиксировать
+                                    //.button.sticky.additional и выбрать другую задачу
+
+
+            script.
+                $('#stopCurrentTask').click(function(){
+                    var popupBlock = $('#taskTimeFixer');
+                    popupBlock.css('display', 'block');
+                    setTimeout(function(){
+                        popupBlock.addClass('active')
+                    }, 200);
+
+                    $('#replayTimer').click(
+                        function func(event){
+                            popupBlock.removeClass('active')
+                            setTimeout(function(){popupBlock.css('display', '')}, 200);
+                            $(event.target).off('click', func);
+                        }
+                    );
+
+                });
+
+
+        when 'messaging'
+            #messaging.popup_backgroundBlock.simpleMessage
+                .wrapper
+                    .popupBlock
+                        .textMessage
+
+            script.
+                function MessageGenerator(){
+                    var runFlag = false;
+                    var callQueue = [];
+                    var popupBlock = $('#messaging');
+                    var textMessage =  popupBlock.find('.textMessage');
+                    this.show = function(text){
+                        callQueue.push(text); //ставим в очередь
+                        if(runFlag){ // если цикл запущен, то выходим
+                            return;
+                        }
+                        runFlag = true;
+
+                        !function showMessage(){
+                            textMessage.text(callQueue[0]);
+                            popupBlock.css('display', 'block');
+                            setTimeout(function () {
+                                popupBlock.addClass('active');
+                                setTimeout(function () {
+                                    popupBlock.removeClass('active')
+                                    setTimeout(function () {
+                                        popupBlock.css('display', '')
+
+                                        callQueue.shift();
+                                        if (callQueue.length != 0)
+                                            showMessage();
+                                        else
+                                            runFlag = false
+
+                                    }, 200);
+                                }, 2000);
+                            }, 200);
+                        }();
+                    }
+                    this.lateCall = function(text){
+                        return this.show.bind(null, text);
+                    }
+                }
+                var messageGenerator = new MessageGenerator();
+
+        when 'timeFixer'
+            #timeFixer.popup_backgroundBlock
+                .wrapper
+                    .popupBlock
+                        .popup.timeFixer
+                            span#twoRange
+                                input#date-range1(type='hidden', value='23.05.16')
+                                input#date-range2(type='hidden', value='23.05.16')
+                            .datePicker
+                                #date-rangeWrap
+
+                            .body
+
+                                .section.active
+                                    .head
+                                        span.header Зафиксированные задачи
+                                            .count 4
+                                        .rightSide
+                                            .button.selected По дате фиксации
+                                            .button.empty
+                                                span.icon-sortBy
+                                            .buttons_group
+                                                input.inputField(placeholder="Поиск")
+                                                .button.empty.blueC.sticky
+                                                    span.icon-search
+
+
+                                    //#container.diagramContainer(style="width: 1063px; height: 276px")
+                                    .t_wrapper
+                                        .tc_wrapper.large
+                                            #container.diagramContainer
+                                        .tc_wrapper
+                                            .commonFixTime
+                                                .date 23.05.16 - 23.05.16
+                                                .wrapper
+                                                    span Затрачено
+                                                    .time 06 : 29
+                                    //table(style="width: 100%")
+                                    //    tr
+                                    //        td(style="width: 100%;")
+                                    //            //#container.diagramContainer(style="width: 1063px; height: 176px")
+                                    //        td
+
+                                    script.
+                                        function activateTimeFixerDiagram() {
+                                            Highcharts.setOptions({
+                                                lang: {
+                                                    resetZoom: "Сбросить масштаб"
+                                                }
+                                            });
+                                            $('#container').highcharts({
+                                                chart: {
+                                                    //type: 'column',
+                                                    type: 'areaspline',
+                                                    zoomType: 'x',
+                                                    panning: true,
+                                                    panKey: 'shift',
+                                                    resetZoomButton: {
+                                                        position: {
+                                                            x: 0,
+                                                            y: 0
+                                                        },
+                                                        theme: {
+                                                            fill: 'white',
+                                                            stroke: '#bec5ce',
+                                                            r: 3,
+                                                            style: {
+                                                                color: '#314157'
+                                                            },
+                                                            states: {
+                                                                hover: {
+                                                                    stroke: '#acb7c6',
+                                                                    fill: '#f5f7f8'
+                                                                }
+                                                            }
+                                                        }
+                                                    },
+                                                },
+                                                exporting: false,
+                                                title: false,
+                                                xAxis: {
+                                                    type: 'datetime'
+                                                },
+                                                yAxis: {
+                                                    title: false,
+                                                    gridLineColor: '#e8e8e8',
+                                                },
+                                                legend: {
+                                                    enabled: false
+                                                },
+                                                tooltip: {
+                                                    shared: true,
+                                                    crosshairs: true,
+                                                },
+                                                credits: {
+                                                    enabled: false
+                                                },
+
+                                                plotOptions: {
+                                                    areaspline: {
+                                                        fillColor: {
+                                                            linearGradient: [0, 0, 0, 350],
+                                                            stops: [
+                                                                [0, '#5F9EDC'],
+                                                                [1, '#4978ba']
+                                                            ]
+                                                        },
+                                                        marker: {
+                                                            radius: 3,
+                                                            enabled: true
+                                                        },
+                                                        lineWidth: 1,
+                                                        states: {
+                                                            hover: {
+                                                                lineWidth: 1
+                                                            }
+                                                        },
+                                                    }
+                                                },
+
+                                                series: [{
+                                                    color: '#5481c1',
+                                                    data: [
+                                                        [Date.UTC(2016, 4, 25), 7.28],
+                                                        [Date.UTC(2016, 4, 26), 6.25],
+                                                        [Date.UTC(2016, 4, 27), 6],
+                                                        {
+                                                            x: Date.UTC(2016, 4, 28),
+                                                            y: 7.28,
+                                                            color: 'red'
+                                                        },
+                                                        [Date.UTC(2016, 4, 29), 0],
+                                                        [Date.UTC(2016, 4, 30), 0],
+                                                        [Date.UTC(2016, 4, 31), 8],
+                                                    ]
+                                                }]
+                                            });
+                                        }
+
+
+
+
+                                    .CaseList
+                                        table.cases
+
+                                            tr.headers
+                                                td.type.number(colspan="2") Тип и номер задачи
+                                                td.name Название
+                                                td.timeSpent Затрачено
+                                                td.timeEstimate Оценка
+                                                td.timeLeft Осталось
+                                                td.timeFix Время
+                                                td.status Статутс
+
+
+                                            tbody
+                                                tr.case
+                                                    td.type
+                                                        .relativeBlock
+                                                            .timer_button
+                                                            .typeName Bug
+                                                    td.number
+                                                        .id 32158
+                                                        .criticality.critical
+                                                    td.name
+                                                        .relativeBlock
+                                                            span.productTag
+                                                                span.productName Portal Protei
+                                                                span.productBranch Base
+                                                                span.productVersion 1
+                                                            .description Здесь будет описание описание описание описание описание описание описание описание описание описание описание описание описание описание описание описание описание
+                                                            .right_block
+                                                                .markers
+                                                                    .marker.type1 Маркер №1
+                                                                    .marker.type2 Мой маркер
+                                                                span.menu_button
+                                                    td.timeSpent
+                                                        .time 28 : 00
+                                                    td.timeEstimate
+                                                        .time 49 : 00
+                                                    td.timeLeft
+                                                        .time 21 : 00
+                                                    td.timeFix
+                                                        .time 02 : 35
+                                                    td.status
+                                                        .relativeBlock
+                                                            .statusName status
+                                                            .favorite_button
+
+                                                tr.case
+                                                    td.type
+                                                        .relativeBlock
+                                                            .timer_button
+                                                            .typeName Task
+                                                    td.number
+                                                        .id 124532
+                                                        .criticality
+                                                    td.name
+                                                        .relativeBlock
+                                                            .description Здесь будет описание описание описание описание описание описание описание описание описание описание описание описание описание описание описание описание описание
+                                                            .right_block
+                                                                span.menu_button
+
+                                                    td.timeSpent
+                                                        .time 28 : 00
+                                                    td.timeEstimate
+                                                        .time 49 : 00
+                                                    td.timeLeft
+                                                        .time 21 : 00
+                                                    td.timeFix
+                                                        .time 02 : 35
+                                                    td.status
+                                                        .relativeBlock
+                                                            .statusName
+                                                                span.link status
+                                                            .favorite_button
+
+                                                tr.case
+                                                    td.type
+                                                        .relativeBlock
+                                                            .timer_button
+                                                            .typeName Task
+                                                    td.number
+                                                        .id 124532
+                                                        .criticality
+                                                    td.name
+                                                        .relativeBlock
+                                                            .description Здесь будет описание описание описание описание описание описание описание описание описание описание описание описание описание описание описание описание описание
+                                                            .right_block
+                                                                span.menu_button
+                                                    td.timeSpent
+                                                        .time 28 : 00
+                                                    td.timeEstimate
+                                                        .time 49 : 00
+                                                    td.timeLeft
+                                                        .time 21 : 00
+                                                    td.timeFix
+                                                        .time 02 : 35
+                                                    td.status
+                                                        .relativeBlock
+                                                            .statusName status
+                                                            .favorite_button
+
+                                                tr.case
+                                                    td.type
+                                                        .relativeBlock
+                                                            .timer_button
+                                                            .typeName Freq
+                                                    td.number
+                                                        .id 32158
+                                                        .criticality.cosmetic
+                                                    td.name
+                                                        .relativeBlock
+                                                            .description Здесь будет описание описание описание описание описание описание описание
+                                                            .right_block
+                                                                span.menu_button
+                                                    td.timeSpent
+                                                        .time 28 : 00
+                                                    td.timeEstimate
+                                                        .time 49 : 00
+                                                    td.timeLeft
+                                                        .time 21 : 00
+                                                    td.timeFix
+                                                        .time 02 : 35
+                                                    td.status
+                                                        .relativeBlock
+                                                            .statusName status
+                                                            .favorite_button
+
+
+                                .section.active
+                                    .head
+                                        span.header Возможные задачи
+                                        .rightSide
+                                            .button.selected По дате создания
+                                            .button.empty
+                                                span.icon-sortBy
+                                            .buttons_group
+                                                input.inputField(placeholder="Поиск")
+                                                .button.empty.blueC.sticky
+                                                    span.icon-search
+
+
+
+
+                                    .CaseList
+                                        table.cases
+
+                                            tr.headers
+                                                td.type.number(colspan="2") Тип и номер задачи
+                                                td.name Название
+                                                td.timeSpent Затрачено
+                                                td.timeEstimate Оценка
+                                                td.timeLeft Осталось
+                                                td.timeFix Время
+                                                td.status Статутс
+
+
+                                            tbody
+                                                -var type = ['Bug', 'Freq', 'Task', 'Task', 'Treq', 'Freq', 'Task', 'Treq', 'Task', 'Task', 'Task', 'Bug']
+                                                -var product = [1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1]
+                                                -var criticality = [1, 2, 0, 0, 3, 0, 0, 3, 0, 0, 1]
+                                                -var markers = [0, 0, 0, 1, 0, 0, 2, 3, 0, 0, 0]
+                                                -var deadline = [0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0]
+                                                -var performed = [0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0]
+                                                -var notMine = [0, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0]
+                                                -var closed = [0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0]
+                                                -var notEstimate = [0, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0]
+                                                -for(var b=0; b<6; b++)
+                                                    tr.case(class=closed[b]?'closed':'')
+                                                        td.type
+                                                            .relativeBlock
+                                                                if(performed[b])
+                                                                    .timer_button.performed
+                                                                else if(!notMine[b])
+                                                                    .timer_button.notMine
+                                                                else
+                                                                    .timer_button
+                                                                .typeName= type[b]
+                                                        td.number
+                                                            .id 32158
+                                                            if(criticality[b]==1)
+                                                                .criticality.critical
+                                                            else if(criticality[b]==2)
+                                                                .criticality.important
+                                                            else if(criticality[b]==3)
+                                                                .criticality.cosmetic
+                                                            else
+                                                                .criticality
+                                                        td.name
+                                                            .relativeBlock
+                                                                if(product[b])
+                                                                    span.productTag
+                                                                        span.productName Portal Protei
+                                                                        span.productBranch Base
+                                                                        span.productVersion 1
+                                                                .description Здесь будет описание описание описание описание описание описание описание описание описание описание описание описание описание описание описание описание описание
+                                                                .right_block
+                                                                    if(markers[b]==1)
+                                                                        .markers
+                                                                            .marker.type3 Мой личный маркер
+                                                                    else if(markers[b]==2)
+                                                                        .markers
+                                                                            .marker.type4 Сделать срочно!
+                                                                            .marker.type5 Для компании
+                                                                    else if(markers[b]==3)
+                                                                        .markers
+                                                                            .marker.type1 Маркер №1
+
+                                                                    span.menu_button
+                                                        td.timeSpent
+                                                            if(!notMine[b])
+                                                                .time.empty
+                                                            else
+                                                                .time 28 : 00
+                                                        td.timeEstimate
+                                                            if(!notMine[b])
+                                                                .time.empty
+                                                            else if (notEstimate[b])
+                                                                .time.empty
+                                                            else
+                                                                .time 49 : 00
+                                                        td.timeLeft
+                                                            if(!notMine[b])
+                                                                .time.empty
+                                                            else
+                                                                .time 21 : 00
+                                                        td.timeFix
+                                                            .timeFix_button
+                                                        td.status
+                                                            .relativeBlock
+                                                                if(closed[b])
+                                                                    .statusName
+                                                                        span.link closed
+                                                                else
+                                                                    .statusName
+                                                                        span.link status
+                                                                .favorite_button
+
+                                    .footer
+                                        .btn ещё 5
+                                        .btn ещё 10
+                                        .btn показать всё
+
+
+                            .footer
+                                .button.greenC Сохранить
+                                #closeTimeFixer.button.grayC Отмена
+
+
+            script.
+                $(function () {
+                    $('#twoRange').dateRangePicker(
+                        {
+                            singleMonth: true,
+                            inline: true,
+                            format: 'DD.MM.YY',
+                            showShortcuts: false,
+                            showTopbar: false,
+                            //startDate: "27.10.15",
+                            startOfWeek: "monday",
+                            //                    showTopbar: false,
+                            separator: '  ',
+                            getValue: function () {
+                                //                        if ($('#date-range200').val() && $('#date-range201').val() )
+                                //  				return $('#date-range200').val() + ' to ' + $('#date-range201').val();
+                                //                            return '';
+                                //                        else
+                                return '';
+                            },
+                            setValue: function (s, s1, s2) {
+                                $('#date-range1').val(s1);
+                                $('#date-range2').val(s2);
+                            },
+                            alwaysOpen: true,
+                            container: '#date-rangeWrap'
+                        }
+                    );
+                    $('#twoRange').data('dateRangePicker').setDateRange('23-05-16', '23-05-16');
+                });
+
+
+                $('#runTimeFixer').click(function () {
+                    var popupBlock = $('#timeFixer');
+                    popupBlock.css('display', 'block');
+                    setTimeout(function () {
+                        popupBlock.addClass('active'),
+                        activateTimeFixerDiagram();
+                    }, 200);
+                    $('#closeTimeFixer').click(
+                        function func(event) {
+                            popupBlock.removeClass('active')
+                            setTimeout(function () {
+                                popupBlock.css('display', '')
+                            }, 200);
+                            $(event.target).off('click', func);
+                        }
+                    );
+                });
+
+
+
+
+        when 'user'
+            .popupBlack
+                .user
+                    span.name Бондаренко Артём Александрович
+                    .rightSide
+                        span.icon-settings
+
+                .buttons
+                    .button.blueC Мой пасспорт
+                    .button.grayC Мои отсутствия
+                    .button.empty.sticky.grayC
+                        span.icon-plus
+                    .button.grayC Мои подписки
+                    .button.grayC Моя активность
+
+                .work
+                    .case
+                        .animationWrapper
+                            .timerButton.active
+                                span.icon-right
+                            .timeSpent
+                                .hours 02
+                                .timeDelimiter :
+                                .minutes 17
+                        .caseType Bug
+                        .caseId 32158
+                        .caseCriticality.critical
+                        .description Здесь будет описание описание описание описание описание описание описание
+                .bottomButtons
+                    .button Завершить рабочий период
+
+            script.
+                !function() {
+                    var userIconElem = $('#userProfile');
+                    var popupBlock = $('.popupBlack');
+
+                    userIconElem.click(function () {
+                        if(userIconElem.hasClass('active')) return;
+                        userIconElem.addClass('active');
+                        popupBlock.css('display', 'block');
+                        setTimeout(function(){
+                            popupBlock.addClass('active');
+                            $(document.body).click(
+                                function func(event){
+                                    var elem = event.target;
+                                    if(popupBlock.has(elem).length<=0){
+                                        popupBlock.removeClass('active')
+                                        setTimeout(function(){popupBlock.css('display', '')}, 200);
+                                        userIconElem.removeClass('active')
+                                        $(document.body).off('click', func);
+                                    }
+                                }
+                            );
+                        }, 200);
+
+                    });
+                }();
+
+
+        when 'globalSearchFilters'
+
+
+            .globalSearch_popup
+                .t_wrapper
+                    .tc_wrapper.systemObject.active
+                        .relativeBlock
+                            .title Объекты системы
+                            .items(style="overflow: hidden")
+                                .main
+                                    .item.more.show 0Компонента
+                                    .item.more.show 1Компонента
+                                    .item.more.show 2Компонента
+                                    .item.more.show 3Компонента
+                                    .item.more.show 4Компонента
+                                    .item.more.show 5Компонента
+                                    .item.more.show 6Компонента
+                                    .item.more.show 7Компонента
+                                    .item.more.show 8Компонента
+                                    .item.more.show Продукт
+                                    .item.more.show Задача
+                                    .item.more.show План
+                                    .item.more.show Группа задач
+                                    .item.more.show Заказ
+                                    .item.more.show Проект
+                                    .item.more.show Организация
+                                    .item.more.show.hover(data-title="employee") Сотрудник
+
+                    .tc_wrapper.objectProperties
+                        .relativeBlock
+                            .title Параметры объекта
+                            .items
+                                .additional
+                                    //.common(data-additional="another,exception")
+                                    .item.back(data-title="another")
+                                        span.keyWord ,
+                                        .description другое_значение
+                                    .item.back(data-title="exception")
+                                        span.keyWord -
+                                        .description исключение
+                                    .item.back(data-title="range")
+                                        span.keyWord ..
+                                        .description диапазон
+                                .main
+
+
+
+
+                                //.item.show.more Фильтр
+                                //.item.show.single Избранный
+                                //.item.show.multi.more Отсутсвие
+                                //.item.show.more.back(data-additional="another") Пол
+                                //.item.show.more.free.back ФИО
+                                //.item.show.more.back Должность
+                                //.item.show.more.back Подразделение
+                                //.item.show.more.free.back(data-additional="another,exception,range") День_рождения
+                                //.item.show Телефон_рабочий
+                                //.item.show Телефон_домашний
+                                //.item.show
+                                //.item.show.more.free.back Email
+                                //.item.show IP
+                                //.item.show JID
+
+
+
+                    .tc_wrapper.propertyValues
+
+                        .title Варианты значений
+                        .items
+                            .additional
+                                .item.back(data-title="another")
+                                    span.keyWord ,
+                                    .description другое_значение
+                                .item.back(data-title="exception")
+                                    span.keyWord -
+                                    .description исключение
+                                .item.back(data-title="range")
+                                    span.keyWord ..
+                                    .description диапазон
+                            .main
+
+
+                    .tc_wrapper.propertyValues
+                        .relativeBlock
+                            .title Сохранённые фильтры
+                            .items
+                                .additonal
+                                    .item.back(data-title="another")
+                                        span.keyWord ,
+                                        .description другое_значение
+                                    .item.back(data-title="exception")
+                                        span.keyWord -
+                                        .description исключение
+                                    .item.back(data-title="range")
+                                        span.keyWord ..
+                                        .description диапазон
+                                .main
+
+
+
+
+
+            script.
+                var allItems = {
+                    employee: {
+                        items: {
+                            mobile: {
+                                name: 'Телефон_мобильный',
+                                show: true,
+                            },
+                            late: {
+                                name: 'Отсутствие',
+                                show: true,
+                                multi: true,
+                                items: {
+                                    date: {
+                                        name: 'Дата',
+                                        show: true,
+                                        back: true,
+                                        free: true,
+                                        additional: 'another,exception,range',
+                                        items: [
+                                            '<div class="item show">{Сегодня}</div>',
+                                            '<div class="item show">{Вчера}</div>'
+                                        ]
+                                    },
+                                    reason: {
+                                        name: 'Причина',
+                                        show: true,
+                                        back: true,
+                                        items: [
+                                            '<div class="item show">Личные дела</div>',
+                                            '<div class="item show">Личные дела</div>',
+                                            '<div class="item show">Личные дела</div>',
+                                            '<div class="item show">Личные дела</div>',
+                                            '<div class="item show">Личные дела</div>',
+                                            '<div class="item show">Болезнь</div>'
+                                        ]
+                                    }
+                                }
+                            },
+                            sex: {
+                                name: 'Пол',
+                                show: true,
+                                back: true,
+                                additional: 'another',
+                                items: [
+                                    '<div class="item show">Мужской</div>',
+                                    '<div class="item show">Женский</div>'
+                                ]
+                            },
+                            email: {
+                                name: 'Email',
+                                show: true,
+                                free: true,
+                                back: true,
+                                items: [
+                                    '<div class="item show">1a@mail.ru</div>',
+                                    '<div class="item show">2a@mail.ru</div>',
+                                    '<div class="item show">3a@mail.ru</div>',
+                                    '<div class="item show">4a@mail.ru</div>',
+                                    '<div class="item show">5a@mail.ru</div>',
+                                    '<div class="item show">6a@mail.ru</div>',
+                                    '<div class="item show">7a@mail.ru</div>',
+                                    '<div class="item show">8a@mail.ru</div>'
+                                ]
+                            },
+                            post: {
+                                name: 'Должность',
+                                show: true,
+                                back: true,
+                                items: [
+                                    '<div class="item show">0Инженер-программист</div>',
+                                    '<div class="item show">1Инженер-программист</div>',
+                                    '<div class="item show">2Инженер-программист</div>',
+                                    '<div class="item show">3Инженер-программист</div>',
+                                    '<div class="item show">4Инженер-программист</div>',
+                                    '<div class="item show">5Инженер-программист</div>',
+                                    '<div class="item show">6Инженер-программист</div>',
+                                    '<div class="item show">7Инженер-программист</div>'
+                                ]
+                            },
+                            department: {
+                                name: 'Подразделение',
+                                show: true,
+                                back: true,
+                                items: [
+                                    '<div class="item show">0</div>',
+                                    '<div class="item show">1</div>',
+                                    '<div class="item show">2</div>',
+                                    '<div class="item show">3</div>',
+                                    '<div class="item show">4</div>',
+                                    '<div class="item show">5</div>',
+                                    '<div class="item show">6</div>',
+                                    '<div class="item show">7</div>'
+                                ]
+                            }
+                        }
+                    }
+                }
+
+
+
+            script.
+                !function() {
+
+
+                    var globalSearch = $('#globalSearch');
+                    var popupBlock = $('.globalSearch_popup');
+                    var searchInputOffset = globalSearch.offset();
+
+                    //var searchWidth = globalSearch.outerWidth();
+                    var searchWidth = 179;
+
+
+                    var sections = [];
+                    var asi = 0; // индекс активной секции
+
+
+                    var permittedItems // разрешённые
+                    var visibleItems; // показанные
+                    var activeItem; // активный item
+                    var hi; // индекс hover item
+
+                    var savedParams = [];
+                    var multipleParam = (function(){
+                        return savedParams; // для сохранения savedParams при записи в multipleParam (единственный способо, это сделать замыкание)
+                    }());
+                    var api = 0; // индекс активного параметра
+
+
+                    var inputT = "";
+
+                    function makeFirstItemSelected(items){
+                        items.eq(0).addClass('hover');
+                        hi = 0;
+                    }
+
+                    function showSection(i){
+                        sections[i].section.css('display', 'table-cell').addClass('active');
+                    }
+
+
+                    function isAdditionalItem(i){
+                        if(i.parent().hasClass('additional')) return true;
+                    }
+
+                    function activateSection(i){
+                        if(!sections[i]){
+                            sections[i] = {
+                                section: sections[sections.length-1].section.next()
+                            };
+                        }
+
+
+
+                        if(sections[i-1].link) {
+
+                            var items = sections[i].section.find('.items .main');
+                            items.html(""); //очищаем предыдущие items
+
+                            var innerItems = sections[i-1].link.items
+
+                            if (innerItems) {
+                                var html = "";
+
+                                if ($.isArray(innerItems)) {
+                                    html = innerItems.join("");
+                                } else {
+                                    for (var title in innerItems) {
+                                        var itemNode = innerItems[title];
+                                        var item = '<div data-title="'+ title +'" class="item ';
+                                        itemNode['back'] && (item += 'back ');
+                                        itemNode['multi'] && (item += 'multi ');
+                                        itemNode['show'] && (item += 'show ');
+                                        itemNode['items'] && (item += 'more ');
+                                        itemNode['free'] && (item += 'free ');
+                                        item += '" ';
+                                        itemNode['additional'] && (item += 'data-additional="' + itemNode['additional'] + '"');
+                                        item += '>' + itemNode.name + '</div>';
+                                        html += item;
+                                    }
+                                }
+                                items.append(html)
+
+                            } else {
+                                log('загрузить')
+                            }
+                            sections[asi].items = items.find('.item')
+
+                        }else
+                            showAllItems(sections[asi].items);
+
+                        permittedItems = visibleItems = sections[asi].items;
+
+
+
+                        makeFirstItemSelected(visibleItems)
+                        showSection(i)
+
+                    }
+
+
+                    function additionalActivate(dataAdditional){
+
+                        //var items = sections[aisection].find('.item');
+                        //items.filter('.active').removeClass('active');
+                        //activeItem.removeClass('active')
+                        activeItem.removeClass('active')
+                        //activeItem = null;
+                        //oldItems = items;
+
+                        //var dataAdditional = visibleItems.eq(hi).attr('data-additional');
+                        //var addItems;
+                        //if(dataAdditional)
+                        //    addItems = dataAdditional.split(',');
+                        //else
+                        //    addItems = sections[aisection].find('.common').attr('data-additional').split(',')
+
+                        var addItems = dataAdditional.split(',');
+
+                        visibleItems = $([]);
+
+                        var additionalSection = sections[asi].section.find('.additional');
+                        additionalSection.show();
+
+                        additionalSection.find('.item').each(function(i,e){
+                            e = $(e);
+
+                            for (var i = 0; i < addItems.length; i++) {
+                                if (e.attr('data-title') == addItems[i]) {
+                                    e.addClass('show')
+                                    if(activeItem.hasClass('more'))
+                                        e.addClass('more')
+                                    else
+                                        e.removeClass('more');
+                                    visibleItems = visibleItems.add(e);
+                                    return;
+                                }
+                            }
+                            e.removeClass('show');
+                        })
+
+                        log(sections[asi].items)
+                        showAllItems(sections[asi].items);
+                        visibleItems = visibleItems.add(sections[asi].items);
+
+
+                        permittedItems = visibleItems;
+                        hi = 0;
+                        visibleItems.eq(0).addClass('hover');
+                    }
+
+                    function moveToBack(){
+
+                        visibleItems.eq(hi).removeClass('hover');
+                        sections[asi].section.removeClass('active').css('display', 'none');
+                        asi--;
+                        sections[asi].section.addClass('active')
+                        popupBlock.css('left', searchInputOffset.left - searchWidth * asi);
+
+                    }
+
+                    function showAllItems(collection){
+                        collection.each(function(i, e){
+                            $(e).addClass('show')
+                        });
+                    }
+
+
+                    function saveParam(param){
+                        //param = param || "";
+                        //param = getItemKeyWord(visibleItems.eq(ai)) + '"';
+
+                        var dataAdditional = activeItem.attr('data-additional');
+
+                        if(dataAdditional)
+                            if(dataAdditional==""){
+                                visibleItems = permittedItems;
+
+                                showAllItems(visibleItems)
+
+                                if(activeItem.hasClass('multi'))
+                                    param += ") ";
+                                else
+                                    param += " ";
+
+                                activeItem.removeClass('active').addClass('hover');
+                                activeItem = null;
+                                hi = visibleItems.filter('hover').index();
+                            }else
+                                additionalActivate(dataAdditional)
+                        else{
+                            additionalActivate('another,exception');
+                        }
+
+                        inputT += param
+                        globalSearch.val(inputT);
+                        multipleParam[api] += param.trim();
+                    }
+
+
+                    function getItemKeyWord(e){
+
+                        e = $(e);
+                        var keyWordTag = e.children('.keyWord');
+                        if(keyWordTag.length) return keyWordTag.text()
+                        return e.text();
+
+                    }
+
+
+
+                    globalSearch.focus(function () {
+
+                        //multipleParam = savedParams;
+
+
+                        globalSearch.on('input', function (event) {
+
+                            var inputText = globalSearch.val();
+
+                            if(inputText.charAt(inputText.length-1) == ' '){
+                                visibleItems.each(function(i,e){
+                                    $(e).removeClass('show')
+                                });
+
+
+                                permittedItems = sections[asi].items;
+                                showAllItems(permittedItems);
+                            }
+
+                            if(visibleItems.eq(hi).hasClass('active') && inputText.charAt(inputText.length-1) == '"'){
+
+                                var joinedParams = multipleParam.join(" ")
+                                var param =  inputText.substr(joinedParams.length) + '"';
+
+
+                                if(visibleItems.eq(hi).attr('data-additional'))
+                                    additionalActivate()
+                                else{
+                                    visibleItems.eq(hi).removeClass('active').addClass('hover')
+                                    param += " ";
+                                }
+
+                                globalSearch.val(multipleParam.join(" ") + param)
+                                multipleParam[multipleParam.length - 1] += param.trim();
+                                return;
+                            }
+
+                            var text;
+                            if(!multipleParam[0]){
+                                text = inputText;
+                            }else{
+                                var quotePos = inputText.lastIndexOf('"');
+                                var spacePos = inputText.lastIndexOf(' ');
+                                var fBracket = inputText.lastIndexOf('(');
+                                var lBracket = inputText.lastIndexOf(')');
+                                var maxPos = Math.max(quotePos, spacePos, fBracket, lBracket);
+                                text = inputText.substr(maxPos + 1);
+
+
+                            }
+
+
+                            //var firstItemFlag;
+                            //showingItemIndexes = [];
+                            visibleItems.eq(hi).removeClass('hover')
+
+
+                            visibleItems = $($.grep(permittedItems, function(e, i){
+
+                                e = $(e);
+                                if(e.text().toLowerCase().indexOf(text) == 0){
+
+                                    e.addClass('show');
+                                    //if(!firstItemFlag){
+                                    //    activeItems.eq(ai).removeClass('hover');
+                                    //    ai = e.index();
+                                    //    e.addClass('hover');
+                                    //    firstItemFlag = true;
+                                    //}
+                                    return true;
+
+                                }else{
+                                    e.removeClass('show');
+                                    return false;
+                                }
+                            }));
+
+                            makeFirstItemSelected(visibleItems)
+                            sections[asi].section.css('margin-top', 0)
+
+
+                        });
+
+
+
+
+                        sections[0] = {
+                            section: popupBlock.find('.tc_wrapper.active'),
+                            link: allItems
+                        };
+                        popupBlock.css('display', 'block').css('left', searchInputOffset.left);
+                        permittedItems = visibleItems = sections[0].section.find('.item')
+                        hi = visibleItems.filter('.hover').index();
+
+                        showSection(0)
+
+
+                        var elem = visibleItems.eq(hi);
+                        var elemOffset = elem.position();
+                        var bottom = elemOffset.top + 33;
+
+                        if (bottom > 424) {
+                            sections[asi].section.find('.main').css('margin-top', (bottom - 424) * -1);
+                        }
+
+
+
+                        setTimeout(function(){
+                            popupBlock.addClass('active');
+
+
+                            $(document).keydown(function (event) {
+                                switch (event.which) {
+                                    case 16: // shift
+
+                                        break;
+                                    case 38: // up
+
+                                        if(hi != 0){
+                                            visibleItems.eq(hi).removeClass('hover');
+                                            hi--;
+                                            visibleItems.eq(hi).addClass('hover');
+
+
+                                            var elem = visibleItems.eq(hi);
+                                            var elemOffset = elem.position();
+                                            var marginTop = parseInt( sections[asi].section.find('.main').css('margin-top') );
+                                            var top = elemOffset.top;
+                                            if (marginTop != 0 && top < 28) {
+                                                //log(1)
+                                                sections[asi].section.find('.main').css('margin-top', marginTop+33);
+                                            }
+
+
+
+
+                                        }
+                                        break;
+                                    case 9: // tab
+
+                                        if(visibleItems.length == 0 && activeItem.hasClass('free')){
+                                            var joinedParams = multipleParam.join(" ")
+                                            var param = globalSearch.val().substr(joinedParams.length) + '"'
+                                            if(activeItem.hasClass('back')) {
+                                                moveToBack();
+                                            }
+                                            saveParam(param);
+                                        }
+
+
+                                        else if(visibleItems.length == 0 && !activeItem.hasClass('free')){
+
+                                            log('НЕ ДОПУСКАЕТСЯ СВОБОДНЫЙ ВВОД')
+
+                                        }
+
+                                        else {
+
+                                            //activeItem = $('#datePicker');
+
+
+                                            if (visibleItems.filter('.active').length>0) {
+                                                var joinedParams = multipleParam.join(" ")
+                                                var param = globalSearch.val().substr(joinedParams.length) + '"';
+
+
+
+
+
+
+
+
+
+                                                //if (activeItem.attr('data-additional'))
+                                                //    additionalActivate()
+
+                                                var dataAdditional = activeItem.attr('data-additional');
+                                                if(!dataAdditional || dataAdditional != "") {
+                                                    if (!dataAdditional)
+                                                        dataAdditional = 'another,exception';
+                                                    additionalActivate(dataAdditional)
+                                                }else {
+                                                    activeItem.removeClass('active').addClass('hover')
+                                                    hi = visibleItems.filter('active').index();
+                                                    log(visibleItems.has(activeItem));
+                                                    activeItem = null;
+                                                    param += " ";
+                                                }
+
+                                                globalSearch.val(multipleParam.join(" ") + param)
+                                                multipleParam[multipleParam.length - 1] += param.trim();
+                                            } else {
+
+                                                if (visibleItems.eq(hi).hasClass('more')) {
+
+                                                    sections[asi].section.removeClass('active')
+                                                    var param = getItemKeyWord(visibleItems.eq(hi));
+
+
+                                                    activeItem = visibleItems.eq(hi);
+                                                    activeItem.removeClass('hover').addClass('active');
+
+
+
+                                                    if(asi == 0){
+                                                        param += " ";
+                                                        sections[0].link = allItems[activeItem.attr('data-title')];
+
+                                                    }else{
+                                                        if (visibleItems.eq(hi).hasClass('multi')){
+                                                            param = " " + param + "(";
+                                                            api++;
+                                                            multipleParam[api] = [];
+                                                            multipleParam = multipleParam[api];
+                                                            api = 0;
+                                                        }
+                                                        else
+                                                            param += '"';
+                                                            //param += '"';
+                                                        sections[asi].link = sections[asi-1].link.items[activeItem.attr('data-title')];
+                                                    }
+
+                                                    if(multipleParam[api])
+                                                        if(isAdditionalItem(activeItem)){
+                                                            multipleParam[api] += param; // += для additional параметров
+                                                        }else {
+                                                            api++
+                                                            multipleParam[api] = param;
+                                                            param = " " + param;
+                                                        }
+                                                     else
+                                                        multipleParam[api] = param.trim();
+
+
+
+                                                    inputT += param;
+
+                                                    if(asi==0) {
+                                                        //globalSearch.val(param + " ");
+                                                        api++;
+                                                    }else{
+
+                                                    }
+                                                        //globalSearch.val(multipleParam.join(" "));
+
+                                                    globalSearch.val(inputT)
+
+
+
+                                                    asi++
+                                                    popupBlock.css('left', searchInputOffset.left - searchWidth * asi);
+
+                                                    activateSection(asi)
+
+                                                } else {
+                                                    if (activeItem.hasClass('back')) {
+
+                                                        moveToBack();
+                                                        saveParam(getItemKeyWord(visibleItems.eq(hi)) + '"');
+
+                                                    } else {
+                                                        if(activeItem.hasClass('single')){
+                                                            api++;
+                                                            multipleParam[api] = getItemKeyWord(activeItem);
+                                                            api++;
+                                                            globalSearch.val(multipleParam.join(" "))
+                                                        }else {
+                                                            activeItem = visibleItems.eq(hi);
+                                                            activeItem.removeClass('hover').addClass('active');
+                                                            api++
+                                                            multipleParam[api] = getItemKeyWord(activeItem) + '"';
+                                                            globalSearch.val(multipleParam.join(" "))
+                                                        }
+                                                    }
+
+                                                }
+
+
+                                            }
+                                        }
+
+
+
+                                        break;
+                                    case 40: // down
+
+                                        if(hi < visibleItems.length-1){
+                                            visibleItems.eq(hi).removeClass('hover')
+                                            hi++;
+                                            visibleItems.eq(hi).addClass('hover')
+
+
+                                            var elem = visibleItems.eq(hi);
+                                            var elemOffset = elem.position();
+                                            var marginTop = parseInt( sections[asi].section.find('.main').css('margin-top') );
+                                            var bottom = elemOffset.top + 33 + (marginTop*-1);
+                                            if (elemOffset.top+33 >=424 && bottom > 424) {
+                                                sections[asi].section.find('.main').css('margin-top', (bottom - 424) * -1);
+                                            }
+
+                                        }
+
+                                        break;
+                                    default:
+                                        return; // exit this handler for other keys
+                                }
+                                event.preventDefault();
+                            });
+
+
+
+
+                            $(document.body).click(
+                                function func(event){
+                                    var elem = event.target;
+                                    if(popupBlock.has(elem).length<=0){
+                                        popupBlock.removeClass('active')
+                                        setTimeout(function(){popupBlock.css('display', '')}, 200);
+                                        globalSearch.removeClass('active')
+                                        $(document.body).off('click', func);
+                                    }
+                                }
+                            );
+                        }, 200);
+
+                    });
+                }();
+
+
+        when 'notifications'
+            .notifications
+                .head
+                    .button.grayC.active
+                        span.icon-settings
+                        |Типы уведомлений
+                    .rightSide
+                        .regulator
+                            form
+                                input.inputField(type="text" placeholder="Поиск")
+                                span.filters_button
+                                label.hideSource
+                                    input(type="submit")
+                                    .button.empty.sticky.blueC
+                                        span.icon-search
+
+                .propertiesBlock
+                    .property
+                        .marker.status.active
+                        | Статус
+
+                    .property
+                        .marker.comments.active
+                        | Комментарии
+
+
+                    .property
+                        .marker
+                        | Приоритет
+
+                    .property
+                        .marker.fixTime.active
+                        | Фиксация времени
+
+                    .property
+                        .marker
+                        | Документы
+
+                    .property
+                        .marker.files.active
+                        | Вложения
+
+                    .property
+                        .marker
+                        | Связи
+
+                    .property
+                        .marker
+                        | Сроки и этапы
+
+                    .property
+                        .marker.executors.active
+                        | Исполнители
+
+
+                .body
+                    .date
+                        .dateTitle Сегодня, 15.04.16
+                        .notes
+                            .note.plan.notRead
+                                .head
+                                    .time 12:00
+                                .content
+                                    .head
+                                        span.marker
+                                        span.title
+                                            span.case.mr Bug
+                                                span.id 13432
+                                            |был добавлен в ваш план
+                                            span.by.ml
+                                                span.employee Фамилия И.О.
+
+                            .note.comment.notRead
+                                .head
+                                    .time 11:45
+                                .content
+                                    .head
+                                        span.marker
+                                        span.title
+                                            |Вам ответили на комментарий в
+                                            span.case.mlr Bug
+                                                span.id 13432
+                                            span.by
+                                                span.employee Фамилия И.О.
+
+                            .note.comment.notRead
+                                .head
+                                    .time 11:42
+                                .content
+                                    .head
+                                        span.marker
+                                        span.title
+                                            |Вам ответили на комментарий в
+                                            span.case.mlr Bug
+                                                span.id 13432
+                                            span.by
+                                                span.employee Фамилия И.О.
+
+                            .note.late
+                                .head
+                                    .time 11:40
+                                .content
+                                    .head
+                                        span.marker
+                                        span.title
+                                            span.employee.mr Фамилия И.О.
+                                            |будет отсутствовать
+                                            span.date.mlr 16.04.16
+                                            |по причине
+                                            span.lateReason.ml Болезнь
+
+
+
+                    .date
+                        .dateTitle Вчера, 14.04.16
+
+                        .notes
+                            +loop(4)
+                                .note.plan
+                                    .head
+                                        .time 12:00
+                                    .content
+                                        .head
+                                            span.marker
+                                            span.title
+                                                |У вас новая неподтверждённая задача
+                                                span.case.ml Freq
+                                                    span.id 13432
+
+                                .note.case
+                                    .head
+                                        .time 11:45
+                                    .content
+                                        .head
+                                            span.marker
+                                            span.title
+                                                |В
+                                                span.case.mlr Freq
+                                                    span.id 213432
+                                                |появился новый этап
+                                                span.by.ml
+                                                    span.employee Фамилия И.О.
+
+                                .note.case
+                                    .head
+                                        .time 11:42
+                                    .content
+                                        .head
+                                            span.marker
+                                            span.title
+                                                |В
+                                                span.case.mlr Task
+                                                    span.id 134324
+                                                |сменился статус на
+                                                span.status.mlr paused
+                                                span.by
+                                                    span.employee Фамилия И.О.
+
+                                .note.plan
+                                    .head
+                                        .time 11:00
+                                    .content
+                                        .head
+                                            span.marker
+                                            span.title
+                                                |У вас новая неподтверждённая задача
+                                                span.case.ml Freq
+                                                    span.id 13432
+
+                                .note.case
+                                    .head
+                                        .time 10:12
+                                    .content
+                                        .head
+                                            span.marker
+                                            span.title
+                                                |В
+                                                span.case.mlr Freq
+                                                    span.id 134324
+                                                |появился новый этап
+                                                span.by
+                                                    span.employee Фамилия И.О.
+
+
+                                .note.plan
+                                    .head
+                                        .time 10:00
+                                    .content
+                                        .head
+                                            span.marker
+                                            span.title
+                                                |Порядок задач в вашем плане был изменён
+                                                span.by.ml
+                                                    span.employee Фамилия И.О.
+
+                                .note.component
+                                    .head
+                                        .time 08:15
+                                    .content
+                                        .head
+                                            span.marker
+                                            span.title
+                                                |В компоненте
+                                                span.component.mlr .Component_A
+                                                |появилась новая версия
+                                                span.version.mlr 4.32
+                                                span.by
+                                                    span.employee Фамилия И.О.
+
+                .footer
+                    .btn ещё 10
+                    .btn ещё 30
+                    .btn ещё 1 день
+                    .btn ещё 3 дня
+                    .btn ещё неделя
+
+            script.
+                function fixPositioning(elem) {
+                    if ($(window).scrollTop() > 59) {
+                        if(elem.css("top") != 0) {
+                            //elem.addClass("fix");
+                            elem.css('top', 0);
+                        }
+                    } else {
+                        elem.css('top', 59 - $(window).scrollTop());
+                        //elem.removeClass("fix");
+                    }
+                };
+
+
+
+                !function() {
+                    var notificationsIconElem = $('#globalNotifications');
+                    var popupBlock = $('.notifications');
+                    var fixPopupBlock = fixPositioning.bind(null, popupBlock);
+
+                    notificationsIconElem.click(function () {
+                        //if(notificationsIconElem.hasClass('active')) return;
+                        notificationsIconElem.addClass('active');
+
+                        $(window).scroll(fixPopupBlock);
+
+                        popupBlock.css('display', 'block');
+                        setTimeout(function(){
+                            popupBlock.addClass('active');
+                            //popupBlock.addClass('noAnimation');
+                            fixPopupBlock();
+                            $(document.body).click(
+                                    function func(event){
+                                        var elem = event.target;
+                                        if(popupBlock.has(elem).length<=0){
+                                            popupBlock.removeClass('active')
+                                            setTimeout(function(){popupBlock.css('display', '')}, 200);
+                                            notificationsIconElem.removeClass('active')
+                                            $(document.body).off('click', func);
+                                            $(window).off('scroll', fixPopupBlock);
+                                        }
+                                    }
+                            );
+                        }, 200);
+
+                    });
+                }();
+
+
+
+
+
