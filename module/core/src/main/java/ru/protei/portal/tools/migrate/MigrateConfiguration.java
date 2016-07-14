@@ -11,17 +11,21 @@ import ru.protei.portal.tools.migrate.tools.MigrateAction;
 @Configuration
 public class MigrateConfiguration {
 
-//    @Bean
-//    public MigrateAction getCompanyMigrateAction () {
-//        return new MigrateCompaniesAction();
-//    }
+   @Bean
+   public MigrateAction getCompanyMigrateAction() {
+      return new MigrateCompaniesAction();
+   }
 
-    @Bean MigrateAction getPersonMigrateAction () {
-        return new MigratePersonAction();
-    }
+   @Bean
+   MigrateAction getPersonMigrateAction() {
+      return new MigratePersonAction();
+   }
 
+   @Bean
+   MigrateAction getPersonAbsenceAction() {
+      return new MigratePersonAbsenceAction();
+   }
 
-    @Bean MigrateAction getPersonAbsenceAction () { return new MigratePersonAbsenceAction(); }
 //    @Bean
 //    public MigrateAction getBugsMigrateAction () {
 //        return new MigrateBugs();
@@ -42,8 +46,8 @@ public class MigrateConfiguration {
 //        return new MigrateFreq();
 //    }
 
-    @Bean
-    public MigrateSetup getSetup () {
-        return new MigrateSetup();
-    }
+   @Bean
+   public MigrateSetup getSetup() {
+      return new MigrateSetup();
+   }
 }

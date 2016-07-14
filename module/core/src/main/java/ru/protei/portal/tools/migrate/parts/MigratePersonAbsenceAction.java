@@ -55,7 +55,11 @@ public class MigratePersonAbsenceAction implements MigrateAction {
         new BatchProcessTask<PersonAbsence>(
                 "\"AbsentLog\".Tm_AbsentViewer", "dtLastUpdate", lastOldDateUpdate
         )
+                .withIdFieldName("nID")
+                .setLastId(migrateDAO.getMigratedLastId(TM_PERSON_ABS_ITEM_CODE, 0L))
                 .setLastUpdate(lastOldDateUpdate)
+
+                .onBatchEnd(lastIdValue -> migrateDAO.confirmMigratedLastId(TM_PERSON_ABS_ITEM_CODE, lastIdValue))
                 .process(src, dao, row -> {
                     PersonAbsence x = new PersonAbsence();
                     x.setId(((Number) row.get("nID")).longValue());

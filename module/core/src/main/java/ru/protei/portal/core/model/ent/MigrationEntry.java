@@ -5,7 +5,6 @@ import ru.protei.winter.jdbc.annotations.JdbcColumn;
 import ru.protei.winter.jdbc.annotations.JdbcEntity;
 import ru.protei.winter.jdbc.annotations.JdbcId;
 
-//import java.sql.Timestamp;
 import java.util.Date;
 
 /**
@@ -22,6 +21,9 @@ public class MigrationEntry {
 
     @JdbcColumn(name = "lastUpdate")
     private Date lastUpdate;
+
+    @JdbcColumn(name = "last_id")
+    private Long lastId;
 
 
     public MigrationEntry() {
@@ -43,12 +45,12 @@ public class MigrationEntry {
         this.code = code;
     }
 
-//    public Long getLastId() {
-//        return lastId;
-//    }
-//    public void setLastId(Long lastId) {
-//        this.lastId = lastId;
-//    }
+    public Long getLastId() {
+        return lastId;
+    }
+    public void setLastId(Long lastId) {
+        this.lastId = lastId;
+    }
 
     public Date getLastUpdate() {
         return new Date(lastUpdate.getTime() + 10800000); // +3 UTC

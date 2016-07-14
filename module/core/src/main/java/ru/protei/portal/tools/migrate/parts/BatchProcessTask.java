@@ -24,35 +24,38 @@ public class BatchProcessTask<T> {
     int fetchSize = 1000;
     int batchSize = 1000;
 
-    //String idFieldName;
+    String idFieldName;
 
-    //Long lastIdValue;
+    Long lastIdValue;
 
-    //EndOfBatch _onBatchEnd;
+    EndOfBatch _onBatchEnd;
 
     long lastUpdate;
     private long records_handled = 0L;
 
     public BatchProcessTask (String tableName, String idFieldName, Long lastUpdate) {
-        this ("select * from " + tableName + " where " + idFieldName + " > " + "DATEADD(ss, "+ lastUpdate/1000 +",'1/1/1970')");
+        this ("select * from " + tableName + " where " + idFieldName + " > " + "DATEADD(ss, "+ lastUpdate/1000 +",'1/1/1970') order by nID"); // withIdFieldName вызывается после конструктора, поэтому nID прописываем явно
     }
 
     public BatchProcessTask (String query) {
         this.query = query;
     }
+    public BatchProcessTask<T> onBatchEnd (EndOfBatch cb) {
+        this._onBatchEnd = cb;
+        return this;
+    }
 
 
-//    public BatchProcessTask<T> withIdField (String idFieldName) {
-//        this.idFieldName = idFieldName;
-//        return this;
-//    }
-
-//    public BatchProcessTask<T> onBatchEnd (EndOfBatch cb) {
-//        this._onBatchEnd = cb;
-//        return this;
-//    }
+    public BatchProcessTask<T> withIdFieldName (String idFieldName) {
+        this.idFieldName = idFieldName;
+        return this;
+    }
 
 
+    public BatchProcessTask setLastId(long lastId){
+        this.lastIdValue = lastId;
+        return this;
+    }
     public BatchProcessTask setLastUpdate(long lastUpdate){
         this.lastUpdate = lastUpdate;
         return this;
@@ -71,25 +74,26 @@ public class BatchProcessTask<T> {
         try (Statement st = conn.createStatement(ResultSet.TYPE_FORWARD_ONLY,ResultSet.CONCUR_READ_ONLY)) {
 
             st.setFetchSize(fetchSize);
-
             rs = st.executeQuery(query);
 
             System.out.println("loop over result-set::begin");
+            long maxId = lastIdValue;
 
             while (rs.next()) {
                 records_handled++;
 
-                //if (this.idFieldName != null) {
-                //    lastIdValue = rs.getLong(this.idFieldName);
-                //}
+                if (this.idFieldName != null && rs.getLong(this.idFieldName) > lastIdValue) {
+                    maxId = rs.getLong(this.idFieldName);
 
-//                if(rs.getDate("dtCreation").getTime() > lastUpdate){
-//                    handledWithInserting++;
-//                    insertBatchSet.add(adapter.createEntity(Tm_SqlHelper.fetchRowAsMap(rs)));
-//                }else{
+                    //insert
+                    handledWithInserting++;
+                    insertBatchSet.add(adapter.createEntity(Tm_SqlHelper.fetchRowAsMap(rs)));
+                }else{
+                    //update
                     handledWithUpdating++;
                     updateBatchSet.add(adapter.createEntity(Tm_SqlHelper.fetchRowAsMap(rs)));
-//                }
+                }
+
 
                 if (insertBatchSet.size() >= batchSize) {
                     processBatch(dao, insertBatchSet, true);
@@ -101,14 +105,18 @@ public class BatchProcessTask<T> {
                 }
             }
 
+            // остатки
             if (!insertBatchSet.isEmpty()) {
                 processBatch(dao, insertBatchSet, true);
                 System.out.println("Handled inset rows : " + handledWithInserting);
             }
-
             if (!updateBatchSet.isEmpty()) {
                 processBatch(dao, updateBatchSet, false);
                 System.out.println("Handled update rows : " + handledWithUpdating);
+            }
+
+            if (_onBatchEnd != null) {
+                _onBatchEnd.onBatchEnd(maxId);
             }
 
             System.out.println("loop over result-set::end");

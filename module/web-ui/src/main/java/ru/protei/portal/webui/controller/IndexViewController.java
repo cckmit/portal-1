@@ -17,16 +17,26 @@ public class IndexViewController {
     @RequestMapping("/index.html")
     public String globRoot (@RequestAttribute(name = SecurityDefs.AUTH_SESSION_DESC,required = false)UserSessionDescriptor sd) {
         if (sd != null && sd.isValid())
-            return "redirect:/ws/";
+            return "redirect:/userList/";
+            //return "redirect:/ws/";
 
         return "redirect:/login.html";
     }
 
-    @GetMapping("/ws/")
-    public ModelAndView workspaceIndexPage (@RequestAttribute(name = SecurityDefs.AUTH_SESSION_DESC)UserSessionDescriptor sd) {
+//    @GetMapping("/ws/")
+//    public ModelAndView workspaceIndexPage (@RequestAttribute(name = SecurityDefs.AUTH_SESSION_DESC)UserSessionDescriptor sd) {
+//
+//        ModelAndView mv = new ModelAndView();
+//        mv.setViewName("ws-index");
+//        mv.addObject("sd", sd);
+//        return mv;
+//    }
+
+    @GetMapping("/userList/")
+    public ModelAndView userListPage (@RequestAttribute(name = SecurityDefs.AUTH_SESSION_DESC)UserSessionDescriptor sd) {
 
         ModelAndView mv = new ModelAndView();
-        mv.setViewName("ws-index");
+        mv.setViewName("userList");
         mv.addObject("sd", sd);
         return mv;
     }

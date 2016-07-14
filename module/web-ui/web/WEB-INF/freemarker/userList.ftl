@@ -1104,27 +1104,26 @@ function DiagramProducer(){
         }
 
         for(var i=0; i<absences.length; i++){
-            absences[i]['dateFrom'] = (absences[i]['dateFrom'] + 10800000)/1000;
-            absences[i]['dateTill'] = (absences[i]['dateTill'] + 10800000)/1000;
+            var dateFrom = (absences[i]['dateFrom'] + 10800000)/1000;
+            var dateTill = (absences[i]['dateTill'] + 10800000)/1000;
 
-            //STOP();
-            if(absences[i]['dateTill']*1000 < currentStartPoint && absences[i]['dateTill']*1000 < currentEndPoint)
+            if(dateTill*1000 < currentStartPoint && dateTill*1000 < currentEndPoint)
                 continue; // отсутствие полностью выходит за рамки диаграммы
 
             var cellDate;
 
             if(absences[i]['schedule']){
 
-                if(!schedules.hasOwnProperty(absences[i]['dateFrom']))
-                    schedules[absences[i]['dateFrom']] = absences[i]['schedule']; // сохраняем расписание, чтобы можно было потом обратиться к нему при вызове showScheduleData
+                if(!schedules.hasOwnProperty(dateFrom))
+                    schedules[dateFrom] = absences[i]['schedule']; // сохраняем расписание, чтобы можно было потом обратиться к нему при вызове showScheduleData
 
                 var schedule = new Schedule(
                     absences[i]['schedule'],
-                    new Date((absences[i]['dateFrom'] - 10800) * 1000),
-                    new Date((absences[i]['dateTill'] - 10800) * 1000),
+                    new Date((dateFrom - 10800) * 1000),
+                    new Date((dateTill - 10800) * 1000),
                     this.buildLine.bind(null,
-                            absences[i]['dateFrom'],
-                            absences[i]['dateTill'],
+                            dateFrom,
+                            dateTill,
                             absences[i]['comment'],
                             absences[i].reason
                     )
@@ -1137,20 +1136,20 @@ function DiagramProducer(){
 
 
             }else {
-                var from = new Date(absences[i]['dateFrom'] * 1000);
+                var from = new Date(dateFrom * 1000);
 
-                var width = (absences[i]['dateTill'] - absences[i]['dateFrom']) / 60 / 60 * 4 * 2; // в пикселах
+                var width = (dateTill - dateFrom) / 60 / 60 * 4 * 2; // в пикселах
                 //STOP();
                 var marginLeft = ((from.getUTCHours() * 4) + (from.getUTCMinutes() / 15)) * 2; // в пикселах
                 //if(marginLeft != 0)
                 //    marginLeft = ((from.getHours() * 4) + (from.getMinutes() / 4)) * 2; // в пикселах
 
-                var diffTill = absences[i]['dateTill'] - currentEndPoint.getUTCTime()/1000;
+                var diffTill = dateTill - currentEndPoint.getUTCTime()/1000;
                 if(!bellowBottom && diffTill>0){
                     continue; // удаляем нижнее отсутствие
                 }
 
-                var diffFrom = absences[i]['dateFrom'] - currentStartPoint.getUTCTime()/1000;
+                var diffFrom = dateFrom - currentStartPoint.getUTCTime()/1000;
                 if(aboveTop && diffFrom<0){ //если отсутствие началось раньше диаграммы. добавляем верхнее отсутствие
                     diffFrom = Math.abs(diffFrom) / 60 / 60 * 4 * 2; //в пикселах
                     cellDate = currentStartPoint.getDate() + '.' + currentStartPoint.getMonth() + '.' + (currentStartPoint.getFullYear() - 2000);
@@ -1160,8 +1159,8 @@ function DiagramProducer(){
 
 
                 var line = this.buildLine(
-                        absences[i]['dateFrom'],
-                        absences[i]['dateTill'],
+                        dateFrom,
+                        dateTill,
                         absences[i]['comment'],
                         absences[i].reason,
                         width, //width
@@ -1177,7 +1176,6 @@ function DiagramProducer(){
 
     this.build = function(dayCount){
         today = new Date();
-        //STOP();
         daysBefore = 14 + today.getDay() - 1; // + 14 дней + дней до понедельника
         var emoloyeeAbsences = window["Employee" + userProducer.getOpenedUserId()].absences;
 
@@ -1202,7 +1200,6 @@ function DiagramProducer(){
         }else{ // иначе стрираем только линии отсутсвия
             diagramTbody.children('.absenceLines').find('.line').remove();
             newAbsences = {};
-
 
             if(emoloyeeAbsences) {
                 this.buildLines(emoloyeeAbsences, true, true);
@@ -1659,7 +1656,8 @@ function UserProducer(){
                     window[employee] = data;
                     var addData = userBlock.children('.wrapper').children('.wrapper');
                     window[employee].post = addData.children('.post').text();
-                    window[employee].birthday = addData.children('.birthday').text();
+                    //window[employee].birthday = addData.children('.birthday').text();
+                    window[employee].birthday = addData.children('.birthday')[0].firstChild.data
                     buildUserPassport(window[employee]);
                     successHandler();
                 },

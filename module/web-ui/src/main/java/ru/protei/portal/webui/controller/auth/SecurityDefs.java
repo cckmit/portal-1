@@ -9,7 +9,7 @@ public class SecurityDefs {
     public static final String APP_SESSION_ID_NAME= "portalsid";
 
     public static final String LOGIN_PAGE_URI = "/login.html";
-    public static final String MAIN_WORKSPACE_URI = "/ws/";
+    public static final String MAIN_WORKSPACE_URI = "/userList/";
 
 
     public static final String CLIENT_IP_REQ_ATTR = "pctx-client-ip";

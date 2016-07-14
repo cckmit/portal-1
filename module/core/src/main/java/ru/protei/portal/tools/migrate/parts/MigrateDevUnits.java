@@ -48,7 +48,11 @@ public class MigrateDevUnits implements MigrateAction {
 
 
         new BatchProcessTask<DevUnit>("\"Resource\".Tm_Project", "dtLastUpdate", lastOldDateUpdate)
+                .withIdFieldName("nID")
+                .setLastId(migrateDAO.getMigratedLastId(TM_PROJECT_ITEM_CODE, 0L))
                 .setLastUpdate(lastOldDateUpdate)
+
+                .onBatchEnd(lastIdValue -> migrateDAO.confirmMigratedLastId(TM_PROJECT_ITEM_CODE, lastIdValue))
                 .process(src, unitDAO, row -> {
                    DevUnit u = new DevUnit(En_DevUnitType.COMPONENT.getId(), (String) row.get("strName"), (String) row.get("strInfo"));
                    u.setCreated((Date) row.get("dtCreation"));
@@ -87,7 +91,11 @@ public class MigrateDevUnits implements MigrateAction {
        migrateDAO.confirmMigratedLastUpdate(TM_PRODUCT_ITEM_CODE, new Date().getTime());
 
         new BatchProcessTask<DevUnit>("\"Resource\".Tm_Product", "dtLastUpdate", lastOldDateUpdate)
+                .withIdFieldName("nID")
+                .setLastId(migrateDAO.getMigratedLastId(TM_PRODUCT_ITEM_CODE, 0L))
                 .setLastUpdate(lastOldDateUpdate)
+
+                .onBatchEnd(lastIdValue -> migrateDAO.confirmMigratedLastId(TM_PRODUCT_ITEM_CODE, lastIdValue))
                 .process(src, unitDAO, row -> {
                    DevUnit u = new DevUnit(En_DevUnitType.PRODUCT.getId(), (String) row.get("strValue"), (String) row.get("strInfo"));
                    u.setCreated((Date) row.get("dtCreation"));

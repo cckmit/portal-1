@@ -46,7 +46,11 @@ public class MigrateCompaniesAction implements MigrateAction {
         new BatchProcessTask<Company>(
                 "\"resource\".tm_company", "dtLastUpdate", lastOldDateUpdate
         )
+                .withIdFieldName("nID")
+                .setLastId(migrateDAO.getMigratedLastId(TM_COMPANY_ITEM_CODE, 0L))
                 .setLastUpdate(lastOldDateUpdate)
+
+                .onBatchEnd(lastIdValue -> migrateDAO.confirmMigratedLastId(TM_COMPANY_ITEM_CODE, lastIdValue))
                 .process(src, dao, row -> {
                     Company x = new Company();
                     x.setAddressDejure((String) row.get("strDeJureAddress"));
