@@ -54,10 +54,9 @@ public class MigratePersonAction implements MigrateAction {
       return x != null ? x : d;
    }
 
-
    private String makeSql(long lastUpdate) {
       return " select p.*, p.strClient||'@'||p.strClientIP strCreatorID, \"resource\".func_getfullfio (p.strLastName,p.strFirstName,p.strPatronymic) fullFio, prop.properties, cat.nCategoryID, cd.strValue category," +
-              " pext.strIP_Address,pext.strE_Mail, pext.strOther_E_mail, pext.strHomeTel, pext.strWorkTel, pext.strMobileTel, pext.strFaxTel, pext.strOficialAddress, pext.strActualAddress, pext.strICQ, pext.nJID, pext.lRetired " +
+              " pext.strIP_Address,pext.strE_Mail, pext.strOther_E_mail, pext.strHomeTel, pext.strWorkTel, pext.strMobileTel, pext.strFaxTel, pext.strOficialAddress, pext.strActualAddress, pext.strICQ, pext.nJID, pext.lRetired, dep.strDescription" +
               " from \"resource\".tm_person p" +
                  " left outer join ( select nPersonID, LIST('!begin!'||pp.strValue||' '||c.strValue||'='||p.strValue||'!end!',';') properties from \"resource\".tm_person2property p" +
                  " join \"resource\".tm_category c on (p.nCategoryID=c.nID)" +
@@ -65,6 +64,7 @@ public class MigratePersonAction implements MigrateAction {
                  " left outer join \"resource\".tm_person2category cat on (cat.nPersonID=p.nID)" +
                  " left outer join \"resource\".tm_category cd on (cd.nID=cat.nCategoryID)" +
                  " left outer join \"resource\".Tm_PersonPROTEI_Extension pext on (pext.nID=p.nID)" +
+                 " left outer join \"OK\".Tm_Department dep on (dep.nID=pext.nDepartmentID)" +
               " where p.dtLastUpdate > " + "DATEADD(ss, " + lastUpdate / 1000 + ",'1/1/1970')" +
               " order by p.nID ";
       // DATEADD(date_type, time, from) добавляем к 1/1/1970 количество секунд lastUpdate, получая datetime
@@ -117,6 +117,9 @@ public class MigratePersonAction implements MigrateAction {
                  x.setPosition(nvl((String) row.get("strPosition"), (String) row.get("category")));
 
 
+                 x.setDepartment((String) row.get("strDescription"));
+
+
                  x.setIpAddress((String) row.get("strIP_Address"));
 
                  x.setEmail((String) row.get("strE_Mail"));
@@ -133,6 +136,9 @@ public class MigratePersonAction implements MigrateAction {
 
                  x.setIcq((String) row.get("strICQ"));
                  x.setJabber(row.get("nJID") != null ? row.get("nJID").toString() : null);
+
+
+
 
 /*            if (row.get("nCategoryID") != null) {
                 Tm_PersonRole role = commonMapper.getPersonRole(row.get("category").toString());
@@ -174,4 +180,6 @@ public class MigratePersonAction implements MigrateAction {
               .dumpStats(TM_PERSON_ITEM_CODE);
 
    }
+
+
 }

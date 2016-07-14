@@ -47,7 +47,7 @@ public class EmployeeDetailView {
     }
 
     public EmployeeDetailView fill(Person p) {
-        this.department = p.getPosition();
+        this.department = p.getDepartment();
         this.mobilePhone = p.getMobilePhone();
         this.workPhone = p.getWorkPhone();
         this.homePhone = p.getHomePhone();

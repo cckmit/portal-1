@@ -24,6 +24,10 @@ public class Person {
     @JdbcColumn(name = "displayPosition")
     private String position;
 
+    @JdbcColumn(name = "department")
+    private String department;
+
+
     @JdbcColumn(name="firstname")
     private String firstName;
     @JdbcColumn(name="lastname")
@@ -131,6 +135,14 @@ public class Person {
     public void setPosition(String position) {
         this.position = position;
     }
+
+
+    public String getDepartment(){return  department; }
+
+    public void setDepartment(String department){
+        this.department = department;
+    }
+
 
     public String getFirstName() {
         return firstName;
