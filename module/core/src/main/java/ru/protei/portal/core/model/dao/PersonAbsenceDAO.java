@@ -11,4 +11,6 @@ import java.util.List;
 public interface PersonAbsenceDAO extends PortalBaseDAO<PersonAbsence> {
 
     public List<PersonAbsence> getForRange (Long person, Date from, Date till);
+
+    public List<PersonAbsence> getCurrentAbsences (Date now);
 }

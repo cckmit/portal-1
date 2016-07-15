@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.dao.PersonAbsenceDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.ent.PersonAbsence;
 import ru.protei.portal.core.model.view.EmployeeDetailView;
 import ru.protei.portal.core.model.view.WorkerView;
 import ru.protei.portal.webui.api.struct.HttpListResult;
@@ -45,12 +46,12 @@ public class WorkersAPI_Impl implements WorkersAPI {
     @GetMapping(path = "/gate/employees/{id:[0-9]+}/absences.json", params = {"from", "till"})
     public EmployeeDetailView getEmployeeAbsences(@PathVariable("id") Long id, @RequestParam("from") Long tFrom, @RequestParam("till") Long tTill){
 
-        Person p = personDAO.get(id);
-        if (p == null || !groupHomeDAO.checkIfHome(p.getCompanyId())) {
-            return null;
-        }
+//        Person p = personDAO.get(id);
+//        if (p == null || !groupHomeDAO.checkIfHome(p.getCompanyId())) {
+//            return null;
+//        }
 
-        return new EmployeeDetailView().fill(absenceDAO.getForRange(p.getId(), new Date(tFrom), new Date(tTill)));
+        return new EmployeeDetailView().fill(absenceDAO.getForRange(id, new Date(tFrom), new Date(tTill)));
     }
 
 
@@ -68,6 +69,24 @@ public class WorkersAPI_Impl implements WorkersAPI {
         view.fill(absenceDAO.getForRange(p.getId(), null, null));
 
         return view;
+    }
+
+
+    @GetMapping(path = "/gate/currentMissingEmployeesIDs.json")
+    public String getCurrentMissingEmployeeIDs() {
+        List<PersonAbsence> currentAbsences = absenceDAO.getCurrentAbsences(null);
+
+        StringBuilder IDs = new StringBuilder();
+        IDs.append("[");
+
+        for(int i = 0; i < currentAbsences.size(); i++){
+            if(i>0)
+                IDs.append(",");
+            IDs.append(currentAbsences.get(i).getPersonId());
+        }
+
+        IDs.append("]");
+        return IDs.toString();
     }
 
 
@@ -96,4 +115,5 @@ public class WorkersAPI_Impl implements WorkersAPI {
 
         return new HttpListResult<>(r, false);
     }
+
 }

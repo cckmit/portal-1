@@ -517,9 +517,8 @@ function Sorting(){
 
 var employeeGenerator = new EmployeeGenerator();
 var sorting = new Sorting();
-//var missing = [2,4,6,9,22];
 //var favorites = [1,2,6,15,20,24];
-//employeeGenerator.setMissing(missing);
+employeeGenerator.setMissing(window['missingEmployeesIDs']);
 //employeeGenerator.setFavorites(favorites);
 
 //                            AJAX.getMissingEmployees(
@@ -993,9 +992,7 @@ function DiagramProducer(){
             }
 
             return absences;
-
         }
-
     }
 
 

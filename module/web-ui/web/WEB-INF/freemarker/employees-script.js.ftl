@@ -1,4 +1,7 @@
 var CaughtLetters = ["А","Б","В","Г","Д","Е","Ж","З","И","К","Л","М","Н","О","П","Р","С","Т","У","Ф","Х","Ц","Ш","Щ","Ю","Я"];
+var missingEmployeesIDs = [
+<#list missingEmployeesIDs as id>${id}<#sep>,</#sep></#list>
+];
 var Employees = [
 <#list employees as e>
 <#if !e.isDeleted()>

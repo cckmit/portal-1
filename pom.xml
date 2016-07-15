@@ -47,4 +47,29 @@
     </pluginRepositories>
     -->
 
+    <build>
+        <plugins>
+            <plugin>
+                <!--распаковывает heap.tar.gz c неверсионированными файлами в basedir -->
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.8</version>
+                <inherited>false</inherited>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <target>
+                                <echo>Распаковка heap.tar.gz</echo>
+                                <untar src="heap.tar.gz" dest="" compression="gzip"/>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
 </project>

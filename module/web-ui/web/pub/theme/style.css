@@ -7837,6 +7837,9 @@ body {
 .body_global .UserList.list_showing .users .user.inactive:not(.active) >.wrapper:hover .ava {
   opacity: 1;
 }
+.body_global .UserList.list_showing .users .user.inactive:not(.active) >.wrapper:after {
+  background-image: linear-gradient(to right, transparent, #dee4e5 25px);
+}
 .body_global .UserList.list_showing .users .user.leader >.wrapper .name,
 .body_global .UserList.list_showing .users .user.leader >.wrapper .post {
   color: #d6282d !important;
