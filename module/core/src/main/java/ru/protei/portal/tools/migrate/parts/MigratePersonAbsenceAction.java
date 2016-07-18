@@ -20,6 +20,7 @@ import java.util.Map;
 public class MigratePersonAbsenceAction implements MigrateAction {
 
     public static final String TM_PERSON_ABS_ITEM_CODE = "ABSENCE-LOG";
+    public static final String TM_PERSON_LEAVE_ITEM_CODE = "LEAVE-LOG";
     private Calendar calendar = Calendar.getInstance();
 
     @Autowired
@@ -72,6 +73,47 @@ public class MigratePersonAbsenceAction implements MigrateAction {
 
                     Date dateFrom = joinDateTime("From", row);
                     Date dateTill = joinDateTime("To", row);
+                    if (dateFrom.getTime() > dateTill.getTime()) {
+                        // swap dates
+                        Date temp = dateFrom;
+                        dateFrom = dateTill;
+                        dateTill = temp;
+                    }
+
+                    x.setFromTime(dateFrom);
+                    x.setTillTime(dateTill);
+
+                    return x;
+                })
+                .dumpStats(TM_PERSON_ABS_ITEM_CODE);
+
+
+
+
+        lastOldDateUpdate = migrateDAO.getMigratedLastUpdate(TM_PERSON_LEAVE_ITEM_CODE, 0L);
+        migrateDAO.confirmMigratedLastUpdate(TM_PERSON_LEAVE_ITEM_CODE, new Date().getTime());
+
+        new BatchProcessTask<PersonAbsence>(
+                "\"AbsentLog\".Tm_Leave", "dtLastUpdate", lastOldDateUpdate
+        )
+                .withIdFieldName("nID")
+                .setLastId(migrateDAO.getMigratedLastId(TM_PERSON_LEAVE_ITEM_CODE, 0L))
+                .setLastUpdate(lastOldDateUpdate)
+
+                .onBatchEnd(lastIdValue -> migrateDAO.confirmMigratedLastId(TM_PERSON_LEAVE_ITEM_CODE, lastIdValue))
+                .process(src, dao, row -> {
+                    PersonAbsence x = new PersonAbsence();
+                    //x.setId(((Number) row.get("nID")).longValue());
+                    x.setCreated((Date) row.get("dtCreation"));
+                    x.setCreatorId(((Number) row.get("nSubmitterID")).longValue());
+                    x.setPersonId(((Number) row.get("nPersonID")).longValue());
+                    x.setUserComment((String) row.get("strComment"));
+                    x.setReasonId(2); // отпуск
+
+                    Date dateFrom = (Date) row.get("dFromDate");
+                    Date dateTill = (Date) row.get("dToDate");
+                    dateTill.setTime(dateTill.getTime() + 86340000); // + 23ч 59м 00c 000мс
+
                     if (dateFrom.getTime() > dateTill.getTime()) {
                         // swap dates
                         Date temp = dateFrom;

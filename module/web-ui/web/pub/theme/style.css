@@ -338,61 +338,6 @@ body {
   padding-left: 240px;
   box-sizing: border-box;
 }
-.loaderBlock {
-  position: fixed;
-  bottom: 0;
-  right: 0;
-  left: 240px;
-  top: 58px;
-  background-color: rgba(206,220,235,0.6);
-  z-index: 8;
-}
-.loaderBlock >.wrapper {
-  display: table;
-  width: 100%;
-  height: 100%;
-}
-.loaderBlock >.wrapper >.wrapper {
-  display: table-cell;
-  vertical-align: middle;
-}
-.loaderBlock >.wrapper >.wrapper .loader {
-  width: 150px;
-  height: 150px;
-  border: 2px solid #314157;
-  margin: auto;
-  border-radius: 50%;
-  border-left-color: transparent;
-  border-right-color: transparent;
-  box-sizing: border-box;
-  padding: 10px;
-  animation: animation-2 10s linear 0s infinite normal forwards running;
-}
-@-moz-keyframes animation-2 {
-  100% {
-    transform: rotate(360deg);
-  }
-}
-@-webkit-keyframes animation-2 {
-  100% {
-    transform: rotate(360deg);
-  }
-}
-@-o-keyframes animation-2 {
-  100% {
-    transform: rotate(360deg);
-  }
-}
-@keyframes animation-2 {
-  100% {
-    transform: rotate(360deg);
-  }
-}
-.loaderBlock >.wrapper >.wrapper .loader >.loader {
-  width: 100%;
-  height: 100%;
-  animation-duration: 1s;
-}
 .Loader {
   position: absolute;
   top: 0;
@@ -409,6 +354,21 @@ body {
 .Loader.active {
   opacity: 1;
   z-index: 10;
+}
+.EmptyBlock {
+  display: table;
+  width: 100%;
+  height: 300px;
+}
+.EmptyBlock >.wrapper {
+  display: table-cell;
+  text-align: center;
+  vertical-align: middle;
+  font-size: 18px;
+  line-height: 1.6em;
+  color: #a1aab8;
+  font-weight: bold;
+  text-shadow: 1px 1px 0 #fff;
 }
 .button+.buttons_group,
 .button+.regulator,
@@ -971,24 +931,24 @@ body {
 }
 .header_global >.rightBlock .currentTask .timer .time .timeDelimiter {
   padding: 0 2px;
-  animation: animation-3 0.8s step-end 0s infinite alternate forwards running;
+  animation: animation-2 0.8s step-end 0s infinite alternate forwards running;
 }
-@-moz-keyframes animation-3 {
+@-moz-keyframes animation-2 {
   50% {
     opacity: 0;
   }
 }
-@-webkit-keyframes animation-3 {
+@-webkit-keyframes animation-2 {
   50% {
     opacity: 0;
   }
 }
-@-o-keyframes animation-3 {
+@-o-keyframes animation-2 {
   50% {
     opacity: 0;
   }
 }
-@keyframes animation-3 {
+@keyframes animation-2 {
   50% {
     opacity: 0;
   }
@@ -1131,27 +1091,27 @@ body {
   position: relative;
 }
 .header_global >.rightBlock .icons .notifications_button.active {
-  animation: animation-4 0.4s ease-out 0s infinite alternate forwards running;
+  animation: animation-3 0.4s ease-out 0s infinite alternate forwards running;
 }
-@-moz-keyframes animation-4 {
+@-moz-keyframes animation-3 {
   100% {
     color: #fff;
     text-shadow: 0 0 20px #fff;
   }
 }
-@-webkit-keyframes animation-4 {
+@-webkit-keyframes animation-3 {
   100% {
     color: #fff;
     text-shadow: 0 0 20px #fff;
   }
 }
-@-o-keyframes animation-4 {
+@-o-keyframes animation-3 {
   100% {
     color: #fff;
     text-shadow: 0 0 20px #fff;
   }
 }
-@keyframes animation-4 {
+@keyframes animation-3 {
   100% {
     color: #fff;
     text-shadow: 0 0 20px #fff;
@@ -2031,9 +1991,9 @@ body {
   background: #389928;
 }
 .body_global >.rightBlock .CaseList table.cases tr.case td .timer_button.active {
-  animation: animation-5 1s linear 0s infinite alternate forwards running;
+  animation: animation-4 1s linear 0s infinite alternate forwards running;
 }
-@-moz-keyframes animation-5 {
+@-moz-keyframes animation-4 {
   0% {
     box-shadow: 0 0 0 0 #6fce41;
   }
@@ -2041,7 +2001,7 @@ body {
     box-shadow: 0 0 30px 0 #6fce41;
   }
 }
-@-webkit-keyframes animation-5 {
+@-webkit-keyframes animation-4 {
   0% {
     box-shadow: 0 0 0 0 #6fce41;
   }
@@ -2049,7 +2009,7 @@ body {
     box-shadow: 0 0 30px 0 #6fce41;
   }
 }
-@-o-keyframes animation-5 {
+@-o-keyframes animation-4 {
   0% {
     box-shadow: 0 0 0 0 #6fce41;
   }
@@ -2057,7 +2017,7 @@ body {
     box-shadow: 0 0 30px 0 #6fce41;
   }
 }
-@keyframes animation-5 {
+@keyframes animation-4 {
   0% {
     box-shadow: 0 0 0 0 #6fce41;
   }
@@ -3912,24 +3872,24 @@ body {
 }
 .body_global >.rightBlock .caseListsBlock.taskBoard >.block >.unconfirmedCases .emptyBlock.active {
   display: block;
-  animation: animation-6 0.5s linear 0.3s 1 alternate forwards running;
+  animation: animation-5 0.5s linear 0.3s 1 alternate forwards running;
 }
-@-moz-keyframes animation-6 {
+@-moz-keyframes animation-5 {
   100% {
     opacity: 1;
   }
 }
-@-webkit-keyframes animation-6 {
+@-webkit-keyframes animation-5 {
   100% {
     opacity: 1;
   }
 }
-@-o-keyframes animation-6 {
+@-o-keyframes animation-5 {
   100% {
     opacity: 1;
   }
 }
-@keyframes animation-6 {
+@keyframes animation-5 {
   100% {
     opacity: 1;
   }
@@ -7870,6 +7830,7 @@ body {
   right: 0;
   top: 0;
   font-size: 16px;
+  font-size: 16px;
   color: #d2d5d8;
   font-weight: bold;
   line-height: 28px;
@@ -9118,24 +9079,24 @@ body {
   background-color: transparent;
 }
 .body_global .case >.body .executorsBlock >.header.active + .content {
-  animation: animation-7 0.5s linear 0s 1 alternate forwards running;
+  animation: animation-6 0.5s linear 0s 1 alternate forwards running;
 }
-@-moz-keyframes animation-7 {
+@-moz-keyframes animation-6 {
   100% {
     opacity: 1;
   }
 }
-@-webkit-keyframes animation-7 {
+@-webkit-keyframes animation-6 {
   100% {
     opacity: 1;
   }
 }
-@-o-keyframes animation-7 {
+@-o-keyframes animation-6 {
   100% {
     opacity: 1;
   }
 }
-@keyframes animation-7 {
+@keyframes animation-6 {
   100% {
     opacity: 1;
   }
@@ -9601,27 +9562,27 @@ body {
 }
 .body_global .case >.body .logsBlock .content .newMessageBlock.active {
   display: block;
-  animation: animation-8 0.4s ease-in 0s 1 normal forwards running;
+  animation: animation-7 0.4s ease-in 0s 1 normal forwards running;
 }
-@-moz-keyframes animation-8 {
+@-moz-keyframes animation-7 {
   100% {
     opacity: 1;
     bottom: 0;
   }
 }
-@-webkit-keyframes animation-8 {
+@-webkit-keyframes animation-7 {
   100% {
     opacity: 1;
     bottom: 0;
   }
 }
-@-o-keyframes animation-8 {
+@-o-keyframes animation-7 {
   100% {
     opacity: 1;
     bottom: 0;
   }
 }
-@keyframes animation-8 {
+@keyframes animation-7 {
   100% {
     opacity: 1;
     bottom: 0;
@@ -11859,9 +11820,9 @@ body {
   background: #389928;
 }
 .CaseList table.cases tr.case td .timer_button.active {
-  animation: animation-9 1s linear 0s infinite alternate forwards running;
+  animation: animation-8 1s linear 0s infinite alternate forwards running;
 }
-@-moz-keyframes animation-9 {
+@-moz-keyframes animation-8 {
   0% {
     box-shadow: 0 0 0 0 #6fce41;
   }
@@ -11869,7 +11830,7 @@ body {
     box-shadow: 0 0 30px 0 #6fce41;
   }
 }
-@-webkit-keyframes animation-9 {
+@-webkit-keyframes animation-8 {
   0% {
     box-shadow: 0 0 0 0 #6fce41;
   }
@@ -11877,7 +11838,7 @@ body {
     box-shadow: 0 0 30px 0 #6fce41;
   }
 }
-@-o-keyframes animation-9 {
+@-o-keyframes animation-8 {
   0% {
     box-shadow: 0 0 0 0 #6fce41;
   }
@@ -11885,7 +11846,7 @@ body {
     box-shadow: 0 0 30px 0 #6fce41;
   }
 }
-@keyframes animation-9 {
+@keyframes animation-8 {
   0% {
     box-shadow: 0 0 0 0 #6fce41;
   }
@@ -13522,24 +13483,24 @@ body {
 }
 .caseListsBlock.taskBoard >.block >.unconfirmedCases .emptyBlock.active {
   display: block;
-  animation: animation-10 0.5s linear 0.3s 1 alternate forwards running;
+  animation: animation-9 0.5s linear 0.3s 1 alternate forwards running;
 }
-@-moz-keyframes animation-10 {
+@-moz-keyframes animation-9 {
   100% {
     opacity: 1;
   }
 }
-@-webkit-keyframes animation-10 {
+@-webkit-keyframes animation-9 {
   100% {
     opacity: 1;
   }
 }
-@-o-keyframes animation-10 {
+@-o-keyframes animation-9 {
   100% {
     opacity: 1;
   }
 }
-@keyframes animation-10 {
+@keyframes animation-9 {
   100% {
     opacity: 1;
   }
@@ -16484,7 +16445,7 @@ body {
   position: absolute;
   color: #fff;
   opacity: 0;
-  animation: animation-11 0.3s linear 0s 1 alternate forwards running;
+  animation: animation-10 0.3s linear 0s 1 alternate forwards running;
 }
 .tooltipPopup_block:before {
   content: "";
@@ -16497,22 +16458,22 @@ body {
   left: 50%;
   margin-left: -6px;
 }
-@-moz-keyframes animation-11 {
+@-moz-keyframes animation-10 {
   100% {
     opacity: 1;
   }
 }
-@-webkit-keyframes animation-11 {
+@-webkit-keyframes animation-10 {
   100% {
     opacity: 1;
   }
 }
-@-o-keyframes animation-11 {
+@-o-keyframes animation-10 {
   100% {
     opacity: 1;
   }
 }
-@keyframes animation-11 {
+@keyframes animation-10 {
   100% {
     opacity: 1;
   }

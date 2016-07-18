@@ -173,7 +173,7 @@ html
                                                         break;
                                                 }
 
-                                                users.append(html);
+                                                users.appendEmployees(html);
                                                 employeeGenerator.setEmployeeCount(count);
                                             }
                                         }
@@ -339,6 +339,12 @@ html
                         script.
                             function EmployeeGenerator(){
                                 this.users = $('.users');
+                                this.users.appendEmployees = function(html){
+                                    if(html)
+                                        this.append(html);
+                                    else
+                                        this.append('<div class="EmptyBlock"><div class="wrapper">Не найдено</div></div>');
+                                }
                                 var index = 1;
                                 var favorites = [];
                                 var missing = [];
@@ -398,7 +404,7 @@ html
                                     for(var i=0; i<Employees.length; i++){
                                         html += this.generate(Employees[i]);
                                     }
-                                    this.users.append(html);
+                                    this.users.appendEmployees(html);
                                 }
 
 

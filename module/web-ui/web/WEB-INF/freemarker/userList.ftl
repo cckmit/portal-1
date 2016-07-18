@@ -108,7 +108,7 @@ span 22
        $.ajax(message);
     };
     this.getMissingEmployees = function(successHandler, errorHandler){
-        message.url = '/api/getMissingEmployees';
+        message.url = '/api/gate/currentMissingEmployeesIDs.json';
         message.data = null;
         message.success = successHandler;
         message.error = errorHandler;
@@ -222,7 +222,7 @@ function Buttons(){
                     break;
             }
 
-            users.append(html);
+            users.appendEmployees(html);
             employeeGenerator.setEmployeeCount(count);
         }
     }
@@ -363,6 +363,12 @@ function showStartingWithLetter(event){
 
 </script><div class="users"></div><script>function EmployeeGenerator(){
     this.users = $('.users');
+    this.users.appendEmployees = function(html){
+        if(html)
+            this.append(html);
+        else
+            this.append('<div class="EmptyBlock"><div class="wrapper">Не найдено</div></div>');
+    }
     var index = 1;
     var favorites = [];
     var missing = [];
@@ -392,7 +398,12 @@ function showStartingWithLetter(event){
         favorites = mass
     }
     this.setMissing = function(mass){
-        missing = mass
+        missing = mass;
+    }
+    this.showMissingOnCurrentEmployess = function(){
+        for(var i=0;i<missing.length;i++){
+            this.users.children('[id='+ missing[i] +']').addClass('inactive');
+        }
     }
     this.addMissing = function(id){
         missing.push(id)
@@ -417,7 +428,7 @@ function showStartingWithLetter(event){
         for(var i=0; i<Employees.length; i++){
             html += this.generate(Employees[i]);
         }
-        this.users.append(html);
+        this.users.appendEmployees(html);
     }
 
 
@@ -517,7 +528,6 @@ function Sorting(){
 
 var employeeGenerator = new EmployeeGenerator();
 var sorting = new Sorting();
-//var favorites = [1,2,6,15,20,24];
 employeeGenerator.setMissing(window['missingEmployeesIDs']);
 //employeeGenerator.setFavorites(favorites);
 
@@ -545,7 +555,7 @@ $(document).ready(function () {
     //    AJAX.getMissingEmployees(
     //        function(data){
     //            employeeGenerator.setMissing(data);
-    //            employeeGenerator.generateAllUsers();
+    //            employeeGenerator.showMissingOnCurrentEmployess();
     //        },
     //        messageGenerator.lateCall("Ошибка при получении отсутствующих сотрудников")
     //    );
