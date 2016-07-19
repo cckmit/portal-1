@@ -43,15 +43,14 @@ public class WorkersAPI_Impl implements WorkersAPI {
 
 
 
-    @GetMapping(path = "/gate/employees/{id:[0-9]+}/absences.json", params = {"from", "till"})
-    public EmployeeDetailView getEmployeeAbsences(@PathVariable("id") Long id, @RequestParam("from") Long tFrom, @RequestParam("till") Long tTill){
+    @GetMapping(path = "/gate/employees/{id:[0-9]+}/absences.json", params = {"from", "till", "full"})
+    public EmployeeDetailView getEmployeeAbsences(@PathVariable("id") Long id, @RequestParam("from") Long tFrom, @RequestParam("till") Long tTill, @RequestParam("full") Boolean isFull){
 
-//        Person p = personDAO.get(id);
-//        if (p == null || !groupHomeDAO.checkIfHome(p.getCompanyId())) {
-//            return null;
-//        }
-
-        return new EmployeeDetailView().fill(absenceDAO.getForRange(id, new Date(tFrom), new Date(tTill)));
+        Person p = personDAO.get(id);
+        if (p == null || !groupHomeDAO.checkIfHome(p.getCompanyId())) {
+            return null;
+        }
+        return new EmployeeDetailView().fill(absenceDAO.getForRange(id, new Date(tFrom), new Date(tTill)), isFull);
     }
 
 
@@ -66,7 +65,7 @@ public class WorkersAPI_Impl implements WorkersAPI {
 
         EmployeeDetailView view = new EmployeeDetailView().fill(p);
 
-        view.fill(absenceDAO.getForRange(p.getId(), null, null));
+        view.fill(absenceDAO.getForRange(p.getId(), null, null), false);
 
         return view;
     }

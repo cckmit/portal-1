@@ -79,7 +79,8 @@ function STOP(){
     }
 }
 var messageGenerator = new MessageGenerator();
-</script><script src="/ws/resource/employees.js"></script></head><body><div class="global"><div class="header_global"><div class="leftBlock"><div class="company"><span onclick="alert($.eventReport())" class="logo"></span><span class="name">PROTEI</span></div><div id="hideLeftBlock" class="hideBar_button"></div></div><div class="rightBlock"><div class="topicTitle employees"><div class="title">Сотрудники</div></div><div class="currentTask"><span class="case">Freq<span class="id">7823289</span></span><div class="timer"><span class="time"><span class="hours">01</span><span class="timeDelimiter">:</span><span class="minutes">12</span></span><span id="stopCurrentTask" class="stop_button"></span></div></div><div id="runTimeFixer" class="completeWorkSession"><span class="icon-time"></span>Таймфиксер</div><div class="rightSide"><div class="icons"><!--#userProfile.userProfilespan.icon-user--><div id="globalNotifications" class="notifications_button active"></div><div id="globalSettings" class="settings_button"></div><div id="globalHelper" class="helper_button"></div><div id="globalExit" class="exit_button"></div></div></div><div class="rightSide searchBlock"><form class="globalSearch"><input id="globalSearch" placeholder="Поиск по объектам" type="text" autocomplete="off" class="searchInput"/><!--#p4.searchInput(contenteditable="true")span 11
+</script><script src="/ws/resource/employees.js"></script><script>var MyID = 546;
+</script></head><body><div class="global"><div class="header_global"><div class="leftBlock"><div class="company"><span onclick="alert($.eventReport())" class="logo"></span><span class="name">PROTEI</span></div><div id="hideLeftBlock" class="hideBar_button"></div></div><div class="rightBlock"><div class="topicTitle employees"><div class="title">Сотрудники</div></div><div class="currentTask"><span class="case">Freq<span class="id">7823289</span></span><div class="timer"><span class="time"><span class="hours">01</span><span class="timeDelimiter">:</span><span class="minutes">12</span></span><span id="stopCurrentTask" class="stop_button"></span></div></div><div id="runTimeFixer" class="completeWorkSession"><span class="icon-time"></span>Таймфиксер</div><div class="rightSide"><div class="icons"><!--#userProfile.userProfilespan.icon-user--><div id="globalNotifications" class="notifications_button active"></div><div id="globalSettings" class="settings_button"></div><div id="globalHelper" class="helper_button"></div><div id="globalExit" class="exit_button"></div></div></div><div class="rightSide searchBlock"><form class="globalSearch"><input id="globalSearch" placeholder="Поиск по объектам" type="text" autocomplete="off" class="searchInput"/><!--#p4.searchInput(contenteditable="true")span 11
 span 22
     span 33--><div class="buttonsBlock"><label class="search_button"><input type="submit" value="Поиск"/></label><!--label.icon-resetButtoninput(type="reset" value="Сброс")
 --></div></form></div></div></div><div class="body_global"><div class="leftBlock"><div class="noScrolling"><div class="scrolling"><div class="mainButtons"></div><div class="menuList"><div class="menu"><div class="title">Рабочее место</div><div class="list"><div class="item"><span class="icon-plan"></span>Мой план</div><div class="item"><span class="icon-created"></span>Инспектор</div><div class="item"><span class="icon-activity"></span>Моя активность</div><div class="item"><span class="icon-subscription"></span>Мои подписки</div><div class="item"><span class="icon-favorites"></span>Мои избранные</div></div></div><div class="menu"><div class="title">Компания</div><div class="list"><div class="item"><span class="icon-employees"></span>Сотрудники</div><div class="item"><span class="icon-me"></span>Мой паспорт</div></div></div><div class="menu"><div class="title"><!--span.icon-savedQueries-->Объекты системы</div><div style="max-height: 500px" class="list active"><!--.slideWrapper--><div class="item"><span class="icon-component"></span>Компоненты</div><div class="item"><span class="icon-product"></span>Продукты</div><div class="item"><span class="icon-case"></span>Задачи</div><div class="item"><span class="icon-order"></span>Группы задач</div><div class="item"><span class="icon-order"></span>Заказы</div><div class="item"><span class="icon-project"></span>Проекты</div><div class="item"><span class="icon-organization"></span>Организации</div></div></div><div class="menu"><div class="title"><!--span.icon-savedQueries-->Управление и отчёты</div><div class="list"><!--.slideWrapper--><div class="item"><span class="icon-employees"></span>Сотрудники</div><div class="item"><span class="icon-component"></span>Компоненты</div><div class="item"><span class="icon-product"></span>Продукты</div></div></div></div></div></div><script>$('#hideLeftBlock').click(function(){
@@ -716,6 +717,53 @@ function DiagramProducer(){
             }
 
             lastScheduleToday.addClass('today');
+        }
+
+
+
+        this.showScheduleInfo = function(id, timeFrom){
+            //var schedule = diagramProducer.getScheduleByTimeFrom(timeFrom);
+
+            diagramProducer.downloadAbsences(from, till, function(data){
+                if(data["absences"]){
+
+                }else{
+                    // пусто
+                }
+            })
+
+
+
+            if(schedule.length == 1){ // одна неделя
+                headerWeekTd.hide();
+
+                weeks[0].eq(0).hide(); //скрываем 2 колонки с чётностью недель
+                weeks[1].eq(0).hide();
+
+                buildScheduleTable(weeks[0], schedule);
+            }else{ // две недели
+                headerWeekTd.show();
+
+                weeks[0].eq(0).show();
+                weeks[1].eq(0).show();
+
+                buildScheduleTable(weeks[0], schedule['чёт']);
+                buildScheduleTable(weeks[1], schedule['нечёт']);
+            }
+
+            mainInfo.hide();
+            commentInfo.hide();
+
+            absenceInfo.addClass('whiteScheduleBlock');
+            absenceInfo.show();
+            event.stopPropagation();
+
+            setPopupPosition(event, absenceInfo, 58, 28); // 58 = toLeft/toRight offset + row.width/2
+            bindDocumentKillingClick(absenceInfo, absenceInfo, function(){
+                absenceInfo.hide();
+                mainInfo.show();
+                absenceInfo.removeClass('whiteScheduleBlock');
+            })
         }
 
         this.showAbsenceInfo = function(event, timeFrom, timeTill, absenceId, comment){
@@ -1425,108 +1473,14 @@ function DiagramProducer(){
 
 
 
---></div></div></div><div id="absenceTooltip" class="tooltipPopup_block"></div><div id="absenceInfo" class="absencePopup_block"><div class="info"><div class="date"><div class="dateNumber"></div><div class="monthTime"><div class="month"></div><div class="time"></div></div></div>—<div class="date"><div class="dateNumber"></div><div class="monthTime"><div class="month"></div><div class="time"></div></div></div><div class="absenceReason"></div><div class="rightSide"><span class="delete_button"></span><span class="edit_button"></span><span class="duplicate_button"></span></div></div><div class="schedule"><table><tr class="headers"><td></td><td class="day mo">Пн</td><td class="day tu">Вт</td><td class="day we">Ср</td><td class="day th">Чт</td><td class="day fr">Пт</td></tr><tr class="week"><td class="weekParity">Чётная неделя</td><td data-day="Пн" class="day"></td><td data-day="Вт" class="day"></td><td data-day="Ср" class="day"></td><td data-day="Чт" class="day"></td><td data-day="Пт" class="day"></td></tr><tr class="week"><td class="weekParity">Нечётная неделя</td><td data-day="Пн" class="day"></td><td data-day="Вт" class="day"></td><td data-day="Ср" class="day"></td><td data-day="Чт" class="day"></td><td data-day="Пт" class="day"></td></tr></table></div><div class="comment"><span class="icon-comment"></span><span class="text"></span></div></div><div id="absenceViewer" class="popup_backgroundBlock"><div class="wrapper"><div class="popupBlock"><div style="display: none" class="popup absenceViewer"><div class="head">Просмотрщик отсутствий<div class="rightSide"><div id="clsAbsenceViewerBut1" class="close_button"></div></div></div><div class="body"><div class="solidDatePicker blueC"><div class="top_button"></div><div class="wrapper"><div class="date today">31 мая, Пт</div><div class="date">30 мая, Чт</div><div class="date exists">29 мая, Ср</div><div class="date">28 мая, Вт</div><div class="date exists">27 мая, Пн</div><div class="date weekend">26 мая, Вс</div><div class="date weekend">25 мая, Сб</div><div class="date exists">24 мая, Пт</div><div class="date active">23 мая, Чт</div><div class="date">22 мая, Ср</div><div class="date">21 мая, Вт</div><div class="date exists">20 мая, Пн</div><div class="date weekend">19 мая, Вс</div><div class="date weekend">18 мая, Сб</div><div class="date exists">17 мая, Пт</div><div class="date exists">16 мая, Чт</div><div class="date">15 мая, Ср</div><div class="date">14 мая, Вт</div><div class="date">13 мая, Пн</div><div class="date weekend">12 мая, Вс</div><div class="date weekend">11 мая, Сб</div><div class="date">10 мая, Пт</div><div class="date">9 мая, Чт</div><div class="date">8 мая, Ср</div><div class="date">7 мая, Вт</div><div class="date">6 мая, Пн</div><div class="date">5 мая, Вс</div><div class="date">4 мая, Сб</div><div class="date">3 мая, Пт</div><div class="date">2 мая, Чт</div><div class="date">1 мая, Ср</div></div><div class="bottom_button"></div></div><div class="controlButtons"><div class="button">Активные</div><div class="button">Завершённые</div><div class="buttons_group"><div class="button selected">Все типы отсутствий</div></div><div class="rightSide"><div class="button greenC"><span class="icon-add"></span>Новое отсутствие</div></div></div><div class="AbsenceList"><table class="absences"><tr class="headers"><td class="control">Управление</td><td class="dateCreation">Дата создания</td><td class="dateUpdate">Дата обновления</td><td class="creator">Создатель</td><td class="absenceRange">Время отсутствия</td><td class="type">Тип отсутствия</td><td class="comment">Комментарий</td></tr><tr class="absence"><td class="control"><span class="edit_button"></span><span class="duplicate_button"></span><span class="delete_button"></span></td><td class="dateCreation"><div class="dateTime">12.09.12 12:30</div></td><td class="dateUpdate"><div class="dateTime">12.09.12 12:30</div></td><td class="creator me">Я</td><td class="absenceRange"><!--span.from 12.09.12 12:30--><!--span.to 13.09.12--><!--span.timeCount--><div class="from"><div class="dateNumber">18</div><div class="monthTime"><div class="month">Май</div><div class="time">13:00</div></div></div><div class="to"><div class="dateNumber">01</div><div class="monthTime"><div class="month">Сентябрь</div><div class="time">13:00</div></div></div></td><td class="type"><span class="typeName reason1">Личные дела</span></td><td class="comment"><div class="relativeBlock"><div class="text">Здесь будет комментарий комментарий комментарий</div></div></td></tr><tr class="absence"><td class="control"><span class="edit_button"></span><span class="duplicate_button"></span><span class="delete_button"></span></td><td class="dateCreation"><div class="dateTime">12.09.12 12:30</div></td><td class="dateUpdate"><div class="dateTime">12.09.12 12:30</div></td><td class="creator"><span class="link">Фамилия И.О.</span></td><td class="absenceRange"><!--span.from 12.09.12 12:30--><!--span.to 13.09.12--><!--span.timeCount--><div class="from"><div class="dateNumber">18</div><div class="monthTime"><div class="month">Май</div><div class="time">13:00</div></div></div><div class="to"><div class="dateNumber">01</div><div class="monthTime"><div class="month">Сентябрь</div><div class="time">13:00</div></div></div></td><td class="type"><span class="typeName reason3">Командировка</span></td><td class="comment"><div class="relativeBlock"><div class="text">Здесь будет комментарий комментарий комментарий</div></div></td></tr><tr class="absence"><td class="control"><span class="edit_button"></span><span class="duplicate_button"></span><span class="delete_button"></span></td><td class="dateCreation"><div class="dateTime">12.09.12 12:30</div></td><td class="dateUpdate"><div class="dateTime">12.09.12 12:30</div></td><td class="creator"><span class="link">Фамилия И.О.</span></td><td class="absenceRange"><!--span.from 12.09.12 12:30--><!--span.to 13.09.12--><!--span.timeCount--><div class="from"><div class="dateNumber">18</div><div class="monthTime"><div class="month">Май</div><div class="time">13:00</div></div></div><div class="to"><div class="dateNumber">01</div><div class="monthTime"><div class="month">Сентябрь</div><div class="time">13:00</div></div></div></td><td class="type"><span class="typeName reason3">Командировка</span></td><td class="comment"><div class="relativeBlock"><div class="text">Здесь будет комментарий комментарий комментарий</div></div></td></tr><tr class="absence"><td class="control"><span class="edit_button"></span><span class="duplicate_button"></span><span class="delete_button"></span></td><td class="dateCreation"><div class="dateTime">12.09.12 12:30</div></td><td class="dateUpdate"><div class="dateTime">12.09.12 12:30</div></td><td class="creator me">Я</td><td class="absenceRange"><!--span.from 12.09.12 12:30--><!--span.to 13.09.12--><!--span.timeCount--><div class="from"><div class="dateNumber">18</div><div class="monthTime"><div class="month">Май</div><div class="time">13:00</div></div></div><div class="to"><div class="dateNumber">01</div><div class="monthTime"><div class="month">Сентябрь</div><div class="time">13:00</div></div></div></td><td class="type"><span class="typeName reason2">Расписание<div class="more_button"></div></span></td><td class="comment"><div class="relativeBlock"><div class="text">Здесь будет комментарий комментарий комментарий</div></div></td></tr><tr class="absence"><td class="control"><span class="edit_button"></span><span class="duplicate_button"></span><span class="delete_button"></span></td><td class="dateCreation"><div class="dateTime">12.09.12 12:30</div></td><td class="dateUpdate"><div class="dateTime">12.09.12 12:30</div></td><td class="creator me">Я</td><td class="absenceRange"><!--span.from 12.09.12 12:30--><!--span.to 13.09.12--><!--span.timeCount--><div class="from"><div class="dateNumber">18</div><div class="monthTime"><div class="month">Май</div><div class="time">13:00</div></div></div><div class="to"><div class="dateNumber">01</div><div class="monthTime"><div class="month">Сентябрь</div><div class="time">13:00</div></div></div></td><td class="type"><span class="typeName reason4">Отпуск</span></td><td class="comment"><div class="relativeBlock"><div class="text">Здесь будет комментарий комментарий комментарий</div></div></td></tr><tr class="absence"><td class="control"><span class="edit_button"></span><span class="duplicate_button"></span><span class="delete_button"></span></td><td class="dateCreation"><div class="dateTime">12.09.12 12:30</div></td><td class="dateUpdate"><div class="dateTime">12.09.12 12:30</div></td><td class="creator me">Я</td><td class="absenceRange"><!--span.from 12.09.12 12:30--><!--span.to 13.09.12--><!--span.timeCount--><div class="from"><div class="dateNumber">18</div><div class="monthTime"><div class="month">Май</div><div class="time">13:00</div></div></div><div class="to"><div class="dateNumber">01</div><div class="monthTime"><div class="month">Сентябрь</div><div class="time">13:00</div></div></div></td><td class="type"><span class="typeName reason1">Личные дела</span></td><td class="comment"><div class="relativeBlock"><div class="text">Здесь будет комментарий комментарий комментарий</div></div></td></tr><tr class="absence"><td class="control"><span class="edit_button"></span><span class="duplicate_button"></span><span class="delete_button"></span></td><td class="dateCreation"><div class="dateTime">12.09.12 12:30</div></td><td class="dateUpdate"><div class="dateTime">12.09.12 12:30</div></td><td class="creator"><span class="link">Фамилия И.О.</span></td><td class="absenceRange"><!--span.from 12.09.12 12:30--><!--span.to 13.09.12--><!--span.timeCount--><div class="from"><div class="dateNumber">18</div><div class="monthTime"><div class="month">Май</div><div class="time">13:00</div></div></div><div class="to"><div class="dateNumber">01</div><div class="monthTime"><div class="month">Сентябрь</div><div class="time">13:00</div></div></div></td><td class="type"><span class="typeName reason4">Отпуск</span></td><td class="comment"><div class="relativeBlock"><div class="text">Здесь будет комментарий комментарий комментарий</div></div></td></tr><tr class="absence"><td class="control"><span class="edit_button"></span><span class="duplicate_button"></span><span class="delete_button"></span></td><td class="dateCreation"><div class="dateTime">12.09.12 12:30</div></td><td class="dateUpdate"><div class="dateTime">12.09.12 12:30</div></td><td class="creator me">Я</td><td class="absenceRange"><!--span.from 12.09.12 12:30--><!--span.to 13.09.12--><!--span.timeCount--><div class="from"><div class="dateNumber">18</div><div class="monthTime"><div class="month">Май</div><div class="time">13:00</div></div></div><div class="to"><div class="dateNumber">01</div><div class="monthTime"><div class="month">Сентябрь</div><div class="time">13:00</div></div></div></td><td class="type"><span class="typeName reason1">Личные дела</span></td><td class="comment"><div class="relativeBlock"><div class="text">Здесь будет комментарий комментарий комментарий</div></div></td></tr><tr class="absence"><td class="control"><span class="edit_button"></span><span class="duplicate_button"></span><span class="delete_button"></span></td><td class="dateCreation"><div class="dateTime">12.09.12 12:30</div></td><td class="dateUpdate"><div class="dateTime">12.09.12 12:30</div></td><td class="creator me">Я</td><td class="absenceRange"><!--span.from 12.09.12 12:30--><!--span.to 13.09.12--><!--span.timeCount--><div class="from"><div class="dateNumber">18</div><div class="monthTime"><div class="month">Май</div><div class="time">13:00</div></div></div><div class="to"><div class="dateNumber">01</div><div class="monthTime"><div class="month">Сентябрь</div><div class="time">13:00</div></div></div></td><td class="type"><span class="typeName reason1">Личные дела</span></td><td class="comment"><div class="relativeBlock"><div class="text">Здесь будет комментарий комментарий комментарий</div></div></td></tr></table><div class="footer"><div class="btn">ещё 5</div><div class="btn">ещё 10</div><div class="btn">ещё 15</div></div></div></div><div class="footer"><div class="button greenC">Сохранить</div><div id="clsAbsenceViewerBut2" class="button grayC">Отмена</div></div></div><div class="popup absenceEditing"><div class="body"><div class="t_wrapper"><div class="tc_wrapper datePickerBlock"><div class="datePicker"><div id="2date-rangeWrap"></div></div></div><div class="tc_wrapper mainBlock"><div class="head">Новое отсутствие<div class="rightSide"><div id="clsAbsenceViewerBut1" class="close_button"></div></div></div><div class="body"><div class="mainInfo"><span id="2twoRange" class="dateTime"><span class="from"><span id="2date-range1" class="date">23.05.16</span><span id="amount" class="time">с начала дня</span></span>—<span class="to"><span id="2date-range2" class="date">23.05.16</span><span id="amount2" class="time">до конца дня</span></span></span><div class="rightSide"><div id="absenceReason_but" class="absenceReason_button reason2">Расписание</div></div></div><div class="timePicker"><div class="twoDays"><div class="slider toRight"><div id="slider-range-max"></div></div><div class="slider toLeft"><div id="slider-range-min"></div></div></div><div class="oneDay"><div class="slider"><div id="slider-range"></div></div></div></div><div class="comment"><textarea placeholder="Комментарий" class="text"></textarea></div></div></div><div id="scheduleBlock" class="tc_wrapper scheduleBlock"><div class="dimension_wrapper"><div class="schedule"><div class="head">Расписание<div class="rightSide"><div class="weekParity_button">2нед.</div></div></div><div class="body"><table><thead><tr class="headers"><td class="day"></td><td class="week">Чётная неделя</td><td class="week">Нечётная неделя</td></tr></thead><tbody><tr><td class="day">Пн</td><td class="week"><span class="time"><span class="from">12:00</span>—<span class="to">18:00</span></span><span class="delete_button"></span></td><td class="week"><div class="add_button"></div></td></tr><tr><td class="day">Пн</td><td class="week"><span class="time"><span class="from">12:00</span>—<span class="to">18:00</span></span><span class="delete_button"></span></td><td class="week"><div class="add_button"></div></td></tr><tr><td class="day">Пн</td><td class="week"><span class="time"><span class="from">12:00</span>—<span class="to">18:00</span></span><span class="delete_button"></span></td><td class="week"><div class="add_button"></div></td></tr><tr><td class="day">Пн</td><td class="week"><span class="time"><span class="from">12:00</span>—<span class="to">18:00</span></span><span class="delete_button"></span></td><td class="week"><div class="add_button"></div></td></tr><tr><td class="day">Пн</td><td class="week"><span class="time"><span class="from">12:00</span>—<span class="to">18:00</span></span><span class="delete_button"></span></td><td class="week"><div class="add_button"></div></td></tr></tbody></table></div></div></div></div></div></div><script>$(function () {
-    $('#2twoRange').dateRangePicker(
-        {
-            singleMonth: true,
-            inline: true,
-            format: 'DD.MM.YY',
-            showShortcuts: false,
-            showTopbar: false,
-            //startDate: "27.10.15",
-            startOfWeek: "monday",
-            //                    showTopbar: false,
-            separator: '  ',
-            getValue: function () {
-                //                        if ($('#date-range200').val() && $('#date-range201').val() )
-                //  				return $('#date-range200').val() + ' to ' + $('#date-range201').val();
-                //                            return '';
-                //                        else
-                return '';
-            },
-            setValue: function (s, s1, s2) {
-                $('#2date-range1').html(s1);
-                $('#2date-range2').html(s2);
-            },
-            alwaysOpen: true,
-            container: '#2date-rangeWrap'
-        }
-    );
-    //$('#2twoRange').data('dateRangePicker').setDateRange('23-05-16', '23-05-16');
-
-
-    function generateTime(elem, e, ui){
-
-        var hours = Math.floor(ui.value / 60);
-        var minutes = ui.value - (hours * 60);
-
-        if (hours == 0 && minutes==0) {
-            elem[0].html( 'с начала дня' );
-            return;
-        }
-        else if(hours==24){
-            elem[0].html( 'до конца дня' );
-            return
-        }
-
-        if (hours < 10) hours = '0' + hours;
-        if (minutes < 10) minutes = '0' + minutes;
-
-        elem[0].html( hours + ':' + minutes );
-
-
-    }
-
-
-    $( "#slider-range-max" ).slider({
-        range: "max",
-        min: 0,
-        max: 1425,
-        step: 15,
-        slide: generateTime.bind(null, [$("#amount")])
-    });
-
-
-    $( "#slider-range-min" ).slider({
-        range: "min",
-        min: 15,
-        max: 1440,
-        step: 15,
-        value: 1440,
-        slide: generateTime.bind(null, [$("#amount2")])
-    });
-
-    $( "#slider-range" ).slider({
-        range: true,
-        min: 0,
-        max: 1440,
-        step: 15,
-        values: [0,1440],
-        slide: function(e, ui) {
-            generateTime([$("#amount")], null, {value: ui.values[0]});
-            generateTime([$("#amount2")], null, {value: ui.values[1]});
-        }
-    });
+--></div></div></div><div id="absenceTooltip" class="tooltipPopup_block"></div><div id="absenceInfo" class="absencePopup_block"><div class="info"><div class="date"><div class="dateNumber"></div><div class="monthTime"><div class="month"></div><div class="time"></div></div></div>—<div class="date"><div class="dateNumber"></div><div class="monthTime"><div class="month"></div><div class="time"></div></div></div><div class="absenceReason"></div><div class="rightSide"><span class="delete_button"></span><span class="edit_button"></span><span class="duplicate_button"></span></div></div><div class="schedule"><table><tr class="headers"><td></td><td class="day mo">Пн</td><td class="day tu">Вт</td><td class="day we">Ср</td><td class="day th">Чт</td><td class="day fr">Пт</td></tr><tr class="week"><td class="weekParity">Чётная неделя</td><td data-day="Пн" class="day"></td><td data-day="Вт" class="day"></td><td data-day="Ср" class="day"></td><td data-day="Чт" class="day"></td><td data-day="Пт" class="day"></td></tr><tr class="week"><td class="weekParity">Нечётная неделя</td><td data-day="Пн" class="day"></td><td data-day="Вт" class="day"></td><td data-day="Ср" class="day"></td><td data-day="Чт" class="day"></td><td data-day="Пт" class="day"></td></tr></table></div><div class="comment"><span class="icon-comment"></span><span class="text"></span></div></div><div id="absenceViewer" class="popup_backgroundBlock"><div class="wrapper"><div class="popupBlock"><div class="popup absenceViewer"><div class="leftBlock"><div class="datePicker"><div class="datePickerWrap"></div></div></div><div class="rightBlock"><div class="head">Просмотрщик отсутствий<div class="rightSide"><div id="clsAbsenceViewerBut1" class="close_button"></div></div></div><div class="body"><div class="controlButtons"><span id="dtAv" class="dateTime"><span class="dateTimeBy">дата отсутствия</span><span class="from"><span id="tAv1" class="date">23.05.16</span></span>—<span class="to"><span id="tAv2" class="date">23.05.16</span></span></span><div class="buttons_group"><div id="absenceReasonFilter" class="button selected">Все типы отсутствий</div></div><div class="rightSide"><div class="button greenC"><span class="icon-add"></span>Новое отсутствие</div></div></div><div class="AbsenceList"><table class="absences"><tr class="headers"><td class="control">Управление</td><td class="dateCreation">Дата создания</td><td class="dateUpdate">Дата обновления</td><td class="creator">Создатель</td><td class="absenceRange">Время отсутствия</td><td class="type">Тип отсутствия</td><td class="comment">Комментарий</td></tr><tbody><tr class="absence"><td class="control"><span class="edit_button"></span><span class="duplicate_button"></span><span class="delete_button"></span></td><td class="dateCreation"><div class="dateTime">12.09.12 12:30</div></td><td class="dateUpdate"><div class="dateTime">12.09.12 12:30</div></td><td class="creator me">Я</td><td class="absenceRange"><div class="from"><div class="dateNumber">18</div><div class="monthTime"><div class="month">Май</div><div class="time">13:00</div></div></div><div class="to"><div class="dateNumber">01</div><div class="monthTime"><div class="month">Сентябрь</div><div class="time">13:00</div></div></div></td><td class="type"><span class="typeName reason6">Расписание<div id="showSchedule_but" class="more_button"></div></span></td><td class="comment"><div class="comment_button"></div></td></tr></tbody></table><!--.footer.btn ещё 5
+.btn ещё 10
+.btn ещё 15
+--></div><div class="EmptyBlock"><div class="wrapper">По вашему запросу ничего не найдено</div></div></div><div class="footer"><div class="button greenC">Сохранить</div><div id="clsAbsenceViewerBut2" class="button grayC">Отмена</div></div></div></div><!--.popup.absenceEditing--><!----><!--    .body--><!--        .t_wrapper--><!--            .tc_wrapper.datePickerBlock--><!--                .datePicker--><!--                    #2date-rangeWrap--><!--            .tc_wrapper.mainBlock--><!--                .head Новое отсутствие--><!--                    .rightSide--><!--                        #clsAbsenceViewerBut1.close_button--><!--                .body--><!--                    .mainInfo--><!--                        span#2twoRange.dateTime--><!--                            span.from--><!--                                span#2date-range1.date 23.05.16--><!--                                span#amount.time с начала дня--><!--                            |—--><!--                            span.to--><!--                                span#2date-range2.date 23.05.16--><!--                                span#amount2.time до конца дня--><!----><!--                        .rightSide--><!--                            #absenceReason_but.absenceReason_button.reason2 Расписание--><!----><!--                    .timePicker--><!----><!--                        .twoDays--><!--                            .slider.toRight--><!--                                #slider-range-max--><!--                            .slider.toLeft--><!--                                #slider-range-min--><!--                        .oneDay--><!--                            .slider--><!--                                #slider-range--><!----><!--                    .comment--><!--                        textarea.text(placeholder="Комментарий")--><!----><!----><!--            #scheduleBlock.tc_wrapper.scheduleBlock--><!--                .dimension_wrapper--><!--                    .schedule--><!--                        .head Расписание--><!--                            .rightSide--><!--                                .weekParity_button 2нед.--><!--                        .body--><!--                            table--><!--                                thead--><!--                                    tr.headers--><!--                                        td.day--><!--                                        td.week Чётная неделя--><!--                                        td.week Нечётная неделя--><!--                                tbody--><!--                                    +loop(5)--><!--                                        tr--><!--                                            td.day Пн--><!--                                            td.week--><!--                                                span.time--><!--                                                    span.from 12:00--><!--                                                    | —--><!--                                                    span.to 18:00--><!--                                                span.delete_button--><!----><!--                                            td.week--><!--                                                .add_button--><!----><!----><!----><!----><!--    script.--><!--        $(function () {--><!--            $('#2twoRange').dateRangePicker(--><!--                {--><!--                    singleMonth: true,--><!--                    inline: true,--><!--                    format: 'DD.MM.YY',--><!--                    showShortcuts: false,--><!--                    showTopbar: false,--><!--                    //startDate: "27.10.15",--><!--                    startOfWeek: "monday",--><!--                    //                    showTopbar: false,--><!--                    separator: '  ',--><!--                    getValue: function () {--><!--                        //                        if ($('#date-range200').val() && $('#date-range201').val() )--><!--                        //  				return $('#date-range200').val() + ' to ' + $('#date-range201').val();--><!--                        //                            return '';--><!--                        //                        else--><!--                        return '';--><!--                    },--><!--                    setValue: function (s, s1, s2) {--><!--                        $('#2date-range1').html(s1);--><!--                        $('#2date-range2').html(s2);--><!--                    },--><!--                    alwaysOpen: true,--><!--                    container: '#2date-rangeWrap'--><!--                }--><!--            );--><!--            //$('#2twoRange').data('dateRangePicker').setDateRange('23-05-16', '23-05-16');--><!----><!----><!--            function generateTime(elem, e, ui){--><!----><!--                var hours = Math.floor(ui.value / 60);--><!--                var minutes = ui.value - (hours * 60);--><!----><!--                if (hours == 0 && minutes==0) {--><!--                    elem[0].html( 'с начала дня' );--><!--                    return;--><!--                }--><!--                else if(hours==24){--><!--                    elem[0].html( 'до конца дня' );--><!--                    return--><!--                }--><!----><!--                if (hours < 10) hours = '0' + hours;--><!--                if (minutes < 10) minutes = '0' + minutes;--><!----><!--                elem[0].html( hours + ':' + minutes );--><!----><!----><!--            }--><!----><!----><!--            $( "#slider-range-max" ).slider({--><!--                range: "max",--><!--                min: 0,--><!--                max: 1425,--><!--                step: 15,--><!--                slide: generateTime.bind(null, [$("#amount")])--><!--            });--><!----><!----><!--            $( "#slider-range-min" ).slider({--><!--                range: "min",--><!--                min: 15,--><!--                max: 1440,--><!--                step: 15,--><!--                value: 1440,--><!--                slide: generateTime.bind(null, [$("#amount2")])--><!--            });--><!----><!--            $( "#slider-range" ).slider({--><!--                range: true,--><!--                min: 0,--><!--                max: 1440,--><!--                step: 15,--><!--                values: [0,1440],--><!--                slide: function(e, ui) {--><!--                    generateTime([$("#amount")], null, {value: ui.values[0]});--><!--                    generateTime([$("#amount2")], null, {value: ui.values[1]});--><!--                }--><!--            });--><!----><!----><!----><!--            $('#absenceReason_but').click(function(event){--><!--                var absenceEditing = $('#absenceViewer').find('.absenceEditing');--><!--                if(absenceEditing.hasClass('schedule_showing')){--><!--                    $('#absenceViewer').find('.scheduleBlock').removeClass('active');--><!--                    absenceEditing.removeClass('schedule_showing');--><!--                }--><!--                else {--><!--                    absenceEditing.addClass('schedule_showing');--><!--                    setTimeout(function(){--><!--                        $('#absenceViewer').find('.scheduleBlock').addClass('active');--><!--                    }, 300);--><!--                }--><!--            });--><!----><!----><!--        });--><!----><!--    .footer--><!--        .button.greenC Сохранить--><!--        #clsAbsenceViewerBut2.button.grayC Отмена-->
 
 
 
-    $('#absenceReason_but').click(function(event){
-        var absenceEditing = $('#absenceViewer').find('.absenceEditing');
-        if(absenceEditing.hasClass('schedule_showing')){
-            $('#absenceViewer').find('.scheduleBlock').removeClass('active');
-            absenceEditing.removeClass('schedule_showing');
-        }
-        else {
-            absenceEditing.addClass('schedule_showing');
-            setTimeout(function(){
-                $('#absenceViewer').find('.scheduleBlock').addClass('active');
-            }, 300);
-        }
-    });
-
-
-});
-</script><div class="footer"><div class="button greenC">Сохранить</div><div id="clsAbsenceViewerBut2" class="button grayC">Отмена</div></div></div></div></div></div><script>function setPopupPosition(event, popup, innerOffset, outerTopOffset){
+</div></div></div><script>function setPopupPosition(event, popup, innerOffset, outerTopOffset){
     var width = popup.outerWidth();
 
     if(event.clientX + width > $(document).width())
@@ -1761,24 +1715,182 @@ function UserProducer(){
 
 
 
-</script><script>$('#editAbsenceButton').click(function () {
-    var popupBlock = $('#absenceViewer');
-    popupBlock.css('display', 'block');
-    setTimeout(function () {
-        popupBlock.addClass('active'),
-                activateTimeFixerDiagram();
-                //$('#absenceSchedule').perfectScrollbar();
-                //$('#absenceSchedule').perfectScrollbar();
-    }, 200);
-    $('#clsAbsenceViewerBut1,#clsAbsenceViewerBut2').click(
-        function func(event) {
-            popupBlock.removeClass('active')
-            setTimeout(function () {
-                popupBlock.css('display', '')
-            }, 200);
-            $(event.target).off('click', func);
+</script><script>function AbsenceViewer(){
+    var absenceViewer = $('#absenceViewer');
+    var dateTime = absenceViewer.find('#dtAv');
+    var absenceList = absenceViewer.find('.AbsenceList');
+    var absenceListTbody = absenceList.find('tbody');
+    var months = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
+    var absenceReasons = ["Командировка", "Отпуск", "Болезнь", "Личные дела", "Местная командировка", "Учеба", "Больничный лист", "Гостевой пропуск", "Ночные работы", "Отпуск за свой счёт"]
+    var emptyBlock = absenceList.next('.EmptyBlock');
+    dateTime.dateRangePicker(
+        {
+            singleMonth: true,
+            inline: true,
+            format: 'DD.MM.YY',
+            showShortcuts: false,
+            showTopbar: false,
+            startOfWeek: "monday",
+            separator: '  ',
+            getValue: function () {
+                return '';
+            },
+            setValue: function (s, s1, s2) {
+                dateTime.find('#tAv1').html(s1);
+                dateTime.find('#tAv2').html(s2);
+            },
+            alwaysOpen: true,
+            container: absenceViewer.find('.datePickerWrap')
         }
     );
+
+
+    function downloadAbsences(from, till, id){
+        AJAX.getEmployeeAbsences(
+            {
+                id: id,
+                from: +from,
+                till: +till
+                //from: +timeFrom  + 10800000,
+                //till: +timeTill  + 10800000
+            },
+            successAction,
+            messageGenerator.lateCall("Ошибка! Не удалось подгрузить отсутствия")
+        );
+    }
+
+
+
+    function getTwoNumberDatePart(number){
+        return number<10?'0'+number:number;
+    }
+
+    function getDateString(date){
+        return getTwoNumberDatePart(date.getDate()) +'.'+ getTwoNumberDatePart(date.getMonth()) +'.'+ date.getFullYear() +' '+ getTwoNumberDatePart(date.getHours()) +':'+ getTwoNumberDatePart(date.getMinutes());
+    }
+
+
+    function getDateRangeString(date, initiallyTime){
+        var hm = getTwoNumberDatePart(date.getHours()) +':'+ getTwoNumberDatePart(date.getMinutes());
+        return '<div class="dateNumber">' + getTwoNumberDatePart(date.getDate()) +
+            '<div class="monthTime">' +
+            '<div class="month">'+ months[date.getMonth()] +'</div>' +
+             (hm != initiallyTime?'<div class="time">'+ hm +'</div>':'') +
+            '</div>' +
+            '</div>';
+    }
+
+    function buildAbsence(absence){
+
+        var html = '<tr>' +
+                '<td class="control">' +
+                '<span class="edit_button inactive"></span>' +
+                '<span class="duplicate_button inactive"></span>' +
+                '<span class="delete_button inactive"></span>' +
+                '</td>'
+
+
+        html += '<td class="dateCreation">' +
+                '<div class="dateTime">' +
+                getDateString(new Date(absence.dtCreation)) +
+                '</div>' +
+                '</td>';
+
+        html += '<td class="dateUpdate">' +
+                '<div class="dateTime"></div>' +
+                getDateString(new Date(absence.dtUpdate)) +
+                '</div>' +
+                '</td>';
+
+        if(absence.creatorId == MyID)
+            html += '<td class="creator me">Я</td>'
+        else
+            html += '<td class="creator"><span class="link">'+ absence.creator +'</span></td>'
+
+
+        html += '<td class="absenceRange">' +
+                '<div class="from">' +
+                getDateRangeString(new Date(absence.dateFrom), '00:00') +
+                '</div>' +
+                '</td>';
+
+        html += '<td class="absenceRange">' +
+                '<div class="to">' +
+                getDateRangeString(new Date(absence.dateTill), '23:59') +
+                '</div>' +
+                '</td>';
+
+
+
+        html += '<td class="type">' +
+                '<span class="typeName reason'+ absenceReasons[absence.reason] +'">' +
+                (absence.reason == 6?'<div class="more_button" onclick="showSchedule(event, '+ absence.schedule +')"></div>':'') +
+                '</span>' +
+                '</td>';
+
+        html += '<td class="comment">' +
+                (absence.comment?'<div class="comment_button" onclick="showAbsenceComment(event, '+ absence.comment +')"></div>':'') +
+                '</td>';
+
+        html += '</tr>';
+
+        return html;
+    }
+
+    this.show = function(id){
+        var till = new Date();
+        var from = new Date(+till)
+        from.setDate(from.getDate() - 7);
+
+        dateTime.data('dateRangePicker').setDateRange(from, till);
+        //downloadAbsences(from, till, id);
+
+
+        var absences = window['Employee'+id].absences;
+        if(absences.length>0){
+            emptyBlock.hide();
+            absenceList.show();
+            var html = '';
+            for(var i=0; i<absences.length; i++)
+                html += buildAbsence(absences[i]);
+            absenceListTbody.html('html');
+        }else{
+            absenceListTbody.html('');
+            absenceList.hide();
+            emptyBlock.show();
+        }
+
+        absenceViewer.show();
+        setTimeout(function () {
+            absenceViewer.addClass('active')
+        }, 200);
+
+
+        $('#clsAbsenceViewerBut1, #clsAbsenceViewerBut2').click(
+            function func(event) {
+                absenceViewer.removeClass('active')
+                setTimeout(function () {
+                    absenceViewer.hide();
+                    //absenceViewer.css('display', '')
+                }, 200);
+                $(event.target).off('click', func);
+            }
+        );
+
+
+    }
+
+
+}
+
+
+var absenceViewer;
+$('#editAbsenceButton').click(function () {
+    STOP();
+    if(!absenceViewer)
+        absenceViewer = new AbsenceViewer();
+
+    absenceViewer.show(userProducer.getOpenedUserId());
 });
 
 </script><div id="selectList" class="selectList"><div class="wrapper"></div></div><script>var departmentFilter = $('#departmentFilter');
@@ -2065,6 +2177,19 @@ binderSelectList.bindSimpleSelect($('#sorting_but'), [
     "Фамилия",
     "Должность",
     "Дата рождения"
+], sorting.by);
+binderSelectList.bindSimpleSelect($('#absenceReasonFilter'), [
+    "Все типы отсутствий",
+    "Командировка",
+    "Отпуск",
+    "Болезнь",
+    "Личные дела",
+    "Местная командировка",
+    "Учёба",
+    "Больничный лист",
+    "Гостевой пропуск",
+    "Ночные работы",
+    "Отпуск за свой счёт"
 ], sorting.by);
 
 </script><div id="userMenuPopup" class="menu_popup"><div class="menu"><div class="item">Отправить email</div><div class="item">Добавить в избранные</div><div class="item">Добавить отсутствие</div></div></div><script>function showUserMenu(event){

@@ -99,6 +99,7 @@ public class MigratePersonAction implements MigrateAction {
                  x.setCreator((String) row.get("strCreatorID"));
 
                  x.setDisplayName((String) row.get("fullFio"));
+
                  x.setFirstName((String) row.get("strFirstName"));
                  if (x.getFirstName() == null)
                     x.setFirstName("-");
@@ -109,6 +110,8 @@ public class MigratePersonAction implements MigrateAction {
 
                  x.setSecondName((String) row.get("strPatronymic"));
 
+                 x.setDisplayShortName(generateDisplayShortName(x.getFirstName(), x.getLastName(), x.getSecondName()));
+
                  x.setInfo((String) row.get("strInfo"));
                  x.setDeleted(row.get("lRetired") != null && ((Number) row.get("lRetired")).intValue() != 0);
                  x.setPassportInfo((String) row.get("strPassportInfo"));
@@ -118,7 +121,6 @@ public class MigratePersonAction implements MigrateAction {
 
 
                  x.setDepartment((String) row.get("strDescription"));
-
 
                  x.setIpAddress((String) row.get("strIP_Address"));
 
@@ -180,6 +182,26 @@ public class MigratePersonAction implements MigrateAction {
               .dumpStats(TM_PERSON_ITEM_CODE);
 
    }
+
+
+   private String generateDisplayShortName(String firstName, String lastName, String secondName){
+      return lastName +" "+ firstName.charAt(0) +"."+ (secondName!=null?secondName.charAt(0) +".":"");
+   }
+
+
+//   private HashMap getDepartmentIdPairs(){
+//      int[] oldIds = {1,45,16,10,11,9,12,8,50,166,161,160,53,170,162,29,167,21,19,37,26,41,164,31,33,159,23,171,165,46,49,47,48,43,17,15,13,169,4,168,3,42,28,34,25,20,22,38,30,163,40,32,27,7,39,5,2,18,6,54,52,14}; // Id подразделений отсортированных по strDescription
+//      HashMap<Integer, Integer> conformity = new HashMap<>();
+//
+//
+//      for(int i= 0; i < oldIds.length; i++){
+//         conformity.put(oldIds[i], i+1); // заменяем их на новые id начиная с 1 в порядке возрастания
+//      }
+//      return conformity;
+//   }
+
+
+
 
 
 }

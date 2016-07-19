@@ -34,8 +34,12 @@ public class Person {
     private String lastName;
     @JdbcColumn(name="secondname")
     private String secondName;
+
     @JdbcColumn(name="displayname")
     private String displayName;
+
+    @JdbcColumn(name="displayShortName")
+    private String displayShortName;
 
     /**
      * constraint CHK_PERSON_SEX check (SEX in ('M','F','-')),
@@ -314,5 +318,13 @@ public class Person {
 
     public String toDebugString () {
         return this.getDisplayName();
+    }
+
+    public String getDisplayShortName() {
+        return displayShortName;
+    }
+
+    public void setDisplayShortName(String displayShortName) {
+        this.displayShortName = displayShortName;
     }
 }

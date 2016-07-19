@@ -18,8 +18,8 @@ public interface WorkersAPI {
     @GetMapping("/gate/employees/{id:[0-9]+}.json")
     public EmployeeDetailView getEmployeeProfile (@PathVariable("id") Long id);
 
-    @GetMapping(path = "/gate/employees/{id:[0-9]+}/absences.json", params = {"from", "till"})
-    public EmployeeDetailView getEmployeeAbsences(@PathVariable("id") Long id, @RequestParam("from") Long tFrom, @RequestParam("till") Long tTill);
+    @GetMapping(path = "/gate/employees/{id:[0-9]+}/absences.json", params = {"from", "till", "full"})
+    public EmployeeDetailView getEmployeeAbsences(@PathVariable("id") Long id, @RequestParam("from") Long tFrom, @RequestParam("till") Long tTill, @RequestParam("full") Boolean isFull);
 
     @GetMapping(path = "/gate/currentMissingEmployeesIDs.json")
     public String getCurrentMissingEmployeeIDs();

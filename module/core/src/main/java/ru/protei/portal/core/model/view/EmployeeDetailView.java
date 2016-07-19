@@ -59,20 +59,22 @@ public class EmployeeDetailView {
         return this;
     }
 
-    public EmployeeDetailView fill (List<PersonAbsence> alist) {
+    public EmployeeDetailView fill (List<PersonAbsence> alist, boolean isFull) {
 
         this.absences = alist == null || alist.isEmpty() ? null : new AbsenceEntryView[alist.size()];
 
         if (this.absences != null) {
             int i = 0;
             for (PersonAbsence a : alist) {
-                this.absences[i] = new AbsenceEntryView(a);
+                if(!isFull)
+                    this.absences[i] = new AbsenceEntryView().fill(a);
+                else
+                    this.absences[i] = new AbsenceEntryView().fullFill(a);
                 i++;
             }
         }
 
-
-
         return this;
     }
+
 }

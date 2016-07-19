@@ -14,6 +14,8 @@ html
         +popup('messaging')
 
         script(src="/ws/resource/employees.js")
+        script.
+            var MyID = 546;
 
     body
         .global
@@ -737,6 +739,53 @@ html
                                         }
 
                                         lastScheduleToday.addClass('today');
+                                    }
+
+
+
+                                    this.showScheduleInfo = function(id, timeFrom){
+                                        //var schedule = diagramProducer.getScheduleByTimeFrom(timeFrom);
+
+                                        diagramProducer.downloadAbsences(from, till, function(data){
+                                            if(data["absences"]){
+
+                                            }else{
+                                                // пусто
+                                            }
+                                        })
+
+
+
+                                        if(schedule.length == 1){ // одна неделя
+                                            headerWeekTd.hide();
+
+                                            weeks[0].eq(0).hide(); //скрываем 2 колонки с чётностью недель
+                                            weeks[1].eq(0).hide();
+
+                                            buildScheduleTable(weeks[0], schedule);
+                                        }else{ // две недели
+                                            headerWeekTd.show();
+
+                                            weeks[0].eq(0).show();
+                                            weeks[1].eq(0).show();
+
+                                            buildScheduleTable(weeks[0], schedule['чёт']);
+                                            buildScheduleTable(weeks[1], schedule['нечёт']);
+                                        }
+
+                                        mainInfo.hide();
+                                        commentInfo.hide();
+
+                                        absenceInfo.addClass('whiteScheduleBlock');
+                                        absenceInfo.show();
+                                        event.stopPropagation();
+
+                                        setPopupPosition(event, absenceInfo, 58, 28); // 58 = toLeft/toRight offset + row.width/2
+                                        bindDocumentKillingClick(absenceInfo, absenceInfo, function(){
+                                            absenceInfo.hide();
+                                            mainInfo.show();
+                                            absenceInfo.removeClass('whiteScheduleBlock');
+                                        })
                                     }
 
                                     this.showAbsenceInfo = function(event, timeFrom, timeTill, absenceId, comment){
@@ -1511,290 +1560,274 @@ html
             #absenceViewer.popup_backgroundBlock
                 .wrapper
                     .popupBlock
-                        .popup.absenceViewer(style="display: none")
-                            .head Просмотрщик отсутствий
-                                .rightSide
-                                    #clsAbsenceViewerBut1.close_button
-                            .body
-                                .solidDatePicker.blueC
-                                    .top_button
-                                    .wrapper
-                                        -var days = ['Вт','Ср','Чт','Пт','Сб','Вс','Пн'];
-                                        -for(var i=31; i>0; i--)
+                        .popup.absenceViewer
 
-                                            if(i==31)
-                                                .date.today #{i} мая, #{days[i % 7]}
-                                            else if(i==23)
-                                                .date.active #{i} мая, #{days[i % 7]}
-                                            else if(i==29 || i==27 || i==24 || i==20 || i==16 || i==17)
-                                                .date.exists #{i} мая, #{days[i % 7]}
-                                            else if(i==26 || i==25 || i==19 || i==18 || i==12 || i==11)
-                                                .date.weekend #{i} мая, #{days[i % 7]}
-                                            else
-                                                .date #{i} мая, #{days[i % 7]}
-                                    .bottom_button
+                            .leftBlock
+                                .datePicker
+                                    .datePickerWrap
 
+                            .rightBlock
 
-                                .controlButtons
-                                    .button Активные
-                                    .button Завершённые
-                                    .buttons_group
-                                        .button.selected Все типы отсутствий
-
+                                .head Просмотрщик отсутствий
                                     .rightSide
-                                        .button.greenC
-                                            span.icon-add
-                                            |Новое отсутствие
+                                        #clsAbsenceViewerBut1.close_button
+                                .body
+                                    .controlButtons
+                                        span#dtAv.dateTime
+                                            span.dateTimeBy дата отсутствия
+                                            span.from
+                                                span#tAv1.date 23.05.16
+                                            |—
+                                            span.to
+                                                span#tAv2.date 23.05.16
 
-                                .AbsenceList
+                                        .buttons_group
+                                            #absenceReasonFilter.button.selected Все типы отсутствий
 
-                                    table.absences
+                                        .rightSide
+                                            .button.greenC
+                                                span.icon-add
+                                                |Новое отсутствие
 
-                                        tr.headers
-                                            td.control Управление
-                                            td.dateCreation Дата создания
-                                            td.dateUpdate Дата обновления
-                                            td.creator Создатель
-                                            td.absenceRange Время отсутствия
-                                            td.type Тип отсутствия
-                                            td.comment Комментарий
+                                    .AbsenceList
+                                        table.absences
+
+                                            tr.headers
+                                                td.control Управление
+                                                td.dateCreation Дата создания
+                                                td.dateUpdate Дата обновления
+                                                td.creator Создатель
+                                                td.absenceRange Время отсутствия
+                                                td.type Тип отсутствия
+                                                td.comment Комментарий
 
 
-                                        -var reasons = [1,3,3,2,4,1,4,1,1,2,1,1,1,3,3,2,4,1,4,1,1,2,1,1,1,3,3,2,4,1,4,1,1,2,1,1]
-                                        -var creator = [1,0,0,1,1,1,0,1,1,1,1,1,1,0,0,1,1,1,0,1,1,1,1,1,1,0,0,1,1,1,0,1,1,1,1,1]
-                                        -for(var b=0; b<9; b++)
-                                            tr.absence
-                                                td.control
-                                                    span.edit_button
-                                                    span.duplicate_button
-                                                    span.delete_button
-                                                td.dateCreation
-                                                    .dateTime 12.09.12 12:30
-                                                td.dateUpdate
-                                                    .dateTime 12.09.12 12:30
-                                                if(creator[b]==1)
+                                            tbody
+                                                tr.absence
+                                                    td.control
+                                                        span.edit_button
+                                                        span.duplicate_button
+                                                        span.delete_button
+                                                    td.dateCreation
+                                                        .dateTime 12.09.12 12:30
+                                                    td.dateUpdate
+                                                        .dateTime 12.09.12 12:30
+
                                                     td.creator.me Я
-                                                else
-                                                    td.creator
-                                                        span.link Фамилия И.О.
-                                                td.absenceRange
-                                                    //span.from 12.09.12 12:30
-                                                    //span.to 13.09.12
-                                                    //span.timeCount
 
-                                                    .from
-                                                        .dateNumber 18
-                                                        .monthTime
-                                                            .month Май
-                                                            .time 13:00
+                                                    td.absenceRange
+                                                        .from
+                                                            .dateNumber 18
+                                                            .monthTime
+                                                                .month Май
+                                                                .time 13:00
 
-                                                    .to
-                                                        .dateNumber 01
-                                                        .monthTime
-                                                            .month Сентябрь
-                                                            .time 13:00
+                                                        .to
+                                                            .dateNumber 01
+                                                            .monthTime
+                                                                .month Сентябрь
+                                                                .time 13:00
 
-                                                td.type
-                                                    if(reasons[b]==1)
-                                                        span.typeName.reason1 Личные дела
-                                                    else if(reasons[b]==2)
-                                                        span.typeName.reason2 Расписание
-                                                            .more_button
-                                                    else if(reasons[b]==3)
-                                                        span.typeName.reason3 Командировка
-                                                    else if(reasons[b]==4)
-                                                        span.typeName.reason4 Отпуск
-                                                td.comment
-                                                    .relativeBlock
-                                                        .text Здесь будет комментарий комментарий комментарий
+                                                    td.type
+                                                        span.typeName.reason6 Расписание
+                                                            #showSchedule_but.more_button
+                                                    td.comment
+                                                        .comment_button
 
+                                        //.footer
+                                            .btn ещё 5
+                                            .btn ещё 10
+                                            .btn ещё 15
 
-                                    .footer
-                                        .btn ещё 5
-                                        .btn ещё 10
-                                        .btn ещё 15
+                                    .EmptyBlock
+                                        .wrapper По вашему запросу ничего не найдено
 
-                            .footer
-                                .button.greenC Сохранить
-                                #clsAbsenceViewerBut2.button.grayC Отмена
-
-
-                        .popup.absenceEditing
-
-                            .body
-                                .t_wrapper
-                                    .tc_wrapper.datePickerBlock
-                                        .datePicker
-                                            #2date-rangeWrap
-                                    .tc_wrapper.mainBlock
-                                        .head Новое отсутствие
-                                            .rightSide
-                                                #clsAbsenceViewerBut1.close_button
-                                        .body
-                                            .mainInfo
-                                                span#2twoRange.dateTime
-                                                    span.from
-                                                        span#2date-range1.date 23.05.16
-                                                        span#amount.time с начала дня
-                                                    |—
-                                                    span.to
-                                                        span#2date-range2.date 23.05.16
-                                                        span#amount2.time до конца дня
-
-                                                .rightSide
-                                                    #absenceReason_but.absenceReason_button.reason2 Расписание
-
-                                            .timePicker
-
-                                                .twoDays
-                                                    .slider.toRight
-                                                        #slider-range-max
-                                                    .slider.toLeft
-                                                        #slider-range-min
-                                                .oneDay
-                                                    .slider
-                                                        #slider-range
-
-                                            .comment
-                                                textarea.text(placeholder="Комментарий")
-
-
-                                    #scheduleBlock.tc_wrapper.scheduleBlock
-                                        .dimension_wrapper
-                                            .schedule
-                                                .head Расписание
-                                                    .rightSide
-                                                        .weekParity_button 2нед.
-                                                .body
-                                                    table
-                                                        thead
-                                                            tr.headers
-                                                                td.day
-                                                                td.week Чётная неделя
-                                                                td.week Нечётная неделя
-                                                        tbody
-                                                            +loop(5)
-                                                                tr
-                                                                    td.day Пн
-                                                                    td.week
-                                                                        span.time
-                                                                            span.from 12:00
-                                                                            | —
-                                                                            span.to 18:00
-                                                                        span.delete_button
-
-                                                                    td.week
-                                                                        .add_button
+                                .footer
+                                    .button.greenC Сохранить
+                                    #clsAbsenceViewerBut2.button.grayC Отмена
 
 
 
 
-                            script.
-                                $(function () {
-                                    $('#2twoRange').dateRangePicker(
-                                        {
-                                            singleMonth: true,
-                                            inline: true,
-                                            format: 'DD.MM.YY',
-                                            showShortcuts: false,
-                                            showTopbar: false,
-                                            //startDate: "27.10.15",
-                                            startOfWeek: "monday",
-                                            //                    showTopbar: false,
-                                            separator: '  ',
-                                            getValue: function () {
-                                                //                        if ($('#date-range200').val() && $('#date-range201').val() )
-                                                //  				return $('#date-range200').val() + ' to ' + $('#date-range201').val();
-                                                //                            return '';
-                                                //                        else
-                                                return '';
-                                            },
-                                            setValue: function (s, s1, s2) {
-                                                $('#2date-range1').html(s1);
-                                                $('#2date-range2').html(s2);
-                                            },
-                                            alwaysOpen: true,
-                                            container: '#2date-rangeWrap'
-                                        }
-                                    );
-                                    //$('#2twoRange').data('dateRangePicker').setDateRange('23-05-16', '23-05-16');
-
-
-                                    function generateTime(elem, e, ui){
-
-                                        var hours = Math.floor(ui.value / 60);
-                                        var minutes = ui.value - (hours * 60);
-
-                                        if (hours == 0 && minutes==0) {
-                                            elem[0].html( 'с начала дня' );
-                                            return;
-                                        }
-                                        else if(hours==24){
-                                            elem[0].html( 'до конца дня' );
-                                            return
-                                        }
-
-                                        if (hours < 10) hours = '0' + hours;
-                                        if (minutes < 10) minutes = '0' + minutes;
-
-                                        elem[0].html( hours + ':' + minutes );
-
-
-                                    }
-
-
-                                    $( "#slider-range-max" ).slider({
-                                        range: "max",
-                                        min: 0,
-                                        max: 1425,
-                                        step: 15,
-                                        slide: generateTime.bind(null, [$("#amount")])
-                                    });
-
-
-                                    $( "#slider-range-min" ).slider({
-                                        range: "min",
-                                        min: 15,
-                                        max: 1440,
-                                        step: 15,
-                                        value: 1440,
-                                        slide: generateTime.bind(null, [$("#amount2")])
-                                    });
-
-                                    $( "#slider-range" ).slider({
-                                        range: true,
-                                        min: 0,
-                                        max: 1440,
-                                        step: 15,
-                                        values: [0,1440],
-                                        slide: function(e, ui) {
-                                            generateTime([$("#amount")], null, {value: ui.values[0]});
-                                            generateTime([$("#amount2")], null, {value: ui.values[1]});
-                                        }
-                                    });
 
 
 
-                                    $('#absenceReason_but').click(function(event){
-                                        var absenceEditing = $('#absenceViewer').find('.absenceEditing');
-                                        if(absenceEditing.hasClass('schedule_showing')){
-                                            $('#absenceViewer').find('.scheduleBlock').removeClass('active');
-                                            absenceEditing.removeClass('schedule_showing');
-                                        }
-                                        else {
-                                            absenceEditing.addClass('schedule_showing');
-                                            setTimeout(function(){
-                                                $('#absenceViewer').find('.scheduleBlock').addClass('active');
-                                            }, 300);
-                                        }
-                                    });
-
-
-                                });
-
-                            .footer
-                                .button.greenC Сохранить
-                                #clsAbsenceViewerBut2.button.grayC Отмена
+                        //.popup.absenceEditing
+                        //
+                        //    .body
+                        //        .t_wrapper
+                        //            .tc_wrapper.datePickerBlock
+                        //                .datePicker
+                        //                    #2date-rangeWrap
+                        //            .tc_wrapper.mainBlock
+                        //                .head Новое отсутствие
+                        //                    .rightSide
+                        //                        #clsAbsenceViewerBut1.close_button
+                        //                .body
+                        //                    .mainInfo
+                        //                        span#2twoRange.dateTime
+                        //                            span.from
+                        //                                span#2date-range1.date 23.05.16
+                        //                                span#amount.time с начала дня
+                        //                            |—
+                        //                            span.to
+                        //                                span#2date-range2.date 23.05.16
+                        //                                span#amount2.time до конца дня
+                        //
+                        //                        .rightSide
+                        //                            #absenceReason_but.absenceReason_button.reason2 Расписание
+                        //
+                        //                    .timePicker
+                        //
+                        //                        .twoDays
+                        //                            .slider.toRight
+                        //                                #slider-range-max
+                        //                            .slider.toLeft
+                        //                                #slider-range-min
+                        //                        .oneDay
+                        //                            .slider
+                        //                                #slider-range
+                        //
+                        //                    .comment
+                        //                        textarea.text(placeholder="Комментарий")
+                        //
+                        //
+                        //            #scheduleBlock.tc_wrapper.scheduleBlock
+                        //                .dimension_wrapper
+                        //                    .schedule
+                        //                        .head Расписание
+                        //                            .rightSide
+                        //                                .weekParity_button 2нед.
+                        //                        .body
+                        //                            table
+                        //                                thead
+                        //                                    tr.headers
+                        //                                        td.day
+                        //                                        td.week Чётная неделя
+                        //                                        td.week Нечётная неделя
+                        //                                tbody
+                        //                                    +loop(5)
+                        //                                        tr
+                        //                                            td.day Пн
+                        //                                            td.week
+                        //                                                span.time
+                        //                                                    span.from 12:00
+                        //                                                    | —
+                        //                                                    span.to 18:00
+                        //                                                span.delete_button
+                        //
+                        //                                            td.week
+                        //                                                .add_button
+                        //
+                        //
+                        //
+                        //
+                        //    script.
+                        //        $(function () {
+                        //            $('#2twoRange').dateRangePicker(
+                        //                {
+                        //                    singleMonth: true,
+                        //                    inline: true,
+                        //                    format: 'DD.MM.YY',
+                        //                    showShortcuts: false,
+                        //                    showTopbar: false,
+                        //                    //startDate: "27.10.15",
+                        //                    startOfWeek: "monday",
+                        //                    //                    showTopbar: false,
+                        //                    separator: '  ',
+                        //                    getValue: function () {
+                        //                        //                        if ($('#date-range200').val() && $('#date-range201').val() )
+                        //                        //  				return $('#date-range200').val() + ' to ' + $('#date-range201').val();
+                        //                        //                            return '';
+                        //                        //                        else
+                        //                        return '';
+                        //                    },
+                        //                    setValue: function (s, s1, s2) {
+                        //                        $('#2date-range1').html(s1);
+                        //                        $('#2date-range2').html(s2);
+                        //                    },
+                        //                    alwaysOpen: true,
+                        //                    container: '#2date-rangeWrap'
+                        //                }
+                        //            );
+                        //            //$('#2twoRange').data('dateRangePicker').setDateRange('23-05-16', '23-05-16');
+                        //
+                        //
+                        //            function generateTime(elem, e, ui){
+                        //
+                        //                var hours = Math.floor(ui.value / 60);
+                        //                var minutes = ui.value - (hours * 60);
+                        //
+                        //                if (hours == 0 && minutes==0) {
+                        //                    elem[0].html( 'с начала дня' );
+                        //                    return;
+                        //                }
+                        //                else if(hours==24){
+                        //                    elem[0].html( 'до конца дня' );
+                        //                    return
+                        //                }
+                        //
+                        //                if (hours < 10) hours = '0' + hours;
+                        //                if (minutes < 10) minutes = '0' + minutes;
+                        //
+                        //                elem[0].html( hours + ':' + minutes );
+                        //
+                        //
+                        //            }
+                        //
+                        //
+                        //            $( "#slider-range-max" ).slider({
+                        //                range: "max",
+                        //                min: 0,
+                        //                max: 1425,
+                        //                step: 15,
+                        //                slide: generateTime.bind(null, [$("#amount")])
+                        //            });
+                        //
+                        //
+                        //            $( "#slider-range-min" ).slider({
+                        //                range: "min",
+                        //                min: 15,
+                        //                max: 1440,
+                        //                step: 15,
+                        //                value: 1440,
+                        //                slide: generateTime.bind(null, [$("#amount2")])
+                        //            });
+                        //
+                        //            $( "#slider-range" ).slider({
+                        //                range: true,
+                        //                min: 0,
+                        //                max: 1440,
+                        //                step: 15,
+                        //                values: [0,1440],
+                        //                slide: function(e, ui) {
+                        //                    generateTime([$("#amount")], null, {value: ui.values[0]});
+                        //                    generateTime([$("#amount2")], null, {value: ui.values[1]});
+                        //                }
+                        //            });
+                        //
+                        //
+                        //
+                        //            $('#absenceReason_but').click(function(event){
+                        //                var absenceEditing = $('#absenceViewer').find('.absenceEditing');
+                        //                if(absenceEditing.hasClass('schedule_showing')){
+                        //                    $('#absenceViewer').find('.scheduleBlock').removeClass('active');
+                        //                    absenceEditing.removeClass('schedule_showing');
+                        //                }
+                        //                else {
+                        //                    absenceEditing.addClass('schedule_showing');
+                        //                    setTimeout(function(){
+                        //                        $('#absenceViewer').find('.scheduleBlock').addClass('active');
+                        //                    }, 300);
+                        //                }
+                        //            });
+                        //
+                        //
+                        //        });
+                        //
+                        //    .footer
+                        //        .button.greenC Сохранить
+                        //        #clsAbsenceViewerBut2.button.grayC Отмена
 
 
 
@@ -2038,24 +2071,182 @@ html
 
 
             script.
-                $('#editAbsenceButton').click(function () {
-                    var popupBlock = $('#absenceViewer');
-                    popupBlock.css('display', 'block');
-                    setTimeout(function () {
-                        popupBlock.addClass('active'),
-                                activateTimeFixerDiagram();
-                                //$('#absenceSchedule').perfectScrollbar();
-                                //$('#absenceSchedule').perfectScrollbar();
-                    }, 200);
-                    $('#clsAbsenceViewerBut1,#clsAbsenceViewerBut2').click(
-                        function func(event) {
-                            popupBlock.removeClass('active')
-                            setTimeout(function () {
-                                popupBlock.css('display', '')
-                            }, 200);
-                            $(event.target).off('click', func);
+                function AbsenceViewer(){
+                    var absenceViewer = $('#absenceViewer');
+                    var dateTime = absenceViewer.find('#dtAv');
+                    var absenceList = absenceViewer.find('.AbsenceList');
+                    var absenceListTbody = absenceList.find('tbody');
+                    var months = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
+                    var absenceReasons = ["Командировка", "Отпуск", "Болезнь", "Личные дела", "Местная командировка", "Учеба", "Больничный лист", "Гостевой пропуск", "Ночные работы", "Отпуск за свой счёт"]
+                    var emptyBlock = absenceList.next('.EmptyBlock');
+                    dateTime.dateRangePicker(
+                        {
+                            singleMonth: true,
+                            inline: true,
+                            format: 'DD.MM.YY',
+                            showShortcuts: false,
+                            showTopbar: false,
+                            startOfWeek: "monday",
+                            separator: '  ',
+                            getValue: function () {
+                                return '';
+                            },
+                            setValue: function (s, s1, s2) {
+                                dateTime.find('#tAv1').html(s1);
+                                dateTime.find('#tAv2').html(s2);
+                            },
+                            alwaysOpen: true,
+                            container: absenceViewer.find('.datePickerWrap')
                         }
                     );
+
+
+                    function downloadAbsences(from, till, id){
+                        AJAX.getEmployeeAbsences(
+                            {
+                                id: id,
+                                from: +from,
+                                till: +till
+                                //from: +timeFrom  + 10800000,
+                                //till: +timeTill  + 10800000
+                            },
+                            successAction,
+                            messageGenerator.lateCall("Ошибка! Не удалось подгрузить отсутствия")
+                        );
+                    }
+
+
+
+                    function getTwoNumberDatePart(number){
+                        return number<10?'0'+number:number;
+                    }
+
+                    function getDateString(date){
+                        return getTwoNumberDatePart(date.getDate()) +'.'+ getTwoNumberDatePart(date.getMonth()) +'.'+ date.getFullYear() +' '+ getTwoNumberDatePart(date.getHours()) +':'+ getTwoNumberDatePart(date.getMinutes());
+                    }
+
+
+                    function getDateRangeString(date, initiallyTime){
+                        var hm = getTwoNumberDatePart(date.getHours()) +':'+ getTwoNumberDatePart(date.getMinutes());
+                        return '<div class="dateNumber">' + getTwoNumberDatePart(date.getDate()) +
+                            '<div class="monthTime">' +
+                            '<div class="month">'+ months[date.getMonth()] +'</div>' +
+                             (hm != initiallyTime?'<div class="time">'+ hm +'</div>':'') +
+                            '</div>' +
+                            '</div>';
+                    }
+
+                    function buildAbsence(absence){
+
+                        var html = '<tr>' +
+                                '<td class="control">' +
+                                '<span class="edit_button inactive"></span>' +
+                                '<span class="duplicate_button inactive"></span>' +
+                                '<span class="delete_button inactive"></span>' +
+                                '</td>'
+
+
+                        html += '<td class="dateCreation">' +
+                                '<div class="dateTime">' +
+                                getDateString(new Date(absence.dtCreation)) +
+                                '</div>' +
+                                '</td>';
+
+                        html += '<td class="dateUpdate">' +
+                                '<div class="dateTime"></div>' +
+                                getDateString(new Date(absence.dtUpdate)) +
+                                '</div>' +
+                                '</td>';
+
+                        if(absence.creatorId == MyID)
+                            html += '<td class="creator me">Я</td>'
+                        else
+                            html += '<td class="creator"><span class="link">'+ absence.creator +'</span></td>'
+
+
+                        html += '<td class="absenceRange">' +
+                                '<div class="from">' +
+                                getDateRangeString(new Date(absence.dateFrom), '00:00') +
+                                '</div>' +
+                                '</td>';
+
+                        html += '<td class="absenceRange">' +
+                                '<div class="to">' +
+                                getDateRangeString(new Date(absence.dateTill), '23:59') +
+                                '</div>' +
+                                '</td>';
+
+
+
+                        html += '<td class="type">' +
+                                '<span class="typeName reason'+ absenceReasons[absence.reason] +'">' +
+                                (absence.reason == 6?'<div class="more_button" onclick="showSchedule(event, '+ absence.schedule +')"></div>':'') +
+                                '</span>' +
+                                '</td>';
+
+                        html += '<td class="comment">' +
+                                (absence.comment?'<div class="comment_button" onclick="showAbsenceComment(event, '+ absence.comment +')"></div>':'') +
+                                '</td>';
+
+                        html += '</tr>';
+
+                        return html;
+                    }
+
+                    this.show = function(id){
+                        var till = new Date();
+                        var from = new Date(+till)
+                        from.setDate(from.getDate() - 7);
+
+                        dateTime.data('dateRangePicker').setDateRange(from, till);
+                        //downloadAbsences(from, till, id);
+
+
+                        var absences = window['Employee'+id].absences;
+                        if(absences.length>0){
+                            emptyBlock.hide();
+                            absenceList.show();
+                            var html = '';
+                            for(var i=0; i<absences.length; i++)
+                                html += buildAbsence(absences[i]);
+                            absenceListTbody.html('html');
+                        }else{
+                            absenceListTbody.html('');
+                            absenceList.hide();
+                            emptyBlock.show();
+                        }
+
+                        absenceViewer.show();
+                        setTimeout(function () {
+                            absenceViewer.addClass('active')
+                        }, 200);
+
+
+                        $('#clsAbsenceViewerBut1, #clsAbsenceViewerBut2').click(
+                            function func(event) {
+                                absenceViewer.removeClass('active')
+                                setTimeout(function () {
+                                    absenceViewer.hide();
+                                    //absenceViewer.css('display', '')
+                                }, 200);
+                                $(event.target).off('click', func);
+                            }
+                        );
+
+
+                    }
+
+
+                }
+
+
+                var absenceViewer;
+                $('#editAbsenceButton').click(function () {
+                    STOP();
+                    if(!absenceViewer)
+                        absenceViewer = new AbsenceViewer();
+
+                    absenceViewer.show(userProducer.getOpenedUserId());
                 });
 
 
@@ -2347,6 +2538,19 @@ html
                     "Фамилия",
                     "Должность",
                     "Дата рождения"
+                ], sorting.by);
+                binderSelectList.bindSimpleSelect($('#absenceReasonFilter'), [
+                    "Все типы отсутствий",
+                    "Командировка",
+                    "Отпуск",
+                    "Болезнь",
+                    "Личные дела",
+                    "Местная командировка",
+                    "Учёба",
+                    "Больничный лист",
+                    "Гостевой пропуск",
+                    "Ночные работы",
+                    "Отпуск за свой счёт"
                 ], sorting.by);
 
 

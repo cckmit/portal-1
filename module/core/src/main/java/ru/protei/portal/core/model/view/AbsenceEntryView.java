@@ -1,6 +1,8 @@
 package ru.protei.portal.core.model.view;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.springframework.beans.factory.annotation.Autowired;
+import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.ent.PersonAbsence;
 import ru.protei.portal.core.utils.HelperFunc;
 
@@ -8,6 +10,20 @@ import ru.protei.portal.core.utils.HelperFunc;
  * Created by michael on 06.07.16.
  */
 public class AbsenceEntryView {
+
+    @JsonProperty
+    private String creator;
+
+    @JsonProperty
+    private Long creatorId;
+
+    @JsonProperty
+    private Long dtCreation;
+
+    @JsonProperty
+    private Long dtUpdate;
+
+
 
     @JsonProperty
     private Long dateFrom;
@@ -20,6 +36,11 @@ public class AbsenceEntryView {
 
     @JsonProperty
     private String comment;
+
+
+
+    @Autowired
+    PersonDAO personDAO;
 
 
     public AbsenceEntryView() {
@@ -36,6 +57,15 @@ public class AbsenceEntryView {
         this.dateTill = HelperFunc.toTime(a.getTillTime(), null);
         this.reason = a.getReasonId();
         return this;
+    }
+
+    public AbsenceEntryView fullFill(PersonAbsence a){
+        this.creator = personDAO.partialGet(a.getCreatorId(), "displayShortName").getDisplayShortName();
+        this.creatorId = a.getCreatorId();
+        this.dtCreation = HelperFunc.toTime(a.getCreated(), null);
+//        this.dtUpdate = HelperFunc.toTime(a.getUpdated(), null);
+        this.reason = a.getReasonId();
+        return fill(a);
     }
 
 

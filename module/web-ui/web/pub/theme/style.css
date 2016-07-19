@@ -10723,8 +10723,7 @@ body {
   display: inline-block;
   vertical-align: middle;
 }
-.body_global .Subscriptions table.rules tr.rule >td.description:after,
-.AbsenceList table.absences tr.absence td.comment .relativeBlock:after {
+.body_global .Subscriptions table.rules tr.rule >td.description:after {
   content: "";
   position: absolute;
   top: 0;
@@ -10965,8 +10964,7 @@ body {
 .body_global .Inspector >.head .tabs .tab {
   width: 33.33%;
 }
-.body_global .Inspector >.body .datePicker,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.body .solidDatePicker {
+.body_global .Inspector >.body .datePicker {
   position: fixed;
   bottom: 14px;
   top: 114px;
@@ -10975,9 +10973,7 @@ body {
   background-color: #c6ced2;
 }
 .body_global .Inspector >.body .datePicker .top_button,
-.body_global .Inspector >.body .datePicker .bottom_button,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.body .solidDatePicker .top_button,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.body .solidDatePicker .bottom_button {
+.body_global .Inspector >.body .datePicker .bottom_button {
   text-align: center;
   line-height: 28px;
   cursor: pointer;
@@ -10985,112 +10981,90 @@ body {
   background-color: #fff;
   border: 1px solid #d9dde1;
 }
-.body_global .Inspector >.body .datePicker .top_button,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.body .solidDatePicker .top_button {
+.body_global .Inspector >.body .datePicker .top_button {
   position: relative;
   border-bottom: 0;
 }
-.body_global .Inspector >.body .datePicker .top_button:before,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.body .solidDatePicker .top_button:before {
+.body_global .Inspector >.body .datePicker .top_button:before {
   content: "\e901";
   vertical-align: middle;
 }
-.body_global .Inspector >.body .datePicker .bottom_button,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.body .solidDatePicker .bottom_button {
+.body_global .Inspector >.body .datePicker .bottom_button {
   position: absolute;
   bottom: 0;
   width: 100%;
   border-top: 0;
 }
-.body_global .Inspector >.body .datePicker .bottom_button:before,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.body .solidDatePicker .bottom_button:before {
+.body_global .Inspector >.body .datePicker .bottom_button:before {
   content: "\e807";
   vertical-align: middle;
 }
-.body_global .Inspector >.body .datePicker .wrapper,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.body .solidDatePicker .wrapper {
+.body_global .Inspector >.body .datePicker .wrapper {
   text-align: center;
   width: 130px;
 }
-.body_global .Inspector >.body .datePicker .wrapper .date,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.body .solidDatePicker .wrapper .date {
+.body_global .Inspector >.body .datePicker .wrapper .date {
   white-space: nowrap;
   line-height: 42px;
   font-size: 13px;
   color: #9099a3;
   border-top: 1px solid #b4bdc2;
 }
-.body_global .Inspector >.body .datePicker .wrapper .date.weekend,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.body .solidDatePicker .wrapper .date.weekend {
+.body_global .Inspector >.body .datePicker .wrapper .date.weekend {
   background: #bac4c9;
 }
-.body_global .Inspector >.body .datePicker .wrapper .date.exists,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.body .solidDatePicker .wrapper .date.exists {
+.body_global .Inspector >.body .datePicker .wrapper .date.exists {
   color: #314157;
   cursor: pointer;
 }
 .body_global .Inspector >.body .datePicker .wrapper .date.exists:hover,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.body .solidDatePicker .wrapper .date.exists:hover,
-.body_global .Inspector >.body .datePicker .wrapper .date.active,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.body .solidDatePicker .wrapper .date.active {
+.body_global .Inspector >.body .datePicker .wrapper .date.active {
   font-weight: bold;
   color: #fff;
   border-top-color: #4975b4;
   background-image: linear-gradient(to bottom, #5481c1, #4c92d3);
 }
 .body_global .Inspector >.body .datePicker .wrapper .date.exists:hover+.date,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.body .solidDatePicker .wrapper .date.exists:hover+.date,
-.body_global .Inspector >.body .datePicker .wrapper .date.active+.date,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.body .solidDatePicker .wrapper .date.active+.date {
+.body_global .Inspector >.body .datePicker .wrapper .date.active+.date {
   border-top-color: #4975b4;
 }
-.body_global .Inspector >.body .datePicker .wrapper .date.today,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.body .solidDatePicker .wrapper .date.today {
+.body_global .Inspector >.body .datePicker .wrapper .date.today {
   font-weight: bold;
   text-shadow: 1px 1px 0 #d9e0e3;
   color: #2164c5;
   font-size: 15px;
 }
-.body_global .Inspector >.body .datePicker.blueC,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.body .solidDatePicker.blueC {
+.body_global .Inspector >.body .datePicker.blueC {
   background-color: #456da5;
 }
 .body_global .Inspector >.body .datePicker.blueC .top_button,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.body .solidDatePicker.blueC .top_button,
-.body_global .Inspector >.body .datePicker.blueC .bottom_button,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.body .solidDatePicker.blueC .bottom_button {
+.body_global .Inspector >.body .datePicker.blueC .bottom_button {
   box-shadow: 0 0 17px -3px #1b2d46;
   background-color: #5189d9;
   border: 1px solid #4b7ec5;
   color: #fff;
 }
-.body_global .Inspector >.body .datePicker.blueC .date,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.body .solidDatePicker.blueC .date {
+.body_global .Inspector >.body .datePicker.blueC .date {
   border-top: 1px solid rgba(52,90,146,0.6);
   color: #7b9dca;
 }
-.body_global .Inspector >.body .datePicker.blueC .date.today,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.body .solidDatePicker.blueC .date.today {
+.body_global .Inspector >.body .datePicker.blueC .date.today {
   text-shadow: none;
   color: #fff;
 }
-.body_global .Inspector >.body .datePicker.blueC .date.exists,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.body .solidDatePicker.blueC .date.exists {
+.body_global .Inspector >.body .datePicker.blueC .date.exists {
   color: #fff;
 }
-.body_global .Inspector >.body .datePicker.blueC .date.exists:hover,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.body .solidDatePicker.blueC .date.exists:hover {
+.body_global .Inspector >.body .datePicker.blueC .date.exists:hover {
   background: #5189d9;
   margin: 0 3px;
   font-weight: normal;
   border-top: 1px solid rgba(52,90,146,0.6);
 }
-.body_global .Inspector >.body .datePicker.blueC .date.weekend,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.body .solidDatePicker.blueC .date.weekend {
+.body_global .Inspector >.body .datePicker.blueC .date.weekend {
   background: #396098;
 }
-.body_global .Inspector >.body .datePicker.blueC .date.active,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.body .solidDatePicker.blueC .date.active {
+.body_global .Inspector >.body .datePicker.blueC .date.active {
   border-radius: 3px;
   margin: 0 3px;
   font-weight: bold;
@@ -14348,6 +14322,9 @@ body {
 .AbsenceList table.absences {
   width: 100%;
 }
+.AbsenceList table.absences tr.headers td:last-child {
+  padding-right: 10px;
+}
 .AbsenceList table.absences tr.absence {
   border-top: 1px solid #e8e8e8;
 }
@@ -14356,6 +14333,9 @@ body {
 }
 .AbsenceList table.absences tr.absence:nth-child(odd) td .comment .relativeBlock:after {
   background-image: linear-gradient(to right, transparent 0%, #f6f7f8 20px);
+}
+.AbsenceList table.absences tr.absence.closed {
+  opacity: 0.6;
 }
 .AbsenceList table.absences tr.absence td.control .edit_button {
   margin-left: 0;
@@ -14375,6 +14355,7 @@ body {
 .AbsenceList table.absences tr.absence td.absenceRange {
   padding: 0 16px;
   vertical-align: middle;
+  width: 100%;
 }
 .AbsenceList table.absences tr.absence td.absenceRange .from:after {
   content: "—";
@@ -14390,14 +14371,14 @@ body {
 }
 .AbsenceList table.absences tr.absence td.absenceRange .from .dateNumber,
 .AbsenceList table.absences tr.absence td.absenceRange .to .dateNumber {
-  font-size: 24px;
+  font-size: 28px;
   line-height: 33px;
   display: inline-block;
 }
 .AbsenceList table.absences tr.absence td.absenceRange .from .monthTime,
 .AbsenceList table.absences tr.absence td.absenceRange .to .monthTime {
   display: inline-block;
-  padding-left: 7px;
+  padding-left: 10px;
   vertical-align: top;
 }
 .AbsenceList table.absences tr.absence td.absenceRange .from .month,
@@ -14434,58 +14415,40 @@ body {
   font-size: 11px;
   display: inline-block;
   box-sizing: border-box;
-  width: 100%;
+  min-width: 160px;
 }
-.AbsenceList table.absences tr.absence td.type .typeName.reason1,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.mainBlock >.body .mainInfo .absenceReason_button.reason1 {
-  background-color: #589ac4;
-}
-.AbsenceList table.absences tr.absence td.type .typeName.reason2,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.mainBlock >.body .mainInfo .absenceReason_button.reason2 {
-  background-color: #dfac39;
-}
-.AbsenceList table.absences tr.absence td.type .typeName.reason2 .more_button {
-  display: inline-block;
+.AbsenceList table.absences tr.absence td.type .typeName.reason6 .more_button {
   margin-right: -10px;
   padding: 0 7px;
   border-left: 1px solid #f6f7f8;
   margin-left: 10px;
   font-size: 9px;
-  vertical-align: top;
   cursor: pointer;
+  float: right;
 }
-.AbsenceList table.absences tr.absence td.type .typeName.reason2 .more_button:before {
+.AbsenceList table.absences tr.absence td.type .typeName.reason6 .more_button:before {
   content: "\e93e";
   vertical-align: middle;
 }
-.AbsenceList table.absences tr.absence td.type .typeName.reason2 .more_button:hover {
-  background-color: #ca9c35;
-}
-.AbsenceList table.absences tr.absence td.type .typeName.reason3,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.mainBlock >.body .mainInfo .absenceReason_button.reason3 {
-  background-color: #a24fe1;
-}
-.AbsenceList table.absences tr.absence td.type .typeName.reason4,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.mainBlock >.body .mainInfo .absenceReason_button.reason4 {
-  background-color: #6aaf57;
+.AbsenceList table.absences tr.absence td.type .typeName.reason6 .more_button:hover {
+  background-color: #279c38;
 }
 .AbsenceList table.absences tr.absence td.comment {
   padding: 0;
-  width: 100%;
-  overflow: hidden;
-  text-align: left;
-}
-.AbsenceList table.absences tr.absence td.comment .relativeBlock {
-  padding: 16px 10px;
-}
-.AbsenceList table.absences tr.absence td.comment .relativeBlock:before {
-  content: "";
-  display: inline-block;
-}
-.AbsenceList table.absences tr.absence td.comment .text {
-  display: inline-block;
   vertical-align: middle;
-  position: absolute;
+}
+.AbsenceList table.absences tr.absence td.comment .comment_button {
+  text-align: center;
+  font-size: 18px;
+  color: #8c96a2;
+  cursor: pointer;
+}
+.AbsenceList table.absences tr.absence td.comment .comment_button:before {
+  content: "\e915";
+  vertical-align: 0;
+}
+.AbsenceList table.absences tr.absence td.comment .comment_button:hover {
+  color: #314157;
 }
 .AbsenceList >.footer {
   margin: 14px 0;
@@ -14545,7 +14508,7 @@ body {
 .popup_backgroundBlock >.wrapper .popupBlock .popup.caseTimeFix >.head,
 .popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.mainBlock >.head,
 .popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.scheduleBlock .schedule >.head,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.head {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.rightBlock >.head {
   padding: 18px;
   font-size: 18px;
   background-color: #5481c1;
@@ -15250,7 +15213,8 @@ body {
   margin-bottom: 114px;
 }
 .popup_backgroundBlock >.wrapper .popupBlock .popup.timeFixer .datePicker,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.leftBlock .datePicker {
   width: 308px;
   height: 350px;
   background-color: #4f8ed7;
@@ -15260,7 +15224,8 @@ body {
   border-right: 1px solid #2c3848;
 }
 .popup_backgroundBlock >.wrapper .popupBlock .popup.timeFixer .datePicker:before,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker:before {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker:before,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.leftBlock .datePicker:before {
   content: "";
   display: block;
   position: absolute;
@@ -15274,7 +15239,8 @@ body {
   border-color: #5892d2 #3b7abb #2f6094;
 }
 .popup_backgroundBlock >.wrapper .popupBlock .popup.timeFixer .datePicker:after,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker:after {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker:after,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.leftBlock .datePicker:after {
   content: "";
   position: absolute;
   height: 100%;
@@ -15284,44 +15250,53 @@ body {
   top: 0;
 }
 .popup_backgroundBlock >.wrapper .popupBlock .popup.timeFixer .datePicker .date-picker-wrapper table.month1 tr.caption,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tr.caption {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tr.caption,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.leftBlock .datePicker .date-picker-wrapper table.month1 tr.caption {
   line-height: 58px;
   color: #fff;
 }
 .popup_backgroundBlock >.wrapper .popupBlock .popup.timeFixer .datePicker .date-picker-wrapper table.month1 tr.caption .prev_button,
 .popup_backgroundBlock >.wrapper .popupBlock .popup.timeFixer .datePicker .date-picker-wrapper table.month1 tr.caption .next_button,
 .popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tr.caption .prev_button,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tr.caption .next_button {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tr.caption .next_button,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.leftBlock .datePicker .date-picker-wrapper table.month1 tr.caption .prev_button,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.leftBlock .datePicker .date-picker-wrapper table.month1 tr.caption .next_button {
   text-align: center;
   cursor: pointer;
 }
 .popup_backgroundBlock >.wrapper .popupBlock .popup.timeFixer .datePicker .date-picker-wrapper table.month1 tr.caption .prev_button:before,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tr.caption .prev_button:before {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tr.caption .prev_button:before,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.leftBlock .datePicker .date-picker-wrapper table.month1 tr.caption .prev_button:before {
   content: "\e80a";
   vertical-align: -1px;
 }
 .popup_backgroundBlock >.wrapper .popupBlock .popup.timeFixer .datePicker .date-picker-wrapper table.month1 tr.caption .next_button:before,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tr.caption .next_button:before {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tr.caption .next_button:before,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.leftBlock .datePicker .date-picker-wrapper table.month1 tr.caption .next_button:before {
   content: "\e806";
   vertical-align: -1px;
 }
 .popup_backgroundBlock >.wrapper .popupBlock .popup.timeFixer .datePicker .date-picker-wrapper table.month1 tr.caption .month-name,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tr.caption .month-name {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tr.caption .month-name,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.leftBlock .datePicker .date-picker-wrapper table.month1 tr.caption .month-name {
   font-size: 18px;
   font-weight: bold;
 }
 .popup_backgroundBlock >.wrapper .popupBlock .popup.timeFixer .datePicker .date-picker-wrapper table.month1 tr.week-name td,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tr.week-name td {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tr.week-name td,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.leftBlock .datePicker .date-picker-wrapper table.month1 tr.week-name td {
   line-height: 42px;
   font-weight: bold;
   color: #2b456a;
 }
 .popup_backgroundBlock >.wrapper .popupBlock .popup.timeFixer .datePicker .date-picker-wrapper table.month1 tbody td,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tbody td {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tbody td,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.leftBlock .datePicker .date-picker-wrapper table.month1 tbody td {
   width: 44px;
 }
 .popup_backgroundBlock >.wrapper .popupBlock .popup.timeFixer .datePicker .date-picker-wrapper table.month1 tbody td .day,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tbody td .day {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tbody td .day,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.leftBlock .datePicker .date-picker-wrapper table.month1 tbody td .day {
   line-height: 42px;
   width: 44px;
   color: #fff;
@@ -15330,24 +15305,30 @@ body {
 .popup_backgroundBlock >.wrapper .popupBlock .popup.timeFixer .datePicker .date-picker-wrapper table.month1 tbody td .day.last-date-selected,
 .popup_backgroundBlock >.wrapper .popupBlock .popup.timeFixer .datePicker .date-picker-wrapper table.month1 tbody td .day.first-date-selected,
 .popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tbody td .day.last-date-selected,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tbody td .day.first-date-selected {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tbody td .day.first-date-selected,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.leftBlock .datePicker .date-picker-wrapper table.month1 tbody td .day.last-date-selected,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.leftBlock .datePicker .date-picker-wrapper table.month1 tbody td .day.first-date-selected {
   background-color: #345a92 !important;
   font-weight: bold;
 }
 .popup_backgroundBlock >.wrapper .popupBlock .popup.timeFixer .datePicker .date-picker-wrapper table.month1 tbody td .day.lastMonth,
 .popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tbody td .day.lastMonth,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.leftBlock .datePicker .date-picker-wrapper table.month1 tbody td .day.lastMonth,
 .popup_backgroundBlock >.wrapper .popupBlock .popup.timeFixer .datePicker .date-picker-wrapper table.month1 tbody td .day.nextMonth,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tbody td .day.nextMonth {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tbody td .day.nextMonth,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.leftBlock .datePicker .date-picker-wrapper table.month1 tbody td .day.nextMonth {
   color: #7b9dca;
   font-weight: normal;
 }
 .popup_backgroundBlock >.wrapper .popupBlock .popup.timeFixer .datePicker .date-picker-wrapper table.month1 tbody td .day.hovering,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tbody td .day.hovering {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tbody td .day.hovering,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.leftBlock .datePicker .date-picker-wrapper table.month1 tbody td .day.hovering {
   color: #6592d1;
   background-color: #345a92;
 }
 .popup_backgroundBlock >.wrapper .popupBlock .popup.timeFixer .datePicker .date-picker-wrapper table.month1 tbody td .day.real-today,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tbody td .day.real-today {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tbody td .day.real-today,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.leftBlock .datePicker .date-picker-wrapper table.month1 tbody td .day.real-today {
   background-color: #fff;
   border-radius: 50%;
   color: #2761a5;
@@ -15356,23 +15337,28 @@ body {
 }
 .popup_backgroundBlock >.wrapper .popupBlock .popup.timeFixer .datePicker .date-picker-wrapper table.month1 tbody td .day.checked,
 .popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tbody td .day.checked,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.leftBlock .datePicker .date-picker-wrapper table.month1 tbody td .day.checked,
 .popup_backgroundBlock >.wrapper .popupBlock .popup.timeFixer .datePicker .date-picker-wrapper table.month1 tbody td .day.toMonth.hovering,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tbody td .day.toMonth.hovering {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tbody td .day.toMonth.hovering,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.leftBlock .datePicker .date-picker-wrapper table.month1 tbody td .day.toMonth.hovering {
   background: #3c639a;
   color: #fff;
   box-shadow: none;
   border-radius: 0;
 }
 .popup_backgroundBlock >.wrapper .popupBlock .popup.timeFixer .datePicker .date-picker-wrapper table.month1 tbody td .day.last-date-selected,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tbody td .day.last-date-selected {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tbody td .day.last-date-selected,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.leftBlock .datePicker .date-picker-wrapper table.month1 tbody td .day.last-date-selected {
   border-radius: 0 50% 50% 0;
 }
 .popup_backgroundBlock >.wrapper .popupBlock .popup.timeFixer .datePicker .date-picker-wrapper table.month1 tbody td .day.first-date-selected,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tbody td .day.first-date-selected {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tbody td .day.first-date-selected,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.leftBlock .datePicker .date-picker-wrapper table.month1 tbody td .day.first-date-selected {
   border-radius: 50% 0 0 50%;
 }
 .popup_backgroundBlock >.wrapper .popupBlock .popup.timeFixer .datePicker .date-picker-wrapper table.month1 tbody td .day.first-date-selected.last-date-selected,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tbody td .day.first-date-selected.last-date-selected {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tbody td .day.first-date-selected.last-date-selected,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.leftBlock .datePicker .date-picker-wrapper table.month1 tbody td .day.first-date-selected.last-date-selected {
   border-radius: 50%;
 }
 .popup_backgroundBlock >.wrapper .popupBlock .popup.timeFixer >.body {
@@ -15512,7 +15498,7 @@ body {
 }
 .popup_backgroundBlock >.wrapper .popupBlock .popup.timeFixer >.footer,
 .popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.footer,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.footer {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.rightBlock >.footer {
   margin-left: 337px;
   text-align: right;
   padding: 14px;
@@ -15546,19 +15532,23 @@ body {
 .popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper {
   vertical-align: top;
 }
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.leftBlock {
   background-color: #456da5;
 }
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.leftBlock .datePicker {
   position: relative;
   box-shadow: none;
   background-color: transparent;
   border-right: 1px solid #456da5;
 }
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker:after {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker:after,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.leftBlock .datePicker:after {
   content: normal;
 }
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker:before {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker:before,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.leftBlock .datePicker:before {
   background-color: #4f8ed7;
   height: 58px;
   border-color: #6999de #6999de #456da5;
@@ -15806,107 +15796,102 @@ body {
   border-top: 0;
 }
 .popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer {
-  width: 1400px;
+  width: 1350px;
   position: relative;
   margin-top: 58px;
   margin-bottom: 114px;
-  background-color: #dee4e5;
-  box-shadow: 0 0 11px -2px rgba(0,3,8,0.6);
+  box-shadow: none;
+  transition-duration: 0.3s;
 }
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.head {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.leftBlock {
+  position: absolute;
+  box-shadow: 0 0 11px -2px rgba(0,3,8,0.9);
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.rightBlock {
+  margin-left: 337px;
+  box-shadow: 0 0 11px -2px rgba(0,3,8,0.9);
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.rightBlock >.head {
+  background-color: #5189d9;
   text-align: left;
+  position: relative;
 }
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.head .close_button {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.rightBlock >.head .close_button {
   font-size: 21px;
   cursor: pointer;
   color: #dfecff;
 }
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.head .close_button:before {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.rightBlock >.head .close_button:before {
   content: "\e80e";
   vertical-align: 0;
 }
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.head .close_button:hover {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.rightBlock >.head .close_button:hover {
   color: #fff;
   text-shadow: 0 0 0;
 }
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.body {
-  padding: 14px 0 14px 14px;
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.rightBlock >.body {
+  padding: 14px 0 14px 0;
   position: relative;
+  background: #dee4e5;
   text-align: left;
   min-height: 690px;
   box-sizing: border-box;
 }
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.body .solidDatePicker {
-  position: absolute;
-  top: 14px;
-  bottom: 14px;
-  left: 0;
-}
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.body .solidDatePicker.blueC {
-  background-color: #456da5;
-}
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.body .solidDatePicker.blueC .top_button,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.body .solidDatePicker.blueC .bottom_button {
-  box-shadow: 0 0 17px -3px #1b2d46;
-  background-color: #5189d9;
-  border: 1px solid #4b7ec5;
-  color: #fff;
-}
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.body .solidDatePicker.blueC .date {
-  border-top: 1px solid rgba(52,90,146,0.6);
-  color: #7b9dca;
-}
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.body .solidDatePicker.blueC .date.today {
-  text-shadow: none;
-  color: #fff;
-}
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.body .solidDatePicker.blueC .date.exists {
-  color: #fff;
-}
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.body .solidDatePicker.blueC .date.exists:hover {
-  background: #5189d9;
-  margin: 0 3px;
-  font-weight: normal;
-}
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.body .solidDatePicker.blueC .date.weekend {
-  background: #396098;
-}
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.body .solidDatePicker.blueC .date.active {
-  border-radius: 3px;
-  margin: 0 3px;
-  font-weight: bold;
-  color: #2d65a7;
-  border-top-color: #4975b4;
-  background-image: linear-gradient(to bottom, #fff, #bfc7d2);
-  box-shadow: 0 0 9px 0px #415166;
-}
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.body .controlButtons {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.rightBlock >.body .controlButtons {
   margin-bottom: 14px;
-  margin-left: 144px;
+  margin-left: 14px;
   margin-right: 14px;
 }
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.body .controlButtons .icon-add {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.rightBlock >.body .controlButtons .dateTimeBy {
+  margin-right: 14px;
+  border-bottom: 1px dashed;
+  padding-bottom: 2px;
+  cursor: pointer;
+  border-bottom-color: #a2a9b3;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.rightBlock >.body .controlButtons .dateTimeBy:hover {
+  border-bottom-color: #314157;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.rightBlock >.body .controlButtons .dateTimeBy:after {
+  content: ":";
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.rightBlock >.body .controlButtons .dateTime {
+  font-size: 18px;
+  line-height: 28px;
+  margin-right: 14px;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.rightBlock >.body .controlButtons .dateTime .from,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.rightBlock >.body .controlButtons .dateTime .to {
+  color: #4d7dc1;
+  font-weight: bold;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.rightBlock >.body .controlButtons .dateTime .from {
+  padding-right: 7px;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.rightBlock >.body .controlButtons .dateTime .to {
+  padding-left: 7px;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.rightBlock >.body .controlButtons .icon-add {
   padding-right: 7px;
   font-size: 11px;
 }
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.body .controlButtons .icon-add:before {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.rightBlock >.body .controlButtons .icon-add:before {
   content: "\e805";
   vertical-align: 0;
 }
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.body .AbsenceList {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.rightBlock >.body .AbsenceList {
   max-height: 900px;
   overflow: auto;
-  margin-left: 130px;
 }
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.body .AbsenceList .absences {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.rightBlock >.body .AbsenceList .absences {
   margin: 0 14px;
   box-shadow: 0 0 10px -2px rgba(49,65,87,0.5);
   width: auto;
 }
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.body .AbsenceList >.footer {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.rightBlock >.body .AbsenceList >.footer {
   margin: 14px;
 }
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.footer {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.rightBlock >.footer {
   margin-left: 0;
 }
 .popup_backgroundBlock.simpleMessage {
@@ -16546,34 +16531,54 @@ body {
   padding: 0 12px;
   vertical-align: middle;
 }
-.absencePopup_block .info .absenceReason.reason1 {
+.absencePopup_block .info .absenceReason.reason1,
+.AbsenceList table.absences tr.absence td.type .typeName.reason1,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.mainBlock >.body .mainInfo .absenceReason_button.reason1 {
   background: #e53131;
 }
-.absencePopup_block .info .absenceReason.reason2 {
+.absencePopup_block .info .absenceReason.reason2,
+.AbsenceList table.absences tr.absence td.type .typeName.reason2,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.mainBlock >.body .mainInfo .absenceReason_button.reason2 {
   background: #bf4f9d;
 }
-.absencePopup_block .info .absenceReason.reason3 {
+.absencePopup_block .info .absenceReason.reason3,
+.AbsenceList table.absences tr.absence td.type .typeName.reason3,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.mainBlock >.body .mainInfo .absenceReason_button.reason3 {
   background: #ef8919;
 }
-.absencePopup_block .info .absenceReason.reason4 {
+.absencePopup_block .info .absenceReason.reason4,
+.AbsenceList table.absences tr.absence td.type .typeName.reason4,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.mainBlock >.body .mainInfo .absenceReason_button.reason4 {
   background: #6091d5;
 }
-.absencePopup_block .info .absenceReason.reason5 {
+.absencePopup_block .info .absenceReason.reason5,
+.AbsenceList table.absences tr.absence td.type .typeName.reason5,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.mainBlock >.body .mainInfo .absenceReason_button.reason5 {
   background: #dcc500;
 }
-.absencePopup_block .info .absenceReason.reason6 {
+.absencePopup_block .info .absenceReason.reason6,
+.AbsenceList table.absences tr.absence td.type .typeName.reason6,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.mainBlock >.body .mainInfo .absenceReason_button.reason6 {
   background: #30b142;
 }
-.absencePopup_block .info .absenceReason.reason7 {
+.absencePopup_block .info .absenceReason.reason7,
+.AbsenceList table.absences tr.absence td.type .typeName.reason7,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.mainBlock >.body .mainInfo .absenceReason_button.reason7 {
   background: #9a23c8;
 }
-.absencePopup_block .info .absenceReason.reason8 {
+.absencePopup_block .info .absenceReason.reason8,
+.AbsenceList table.absences tr.absence td.type .typeName.reason8,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.mainBlock >.body .mainInfo .absenceReason_button.reason8 {
   background: #06a6a9;
 }
-.absencePopup_block .info .absenceReason.reason9 {
+.absencePopup_block .info .absenceReason.reason9,
+.AbsenceList table.absences tr.absence td.type .typeName.reason9,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.mainBlock >.body .mainInfo .absenceReason_button.reason9 {
   background: #7e7e7e;
 }
-.absencePopup_block .info .absenceReason.reason10 {
+.absencePopup_block .info .absenceReason.reason10,
+.AbsenceList table.absences tr.absence td.type .typeName.reason10,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.mainBlock >.body .mainInfo .absenceReason_button.reason10 {
   background: #7fab1c;
 }
 .absencePopup_block .info .rightSide {
@@ -16621,6 +16626,14 @@ body {
   text-align: center;
   color: #41567c;
   word-spacing: 2px;
+}
+.absencePopup_block .schedule.whiteScheduleBlock {
+  border-top: 0;
+  background: #fff;
+}
+.absencePopup_block .schedule.whiteScheduleBlock table td,
+.absencePopup_block .schedule.whiteScheduleBlock table tr.week {
+  border-top: 1px solid #e2e5e7;
 }
 .absencePopup_block .comment {
   background: #f3f4f5;
