@@ -16,13 +16,8 @@ import ru.protei.portal.core.model.view.WorkerView;
 import ru.protei.portal.webui.api.struct.HttpListResult;
 import ru.protei.winter.jdbc.JdbcSort;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
-
-import java.util.logging.LogManager;
-import java.util.logging.Logger;
 
 /**
  * Created by michael on 06.04.16.
@@ -50,7 +45,42 @@ public class WorkersAPI_Impl implements WorkersAPI {
         if (p == null || !groupHomeDAO.checkIfHome(p.getCompanyId())) {
             return null;
         }
-        return new EmployeeDetailView().fill(absenceDAO.getForRange(id, new Date(tFrom), new Date(tTill)), isFull);
+
+        List<PersonAbsence> personAbsences =absenceDAO.getForRange(id, new Date(tFrom), new Date(tTill));
+        if(isFull){
+            fillAbsencesOfCreators(personAbsences);
+        }
+
+        return new EmployeeDetailView().fill(personAbsences, isFull);
+    }
+
+    private void fillAbsencesOfCreators(List<PersonAbsence> personAbsences){
+        if(personAbsences.size()==0)
+            return;
+
+        TreeSet<Long> ids = new TreeSet<>();
+        for(PersonAbsence pa: personAbsences)
+            ids.add(pa.getCreatorId());
+
+        HashMap<Long,String> creators = new HashMap<>();
+
+        Iterator<Long> iterator = ids.iterator();
+        for (Person p : personDAO.partialGetListByKeys(ids, "displayShortName")){
+            creators.put(iterator.next(), p.getDisplayShortName());
+        }
+
+
+//        System.out.println("**********************************");
+////        for (Long l : creators.keySet())
+////            System.out.println(l);
+////        for (String s : creators.values())
+////            System.out.println(s);
+//        System.out.print(creators.toString());
+
+
+        for(PersonAbsence p:personAbsences)
+            p.setCreator(creators.get(p.getCreatorId()));
+
     }
 
 

@@ -75,7 +75,7 @@ html
                                             $.ajax(message);
                                         }
                                         this.getEmployeeAbsences = function(data, successHandler, errorHandler){
-                                            message.url = '/api/gate/employees/'+ data.id +'/absences.json?from='+ data.from +'&till='+ data.till;
+                                            message.url = '/api/gate/employees/'+ data.id +'/absences.json?full='+ data.isFull +'&from='+ data.from +'&till='+ data.till;
                                             message.data = null;
                                             message.success = successHandler;
                                             message.error = errorHandler;
@@ -88,7 +88,7 @@ html
                                         var completed;
                                         var actions = [];
                                         var ajaxData;
-                                        this.than = function(func){
+                                        this.then = function(func){
                                             if(completed) // если ajax success ф-я закончена, то просто вызываем переданное действие
                                                 func(ajaxData);
                                             else actions.push(func) // иначе помещаем в массив
@@ -1141,7 +1141,8 @@ html
                                         {
                                             id: userProducer.getOpenedUserId(),
                                             from: +timeFrom,
-                                            till: +timeTill
+                                            till: +timeTill,
+                                            isFull: false
                                             //from: +timeFrom  + 10800000,
                                             //till: +timeTill  + 10800000
                                         },
@@ -1310,7 +1311,7 @@ html
                                     log("currentEndPoint"+ currentEndPoint);
 
                                     var seq = new ActionSequence();
-                                    seq.than(
+                                    seq.then(
                                         function(data){
                                             var absences = data.absences;
 
@@ -1346,7 +1347,7 @@ html
                                     log("currentEndPoint"+ currentEndPoint);
 
                                     var seq = new ActionSequence();
-                                    seq.than(
+                                    seq.then(
                                         function(data){
                                             var absences = data.absences;
 
@@ -1439,7 +1440,7 @@ html
                                         if (offset >= 0) {
                                             diagramLoader.addClass('active');
                                             diagram.css('transition', 'none');
-                                            diagramProducer.completeCellsBefore(14, true, false).than(
+                                            diagramProducer.completeCellsBefore(14, true, false).then(
                                                 function () {
                                                     STOP();
                                                     diagram.css('margin-left', 14 * -192);
@@ -1452,7 +1453,7 @@ html
                                             return true;
                                         } else if (offset <= (diagram.width() * -1) + absenceDiagram.width()) {
                                             diagramLoader.addClass('active');
-                                            diagramProducer.completeCellsAfter(14, false, true).than(
+                                            diagramProducer.completeCellsAfter(14, false, true).then(
                                                 function() {
                                                     setTimeout(function () {
                                                         diagramLoader.removeClass('active');
@@ -1574,7 +1575,7 @@ html
                                 .body
                                     .controlButtons
                                         span#dtAv.dateTime
-                                            span.dateTimeBy дата отсутствия
+                                            span.dateTimeBy Дата отсутствия
                                             span.from
                                                 span#tAv1.date 23.05.16
                                             |—
@@ -1591,15 +1592,15 @@ html
 
                                     .AbsenceList
                                         table.absences
-
-                                            tr.headers
-                                                td.control Управление
-                                                td.dateCreation Дата создания
-                                                td.dateUpdate Дата обновления
-                                                td.creator Создатель
-                                                td.absenceRange Время отсутствия
-                                                td.type Тип отсутствия
-                                                td.comment Комментарий
+                                            thead
+                                                tr.headers
+                                                    td.control Управление
+                                                    td.dateCreation Дата создания
+                                                    td.dateUpdate Дата обновления
+                                                    td.creator Создатель
+                                                    td.absenceRange Дата отсутствия
+                                                    td.type Тип отсутствия
+                                                    td.comment Комментарий
 
 
                                             tbody
@@ -2079,6 +2080,7 @@ html
                     var months = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
                     var absenceReasons = ["Командировка", "Отпуск", "Болезнь", "Личные дела", "Местная командировка", "Учеба", "Больничный лист", "Гостевой пропуск", "Ночные работы", "Отпуск за свой счёт"]
                     var emptyBlock = absenceList.next('.EmptyBlock');
+                    var dateNow;
                     dateTime.dateRangePicker(
                         {
                             singleMonth: true,
@@ -2101,14 +2103,13 @@ html
                     );
 
 
-                    function downloadAbsences(from, till, id){
+                    function downloadAbsences(from, till, id, successAction){
                         AJAX.getEmployeeAbsences(
                             {
                                 id: id,
                                 from: +from,
-                                till: +till
-                                //from: +timeFrom  + 10800000,
-                                //till: +timeTill  + 10800000
+                                till: +till,
+                                isFull: true
                             },
                             successAction,
                             messageGenerator.lateCall("Ошибка! Не удалось подгрузить отсутствия")
@@ -2128,17 +2129,18 @@ html
 
                     function getDateRangeString(date, initiallyTime){
                         var hm = getTwoNumberDatePart(date.getHours()) +':'+ getTwoNumberDatePart(date.getMinutes());
-                        return '<div class="dateNumber">' + getTwoNumberDatePart(date.getDate()) +
-                            '<div class="monthTime">' +
-                            '<div class="month">'+ months[date.getMonth()] +'</div>' +
-                             (hm != initiallyTime?'<div class="time">'+ hm +'</div>':'') +
-                            '</div>' +
-                            '</div>';
+                        return '<div class="dateNumber">' +
+                                getTwoNumberDatePart(date.getDate()) +
+                                '</div>' +
+                                '<div class="monthTime">' +
+                                '<div class="month">'+ months[date.getMonth()] +'</div>' +
+                                 (hm != initiallyTime?'<div class="time">'+ hm +'</div>':'') +
+                                '</div>';
                     }
 
                     function buildAbsence(absence){
 
-                        var html = '<tr>' +
+                        var html = '<tr class="absence'+ (dateNow > absence.dateTill?'closed':'') +'">' + // добавление inactive
                                 '<td class="control">' +
                                 '<span class="edit_button inactive"></span>' +
                                 '<span class="duplicate_button inactive"></span>' +
@@ -2168,18 +2170,14 @@ html
                                 '<div class="from">' +
                                 getDateRangeString(new Date(absence.dateFrom), '00:00') +
                                 '</div>' +
-                                '</td>';
-
-                        html += '<td class="absenceRange">' +
                                 '<div class="to">' +
                                 getDateRangeString(new Date(absence.dateTill), '23:59') +
                                 '</div>' +
                                 '</td>';
 
 
-
                         html += '<td class="type">' +
-                                '<span class="typeName reason'+ absenceReasons[absence.reason] +'">' +
+                                '<span class="typeName reason'+ absence.reason +'">' + absenceReasons[absence.reason-1] +
                                 (absence.reason == 6?'<div class="more_button" onclick="showSchedule(event, '+ absence.schedule +')"></div>':'') +
                                 '</span>' +
                                 '</td>';
@@ -2194,32 +2192,32 @@ html
                     }
 
                     this.show = function(id){
-                        var till = new Date();
+                        dateNow = new Date();
+                        var till = dateNow;
                         var from = new Date(+till)
                         from.setDate(from.getDate() - 7);
 
-                        dateTime.data('dateRangePicker').setDateRange(from, till);
-                        //downloadAbsences(from, till, id);
+                        downloadAbsences(from, till, id, function(data){
+                            var absences = data.absences;
+                            if(absences && absences.length>0){
+                                emptyBlock.hide();
+                                absenceList.show();
+                                var html = '';
+                                for(var i=0; i<absences.length; i++)
+                                    html += buildAbsence(absences[i]);
+                                absenceListTbody.html(html);
+                            }else{
+                                absenceListTbody.html('');
+                                absenceList.hide();
+                                emptyBlock.show();
+                            }
 
-
-                        var absences = window['Employee'+id].absences;
-                        if(absences.length>0){
-                            emptyBlock.hide();
-                            absenceList.show();
-                            var html = '';
-                            for(var i=0; i<absences.length; i++)
-                                html += buildAbsence(absences[i]);
-                            absenceListTbody.html('html');
-                        }else{
-                            absenceListTbody.html('');
-                            absenceList.hide();
-                            emptyBlock.show();
-                        }
-
-                        absenceViewer.show();
-                        setTimeout(function () {
-                            absenceViewer.addClass('active')
-                        }, 200);
+                            dateTime.data('dateRangePicker').setDateRange(from, till);
+                            absenceViewer.show();
+                            setTimeout(function () {
+                                absenceViewer.addClass('active')
+                            }, 200);
+                        });
 
 
                         $('#clsAbsenceViewerBut1, #clsAbsenceViewerBut2').click(
@@ -2227,7 +2225,6 @@ html
                                 absenceViewer.removeClass('active')
                                 setTimeout(function () {
                                     absenceViewer.hide();
-                                    //absenceViewer.css('display', '')
                                 }, 200);
                                 $(event.target).off('click', func);
                             }

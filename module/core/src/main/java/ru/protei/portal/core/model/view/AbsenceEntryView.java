@@ -11,6 +11,9 @@ import ru.protei.portal.core.utils.HelperFunc;
  */
 public class AbsenceEntryView {
 
+    @Autowired
+    PersonDAO personDAO;
+
     @JsonProperty
     private String creator;
 
@@ -39,9 +42,6 @@ public class AbsenceEntryView {
 
 
 
-    @Autowired
-    PersonDAO personDAO;
-
 
     public AbsenceEntryView() {
 
@@ -59,11 +59,11 @@ public class AbsenceEntryView {
         return this;
     }
 
-    public AbsenceEntryView fullFill(PersonAbsence a){
-        this.creator = personDAO.partialGet(a.getCreatorId(), "displayShortName").getDisplayShortName();
+    public AbsenceEntryView fullFill(PersonAbsence a) {
+        this.creator = a.getCreator();
         this.creatorId = a.getCreatorId();
         this.dtCreation = HelperFunc.toTime(a.getCreated(), null);
-//        this.dtUpdate = HelperFunc.toTime(a.getUpdated(), null);
+        this.dtUpdate = HelperFunc.toTime(a.getUpdated(), null);
         this.reason = a.getReasonId();
         return fill(a);
     }

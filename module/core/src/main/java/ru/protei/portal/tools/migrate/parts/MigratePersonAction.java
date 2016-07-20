@@ -185,7 +185,7 @@ public class MigratePersonAction implements MigrateAction {
 
 
    private String generateDisplayShortName(String firstName, String lastName, String secondName){
-      return lastName +" "+ firstName.charAt(0) +"."+ (secondName!=null?secondName.charAt(0) +".":"");
+      return lastName +" "+ (!firstName.isEmpty()?firstName.charAt(0)+".":"") + (secondName!=null && !secondName.isEmpty()?secondName.charAt(0)+".":"");
    }
 
 

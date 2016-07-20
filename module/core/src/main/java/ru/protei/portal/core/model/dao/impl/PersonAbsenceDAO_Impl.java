@@ -3,12 +3,10 @@ package ru.protei.portal.core.model.dao.impl;
 import org.apache.commons.lang3.time.DateUtils;
 import ru.protei.portal.core.model.dao.PersonAbsenceDAO;
 import ru.protei.portal.core.model.ent.PersonAbsence;
+import ru.protei.winter.jdbc.JdbcHelper;
 import ru.protei.winter.jdbc.annotations.JdbcColumn;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by michael on 05.07.16.
@@ -54,4 +52,6 @@ public class PersonAbsenceDAO_Impl extends PortalBaseJdbcDAO<PersonAbsence> impl
 
         return partialGetListByCondition("from_time < ? and till_time > ?", list, personIdColumn);
     }
+
+
 }

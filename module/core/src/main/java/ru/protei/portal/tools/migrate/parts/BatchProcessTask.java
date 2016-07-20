@@ -1,6 +1,8 @@
 package ru.protei.portal.tools.migrate.parts;
 
 import protei.sql.Tm_SqlHelper;
+import ru.protei.portal.core.model.dao.PersonAbsenceDAO;
+import ru.protei.portal.core.model.ent.PersonAbsence;
 import ru.protei.portal.tools.migrate.tools.EndOfBatch;
 import ru.protei.portal.tools.migrate.tools.MigrateAdapter;
 import ru.protei.portal.tools.migrate.tools.MigrateUtils;
@@ -11,7 +13,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -92,6 +93,7 @@ public class BatchProcessTask<T> {
                     //update
                     handledWithUpdating++;
                     updateBatchSet.add(adapter.createEntity(Tm_SqlHelper.fetchRowAsMap(rs)));
+
                 }
 
 
@@ -135,14 +137,16 @@ public class BatchProcessTask<T> {
     private void processBatch(JdbcDAO<Long, T> dao, List<T> batchSet, boolean isNew) {
         if(isNew)
             dao.persistBatch(batchSet);
-        else
-            dao.mergeBatch(batchSet);
+        else{
+            if(dao instanceof PersonAbsenceDAO)
+                for(T set: batchSet){
+                    dao.mergeByCondition(set, "old_id=?", ((PersonAbsence)set).getOldId());
+                }
+            else
+                dao.mergeBatch(batchSet);
+        }
 
         batchSet.clear();
-
-//        if (_onBatchEnd != null) {
-//            _onBatchEnd.onBatchEnd(this.lastIdValue);
-//        }
     }
 
     public String getQuery() {

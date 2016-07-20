@@ -34,7 +34,6 @@ public class MigratePersonAbsenceAction implements MigrateAction {
         return 5;
     }
 
-//    public static Logger log;
 //    static { // ДЛЯ ПРОВЕРКИ
 //        try {
 //            System.setProperty("java.util.logging.config.file", "/home/bondarenko/portal/module/web-ui/src/main/java/ru/protei/portal/webui/controller/dict/logging.properties");
@@ -42,7 +41,6 @@ public class MigratePersonAbsenceAction implements MigrateAction {
 //        }catch (Throwable e){
 //            System.out.println(e);
 //        }
-//        log = Logger.getLogger("PORTAL");
 //    }
 
 
@@ -51,6 +49,8 @@ public class MigratePersonAbsenceAction implements MigrateAction {
 
         long lastOldDateUpdate = migrateDAO.getMigratedLastUpdate(TM_PERSON_ABS_ITEM_CODE, 0L);
         migrateDAO.confirmMigratedLastUpdate(TM_PERSON_ABS_ITEM_CODE, new Date().getTime());
+
+
 
 
         new BatchProcessTask<PersonAbsence>(
@@ -63,8 +63,9 @@ public class MigratePersonAbsenceAction implements MigrateAction {
                 .onBatchEnd(lastIdValue -> migrateDAO.confirmMigratedLastId(TM_PERSON_ABS_ITEM_CODE, lastIdValue))
                 .process(src, dao, row -> {
                     PersonAbsence x = new PersonAbsence();
-                    x.setId(((Number) row.get("nID")).longValue());
+                    x.setOldId(((Number) row.get("nID")).longValue());
                     x.setCreated((Date) row.get("dtCreation"));
+                    x.setUpdated(x.getCreated());
                     x.setCreatorId(((Number) row.get("nSubmitterID")).longValue());
                     x.setPersonId(((Number) row.get("nPersonID")).longValue());
                     x.setUserComment((String) row.get("strComment"));
@@ -103,8 +104,9 @@ public class MigratePersonAbsenceAction implements MigrateAction {
                 .onBatchEnd(lastIdValue -> migrateDAO.confirmMigratedLastId(TM_PERSON_LEAVE_ITEM_CODE, lastIdValue))
                 .process(src, dao, row -> {
                     PersonAbsence x = new PersonAbsence();
-                    //x.setId(((Number) row.get("nID")).longValue());
+                    x.setOldId(((Number) row.get("nID")).longValue());
                     x.setCreated((Date) row.get("dtCreation"));
+                    x.setUpdated(x.getCreated());
                     x.setCreatorId(((Number) row.get("nSubmitterID")).longValue());
                     x.setPersonId(((Number) row.get("nPersonID")).longValue());
                     x.setUserComment((String) row.get("strComment"));
