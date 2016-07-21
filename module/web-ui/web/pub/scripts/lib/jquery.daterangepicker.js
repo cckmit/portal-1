@@ -1518,7 +1518,8 @@
 			{
 				box.find('.apply-btn').removeClass('disabled');
 				var dateRange = getDateString(new Date(opt.start));
-				opt.setValue.call(selfDom, dateRange, getDateString(new Date(opt.start)), getDateString(new Date(opt.end)));
+				//opt.setValue.call(selfDom, dateRange, getDateString(new Date(opt.start)), getDateString(new Date(opt.end)));
+				opt.setValue.call(selfDom, dateRange, new Date(opt.start), new Date(opt.end));
 
 				if (initiated)
 				{
@@ -1534,7 +1535,7 @@
 				box.find('.selected-days').show().find('.selected-days-num').html(countDays(opt.end, opt.start));
 				box.find('.apply-btn').removeClass('disabled');
 				var dateRange = getDateString(new Date(opt.start))+ opt.separator +getDateString(new Date(opt.end));
-				opt.setValue.call(selfDom,dateRange, getDateString(new Date(opt.start)), getDateString(new Date(opt.end)));
+				opt.setValue.call(selfDom,dateRange, new Date(opt.start), new Date(opt.end));
 				if (initiated && !silent)
 				{
 					$(self).trigger('datepicker-change',

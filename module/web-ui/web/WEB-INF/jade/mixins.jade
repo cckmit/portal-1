@@ -931,9 +931,10 @@ mixin popup(type)
                                 //                        else
                                 return '';
                             },
-                            setValue: function (s, s1, s2) {
-                                $('#date-range1').val(s1);
-                                $('#date-range2').val(s2);
+                            setValue: function (s, d1, d2) {
+                                var format = 'DD.MM.YY';
+                                $('#date-range1').val(moment(d1).format(format));
+                                $('#date-range2').val(moment(d2).format(format));
                             },
                             alwaysOpen: true,
                             container: '#date-rangeWrap'

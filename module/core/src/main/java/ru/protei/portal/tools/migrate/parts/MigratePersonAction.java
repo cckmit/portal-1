@@ -58,13 +58,13 @@ public class MigratePersonAction implements MigrateAction {
       return " select p.*, p.strClient||'@'||p.strClientIP strCreatorID, \"resource\".func_getfullfio (p.strLastName,p.strFirstName,p.strPatronymic) fullFio, prop.properties, cat.nCategoryID, cd.strValue category," +
               " pext.strIP_Address,pext.strE_Mail, pext.strOther_E_mail, pext.strHomeTel, pext.strWorkTel, pext.strMobileTel, pext.strFaxTel, pext.strOficialAddress, pext.strActualAddress, pext.strICQ, pext.nJID, pext.lRetired, dep.strDescription" +
               " from \"resource\".tm_person p" +
-                 " left outer join ( select nPersonID, LIST('!begin!'||pp.strValue||' '||c.strValue||'='||p.strValue||'!end!',';') properties from \"resource\".tm_person2property p" +
-                 " join \"resource\".tm_category c on (p.nCategoryID=c.nID)" +
-                 " join \"resource\".tm_personproperty pp on (pp.nID=p.nPropertyID) group by nPersonID ) prop on (prop.nPersonID=p.nID)" +
-                 " left outer join \"resource\".tm_person2category cat on (cat.nPersonID=p.nID)" +
-                 " left outer join \"resource\".tm_category cd on (cd.nID=cat.nCategoryID)" +
-                 " left outer join \"resource\".Tm_PersonPROTEI_Extension pext on (pext.nID=p.nID)" +
-                 " left outer join \"OK\".Tm_Department dep on (dep.nID=pext.nDepartmentID)" +
+              " left outer join ( select nPersonID, LIST('!begin!'||pp.strValue||' '||c.strValue||'='||p.strValue||'!end!',';') properties from \"resource\".tm_person2property p" +
+              " join \"resource\".tm_category c on (p.nCategoryID=c.nID)" +
+              " join \"resource\".tm_personproperty pp on (pp.nID=p.nPropertyID) group by nPersonID ) prop on (prop.nPersonID=p.nID)" +
+              " left outer join \"resource\".tm_person2category cat on (cat.nPersonID=p.nID)" +
+              " left outer join \"resource\".tm_category cd on (cd.nID=cat.nCategoryID)" +
+              " left outer join \"resource\".Tm_PersonPROTEI_Extension pext on (pext.nID=p.nID)" +
+              " left outer join \"OK\".Tm_Department dep on (dep.nID=pext.nDepartmentID)" +
               " where p.dtLastUpdate > " + "DATEADD(ss, " + lastUpdate / 1000 + ",'1/1/1970')" +
               " order by p.nID ";
       // DATEADD(date_type, time, from) добавляем к 1/1/1970 количество секунд lastUpdate, получая datetime
@@ -113,7 +113,13 @@ public class MigratePersonAction implements MigrateAction {
                  x.setDisplayShortName(generateDisplayShortName(x.getFirstName(), x.getLastName(), x.getSecondName()));
 
                  x.setInfo((String) row.get("strInfo"));
-                 x.setDeleted(row.get("lRetired") != null && ((Number) row.get("lRetired")).intValue() != 0);
+                 x.setDeleted(
+                         row.get("lRetired") != null &&
+                                 (
+                                         ((Number) row.get("lRetired")).intValue() != 0 ||
+                                         ((Number) row.get("lDeleted")).intValue() != 0
+                                 )
+                 );
                  x.setPassportInfo((String) row.get("strPassportInfo"));
                  x.setSex(row.get("nSexID") == null ? "-" : ((Number) row.get("nSexID")).intValue() == 1 ? "M" : "F");
 
@@ -184,8 +190,8 @@ public class MigratePersonAction implements MigrateAction {
    }
 
 
-   private String generateDisplayShortName(String firstName, String lastName, String secondName){
-      return lastName +" "+ (!firstName.isEmpty()?firstName.charAt(0)+".":"") + (secondName!=null && !secondName.isEmpty()?secondName.charAt(0)+".":"");
+   private String generateDisplayShortName(String firstName, String lastName, String secondName) {
+      return lastName + " " + (!firstName.isEmpty() ? firstName.charAt(0) + "." : "") + (secondName != null && !secondName.isEmpty() ? secondName.charAt(0) + "." : "");
    }
 
 
@@ -199,9 +205,6 @@ public class MigratePersonAction implements MigrateAction {
 //      }
 //      return conformity;
 //   }
-
-
-
 
 
 }

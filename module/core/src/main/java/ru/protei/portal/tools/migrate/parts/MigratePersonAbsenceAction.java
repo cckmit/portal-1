@@ -128,7 +128,7 @@ public class MigratePersonAbsenceAction implements MigrateAction {
 
                     return x;
                 })
-                .dumpStats(TM_PERSON_ABS_ITEM_CODE);
+                .dumpStats(TM_PERSON_LEAVE_ITEM_CODE);
 
     }
 

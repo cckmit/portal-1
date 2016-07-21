@@ -14335,7 +14335,13 @@ body {
   background-image: linear-gradient(to right, transparent 0%, #f6f7f8 20px);
 }
 .AbsenceList table.absences tr.absence.closed {
-  opacity: 0.6;
+  opacity: 0.5;
+}
+.AbsenceList table.absences tr.absence.closed td {
+  background: #f2f3f3;
+}
+.AbsenceList table.absences tr.absence.closed:hover {
+  opacity: 1;
 }
 .AbsenceList table.absences tr.absence td.control .edit_button {
   margin-left: 0;
@@ -15796,7 +15802,7 @@ body {
   border-top: 0;
 }
 .popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer {
-  width: 1350px;
+  width: 1450px;
   position: relative;
   margin-top: 58px;
   margin-bottom: 114px;
@@ -15830,17 +15836,15 @@ body {
   text-shadow: 0 0 0;
 }
 .popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.rightBlock >.body {
-  padding: 14px 0 14px 0;
+  padding: 14px;
   position: relative;
   background: #dee4e5;
   text-align: left;
-  min-height: 690px;
+  min-height: 500px;
   box-sizing: border-box;
 }
 .popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.rightBlock >.body .controlButtons {
   margin-bottom: 14px;
-  margin-left: 14px;
-  margin-right: 14px;
 }
 .popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.rightBlock >.body .controlButtons .dateTimeBy {
   margin-right: 14px;
@@ -15882,14 +15886,10 @@ body {
 .popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.rightBlock >.body .AbsenceList {
   max-height: 900px;
   overflow: auto;
-}
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.rightBlock >.body .AbsenceList .absences {
-  margin: 0 14px;
   box-shadow: 0 0 10px -2px rgba(49,65,87,0.5);
-  width: auto;
 }
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.rightBlock >.body .AbsenceList >.footer {
-  margin: 14px;
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.rightBlock >.body .EmptyBlock {
+  height: 90px;
 }
 .popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.rightBlock >.footer {
   margin-left: 0;
