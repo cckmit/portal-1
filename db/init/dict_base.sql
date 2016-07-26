@@ -54,6 +54,7 @@ insert into Absence_Reason(id, ar_code, old_id, ar_info, display_order) values (
 insert into Absence_Reason(id, ar_code, old_id, ar_info, display_order) values (8, 'guest_card', 8, 'Гостевая карта', 8);
 insert into Absence_Reason(id, ar_code, old_id, ar_info, display_order) values (9, 'night_work', 9, 'Ночные работы', 9);
 insert into Absence_Reason(id, ar_code, old_id, ar_info, display_order) values (10, 'leave_without_pay', 10, 'Отпуск за свой счет', 10);
+insert into Absence_Reason(id, ar_code, old_id, ar_info, display_order) values (11, 'schedule', 11, 'Расписание', 11);
 
 
 --insert into company(id,cname) values (-1,'no_company');
