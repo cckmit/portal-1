@@ -10,10 +10,7 @@ import ru.protei.portal.tools.migrate.tools.BatchProcess;
 import ru.protei.portal.tools.migrate.tools.MigrateAdapter;
 import ru.protei.winter.jdbc.JdbcDAO;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -117,6 +114,11 @@ public class BatchProcessTaskExt {
                 }
 
 
+                Timestamp ts = rs.getTimestamp(lastUpdateFieldName);
+                if (ts != null) {
+                    migrationEntry.setLastUpdate(Tm_SqlHelper.timestampToDate(ts));
+                }
+
                 if (insertBatchSet.size() >= batchSize) {
                     //processBatch(dao, insertBatchSet, true);
                     batchProcess.doInsert(dao, insertBatchSet);
@@ -129,7 +131,6 @@ public class BatchProcessTaskExt {
                     logger.debug("Handled update rows : " + handledWithUpdating);
                 }
 
-                migrationEntry.setLastUpdate(rs.getDate(lastUpdateFieldName));
             }
 
             // остатки
