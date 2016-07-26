@@ -60,6 +60,8 @@ public class BatchProcessTaskExt {
 
     public BatchProcessTaskExt forTable (String tableName, String idFieldName, String lastUpdateFieldName) {
         queryCmd.setCommad("select * from " + tableName + " where " + lastUpdateFieldName + " > ? order by " + idFieldName);
+        this.idFieldName = idFieldName;
+        this.lastUpdateFieldName = lastUpdateFieldName;
         return this;
     }
 
