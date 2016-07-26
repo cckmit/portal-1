@@ -79,18 +79,28 @@ function STOP(){
     }
 }
 var messageGenerator = new MessageGenerator();
-</script><script src="/ws/resource/employees.js"></script><script>var MyID = 546;
-</script></head><body><div class="global"><div class="header_global"><div class="leftBlock"><div class="company"><span onclick="alert($.eventReport())" class="logo"></span><span class="name">PROTEI</span></div><div id="hideLeftBlock" class="hideBar_button"></div></div><div class="rightBlock"><div class="topicTitle employees"><div class="title">Сотрудники</div></div><div class="currentTask"><span class="case">Freq<span class="id">7823289</span></span><div class="timer"><span class="time"><span class="hours">01</span><span class="timeDelimiter">:</span><span class="minutes">12</span></span><span id="stopCurrentTask" class="stop_button"></span></div></div><div id="runTimeFixer" class="completeWorkSession"><span class="icon-time"></span>Таймфиксер</div><div class="rightSide"><div class="icons"><!--#userProfile.userProfilespan.icon-user--><div id="globalNotifications" class="notifications_button active"></div><div id="globalSettings" class="settings_button"></div><div id="globalHelper" class="helper_button"></div><div id="globalExit" class="exit_button"></div></div></div><div class="rightSide searchBlock"><form class="globalSearch"><input id="globalSearch" placeholder="Поиск по объектам" type="text" autocomplete="off" class="searchInput"/><!--#p4.searchInput(contenteditable="true")span 11
+</script><script src="/ws/resource/employees.js"></script><script>var MyID = ${sd.getPerson().getId()};
+</script></head><body><div class="global"><div class="header_global"><div class="leftBlock inactive"><div class="company"><span class="logo"></span><!--(onclick="alert($.eventReport())")--><span class="name">PROTEI</span></div><div id="hideLeftBlock" class="hideBar_button"></div></div><div class="rightBlock"><div class="topicTitle employees"><div class="title">Сотрудники</div></div><!--.currentTaskspan.case Freq
+    span.id 7823289
+.timer
+    span.time
+        span.hours 01
+        span.timeDelimiter :
+        span.minutes 12
+    span#stopCurrentTask.stop_button
+--><!--#runTimeFixer.completeWorkSessionspan.icon-time
+|Таймфиксер
+--><div class="rightSide"><div class="icons"><!--#userProfile.userProfilespan.icon-user--><!--#globalNotifications.notifications_button.active--><!--#globalSettings.settings_button--><!--#globalHelper.helper_button--><div id="globalExit" class="exit_button"></div></div></div><div class="rightSide searchBlock"><form class="globalSearch"><input id="globalSearch" placeholder="Поиск по объектам" type="text" autocomplete="off" class="searchInput"/><!--#p4.searchInput(contenteditable="true")span 11
 span 22
     span 33--><div class="buttonsBlock"><label class="search_button"><input type="submit" value="Поиск"/></label><!--label.icon-resetButtoninput(type="reset" value="Сброс")
---></div></form></div></div></div><div class="body_global"><div class="leftBlock"><div class="noScrolling"><div class="scrolling"><div class="mainButtons"></div><div class="menuList"><div class="menu"><div class="title">Рабочее место</div><div class="list"><div class="item"><span class="icon-plan"></span>Мой план</div><div class="item"><span class="icon-created"></span>Инспектор</div><div class="item"><span class="icon-activity"></span>Моя активность</div><div class="item"><span class="icon-subscription"></span>Мои подписки</div><div class="item"><span class="icon-favorites"></span>Мои избранные</div></div></div><div class="menu"><div class="title">Компания</div><div class="list"><div class="item"><span class="icon-employees"></span>Сотрудники</div><div class="item"><span class="icon-me"></span>Мой паспорт</div></div></div><div class="menu"><div class="title"><!--span.icon-savedQueries-->Объекты системы</div><div style="max-height: 500px" class="list active"><!--.slideWrapper--><div class="item"><span class="icon-component"></span>Компоненты</div><div class="item"><span class="icon-product"></span>Продукты</div><div class="item"><span class="icon-case"></span>Задачи</div><div class="item"><span class="icon-order"></span>Группы задач</div><div class="item"><span class="icon-order"></span>Заказы</div><div class="item"><span class="icon-project"></span>Проекты</div><div class="item"><span class="icon-organization"></span>Организации</div></div></div><div class="menu"><div class="title"><!--span.icon-savedQueries-->Управление и отчёты</div><div class="list"><!--.slideWrapper--><div class="item"><span class="icon-employees"></span>Сотрудники</div><div class="item"><span class="icon-component"></span>Компоненты</div><div class="item"><span class="icon-product"></span>Продукты</div></div></div></div></div></div><script>$('#hideLeftBlock').click(function(){
+--></div></form></div></div></div><div class="body_global"><div class="leftBlock inactive"><div class="noScrolling"><div class="scrolling"><div class="mainButtons"></div><div class="menuList"><div class="menu"><div class="title">Рабочее место</div><div class="list"><div class="item"><span class="icon-plan"></span>Мой план</div><div class="item"><span class="icon-created"></span>Инспектор</div><div class="item"><span class="icon-activity"></span>Моя активность</div><div class="item"><span class="icon-subscription"></span>Мои подписки</div><div class="item"><span class="icon-favorites"></span>Мои избранные</div></div></div><div class="menu"><div class="title">Компания</div><div class="list"><div class="item"><span class="icon-employees"></span>Сотрудники</div><div class="item"><span class="icon-me"></span>Мой паспорт</div></div></div><div class="menu"><div class="title"><!--span.icon-savedQueries-->Объекты системы</div><div style="max-height: 500px" class="list active"><!--.slideWrapper--><div class="item"><span class="icon-component"></span>Компоненты</div><div class="item"><span class="icon-product"></span>Продукты</div><div class="item"><span class="icon-case"></span>Задачи</div><div class="item"><span class="icon-order"></span>Группы задач</div><div class="item"><span class="icon-order"></span>Заказы</div><div class="item"><span class="icon-project"></span>Проекты</div><div class="item"><span class="icon-organization"></span>Организации</div></div></div><div class="menu"><div class="title"><!--span.icon-savedQueries-->Управление и отчёты</div><div class="list"><!--.slideWrapper--><div class="item"><span class="icon-employees"></span>Сотрудники</div><div class="item"><span class="icon-component"></span>Компоненты</div><div class="item"><span class="icon-product"></span>Продукты</div></div></div></div></div></div><script>$('#hideLeftBlock').click(function(){
     $('.header_global >.leftBlock,.body_global >.leftBlock').addClass('inactive');
-    $('.body_global >.leftBlock').click(function func(){
-        $('.header_global >.leftBlock,.body_global >.leftBlock').removeClass('inactive');
-        $('.body_global >.leftBlock').off()
-    })
 })
-</script></div><div class="rightBlock"><div class="UserList list_showing"><div class="controlButtons"><div class="buttons_group"><div id="showLeaders_but" class="button">Руководство компании</div><div id="showMissing_but" class="button">Отсутствующие</div><div id="showBirthdatPeople_but" class="button">День рождения</div><script>var AJAX = new function(){
+$('.body_global >.leftBlock').click(function func(){
+    $('.header_global >.leftBlock,.body_global >.leftBlock').removeClass('inactive');
+    //$('.body_global >.leftBlock').off()
+})
+</script></div><div class="rightBlock"><div class="UserList list_showing"><div class="controlButtons"><div class="buttons_group"><div id="showLeaders_but" class="button whiteC switcher">Руководство компании</div><div id="showMissing_but" class="button whiteC switcher">Отсутствующие</div><div id="showBirthdatPeople_but" class="button whiteC switcher">День рождения</div><script>var AJAX = new function(){
     var message = {
         url : null,
         method : "POST",
@@ -318,8 +328,6 @@ function Buttons(){
 };
 
 
-var months = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь']
-
 
 function getToday(){
     var date = new Date();
@@ -330,7 +338,7 @@ function getToday(){
 
 
 
-</script></div><div id="departmentFilter" class="regulator"><input placeholder="Подразделение" class="inputField"><div class="button sticky empty selected"></div></div><div class="buttons_group"><div class="regulator">Сортировать по<div id="sorting_but" class="button selected">Фамилия</div><div id="sortingDirection_but" class="button empty switcher"><span class="icon-down"></span></div></div></div></div><div id="letters" class="letters scrollFixBlock"><div onclick="showStartingWithLetter(event)" class="button">А</div><div onclick="showStartingWithLetter(event)" class="button">Б</div><div onclick="showStartingWithLetter(event)" class="button">В</div><div onclick="showStartingWithLetter(event)" class="button">Г</div><div onclick="showStartingWithLetter(event)" class="button">Д</div><div onclick="showStartingWithLetter(event)" class="button">Е</div><div onclick="showStartingWithLetter(event)" class="button">Ж</div><div onclick="showStartingWithLetter(event)" class="button">З</div><div onclick="showStartingWithLetter(event)" class="button">И</div><div onclick="showStartingWithLetter(event)" class="button">К</div><div onclick="showStartingWithLetter(event)" class="button">Л</div><div onclick="showStartingWithLetter(event)" class="button">М</div><div onclick="showStartingWithLetter(event)" class="button">Н</div><div onclick="showStartingWithLetter(event)" class="button">О</div><div onclick="showStartingWithLetter(event)" class="button">П</div><div onclick="showStartingWithLetter(event)" class="button">Р</div><div onclick="showStartingWithLetter(event)" class="button">С</div><div onclick="showStartingWithLetter(event)" class="button">Т</div><div onclick="showStartingWithLetter(event)" class="button">У</div><div onclick="showStartingWithLetter(event)" class="button">Ф</div><div onclick="showStartingWithLetter(event)" class="button">Х</div><div onclick="showStartingWithLetter(event)" class="button">Ц</div><div onclick="showStartingWithLetter(event)" class="button">Ч</div><div onclick="showStartingWithLetter(event)" class="button">Ш</div><div onclick="showStartingWithLetter(event)" class="button">Щ</div><div onclick="showStartingWithLetter(event)" class="button">Э</div><div onclick="showStartingWithLetter(event)" class="button">Ю</div><div onclick="showStartingWithLetter(event)" class="button">Я</div></div><script>function LettersToolBar(){
+</script></div><div id="departmentFilter" class="buttons_group"><div class="button_wrap"><input placeholder="Подразделение" disabled class="inputField inactive"><div class="button sticky empty selected whiteC inactive"></div></div></div><div class="buttons_group"><div class="regulator">Сортировать по<div class="button_wrap"><div id="sorting_but" class="button selected whiteC">Фамилия</div></div><div id="sortingDirection_but" class="button empty switcher whiteC"><span class="icon-down"></span></div></div></div></div><div id="letters" class="letters scrollFixBlock"><div onclick="showStartingWithLetter(event)" class="button whiteC switcher">А</div><div onclick="showStartingWithLetter(event)" class="button whiteC switcher">Б</div><div onclick="showStartingWithLetter(event)" class="button whiteC switcher">В</div><div onclick="showStartingWithLetter(event)" class="button whiteC switcher">Г</div><div onclick="showStartingWithLetter(event)" class="button whiteC switcher">Д</div><div onclick="showStartingWithLetter(event)" class="button whiteC switcher">Е</div><div onclick="showStartingWithLetter(event)" class="button whiteC switcher">Ж</div><div onclick="showStartingWithLetter(event)" class="button whiteC switcher">З</div><div onclick="showStartingWithLetter(event)" class="button whiteC switcher">И</div><div onclick="showStartingWithLetter(event)" class="button whiteC switcher">К</div><div onclick="showStartingWithLetter(event)" class="button whiteC switcher">Л</div><div onclick="showStartingWithLetter(event)" class="button whiteC switcher">М</div><div onclick="showStartingWithLetter(event)" class="button whiteC switcher">Н</div><div onclick="showStartingWithLetter(event)" class="button whiteC switcher">О</div><div onclick="showStartingWithLetter(event)" class="button whiteC switcher">П</div><div onclick="showStartingWithLetter(event)" class="button whiteC switcher">Р</div><div onclick="showStartingWithLetter(event)" class="button whiteC switcher">С</div><div onclick="showStartingWithLetter(event)" class="button whiteC switcher">Т</div><div onclick="showStartingWithLetter(event)" class="button whiteC switcher">У</div><div onclick="showStartingWithLetter(event)" class="button whiteC switcher">Ф</div><div onclick="showStartingWithLetter(event)" class="button whiteC switcher">Х</div><div onclick="showStartingWithLetter(event)" class="button whiteC switcher">Ц</div><div onclick="showStartingWithLetter(event)" class="button whiteC switcher">Ч</div><div onclick="showStartingWithLetter(event)" class="button whiteC switcher">Ш</div><div onclick="showStartingWithLetter(event)" class="button whiteC switcher">Щ</div><div onclick="showStartingWithLetter(event)" class="button whiteC switcher">Э</div><div onclick="showStartingWithLetter(event)" class="button whiteC switcher">Ю</div><div onclick="showStartingWithLetter(event)" class="button whiteC switcher">Я</div></div><script>function LettersToolBar(){
     var lettersBlock = $('#letters');
     var letters = {};
 
@@ -368,7 +376,7 @@ function showStartingWithLetter(event){
         if(html)
             this.append(html);
         else
-            this.append('<div class="EmptyBlock"><div class="wrapper">Не найдено</div></div>');
+            this.append('<div class="EmptyBlock"><div class="wrapper">По вашему запросу ничего не найдено</div></div>');
     }
     var index = 1;
     var favorites = [];
@@ -378,7 +386,7 @@ function showStartingWithLetter(event){
     this.generate = function(employee){
         var employeeHtml = '<div id="' + employee.id + '" class="user' + (employee.leader ? ' leader' : '') + (missing.indexOf(employee.id)>-1 ? ' inactive' : '') + '" onclick="activateUserPassport(event)" data-id="' + index + '">';
         employeeHtml += '<div class="wrapper">';
-        employeeHtml += '<div class="ava user' + employee.id + '"></div>';
+        employeeHtml += '<img class="ava" src="/pub/images/avatars/' + employee.id + '.jpg">';
         employeeHtml += '<div class="wrapper">';
         employeeHtml += '<div class="post">' + employee.post + '</div>';
         employeeHtml += '<div class="name">' + employee.fio + '</div>';
@@ -491,25 +499,25 @@ function Sorting(){
     function idSorting(a, b){
         return a.id -  b.id;
     }
-    this.by = function(sortKey){
+    this.by = function(i){
         if(userProducer)
             userProducer.saveUserPassport();
-        switch(sortKey){
-            case "Фамилия":
+        switch(i){
+            case "0":
+                Employees.sort(idSorting);
+                break;
+            case "1":
                 Employees.sort(function(a,b){
                     return stringSorting(a.fio, b.fio)
                 });
                 break;
-            case "Должность":
+            case "2":
                 Employees.sort(function(a,b){
                     return stringSorting(a.post, b.post)
                 });
                 break;
-            case "Дата рождения":
+            case "3":
                 Employees.sort(birthdaySorting);
-                break;
-            case "Id":
-                Employees.sort(idSorting);
                 break;
             default:
                 return;
@@ -606,8 +614,13 @@ String.escapeSymbols = {
 String.prototype.escapeHTML = function(){
     return this.replace(/[&<>"'\/]/g, function (s) {
       return String.escapeSymbols[s];
-    });
+    }).replace(/\s+/gm, " ");
 }
+
+var absenceReasons = ["Командировка", "Отпуск", "Болезнь", "Личные дела", "Местная командировка", "Учеба", "Больничный лист", "Гостевой пропуск", "Ночные работы", "Отпуск за свой счёт", "Расписание"];
+var months = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
+
+
 
 function DiagramProducer(){
 
@@ -617,8 +630,8 @@ function DiagramProducer(){
     var diagramThead = diagram.children('thead');//
     var diagramTbody = diagram.children('tbody');//
     var days = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
-    var months = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
-    var absenceReasons = ["Командировка", "Отпуск", "Болезнь", "Личные дела", "Местная командировка", "Учеба", "Больничный лист", "Гостевой пропуск", "Ночные работы", "Отпуск за свой счёт"]
+    //var months = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
+    //var absenceReasons = ["Командировка", "Отпуск", "Болезнь", "Личные дела", "Местная командировка", "Учеба", "Больничный лист", "Гостевой пропуск", "Ночные работы", "Отпуск за свой счёт", "Расписание"]
     var changeFlag = true;
     var todayExistsFlag = false;
     var newAbsences;
@@ -784,7 +797,7 @@ function DiagramProducer(){
             absenceReason[0].className = 'absenceReason reason' + absenceId;
             absenceReason.text(absenceReasons[absenceId - 1]);
 
-            if(absenceId==6){ //если учёба , значит расписание
+            if(absenceId==11){ //если учёба , значит расписание
                 var schedule = diagramProducer.getScheduleByTimeFrom(timeFrom);
 
                 var leftOffset = event.offsetX || event.clientX - absenceLine.offset().left;
@@ -1143,13 +1156,13 @@ function DiagramProducer(){
 
 
 
-        var absences2 = jQuery.extend(true, {}, absences);
-        for(var a in absences2){
-            absences2[a].dateFrom = new Date(absences2[a].dateFrom);
-            absences2[a].dateTill = new Date(absences2[a].dateTill);
-        }
-        log(absences2);
-        log("======================================");
+        //var absences2 = jQuery.extend(true, {}, absences);
+        //for(var a in absences2){
+        //    absences2[a].dateFrom = new Date(absences2[a].dateFrom);
+        //    absences2[a].dateTill = new Date(absences2[a].dateTill);
+        //}
+        //log(absences2);
+        //log("======================================");
 
 
 
@@ -1199,10 +1212,7 @@ function DiagramProducer(){
                 var from = new Date(dateFrom * 1000);
 
                 var width = (dateTill - dateFrom) / 60 / 60 * 4 * 2; // в пикселах
-                //STOP();
                 var marginLeft = ((from.getUTCHours() * 4) + (from.getUTCMinutes() / 15)) * 2; // в пикселах
-                //if(marginLeft != 0)
-                //    marginLeft = ((from.getHours() * 4) + (from.getMinutes() / 4)) * 2; // в пикселах
 
                 var diffTill = dateTill - currentEndPoint.getUTCTime()/1000;
                 if(!bellowBottom && diffTill>0){
@@ -1478,17 +1488,20 @@ function DiagramProducer(){
 
 
 
---></div></div></div><div id="absenceTooltip" class="tooltipPopup_block"></div><div id="absenceInfo" class="absencePopup_block"><div class="info"><div class="date"><div class="dateNumber"></div><div class="monthTime"><div class="month"></div><div class="time"></div></div></div>—<div class="date"><div class="dateNumber"></div><div class="monthTime"><div class="month"></div><div class="time"></div></div></div><div class="absenceReason"></div><div class="rightSide"><span class="delete_button"></span><span class="edit_button"></span><span class="duplicate_button"></span></div></div><div class="schedule"><table><tr class="headers"><td></td><td class="day mo">Пн</td><td class="day tu">Вт</td><td class="day we">Ср</td><td class="day th">Чт</td><td class="day fr">Пт</td></tr><tr class="week"><td class="weekParity">Чётная неделя</td><td data-day="Пн" class="day"></td><td data-day="Вт" class="day"></td><td data-day="Ср" class="day"></td><td data-day="Чт" class="day"></td><td data-day="Пт" class="day"></td></tr><tr class="week"><td class="weekParity">Нечётная неделя</td><td data-day="Пн" class="day"></td><td data-day="Вт" class="day"></td><td data-day="Ср" class="day"></td><td data-day="Чт" class="day"></td><td data-day="Пт" class="day"></td></tr></table></div><div class="comment"><span class="icon-comment"></span><span class="text"></span></div></div><div id="absenceViewer" class="popup_backgroundBlock"><div class="wrapper"><div class="popupBlock"><div class="popup absenceViewer"><div class="leftBlock"><div class="datePicker"><div class="datePickerWrap"></div></div></div><div class="rightBlock"><div class="head">Просмотрщик отсутствий<div class="rightSide"><div id="clsAbsenceViewerBut1" class="close_button"></div></div></div><div class="body"><div class="Loader"></div><div class="controlButtons"><span id="dtAv" class="dateTime"><span class="dateTimeBy">Дата отсутствия</span><span class="from"><span id="tAv1" class="date">23.05.16</span></span>—<span class="to"><span id="tAv2" class="date">23.05.16</span></span></span><div class="buttons_group"><div id="absenceReasonFilter" class="button selected">Все типы отсутствий</div></div><div class="rightSide"><div class="button greenC"><span class="icon-add"></span>Новое отсутствие</div></div></div><div class="AbsenceList"><table class="absences"><thead><tr class="headers"><td class="control">Управление</td><td class="dateCreation">Дата создания</td><td class="dateUpdate">Дата обновления</td><td class="creator">Создатель</td><td class="absenceRange">Дата отсутствия</td><td class="type">Тип отсутствия</td><td class="comment">Комментарий</td></tr></thead><tbody><tr class="absence"><td class="control"><span class="edit_button"></span><span class="duplicate_button"></span><span class="delete_button"></span></td><td class="dateCreation"><div class="dateTime">12.09.12 12:30</div></td><td class="dateUpdate"><div class="dateTime">12.09.12 12:30</div></td><td class="creator me">Я</td><td class="absenceRange"><div class="from"><div class="dateNumber">18</div><div class="monthTime"><div class="month">Май</div><div class="time">13:00</div></div></div><div class="to"><div class="dateNumber">01</div><div class="monthTime"><div class="month">Сентябрь</div><div class="time">13:00</div></div></div></td><td class="type"><span class="typeName reason6">Расписание<div id="showSchedule_but" class="more_button"></div></span></td><td class="comment"><div class="comment_button"></div></td></tr></tbody></table></div><div class="EmptyBlock"><div class="wrapper">По вашему запросу ничего не найдено</div></div></div><div class="footer"><!--.button.greenC Сохранить--><div id="clsAbsenceViewerBut2" class="button grayC">Отмена</div></div></div><div id="absenceViewerInfo" class="absencePopup_block"><div class="comment"><span class="icon-comment"></span><span class="text"></span></div></div></div><!--.popup.absenceEditing--><!----><!--    .body--><!--        .t_wrapper--><!--            .tc_wrapper.datePickerBlock--><!--                .datePicker--><!--                    #2date-rangeWrap--><!--            .tc_wrapper.mainBlock--><!--                .head Новое отсутствие--><!--                    .rightSide--><!--                        #clsAbsenceViewerBut1.close_button--><!--                .body--><!--                    .mainInfo--><!--                        span#2twoRange.dateTime--><!--                            span.from--><!--                                span#2date-range1.date 23.05.16--><!--                                span#amount.time с начала дня--><!--                            |—--><!--                            span.to--><!--                                span#2date-range2.date 23.05.16--><!--                                span#amount2.time до конца дня--><!----><!--                        .rightSide--><!--                            #absenceReason_but.absenceReason_button.reason2 Расписание--><!----><!--                    .timePicker--><!----><!--                        .twoDays--><!--                            .slider.toRight--><!--                                #slider-range-max--><!--                            .slider.toLeft--><!--                                #slider-range-min--><!--                        .oneDay--><!--                            .slider--><!--                                #slider-range--><!----><!--                    .comment--><!--                        textarea.text(placeholder="Комментарий")--><!----><!----><!--            #scheduleBlock.tc_wrapper.scheduleBlock--><!--                .dimension_wrapper--><!--                    .schedule--><!--                        .head Расписание--><!--                            .rightSide--><!--                                .weekParity_button 2нед.--><!--                        .body--><!--                            table--><!--                                thead--><!--                                    tr.headers--><!--                                        td.day--><!--                                        td.week Чётная неделя--><!--                                        td.week Нечётная неделя--><!--                                tbody--><!--                                    +loop(5)--><!--                                        tr--><!--                                            td.day Пн--><!--                                            td.week--><!--                                                span.time--><!--                                                    span.from 12:00--><!--                                                    | —--><!--                                                    span.to 18:00--><!--                                                span.delete_button--><!----><!--                                            td.week--><!--                                                .add_button--><!----><!----><!----><!----><!--    script.--><!--        $(function () {--><!--            $('#2twoRange').dateRangePicker(--><!--                {--><!--                    singleMonth: true,--><!--                    inline: true,--><!--                    format: 'DD.MM.YY',--><!--                    showShortcuts: false,--><!--                    showTopbar: false,--><!--                    //startDate: "27.10.15",--><!--                    startOfWeek: "monday",--><!--                    //                    showTopbar: false,--><!--                    separator: '  ',--><!--                    getValue: function () {--><!--                        //                        if ($('#date-range200').val() && $('#date-range201').val() )--><!--                        //  				return $('#date-range200').val() + ' to ' + $('#date-range201').val();--><!--                        //                            return '';--><!--                        //                        else--><!--                        return '';--><!--                    },--><!--                    setValue: function (s, s1, s2) {--><!--                        $('#2date-range1').html(s1);--><!--                        $('#2date-range2').html(s2);--><!--                    },--><!--                    alwaysOpen: true,--><!--                    container: '#2date-rangeWrap'--><!--                }--><!--            );--><!--            //$('#2twoRange').data('dateRangePicker').setDateRange('23-05-16', '23-05-16');--><!----><!----><!--            function generateTime(elem, e, ui){--><!----><!--                var hours = Math.floor(ui.value / 60);--><!--                var minutes = ui.value - (hours * 60);--><!----><!--                if (hours == 0 && minutes==0) {--><!--                    elem[0].html( 'с начала дня' );--><!--                    return;--><!--                }--><!--                else if(hours==24){--><!--                    elem[0].html( 'до конца дня' );--><!--                    return--><!--                }--><!----><!--                if (hours < 10) hours = '0' + hours;--><!--                if (minutes < 10) minutes = '0' + minutes;--><!----><!--                elem[0].html( hours + ':' + minutes );--><!----><!----><!--            }--><!----><!----><!--            $( "#slider-range-max" ).slider({--><!--                range: "max",--><!--                min: 0,--><!--                max: 1425,--><!--                step: 15,--><!--                slide: generateTime.bind(null, [$("#amount")])--><!--            });--><!----><!----><!--            $( "#slider-range-min" ).slider({--><!--                range: "min",--><!--                min: 15,--><!--                max: 1440,--><!--                step: 15,--><!--                value: 1440,--><!--                slide: generateTime.bind(null, [$("#amount2")])--><!--            });--><!----><!--            $( "#slider-range" ).slider({--><!--                range: true,--><!--                min: 0,--><!--                max: 1440,--><!--                step: 15,--><!--                values: [0,1440],--><!--                slide: function(e, ui) {--><!--                    generateTime([$("#amount")], null, {value: ui.values[0]});--><!--                    generateTime([$("#amount2")], null, {value: ui.values[1]});--><!--                }--><!--            });--><!----><!----><!----><!--            $('#absenceReason_but').click(function(event){--><!--                var absenceEditing = $('#absenceViewer').find('.absenceEditing');--><!--                if(absenceEditing.hasClass('schedule_showing')){--><!--                    $('#absenceViewer').find('.scheduleBlock').removeClass('active');--><!--                    absenceEditing.removeClass('schedule_showing');--><!--                }--><!--                else {--><!--                    absenceEditing.addClass('schedule_showing');--><!--                    setTimeout(function(){--><!--                        $('#absenceViewer').find('.scheduleBlock').addClass('active');--><!--                    }, 300);--><!--                }--><!--            });--><!----><!----><!--        });--><!----><!--    .footer--><!--        .button.greenC Сохранить--><!--        #clsAbsenceViewerBut2.button.grayC Отмена-->
+--></div></div></div><div id="absenceTooltip" class="tooltipPopup_block toCenter"></div><div id="absenceInfo" class="absencePopup_block"><div class="info"><div class="date"><div class="dateNumber"></div><div class="monthTime"><div class="month"></div><div class="time"></div></div></div>—<div class="date"><div class="dateNumber"></div><div class="monthTime"><div class="month"></div><div class="time"></div></div></div><div class="absenceReason"></div><div class="rightSide"><span class="delete_button"></span><span class="edit_button"></span><span class="duplicate_button"></span></div></div><div class="schedule"><table><tr class="headers"><td></td><td class="day mo">Пн</td><td class="day tu">Вт</td><td class="day we">Ср</td><td class="day th">Чт</td><td class="day fr">Пт</td></tr><tr class="week"><td class="weekParity">Чётная неделя</td><td data-day="Пн" class="day"></td><td data-day="Вт" class="day"></td><td data-day="Ср" class="day"></td><td data-day="Чт" class="day"></td><td data-day="Пт" class="day"></td></tr><tr class="week"><td class="weekParity">Нечётная неделя</td><td data-day="Пн" class="day"></td><td data-day="Вт" class="day"></td><td data-day="Ср" class="day"></td><td data-day="Чт" class="day"></td><td data-day="Пт" class="day"></td></tr></table></div><div class="comment"><span class="icon-comment"></span><span class="text"></span></div></div><div id="absenceViewer" class="popup_backgroundBlock"><div class="wrapper"><div class="popupBlock"><div class="popup absenceViewer"><div class="leftBlock"><div class="datePicker"><div class="datePickerWrap"></div></div></div><div class="rightBlock"><div class="head">Просмотрщик отсутствий<div class="rightSide"><div id="clsAbsenceViewerBut1" class="close_button"></div></div></div><div class="body"><div class="Loader"></div><div class="controlButtons"><span id="dtAv" class="dateTime"><span class="dateTimeBy">Дата отсутствия</span><span class="from"><span id="tAv1" class="date">23.05.16</span></span>—<span class="to"><span id="tAv2" class="date">23.05.16</span></span></span><div class="buttons_group"><div id="absenceReasonFilter" class="button selected whiteC">Все типы отсутствий</div></div><div class="rightSide"><div class="button greenC"><span class="icon-add"></span>Новое отсутствие</div></div></div><div class="AbsenceList"><table class="absences"><thead><tr class="headers"><td class="control">Управление</td><td class="dateCreation">Дата создания</td><td class="dateUpdate">Дата обновления</td><td class="creator">Создатель</td><td class="absenceRange">Дата отсутствия</td><td class="type">Тип отсутствия</td><td class="comment">Комментарий</td></tr></thead><tbody></tbody></table></div><div class="EmptyBlock"><div class="wrapper">По вашему запросу ничего не найдено</div></div></div><div class="footer"><!--.button.greenC Сохранить--><div id="clsAbsenceViewerBut2" class="button grayC">Отмена</div></div></div><div id="absenceViewerInfo" class="absencePopup_block"><div class="comment"><span class="icon-comment"></span><span class="text"></span></div></div></div><!--.popup.absenceEditing--><!----><!--    .body--><!--        .t_wrapper--><!--            .tc_wrapper.datePickerBlock--><!--                .datePicker--><!--                    #2date-rangeWrap--><!--            .tc_wrapper.mainBlock--><!--                .head Новое отсутствие--><!--                    .rightSide--><!--                        #clsAbsenceViewerBut1.close_button--><!--                .body--><!--                    .mainInfo--><!--                        span#2twoRange.dateTime--><!--                            span.from--><!--                                span#2date-range1.date 23.05.16--><!--                                span#amount.time с начала дня--><!--                            |—--><!--                            span.to--><!--                                span#2date-range2.date 23.05.16--><!--                                span#amount2.time до конца дня--><!----><!--                        .rightSide--><!--                            #absenceReason_but.absenceReason_button.reason2 Расписание--><!----><!--                    .timePicker--><!----><!--                        .twoDays--><!--                            .slider.toRight--><!--                                #slider-range-max--><!--                            .slider.toLeft--><!--                                #slider-range-min--><!--                        .oneDay--><!--                            .slider--><!--                                #slider-range--><!----><!--                    .comment--><!--                        textarea.text(placeholder="Комментарий")--><!----><!----><!--            #scheduleBlock.tc_wrapper.scheduleBlock--><!--                .dimension_wrapper--><!--                    .schedule--><!--                        .head Расписание--><!--                            .rightSide--><!--                                .weekParity_button 2нед.--><!--                        .body--><!--                            table--><!--                                thead--><!--                                    tr.headers--><!--                                        td.day--><!--                                        td.week Чётная неделя--><!--                                        td.week Нечётная неделя--><!--                                tbody--><!--                                    +loop(5)--><!--                                        tr--><!--                                            td.day Пн--><!--                                            td.week--><!--                                                span.time--><!--                                                    span.from 12:00--><!--                                                    | —--><!--                                                    span.to 18:00--><!--                                                span.delete_button--><!----><!--                                            td.week--><!--                                                .add_button--><!----><!----><!----><!----><!--    script.--><!--        $(function () {--><!--            $('#2twoRange').dateRangePicker(--><!--                {--><!--                    singleMonth: true,--><!--                    inline: true,--><!--                    format: 'DD.MM.YY',--><!--                    showShortcuts: false,--><!--                    showTopbar: false,--><!--                    //startDate: "27.10.15",--><!--                    startOfWeek: "monday",--><!--                    //                    showTopbar: false,--><!--                    separator: '  ',--><!--                    getValue: function () {--><!--                        //                        if ($('#date-range200').val() && $('#date-range201').val() )--><!--                        //  				return $('#date-range200').val() + ' to ' + $('#date-range201').val();--><!--                        //                            return '';--><!--                        //                        else--><!--                        return '';--><!--                    },--><!--                    setValue: function (s, s1, s2) {--><!--                        $('#2date-range1').html(s1);--><!--                        $('#2date-range2').html(s2);--><!--                    },--><!--                    alwaysOpen: true,--><!--                    container: '#2date-rangeWrap'--><!--                }--><!--            );--><!--            //$('#2twoRange').data('dateRangePicker').setDateRange('23-05-16', '23-05-16');--><!----><!----><!--            function generateTime(elem, e, ui){--><!----><!--                var hours = Math.floor(ui.value / 60);--><!--                var minutes = ui.value - (hours * 60);--><!----><!--                if (hours == 0 && minutes==0) {--><!--                    elem[0].html( 'с начала дня' );--><!--                    return;--><!--                }--><!--                else if(hours==24){--><!--                    elem[0].html( 'до конца дня' );--><!--                    return--><!--                }--><!----><!--                if (hours < 10) hours = '0' + hours;--><!--                if (minutes < 10) minutes = '0' + minutes;--><!----><!--                elem[0].html( hours + ':' + minutes );--><!----><!----><!--            }--><!----><!----><!--            $( "#slider-range-max" ).slider({--><!--                range: "max",--><!--                min: 0,--><!--                max: 1425,--><!--                step: 15,--><!--                slide: generateTime.bind(null, [$("#amount")])--><!--            });--><!----><!----><!--            $( "#slider-range-min" ).slider({--><!--                range: "min",--><!--                min: 15,--><!--                max: 1440,--><!--                step: 15,--><!--                value: 1440,--><!--                slide: generateTime.bind(null, [$("#amount2")])--><!--            });--><!----><!--            $( "#slider-range" ).slider({--><!--                range: true,--><!--                min: 0,--><!--                max: 1440,--><!--                step: 15,--><!--                values: [0,1440],--><!--                slide: function(e, ui) {--><!--                    generateTime([$("#amount")], null, {value: ui.values[0]});--><!--                    generateTime([$("#amount2")], null, {value: ui.values[1]});--><!--                }--><!--            });--><!----><!----><!----><!--            $('#absenceReason_but').click(function(event){--><!--                var absenceEditing = $('#absenceViewer').find('.absenceEditing');--><!--                if(absenceEditing.hasClass('schedule_showing')){--><!--                    $('#absenceViewer').find('.scheduleBlock').removeClass('active');--><!--                    absenceEditing.removeClass('schedule_showing');--><!--                }--><!--                else {--><!--                    absenceEditing.addClass('schedule_showing');--><!--                    setTimeout(function(){--><!--                        $('#absenceViewer').find('.scheduleBlock').addClass('active');--><!--                    }, 300);--><!--                }--><!--            });--><!----><!----><!--        });--><!----><!--    .footer--><!--        .button.greenC Сохранить--><!--        #clsAbsenceViewerBut2.button.grayC Отмена-->
 
 
 
 </div></div></div><script>function setPopupPosition(event, popup, innerOffset, outerTopOffset){
+    popup.css('left','');// для правильного вычисления ширины
     var width = popup.outerWidth();
 
-    if(event.clientX + width > $(document).width())
-        popup.removeClass('toLeft').addClass('toRight').css('left', (event.clientX - width + innerOffset));
+    if(width < innerOffset)
+        popup.css('left', event.clientX - width/2).removeClass('toLeft toRight').addClass('toCenter');
+    else if(event.clientX + width > $(document).width())
+        popup.css('left', event.clientX - width + innerOffset).removeClass('toLeft toCenter').addClass('toRight');
     else
-        popup.removeClass('toRight').addClass('toLeft').css('left', event.clientX - innerOffset);
+        popup.css('left', event.clientX - innerOffset).removeClass('toRight toCenter').addClass('toLeft');
 
     popup.css('top', $(event.currentTarget).offset().top + outerTopOffset);
 }
@@ -1522,7 +1535,6 @@ function activateUserPassport(event) {
 
 
 var userProducer;
-
 function UserProducer(){
     var expectsOpening = false;
     var userPassport = $('.UserPassport');
@@ -1609,7 +1621,6 @@ function UserProducer(){
     function downloadEmployeeData(userBlock, successHandler, errorHandler){
         var id = userBlock.attr('id');
         var employee = 'Employee' + id;
-        STOP();
         if(!window[employee]){
             AJAX.getEmployee(
                 id,
@@ -1710,11 +1721,43 @@ function UserProducer(){
     var dateTime = absenceViewer.find('#dtAv');
     var absenceList = absenceViewer.find('.AbsenceList');
     var absenceListTbody = absenceList.find('tbody');
-    var months = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
-    var absenceReasons = ["Командировка", "Отпуск", "Болезнь", "Личные дела", "Местная командировка", "Учеба", "Больничный лист", "Гостевой пропуск", "Ночные работы", "Отпуск за свой счёт"]
+    //var months = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
+    //var absenceReasons = ["Командировка", "Отпуск", "Болезнь", "Личные дела", "Местная командировка", "Учеба", "Больничный лист", "Гостевой пропуск", "Ночные работы", "Отпуск за свой счёт" , "Расписание"]
     var emptyBlock = absenceList.next('.EmptyBlock');
     var dateNow;
+    var commentToolTip;
+
     //var loaderBlock = absenceViewer.find('.Loader');
+    var absenceReasonFilter = new SelectList(1, $('#absenceReasonFilter'), [
+        {i:0,e:"Все типы отсутствий"},
+        {i:1,e:"Командировка"},
+        {i:2,e:"Отпуск"},
+        {i:3,e:"Болезнь"},
+        {i:4,e:"Личные дела"},
+        {i:5,e:"Местная командировка"},
+        {i:6,e:"Учёба"},
+        {i:7,e:"Больничный лист"},
+        {i:8,e:"Гостевой пропуск"},
+        {i:9,e:"Ночные работы"},
+        {i:10,e:"Отпуск за свой счёт"},
+        {i:11,e:"Расписание"}
+    ], filterBy);
+
+
+    this.showAbsenceComment = function(event, message){
+        if(!commentToolTip){
+            commentToolTip = $('<div class="tooltipPopup_block"></div>');
+            absenceViewer.after(commentToolTip);
+        }
+        event.stopPropagation();
+        commentToolTip.text(message);
+        setPopupPosition(event, commentToolTip, 86, 28);
+        commentToolTip.show();
+        bindDocumentKillingClick(commentToolTip, commentToolTip, function(){
+            commentToolTip.hide();
+        });
+    }
+
     dateTime.dateRangePicker(
         {
             singleMonth: true,
@@ -1729,20 +1772,20 @@ function UserProducer(){
                 return '';
             },
             setValue: function (s, d1, d2) {
-                //loaderBlock.addClass('active');
+                if(commentToolTip)
+                    commentToolTip.hide();
                 downloadAbsences(d1, d2, userProducer.getOpenedUserId(), function(data){
                     generateAbsences(data.absences);
-                    //loaderBlock.removeClass('active');
                 });
                 var format = 'DD.MM.YY';
                 dateTime.find('#tAv1').html(moment(d1).format(format));
                 dateTime.find('#tAv2').html(moment(d2).format(format));
+                absenceReasonFilter.reset();
             },
             alwaysOpen: true,
             container: absenceViewer.find('.datePickerWrap')
         }
     );
-
 
     function downloadAbsences(from, till, id, successAction){
         AJAX.getEmployeeAbsences(
@@ -1757,8 +1800,6 @@ function UserProducer(){
         );
     }
 
-
-
     function getTwoNumberDatePart(number){
         return number<10?'0'+number:number;
     }
@@ -1766,7 +1807,6 @@ function UserProducer(){
     function getDateString(date){
         return getTwoNumberDatePart(date.getDate()) +'.'+ getTwoNumberDatePart(date.getMonth()) +'.'+ date.getFullYear() +' '+ getTwoNumberDatePart(date.getHours()) +':'+ getTwoNumberDatePart(date.getMinutes());
     }
-
 
     function getDateRangeString(date, initiallyTime){
         var hm = getTwoNumberDatePart(date.getHours()) +':'+ getTwoNumberDatePart(date.getMinutes());
@@ -1810,7 +1850,7 @@ function UserProducer(){
         html += '<td class="absenceRange">' +
                 '<div class="from">' +
                 getDateRangeString(new Date(absence.dateFrom), '00:00') +
-                '</div>' +
+                '</div> — ' +
                 '<div class="to">' +
                 getDateRangeString(new Date(absence.dateTill), '23:59') +
                 '</div>' +
@@ -1819,7 +1859,7 @@ function UserProducer(){
 
         html += '<td class="type">' +
                 '<span class="typeName reason'+ absence.reason +'">' + absenceReasons[absence.reason-1] +
-                (absence.reason == 6?'<div class="more_button" onclick="showSchedule(event, '+ absence.schedule +')"></div>':'') +
+                (absence.reason == 11?'<div class="more_button" onclick="showSchedule(event, '+ absence.schedule +')"></div>':'') +
                 '</span>' +
                 '</td>';
 
@@ -1874,47 +1914,38 @@ function UserProducer(){
                 $(event.target).off('click', func);
             }
         );
-        binderSelectList.bindSimpleSelect($('#absenceReasonFilter'), [
-            "Все типы отсутствий",
-            "Командировка",
-            "Отпуск",
-            "Болезнь",
-            "Личные дела",
-            "Местная командировка",
-            "Учёба",
-            "Больничный лист",
-            "Гостевой пропуск",
-            "Ночные работы",
-            "Отпуск за свой счёт"
-        ], filterBy);
+
     }
 
-    this.showComment = function(event, message){
-        var absenceViewerInfo = $('#absenceViewerInfo');
-        absenceViewerInfo.find('.text').text(message)
-        setPopupPosition(event, absenceViewerInfo, 58, 28);
-        absenceViewerInfo.show();
-    }
-
-    function filterBy(elem){
-        STOP();
+    function filterBy(i, elem){
         var absences = absenceListTbody.children('.absence');
         if(absences.length == 0)
             return;
 
-        if(elem == "Все типы отсутствий"){
+        if(i=="0"){
             absences.show();
+            absenceList.show();
+            emptyBlock.hide();
             return;
         }
 
+        var size = absences.length;
         absences.each(function(i,e){
             e = $(e);
-            if(e.find('.typeName').text() != elem)
+            if(e.find('.typeName').text() != elem) {
                 e.hide();
+                size--;
+            }
             else
                 e.show();
         })
-
+        if(size==0){
+            absenceList.hide();
+            emptyBlock.show();
+        }else{
+            absenceList.show();
+            emptyBlock.hide();
+        }
     }
 
 
@@ -1928,9 +1959,9 @@ $('#editAbsenceButton').click(function () {
 
     absenceViewer.show();
 });
+
 function showAbsenceComment(event, message){
-    STOP();
-    absenceViewer.showComment(event, message);
+    absenceViewer.showAbsenceComment(event,message)
 }
 
 </script><div id="selectList" class="selectList"><div class="wrapper"></div></div><script>var departmentFilter = $('#departmentFilter');
@@ -1958,10 +1989,185 @@ var departments = [
 
 
 
+function SelectList(type, selector, dataList, changeHandler){
+    var hi; //hover index
+    var items;
+    var visibleItemsIndex;
+    var t = this;
+    var documentClick;
+    var mouseMover;
+    var selectList = $('<div class="selectList"></div>');
+    var selectListWrap = $('<div class="wrapper"></div>');
+    selector.after(selectList.append(selectListWrap));
+
+    function initialize (){
+        items = selectListWrap.find('.item');
+        visibleItemsIndex = [];
+        for (var i = 0; i < items.length; i++)
+            visibleItemsIndex[i] = i;
+    }
+
+    function makeItemHover(i){
+        hi = i;
+        items.eq(i).addClass('hover');
+    }
+
+    function activeSelectList(elem){
+        selectList.css('min-width', elem.outerWidth());
+        selectList.css('margin-top', 2);
+        elem.addClass('checked');
+        elem.after(selectList);
+        selectList.show();
+
+        selectListWrap.html('');
+        var html = '';
+        for(var i = 0; i<dataList.length; i++){
+            html += '<div class="item show" data-index="'+ i +'" data-i="'+ dataList[i].i +'">'+ dataList[i].e +'</div>';
+        }
+        selectListWrap.append(html);
+    }
+
+    function closeSelectList(elem){
+        elem.removeClass('checked')
+        selectList.hide();
+    }
+
+    function keyDownTracking(event){
+        var elemOffset;
+        var marginTop
+        var elem
+
+        switch (event.which) {
+            case 13: // enter
+                changeHandler(items[hi].getAttribute('data-i'), items[hi].textContent);
+                selector.text(items[hi].innerHTML)
+                t.close();
+                break;
+            case 38: // up
+
+                if (hi != 0) {
+                    items.eq(visibleItemsIndex[hi]).removeClass('hover');
+                    hi--
+                    items.eq(visibleItemsIndex[hi]).addClass('hover');
+                    elem = items.eq(visibleItemsIndex[hi]);
+
+                    elemOffset = elem.position();
+                    marginTop = parseInt(selectListWrap.css('margin-top'));
+
+                    if (marginTop != 0 && elemOffset.top+29 < 173) {
+                        selectListWrap.css('margin-top', marginTop += 29);
+                    }
+
+                    if(marginTop!=0) selectList.addClass('moreTop');
+                    else selectList.removeClass('moreTop');
+
+                    if(visibleItemsIndex.length - hi > 6) selectList.addClass('moreBottom');
+                }
+                break;
+            case 40: // down
+
+                if(hi<visibleItemsIndex.length-1){
+                    items.eq(visibleItemsIndex[hi]).removeClass('hover');
+                    hi++
+                    items.eq(visibleItemsIndex[hi]).addClass('hover');
+                    elem = items.eq(visibleItemsIndex[hi]);
+
+                    elemOffset = elem.position();
+                    marginTop = parseInt( selectListWrap.css('margin-top') );
+
+                    var wrapHeight = selectListWrap.height();
+
+
+                    if(elemOffset.top >= 173 && wrapHeight+marginTop-319 > 0){
+                        selectListWrap.css('margin-top', marginTop -= 29);
+                    }
+
+                    if(visibleItemsIndex.length - hi > 6 && (hi > 6 || marginTop == 0))selectList.addClass('moreBottom');
+                    else selectList.removeClass('moreBottom');
+
+                    if(hi > 5)selectList.addClass('moreTop');
+                }
+
+                break;
+            default:
+                return; // exit this handler for other keys
+        }
+        event.preventDefault();
+    }
+
+    function onWheel(event) {
+        var offset = parseInt(selectListWrap.css('margin-top')) + (29 * (event.originalEvent.deltaY > 0 ? -1 : 1)); // 200 смещение в пикселях при прокрутке
+
+        if(offset>0) {
+            offset = 0
+        }else if(offset < selectList.height() - selectListWrap.height()){
+            event.preventDefault();
+            return
+        }
+
+        if(offset<0)selectList.addClass('moreTop');
+        else selectList.removeClass('moreTop');
+
+        if(Math.abs(offset) + 1 + selectList.height() >= selectListWrap.height()) selectList.removeClass('moreBottom');
+        else selectList.addClass('moreBottom');
+
+        selectListWrap.css('margin-top', offset);
+        event.preventDefault();
+    }
 
 
 
+    this.close = function(){
+        closeSelectList(selector);
+        $(document).off('click', documentClick).off('keydown', keyDownTracking);
+        selectList.off('onwheel', onWheel);
+        selectListWrap.off('mousemove', mouseMover);
+    }
+    this.reset = function(){
+        selector.text(dataList[0].e);
+    }
 
+
+    if(dataList.length > 11)selectList.addClass('moreBottom');
+
+    selector.click(function(){
+        if(selector.hasClass('checked')){
+            t.close();
+        }else{
+            activeSelectList(selector);
+            initialize();
+
+            for(var i=0; i<dataList.length; i++){
+                if(dataList[i].e == selector.text()){
+                    makeItemHover(i);
+                    break;
+                }
+            }
+
+            $(document).keydown(keyDownTracking);
+            selectList.on('wheel', onWheel);
+            selectListWrap.mousemove(mouseMover = function(event){
+                items.eq(visibleItemsIndex[hi]).removeClass('hover');
+                hi = event.target.getAttribute("data-index");
+                items.eq(visibleItemsIndex[hi]).addClass('hover');
+            });
+
+            $(document).click(
+                documentClick = function(event){
+                    var elem = event.target;
+                    if(selectList.has(elem).length<=0 && !selector.is(elem)){
+                        t.close();
+                    }else if(selectList.has(elem).length>0){
+                        changeHandler(elem.getAttribute('data-i'), elem.textContent);
+                        selector.text(elem.textContent)
+                        t.close();
+                    }
+                }
+            );
+        }
+    });
+
+}
 
 
 
@@ -1970,31 +2176,33 @@ var departments = [
 
 function BinderSelectList(){
 
+    var hi; //hover index
+    var items;
+    var visibleItemsIndex;
+    var successAction;
+    var closeAction;
+    var selector;
 
-    this.hi; //hover index
-    this.items;
-    this.visibleItemsIndex;
 
-    var t = this;
-
-
-    this.initialize = function (){
-        t.items = selectListWrap.find('.item');
-        t.visibleItemsIndex = [];
-        for (var i = 0; i < t.items.length; i++)
-            t.visibleItemsIndex[i] = i;
+    function initialize (){
+        items = selectListWrap.find('.item');
+        visibleItemsIndex = [];
+        for (var i = 0; i < items.length; i++)
+            visibleItemsIndex[i] = i;
     }
 
     function makeItemHover(i){
-        t.hi = i;
-        t.items.eq(i).addClass('hover');
+        hi = i;
+        items.eq(i).addClass('hover');
     }
 
     function activeSelectList(elem, dataList){
         selectList.css('min-width', elem.outerWidth());
-        var elemOffset = elem.offset();
-        selectList.css('left', elemOffset.left).css('top', elemOffset.top + 28 + 4); // 4 = visual padding
-        elem.addClass('checked')
+        //var elemOffset = elem.offset();
+        //selectList.css('left', elemOffset.left).css('top', elemOffset.top + 28 + 4); // 4 = visual padding
+        selectList.css('margin-top', 2);
+        elem.addClass('checked');
+        elem.after(selectList);
         selectList.show();
 
         selectListWrap.html('');
@@ -2017,17 +2225,17 @@ function BinderSelectList(){
 
         switch (event.which) {
             case 13: // enter
-
-                log('ENTER')
-
+                successAction(items[hi].innerHTML);
+                selector.text(items[hi].innerHTML)
+                closeAction();
                 break;
             case 38: // up
 
-                if (t.hi != 0) {
-                    t.items.eq(t.visibleItemsIndex[t.hi]).removeClass('hover');
-                    t.hi--
-                    t.items.eq(t.visibleItemsIndex[t.hi]).addClass('hover');
-                    elem = t.items.eq(t.visibleItemsIndex[t.hi]);
+                if (hi != 0) {
+                    items.eq(visibleItemsIndex[hi]).removeClass('hover');
+                    hi--
+                    items.eq(visibleItemsIndex[hi]).addClass('hover');
+                    elem = items.eq(visibleItemsIndex[hi]);
 
                     elemOffset = elem.position();
                     marginTop = parseInt(selectListWrap.css('margin-top'));
@@ -2039,11 +2247,11 @@ function BinderSelectList(){
                 break;
             case 40: // down
 
-                if(t.hi<t.visibleItemsIndex.length-1){
-                    t.items.eq(t.visibleItemsIndex[t.hi]).removeClass('hover');
-                    t.hi++
-                    t.items.eq(t.visibleItemsIndex[t.hi]).addClass('hover');
-                    elem = t.items.eq(t.visibleItemsIndex[t.hi]);
+                if(hi<visibleItemsIndex.length-1){
+                    items.eq(visibleItemsIndex[hi]).removeClass('hover');
+                    hi++
+                    items.eq(visibleItemsIndex[hi]).addClass('hover');
+                    elem = items.eq(visibleItemsIndex[hi]);
 
                     elemOffset = elem.position();
                     marginTop = parseInt( selectListWrap.css('margin-top') );
@@ -2063,14 +2271,16 @@ function BinderSelectList(){
     }
 
 
-    this.bindSimpleSelect = function(selector, dataList, handler){
-
+    this.bindSimpleSelect = function(s, dataList, handler){
+        successAction = handler;
+        closeAction = close;
+        selector = s;
         var documentClick;
 
         function close(){
             closeSelectList(selector);
             //$(document).off('keydown', keyDownTracking).off('click', documentClick);
-            $(document).off('click', documentClick);
+            $(document).off('click', documentClick).off('keydown', keyDownTracking);
         }
 
         selector.click(function(){
@@ -2078,8 +2288,10 @@ function BinderSelectList(){
                 close();
             }else{
                 activeSelectList(selector, dataList);
-                t.initialize();
+                initialize();
                 makeItemHover(dataList.indexOf(selector.text()));
+
+                $(document).keydown(keyDownTracking)
 
                 $(document).click(
                     documentClick = function(event){
@@ -2087,7 +2299,7 @@ function BinderSelectList(){
                         if(selectList.has(elem).length<=0 && !selector.is(elem)){
                             close();
                         }else if(selectList.has(elem).length>0 && !$(elem).hasClass('hover')){
-                            handler(elem.textContent);
+                            successAction(elem.textContent);
                             selector.text(elem.textContent)
                             close();
                         }
@@ -2103,11 +2315,9 @@ function BinderSelectList(){
         var changeInputField;
         var input = selector.children('.inputField');
         var button = selector.children('.button');
-        var onWheel
-
-        var t = this;
-
-
+        var onWheel;
+        //successAction = handler;
+        closeAction = close;
 
         function close(){
             closeSelectList(selector);
@@ -2125,26 +2335,26 @@ function BinderSelectList(){
             }
 
             activeSelectList(selector, dataList);
-            t.initialize();
+            initialize();
             makeItemHover(0)
 
             input.on('input', changeInputField = function (e){
                 var text = $(e.currentTarget).val();
-                t.items.eq(t.visibleItemsIndex[t.hi]).removeClass('hover');
+                items.eq(visibleItemsIndex[hi]).removeClass('hover');
 
-                t.visibleItemsIndex = [];
+                visibleItemsIndex = [];
                 $.each(t.items, function(i, e){
                     e = $(e);
                     if(e.text().toLowerCase().indexOf(text)>=0){
                         e.addClass('show');
-                        t.visibleItemsIndex.push(i);
+                        visibleItemsIndex.push(i);
                     }else{
                         e.removeClass('show');
                     }
                 });
 
-                t.hi = 0;
-                t.items.eq(t.visibleItemsIndex[0]).addClass('hover');
+                hi = 0;
+                items.eq(visibleItemsIndex[0]).addClass('hover');
                 selectListWrap.css('margin-top', 0)
             });
 
@@ -2194,30 +2404,19 @@ function BinderSelectList(){
 
 
     }
-
-
-    this.setComboSelect = function(){
-        this.comboFlag = true;
-        return this;
-    }
-
-
-    this.resetComboSelect = function(){
-        this.comboFlag = false;
-        return this;
-    }
-
 }
 
 var binderSelectList = new BinderSelectList();
 
 binderSelectList.bindComboSelect(departmentFilter, departments);
-binderSelectList.bindSimpleSelect($('#sorting_but'), [
-    "Id",
-    "Фамилия",
-    "Должность",
-    "Дата рождения"
+
+new SelectList(1, $('#sorting_but'), [
+    {i:0,e:"Id"},
+    {i:1,e:"Фамилия"},
+    {i:2,e:"Должность"},
+    {i:3,e:"Дата рождения"}
 ], sorting.by);
+
 
 
 </script><div id="userMenuPopup" class="menu_popup"><div class="menu"><div class="item">Отправить email</div><div class="item">Добавить в избранные</div><div class="item">Добавить отсутствие</div></div></div><script>function showUserMenu(event){
@@ -2229,7 +2428,7 @@ binderSelectList.bindSimpleSelect($('#sorting_but'), [
         popup.hide();
     }else {
         elem.addClass('active');
-        var diff = event.clientX - elem.offset().left;
+        //var diff = event.clientX - elem.offset().left;
         setPopupPosition(event, popup, 18, 24);
         popup.show();
         bindDocumentKillingClick(popup, popup, function () {
@@ -2495,7 +2694,7 @@ $('#runTimeFixer').click(function () {
 }
 
 
-</script><script>!function() {
+</script><!--script.!function() {
 
 
     var globalSearch = $('#globalSearch');
@@ -3032,7 +3231,7 @@ $('#runTimeFixer').click(function () {
     });
 }();
 
-</script><div class="notifications"><div class="head"><div class="button grayC active"><span class="icon-settings"></span>Типы уведомлений</div><div class="rightSide"><div class="regulator"><form><input type="text" placeholder="Поиск" class="inputField"/><span class="filters_button"></span><label class="hideSource"><input type="submit"/><div class="button empty sticky blueC"><span class="icon-search"></span></div></label></form></div></div></div><div class="propertiesBlock"><div class="property"><div class="marker status active"></div>Статус</div><div class="property"><div class="marker comments active"></div>Комментарии</div><div class="property"><div class="marker"></div>Приоритет</div><div class="property"><div class="marker fixTime active"></div>Фиксация времени</div><div class="property"><div class="marker"></div>Документы</div><div class="property"><div class="marker files active"></div>Вложения</div><div class="property"><div class="marker"></div>Связи</div><div class="property"><div class="marker"></div>Сроки и этапы</div><div class="property"><div class="marker executors active"></div>Исполнители</div></div><div class="body"><div class="date"><div class="dateTitle">Сегодня, 15.04.16</div><div class="notes"><div class="note plan notRead"><div class="head"><div class="time">12:00</div></div><div class="content"><div class="head"><span class="marker"></span><span class="title"><span class="case mr">Bug<span class="id">13432</span></span>был добавлен в ваш план<span class="by ml"><span class="employee">Фамилия И.О.</span></span></span></div></div></div><div class="note comment notRead"><div class="head"><div class="time">11:45</div></div><div class="content"><div class="head"><span class="marker"></span><span class="title">Вам ответили на комментарий в<span class="case mlr">Bug<span class="id">13432</span></span><span class="by"><span class="employee">Фамилия И.О.</span></span></span></div></div></div><div class="note comment notRead"><div class="head"><div class="time">11:42</div></div><div class="content"><div class="head"><span class="marker"></span><span class="title">Вам ответили на комментарий в<span class="case mlr">Bug<span class="id">13432</span></span><span class="by"><span class="employee">Фамилия И.О.</span></span></span></div></div></div><div class="note late"><div class="head"><div class="time">11:40</div></div><div class="content"><div class="head"><span class="marker"></span><span class="title"><span class="employee mr">Фамилия И.О.</span>будет отсутствовать<span class="date mlr">16.04.16</span>по причине<span class="lateReason ml">Болезнь</span></span></div></div></div></div></div><div class="date"><div class="dateTitle">Вчера, 14.04.16</div><div class="notes"><div class="note plan"><div class="head"><div class="time">12:00</div></div><div class="content"><div class="head"><span class="marker"></span><span class="title">У вас новая неподтверждённая задача<span class="case ml">Freq<span class="id">13432</span></span></span></div></div></div><div class="note case"><div class="head"><div class="time">11:45</div></div><div class="content"><div class="head"><span class="marker"></span><span class="title">В<span class="case mlr">Freq<span class="id">213432</span></span>появился новый этап<span class="by ml"><span class="employee">Фамилия И.О.</span></span></span></div></div></div><div class="note case"><div class="head"><div class="time">11:42</div></div><div class="content"><div class="head"><span class="marker"></span><span class="title">В<span class="case mlr">Task<span class="id">134324</span></span>сменился статус на<span class="status mlr">paused</span><span class="by"><span class="employee">Фамилия И.О.</span></span></span></div></div></div><div class="note plan"><div class="head"><div class="time">11:00</div></div><div class="content"><div class="head"><span class="marker"></span><span class="title">У вас новая неподтверждённая задача<span class="case ml">Freq<span class="id">13432</span></span></span></div></div></div><div class="note case"><div class="head"><div class="time">10:12</div></div><div class="content"><div class="head"><span class="marker"></span><span class="title">В<span class="case mlr">Freq<span class="id">134324</span></span>появился новый этап<span class="by"><span class="employee">Фамилия И.О.</span></span></span></div></div></div><div class="note plan"><div class="head"><div class="time">10:00</div></div><div class="content"><div class="head"><span class="marker"></span><span class="title">Порядок задач в вашем плане был изменён<span class="by ml"><span class="employee">Фамилия И.О.</span></span></span></div></div></div><div class="note component"><div class="head"><div class="time">08:15</div></div><div class="content"><div class="head"><span class="marker"></span><span class="title">В компоненте<span class="component mlr">.Component_A</span>появилась новая версия<span class="version mlr">4.32</span><span class="by"><span class="employee">Фамилия И.О.</span></span></span></div></div></div><div class="note plan"><div class="head"><div class="time">12:00</div></div><div class="content"><div class="head"><span class="marker"></span><span class="title">У вас новая неподтверждённая задача<span class="case ml">Freq<span class="id">13432</span></span></span></div></div></div><div class="note case"><div class="head"><div class="time">11:45</div></div><div class="content"><div class="head"><span class="marker"></span><span class="title">В<span class="case mlr">Freq<span class="id">213432</span></span>появился новый этап<span class="by ml"><span class="employee">Фамилия И.О.</span></span></span></div></div></div><div class="note case"><div class="head"><div class="time">11:42</div></div><div class="content"><div class="head"><span class="marker"></span><span class="title">В<span class="case mlr">Task<span class="id">134324</span></span>сменился статус на<span class="status mlr">paused</span><span class="by"><span class="employee">Фамилия И.О.</span></span></span></div></div></div><div class="note plan"><div class="head"><div class="time">11:00</div></div><div class="content"><div class="head"><span class="marker"></span><span class="title">У вас новая неподтверждённая задача<span class="case ml">Freq<span class="id">13432</span></span></span></div></div></div><div class="note case"><div class="head"><div class="time">10:12</div></div><div class="content"><div class="head"><span class="marker"></span><span class="title">В<span class="case mlr">Freq<span class="id">134324</span></span>появился новый этап<span class="by"><span class="employee">Фамилия И.О.</span></span></span></div></div></div><div class="note plan"><div class="head"><div class="time">10:00</div></div><div class="content"><div class="head"><span class="marker"></span><span class="title">Порядок задач в вашем плане был изменён<span class="by ml"><span class="employee">Фамилия И.О.</span></span></span></div></div></div><div class="note component"><div class="head"><div class="time">08:15</div></div><div class="content"><div class="head"><span class="marker"></span><span class="title">В компоненте<span class="component mlr">.Component_A</span>появилась новая версия<span class="version mlr">4.32</span><span class="by"><span class="employee">Фамилия И.О.</span></span></span></div></div></div><div class="note plan"><div class="head"><div class="time">12:00</div></div><div class="content"><div class="head"><span class="marker"></span><span class="title">У вас новая неподтверждённая задача<span class="case ml">Freq<span class="id">13432</span></span></span></div></div></div><div class="note case"><div class="head"><div class="time">11:45</div></div><div class="content"><div class="head"><span class="marker"></span><span class="title">В<span class="case mlr">Freq<span class="id">213432</span></span>появился новый этап<span class="by ml"><span class="employee">Фамилия И.О.</span></span></span></div></div></div><div class="note case"><div class="head"><div class="time">11:42</div></div><div class="content"><div class="head"><span class="marker"></span><span class="title">В<span class="case mlr">Task<span class="id">134324</span></span>сменился статус на<span class="status mlr">paused</span><span class="by"><span class="employee">Фамилия И.О.</span></span></span></div></div></div><div class="note plan"><div class="head"><div class="time">11:00</div></div><div class="content"><div class="head"><span class="marker"></span><span class="title">У вас новая неподтверждённая задача<span class="case ml">Freq<span class="id">13432</span></span></span></div></div></div><div class="note case"><div class="head"><div class="time">10:12</div></div><div class="content"><div class="head"><span class="marker"></span><span class="title">В<span class="case mlr">Freq<span class="id">134324</span></span>появился новый этап<span class="by"><span class="employee">Фамилия И.О.</span></span></span></div></div></div><div class="note plan"><div class="head"><div class="time">10:00</div></div><div class="content"><div class="head"><span class="marker"></span><span class="title">Порядок задач в вашем плане был изменён<span class="by ml"><span class="employee">Фамилия И.О.</span></span></span></div></div></div><div class="note component"><div class="head"><div class="time">08:15</div></div><div class="content"><div class="head"><span class="marker"></span><span class="title">В компоненте<span class="component mlr">.Component_A</span>появилась новая версия<span class="version mlr">4.32</span><span class="by"><span class="employee">Фамилия И.О.</span></span></span></div></div></div><div class="note plan"><div class="head"><div class="time">12:00</div></div><div class="content"><div class="head"><span class="marker"></span><span class="title">У вас новая неподтверждённая задача<span class="case ml">Freq<span class="id">13432</span></span></span></div></div></div><div class="note case"><div class="head"><div class="time">11:45</div></div><div class="content"><div class="head"><span class="marker"></span><span class="title">В<span class="case mlr">Freq<span class="id">213432</span></span>появился новый этап<span class="by ml"><span class="employee">Фамилия И.О.</span></span></span></div></div></div><div class="note case"><div class="head"><div class="time">11:42</div></div><div class="content"><div class="head"><span class="marker"></span><span class="title">В<span class="case mlr">Task<span class="id">134324</span></span>сменился статус на<span class="status mlr">paused</span><span class="by"><span class="employee">Фамилия И.О.</span></span></span></div></div></div><div class="note plan"><div class="head"><div class="time">11:00</div></div><div class="content"><div class="head"><span class="marker"></span><span class="title">У вас новая неподтверждённая задача<span class="case ml">Freq<span class="id">13432</span></span></span></div></div></div><div class="note case"><div class="head"><div class="time">10:12</div></div><div class="content"><div class="head"><span class="marker"></span><span class="title">В<span class="case mlr">Freq<span class="id">134324</span></span>появился новый этап<span class="by"><span class="employee">Фамилия И.О.</span></span></span></div></div></div><div class="note plan"><div class="head"><div class="time">10:00</div></div><div class="content"><div class="head"><span class="marker"></span><span class="title">Порядок задач в вашем плане был изменён<span class="by ml"><span class="employee">Фамилия И.О.</span></span></span></div></div></div><div class="note component"><div class="head"><div class="time">08:15</div></div><div class="content"><div class="head"><span class="marker"></span><span class="title">В компоненте<span class="component mlr">.Component_A</span>появилась новая версия<span class="version mlr">4.32</span><span class="by"><span class="employee">Фамилия И.О.</span></span></span></div></div></div></div></div></div><div class="footer"><div class="btn">ещё 10</div><div class="btn">ещё 30</div><div class="btn">ещё 1 день</div><div class="btn">ещё 3 дня</div><div class="btn">ещё неделя</div></div></div><script>function fixPositioning(elem) {
+--><div class="notifications"><div class="head"><div class="button grayC active"><span class="icon-settings"></span>Типы уведомлений</div><div class="rightSide"><div class="regulator"><form><input type="text" placeholder="Поиск" class="inputField"/><span class="filters_button"></span><label class="hideSource"><input type="submit"/><div class="button empty sticky blueC"><span class="icon-search"></span></div></label></form></div></div></div><div class="propertiesBlock"><div class="property"><div class="marker status active"></div>Статус</div><div class="property"><div class="marker comments active"></div>Комментарии</div><div class="property"><div class="marker"></div>Приоритет</div><div class="property"><div class="marker fixTime active"></div>Фиксация времени</div><div class="property"><div class="marker"></div>Документы</div><div class="property"><div class="marker files active"></div>Вложения</div><div class="property"><div class="marker"></div>Связи</div><div class="property"><div class="marker"></div>Сроки и этапы</div><div class="property"><div class="marker executors active"></div>Исполнители</div></div><div class="body"><div class="date"><div class="dateTitle">Сегодня, 15.04.16</div><div class="notes"><div class="note plan notRead"><div class="head"><div class="time">12:00</div></div><div class="content"><div class="head"><span class="marker"></span><span class="title"><span class="case mr">Bug<span class="id">13432</span></span>был добавлен в ваш план<span class="by ml"><span class="employee">Фамилия И.О.</span></span></span></div></div></div><div class="note comment notRead"><div class="head"><div class="time">11:45</div></div><div class="content"><div class="head"><span class="marker"></span><span class="title">Вам ответили на комментарий в<span class="case mlr">Bug<span class="id">13432</span></span><span class="by"><span class="employee">Фамилия И.О.</span></span></span></div></div></div><div class="note comment notRead"><div class="head"><div class="time">11:42</div></div><div class="content"><div class="head"><span class="marker"></span><span class="title">Вам ответили на комментарий в<span class="case mlr">Bug<span class="id">13432</span></span><span class="by"><span class="employee">Фамилия И.О.</span></span></span></div></div></div><div class="note late"><div class="head"><div class="time">11:40</div></div><div class="content"><div class="head"><span class="marker"></span><span class="title"><span class="employee mr">Фамилия И.О.</span>будет отсутствовать<span class="date mlr">16.04.16</span>по причине<span class="lateReason ml">Болезнь</span></span></div></div></div></div></div><div class="date"><div class="dateTitle">Вчера, 14.04.16</div><div class="notes"><div class="note plan"><div class="head"><div class="time">12:00</div></div><div class="content"><div class="head"><span class="marker"></span><span class="title">У вас новая неподтверждённая задача<span class="case ml">Freq<span class="id">13432</span></span></span></div></div></div><div class="note case"><div class="head"><div class="time">11:45</div></div><div class="content"><div class="head"><span class="marker"></span><span class="title">В<span class="case mlr">Freq<span class="id">213432</span></span>появился новый этап<span class="by ml"><span class="employee">Фамилия И.О.</span></span></span></div></div></div><div class="note case"><div class="head"><div class="time">11:42</div></div><div class="content"><div class="head"><span class="marker"></span><span class="title">В<span class="case mlr">Task<span class="id">134324</span></span>сменился статус на<span class="status mlr">paused</span><span class="by"><span class="employee">Фамилия И.О.</span></span></span></div></div></div><div class="note plan"><div class="head"><div class="time">11:00</div></div><div class="content"><div class="head"><span class="marker"></span><span class="title">У вас новая неподтверждённая задача<span class="case ml">Freq<span class="id">13432</span></span></span></div></div></div><div class="note case"><div class="head"><div class="time">10:12</div></div><div class="content"><div class="head"><span class="marker"></span><span class="title">В<span class="case mlr">Freq<span class="id">134324</span></span>появился новый этап<span class="by"><span class="employee">Фамилия И.О.</span></span></span></div></div></div><div class="note plan"><div class="head"><div class="time">10:00</div></div><div class="content"><div class="head"><span class="marker"></span><span class="title">Порядок задач в вашем плане был изменён<span class="by ml"><span class="employee">Фамилия И.О.</span></span></span></div></div></div><div class="note component"><div class="head"><div class="time">08:15</div></div><div class="content"><div class="head"><span class="marker"></span><span class="title">В компоненте<span class="component mlr">.Component_A</span>появилась новая версия<span class="version mlr">4.32</span><span class="by"><span class="employee">Фамилия И.О.</span></span></span></div></div></div><div class="note plan"><div class="head"><div class="time">12:00</div></div><div class="content"><div class="head"><span class="marker"></span><span class="title">У вас новая неподтверждённая задача<span class="case ml">Freq<span class="id">13432</span></span></span></div></div></div><div class="note case"><div class="head"><div class="time">11:45</div></div><div class="content"><div class="head"><span class="marker"></span><span class="title">В<span class="case mlr">Freq<span class="id">213432</span></span>появился новый этап<span class="by ml"><span class="employee">Фамилия И.О.</span></span></span></div></div></div><div class="note case"><div class="head"><div class="time">11:42</div></div><div class="content"><div class="head"><span class="marker"></span><span class="title">В<span class="case mlr">Task<span class="id">134324</span></span>сменился статус на<span class="status mlr">paused</span><span class="by"><span class="employee">Фамилия И.О.</span></span></span></div></div></div><div class="note plan"><div class="head"><div class="time">11:00</div></div><div class="content"><div class="head"><span class="marker"></span><span class="title">У вас новая неподтверждённая задача<span class="case ml">Freq<span class="id">13432</span></span></span></div></div></div><div class="note case"><div class="head"><div class="time">10:12</div></div><div class="content"><div class="head"><span class="marker"></span><span class="title">В<span class="case mlr">Freq<span class="id">134324</span></span>появился новый этап<span class="by"><span class="employee">Фамилия И.О.</span></span></span></div></div></div><div class="note plan"><div class="head"><div class="time">10:00</div></div><div class="content"><div class="head"><span class="marker"></span><span class="title">Порядок задач в вашем плане был изменён<span class="by ml"><span class="employee">Фамилия И.О.</span></span></span></div></div></div><div class="note component"><div class="head"><div class="time">08:15</div></div><div class="content"><div class="head"><span class="marker"></span><span class="title">В компоненте<span class="component mlr">.Component_A</span>появилась новая версия<span class="version mlr">4.32</span><span class="by"><span class="employee">Фамилия И.О.</span></span></span></div></div></div><div class="note plan"><div class="head"><div class="time">12:00</div></div><div class="content"><div class="head"><span class="marker"></span><span class="title">У вас новая неподтверждённая задача<span class="case ml">Freq<span class="id">13432</span></span></span></div></div></div><div class="note case"><div class="head"><div class="time">11:45</div></div><div class="content"><div class="head"><span class="marker"></span><span class="title">В<span class="case mlr">Freq<span class="id">213432</span></span>появился новый этап<span class="by ml"><span class="employee">Фамилия И.О.</span></span></span></div></div></div><div class="note case"><div class="head"><div class="time">11:42</div></div><div class="content"><div class="head"><span class="marker"></span><span class="title">В<span class="case mlr">Task<span class="id">134324</span></span>сменился статус на<span class="status mlr">paused</span><span class="by"><span class="employee">Фамилия И.О.</span></span></span></div></div></div><div class="note plan"><div class="head"><div class="time">11:00</div></div><div class="content"><div class="head"><span class="marker"></span><span class="title">У вас новая неподтверждённая задача<span class="case ml">Freq<span class="id">13432</span></span></span></div></div></div><div class="note case"><div class="head"><div class="time">10:12</div></div><div class="content"><div class="head"><span class="marker"></span><span class="title">В<span class="case mlr">Freq<span class="id">134324</span></span>появился новый этап<span class="by"><span class="employee">Фамилия И.О.</span></span></span></div></div></div><div class="note plan"><div class="head"><div class="time">10:00</div></div><div class="content"><div class="head"><span class="marker"></span><span class="title">Порядок задач в вашем плане был изменён<span class="by ml"><span class="employee">Фамилия И.О.</span></span></span></div></div></div><div class="note component"><div class="head"><div class="time">08:15</div></div><div class="content"><div class="head"><span class="marker"></span><span class="title">В компоненте<span class="component mlr">.Component_A</span>появилась новая версия<span class="version mlr">4.32</span><span class="by"><span class="employee">Фамилия И.О.</span></span></span></div></div></div><div class="note plan"><div class="head"><div class="time">12:00</div></div><div class="content"><div class="head"><span class="marker"></span><span class="title">У вас новая неподтверждённая задача<span class="case ml">Freq<span class="id">13432</span></span></span></div></div></div><div class="note case"><div class="head"><div class="time">11:45</div></div><div class="content"><div class="head"><span class="marker"></span><span class="title">В<span class="case mlr">Freq<span class="id">213432</span></span>появился новый этап<span class="by ml"><span class="employee">Фамилия И.О.</span></span></span></div></div></div><div class="note case"><div class="head"><div class="time">11:42</div></div><div class="content"><div class="head"><span class="marker"></span><span class="title">В<span class="case mlr">Task<span class="id">134324</span></span>сменился статус на<span class="status mlr">paused</span><span class="by"><span class="employee">Фамилия И.О.</span></span></span></div></div></div><div class="note plan"><div class="head"><div class="time">11:00</div></div><div class="content"><div class="head"><span class="marker"></span><span class="title">У вас новая неподтверждённая задача<span class="case ml">Freq<span class="id">13432</span></span></span></div></div></div><div class="note case"><div class="head"><div class="time">10:12</div></div><div class="content"><div class="head"><span class="marker"></span><span class="title">В<span class="case mlr">Freq<span class="id">134324</span></span>появился новый этап<span class="by"><span class="employee">Фамилия И.О.</span></span></span></div></div></div><div class="note plan"><div class="head"><div class="time">10:00</div></div><div class="content"><div class="head"><span class="marker"></span><span class="title">Порядок задач в вашем плане был изменён<span class="by ml"><span class="employee">Фамилия И.О.</span></span></span></div></div></div><div class="note component"><div class="head"><div class="time">08:15</div></div><div class="content"><div class="head"><span class="marker"></span><span class="title">В компоненте<span class="component mlr">.Component_A</span>появилась новая версия<span class="version mlr">4.32</span><span class="by"><span class="employee">Фамилия И.О.</span></span></span></div></div></div></div></div></div><div class="footer"><div class="btn">ещё 10</div><div class="btn">ещё 30</div><div class="btn">ещё 1 день</div><div class="btn">ещё 3 дня</div><div class="btn">ещё неделя</div></div></div><script>function fixPositioning(elem) {
     if ($(window).scrollTop() > 59) {
         if(elem.css("top") != 0) {
             //elem.addClass("fix");
