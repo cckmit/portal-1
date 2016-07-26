@@ -142,7 +142,7 @@ public class BatchProcessTaskExt {
 
             migrationDAO.merge(migrationEntry);
 
-            System.out.println("loop over result-set::end");
+            logger.debug("loop over result-set::end");
         }
         finally {
             Tm_SqlHelper.safeCloseResultSet(rs);

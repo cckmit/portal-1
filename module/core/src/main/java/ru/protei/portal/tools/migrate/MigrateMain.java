@@ -29,16 +29,9 @@ public class MigrateMain {
             DriverManager.registerDriver(new com.sybase.jdbc3.jdbc.SybDriver());
             conn_src = DriverManager.getConnection("jdbc:sybase:Tds:192.168.101.140:2638/RESV3", "dba", "sql");
 
-//            DriverManager.registerDriver(new com.mysql.jdbc.Driver());
-//            conn_trg = DriverManager.getConnection("jdbc:mysql://192.168.115.140:3306/portal4", "portal", "sql");
-//
-//            conn_trg.setAutoCommit(false);
-
-
             for (MigrateAction a : setup.sortedList()) {
-                a.migrate(conn_src, ctx);
+                a.migrate(conn_src);
             }
-
         }
         catch (Throwable e) {
             //System.out.println(e.);

@@ -5,11 +5,14 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.servlet.config.annotation.*;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfig;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 import ru.protei.portal.config.MainConfiguration;
+import ru.protei.portal.tools.migrate.MigrateConfiguration;
+import ru.protei.portal.tools.migrate.MigrationRunner;
 import ru.protei.portal.webui.controller.auth.AuthInterceptor;
 import ru.protei.portal.webui.controller.dict.WorkersAPI;
 import ru.protei.portal.webui.controller.dict.WorkersAPI_Impl;
@@ -22,9 +25,15 @@ import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 @Configuration
 @EnableWebMvc
-@Import({CoreConfigurationContext.class, JdbcConfigurationContext.class, MainConfiguration.class})
+@EnableScheduling
+@Import({CoreConfigurationContext.class, JdbcConfigurationContext.class, MainConfiguration.class, MigrateConfiguration.class})
 @ComponentScan(basePackages = "ru.protei.portal.webui.controller")
 public class PortalWebConfiguration extends WebMvcConfigurerAdapter {
+
+    @Bean
+    public MigrationRunner getMigrationRunner () {
+        return new MigrationRunner();
+    }
 
     @Bean
     public WorkersAPI getWorkersController() {

@@ -1,7 +1,6 @@
 package ru.protei.portal.tools.migrate.parts;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.support.AbstractApplicationContext;
 import ru.protei.portal.core.model.dao.DevUnitDAO;
 import ru.protei.portal.core.model.dao.MigrationEntryDAO;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
@@ -37,7 +36,7 @@ public class MigrateDevUnits implements MigrateAction {
 
 
     @Override
-    public void migrate(Connection src, AbstractApplicationContext ctx) throws SQLException {
+    public void migrate(Connection src) throws SQLException {
 
 
         new BatchProcessTaskExt(migrateDAO,TM_PROJECT_ITEM_CODE)

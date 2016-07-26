@@ -1,7 +1,6 @@
 package ru.protei.portal.tools.migrate.parts;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.support.AbstractApplicationContext;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.CaseStateMatrixDAO;
 import ru.protei.portal.core.model.dao.CaseTaskDAO;
@@ -40,7 +39,7 @@ public class MigrateTasks implements MigrateAction {
     }
 
     @Override
-    public void migrate(Connection src, AbstractApplicationContext ctx) throws SQLException {
+    public void migrate(Connection src) throws SQLException {
 
         final Map<Long, Long> oldToNewStateMap = stateMatrixDAO.getOldToNewStateMap(En_CaseType.TASK);
 

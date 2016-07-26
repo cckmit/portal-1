@@ -1,7 +1,6 @@
 package ru.protei.portal.tools.migrate.parts;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.support.AbstractApplicationContext;
 import ru.protei.portal.core.model.dao.CompanyDAO;
 import ru.protei.portal.core.model.dao.MigrationEntryDAO;
 import ru.protei.portal.core.model.ent.Company;
@@ -30,7 +29,7 @@ public class MigrateCompaniesAction implements MigrateAction {
     }
 
     @Override
-    public void migrate(Connection src, AbstractApplicationContext ctx) throws SQLException {
+    public void migrate(Connection src) throws SQLException {
 
         if (dao.get(-1L) == null) {
             Company no_comp_rec = new Company();

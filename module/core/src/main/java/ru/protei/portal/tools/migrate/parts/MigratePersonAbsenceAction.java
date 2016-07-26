@@ -2,7 +2,6 @@ package ru.protei.portal.tools.migrate.parts;
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.support.AbstractApplicationContext;
 import ru.protei.portal.core.model.dao.MigrationEntryDAO;
 import ru.protei.portal.core.model.dao.PersonAbsenceDAO;
 import ru.protei.portal.core.model.ent.PersonAbsence;
@@ -48,7 +47,7 @@ public class MigratePersonAbsenceAction implements MigrateAction {
 
 
     @Override
-    public void migrate(Connection src, AbstractApplicationContext ctx) throws SQLException {
+    public void migrate(Connection src) throws SQLException {
 
 
         BatchProcess<PersonAbsence> batchProcess = new BaseBatchProcess<PersonAbsence>() {

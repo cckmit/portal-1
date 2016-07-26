@@ -24,9 +24,9 @@ public class SimpleSidGenerator implements SessionIdGen{
 
 
 
-    public static void main (String argv[]){
-        System.out.println(new SimpleSidGenerator().generateId());
-        System.out.println(new SimpleSidGenerator().generateId());
-        System.out.println(new SimpleSidGenerator().generateId());
-    }
+//    public static void main (String argv[]){
+//        System.out.println(new SimpleSidGenerator().generateId());
+//        System.out.println(new SimpleSidGenerator().generateId());
+//        System.out.println(new SimpleSidGenerator().generateId());
+//    }
 }

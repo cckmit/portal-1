@@ -79,7 +79,7 @@ public class MigrateUtils {
         List<Map<String,Object>> rez = new ArrayList<Map<String,Object>>();
         ResultSet rs = null;
 
-        System.out.println("running query : " + sql);
+        logger.debug("running query : " + sql);
 
         try (PreparedStatement st = conn.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY,ResultSet.CONCUR_READ_ONLY)) {
 
@@ -92,13 +92,13 @@ public class MigrateUtils {
             rs = st.executeQuery();
 
 
-            System.out.println("loop over result-set::begin");
+            logger.debug("loop over result-set::begin");
 
             while (rs.next()) {
                 rez.add(Tm_SqlHelper.fetchRowAsMap(rs));
             }
 
-            System.out.println("loop over result-set::end");
+            logger.debug("loop over result-set::end");
             return rez;
         }
         finally {
