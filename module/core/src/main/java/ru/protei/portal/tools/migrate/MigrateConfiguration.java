@@ -36,10 +36,10 @@ public class MigrateConfiguration {
 //        return new MigrateTasks();
 //    }
 
-//    @Bean
-//    public MigrateAction getDevUnitMigrateAction () {
-//        return new MigrateDevUnits();
-//    }
+    @Bean
+    public MigrateAction getDevUnitMigrateAction () {
+        return new MigrateDevUnits();
+    }
 
 //    @Bean
 //    public MigrateAction getFreqMigrateAction () {
