@@ -32,7 +32,9 @@ public class Main {
 //            Company company = new Company();
 //            System.out.println(company);
 
-            server = createServer(DEFAULT_PORT);
+            String warDir = args.length > 0 ? args[0] : null;
+
+            server = createServer(DEFAULT_PORT, warDir);
             server.start();
             server.join();
 
@@ -43,9 +45,9 @@ public class Main {
     }
 
 
-    protected static Server createServer (int port) throws Exception {
+    protected static Server createServer (int port, String warDirectory) throws Exception {
         Server server = new Server(port > 0 ? port : DEFAULT_PORT);
-        server.setHandler(getServletContextHandler(getContext()));
+        server.setHandler(getServletContextHandler(getContext(), warDirectory));
 
         if (JSP_ENABLED) {
             Configuration.ClassList classlist = Configuration.ClassList
@@ -59,7 +61,7 @@ public class Main {
     }
 
 
-    private static ServletContextHandler getServletContextHandler(WebApplicationContext context) throws IOException {
+    private static ServletContextHandler getServletContextHandler(WebApplicationContext context, String warDir) throws IOException {
         //ServletContextHandler contextHandler = new ServletContextHandler();
         WebAppContext webapp = new WebAppContext();
 
@@ -82,8 +84,8 @@ public class Main {
 //        webapp.addServlet(springHolder, API_SPACE_URL);
 
         webapp.addServlet(new ServletHolder("defaultServletHandler", new DefaultServlet()), "");
-        webapp.setDescriptor("module/web-ui/web/WEB-INF/web.xml");
-        webapp.setResourceBase("module/web-ui/web");
+        webapp.setDescriptor((warDir == null ? "module/web-ui/web" : warDir) + "/WEB-INF/web.xml");
+        webapp.setResourceBase(warDir == null ? "module/web-ui/web" : warDir);
 
         webapp.setInitParameter("org.eclipse.jetty.servlet.Default.dirAllowed", "false");
         webapp.setWelcomeFiles(new String[]{"index.html", "login.html"});
