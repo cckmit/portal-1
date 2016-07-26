@@ -7,9 +7,9 @@ public interface AuthService {
 
     /**
      * default time-to-live for application session in seconds
-     * 3 hours
+     * 3 days
      */
-    public static final int DEF_APP_SESSION_LIVE_TIME = 60*60*3;
+    public static final int DEF_APP_SESSION_LIVE_TIME = 60*60*24*3;
 
     public UserSessionDescriptor findSession (String appSessionId, String ip, String userAgent);
     public AuthResult login (String appSessionID, String login, String pwd, String ip, String userAgent);
