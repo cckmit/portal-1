@@ -40,18 +40,9 @@ public class MigrateCompaniesAction implements MigrateAction {
             dao.persist(no_comp_rec);
         }
 
-        long lastOldDateUpdate = migrateDAO.getMigratedLastUpdate(TM_COMPANY_ITEM_CODE, 0L);
-        migrateDAO.confirmMigratedLastUpdate(TM_COMPANY_ITEM_CODE, new Date().getTime());
-
-        new BatchProcessTask<Company>(
-                "\"resource\".tm_company", "dtLastUpdate", lastOldDateUpdate
-        )
-                .withIdFieldName("nID")
-                .setLastId(migrateDAO.getMigratedLastId(TM_COMPANY_ITEM_CODE, 0L))
-                .setLastUpdate(lastOldDateUpdate)
-
-                .onBatchEnd(lastIdValue -> migrateDAO.confirmMigratedLastId(TM_COMPANY_ITEM_CODE, lastIdValue))
-                .process(src, dao, row -> {
+        new BatchProcessTaskExt(migrateDAO, TM_COMPANY_ITEM_CODE)
+                .forTable("\"resource\".tm_company", "nID", "dtLastUpdate")
+                .process(src, dao, new BaseBatchProcess<>(), row -> {
                     Company x = new Company();
                     x.setAddressDejure((String) row.get("strDeJureAddress"));
                     x.setAddressFact((String) row.get("strPhysicalAddress"));
@@ -65,7 +56,6 @@ public class MigrateCompaniesAction implements MigrateAction {
                     x.setWebsite((String) row.get("strHTTP_url"));
                     return x;
                 })
-                .dumpStats(TM_COMPANY_ITEM_CODE);
-
+                .dumpStats();
     }
 }

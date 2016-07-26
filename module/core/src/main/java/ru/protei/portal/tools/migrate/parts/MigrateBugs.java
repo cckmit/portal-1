@@ -2,22 +2,15 @@ package ru.protei.portal.tools.migrate.parts;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.AbstractApplicationContext;
-import ru.protei.portal.core.model.dao.CaseCommentDAO;
-import ru.protei.portal.core.model.dao.CaseObjectDAO;
-import ru.protei.portal.core.model.dao.CaseStateMatrixDAO;
-import ru.protei.portal.core.model.dao.CaseTermDAO;
-import ru.protei.portal.core.model.dict.En_CaseTermType;
+import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
-import ru.protei.portal.core.model.ent.CaseTerm;
 import ru.protei.portal.tools.migrate.tools.MigrateAction;
 import ru.protei.portal.tools.migrate.tools.MigrateUtils;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -25,62 +18,63 @@ import java.util.Map;
  */
 public class MigrateBugs implements MigrateAction {
 
-   @Autowired
-   private CaseObjectDAO caseDAO;
+    @Autowired
+    private CaseObjectDAO caseDAO;
 
-   @Autowired
-   private CaseCommentDAO commentDAO;
+    @Autowired
+    private CaseCommentDAO commentDAO;
 
-   @Autowired
-   private CaseTermDAO termDAO;
+    @Autowired
+    private CaseTermDAO termDAO;
 
-   @Autowired
-   private CaseStateMatrixDAO stateMatrixDAO;
+    @Autowired
+    private CaseStateMatrixDAO stateMatrixDAO;
+
+    @Autowired
+    private MigrationEntryDAO migrationEntryDAO;
+
+    @Override
+    public int orderOfExec() {
+        return 10;
+    }
+
+    @Override
+    public void migrate(Connection src, AbstractApplicationContext ctx) throws SQLException {
+
+        final Map<Long, Long> oldToNewStateMap = stateMatrixDAO.getOldToNewStateMap(En_CaseType.BUG);
 
 
-   @Override
-   public int orderOfExec() {
-      return 10;
-   }
+        new BatchProcessTaskExt(migrationEntryDAO, "BugTracking.Bug")
+                .forTable("\"BugTracking\".Tm_Bug", "nID", "dtLastUpdate")
+                .process(src, caseDAO, new BaseBatchProcess<>(), row -> {
+                    CaseObject obj = new CaseObject();
+                    obj.setId(null);
+                    obj.setTypeId(En_CaseType.BUG.getId());
+                    obj.setCreated((Date) row.get("dtCreation"));
+                    obj.setCaseNumber((Long) row.get("nID"));
+                    obj.setCreatorId((Long) row.get("nSubmitterID"));
+                    obj.setCreatorIp((String) row.get("strClientIp"));
+                    obj.setCreatorInfo((String) row.get("strClient"));
+                    obj.setEmails(null);
+                    obj.setExtId(En_CaseType.BUG.makeGUID(obj.getCaseNumber()));
+                    obj.setImpLevel(((Number) row.get("nCriticalityId")).intValue());
+                    obj.setInfo((String) row.get("strInfo"));
+                    obj.setInitiatorId((Long) row.get("nDeclarantId"));
+                    obj.setKeywords((String) row.get("strKeyWord"));
+                    obj.setLocal(row.get("lIsLocal") == null ? 1 : ((Number) row.get("lIsLocal")).intValue());
+                    obj.setName((String) row.get("strSubject"));
+                    obj.setManagerId(obj.getCreatorId());
+                    obj.setModified(new Date());
+                    obj.setStateId(oldToNewStateMap.get((Long) row.get("nStatusID")));
 
-   @Override
-   public void migrate(Connection src, AbstractApplicationContext ctx) throws SQLException {
+                    if (obj.getCreatorId() == null) {
+                        obj.setCreatorId((Long) MigrateUtils.nvl(obj.getInitiatorId(), row.get("nAccepterID")));
+                    }
 
-      final Map<Long, Long> oldToNewStateMap = stateMatrixDAO.getOldToNewStateMap(En_CaseType.BUG);
+                    return obj;
+                });
 
-      long lastOldDateUpdate = 0; // получаем
-      //migrateDAO.confirmMigratedLastUpdate(, new Date().getTime());
-
-      BatchProcessTask<CaseObject> t = new BatchProcessTask<CaseObject>("\"BugTracking\".Tm_Bug", "nID", caseDAO.getMaxValue("caseno", Long.class, "CASE_TYPE=?", En_CaseType.BUG.getId()));
-      t.setLastUpdate(lastOldDateUpdate)
-      .process(src, caseDAO, row -> {
-         CaseObject obj = new CaseObject();
-         obj.setId(null);
-         obj.setTypeId(En_CaseType.BUG.getId());
-         obj.setCreated((Date) row.get("dtCreation"));
-         obj.setCaseNumber((Long) row.get("nID"));
-         obj.setCreatorId((Long) row.get("nSubmitterID"));
-         obj.setCreatorIp((String) row.get("strClientIp"));
-         obj.setCreatorInfo((String) row.get("strClient"));
-         obj.setEmails(null);
-         obj.setExtId(En_CaseType.BUG.makeGUID(obj.getCaseNumber()));
-         obj.setImpLevel(((Number) row.get("nCriticalityId")).intValue());
-         obj.setInfo((String) row.get("strInfo"));
-         obj.setInitiatorId((Long) row.get("nDeclarantId"));
-         obj.setKeywords((String) row.get("strKeyWord"));
-         obj.setLocal(row.get("lIsLocal") == null ? 1 : ((Number) row.get("lIsLocal")).intValue());
-         obj.setName((String) row.get("strSubject"));
-         obj.setManagerId(obj.getCreatorId());
-         obj.setModified(new Date());
-         obj.setStateId(oldToNewStateMap.get((Long) row.get("nStatusID")));
-
-         if (obj.getCreatorId() == null) {
-            obj.setCreatorId((Long) MigrateUtils.nvl(obj.getInitiatorId(), row.get("nAccepterID")));
-         }
-
-         return obj;
-      });
-
+       /*
       Map<Long, Long> caseNumberToIdMapper = caseDAO.getNumberToIdMap(En_CaseType.BUG);
 
       Long lastTermID = termDAO.getMaxValue("old_id", Long.class, "case_id in (select id from case_object where case_type=?)", En_CaseType.BUG.getId());
@@ -125,5 +119,6 @@ public class MigrateBugs implements MigrateAction {
                  return c;
               });
 
-   }
+*/
+    }
 }

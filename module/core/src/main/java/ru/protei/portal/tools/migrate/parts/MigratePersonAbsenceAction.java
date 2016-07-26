@@ -6,12 +6,15 @@ import org.springframework.context.support.AbstractApplicationContext;
 import ru.protei.portal.core.model.dao.MigrationEntryDAO;
 import ru.protei.portal.core.model.dao.PersonAbsenceDAO;
 import ru.protei.portal.core.model.ent.PersonAbsence;
+import ru.protei.portal.tools.migrate.tools.BatchProcess;
 import ru.protei.portal.tools.migrate.tools.MigrateAction;
+import ru.protei.winter.jdbc.JdbcDAO;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -47,21 +50,20 @@ public class MigratePersonAbsenceAction implements MigrateAction {
     @Override
     public void migrate(Connection src, AbstractApplicationContext ctx) throws SQLException {
 
-        long lastOldDateUpdate = migrateDAO.getMigratedLastUpdate(TM_PERSON_ABS_ITEM_CODE, 0L);
-        migrateDAO.confirmMigratedLastUpdate(TM_PERSON_ABS_ITEM_CODE, new Date().getTime());
+
+        BatchProcess<PersonAbsence> batchProcess = new BaseBatchProcess<PersonAbsence>() {
+            @Override
+            protected void processUpdate(JdbcDAO<Long, PersonAbsence> dao, List<PersonAbsence> entries) {
+                for(PersonAbsence e : entries){
+                    dao.mergeByCondition(e, "old_id=?", e.getOldId());
+                }
+            }
+        };
 
 
-
-
-        new BatchProcessTask<PersonAbsence>(
-                "\"AbsentLog\".Tm_AbsentViewer", "dtLastUpdate", lastOldDateUpdate
-        )
-                .withIdFieldName("nID")
-                .setLastId(migrateDAO.getMigratedLastId(TM_PERSON_ABS_ITEM_CODE, 0L))
-                .setLastUpdate(lastOldDateUpdate)
-
-                .onBatchEnd(lastIdValue -> migrateDAO.confirmMigratedLastId(TM_PERSON_ABS_ITEM_CODE, lastIdValue))
-                .process(src, dao, row -> {
+        new BatchProcessTaskExt(migrateDAO, TM_PERSON_ABS_ITEM_CODE)
+                .forTable("\"AbsentLog\".Tm_AbsentViewer", "nID", "dtLastUpdate")
+                .process(src, dao, batchProcess, row -> {
                     PersonAbsence x = new PersonAbsence();
                     x.setOldId(((Number) row.get("nID")).longValue());
                     x.setCreated((Date) row.get("dtCreation"));
@@ -86,23 +88,12 @@ public class MigratePersonAbsenceAction implements MigrateAction {
 
                     return x;
                 })
-                .dumpStats(TM_PERSON_ABS_ITEM_CODE);
+                .dumpStats();
 
 
-
-
-        lastOldDateUpdate = migrateDAO.getMigratedLastUpdate(TM_PERSON_LEAVE_ITEM_CODE, 0L);
-        migrateDAO.confirmMigratedLastUpdate(TM_PERSON_LEAVE_ITEM_CODE, new Date().getTime());
-
-        new BatchProcessTask<PersonAbsence>(
-                "\"AbsentLog\".Tm_Leave", "dtLastUpdate", lastOldDateUpdate
-        )
-                .withIdFieldName("nID")
-                .setLastId(migrateDAO.getMigratedLastId(TM_PERSON_LEAVE_ITEM_CODE, 0L))
-                .setLastUpdate(lastOldDateUpdate)
-
-                .onBatchEnd(lastIdValue -> migrateDAO.confirmMigratedLastId(TM_PERSON_LEAVE_ITEM_CODE, lastIdValue))
-                .process(src, dao, row -> {
+        new BatchProcessTaskExt(migrateDAO, TM_PERSON_LEAVE_ITEM_CODE)
+                .forTable("\"AbsentLog\".Tm_Leave", "nID", "dtLastUpdate")
+                .process(src, dao, batchProcess, row -> {
                     PersonAbsence x = new PersonAbsence();
                     x.setOldId(((Number) row.get("nID")).longValue());
                     x.setCreated((Date) row.get("dtCreation"));
@@ -128,7 +119,7 @@ public class MigratePersonAbsenceAction implements MigrateAction {
 
                     return x;
                 })
-                .dumpStats(TM_PERSON_LEAVE_ITEM_CODE);
+                .dumpStats();
 
     }
 

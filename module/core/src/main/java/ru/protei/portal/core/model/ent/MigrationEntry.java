@@ -52,11 +52,7 @@ public class MigrationEntry {
         this.lastId = lastId;
     }
 
-    public Date getLastUpdate() {
-        return new Date(lastUpdate.getTime() + 10800000); // +3 UTC
-    }
+    public Date getLastUpdate() { return lastUpdate;   }
 
-    public void setLastUpdate(Long lastUpdate) {
-        this.lastUpdate = new Date(lastUpdate);
-    }
+    public void setLastUpdate(Date lastUpdate) {  this.lastUpdate = lastUpdate;   }
 }

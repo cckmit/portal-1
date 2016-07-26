@@ -2,9 +2,7 @@ package ru.protei.portal.tools.migrate.parts;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.AbstractApplicationContext;
-import ru.protei.portal.core.model.dao.DevUnitBranchDAO;
 import ru.protei.portal.core.model.dao.DevUnitDAO;
-import ru.protei.portal.core.model.dao.DevUnitVersionDAO;
 import ru.protei.portal.core.model.dao.MigrationEntryDAO;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
@@ -27,11 +25,11 @@ public class MigrateDevUnits implements MigrateAction {
     @Autowired
     private DevUnitDAO unitDAO;
 
-    @Autowired
-    private DevUnitBranchDAO branchDAO;
-
-    @Autowired
-    private DevUnitVersionDAO versionDAO;
+//    @Autowired
+//    private DevUnitBranchDAO branchDAO;
+//
+//    @Autowired
+//    private DevUnitVersionDAO versionDAO;
 
     @Autowired
     private MigrationEntryDAO migrateDAO;
@@ -41,19 +39,10 @@ public class MigrateDevUnits implements MigrateAction {
     @Override
     public void migrate(Connection src, AbstractApplicationContext ctx) throws SQLException {
 
-//        List<DevUnit> stlist = new ArrayList<>();
 
-       long lastOldDateUpdate = migrateDAO.getMigratedLastUpdate(TM_PROJECT_ITEM_CODE, 0L);
-       migrateDAO.confirmMigratedLastUpdate(TM_PROJECT_ITEM_CODE, new Date().getTime());
-
-
-        new BatchProcessTask<DevUnit>("\"Resource\".Tm_Project", "dtLastUpdate", lastOldDateUpdate)
-                .withIdFieldName("nID")
-                .setLastId(migrateDAO.getMigratedLastId(TM_PROJECT_ITEM_CODE, 0L))
-                .setLastUpdate(lastOldDateUpdate)
-
-                .onBatchEnd(lastIdValue -> migrateDAO.confirmMigratedLastId(TM_PROJECT_ITEM_CODE, lastIdValue))
-                .process(src, unitDAO, row -> {
+        new BatchProcessTaskExt(migrateDAO,TM_PROJECT_ITEM_CODE)
+            .forTable("\"Resource\".Tm_Project", "nID", "dtLastUpdate")
+                .process(src, unitDAO, new BaseBatchProcess<>(), row -> {
                    DevUnit u = new DevUnit(En_DevUnitType.COMPONENT.getId(), (String) row.get("strName"), (String) row.get("strInfo"));
                    u.setCreated((Date) row.get("dtCreation"));
                    u.setCreatorId(MigrateUtils.DEFAULT_CREATOR_ID);
@@ -61,7 +50,7 @@ public class MigrateDevUnits implements MigrateAction {
                    u.setStateId(En_DevUnitState.ACTIVE.getId());
                    u.setOldId((Long) row.get("nID"));
                    return u;
-                }).dumpStats(TM_PROJECT_ITEM_CODE);
+                }).dumpStats();
 
 
 /*
@@ -87,16 +76,9 @@ public class MigrateDevUnits implements MigrateAction {
         // products
 
 
-       lastOldDateUpdate = migrateDAO.getMigratedLastUpdate(TM_PRODUCT_ITEM_CODE, 0L);
-       migrateDAO.confirmMigratedLastUpdate(TM_PRODUCT_ITEM_CODE, new Date().getTime());
-
-        new BatchProcessTask<DevUnit>("\"Resource\".Tm_Product", "dtLastUpdate", lastOldDateUpdate)
-                .withIdFieldName("nID")
-                .setLastId(migrateDAO.getMigratedLastId(TM_PRODUCT_ITEM_CODE, 0L))
-                .setLastUpdate(lastOldDateUpdate)
-
-                .onBatchEnd(lastIdValue -> migrateDAO.confirmMigratedLastId(TM_PRODUCT_ITEM_CODE, lastIdValue))
-                .process(src, unitDAO, row -> {
+        new BatchProcessTaskExt (migrateDAO, TM_PRODUCT_ITEM_CODE)
+                .forTable("\"Resource\".Tm_Product", "nID", "dtLastUpdate")
+                .process(src, unitDAO, new BaseBatchProcess<>(), row -> {
                    DevUnit u = new DevUnit(En_DevUnitType.PRODUCT.getId(), (String) row.get("strValue"), (String) row.get("strInfo"));
                    u.setCreated((Date) row.get("dtCreation"));
                    u.setCreatorId(MigrateUtils.DEFAULT_CREATOR_ID);
@@ -105,7 +87,7 @@ public class MigrateDevUnits implements MigrateAction {
                    u.setOldId((Long) row.get("nID"));
                    return u;
                 })
-                .dumpStats(TM_PRODUCT_ITEM_CODE);
+                .dumpStats();
 
         /*
 //        stlist.clear();
