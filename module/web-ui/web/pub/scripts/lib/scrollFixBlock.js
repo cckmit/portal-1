@@ -5,25 +5,24 @@
 function scrollFixBlock(sec, topOffset, bottomOffset) {
     var secHeight = sec.outerHeight();
     var secOffset = sec.offset();
-    var bodyHeight = $(window).height();
     var lastPos = 0;
     var flag = false;
     var flag2 = false;
 
-    if(secHeight<bodyHeight){
-        $(document).scroll(function (e) {
-            if ($(e.currentTarget).scrollTop() >= topOffset) {
+    $(document).scroll(function (e) {
+        e = $(e.currentTarget);
+        var scrollTop = e.scrollTop();
+        var bodyHeight = $(window).height();
+
+        if(secHeight<bodyHeight){
+            if (scrollTop >= topOffset) {
                 sec.addClass('fix').css('top', 0)
             } else {
                 sec.css('top', '').removeClass('fix');
             }
-        });
-    }else {
-        $(document).scroll(function (e) {
-            e = $(e.currentTarget);
-            var scrollTop = e.scrollTop();
+        }else {
 
-            if (scrollTop > topOffset && scrollTop > lastPos) { // проверка на 78, это когда нужно ограничить вверху
+            if (scrollTop > topOffset && scrollTop > lastPos) { // проверка на 78, когда нужно ограничить вверху
                 // движение вниз
 
                 var documentHeight = $(document).height();
@@ -72,6 +71,6 @@ function scrollFixBlock(sec, topOffset, bottomOffset) {
                 }
             }
             lastPos = scrollTop
-        })
-    }
+        }
+    })
 }

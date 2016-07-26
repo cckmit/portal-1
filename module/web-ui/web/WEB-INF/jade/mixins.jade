@@ -85,9 +85,10 @@ mixin eventsShowingScript()
 
 
 mixin headerContent(title)
-    .leftBlock
+    .leftBlock.inactive
         .company
-            span.logo(onclick="alert($.eventReport())")
+            span.logo
+            //(onclick="alert($.eventReport())")
             span.name PROTEI
         #hideLeftBlock.hideBar_button
     .rightBlock
@@ -170,7 +171,7 @@ mixin headerContent(title)
                 .title Project #1234567
 
 
-        .currentTask
+        //.currentTask
             span.case Freq
                 span.id 7823289
             .timer
@@ -180,7 +181,7 @@ mixin headerContent(title)
                     span.minutes 12
                 span#stopCurrentTask.stop_button
 
-        #runTimeFixer.completeWorkSession
+        //#runTimeFixer.completeWorkSession
             span.icon-time
             |Таймфиксер
 
@@ -188,9 +189,9 @@ mixin headerContent(title)
             .icons
                 //#userProfile.userProfile
                     span.icon-user
-                #globalNotifications.notifications_button.active
-                #globalSettings.settings_button
-                #globalHelper.helper_button
+                //#globalNotifications.notifications_button.active
+                //#globalSettings.settings_button
+                //#globalHelper.helper_button
                 #globalExit.exit_button
 
 
@@ -304,10 +305,10 @@ mixin leftGlobalMenu(elem)
     script.
         $('#hideLeftBlock').click(function(){
             $('.header_global >.leftBlock,.body_global >.leftBlock').addClass('inactive');
-            $('.body_global >.leftBlock').click(function func(){
-                $('.header_global >.leftBlock,.body_global >.leftBlock').removeClass('inactive');
-                $('.body_global >.leftBlock').off()
-            })
+        })
+        $('.body_global >.leftBlock').click(function func(){
+            $('.header_global >.leftBlock,.body_global >.leftBlock').removeClass('inactive');
+            //$('.body_global >.leftBlock').off()
         })
 
 mixin commonBottom()
@@ -1227,7 +1228,7 @@ mixin popup(type)
 
 
 
-            script.
+            //script.
                 !function() {
 
 

@@ -142,8 +142,8 @@ public class MigratePersonAction implements MigrateAction {
                  x.setAddress((String) row.get("strOficialAddress"));
                  x.setAddressHome((String) row.get("strActualAddress"));
 
-                 x.setIcq((String) row.get("strICQ"));
-                 x.setJabber(row.get("nJID") != null ? row.get("nJID").toString() : null);
+                 x.setIcq(row.get("strICQ") != null ? (String) row.get("strICQ"): null);
+                 x.setJabber(row.get("nJID") != null && (Long)row.get("nJID") != 0 ? row.get("nJID").toString() : null);
 
 
 
