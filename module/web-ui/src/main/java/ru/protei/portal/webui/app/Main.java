@@ -1,5 +1,6 @@
 package ru.protei.portal.webui.app;
 
+import org.apache.log4j.Logger;
 import org.eclipse.jetty.jsp.JettyJspServlet;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.DefaultServlet;
@@ -17,6 +18,8 @@ import java.io.IOException;
 
 public class Main {
 
+    private static Logger logger = Logger.getLogger(Main.class);
+
     private static final boolean JSP_ENABLED = false;
 
     private static final int DEFAULT_PORT = 8090;
@@ -33,14 +36,24 @@ public class Main {
 //            System.out.println(company);
 
             String warDir = args.length > 0 ? args[0] : null;
+            int port = args.length > 1 ? Integer.parseInt(args[1],10) : DEFAULT_PORT;
 
-            server = createServer(DEFAULT_PORT, warDir);
+            logger.debug("run portal application");
+            logger.debug("using port : " + port);
+            logger.debug("application war dir: " + (warDir == null ? "default" : warDir));
+
+
+            server = createServer(port, warDir);
+
+            logger.debug("server created, starting");
+
+//            Thread.currentThread().setContextClassLoader(Main.class.getClassLoader());
             server.start();
             server.join();
 
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.debug("error", e);
         }
     }
 
@@ -69,7 +82,7 @@ public class Main {
         webapp.setContextPath(CONTEXT_PATH);
 
         webapp.getMimeTypes().addMimeMapping("js","text/javascript;charset=utf-8");
-        System.out.println(webapp.getMimeTypes().getMimeByExtension("aaa.js"));
+//        System.out.println(webapp.getMimeTypes().getMimeByExtension("aaa.js"));
 
         if (JSP_ENABLED) {
             webapp.addServlet(jspServletHolder(), "*.jsp");

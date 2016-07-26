@@ -128,6 +128,8 @@ public class BatchProcessTaskExt {
                     migrationDAO.merge(migrationEntry);
                     logger.debug("Handled update rows : " + handledWithUpdating);
                 }
+
+                migrationEntry.setLastUpdate(rs.getDate(lastUpdateFieldName));
             }
 
             // остатки
@@ -139,6 +141,8 @@ public class BatchProcessTaskExt {
                 batchProcess.doUpdate(dao, updateBatchSet);
                 logger.debug("Handled update rows : " + handledWithUpdating);
             }
+
+
 
             migrationDAO.merge(migrationEntry);
 
