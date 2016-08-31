@@ -113,10 +113,6 @@ public class PortalWebConfiguration extends WebMvcConfigurerAdapter {
     }
 
 
-//    @Bean
-//    public ServletRegistrationBean dispatcherServlet() {
-//        return new ServletRegistrationBean(new CXFServlet(), "/soap-api/*");
-//    }
 
     @Bean
     public TestService createTestWebService () {
@@ -132,7 +128,6 @@ public class PortalWebConfiguration extends WebMvcConfigurerAdapter {
     public Endpoint endpoint() {
         EndpointImpl endpoint = new EndpointImpl(springBus(), createTestWebService());
         endpoint.publish("/person");
-        //endpoint.setWsdlLocation("Weather1.0.wsdl");
         return endpoint;
     }
 }
