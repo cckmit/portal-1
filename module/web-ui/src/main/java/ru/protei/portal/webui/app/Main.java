@@ -1,7 +1,8 @@
 package ru.protei.portal.webui.app;
 
+import org.apache.cxf.transport.servlet.CXFServlet;
 import org.apache.log4j.Logger;
-import org.eclipse.jetty.jsp.JettyJspServlet;
+//import org.eclipse.jetty.jsp.JettyJspServlet;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
@@ -84,9 +85,9 @@ public class Main {
         webapp.getMimeTypes().addMimeMapping("js","text/javascript;charset=utf-8");
 //        System.out.println(webapp.getMimeTypes().getMimeByExtension("aaa.js"));
 
-        if (JSP_ENABLED) {
-            webapp.addServlet(jspServletHolder(), "*.jsp");
-        }
+//        if (JSP_ENABLED) {
+//            webapp.addServlet(jspServletHolder(), "*.jsp");
+//        }
 
 
         webapp.addEventListener(new ContextLoaderListener(context));
@@ -96,6 +97,8 @@ public class Main {
         webapp.addServlet(springHolder, MAPPING_URL);
 //        webapp.addServlet(springHolder, API_SPACE_URL);
 
+
+        webapp.addServlet(new ServletHolder("cxf", new CXFServlet()), "/api/ws/*");
         webapp.addServlet(new ServletHolder("defaultServletHandler", new DefaultServlet()), "");
         webapp.setDescriptor((warDir == null ? "module/web-ui/web" : warDir) + "/WEB-INF/web.xml");
         webapp.setResourceBase(warDir == null ? "module/web-ui/web" : warDir);
@@ -128,16 +131,16 @@ public class Main {
     }
 
 
-    private static ServletHolder jspServletHolder()
-    {
-        ServletHolder holderJsp = new ServletHolder("jsp", JettyJspServlet.class);
-        holderJsp.setInitOrder(0);
-        holderJsp.setInitParameter("logVerbosityLevel", "DEBUG");
-        holderJsp.setInitParameter("fork", "false");
-        holderJsp.setInitParameter("xpoweredBy", "false");
-        holderJsp.setInitParameter("compilerTargetVM", "1.8");
-        holderJsp.setInitParameter("compilerSourceVM", "1.8");
-        holderJsp.setInitParameter("keepgenerated", "false");
-        return holderJsp;
-    }
+//    private static ServletHolder jspServletHolder()
+//    {
+//        ServletHolder holderJsp = new ServletHolder("jsp", JettyJspServlet.class);
+//        holderJsp.setInitOrder(0);
+//        holderJsp.setInitParameter("logVerbosityLevel", "DEBUG");
+//        holderJsp.setInitParameter("fork", "false");
+//        holderJsp.setInitParameter("xpoweredBy", "false");
+//        holderJsp.setInitParameter("compilerTargetVM", "1.8");
+//        holderJsp.setInitParameter("compilerSourceVM", "1.8");
+//        holderJsp.setInitParameter("keepgenerated", "false");
+//        return holderJsp;
+//    }
 }
