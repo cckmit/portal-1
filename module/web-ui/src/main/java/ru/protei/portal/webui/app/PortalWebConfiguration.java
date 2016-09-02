@@ -3,7 +3,6 @@ package ru.protei.portal.webui.app;
 import org.apache.cxf.Bus;
 import org.apache.cxf.bus.spring.SpringBus;
 import org.apache.cxf.jaxws.EndpointImpl;
-import org.apache.cxf.transport.servlet.CXFServlet;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -20,8 +19,8 @@ import ru.protei.portal.tools.migrate.MigrationRunner;
 import ru.protei.portal.webui.controller.auth.AuthInterceptor;
 import ru.protei.portal.webui.controller.dict.WorkersAPI;
 import ru.protei.portal.webui.controller.dict.WorkersAPI_Impl;
-import ru.protei.portal.webui.controller.ws.TestService;
-import ru.protei.portal.webui.controller.ws.TestServiceImpl;
+import ru.protei.portal.webui.controller.ws.service.WorkerService;
+import ru.protei.portal.webui.controller.ws.service.WorkerServiceImpl;
 import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
@@ -102,7 +101,7 @@ public class PortalWebConfiguration extends WebMvcConfigurerAdapter {
 
     @Override
     public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
-        configurer.mediaType("json", MediaType.APPLICATION_JSON);
+        configurer.mediaType ("json", MediaType.APPLICATION_JSON);
 
 //        MediaType jsMediaType = new MediaType("text", "javascript", Charset.forName("UTF8"));
 //        configurer.mediaType("js", jsMediaType);
@@ -115,8 +114,8 @@ public class PortalWebConfiguration extends WebMvcConfigurerAdapter {
 
 
     @Bean
-    public TestService createTestWebService () {
-        return new TestServiceImpl();
+    public WorkerService createWorkerWebService () {
+        return new WorkerServiceImpl ();
     }
 
     @Bean(name= Bus.DEFAULT_BUS_ID)
@@ -126,8 +125,8 @@ public class PortalWebConfiguration extends WebMvcConfigurerAdapter {
 
     @Bean
     public Endpoint endpoint() {
-        EndpointImpl endpoint = new EndpointImpl(springBus(), createTestWebService());
-        endpoint.publish("/person");
+        EndpointImpl endpoint = new EndpointImpl(springBus(), createWorkerWebService ());
+        endpoint.publish("/worker");
         return endpoint;
     }
 }

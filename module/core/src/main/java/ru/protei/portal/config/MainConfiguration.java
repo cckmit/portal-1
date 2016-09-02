@@ -99,7 +99,6 @@ public class MainConfiguration {
         return new CaseObjectDAO_Impl();
     }
 
-
     @Bean
     public UserSessionDAO getUserSessionDAO() {
         return new UserSessionDAO_Impl();
@@ -115,5 +114,13 @@ public class MainConfiguration {
         return new UserLoginDAO_Impl();
     }
 
+    @Bean
+    public CompanyDepartmentDAO getCompanyDepartmentDAO() { return new CompanyDepartmentDAO_Impl (); }
+
+    @Bean
+    public WorkerPositionDAO getWorkerPositionDAO() { return new WorkerPositionDAO_Impl (); }
+
+    @Bean
+    public WorkerEntryDAO getWorkerEntryDAO() { return new WorkerEntryDAO_Impl (); }
 
 }

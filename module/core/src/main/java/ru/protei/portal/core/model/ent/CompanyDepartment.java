@@ -31,6 +31,9 @@ public class CompanyDepartment {
     @JdbcColumn(name = "dep_info")
     private String info;
 
+    @JdbcColumn(name = "dep_extId")
+    private Long externalId;
+
     public CompanyDepartment() {
     }
 
@@ -80,5 +83,13 @@ public class CompanyDepartment {
 
     public void setInfo(String info) {
         this.info = info;
+    }
+
+    public Long getExternalId() {
+        return externalId;
+    }
+
+    public void setExternalId(Long externalId) {
+        this.externalId = externalId;
     }
 }

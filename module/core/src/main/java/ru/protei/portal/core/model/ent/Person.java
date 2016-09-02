@@ -96,6 +96,9 @@ public class Person {
     @JdbcColumn(name="isdeleted")
     private boolean isDeleted;
 
+    @JdbcColumn(name = "isfired")
+    private boolean isFired;
+
     public Person () {
     }
 
@@ -314,6 +317,14 @@ public class Person {
 
     public void setDeleted(boolean deleted) {
         isDeleted = deleted;
+    }
+
+    public boolean isFired() {
+        return isFired;
+    }
+
+    public void setFired(boolean isFired) {
+        this.isFired = isFired;
     }
 
     public String toDebugString () {

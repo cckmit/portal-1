@@ -17,6 +17,8 @@ public class CompanyHomeGroupItem {
         @JdbcColumn(name = "companyId")
         private Long companyId;
 
+        @JdbcColumn(name = "external_code")
+        private String externalCode;
 
         public CompanyHomeGroupItem() {
         }
@@ -37,4 +39,8 @@ public class CompanyHomeGroupItem {
         public void setCompanyId(Long companyId) {
                 this.companyId = companyId;
         }
+
+        public String getExternalCode() { return externalCode; }
+
+        public void setExternalCode(String externalCode) { this.externalCode = externalCode; }
 }

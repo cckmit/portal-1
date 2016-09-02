@@ -46,6 +46,9 @@ public class WorkerEntry {
     @JdbcColumn(name="active")
     private int activeFlag;
 
+    @JdbcColumn(name = "worker_extId")
+    private Long externalId;
+
     public WorkerEntry () {
         this.activeFlag = 1;
     }
@@ -138,4 +141,11 @@ public class WorkerEntry {
         this.activeFlag = activeFlag;
     }
 
+    public Long getExternalId() {
+        return externalId;
+    }
+
+    public void setExternalId(Long externalId) {
+        this.externalId = externalId;
+    }
 }
