@@ -28,8 +28,8 @@ public class WorkerRecord {
     private String info;
     private String ipAddress;
 
-    private Boolean isDeleted;
-    private Boolean isFired;
+    private boolean isDeleted;
+    private boolean isFired;
 
     private Long workerId;
     private Long departmentId;
@@ -39,7 +39,7 @@ public class WorkerRecord {
     private String fireDate;
     private String hireOrderNo;
     private String fireOrderNo;
-    private Boolean active;
+    private int active;
 
     private String positionName;
 
@@ -194,19 +194,19 @@ public class WorkerRecord {
         this.ipAddress = ipAddress;
     }
 
-    public Boolean isDeleted() {
+    public boolean isDeleted() {
         return isDeleted;
     }
 
-    public void setDeleted(Boolean isDeleted) {
+    public void setDeleted(boolean isDeleted) {
         this.isDeleted = isDeleted;
     }
 
-    public Boolean isFired() {
+    public boolean isFired() {
         return isFired;
     }
 
-    public void setFired(Boolean isFired) {
+    public void setFired(boolean isFired) {
         this.isFired = isFired;
     }
 
@@ -266,11 +266,11 @@ public class WorkerRecord {
         this.fireOrderNo = fireOrderNo;
     }
 
-    public Boolean getActive() {
+    public int getActive() {
         return active;
     }
 
-    public void setActive(Boolean active) {
+    public void setActive(int active) {
         this.active = active;
     }
 

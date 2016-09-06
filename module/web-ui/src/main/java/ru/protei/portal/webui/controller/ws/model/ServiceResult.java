@@ -59,7 +59,7 @@ public class ServiceResult {
         return isSuccess;
     }
 
-    public void setIsSuccess(boolean isSuccess) {
+    public void setSuccess(boolean isSuccess) {
         this.isSuccess = isSuccess;
     }
 

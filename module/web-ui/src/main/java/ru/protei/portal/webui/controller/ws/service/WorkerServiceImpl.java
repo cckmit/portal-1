@@ -45,11 +45,14 @@ public class WorkerServiceImpl implements WorkerService {
     public WorkerRecord getWorker(Long id) {
 
         logger.debug("=== getWorker ===");
+        logger.debug("=== id == " + id);
+
 
         if (id != null) {
             Person person = personDAO.get (id);
-            if (person != null)
+            if (person != null) {
                 return new WorkerRecord (person);
+            }
         }
 
         return null;
@@ -71,11 +74,11 @@ public class WorkerServiceImpl implements WorkerService {
 
             logger.debug("=== properties from 1C ===");
             for (PropertyDescriptor pl : infoRec.getPropertyDescriptors()) {
-                logger.debug(pl.getDisplayName()+" = "+pl.getReadMethod().invoke(rec, new Object[]{})+";");
+                logger.debug(pl.getDisplayName() + " = " + (pl.getReadMethod() != null ? pl.getReadMethod().invoke(rec,null) + ";" : "null;"));
             }
             logger.debug("==========================");
 
-            ServiceResult isValid = isValidRecord (rec);
+            ServiceResult isValid = isValidWorkerRecord (rec);
             if (!isValid.isSuccess ())
                 return isValid;
 
@@ -108,7 +111,10 @@ public class WorkerServiceImpl implements WorkerService {
                 personDAO.merge (person);
             }
 
-            WorkerPosition position = getValidPosition (rec.getPositionId (), rec.getPositionName ());
+            WorkerPosition position = getValidPosition (rec.getPositionId (), rec.getPositionName (), item.getCompanyId ());
+
+            if (workerEntryDAO.checkExistsByCondition ("worker_extId=?",rec.getWorkerId ()))
+                return ServiceResult.failResult ("PE-10009", "Worker already exist ", null);
 
             WorkerEntry worker = new WorkerEntry ();
             worker.setCreated (new Date ());
@@ -120,18 +126,15 @@ public class WorkerServiceImpl implements WorkerService {
             worker.setHireOrderNo (rec.getHireOrderNo () != null && rec.getHireOrderNo ().trim ().length () > 0 ? rec.getHireOrderNo ().trim () : null);
             worker.setFireDate (rec.getFireDate () != null && rec.getFireDate ().trim ().length () > 0 ? HelperService.DATE.parse (rec.getFireDate ()) : null);
             worker.setFireOrderNo (rec.getFireOrderNo () != null && rec.getFireOrderNo ().trim ().length () > 0 ? rec.getFireOrderNo ().trim () : null);
-            worker.setActiveFlag (rec.getActive () != null && rec.getActive () ? 1 : 0);
+            worker.setActiveFlag (rec.getActive ());
             worker.setExternalId (rec.getWorkerId ());
-
-            if (workerEntryDAO.checkExistsByCondition ("worker_extId=?",rec.getWorkerId ()))
-                return ServiceResult.failResult ("PE-10009", "Worker already exist ", null);
 
             Long workerId = workerEntryDAO.persist (worker);
 
-            return ServiceResult.successResult (workerId);
+            return ServiceResult.successResult (person.getId ());
 
         } catch (Exception e) {
-            logger.error ("error while read worker record", e);
+            logger.error ("error while read worker's record", e);
         }
 
         return ServiceResult.failResult ("PE-10010", "Can not create", null);
@@ -148,19 +151,16 @@ public class WorkerServiceImpl implements WorkerService {
 
             logger.debug("=== properties from 1C ===");
             for (PropertyDescriptor pl : infoRec.getPropertyDescriptors()) {
-                logger.debug(pl.getDisplayName()+" = "+pl.getReadMethod().invoke(rec, new Object[]{})+";");
+                logger.debug(pl.getDisplayName() + " = " + (pl.getReadMethod() != null ? pl.getReadMethod().invoke(rec,null) + ";" : "null;"));
             }
             logger.debug("==========================");
 
-            ServiceResult isValid = isValidRecord (rec);
+            ServiceResult isValid = isValidWorkerRecord (rec);
             if (!isValid.isSuccess ())
                 return isValid;
 
             if (rec.getId () == null || rec.getId () < 0)
                 return ServiceResult.failResult ("PE-10011", "Person's identifier is empty ", rec.getId ());
-
-            if (rec.getWorkerId () == null || rec.getWorkerId () < 0)
-                return ServiceResult.failResult ("PE-10013", "Worker's identifier is empty ", rec.getId ());
 
             CompanyHomeGroupItem item = companyGroupHomeDAO.getByCondition ("external_code=?", rec.getCompanyCode ().trim ());
             if (item == null)
@@ -181,24 +181,26 @@ public class WorkerServiceImpl implements WorkerService {
             if (rec.isFired ())
                 return fireWorker (rec.getWorkerId ());
 
+            WorkerPosition position = getValidPosition (rec.getPositionId (), rec.getPositionName (), item.getCompanyId ());
+
             WorkerEntry worker = workerEntryDAO.getByCondition ("worker_extId=?", rec.getWorkerId ());
             if (worker == null)
                 return ServiceResult.failResult ("PE-10014", "Unknown worker ", null);
 
-            WorkerPosition position = getValidPosition (rec.getPositionId (), rec.getPositionName ());
             worker.setDepartmentId (department.getId ());
             worker.setPositionId (position.getId ());
             worker.setHireDate (rec.getHireDate () != null && rec.getHireDate ().trim ().length () > 0 ? HelperService.DATE.parse (rec.getHireDate ()) : null);
             worker.setHireOrderNo (rec.getHireOrderNo () != null && rec.getHireOrderNo ().trim ().length () > 0 ? rec.getHireOrderNo ().trim () : null);
             worker.setFireDate (rec.getFireDate () != null && rec.getFireDate ().trim ().length () > 0 ? HelperService.DATE.parse (rec.getFireDate ()) : null);
             worker.setFireOrderNo (rec.getFireOrderNo () != null && rec.getFireOrderNo ().trim ().length () > 0 ? rec.getFireOrderNo ().trim () : null);
+            worker.setActiveFlag (rec.getActive ());
 
             workerEntryDAO.merge (worker);
 
-            return ServiceResult.successResult (worker.getId ());
+            return ServiceResult.successResult (person.getId ());
 
         } catch (Exception e) {
-            logger.error ("error while read worker record", e);
+            logger.error ("error while read worker's record", e);
         }
 
         return ServiceResult.failResult ("PE-10015", "Can not update", null);
@@ -258,20 +260,126 @@ public class WorkerServiceImpl implements WorkerService {
 
     @Override
     public ServiceResult addDepartment(DepartmentRecord rec) {
-        return null;
+
+        logger.debug("=== addDepartment ===");
+
+        try {
+
+            BeanInfo infoRec = Introspector.getBeanInfo(rec.getClass());
+
+            logger.debug("=== properties from 1C ===");
+            for (PropertyDescriptor pl : infoRec.getPropertyDescriptors()) {
+                logger.debug(pl.getDisplayName() + " = " + (pl.getReadMethod() != null ? pl.getReadMethod().invoke(rec,null) + ";" : "null;"));
+            }
+            logger.debug("==========================");
+
+            ServiceResult isValid = isValidDepartmentRecord (rec);
+            if (!isValid.isSuccess ())
+                return isValid;
+
+            CompanyHomeGroupItem item = companyGroupHomeDAO.getByCondition ("external_code=?", rec.getCompanyCode ().trim ());
+            if (item == null)
+                return ServiceResult.failResult ("PE-10002", "Unknown company's code ", rec.getDepartmentId ());
+
+            if (companyDepartmentDAO.checkExistsByCondition ("dep_extId=?",rec.getDepartmentId ()))
+                return ServiceResult.failResult ("PE-10009", "Department already exist ", null);
+
+            CompanyDepartment department = new CompanyDepartment ();
+            department.setCreated (new Date ());
+            department.setName (rec.getDepartmentName ().trim ());
+            department.setCompanyId (item.getCompanyId ());
+            department.setTypeId (1);
+            department.setParentId (rec.getParentId ());
+            department.setHeadId (rec.getHeadId ());
+            department.setExternalId (rec.getDepartmentId ());
+
+            Long departmentId = companyDepartmentDAO.persist (department);
+
+            return ServiceResult.successResult (departmentId);
+
+        } catch (Exception e) {
+            logger.error ("error while read department's record", e);
+        }
+
+        return ServiceResult.failResult ("PE-10010", "Can not create", null);
     }
 
     @Override
     public ServiceResult updateDepartment(DepartmentRecord rec) {
-        return null;
+
+        logger.debug("=== updateDepartment ===");
+
+        try {
+
+            BeanInfo infoRec = Introspector.getBeanInfo(rec.getClass());
+
+            logger.debug("=== properties from 1C ===");
+            for (PropertyDescriptor pl : infoRec.getPropertyDescriptors()) {
+                logger.debug(pl.getDisplayName() + " = " + (pl.getReadMethod() != null ? pl.getReadMethod().invoke(rec,null) + ";" : "null;"));
+            }
+            logger.debug("==========================");
+
+            ServiceResult isValid = isValidDepartmentRecord (rec);
+            if (!isValid.isSuccess ())
+                return isValid;
+
+            CompanyHomeGroupItem item = companyGroupHomeDAO.getByCondition ("external_code=?", rec.getCompanyCode ().trim ());
+            if (item == null)
+                return ServiceResult.failResult ("PE-10002", "Unknown company's code ", rec.getDepartmentId ());
+
+            CompanyDepartment department = companyDepartmentDAO.getByCondition ("dep_extId=?", rec.getDepartmentId ());
+            if (department == null)
+                return ServiceResult.failResult ("PE-10021", "Unknown department ", null);
+
+            department.setName (rec.getDepartmentName ().trim ());
+            department.setParentId (rec.getParentId ());
+            department.setHeadId (rec.getHeadId ());
+            companyDepartmentDAO.merge (department);
+
+            return ServiceResult.successResult (department.getId ());
+
+        } catch (Exception e) {
+            logger.error ("error while read department's record", e);
+        }
+
+        return ServiceResult.failResult ("PE-10010", "Can not create", null);
     }
 
     @Override
     public ServiceResult deleteDepartment(Long id) {
-        return null;
+
+        logger.debug("=== deleteDepartment ===");
+        logger.debug("=== properties from 1C ===");
+        logger.debug("departmentId = " + id);
+        logger.debug("==========================");
+
+        try {
+
+            if (id == null || id < 0)
+                return ServiceResult.failResult ("PE-10003", "Department's identifier is empty ", id);
+
+            CompanyDepartment department = companyDepartmentDAO.getByCondition ("dep_extId=?", id);
+            if (department == null)
+                return ServiceResult.failResult ("PE-10021", "Unknown department ", null);
+
+            if (companyDepartmentDAO.checkExistsByCondition ("parent_department=?", department.getId ()))
+                return ServiceResult.failResult ("PE-10022", "The department has child departments.", null);
+
+            if (workerEntryDAO.checkExistsByCondition ("dep_id=?", department.getId ()))
+                return ServiceResult.failResult ("PE-10022", "The department has workers.", null);
+
+            companyDepartmentDAO.remove (department);
+
+            return ServiceResult.successResult (id);
+
+        } catch (Exception e) {
+            logger.error ("error while remove", e);
+        }
+
+        return ServiceResult.failResult ("PE-10015", "Can not delete", id);
     }
 
-    private ServiceResult isValidRecord(WorkerRecord rec) {
+    private ServiceResult isValidWorkerRecord(WorkerRecord rec) {
 
         if (rec.getCompanyCode () == null || rec.getCompanyCode ().trim ().equals (""))
             return ServiceResult.failResult ("PE-10001", "Company's code is empty ", rec.getId ());
@@ -299,6 +407,26 @@ public class WorkerServiceImpl implements WorkerService {
         return ServiceResult.successResult (rec.getId ());
     }
 
+    private ServiceResult isValidDepartmentRecord(DepartmentRecord rec) {
+
+        if (rec.getCompanyCode () == null || rec.getCompanyCode ().trim ().equals (""))
+            return ServiceResult.failResult ("PE-10001", "Company's code is empty ", rec.getDepartmentId ());
+
+        if (rec.getDepartmentId () == null || rec.getDepartmentId () < 0)
+            return ServiceResult.failResult ("PE-10003", "Department's identifier is empty ", rec.getDepartmentId ());
+
+        if (rec.getDepartmentName () == null || rec.getDepartmentName ().trim ().length () < 1)
+            return ServiceResult.failResult ("PE-10007", "Department's name is empty ", rec.getDepartmentId ());
+
+        if (rec.getParentId () != null && !companyDepartmentDAO.checkExistsByCondition ("id=?",rec.getParentId ()))
+            return ServiceResult.failResult ("PE-10020", "Unknown parent of department ", null);
+
+        if (rec.getHeadId () != null && !personDAO.checkExistsByCondition ("id=?",rec.getHeadId ()))
+            return ServiceResult.failResult ("PE-10020", "Unknown head of department ", null);
+
+        return ServiceResult.successResult (rec.getDepartmentId ());
+    }
+
     private void copy(WorkerRecord rec, Person person) throws ParseException {
 
         person.setFirstName (rec.getFirstName ().trim ());
@@ -319,22 +447,22 @@ public class WorkerServiceImpl implements WorkerService {
         person.setEmail (rec.getEmail () != null && rec.getEmail ().trim ().length () > 0 ? rec.getEmail ().trim () : null);
         person.setEmail_own (rec.getEmailOwn () != null && rec.getEmailOwn ().trim ().length () > 0 ? rec.getEmailOwn ().trim () : null);
         person.setFax (rec.getFax () != null && rec.getFax ().trim ().length () > 0 ? rec.getFax ().trim () : null);
-        person.setDeleted (rec.isDeleted () != null ? rec.isDeleted () : false);
+        person.setDeleted (rec.isDeleted ());
         //person.setDepartment ();
         //person.setPosition ();
 
     }
 
-    private WorkerPosition getValidPosition(Long positionId, String positionName) {
+    private WorkerPosition getValidPosition(Long positionId, String positionName, Long companyId) {
 
         WorkerPosition position = workerPositionDAO.getByCondition ("pos_extId=?",positionId);
 
         if (position == null) {
             position = new WorkerPosition ();
             position.setExternalId (positionId);
+            position.setCompanyId (companyId);
         }
         position.setName (positionName.trim ());
-        //position.setCode ();
         if (position.getId () == null) {
             Long id = workerPositionDAO.persist (position);
             position.setId (id);
@@ -377,7 +505,4 @@ public class WorkerServiceImpl implements WorkerService {
 
         return ServiceResult.failResult ("PE-10015", "Can not fire", id);
     }
-
-
-
 }

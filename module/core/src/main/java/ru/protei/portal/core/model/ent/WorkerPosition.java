@@ -14,11 +14,11 @@ public class WorkerPosition {
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
 
-    @JdbcColumn(name="pos_code")
-    private String code;
-
     @JdbcColumn(name="pos_name")
     private String name;
+
+    @JdbcColumn(name = "company_id")
+    private Long companyId;
 
     @JdbcColumn(name="pos_extId")
     private Long externalId;
@@ -35,20 +35,20 @@ public class WorkerPosition {
         this.id = id;
     }
 
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
     public String getName() {
         return name;
     }
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Long getCompanyId() {
+        return companyId;
+    }
+
+    public void setCompanyId(Long companyId) {
+        this.companyId = companyId;
     }
 
     public Long getExternalId() {
