@@ -100,8 +100,8 @@ public class Main {
 
         webapp.addServlet(new ServletHolder("cxf", new CXFServlet()), "/api/ws/*");
         webapp.addServlet(new ServletHolder("defaultServletHandler", new DefaultServlet()), "");
-        webapp.setDescriptor((warDir == null ? "module/web-ui/web" : warDir) + "/WEB-INF/web.xml");
-        webapp.setResourceBase(warDir == null ? "module/web-ui/web" : warDir);
+        webapp.setDescriptor((warDir == null ? "module/web-ui/src/main/webapp" : warDir) + "/WEB-INF/web.xml");
+        webapp.setResourceBase(warDir == null ? "module/web-ui/src/main/webapp" : warDir);
 
         webapp.setInitParameter("org.eclipse.jetty.servlet.Default.dirAllowed", "false");
         webapp.setWelcomeFiles(new String[]{"index.html", "login.html"});

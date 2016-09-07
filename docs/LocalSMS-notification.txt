@@ -1,0 +1,30 @@
+[16:37:30] <Imba> <dependencies>
+        <dependency>
+            <groupId>ru.protei</groupId>
+            <artifactId>sn.services_remote</artifactId>
+            <version>2.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+[16:37:50] <Imba> это в protei-central
+[16:37:56] <Michael> да, я понял
+[16:39:27] <Imba> контекст создавать нужно из классов:
+CoreConfigurationContext.class,
+HttpConfigurationContext.class,
+RemoteServiceFactory.class
+[16:39:52] <Imba> понадобиться в classpath файл sn.properties
+[16:40:14] <Imba> sn.core.host=адрес SN.Core
+sn.core.port=порт SN.Core
+[16:40:38] <Imba> авторизацию можно пропустить если добавим портал в белый список
+[16:40:49] <Imba> HttpNotifyListService - для создания списка, джавадок прилагается
+[16:40:51] <Imba> вроде)
+[16:41:00] <Imba> стоп, вру
+[16:41:01] <Michael> да в принципе то можно и аккаунт какой-нить завести, служебный
+[16:41:07] <Imba> NotifyListService
+[16:41:08] <Imba> во
+[16:41:15] <Imba> можно и завести
+[16:41:29] <Michael> в общем я понял, спасибо
+[16:41:36] <Imba> тогда на входе AuthToken(login, password)
+[16:41:49] <Michael> угу, ok
+[16:41:49] <Imba> NotifyAbonentService - для добавления абонентов в созданный список
+[16:42:00] <Imba> если что - спрашивай
+[16:42:04] <Michael> ok

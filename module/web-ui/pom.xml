@@ -10,10 +10,11 @@
     <artifactId>portal4.web-ui</artifactId>
     <packaging>war</packaging>
     <name>Portal WEB UI</name>
+    <version>4.0.1.1</version>
     <url>http://www.protei.ru</url>
 
     <build>
-        <finalName>web-ui</finalName>
+        <finalName>portal</finalName>
 
         <plugins>
             <plugin>
@@ -26,21 +27,146 @@
                 </configuration>
             </plugin>
 
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.12.4</version>
+                <configuration>
+                    <skipTests>true</skipTests>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.8</version>
+
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <configuration>
+                            <tasks>
+                                <unzip dest="${project.build.directory}/${project.build.finalName}/pub/images">
+                                    <fileset dir="src/content" includes="*.zip"/>
+                                </unzip>
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+     <!--
+        convert bundles
+           <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>native2ascii-maven-plugin</artifactId>
+                <version>1.0-alpha-1</version>
+                <executions>
+                    <execution>
+                        <id>native2ascii-utf8-resources</id>
+                        <goals>
+                            <goal>native2ascii</goal>
+                        </goals>
+                        <configuration>
+                            <dest>target/classes</dest>
+                            <src>src/main/resources</src>
+                            <encoding>UTF8</encoding>
+                        </configuration>
+                    </execution>
+                </executions>
+
+                <dependencies>
+                    <dependency>
+                        <groupId>com.sun</groupId>
+                        <artifactId>tools</artifactId>
+                        <version>1.5.0</version>
+                        <scope>system</scope>
+                        <systemPath>${java.home}/../lib/tools.jar</systemPath>
+                    </dependency>
+                </dependencies>
+            </plugin>
+-->
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
                 <version>2.6</version>
                 <configuration>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
-                    <warSourceDirectory>web</warSourceDirectory>
+                    <archiveClasses>true</archiveClasses>
+                    <resourceEncoding>utf-8</resourceEncoding>
+
+                    <archive>
+                        <manifestEntries>
+                            <version>${project.version}</version>
+                            <build-time>${maven.build.timestamp}</build-time>
+                        </manifestEntries>
+                    </archive>
+<!--
+                    <overlays>
+                        <overlay>
+                            <groupId>ru.protei</groupId>
+                            <artifactId>aps</artifactId>
+                            <type>jar</type>
+                            <includes>
+                                <include>aps.3.5.min.js</include>
+                            </includes>
+                            <targetPath>web/scripts</targetPath>
+                        </overlay>
+                    </overlays>
+                    -->
+                   <!-- <warSourceDirectory>web</warSourceDirectory> -->
                 </configuration>
             </plugin>
-        </plugins>
 
+
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.5.3</version>
+                <configuration>
+                    <descriptor>src/assembly/tar-gzip.xml</descriptor>
+                    <finalName>${project.build.finalName}.${project.version}</finalName>
+                    <appendAssemblyId>false</appendAssemblyId>
+                    <archiveBaseDirectory>${project.build.directory}</archiveBaseDirectory>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>create-archive</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
     </build>
 
 
     <dependencies>
+        <dependency>
+            <groupId>ru.protei</groupId>
+            <artifactId>portal4.core</artifactId>
+            <version>4.0.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-databind</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-annotations</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
 
         <dependency>
             <groupId>org.apache.cxf</groupId>
@@ -76,25 +202,6 @@
             <version>2.5.5</version>
         </dependency>
 
-        <dependency>
-            <groupId>ru.protei</groupId>
-            <artifactId>portal4.core</artifactId>
-            <version>4.0.0</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                    <artifactId>jackson-core</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                    <artifactId>jackson-databind</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                    <artifactId>jackson-annotations</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
 
 <!--
         <dependency>
