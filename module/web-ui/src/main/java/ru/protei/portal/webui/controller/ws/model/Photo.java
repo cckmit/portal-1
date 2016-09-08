@@ -3,10 +3,10 @@ package ru.protei.portal.webui.controller.ws.model;
 /**
  * Created by turik on 19.08.16.
  */
-public class FotoByte {
+public class Photo {
 
     private Long id = null;
-    private byte[] fotos = null;
+    private byte[] photo = null;
 
     public Long getId() {
         return id;
@@ -16,11 +16,11 @@ public class FotoByte {
         this.id = id;
     }
 
-    public byte[] getFotos() {
-        return fotos;
+    public byte[] getPhoto() {
+        return photo;
     }
 
-    public void setFotos(byte[] fotos) {
-        this.fotos = fotos;
+    public void setPhoto(byte[] photo) {
+        this.photo = photo;
     }
 }

@@ -1,11 +1,10 @@
 package ru.protei.portal.webui.controller.ws.service;
 
 import ru.protei.portal.webui.controller.ws.model.DepartmentRecord;
-import ru.protei.portal.webui.controller.ws.model.FotoByte;
+import ru.protei.portal.webui.controller.ws.model.Photo;
 import ru.protei.portal.webui.controller.ws.model.ServiceResult;
 import ru.protei.portal.webui.controller.ws.model.WorkerRecord;
 
-import javax.jws.WebParam;
 import javax.jws.WebService;
 import java.util.List;
 
@@ -32,7 +31,7 @@ public interface WorkerService {
      * Данный запрос исключает записи помеченные в базе как "удалена"
      *
      */
-    public List<WorkerRecord> getWorkers(@WebParam(name = "expr") String expr);
+    public List<WorkerRecord> getWorkers(String expr);
 
     /**
      * Добавление записи сотрудника
@@ -45,7 +44,7 @@ public interface WorkerService {
      */
     public ServiceResult updateWorker(WorkerRecord rec);
 
-    public List<ServiceResult> updateWorkers(List<WorkerRecord> group_rec);
+    public List<ServiceResult> updateWorkers(List<WorkerRecord> list);
 
     /**
      * Удаление сотрудника по идентификатору id. При этом, запись фактически не
@@ -56,12 +55,12 @@ public interface WorkerService {
     /**
      * Обновление фотографии сотрудника по идентификатору id.
      */
-    public String updateFoto(Long id, byte[] buf);
+    public ServiceResult updatePhoto(Long id, byte[] buf);
 
     /**
      * получить список фотографий по списку id сотрудников
      */
-    public List<FotoByte> getFotos(List<Long> list);
+    public List<Photo> getPhotos(List<Long> list);
 
     /**
      * Добавление записи подразделения

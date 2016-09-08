@@ -287,8 +287,8 @@ public class WorkerRecord {
         setFirstName (p.getFirstName ());
         setLastName (p.getLastName ());
         setSecondName (p.getSecondName ());
-        setSex (p.getSex () != null ? p.getSex ().equals ("M") ? 1 : p.getSex ().equals ("F") ? 2 : null : null);
-        setBirthday (HelperService.DATE.format (p.getBirthday ()));
+        setSex (p.getSex () != null ? p.getSex ().equals ("M") ? new Integer (1) : p.getSex ().equals ("F") ? new Integer (2) : null : null);
+        setBirthday (p.getBirthday () != null ? HelperService.DATE.format (p.getBirthday ()) : null);
         setIpAddress (p.getIpAddress ());
         setPhoneWork (p.getWorkPhone ());
         setPhoneMobile (p.getMobilePhone ());

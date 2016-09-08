@@ -7,12 +7,16 @@ import org.apache.log4j.Logger;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+import ru.protei.portal.webui.controller.ws.WSConfig;
 import ru.protei.portal.webui.controller.ws.model.DepartmentRecord;
+import ru.protei.portal.webui.controller.ws.model.Photo;
 import ru.protei.portal.webui.controller.ws.model.ServiceResult;
 import ru.protei.portal.webui.controller.ws.model.WorkerRecord;
 import ru.protei.portal.webui.controller.ws.service.WorkerService;
 
-import java.io.InputStream;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -26,6 +30,7 @@ public class TestService {
     private static WorkerService client;
 
     private static String spAddress;
+    private static String dirPhotos;
     private static DepartmentRecord origDepartment = new DepartmentRecord ();
     private static WorkerRecord origWorker = new WorkerRecord ();
     private static ServiceResult result = new ServiceResult ();
@@ -42,6 +47,7 @@ public class TestService {
             props.load(is);
 
             spAddress = props.getProperty ("service_publish_address");
+            dirPhotos = props.getProperty ("dir_photos");
 
             origDepartment.setCompanyCode (props.getProperty ("companyCode"));
             origDepartment.setDepartmentId (new Long (props.getProperty ("departmentId")));
@@ -124,6 +130,29 @@ public class TestService {
     @Test
     public void testGetWorkers() {
 
+        List<WorkerRecord> list = client.getWorkers ("Турик");
+        Assert.assertNotNull ("Result of getWorkers() is null!", list);
+        for (WorkerRecord wr : list) {
+            logger.debug ("id = " + wr.getId ());
+            logger.debug ("firstName = " + wr.getFirstName ());
+            logger.debug ("lastName = " + wr.getLastName ());
+            logger.debug ("secondName = " + wr.getSecondName ());
+            logger.debug ("sex = " + wr.getSex ());
+            logger.debug ("birthday = " + wr.getBirthday ());
+            logger.debug ("phoneWork = " + wr.getPhoneWork ());
+            logger.debug ("phoneHome = " + wr.getPhoneHome ());
+            logger.debug ("phoneMobile = " + wr.getPhoneMobile ());
+            logger.debug ("email = " + wr.getEmail ());
+            logger.debug ("emailOwn = " + wr.getEmailOwn ());
+            logger.debug ("fax = " + wr.getFax ());
+            logger.debug ("address = " + wr.getAddress ());
+            logger.debug ("addressHome = " + wr.getAddressHome ());
+            logger.debug ("passportInfo = " + wr.getPassportInfo ());
+            logger.debug ("info = " + wr.getInfo ());
+            logger.debug ("ipAddress = " + wr.getIpAddress ());
+            logger.debug ("isDeleted = " + wr.isDeleted ());
+            logger.debug ("==============================");
+        }
     }
 
     @Ignore
@@ -137,7 +166,6 @@ public class TestService {
         logger.debug ("The department is added. id = " + result.getId ());
     }
 
-    @Ignore
     @Test
     public void testAddWorker() {
 
@@ -214,16 +242,83 @@ public class TestService {
     @Test
     public void testUpdateWorkers() {
 
+        List<WorkerRecord> list = new ArrayList<> ();
+        list.add (origWorker);
+
+        List<ServiceResult> results = client.updateWorkers (list);
+
+        Assert.assertNotNull ("Results updateWorkers() is null!", results);
+
+        for (ServiceResult result : results) {
+            Assert.assertNotNull ("Result updateWorkers() is null!", result);
+            Assert.assertEquals ("updateWorkers() is not success! " + result.getErrInfo (), true, result.isSuccess ());
+            Assert.assertTrue ("updateWorkers() must return not null identifer!", (result.getId () != null && result.getId () > 0));
+            logger.debug ("The worker is updated. id = " + result.getId ());
+        }
     }
 
     @Test
-    public void testUpdateFoto() {
+    public void testUpdatePhoto() {
 
+        Long id = new Long (149);
+        byte[] buf = read (id);
+        logger.debug ("personId = " + id);
+        logger.debug ("photo = " + buf);
+        logger.debug("photo's length = " + (buf != null ? buf.length : null));
+
+        result = client.updatePhoto (id, buf);
+        Assert.assertNotNull ("Result updatePhoto() is null!", result);
+        Assert.assertEquals ("updatePhoto() is not success! " + result.getErrInfo (), true, result.isSuccess ());
+        Assert.assertTrue ("updatePhoto() must return not null identifer!", (result.getId () != null && result.getId () > 0));
+        File newFile = new File (WSConfig.getInstance ().getDirPhotos () + result.getId () + ".jpg");
+        Assert.assertEquals ("New file not exist", true, (newFile.exists () && (newFile.length () > 0)));
+        logger.debug ("The photo of worker is updated. id = " + result.getId ());
+    }
+
+    private byte[] read(Long id) {
+
+        ByteArrayOutputStream out = null;
+        InputStream input = null;
+
+        try {
+            String fileName = dirPhotos + id + ".jpg";
+            logger.debug("=== fileName = " + fileName);
+            File file = new File(fileName);
+            if (file.exists()) {
+
+                out = new ByteArrayOutputStream();
+                input = new BufferedInputStream(new FileInputStream(file));
+                int data = 0;
+                while ((data = input.read()) != -1){
+                    out.write(data);
+                }
+                logger.debug("=== file exists");
+            } else {
+                logger.debug ("=== file doesn't exist");
+            }
+        } catch (Exception e) {
+            logger.error ("error while update photo", e);
+        }
+        finally{
+            try {
+                input.close();
+                out.close ();
+            } catch (Exception e) {}
+        }
+        return out.toByteArray();
     }
 
     @Test
-    public void testGetFotos() {
-
+    public void testGetPhotos() {
+        List<Long> list = new ArrayList<> ();
+        list.add (new Long (148));
+        list.add (new Long (149));
+        List<Photo> result = client.getPhotos (list);
+        Assert.assertNotNull ("Result getPhotos() is null!", result);
+        for (Photo p : result) {
+            Assert.assertNotNull ("Photo for id = " + p.getId () + " not exist!", p.getPhoto ());
+            logger.debug ("Photo for id = " + p.getId () + " exist. Length of photo = " + p.getPhoto ().length);
+        }
     }
 
     @Test

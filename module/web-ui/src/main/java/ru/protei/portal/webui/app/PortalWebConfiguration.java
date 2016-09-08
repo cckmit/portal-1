@@ -21,14 +21,11 @@ import ru.protei.portal.tools.migrate.MigrationRunner;
 import ru.protei.portal.webui.controller.auth.AuthInterceptor;
 import ru.protei.portal.webui.controller.dict.WorkersAPI;
 import ru.protei.portal.webui.controller.dict.WorkersAPI_Impl;
-import ru.protei.portal.webui.controller.ws.TestService;
-import ru.protei.portal.webui.controller.ws.TestServiceImpl;
 import ru.protei.portal.webui.controller.ws.service.WorkerService;
 import ru.protei.portal.webui.controller.ws.service.WorkerServiceImpl;
 import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
-import javax.xml.namespace.QName;
 import javax.xml.ws.Endpoint;
 
 /**
@@ -114,12 +111,6 @@ public class PortalWebConfiguration extends WebMvcConfigurerAdapter {
 //        configurer.ignoreAcceptHeader(true);
 //        configurer.favorPathExtension(true);
 //            configurer.defaultContentTypeStrategy()
-    }
-
-
-    @Bean
-    public TestService createTestWebService() {
-        return new TestServiceImpl ();
     }
 
     @Bean
