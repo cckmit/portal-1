@@ -23,6 +23,7 @@ import ru.protei.portal.webui.controller.dict.WorkersAPI;
 import ru.protei.portal.webui.controller.dict.WorkersAPI_Impl;
 import ru.protei.portal.webui.controller.ws.service.WorkerService;
 import ru.protei.portal.webui.controller.ws.service.WorkerServiceImpl;
+import ru.protei.portal.webui.controller.ws.tools.migrate.WSMigrationManager;
 import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
@@ -112,6 +113,9 @@ public class PortalWebConfiguration extends WebMvcConfigurerAdapter {
 //        configurer.favorPathExtension(true);
 //            configurer.defaultContentTypeStrategy()
     }
+
+    @Bean
+    public WSMigrationManager getWSMigrationManager () { return new WSMigrationManager (); }
 
     @Bean
     public WorkerService createWorkerWebService () {

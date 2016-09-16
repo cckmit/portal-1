@@ -177,6 +177,7 @@ public class TestService {
         logger.debug ("The worker is added. id = " + result.getId ());
     }
 
+    @Ignore
     @Test
     public void testGetAddedWorker() {
 
@@ -220,6 +221,7 @@ public class TestService {
         logger.debug ("isDeleted = " + wr.isDeleted ());
     }
 
+    @Ignore
     @Test
     public void testUpdateDepartment() {
 
@@ -239,6 +241,7 @@ public class TestService {
         logger.debug ("The worker is updated. id = " + result.getId ());
     }
 
+    @Ignore
     @Test
     public void testUpdateWorkers() {
 
@@ -257,6 +260,7 @@ public class TestService {
         }
     }
 
+    @Ignore
     @Test
     public void testUpdatePhoto() {
 
@@ -308,6 +312,7 @@ public class TestService {
         return out.toByteArray();
     }
 
+    @Ignore
     @Test
     public void testGetPhotos() {
         List<Long> list = new ArrayList<> ();
@@ -321,6 +326,7 @@ public class TestService {
         }
     }
 
+    @Ignore
     @Test
     public void testDeleteWorker() {
 
@@ -331,6 +337,7 @@ public class TestService {
         logger.debug ("The worker is deleted. id = " + result.getId ());
     }
 
+    @Ignore
     @Test
     public void testDeleteDepartment() {
 

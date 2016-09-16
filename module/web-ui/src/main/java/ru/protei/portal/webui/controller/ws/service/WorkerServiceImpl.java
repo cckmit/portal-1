@@ -7,6 +7,7 @@ import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.webui.controller.ws.WSConfig;
 import ru.protei.portal.webui.controller.ws.model.*;
+import ru.protei.portal.webui.controller.ws.tools.migrate.WSMigrationManager;
 import ru.protei.portal.webui.controller.ws.utils.HelperService;
 import ru.protei.winter.jdbc.JdbcSort;
 
@@ -43,6 +44,9 @@ public class WorkerServiceImpl implements WorkerService {
 
     @Autowired
     private WorkerEntryDAO workerEntryDAO;
+
+    @Autowired
+    private WSMigrationManager wsMigrationManager;
 
     @Override
     public WorkerRecord getWorker(Long id) {
@@ -127,6 +131,8 @@ public class WorkerServiceImpl implements WorkerService {
                 personDAO.merge (person);
             }
 
+            logger.debug (" PERSON_ID = " + person.getId ());
+
             WorkerPosition position = getValidPosition (rec.getPositionId (), rec.getPositionName (), item.getCompanyId ());
 
             if (workerEntryDAO.checkExistsByCondition ("worker_extId=?",rec.getWorkerId ()))
@@ -146,6 +152,8 @@ public class WorkerServiceImpl implements WorkerService {
             worker.setExternalId (rec.getWorkerId ());
 
             workerEntryDAO.persist (worker);
+
+            wsMigrationManager.persistPerson (person);
 
             return ServiceResult.successResult (person.getId ());
 
@@ -213,6 +221,8 @@ public class WorkerServiceImpl implements WorkerService {
 
             workerEntryDAO.merge (worker);
 
+            wsMigrationManager.mergePerson (person);
+
             return ServiceResult.successResult (person.getId ());
 
         } catch (Exception e) {
@@ -262,6 +272,7 @@ public class WorkerServiceImpl implements WorkerService {
                 Person person = personDAO.get (personId);
                 person.setDeleted (true);
                 personDAO.merge (person);
+                wsMigrationManager.removePerson (person);
             }
 
             return ServiceResult.successResult (id);
@@ -305,7 +316,8 @@ public class WorkerServiceImpl implements WorkerService {
             logger.error ("error while update photo", e);
         } finally {
             try {
-                out.close();
+                if (out != null)
+                    out.close();
             } catch (Exception e) {}
         }
 
@@ -354,7 +366,8 @@ public class WorkerServiceImpl implements WorkerService {
             logger.error ("error while get photos", e);
         } finally {
             try {
-                in.close();
+                if (in != null)
+                    in.close();
             } catch (Exception e) {}
         }
 
