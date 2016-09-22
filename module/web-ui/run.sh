@@ -1,1 +1,2 @@
-java -jar target/jetty-runner/jetty-runner.jar target/*.war
+cd ./target
+java -jar portal.jar ./webapp

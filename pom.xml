@@ -8,9 +8,20 @@
     <artifactId>portal4</artifactId>
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
+
+    <properties>
+        <project.gwt.version>2.7.0</project.gwt.version>
+        <project.gin.version>2.1.2</project.gin.version>
+        <project.factory.version>2.3-SNAPSHOT</project.factory.version>
+    </properties>
+
+
     <modules>
         <module>module/core</module>
         <module>module/web-ui</module>
+
+        <module>web/common</module>
+        <module>web/crm</module>
     </modules>
 
     <repositories>
