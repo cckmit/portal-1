@@ -73,9 +73,7 @@
                     <include>**/*.java</include>
                 </includes>
             </resource>
-
         </resources>
-
 
         <plugins>
             <!-- GWT Maven Plugin -->
