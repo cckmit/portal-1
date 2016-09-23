@@ -31,9 +31,9 @@ public class WorkerRecord {
     private boolean isDeleted;
     private boolean isFired;
 
-    private Long workerId;
-    private Long departmentId;
-    private Long positionId;
+    private long workerId;
+    private long departmentId;
+    private long positionId;
 
     private String hireDate;
     private String fireDate;
@@ -210,27 +210,27 @@ public class WorkerRecord {
         this.isFired = isFired;
     }
 
-    public Long getWorkerId() {
+    public long getWorkerId() {
         return workerId;
     }
 
-    public void setWorkerId(Long workerId) {
+    public void setWorkerId(long workerId) {
         this.workerId = workerId;
     }
 
-    public Long getDepartmentId() {
+    public long getDepartmentId() {
         return departmentId;
     }
 
-    public void setDepartmentId(Long departmentId) {
+    public void setDepartmentId(long departmentId) {
         this.departmentId = departmentId;
     }
 
-    public Long getPositionId() {
+    public long getPositionId() {
         return positionId;
     }
 
-    public void setPositionId(Long positionId) {
+    public void setPositionId(long positionId) {
         this.positionId = positionId;
     }
 

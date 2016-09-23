@@ -155,15 +155,14 @@ public class TestService {
         }
     }
 
-    @Ignore
     @Test
-    public void testAddDepartment() {
+    public void testUpdateDepartment() {
 
-        result = client.addDepartment (origDepartment);
-        Assert.assertNotNull ("Result addDepartment() is null!", result);
-        Assert.assertEquals ("addDepartment() is not success! " + result.getErrInfo (), true, result.isSuccess ());
-        Assert.assertTrue ("addDepartment() must return not null identifer!", (result.getId () != null && result.getId () > 0));
-        logger.debug ("The department is added. id = " + result.getId ());
+        result = client.updateDepartment (origDepartment);
+        Assert.assertNotNull ("Result updateDepartment() is null!", result);
+        Assert.assertEquals ("updateDepartment() is not success! " + result.getErrInfo (), true, result.isSuccess ());
+        Assert.assertTrue ("updateDepartment() must return not null identifer!", (result.getId () != null && result.getId () > 0));
+        logger.debug ("The department is updated. id = " + result.getId ());
     }
 
     @Test
@@ -177,7 +176,6 @@ public class TestService {
         logger.debug ("The worker is added. id = " + result.getId ());
     }
 
-    @Ignore
     @Test
     public void testGetAddedWorker() {
 
@@ -221,17 +219,6 @@ public class TestService {
         logger.debug ("isDeleted = " + wr.isDeleted ());
     }
 
-    @Ignore
-    @Test
-    public void testUpdateDepartment() {
-
-        result = client.updateDepartment (origDepartment);
-        Assert.assertNotNull ("Result updateDepartment() is null!", result);
-        Assert.assertEquals ("updateDepartment() is not success! " + result.getErrInfo (), true, result.isSuccess ());
-        Assert.assertTrue ("updateDepartment() must return not null identifer!", (result.getId () != null && result.getId () > 0));
-        logger.debug ("The department is updated. id = " + result.getId ());
-    }
-
     @Test
     public void testUpdateWorker() {
         result = client.updateWorker (origWorker);
@@ -241,7 +228,6 @@ public class TestService {
         logger.debug ("The worker is updated. id = " + result.getId ());
     }
 
-    @Ignore
     @Test
     public void testUpdateWorkers() {
 
@@ -260,7 +246,6 @@ public class TestService {
         }
     }
 
-    @Ignore
     @Test
     public void testUpdatePhoto() {
 
@@ -312,7 +297,6 @@ public class TestService {
         return out.toByteArray();
     }
 
-    @Ignore
     @Test
     public void testGetPhotos() {
         List<Long> list = new ArrayList<> ();
@@ -326,22 +310,20 @@ public class TestService {
         }
     }
 
-    @Ignore
     @Test
     public void testDeleteWorker() {
 
-        result = client.deleteWorker (origWorker.getWorkerId ());
+        result = client.deleteWorker (origWorker);
         Assert.assertNotNull ("Result deleteWorker() is null!", result);
         Assert.assertEquals ("deleteWorker() is not success! " + result.getErrInfo (), true, result.isSuccess ());
         Assert.assertTrue ("deleteWorker() must return not null identifer!", (result.getId () != null && result.getId () > 0));
         logger.debug ("The worker is deleted. id = " + result.getId ());
     }
 
-    @Ignore
     @Test
     public void testDeleteDepartment() {
 
-        result = client.deleteDepartment (origDepartment.getDepartmentId ());
+        result = client.deleteDepartment (origDepartment);
         Assert.assertNotNull ("Result deleteDepartment() is null!", result);
         Assert.assertEquals ("deleteDepartment() is not success! " + result.getErrInfo (), true, result.isSuccess ());
         Assert.assertTrue ("deleteDepartment() must return not null identifer!", (result.getId () != null && result.getId () > 0));

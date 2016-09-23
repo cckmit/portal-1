@@ -7,7 +7,7 @@ public class DepartmentRecord {
 
     private String companyCode;
 
-    private Long departmentId;
+    private long departmentId;
     private String departmentName;
     private Long parentId;
     private Long headId;
@@ -20,11 +20,11 @@ public class DepartmentRecord {
         this.companyCode = companyCode;
     }
 
-    public Long getDepartmentId() {
+    public long getDepartmentId() {
         return departmentId;
     }
 
-    public void setDepartmentId(Long departmentId) {
+    public void setDepartmentId(long departmentId) {
         this.departmentId = departmentId;
     }
 
