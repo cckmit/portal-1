@@ -17,13 +17,13 @@
 
 
     <modules>
-        <!--<module>module/core</module>-->
-        <!--<module>module/web-ui</module>-->
+        <module>module/core</module>
+        <module>module/web-ui</module>
 
-        <!--<module>web/common</module>-->
-        <!--<module>web/crm</module>-->
+        <module>web/common</module>
+        <module>web/crm</module>
 
-        <!--<module>app/portal</module>-->
+        <module>app/portal</module>
     </modules>
 
     <repositories>
