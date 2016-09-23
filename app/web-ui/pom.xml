@@ -8,15 +8,42 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>portal4.web-ui</artifactId>
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
     <name>Portal WEB UI</name>
     <version>4.0.1.1</version>
     <url>http://www.protei.ru</url>
+
+    <!--<modules>-->
+        <!--<module>../../web/crm</module>-->
+    <!--</modules>-->
 
     <build>
         <finalName>portal</finalName>
 
         <plugins>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <classpathPrefix>lib/</classpathPrefix>
+                            <mainClass>ru.protei.portal.webui.app.Main</mainClass>
+                            <useUniqueVersions>false</useUniqueVersions>
+                        </manifest>
+                        <manifestEntries>
+                            <Class-Path>
+                                ./ lib/ ./config/ ./webapp
+                            </Class-Path>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -60,71 +87,6 @@
                 </executions>
             </plugin>
 
-     <!--
-        convert bundles
-           <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>native2ascii-maven-plugin</artifactId>
-                <version>1.0-alpha-1</version>
-                <executions>
-                    <execution>
-                        <id>native2ascii-utf8-resources</id>
-                        <goals>
-                            <goal>native2ascii</goal>
-                        </goals>
-                        <configuration>
-                            <dest>target/classes</dest>
-                            <src>src/main/resources</src>
-                            <encoding>UTF8</encoding>
-                        </configuration>
-                    </execution>
-                </executions>
-
-                <dependencies>
-                    <dependency>
-                        <groupId>com.sun</groupId>
-                        <artifactId>tools</artifactId>
-                        <version>1.5.0</version>
-                        <scope>system</scope>
-                        <systemPath>${java.home}/../lib/tools.jar</systemPath>
-                    </dependency>
-                </dependencies>
-            </plugin>
--->
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>2.6</version>
-                <configuration>
-                    <failOnMissingWebXml>false</failOnMissingWebXml>
-                    <archiveClasses>true</archiveClasses>
-                    <resourceEncoding>utf-8</resourceEncoding>
-
-                    <archive>
-                        <manifestEntries>
-                            <version>${project.version}</version>
-                            <build-time>${maven.build.timestamp}</build-time>
-                        </manifestEntries>
-                    </archive>
-<!--
-                    <overlays>
-                        <overlay>
-                            <groupId>ru.protei</groupId>
-                            <artifactId>aps</artifactId>
-                            <type>jar</type>
-                            <includes>
-                                <include>aps.3.5.min.js</include>
-                            </includes>
-                            <targetPath>web/scripts</targetPath>
-                        </overlay>
-                    </overlays>
-                    -->
-                   <!-- <warSourceDirectory>web</warSourceDirectory> -->
-                </configuration>
-            </plugin>
-
-
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>2.5.3</version>
@@ -144,7 +106,57 @@
                     </execution>
                 </executions>
             </plugin>
+
+	    <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <version>2.6</version>
+            <executions>
+                <execution>
+                    <id>copy-dependencies</id>
+                    <phase>prepare-package</phase>
+                    <goals>
+                        <goal>copy-dependencies</goal>
+                    </goals>
+                    <configuration>
+                        <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                        <overWriteReleases>false</overWriteReleases>
+                        <overWriteSnapshots>true</overWriteSnapshots>
+                        <overWriteIfNewer>true</overWriteIfNewer>
+                    </configuration>
+                </execution>
+	        </executions>
+            </plugin>
+
         </plugins>
+
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*.properties</include>
+                    <include>**/*.xml</include>
+                    <include>**/*.txt</include>
+                </includes>
+                <targetPath>${project.build.directory}/config</targetPath>
+            </resource>
+            <resource>
+                <directory>src/main/webapp</directory>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+                <targetPath>${project.build.directory}/webapp</targetPath>
+            </resource>
+
+            <resource>
+                <directory>${project.basedir}/../../gwt/crm/target/portal4.ui.crm-1.0-SNAPSHOT</directory>
+                <includes>
+                    <include>crm.html</include>
+                    <include>Crm/**</include>
+                </includes>
+                <targetPath>${project.build.directory}/webapp</targetPath>
+            </resource>
+        </resources>
     </build>
 
 
