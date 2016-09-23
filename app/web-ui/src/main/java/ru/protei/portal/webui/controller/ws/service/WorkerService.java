@@ -17,7 +17,7 @@ import java.util.List;
 public interface WorkerService {
 
     /**
-     * запрос записи сотрудника по идентификатору
+     * запрос записи сотрудника по идентификатору id
      */
     public WorkerRecord getWorker(Long id);
 
@@ -39,18 +39,19 @@ public interface WorkerService {
     public ServiceResult addWorker(WorkerRecord rec);
 
     /**
-     * Обновление записи сотрудника. Атрибут "id" должен быть задан на
-     * вызывающей стороне
+     * Обновление записи сотрудника.
      */
     public ServiceResult updateWorker(WorkerRecord rec);
 
+    /**
+     * Обновление записей сотрудников.
+     */
     public List<ServiceResult> updateWorkers(List<WorkerRecord> list);
 
     /**
-     * Удаление сотрудника по идентификатору id. При этом, запись фактически не
-     * удаляется из базы, а только помечается как удаленная
+     * Удаление сотрудника по идентификатору ext_id.
      */
-    public ServiceResult deleteWorker(Long id);
+    public ServiceResult deleteWorker(WorkerRecord rec);
 
     /**
      * Обновление фотографии сотрудника по идентификатору id.
@@ -63,19 +64,13 @@ public interface WorkerService {
     public List<Photo> getPhotos(List<Long> list);
 
     /**
-     * Добавление записи подразделения
-     */
-    public ServiceResult addDepartment(DepartmentRecord rec);
-
-    /**
-     * Обновление записи подразделения. Атрибут "id" должен быть задан на
-     * вызывающей стороне
+     * Создание/обновление записи подразделения.
      */
     public ServiceResult updateDepartment(DepartmentRecord rec);
 
     /**
-     * Удаление подразделения по идентификатору id.
+     * Удаление подразделения по идентификатору ext_id.
      */
-    public ServiceResult deleteDepartment(Long id);
+    public ServiceResult deleteDepartment(DepartmentRecord rec);
 
 }
