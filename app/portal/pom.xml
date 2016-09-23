@@ -34,7 +34,7 @@
 
 
     <build>
-        <!--<plugins>-->
+        <plugins>
             <!--<plugin>-->
                 <!--<artifactId>maven-assembly-plugin</artifactId>-->
                 <!--<version>2.6</version>-->
@@ -53,7 +53,51 @@
                     <!--</execution>-->
                 <!--</executions>-->
             <!--</plugin>-->
-        <!--</plugins>-->
+
+
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.0.1</version>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <!-- here the phase you need -->
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.basedir}/target</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.basedir}/../../module/web-ui/target</directory>
+                                    <includes>
+                                        <include>config/**</include>
+                                        <include>lib/**</include>
+                                        <include>webapp/**</include>
+                                        <include>portal.jar</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+
+
+
+        <!--<resources>-->
+            <!--<resource>-->
+                <!--<directory>${project.basedir}/../../modules/web-ui/target</directory>-->
+                <!--<includes>-->
+                    <!--<include>config/**</include>-->
+                    <!--<include>lib/**</include>-->
+                    <!--<include>webapp/**</include>-->
+                    <!--<include>portal.jar</include>-->
+                <!--</includes>-->
+            <!--</resource>-->
+        <!--</resources>-->
     </build>
 
 </project>
