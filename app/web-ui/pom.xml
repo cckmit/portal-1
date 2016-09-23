@@ -149,7 +149,7 @@
             </resource>
 
             <resource>
-                <directory>${project.basedir}/../../web/crm/target/portal4.ui.crm-1.0-SNAPSHOT</directory>
+                <directory>${project.basedir}/../../gwt/crm/target/portal4.ui.crm-1.0-SNAPSHOT</directory>
                 <includes>
                     <include>crm.html</include>
                     <include>Crm/**</include>

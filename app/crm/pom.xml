@@ -12,15 +12,17 @@
     </parent>
 
     <groupId>ru.protei</groupId>
-    <artifactId>portal4.app.portal</artifactId>
+    <artifactId>portal4.app.crm</artifactId>
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
 
     <modules>
-        <module>../../web/common</module>
-        <module>../../web/crm</module>
+        <module>../../gwt/common</module>
+        <module>../../gwt/crm</module>
+
         <module>../../module/core</module>
-        <module>../../module/web-ui</module>
+
+        <module>../../app/web-ui</module>
     </modules>
 
 
@@ -35,26 +37,6 @@
 
     <build>
         <plugins>
-            <!--<plugin>-->
-                <!--<artifactId>maven-assembly-plugin</artifactId>-->
-                <!--<version>2.6</version>-->
-                <!--<executions>-->
-                    <!--<execution>-->
-                        <!--<id>create-archive</id>-->
-                        <!--<phase>package</phase>-->
-                        <!--<goals>-->
-                            <!--<goal>single</goal>-->
-                        <!--</goals>-->
-                        <!--<configuration>-->
-                            <!--<descriptors>-->
-                                <!--<descriptor>src/assembly/bin.xml</descriptor>-->
-                            <!--</descriptors>-->
-                        <!--</configuration>-->
-                    <!--</execution>-->
-                <!--</executions>-->
-            <!--</plugin>-->
-
-
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
                 <version>3.0.1</version>
@@ -70,7 +52,7 @@
                             <outputDirectory>${project.basedir}/target</outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>${project.basedir}/../../module/web-ui/target</directory>
+                                    <directory>${project.basedir}/../web-ui/target</directory>
                                     <includes>
                                         <include>config/**</include>
                                         <include>lib/**</include>
@@ -84,20 +66,6 @@
                 </executions>
             </plugin>
         </plugins>
-
-
-
-        <!--<resources>-->
-            <!--<resource>-->
-                <!--<directory>${project.basedir}/../../modules/web-ui/target</directory>-->
-                <!--<includes>-->
-                    <!--<include>config/**</include>-->
-                    <!--<include>lib/**</include>-->
-                    <!--<include>webapp/**</include>-->
-                    <!--<include>portal.jar</include>-->
-                <!--</includes>-->
-            <!--</resource>-->
-        <!--</resources>-->
     </build>
 
 </project>

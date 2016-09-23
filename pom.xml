@@ -23,7 +23,7 @@
         <module>web/common</module>
         <module>web/crm</module>
 
-        <module>app/portal</module>
+        <module>app/crm</module>
     </modules>
 
     <repositories>
