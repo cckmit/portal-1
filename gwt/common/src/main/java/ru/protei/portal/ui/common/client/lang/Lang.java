@@ -7,4 +7,7 @@ import com.google.gwt.i18n.client.Messages;
  */
 public interface Lang extends Messages {
     String appLogout();
+
+    String authLogin();
+
 }

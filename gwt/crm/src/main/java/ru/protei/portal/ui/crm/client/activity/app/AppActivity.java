@@ -5,8 +5,8 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.ui.crm.client.event.AppEvents;
-import ru.protei.portal.ui.crm.client.event.AuthEvents;
+import ru.protei.portal.ui.crm.client.events.AppEvents;
+import ru.protei.portal.ui.crm.client.events.AuthEvents;
 
 /**
  * Активность приложения
@@ -26,7 +26,7 @@ public abstract class AppActivity
 
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
-        view.setUsername( event.username );
+        view.setUsername( event.userName );
 
         fireEvent(new AppEvents.Show());
     }
@@ -50,7 +50,7 @@ public abstract class AppActivity
         Window.alert("Logout!");
         init.parent.clear();
 
-        //fireEvent( new AuthEvents().Show ( init.parent ));
+        fireEvent( new AuthEvents.Show ( init.parent ));
     }
 
     @Inject

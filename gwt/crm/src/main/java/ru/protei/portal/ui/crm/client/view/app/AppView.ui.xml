@@ -16,9 +16,9 @@
             </div>
 
             <div class="rightSide">
-                <span><i class="fa fa-user"></i></span> <g:Anchor ui:field="user" href="#"/>
+                <!--span><i class="fa fa-user"></i></span--> <g:Anchor ui:field="user" href="#"/>
             </div>
-            <div class="rightSide icons">
+            <div class="rightSide">
                 <g:Button ui:field="logout" text="{lang.appLogout}" styleName="exit_button"/>
             </div>
         </div>
@@ -26,9 +26,10 @@
         <div style="body_global">
             <g:HTMLPanel ui:field="sidebar" styleName="leftBlock">Sidebar</g:HTMLPanel>
             <g:HTMLPanel ui:field="container" styleName="rightBlock">Container</g:HTMLPanel>
+            <g:HTMLPanel ui:field="footer">Footer</g:HTMLPanel>
         </div>
 
-        <g:HTMLPanel ui:field="footer">Footer</g:HTMLPanel>
+
 
     </g:HTMLPanel>
 

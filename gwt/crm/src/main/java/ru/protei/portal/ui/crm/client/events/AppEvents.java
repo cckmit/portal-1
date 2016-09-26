@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.crm.client.event;
+package ru.protei.portal.ui.crm.client.events;
 
 import com.google.gwt.user.client.ui.HasWidgets;
 import ru.brainworm.factory.context.client.annotation.Url;
@@ -28,7 +28,7 @@ public class AppEvents {
     /**
      *   Отобразить App
      */
-    @Url( value = "app" )
+    @Url( value = "app", primary = true )
     public static class Show {
         public Show(){}
     }
