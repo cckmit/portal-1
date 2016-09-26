@@ -50,13 +50,13 @@ public class AppView extends Composite implements AbstractAppView {
     @UiField
     Anchor user;
     @UiField
+    HTMLPanel sidebar;
+    @UiField
     HTMLPanel container;
     @UiField
-    Button logout;
-    @UiField
-    HTMLPanel footer;
-    @UiField
-    HTMLPanel sidebar;
+    Anchor logout;
+//    @UiField
+//    HTMLPanel footer;
 
     AbstractAppActivity activity;
 
