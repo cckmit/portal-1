@@ -1,5 +1,6 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
     <g:HTMLPanel styleName="global">
         <div class="signIn_block">
             <div class="t_wrapper">
@@ -16,12 +17,11 @@
                                 </div>
                                 <div class="password">
                                     <div class="button empty grayC"><span class="icon-lock"></span></div>
-                                    <g:TextBox ui:field="password" styleName="inputField sticky"/>
+                                    <g:PasswordTextBox ui:field="password" styleName="inputField sticky"/>
                                 </div>
-                                <g:Label class="submitBlock hideSource">
-                                    <g:Button ui:field="loginButton"></g:Button>
-                                    <div class="button blueC">Login</div>
-                                </g:Label>
+                                <label class="submitBlock hideSource">
+                                    <g:Button ui:field="loginButton" text="{lang.authLogin}" styleName="button blueC"/>
+                                </label>
                             </div>
                         </div>
                     </div>

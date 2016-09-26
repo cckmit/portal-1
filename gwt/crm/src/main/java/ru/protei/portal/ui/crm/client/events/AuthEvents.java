@@ -13,4 +13,11 @@ public class AuthEvents {
 
         public HasWidgets parent;
     }
+
+    public static class Success {
+
+        public Success(String userName) { this.userName = userName; }
+
+        public String userName;
+    }
 }

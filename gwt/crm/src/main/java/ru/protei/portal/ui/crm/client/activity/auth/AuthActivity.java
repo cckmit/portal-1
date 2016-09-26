@@ -19,14 +19,18 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
 
     @Event
     public void onShow( AuthEvents.Show event ) {
-//        Window.alert ( "Received show event ");
-
         event.parent.add ( view.asWidget () );
     }
 
     public void onLoginClicked() {
-        Window.alert ( "Login clicked" );
+        Window.alert ( "Login clicked with user name '" + view.getUserName () + "' and password '" + view.getPassword () + "'" );
+        this.fireEvent (new AuthEvents.Success (view.getUserName ()));
     }
+
+    /*@Event
+    public void onSuccess(AuthEvents.Success event) {
+        Window.alert ( "Success login with user name '" + view.getUserName () + "'");
+    }*/
 
     public void onResetClicked() {
 
