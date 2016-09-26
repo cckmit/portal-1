@@ -17,11 +17,11 @@
 
 
     <modules>
-        <module>module/core</module>
-        <module>module/web-ui</module>
+        <module>gwt/common</module>
+        <module>gwt/crm</module>
 
-        <module>web/common</module>
-        <module>web/crm</module>
+        <module>module/core</module>
+        <module>app/web-ui</module>
 
         <module>app/crm</module>
     </modules>
