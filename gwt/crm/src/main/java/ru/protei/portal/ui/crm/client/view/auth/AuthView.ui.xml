@@ -1,0 +1,32 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+    <g:HTMLPanel styleName="global">
+        <div class="signIn_block">
+            <div class="t_wrapper">
+                <div class="tc_wrapper">
+                    <div class="block">
+                        <div class="head">
+                            <div class="company"><span class="logo"></span><span class="name">PROTEI</span></div>
+                        </div>
+                        <div class="body">
+                            <div class="signInForm">
+                                <div class="user">
+                                    <div class="button empty grayC"><span class="icon-user"></span></div>
+                                    <g:TextBox ui:field="login" styleName="inputField sticky"/>
+                                </div>
+                                <div class="password">
+                                    <div class="button empty grayC"><span class="icon-lock"></span></div>
+                                    <g:TextBox ui:field="password" styleName="inputField sticky"/>
+                                </div>
+                                <g:Label class="submitBlock hideSource">
+                                    <g:Button ui:field="loginButton"></g:Button>
+                                    <div class="button blueC">Login</div>
+                                </g:Label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </g:HTMLPanel>
+</ui:UiBinder>

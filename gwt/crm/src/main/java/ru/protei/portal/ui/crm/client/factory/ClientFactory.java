@@ -4,6 +4,7 @@ package ru.protei.portal.ui.crm.client.factory;
 import com.google.gwt.inject.client.GinModules;
 import ru.brainworm.factory.generator.injector.client.FactoryInjector;
 import ru.protei.portal.ui.common.client.factory.CommonClientModule;
+import ru.protei.portal.ui.crm.client.activity.auth.AuthActivity;
 
 /**
  * Фабрика
@@ -14,5 +15,5 @@ import ru.protei.portal.ui.common.client.factory.CommonClientModule;
 public interface ClientFactory
         extends FactoryInjector
 {
-
+        AuthActivity getAuthActivity();
 }
