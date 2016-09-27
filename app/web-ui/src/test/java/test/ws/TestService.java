@@ -5,7 +5,6 @@ import org.apache.cxf.aegis.databinding.AegisDatabinding;
 import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
 import org.apache.log4j.Logger;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import ru.protei.portal.webui.controller.ws.WSConfig;
 import ru.protei.portal.webui.controller.ws.model.DepartmentRecord;

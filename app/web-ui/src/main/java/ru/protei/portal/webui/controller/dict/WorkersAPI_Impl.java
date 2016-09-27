@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
+import ru.protei.portal.api.struct.HttpListResult;
 import ru.protei.portal.core.model.dao.CompanyDAO;
 import ru.protei.portal.core.model.dao.CompanyGroupHomeDAO;
 import ru.protei.portal.core.model.dao.PersonAbsenceDAO;
@@ -13,7 +14,6 @@ import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.PersonAbsence;
 import ru.protei.portal.core.model.view.EmployeeDetailView;
 import ru.protei.portal.core.model.view.WorkerView;
-import ru.protei.portal.webui.api.struct.HttpListResult;
 import ru.protei.winter.jdbc.JdbcSort;
 
 import java.util.*;
