@@ -20,4 +20,23 @@ public class HelperFunc {
         return null;
     }
 
+
+    public static String makeLikeArg (String arg) {
+        return makeLikeArg (arg, false);
+    }
+
+    public static String makeLikeArg (String arg, boolean leftSideAny) {
+        if (arg == null || arg.isEmpty()) {
+            return "%";
+        }
+
+        if (leftSideAny && !arg.startsWith("%"))
+            arg = "%" + arg;
+
+        if (!arg.endsWith("%"))
+            arg = arg + "%";
+
+        return arg;
+    }
+
 }

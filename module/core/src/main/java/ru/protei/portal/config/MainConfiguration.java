@@ -4,6 +4,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
+import ru.protei.portal.core.service.dict.CompanyService;
+import ru.protei.portal.core.service.dict.CompanyServiceImpl;
 import ru.protei.portal.core.service.user.AuthService;
 import ru.protei.portal.core.service.user.AuthServiceImpl;
 import ru.protei.portal.core.service.user.LDAPAuthProvider;
@@ -12,6 +14,11 @@ import ru.protei.portal.core.utils.SimpleSidGenerator;
 
 @Configuration
 public class MainConfiguration {
+
+    @Bean
+    public CompanyService getCompanyService () {
+        return new CompanyServiceImpl();
+    }
 
     @Bean
     public LDAPAuthProvider getLDAPAuthProvider() {
