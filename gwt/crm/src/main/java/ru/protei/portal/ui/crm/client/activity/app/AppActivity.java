@@ -28,7 +28,7 @@ public abstract class AppActivity
     public void onAuthSuccess( AuthEvents.Success event ) {
         view.setUsername( " " + event.userName );
 
-        fireEvent(new AppEvents.Show());
+        fireEvent (new AppEvents.Show ());
     }
 
     @Event
@@ -38,18 +38,23 @@ public abstract class AppActivity
         init.parent.add(view.asWidget());
 
         view.setPanelName("CRM common page");
+        view.setFocus();
 
         fireEvent( new AppEvents.InitDetails( view.getDetailsContainer() ));
     }
 
-    @Override
+    @Event
+    public void onInitPanelName(AppEvents.InitPanelName event) {
+
+        view.setPanelName (event.panelName);
+    }
+
     public void onUserClicked() {
         Window.alert("Wow! User clicked!");
     }
 
     public void onLogoutClicked() {
 
-        Window.alert("Logout!");
         init.parent.clear();
 
         fireEvent( new AuthEvents.Show ( init.parent ));

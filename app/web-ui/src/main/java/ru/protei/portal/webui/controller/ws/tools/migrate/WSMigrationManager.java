@@ -2,13 +2,10 @@ package ru.protei.portal.webui.controller.ws.tools.migrate;
 
 import org.apache.log4j.Logger;
 import protei.sql.Tm_SqlHelper;
-import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.ent.Person;
 
 import java.net.UnknownHostException;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by turik on 08.09.16.

@@ -6,6 +6,7 @@ import ru.brainworm.factory.generator.injector.client.FactoryInjector;
 import ru.protei.portal.ui.common.client.factory.CommonClientModule;
 import ru.protei.portal.ui.crm.client.activity.app.AppActivity;
 import ru.protei.portal.ui.crm.client.activity.auth.AuthActivity;
+import ru.protei.portal.ui.crm.client.activity.company.CompanyActivity;
 
 /**
  * Фабрика
@@ -18,4 +19,5 @@ public interface ClientFactory
 {
         AppActivity getAppActivity();
         AuthActivity getAuthActivity();
+        CompanyActivity getCompanyActivity();
 }

@@ -14,4 +14,6 @@ public interface AbstractAuthView extends IsWidget {
 
     String getPassword();
     void setPassword(String password);
+
+    void setFocus();
 }

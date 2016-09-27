@@ -10,4 +10,5 @@ public interface Lang extends Messages {
 
     String authLogin();
 
+    String objectSearch();
 }

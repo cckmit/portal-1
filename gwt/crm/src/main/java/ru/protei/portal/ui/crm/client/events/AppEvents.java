@@ -37,10 +37,21 @@ public class AppEvents {
      * Инициализация контейнера App
      */
     public static class InitDetails {
+
         public InitDetails(HasWidgets parent) {
             this.parent = parent;
         }
 
         public HasWidgets parent;
+    }
+
+    public static class InitPanelName {
+
+        public InitPanelName (String panelName) {
+
+            this.panelName = panelName;
+        }
+
+        public String panelName;
     }
 }

@@ -1,4 +1,4 @@
-package ru.protei.portal.webui.api.struct;
+package ru.protei.portal.api.struct;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;

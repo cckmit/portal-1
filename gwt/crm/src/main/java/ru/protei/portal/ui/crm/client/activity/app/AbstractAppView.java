@@ -14,4 +14,6 @@ public interface AbstractAppView extends IsWidget {
     void setPanelName(String panelName);
 
     HasWidgets getDetailsContainer();
+
+    void setFocus();
 }
