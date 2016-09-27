@@ -1066,7 +1066,7 @@ body {
 .header_global >.rightBlock .icons .helper_button,
 .header_global >.rightBlock .icons .settings_button,
 .header_global >.rightBlock .icons .exit_button,
-.header_global >.rightBlock .icons .user_pic,
+.header_global >.rightBlock .icons .user_button,
 .header_global >.rightBlock .icons .notifications_button {
   display: inline-block;
   vertical-align: middle;
@@ -1076,7 +1076,7 @@ body {
 .header_global >.rightBlock .icons .helper_button:hover,
 .header_global >.rightBlock .icons .settings_button:hover,
 .header_global >.rightBlock .icons .exit_button:hover,
-.header_global >.rightBlock .icons .user_pic:hover,
+.header_global >.rightBlock .icons .user_button:hover,
 .header_global >.rightBlock .icons .notifications_button:hover {
   color: #fff;
 }
@@ -1106,13 +1106,15 @@ body {
   vertical-align: -2px;
 }
 
-.header_global >.rightBlock .icons .user_pic {
+.header_global >.rightBlock .icons .user_button {
   margin-left: 8px;
+  margin-right: 8px;
   font-size: 22px;
 }
-.header_global >.rightBlock .icons .user_pic:before {
+.header_global >.rightBlock .icons .user_button:before {
   content: "\e90e";
   vertical-align: -2px;
+  padding-right: 5px;
 }
 
 .header_global >.rightBlock .icons .notifications_button {
