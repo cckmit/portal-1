@@ -1,0 +1,100 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+
+    <g:HTMLPanel styleName="global">
+
+        <g:HTMLPanel ui:field="sidebar" styleName="header_global">
+            <div class="leftBlock">
+                <div class="company">
+                    <span class="logo"></span>
+                    <span class="name">PROTEI</span>
+                </div>
+                <div class="hideBar_button"></div>
+            </div>
+            <div class="rightBlock">
+                <div class="topicTitle employees">
+                    <div class="title">
+                        <g:Label ui:field="panelName" />
+                    </div>
+                </div>
+                <div class="rightSide">
+                    <div class="icons">
+                        <g:Anchor ui:field="user" styleName="user_button"/>
+                        <g:Anchor ui:field="logout" title="{lang.appLogout}" styleName="exit_button"/>
+                    </div>
+                </div>
+                <div class="rightSide searchBlock">
+                    <div class="globalSearch">
+                    <input id="globalSearch" placeholder="Поиск по объектам" type="text" autocomplete="off" class="searchInput"/>
+
+                    <div class="buttonsBlock">
+                        <label class="search_button">
+                            <input type="submit" value="Поиск"/>
+                        </label>
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </g:HTMLPanel>
+
+
+        <div class="body_global">
+
+            <div class="leftBlock">
+                <div class="noScrolling">
+                    <div class="scrolling">
+                        <div class="mainButtons"></div>
+                        <div class="menuList">
+                            <div class="menu">
+                                <div class="title">Рабочее место</div>
+                                <div class="list">
+                                    <div class="item"><span class="icon-plan"></span>Мой план</div>
+                                    <div class="item"><span class="icon-created"></span>Инспектор</div>
+                                    <div class="item"><span class="icon-activity"></span>Моя активность</div>
+                                    <div class="item"><span class="icon-subscription"></span>Мои подписки</div>
+                                    <div class="item"><span class="icon-favorites"></span>Мои избранные</div>
+                                </div>
+                            </div>
+                            <div class="menu">
+                                <div class="title">Компания</div>
+                                <div class="list">
+                                    <div class="item"><span class="icon-employees"></span>Сотрудники</div>
+                                    <div class="item"><span class="icon-me"></span>Мой паспорт</div>
+                                </div>
+                            </div>
+                            <div class="menu">
+                                <div class="title">Объекты системы</div>
+                                <div style="max-height: 500px" class="list active">
+                                    <div class="item"><span class="icon-component"></span>Компоненты</div>
+                                    <div class="item"><span class="icon-product"></span>Продукты</div>
+                                    <div class="item"><span class="icon-case"></span>Задачи</div>
+                                    <div class="item"><span class="icon-order"></span>Группы задач</div>
+                                    <div class="item"><span class="icon-order"></span>Заказы</div>
+                                    <div class="item"><span class="icon-project"></span>Проекты</div>
+                                    <div class="item"><span class="icon-organization"></span>Организации</div>
+                                </div>
+                            </div>
+                            <div class="menu">
+                                <div class="title">Управление и отчёты</div>
+                                <div class="list">
+                                    <div class="item"><span class="icon-employees"></span>Сотрудники</div>
+                                    <div class="item"><span class="icon-component"></span>Компоненты</div>
+                                    <div class="item"><span class="icon-product"></span>Продукты</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <g:HTMLPanel ui:field="container" styleName="rightBlock"/>
+
+        </div>
+
+        <!--g:HTMLPanel ui:field="footer" styleName="">Footer</g:HTMLPanel-->
+
+    </g:HTMLPanel>
+
+</ui:UiBinder>
