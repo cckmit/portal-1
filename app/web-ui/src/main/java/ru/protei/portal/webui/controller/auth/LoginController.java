@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.service.user.AuthResult;
 import ru.protei.portal.core.service.user.AuthService;
-import ru.protei.portal.webui.api.struct.CoreResponse;
 
 @RestController
 public class LoginController {

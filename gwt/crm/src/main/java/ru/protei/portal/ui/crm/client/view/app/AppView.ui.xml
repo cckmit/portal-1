@@ -3,7 +3,7 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="global">
+    <g:HTMLPanel ui:field="appPanel" styleName="global">
 
         <g:HTMLPanel ui:field="sidebar" styleName="header_global">
             <div class="leftBlock">
@@ -32,7 +32,8 @@
                 </div>
                 <div class="rightSide searchBlock">
                     <div class="globalSearch">
-                    <input id="globalSearch" placeholder="Поиск по объектам" type="text" autocomplete="off" class="searchInput"/>
+                        <!--g:Label text="{lang.objectSearch}"/-->
+                    <g:TextBox ui:field="search" styleName="searchInput"/>
 
                     <div class="buttonsBlock">
                         <label class="search_button">

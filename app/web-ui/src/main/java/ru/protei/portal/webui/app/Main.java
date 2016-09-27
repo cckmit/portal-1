@@ -2,7 +2,6 @@ package ru.protei.portal.webui.app;
 
 import org.apache.cxf.transport.servlet.CXFServlet;
 import org.apache.log4j.Logger;
-//import org.eclipse.jetty.jsp.JettyJspServlet;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
@@ -15,6 +14,8 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
 import org.springframework.web.servlet.DispatcherServlet;
 
 import java.io.IOException;
+
+//import org.eclipse.jetty.jsp.JettyJspServlet;
 
 
 public class Main {

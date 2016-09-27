@@ -9,25 +9,35 @@
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
 
+
     <properties>
         <project.gwt.version>2.7.0</project.gwt.version>
         <project.gin.version>2.1.2</project.gin.version>
         <project.factory.version>2.3-SNAPSHOT</project.factory.version>
     </properties>
 
+    <profiles>
+        <profile>
+            <id>crm</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
 
-    <modules>
-        <module>skin/classic</module>
+            <modules>
+                <module>module/model</module>
+                <module>module/core</module>
+                <module>app/web-ui</module>
+                
+                <module>skin/classic</module>
 
-        <module>gwt/common</module>
-        <module>gwt/crm</module>
+                <module>gwt/common</module>
+                <module>gwt/crm</module>
 
-        <module>module/core</module>
-        <module>app/web-ui</module>
+                <module>app/crm</module>
+            </modules>
+        </profile>
+    </profiles>
 
-        <module>app/crm</module>
-
-    </modules>
 
     <repositories>
         <repository>

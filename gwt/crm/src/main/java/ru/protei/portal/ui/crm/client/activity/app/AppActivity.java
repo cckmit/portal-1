@@ -38,6 +38,7 @@ public abstract class AppActivity
         init.parent.add(view.asWidget());
 
         view.setPanelName("CRM common page");
+        view.setFocus();
 
         fireEvent( new AppEvents.InitDetails( view.getDetailsContainer() ));
     }
@@ -49,7 +50,6 @@ public abstract class AppActivity
 
     public void onLogoutClicked() {
 
-        Window.alert("Logout!");
         init.parent.clear();
 
         fireEvent( new AuthEvents.Show ( init.parent ));

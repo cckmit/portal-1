@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.crm.client.activity.auth;
 
-import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -20,10 +19,10 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
     @Event
     public void onShow( AuthEvents.Show event ) {
         event.parent.add ( view.asWidget () );
+        view.setFocus();
     }
 
     public void onLoginClicked() {
-        Window.alert ( "Login clicked with user name '" + view.getUserName () + "' and password '" + view.getPassword () + "'" );
         this.fireEvent (new AuthEvents.Success (view.getUserName ()));
     }
 
