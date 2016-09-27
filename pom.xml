@@ -15,16 +15,25 @@
         <project.factory.version>2.3-SNAPSHOT</project.factory.version>
     </properties>
 
+    <profiles>
+        <profile>
+            <id>crm</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
 
-    <modules>
-        <module>module/core</module>
-        <module>module/web-ui</module>
+            <modules>
+                <module>module/core</module>
+                <module>app/web-ui</module>
 
-        <module>web/common</module>
-        <module>web/crm</module>
+                <module>gwt/common</module>
+                <module>gwt/crm</module>
 
-        <module>app/crm</module>
-    </modules>
+                <module>app/crm</module>
+            </modules>
+        </profile>
+    </profiles>
+
 
     <repositories>
         <repository>
