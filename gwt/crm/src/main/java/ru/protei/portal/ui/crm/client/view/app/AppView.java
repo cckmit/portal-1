@@ -28,6 +28,11 @@ public class AppView extends Composite implements AbstractAppView {
     }
 
     @Override
+    public void setPanelName(String panelName) {
+        this.panelName.setText( panelName );
+    }
+
+    @Override
     public HasWidgets getDetailsContainer() {
         return container;
     }
@@ -55,6 +60,8 @@ public class AppView extends Composite implements AbstractAppView {
     HTMLPanel container;
     @UiField
     Anchor logout;
+    @UiField
+    Label panelName;
 //    @UiField
 //    HTMLPanel footer;
 

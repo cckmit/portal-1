@@ -37,6 +37,8 @@ public abstract class AppActivity
         init.parent.clear();
         init.parent.add(view.asWidget());
 
+        view.setPanelName("CRM common page");
+
         fireEvent( new AppEvents.InitDetails( view.getDetailsContainer() ));
     }
 

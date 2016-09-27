@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module rename-to='Crm'>
-    <entry-point class='ru.protei.portal.ui.crm.client.Main'/>
 
+    <inherits name="ru.protei.portal.skin.classic.Classic"/>
     <inherits name="ru.protei.portal.ui.common.Common"/>
+
+    <entry-point class='ru.protei.portal.ui.crm.client.Main'/>
 
     <source path='client'/>
     <source path='shared'/>

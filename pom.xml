@@ -17,6 +17,8 @@
 
 
     <modules>
+        <module>skin/classic</module>
+
         <module>gwt/common</module>
         <module>gwt/crm</module>
 
@@ -24,6 +26,7 @@
         <module>app/web-ui</module>
 
         <module>app/crm</module>
+
     </modules>
 
     <repositories>

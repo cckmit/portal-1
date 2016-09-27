@@ -15,7 +15,9 @@
             </div>
             <div class="rightBlock">
                 <div class="topicTitle employees">
-                    <div class="title">CRM</div>
+                    <div class="title">
+                        <g:Label ui:field="panelName" />
+                    </div>
                 </div>
                 <div class="rightSide">
                     <div class="icons">
@@ -80,11 +82,11 @@
                                 </div>
                             </div>
                             <div class="menu">
-                                <div class="title"><!--span.icon-savedQueries-->Управление и отчёты</div>
-                                <div class="list"><!--.slideWrapper-->
-                                <div class="item"><span class="icon-employees"></span>Сотрудники</div>
-                                <div class="item"><span class="icon-component"></span>Компоненты</div>
-                                <div class="item"><span class="icon-product"></span>Продукты</div>
+                                <div class="title">Управление и отчёты</div>
+                                <div class="list">
+                                    <div class="item"><span class="icon-employees"></span>Сотрудники</div>
+                                    <div class="item"><span class="icon-component"></span>Компоненты</div>
+                                    <div class="item"><span class="icon-product"></span>Продукты</div>
                                 </div>
                             </div>
                         </div>
