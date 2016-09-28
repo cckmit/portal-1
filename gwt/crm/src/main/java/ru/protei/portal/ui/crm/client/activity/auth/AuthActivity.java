@@ -24,9 +24,7 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
     }
 
     public void onLoginClicked() {
-
         this.fireEvent (new AuthEvents.Success (view.getUserName ()));
-
         this.fireEvent(new AppEvents.Show());
     }
 

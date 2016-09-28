@@ -24,7 +24,7 @@
                 <div class="rightSide">
                     <div class="icons">
                         <g:Anchor ui:field="user" styleName="user_button" href="#"/>
-                        <g:Anchor ui:field="logout" title="{lang.appLogout} (you cas use Ctrl+F4)" styleName="exit_button" href="#"/>
+                        <g:Anchor ui:field="logout" title="{lang.appLogout} (you can use Ctrl+F4)" styleName="exit_button" href="#"/>
                     </div>
                 </div>
                 <div class="rightSide searchBlock">
