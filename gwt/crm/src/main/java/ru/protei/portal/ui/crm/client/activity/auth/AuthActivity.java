@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.ui.crm.client.events.AppEvents;
 import ru.protei.portal.ui.crm.client.events.AuthEvents;
 
 /**
@@ -23,13 +24,11 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
     }
 
     public void onLoginClicked() {
-        this.fireEvent (new AuthEvents.Success (view.getUserName ()));
-    }
 
-    /*@Event
-    public void onSuccess(AuthEvents.Success event) {
-        Window.alert ( "Success login with user name '" + view.getUserName () + "'");
-    }*/
+        this.fireEvent (new AuthEvents.Success (view.getUserName ()));
+
+        this.fireEvent(new AppEvents.Show());
+    }
 
     public void onResetClicked() {
 

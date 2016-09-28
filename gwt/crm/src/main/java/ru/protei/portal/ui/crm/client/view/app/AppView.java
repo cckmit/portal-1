@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.crm.client.view.app;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -49,6 +50,7 @@ public class AppView extends Composite implements AbstractAppView, KeyPressHandl
 
     @UiHandler("logout")
     public void onLogoutButtonClicked(ClickEvent event) {
+        event.preventDefault();
         if ( activity != null ) {
             activity.onLogoutClicked();
         }
@@ -56,8 +58,17 @@ public class AppView extends Composite implements AbstractAppView, KeyPressHandl
 
     @UiHandler("hideBarButton")
     public void onHideBarButtonClicked(ClickEvent event) {
-        logo.getElement().addClassName("inactive");
-        sidebar.getElement().addClassName("inactive");
+        event.preventDefault();
+        logo.addClassName("inactive");
+        sidebar.addStyleName("inactive");
+    }
+
+    @UiHandler("companies")
+    public void onCompaniesClicked(ClickEvent event) {
+        event.preventDefault();
+        if ( activity != null ) {
+            activity.onCompaniesClicked();
+        }
     }
 
     @Override
@@ -68,8 +79,8 @@ public class AppView extends Composite implements AbstractAppView, KeyPressHandl
 
     @Override
     public void onClick (ClickEvent event) {
-        logo.getElement().removeClassName("inactive");
-        sidebar.getElement().removeClassName("inactive");
+        logo.removeClassName("inactive");
+        sidebar.removeStyleName("inactive");
     }
 
     private void initHandlers() {
@@ -88,7 +99,7 @@ public class AppView extends Composite implements AbstractAppView, KeyPressHandl
     HTMLPanel appPanel;
 
     @UiField
-    HTMLPanel logo;
+    DivElement logo;
     @UiField
     Anchor hideBarButton;
 
@@ -111,6 +122,10 @@ public class AppView extends Composite implements AbstractAppView, KeyPressHandl
     Anchor user;
     @UiField
     Label panelName;
+
+
+    @UiField
+    Anchor companies;
 
 
 //    @UiField
