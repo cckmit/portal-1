@@ -20,7 +20,7 @@ public abstract class CompanyActivity implements AbstractCompanyActivity, Activi
 
     @Event
     public void onShow (CompanyEvents.Show event) {
-        this.fireEvent (new AppEvents.InitPanelName ("Companies"));
+        this.fireEvent (new AppEvents.InitPanelName ("Компании"));
         parent.add (view.asWidget ());
     }
 

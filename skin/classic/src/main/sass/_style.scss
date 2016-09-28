@@ -1108,11 +1108,13 @@ body {
 
 .header_global >.rightBlock .icons .user_button {
   margin-left: 8px;
+  margin-right: 8px;
   font-size: 22px;
 }
 .header_global >.rightBlock .icons .user_button:before {
   content: "\e90e";
   vertical-align: -2px;
+  padding-right: 5px;
 }
 
 .header_global >.rightBlock .icons .notifications_button {
@@ -7618,7 +7620,7 @@ body {
 .body_global .UserList.list_showing .users .user {
   padding: 7px;
   display: inline-block;
-  width: 33.333333333333336%;
+  width: 33.1%;
   box-sizing: border-box;
   vertical-align: top;
 }

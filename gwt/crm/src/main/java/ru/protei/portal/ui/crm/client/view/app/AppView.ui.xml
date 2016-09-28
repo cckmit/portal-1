@@ -5,15 +5,17 @@
 
     <g:HTMLPanel ui:field="appPanel" styleName="global">
 
-        <g:HTMLPanel ui:field="sidebar" styleName="header_global">
-            <div class="leftBlock">
+        <div class="header_global">
+
+            <g:HTMLPanel ui:field="logo" styleName="leftBlock">
                 <div class="company">
                     <span class="logo"></span>
                     <span class="name">PROTEI</span>
                 </div>
-                <div class="hideBar_button"></div>
-            </div>
-            <div class="rightBlock">
+                <g:Anchor ui:field="hideBarButton" styleName="hideBar_button"/>
+            </g:HTMLPanel>
+
+            <g:HTMLPanel ui:field="navbar" styleName="rightBlock">
                 <div class="topicTitle employees">
                     <div class="title">
                         <g:Label ui:field="panelName" />
@@ -37,14 +39,14 @@
                     </div>
                     </div>
                 </div>
-            </div>
-        </g:HTMLPanel>
+            </g:HTMLPanel>
+        </div>
 
 
         <div class="body_global">
 
-            <div class="leftBlock">
-                <div class="noScrolling">
+            <g:HTMLPanel ui:field="sidebar" styleName="leftBlock">
+                <g:HTMLPanel ui:field="noScrol" styleName="noScrolling">
                     <div class="scrolling">
                         <div class="mainButtons"></div>
                         <div class="menuList">
@@ -87,8 +89,8 @@
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
+                </g:HTMLPanel>
+            </g:HTMLPanel>
 
             <g:HTMLPanel ui:field="container" styleName="rightBlock"/>
 
