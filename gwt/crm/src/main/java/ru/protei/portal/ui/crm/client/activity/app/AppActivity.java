@@ -55,7 +55,7 @@ public abstract class AppActivity
 
         init.parent.clear();
 
-        fireEvent( new AuthEvents.Show ( init.parent ));
+        fireEvent( new AuthEvents.Show ( init.parent ) );
     }
 
     @Override

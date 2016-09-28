@@ -18,7 +18,7 @@ public class Main implements EntryPoint {
         ClientFactory factory = GWT.create( ClientFactory.class);
 
         factory.getAppActivity().fireEvent( new AppEvents.Init( RootPanel.get() ));
-        factory.getAuthActivity().fireEvent(new AuthEvents.Show(RootPanel.get()));
+        factory.getAuthActivity().fireEvent(new AuthEvents.Show( RootPanel.get() ));
         //factory.getAppActivity().fireEvent( new AuthEvents.Success( "userName" ) );
         //factory.getAppActivity().fireEvent( new AppEvents.Show( ));
     }

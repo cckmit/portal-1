@@ -21,9 +21,9 @@ public class ClientModule extends AbstractGinModule {
     protected void configure() {
         bind( AppActivity.class ).asEagerSingleton();
         bind( AbstractAppView.class ).to( AppView.class ).in( Singleton.class );
-        bind (AuthActivity.class).asEagerSingleton ();
-        bind(AbstractAuthView.class).to (AuthView.class);
-        bind (CompanyActivity.class).asEagerSingleton ();
-        bind (AbstractCompanyView.class).to (CompanyView.class);
+        bind( AuthActivity.class ).asEagerSingleton ();
+        bind( AbstractAuthView.class ).to (AuthView.class);
+        bind( CompanyActivity.class ).asEagerSingleton ();
+        bind( AbstractCompanyView.class ).to (CompanyView.class);
     }
 }

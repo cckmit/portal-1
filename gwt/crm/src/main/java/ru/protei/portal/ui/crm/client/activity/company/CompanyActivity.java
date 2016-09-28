@@ -5,6 +5,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.crm.client.events.AppEvents;
 import ru.protei.portal.ui.crm.client.events.CompanyEvents;
 
@@ -20,7 +21,7 @@ public abstract class CompanyActivity implements AbstractCompanyActivity, Activi
 
     @Event
     public void onShow (CompanyEvents.Show event) {
-        this.fireEvent (new AppEvents.InitPanelName ("Companies"));
+        this.fireEvent (new AppEvents.InitPanelName (lang.companies()));
         parent.add (view.asWidget ());
     }
 
@@ -31,6 +32,8 @@ public abstract class CompanyActivity implements AbstractCompanyActivity, Activi
 
     @Inject
     AbstractCompanyView view;
+    @Inject
+    Lang lang;
 
     public HasWidgets parent;
 }

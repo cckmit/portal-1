@@ -7,14 +7,16 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.ui.crm.client.activity.app.AbstractAppActivity;
 import ru.protei.portal.ui.crm.client.activity.app.AbstractAppView;
+import ru.protei.portal.ui.crm.client.events.AuthEvents;
 
 /**
  * Вид основной формы приложения
  */
-public class AppView extends Composite implements AbstractAppView, KeyPressHandler, ClickHandler {
+public class AppView extends Composite implements AbstractAppView, KeyUpHandler, ClickHandler {
     public AppView() {
         initWidget(ourUiBinder.createAndBindUi(this));
         initHandlers();
@@ -49,7 +51,7 @@ public class AppView extends Composite implements AbstractAppView, KeyPressHandl
     }
 
     @UiHandler("logout")
-    public void onLogoutButtonClicked(ClickEvent event) {
+    public void onLogoutClicked(ClickEvent event) {
         event.preventDefault();
         if ( activity != null ) {
             activity.onLogoutClicked();
@@ -72,9 +74,12 @@ public class AppView extends Composite implements AbstractAppView, KeyPressHandl
     }
 
     @Override
-    public void onKeyPress (KeyPressEvent event) {
-        if (event.getNativeEvent().getKeyCode() == KeyCodes.KEY_ESCAPE)
+    public void onKeyUp (KeyUpEvent event) {
+
+        if (event.getNativeKeyCode() == KeyCodes.KEY_F4 && event.isAnyModifierKeyDown() && event.isControlKeyDown()) {
+            event.preventDefault();
             activity.onLogoutClicked();
+        }
     }
 
     @Override
@@ -84,11 +89,12 @@ public class AppView extends Composite implements AbstractAppView, KeyPressHandl
     }
 
     private void initHandlers() {
-        appPanel.sinkEvents(Event.ONKEYPRESS);
-        appPanel.addHandler(this, KeyPressEvent.getType());
 
         noScrol.sinkEvents(Event.ONCLICK);
         noScrol.addHandler(this, ClickEvent.getType());
+
+        RootPanel.get().sinkEvents(Event.ONKEYUP);
+        RootPanel.get().addHandler(this, KeyUpEvent.getType());
     }
 
     public void setFocus () {
