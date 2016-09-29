@@ -19,6 +19,25 @@
 
 
     <build>
+        <sourceDirectory>src/main/java</sourceDirectory>
+
+        <resources>
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>*.java</include>
+                    <include>**/*.java</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>*.gwt.xml</include>
+                    <include>**/*.gwt.xml</include>
+                </includes>
+            </resource>
+        </resources>
+
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -50,7 +69,6 @@
             <artifactId>winter.jdbc</artifactId>
             <version>2.1-SNAPSHOT</version>
         </dependency>
-
     </dependencies>
 
 </project>

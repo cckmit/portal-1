@@ -1,5 +1,8 @@
 package ru.protei.portal.core.service.user;
 
+import ru.protei.portal.core.model.ent.AuthResult;
+import ru.protei.portal.core.model.ent.UserSessionDescriptor;
+
 /**
  * Created by michael on 29.06.16.
  */

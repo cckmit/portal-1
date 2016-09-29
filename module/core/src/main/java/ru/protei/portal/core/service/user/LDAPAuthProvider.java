@@ -1,6 +1,7 @@
 package ru.protei.portal.core.service.user;
 
 import org.apache.log4j.Logger;
+import ru.protei.portal.core.model.dict.En_AuthResult;
 
 import javax.naming.AuthenticationException;
 import javax.naming.Context;

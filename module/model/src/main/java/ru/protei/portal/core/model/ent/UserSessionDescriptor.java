@@ -1,6 +1,5 @@
-package ru.protei.portal.core.service.user;
+package ru.protei.portal.core.model.ent;
 
-import ru.protei.portal.core.model.ent.*;
 
 /**
  * Created by michael on 23.06.16.

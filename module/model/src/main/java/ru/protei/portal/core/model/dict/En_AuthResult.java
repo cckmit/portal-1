@@ -1,4 +1,4 @@
-package ru.protei.portal.core.service.user;
+package ru.protei.portal.core.model.dict;
 
 /**
  * Created by michael on 29.06.16.

@@ -8,8 +8,10 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.webapp.Configuration;
 import org.eclipse.jetty.webapp.WebAppContext;
+import org.spring4gwt.server.SpringGwtRemoteServiceServlet;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.request.RequestContextListener;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 
@@ -99,10 +101,17 @@ public class Main {
 //        webapp.addServlet(springHolder, API_SPACE_URL);
 
 
+        // Spring4gwt servlet
+        ServletHolder springGwtHolder = springGwtServletHolder(context);
+        webapp.addServlet(springGwtHolder, "/Crm/springGwtServices/*");
+        // Spring4gwt listener
+        webapp.addEventListener( new RequestContextListener() );
+
+
         webapp.addServlet(new ServletHolder("cxf", new CXFServlet()), "/api/ws/*");
         webapp.addServlet(new ServletHolder("defaultServletHandler", new DefaultServlet()), "");
-        webapp.setDescriptor((warDir == null ? "module/web-ui/src/main/webapp" : warDir) + "/WEB-INF/web.xml");
-        webapp.setResourceBase(warDir == null ? "module/web-ui/src/main/webapp" : warDir);
+        webapp.setDescriptor( ( warDir == null ? "module/web-ui/src/main/webapp" : warDir ) + "/WEB-INF/web.xml");
+        webapp.setResourceBase( warDir == null ? "module/web-ui/src/main/webapp" : warDir);
 
         webapp.setInitParameter("org.eclipse.jetty.servlet.Default.dirAllowed", "false");
         webapp.setWelcomeFiles(new String[]{"index.html", "login.html"});
@@ -114,6 +123,12 @@ public class Main {
         }
 
         return webapp;
+    }
+
+    private static ServletHolder springGwtServletHolder( WebApplicationContext context ) {
+        SpringGwtRemoteServiceServlet servlet = new SpringGwtRemoteServiceServlet();
+        ServletHolder holder = new ServletHolder( servlet );
+        return holder;
     }
 
 

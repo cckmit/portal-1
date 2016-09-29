@@ -14,6 +14,7 @@
         <project.gwt.version>2.7.0</project.gwt.version>
         <project.gin.version>2.1.2</project.gin.version>
         <project.factory.version>2.3-SNAPSHOT</project.factory.version>
+        <project.spring.version>4.3.0.RELEASE</project.spring.version>
     </properties>
 
     <profiles>
@@ -27,6 +28,8 @@
                 <module>module/model</module>
                 <module>module/core</module>
                 <module>app/web-ui</module>
+                
+                <module>skin/classic</module>
 
                 <module>gwt/common</module>
                 <module>gwt/crm</module>
@@ -51,60 +54,7 @@
             <id>spring-releases</id>
             <name>spring-releases</name>
             <url>https://repo.spring.io/libs-release</url>
-            <!--<snapshots>-->
-                <!--<enabled>false</enabled>-->
-            <!--</snapshots>-->
-            <!--<releases>-->
-                <!--<enabled>true</enabled>-->
-            <!--</releases>-->
         </repository>
-
     </repositories>
-
-    <!--
-    <pluginRepositories>
-        <pluginRepository>
-            <id>spring-releases</id>
-            <name>spring-releases</name>
-            <url>https://repo.spring.io/libs-release</url>
-        </pluginRepository>
-    </pluginRepositories>
-    -->
-
-    <build>
-        <plugins>
-            <plugin>
-                <!--распаковывает heap.tar.gz c неверсионированными файлами в basedir -->
-                <artifactId>maven-antrun-plugin</artifactId>
-                <version>1.8</version>
-                <inherited>false</inherited>
-                <executions>
-                    <execution>
-                        <phase>generate-sources</phase>
-                        <configuration>
-                            <target>
-                                <echo>Распаковка heap.tar.gz</echo>
-                                <untar src="heap.tar.gz" dest="" compression="gzip"/>
-                            </target>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
-
-            <!--<plugin>-->
-                <!--<artifactId>maven-assembly-plugin</artifactId>-->
-                <!--<version>2.6</version>-->
-                <!--<configuration>-->
-                    <!--<descriptors>-->
-                        <!--<descriptor>src/assembly/bin.xml</descriptor>-->
-                    <!--</descriptors>-->
-                <!--</configuration>-->
-            <!--</plugin>-->
-        </plugins>
-    </build>
 
 </project>

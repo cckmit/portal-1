@@ -5,11 +5,13 @@ import ru.protei.winter.jdbc.annotations.JdbcColumn;
 import ru.protei.winter.jdbc.annotations.JdbcEntity;
 import ru.protei.winter.jdbc.annotations.JdbcId;
 
+import java.io.Serializable;
+
 /**
  * Created by michael on 16.06.16.
  */
 @JdbcEntity(table = "user_role")
-public class UserRole {
+public class UserRole implements Serializable {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.EXPLICIT)
     private int id;
@@ -21,8 +23,7 @@ public class UserRole {
     private String caRoleName;
 
 
-    public UserRole() {
-    }
+    public UserRole() {}
 
     public int getId() {
         return id;
