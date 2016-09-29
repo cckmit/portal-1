@@ -23,7 +23,11 @@ public abstract class AppActivity
     }
 
     @Event
-    public void onInit(AppEvents.Init event) { this.init = event; }
+    public void onInit(AppEvents.Init event) {
+        this.init = event;
+
+        fireEvent( new AppEvents.InitDetails( view.getDetailsContainer() ) );
+    }
 
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
@@ -35,10 +39,7 @@ public abstract class AppActivity
         init.parent.clear();
         init.parent.add(view.asWidget());
 
-        view.setPanelName("CRM common page");
-        view.setFocus();
-
-        fireEvent( new AppEvents.InitDetails( view.getDetailsContainer() ) );
+        fireEvent( new CompanyEvents.Show ( ));
     }
 
     @Event
