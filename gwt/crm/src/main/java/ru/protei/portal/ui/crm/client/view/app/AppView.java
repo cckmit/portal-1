@@ -1,22 +1,22 @@
 package ru.protei.portal.ui.crm.client.view.app;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyPressEvent;
-import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.event.dom.client.*;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.ui.crm.client.activity.app.AbstractAppActivity;
 import ru.protei.portal.ui.crm.client.activity.app.AbstractAppView;
+import ru.protei.portal.ui.crm.client.events.AuthEvents;
 
 /**
  * Вид основной формы приложения
  */
-public class AppView extends Composite implements AbstractAppView, KeyPressHandler {
+public class AppView extends Composite implements AbstractAppView, KeyUpHandler, ClickHandler {
     public AppView() {
         initWidget(ourUiBinder.createAndBindUi(this));
         initHandlers();
@@ -51,21 +51,50 @@ public class AppView extends Composite implements AbstractAppView, KeyPressHandl
     }
 
     @UiHandler("logout")
-    public void onButtonClicked( ClickEvent event ) {
+    public void onLogoutClicked(ClickEvent event) {
+        event.preventDefault();
         if ( activity != null ) {
             activity.onLogoutClicked();
         }
     }
 
+    @UiHandler("hideBarButton")
+    public void onHideBarButtonClicked(ClickEvent event) {
+        event.preventDefault();
+        logo.addClassName("inactive");
+        sidebar.addStyleName("inactive");
+    }
+
+    @UiHandler("companies")
+    public void onCompaniesClicked(ClickEvent event) {
+        event.preventDefault();
+        if ( activity != null ) {
+            activity.onCompaniesClicked();
+        }
+    }
+
     @Override
-    public void onKeyPress (KeyPressEvent event) {
-        if (event.getNativeEvent().getKeyCode() == KeyCodes.KEY_ESCAPE)
+    public void onKeyUp (KeyUpEvent event) {
+
+        if (event.getNativeKeyCode() == KeyCodes.KEY_F4 && event.isAnyModifierKeyDown() && event.isControlKeyDown()) {
+            event.preventDefault();
             activity.onLogoutClicked();
+        }
+    }
+
+    @Override
+    public void onClick (ClickEvent event) {
+        logo.removeClassName("inactive");
+        sidebar.removeStyleName("inactive");
     }
 
     private void initHandlers() {
-        appPanel.sinkEvents(Event.ONKEYPRESS);
-        appPanel.addHandler(this, KeyPressEvent.getType());
+
+        noScrol.sinkEvents(Event.ONCLICK);
+        noScrol.addHandler(this, ClickEvent.getType());
+
+        RootPanel.get().sinkEvents(Event.ONKEYUP);
+        RootPanel.get().addHandler(this, KeyUpEvent.getType());
     }
 
     public void setFocus () {
@@ -73,19 +102,38 @@ public class AppView extends Composite implements AbstractAppView, KeyPressHandl
     }
 
     @UiField
-    Anchor user;
+    HTMLPanel appPanel;
+
+    @UiField
+    DivElement logo;
+    @UiField
+    Anchor hideBarButton;
+
+    @UiField
+    HTMLPanel noScrol;
+
+    @UiField
+    HTMLPanel navbar;
+    @UiField
+    TextBox search;
+    @UiField
+    Anchor logout;
+
     @UiField
     HTMLPanel sidebar;
     @UiField
     HTMLPanel container;
+
     @UiField
-    Anchor logout;
+    Anchor user;
     @UiField
     Label panelName;
+
+
     @UiField
-    HTMLPanel appPanel;
-    @UiField
-    TextBox search;
+    Anchor companies;
+
+
 //    @UiField
 //    HTMLPanel footer;
 

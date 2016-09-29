@@ -54,7 +54,6 @@ public class AuthView extends Composite implements AbstractAuthView, KeyPressHan
         }
     }
 
-    @Override
     public void onKeyPress (KeyPressEvent event) {
         if (event.getNativeEvent().getKeyCode() == KeyCodes.KEY_ENTER)
             activity.onLoginClicked();
@@ -65,7 +64,6 @@ public class AuthView extends Composite implements AbstractAuthView, KeyPressHan
         loginPanel.addHandler(this, KeyPressEvent.getType());
     }
 
-    @Override
     public void setFocus () {
         login.setFocus(true);
     }
@@ -78,6 +76,7 @@ public class AuthView extends Composite implements AbstractAuthView, KeyPressHan
 
     @UiField
     Button loginButton;
+
     @UiField
     HTMLPanel loginPanel;
 

@@ -7,6 +7,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.ui.crm.client.events.AppEvents;
 import ru.protei.portal.ui.crm.client.events.AuthEvents;
+import ru.protei.portal.ui.crm.client.events.CompanyEvents;
 
 /**
  * Активность приложения
@@ -27,29 +28,35 @@ public abstract class AppActivity
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
         view.setUsername( event.profile.getLogin() );
-
-        fireEvent(new AppEvents.Show());
     }
 
     @Event
     public void onShowApp( AppEvents.Show event ) {
-
         init.parent.clear();
         init.parent.add(view.asWidget());
 
         view.setPanelName("CRM common page");
         view.setFocus();
 
-        fireEvent( new AppEvents.InitDetails( view.getDetailsContainer() ));
+        fireEvent( new AppEvents.InitDetails( view.getDetailsContainer() ) );
     }
 
-    @Override
+    @Event
+    public void onInitPanelName(AppEvents.InitPanelName event) {
+        view.setPanelName( event.panelName );
+    }
+
     public void onUserClicked() {
-        Window.alert("Wow! User clicked!");
+        Window.alert( "Wow! User clicked!" );
     }
 
     public void onLogoutClicked() {
         fireEvent( new AppEvents.Logout() );
+    }
+
+    @Override
+    public void onCompaniesClicked() {
+        fireEvent( new CompanyEvents.Show ( ));
     }
 
     @Inject

@@ -17,7 +17,7 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
     @Event
     public void onInit( AuthEvents.Init init ) {
         this.init = init;
-        view.setActivity (this);
+        view.setActivity (this );
     }
 
     @Event

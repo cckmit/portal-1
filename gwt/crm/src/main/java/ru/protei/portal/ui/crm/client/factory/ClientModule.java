@@ -8,6 +8,9 @@ import ru.protei.portal.ui.crm.client.view.app.AppView;
 import ru.protei.portal.ui.crm.client.activity.auth.AbstractAuthView;
 import ru.protei.portal.ui.crm.client.activity.auth.AuthActivity;
 import ru.protei.portal.ui.crm.client.view.auth.AuthView;
+import ru.protei.portal.ui.crm.client.activity.company.AbstractCompanyView;
+import ru.protei.portal.ui.crm.client.activity.company.CompanyActivity;
+import ru.protei.portal.ui.crm.client.view.company.CompanyView;
 
 /**
  * Клиентский модуль
@@ -18,7 +21,9 @@ public class ClientModule extends AbstractGinModule {
     protected void configure() {
         bind( AppActivity.class ).asEagerSingleton();
         bind( AbstractAppView.class ).to( AppView.class ).in( Singleton.class );
-        bind ( AuthActivity.class ).asEagerSingleton ();
-        bind( AbstractAuthView.class).to (AuthView.class);
+        bind( AuthActivity.class ).asEagerSingleton ();
+        bind( AbstractAuthView.class ).to (AuthView.class);
+        bind( CompanyActivity.class ).asEagerSingleton ();
+        bind( AbstractCompanyView.class ).to (CompanyView.class);
     }
 }

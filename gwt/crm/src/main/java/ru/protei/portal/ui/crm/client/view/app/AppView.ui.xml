@@ -5,15 +5,17 @@
 
     <g:HTMLPanel ui:field="appPanel" styleName="global">
 
-        <g:HTMLPanel ui:field="sidebar" styleName="header_global">
-            <div class="leftBlock">
+        <div class="header_global">
+
+            <div ui:field="logo" class="leftBlock">
                 <div class="company">
                     <span class="logo"></span>
                     <span class="name">PROTEI</span>
                 </div>
-                <div class="hideBar_button"></div>
+                <g:Anchor ui:field="hideBarButton" styleName="hideBar_button" href="#"/>
             </div>
-            <div class="rightBlock">
+
+            <g:HTMLPanel ui:field="navbar" styleName="rightBlock">
                 <div class="topicTitle employees">
                     <div class="title">
                         <g:Label ui:field="panelName" />
@@ -21,14 +23,9 @@
                 </div>
                 <div class="rightSide">
                     <div class="icons">
-                        <g:Anchor ui:field="logout" title="{lang.appLogout}" styleName="exit_button"/>
+                        <g:Anchor ui:field="user" styleName="user_button" href="#"/>
+                        <g:Anchor ui:field="logout" title="{lang.appLogout} (you can use Ctrl+F4)" styleName="exit_button" href="#"/>
                     </div>
-                </div>
-                <div class="rightSide">
-                    <div class="icons">
-                        <g:Anchor ui:field="user" href="#" styleName="user_pic"/>
-                    </div>
-
                 </div>
                 <div class="rightSide searchBlock">
                     <div class="globalSearch">
@@ -42,14 +39,14 @@
                     </div>
                     </div>
                 </div>
-            </div>
-        </g:HTMLPanel>
+            </g:HTMLPanel>
+        </div>
 
 
         <div class="body_global">
 
-            <div class="leftBlock">
-                <div class="noScrolling">
+            <g:HTMLPanel ui:field="sidebar" styleName="leftBlock">
+                <g:HTMLPanel ui:field="noScrol" styleName="noScrolling">
                     <div class="scrolling">
                         <div class="mainButtons"></div>
                         <div class="menuList">
@@ -79,7 +76,7 @@
                                     <div class="item"><span class="icon-order"></span>Группы задач</div>
                                     <div class="item"><span class="icon-order"></span>Заказы</div>
                                     <div class="item"><span class="icon-project"></span>Проекты</div>
-                                    <div class="item"><span class="icon-organization"></span>Организации</div>
+                                    <div class="item"><span class="icon-organization"></span><g:Anchor ui:field="companies" href="#" text="{lang.companies}" /></div>
                                 </div>
                             </div>
                             <div class="menu">
@@ -92,8 +89,8 @@
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
+                </g:HTMLPanel>
+            </g:HTMLPanel>
 
             <g:HTMLPanel ui:field="container" styleName="rightBlock"/>
 
