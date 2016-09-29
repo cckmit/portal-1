@@ -10,15 +10,5 @@ public class RequestFailedException extends Exception {
         super( msg );
     }
 
-//    public RequestFailedException( Status status ) {
-//        this.status = status;
-//    }
-//
-//    public RequestFailedException( Status status ) {
-//        this.status = status;
-//    }
-//
     public RequestFailedException() {}
-
-//    public Status status;
 }

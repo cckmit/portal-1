@@ -5,8 +5,8 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
-import ru.protei.portal.ui.crm.client.events.AppEvents;
-import ru.protei.portal.ui.crm.client.events.AuthEvents;
+import ru.protei.portal.ui.common.client.events.AppEvents;
+import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.crm.client.service.AuthServiceAsync;
 
 /**
@@ -29,7 +29,8 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
     public void onLogout( AppEvents.Logout event ) {
         authService.logout( new RequestCallback< Void >() {
             @Override
-            public void onError( Throwable throwable ) {}
+            public void onError( Throwable throwable ) {
+            }
 
             @Override
             public void onSuccess( Void result ) {

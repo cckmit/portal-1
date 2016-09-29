@@ -1,18 +1,18 @@
-package ru.protei.portal.ui.crm.client.activity.company;
+package ru.protei.portal.ui.company.client.activity.list;
 
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.ui.common.client.events.AppEvents;
+import ru.protei.portal.ui.common.client.events.CompanyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.crm.client.events.AppEvents;
-import ru.protei.portal.ui.crm.client.events.CompanyEvents;
 
 /**
  * Created by turik on 27.09.16.
  */
-public abstract class CompanyActivity implements AbstractCompanyActivity, Activity {
+public abstract class CompanyListActivity implements AbstractCompanyListActivity, Activity {
 
     @PostConstruct
     public void onInit() {
@@ -31,7 +31,7 @@ public abstract class CompanyActivity implements AbstractCompanyActivity, Activi
     }
 
     @Inject
-    AbstractCompanyView view;
+    AbstractCompanyListView view;
     @Inject
     Lang lang;
 

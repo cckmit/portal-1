@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.crm.client.service.AuthService;
+import ru.protei.portal.ui.crm.server.util.SystemConstants;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -32,7 +33,7 @@ public class AuthServiceImpl extends RemoteServiceServlet implements AuthService
 
         log.debug( "authentificate: login={}", login );
 
-        AuthResult result = authService.login( httpRequest.getSession().getId(), login, password, httpRequest.getRemoteAddr(), "");
+        AuthResult result = authService.login( httpRequest.getSession().getId(), login, password, httpRequest.getRemoteAddr(), httpRequest.getHeader( SystemConstants.USER_AGENT_HEADER ) );
         if ( !result.isOk() ) {
             throw new RequestFailedException( result.getResult().name() );
         }
@@ -44,7 +45,7 @@ public class AuthServiceImpl extends RemoteServiceServlet implements AuthService
     public void logout() {
         UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor( httpRequest );
         if ( descriptor != null )  {
-            authService.logout( httpRequest.getSession().getId(), httpRequest.getRemoteAddr(), "" );
+            authService.logout( httpRequest.getSession().getId(), httpRequest.getRemoteAddr(), httpRequest.getHeader( SystemConstants.USER_AGENT_HEADER ) );
         }
     }
 
@@ -56,7 +57,6 @@ public class AuthServiceImpl extends RemoteServiceServlet implements AuthService
         return profile;
     }
 
-
     @Autowired
     HttpServletRequest httpRequest;
 
@@ -65,7 +65,6 @@ public class AuthServiceImpl extends RemoteServiceServlet implements AuthService
 
     @Autowired
     private ru.protei.portal.core.service.user.AuthService authService;
-
 
     private static final Logger log = LoggerFactory.getLogger( "web" );
 }
