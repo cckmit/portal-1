@@ -5,6 +5,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.DigestUtils;
 import ru.protei.portal.core.model.dao.*;
+import ru.protei.portal.core.model.dict.En_AuthResult;
 import ru.protei.portal.core.model.ent.*;
 
 import java.util.Date;
@@ -115,7 +116,7 @@ public class AuthServiceImpl implements AuthService {
         UserLogin login = userLoginDAO.findByLogin(ulogin);
         if (login == null) {
             logger.debug("login [" + ulogin + "] not found, auth-failed");
-            return new AuthResult(En_AuthResult.INVALID_LOGIN_OR_PWD);
+            return new AuthResult( En_AuthResult.INVALID_LOGIN_OR_PWD);
         }
 
         if (login.isLDAP_Auth()) {

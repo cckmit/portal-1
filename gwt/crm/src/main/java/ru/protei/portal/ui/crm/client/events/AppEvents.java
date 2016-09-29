@@ -19,7 +19,7 @@ public class AppEvents {
     }
 
     /**
-     *   Отобразить Auth
+     * Отобразить Auth
      */
     public static class Logout {
         public Logout() { }

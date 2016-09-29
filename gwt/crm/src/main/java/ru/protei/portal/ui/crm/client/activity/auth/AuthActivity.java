@@ -3,39 +3,90 @@ package ru.protei.portal.ui.crm.client.activity.auth;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
-import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.ui.common.shared.model.Profile;
+import ru.protei.portal.ui.common.shared.model.RequestCallback;
+import ru.protei.portal.ui.crm.client.events.AppEvents;
 import ru.protei.portal.ui.crm.client.events.AuthEvents;
+import ru.protei.portal.ui.crm.client.service.AuthServiceAsync;
 
 /**
- * Created by turik on 23.09.16.
+ * Активность окна авторизации
  */
 public abstract class AuthActivity implements AbstractAuthActivity, Activity {
 
-    @PostConstruct
-    public void onInit() {
+    @Event
+    public void onInit( AuthEvents.Init init ) {
+        this.init = init;
         view.setActivity (this);
     }
 
     @Event
     public void onShow( AuthEvents.Show event ) {
-        event.parent.add ( view.asWidget () );
-        view.setFocus();
+        checkSession();
+    }
+
+    @Event
+    public void onLogout( AppEvents.Logout event ) {
+        authService.logout( new RequestCallback< Void >() {
+            @Override
+            public void onError( Throwable throwable ) {}
+
+            @Override
+            public void onSuccess( Void result ) {
+                fireEvent( new AuthEvents.Show() );
+            }
+        } );
     }
 
     public void onLoginClicked() {
-        this.fireEvent (new AuthEvents.Success (view.getUserName ()));
-    }
+        authService.authentificate( view.getUserName(), view.getPassword(), new RequestCallback< Profile >() {
+            @Override
+            public void onError( Throwable caught ) {
+            }
 
-    /*@Event
-    public void onSuccess(AuthEvents.Success event) {
-        Window.alert ( "Success login with user name '" + view.getUserName () + "'");
-    }*/
+            @Override
+            public void onSuccess( Profile profile ) {
+                fireEvent( new AuthEvents.Success( profile ) );
+                fireEvent( new AppEvents.Show() );
+            }
+        } );
+    }
 
     public void onResetClicked() {
 
     }
 
+    private void checkSession() {
+        authService.authentificate( null, null, new RequestCallback<Profile>() {
+            @Override
+            public void onError(Throwable throwable) {
+                placeView();
+            }
+
+            @Override
+            public void onSuccess( Profile profile ) {
+                if (profile == null) {
+                    placeView();
+                    return;
+                }
+
+                fireEvent( new AuthEvents.Success( profile ) );
+            }
+        });
+    }
+
+    private void placeView() {
+        init.parent.clear();
+        init.parent.add( view.asWidget() );
+
+        view.setFocus();
+    }
+
     @Inject
     AbstractAuthView view;
 
+    @Inject
+    AuthServiceAsync authService;
+
+    private AuthEvents.Init init;
 }

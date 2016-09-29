@@ -1,4 +1,6 @@
-package ru.protei.portal.core.service.user;
+package ru.protei.portal.core.model.ent;
+
+import ru.protei.portal.core.model.dict.En_AuthResult;
 
 /**
  * Created by michael on 29.06.16.

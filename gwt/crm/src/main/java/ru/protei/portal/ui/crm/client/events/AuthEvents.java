@@ -1,27 +1,38 @@
 package ru.protei.portal.ui.crm.client.events;
 
 import com.google.gwt.user.client.ui.HasWidgets;
+import ru.brainworm.factory.context.client.annotation.Url;
+import ru.protei.portal.ui.common.shared.model.Profile;
 
 /**
- * Created by turik on 23.09.16.
+ * События авторизации
  */
 public class AuthEvents {
 
-    //@Url( value = "login", primary = true )
-    public static class Show {
-        public Show() {}
-
-        public Show(HasWidgets parent) {
+    /**
+     * Инициализация контейнера окна авторизации
+     */
+    public static class Init {
+        public Init( HasWidgets parent ) {
             this.parent = parent;
         }
 
         public HasWidgets parent;
     }
 
+    /**
+     * Событие - показать форму входа
+     */
+    @Url( value = "login", primary = true)
+    public static class Show {}
+
+
+    /**
+     * Успешная авторизация пользователя
+     */
     public static class Success {
+        public Success( Profile profile) { this.profile = profile; }
 
-        public Success(String userName) { this.userName = userName; }
-
-        public String userName;
+        public Profile profile;
     }
 }

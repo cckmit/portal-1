@@ -17,5 +17,4 @@ public interface ClientFactory
         extends FactoryInjector
 {
         AppActivity getAppActivity();
-        AuthActivity getAuthActivity();
 }

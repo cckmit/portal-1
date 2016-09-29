@@ -1,7 +1,7 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'>
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
-    <g:HTMLPanel ui:field="loginPanel" styleName="global">
+    <g:HTMLPanel tag="aside" ui:field="loginPanel" styleName="global">
         <div class="signIn_block">
             <div class="t_wrapper">
                 <div class="tc_wrapper">

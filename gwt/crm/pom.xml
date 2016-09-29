@@ -50,6 +50,18 @@
             <version>1.0-SNAPSHOT</version>
         </dependency>
 
+        <!-- Spring4gwt dependency -->
+        <dependency>
+            <groupId>ru.protei.3rdparty</groupId>
+            <artifactId>spring4gwt</artifactId>
+            <version>0.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <version>${project.spring.version}</version>
+        </dependency>
+        
     </dependencies>
 
 

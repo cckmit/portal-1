@@ -26,7 +26,7 @@ public abstract class AppActivity
 
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
-        view.setUsername( event.userName );
+        view.setUsername( event.profile.getLogin() );
 
         fireEvent(new AppEvents.Show());
     }
@@ -49,10 +49,7 @@ public abstract class AppActivity
     }
 
     public void onLogoutClicked() {
-
-        init.parent.clear();
-
-        fireEvent( new AuthEvents.Show ( init.parent ));
+        fireEvent( new AppEvents.Logout() );
     }
 
     @Inject
