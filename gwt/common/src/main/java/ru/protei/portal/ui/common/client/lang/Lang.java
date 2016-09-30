@@ -13,4 +13,8 @@ public interface Lang extends Messages {
     String objectSearch();
 
     String companies();
+
+    String customers();
+
+    String partners();
 }
