@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
-import ru.protei.portal.webui.controller.auth.SecurityDefs;
 
 /**
  * Created by michael on 24.06.16.

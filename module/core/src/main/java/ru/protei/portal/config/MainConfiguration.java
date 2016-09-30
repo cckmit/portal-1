@@ -2,6 +2,7 @@ package ru.protei.portal.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import ru.protei.portal.core.controller.auth.AuthInterceptor;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
 import ru.protei.portal.core.service.dict.CompanyService;
@@ -49,6 +50,11 @@ public class MainConfiguration {
     @Bean
     public AuthService getAuthService() {
         return new AuthServiceImpl();
+    }
+
+    @Bean
+    public AuthInterceptor getAuthInterceptor() {
+        return new AuthInterceptor();
     }
 
     @Bean

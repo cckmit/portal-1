@@ -1,12 +1,12 @@
-package ru.protei.portal.webui.controller.auth;
+package ru.protei.portal.core.controller.auth;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
-import ru.protei.portal.core.service.user.AuthService;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
+import ru.protei.portal.core.service.user.AuthService;
 import ru.protei.portal.core.utils.SessionIdGen;
 
 import javax.servlet.http.Cookie;

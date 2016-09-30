@@ -1,4 +1,4 @@
-package ru.protei.portal.webui.controller.auth;
+package ru.protei.portal.core.controller.auth;
 
 
 import org.apache.log4j.Logger;
