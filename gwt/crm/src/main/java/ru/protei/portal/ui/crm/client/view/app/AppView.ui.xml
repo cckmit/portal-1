@@ -71,7 +71,7 @@
                                 <div class="title">Объекты системы</div>
                                 <div style="max-height: 500px" class="list active">
                                     <div class="item"><span class="icon-component"></span>Компоненты</div>
-                                    <div class="item"><span class="icon-product"></span>Продукты</div>
+                                    <div class="item"><span class="icon-product"></span><g:Anchor ui:field="products" href="#" text="{lang.products}" /></div>
                                     <div class="item"><span class="icon-case"></span>Задачи</div>
                                     <div class="item"><span class="icon-order"></span>Группы задач</div>
                                     <div class="item"><span class="icon-order"></span>Заказы</div>

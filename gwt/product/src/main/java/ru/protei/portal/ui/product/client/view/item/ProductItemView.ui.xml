@@ -1,0 +1,19 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+
+    <g:HTMLPanel styleName="product">
+
+        <div class="wrapper">
+            <div class="department">Messaging</div>
+            <div ui:field="name" class="name"/>
+            <div class="buttons"><span class="icon-menu"></span></div>
+            <div class="favorite"></div>
+            <div class="checkbox"></div>
+        </div>
+
+    </g:HTMLPanel>
+</ui:UiBinder>
+
+

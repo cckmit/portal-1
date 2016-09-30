@@ -6,6 +6,8 @@ import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
 import ru.protei.portal.core.service.dict.CompanyService;
 import ru.protei.portal.core.service.dict.CompanyServiceImpl;
+import ru.protei.portal.core.service.dict.ProductService;
+import ru.protei.portal.core.service.dict.ProductServiceImpl;
 import ru.protei.portal.core.service.user.AuthService;
 import ru.protei.portal.core.service.user.AuthServiceImpl;
 import ru.protei.portal.core.service.user.LDAPAuthProvider;
@@ -18,6 +20,11 @@ public class MainConfiguration {
     @Bean
     public CompanyService getCompanyService () {
         return new CompanyServiceImpl();
+    }
+
+    @Bean
+    public ProductService getProductService () {
+        return new ProductServiceImpl();
     }
 
     @Bean
@@ -54,6 +61,11 @@ public class MainConfiguration {
     @Bean
     public CompanyDAO getCompanyDAO() {
         return new CompanyDAO_Impl();
+    }
+
+    @Bean
+    public ProductDAO getProductDAO() {
+        return new ProductDAO_Impl();
     }
 
     @Bean
