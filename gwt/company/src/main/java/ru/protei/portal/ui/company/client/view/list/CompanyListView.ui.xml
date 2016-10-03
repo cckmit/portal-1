@@ -6,18 +6,17 @@
             <g:Button ui:field="customersButton" text="{lang.customers}" styleName="button whiteC switcher"/>
             <g:Button ui:field="partnersButton" text="{lang.partners}" styleName="button whiteC switcher"/>
             <div class="buttons_group">
-                <g:ListBox ui:field="groups" styleName="inputField"/>
-                <!--div class="button selected sticky empty"></div-->
+                <!--g:ListBox ui:field="groups" styleName="inputField"/-->
+                <input placeholder="Группа компаний" class="inputField"/><div class="button selected sticky empty whiteC"></div>
             </div>
             <div class="buttons_group">
                 <div class="regulator">Сортировать по<div class="button selected whiteC switcher">Название</div>
-                    <div class="button empty switcher whiteC switcher"><span class="icon-down"></span></div>
-                    <!--g:Button ui:field="directionButton" styleName="button empty switcher icon-down"/-->
+                    <g:Button ui:field="directionButton" styleName="button empty switcher whiteC"><span class="icon-down"></span></g:Button>
                 </div>
             </div>
             <div class="rightSide">
                 <g:TextBox ui:field="search" styleName="inputField"/>
-                <div class="button empty sticky blueC"><span class="icon-search"></span></div>
+                <g:Button ui:field="searchButton" styleName="button empty sticky blueC"><span class="icon-search"></span></g:Button>
             </div>
         </div>
         <g:HTMLPanel ui:field="companyContainer" styleName="organizations"/>

@@ -37,4 +37,12 @@ public class HttpListResult<T> {
         this.hasMore = more;
 //        this.errorCode = null;
     }
+
+    public List<T> getItems () {
+        return items;
+    }
+
+    public int getTotalSize() {
+        return totalSize;
+    }
 }

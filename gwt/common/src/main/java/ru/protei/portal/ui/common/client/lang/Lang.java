@@ -17,4 +17,9 @@ public interface Lang extends Messages {
     String customers();
 
     String partners();
+
+    String customer();
+
+    String partner();
+
 }
