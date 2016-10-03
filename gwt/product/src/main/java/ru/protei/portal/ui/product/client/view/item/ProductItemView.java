@@ -10,7 +10,7 @@ import ru.protei.portal.ui.product.client.activity.item.AbstractProductItemView;
 import ru.protei.portal.ui.product.client.activity.list.AbstractProductListActivity;
 
 /**
- * Продукт
+ * Вид карточки продукта
  */
 public class ProductItemView extends Composite implements AbstractProductItemView {
 

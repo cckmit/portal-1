@@ -41,7 +41,7 @@ public abstract class AppActivity
         init.parent.add(view.asWidget());
 
         //fireEvent(new CompanyEvents.Show());
-        fireEvent(new ProductEvents.Show());
+        //fireEvent(new ProductEvents.Show());
     }
 
     @Event

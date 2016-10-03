@@ -9,7 +9,9 @@ import ru.protei.portal.core.model.ent.Product;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.ProductEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.product.client.activity.item.AbstractProductItemView;
+import ru.protei.portal.ui.product.client.service.ProductServiceAsync;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,39 +32,69 @@ public abstract class ProductListActivity implements AbstractProductListActivity
 
         view.getItemsContainer().clear();
 
-        List<Product> products = new ArrayList();
+        initProducts();
+    }
+
+    private void initProducts() {
+
+        products.clear();
+
+        productService.getProductList(view.getName(), new RequestCallback<List<Product>>() {
+            @Override
+            public void onError(Throwable throwable) {
+                patchView();
+                fillView();
+            }
+
+            @Override
+            public void onSuccess(List<Product> result) {
+                products.addAll(result);
+                fillView();
+            }
+        });
+    }
+
+    private void patchView ()
+    {
+        // временная заглушка
+        products = new ArrayList<Product>();
         Product pr = new Product();
-        pr.setPname("Virtual Office");
+        pr.setPname("EACD4");
         products.add(pr);
 
         pr = new Product();
-        pr.setPname("SMS_Firewall");
+        pr.setPname("WelcomSMS");
         products.add(pr);
+    }
 
+    private void fillView ()
+    {
         // цикл добавления items
         for (Product p : products) {
 
             AbstractProductItemView itemView = provider.get();
-            itemView.setActivity(this);
             itemView.setName(p.getPname());
-
+            itemView.setActivity(this);
             view.getItemsContainer().add(itemView.asWidget());
         }
     }
-
 
     @Event
     public void onInitDetails(AppEvents.InitDetails event) {
         this.init = event;
     }
 
+
+    private List<Product> products = new ArrayList<Product>();
+    private AppEvents.InitDetails init;
+
     @Inject
     AbstractProductListView view;
     @Inject
     Lang lang;
 
-    private AppEvents.InitDetails init;
-
     @Inject
     Provider<AbstractProductItemView> provider;
+    @Inject
+    ProductServiceAsync productService;
 }

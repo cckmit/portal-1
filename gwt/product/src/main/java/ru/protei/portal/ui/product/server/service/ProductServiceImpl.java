@@ -5,47 +5,40 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.protei.portal.api.struct.HttpListResult;
+import ru.protei.portal.core.model.ent.Product;
+import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.product.client.service.ProductService;
 
-import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Сервис авторизации
+ * Реализация сервиса управления продуктами
  */
 @Service( "ProductService" )
 public class ProductServiceImpl extends RemoteServiceServlet implements ProductService {
 
-    /*
     @Override
-    public Profile authentificate( String login, String password ) throws RequestFailedException {
-        if ( login == null && password == null ) {
-            log.debug( "authentificate: empty auth params" );
+    public List<Product> getProductList(String name) throws RequestFailedException {
 
-            UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor( httpRequest );
-            log.debug( "authentificate: sessionDescriptior={}", descriptor );
+        log.info (" getProductList : ");
+        HttpListResult<Product> result = productService.list(name);
 
-            return descriptor == null ? null : makeProfileByDescriptor( descriptor );
-        }
+        return result.items;
+   }
 
-        log.debug("authentificate: login={}", login);
+    @Override
+    public Product getProductById(Long productId) throws RequestFailedException {
 
-        AuthResult result = authService.login( httpRequest.getSession().getId(), login, password, httpRequest.getRemoteAddr(), httpRequest.getHeader( SystemConstants.USER_AGENT_HEADER ) );
-        if ( !result.isOk() ) {
-            throw new RequestFailedException( result.getResult().name() );
-        }
+        log.info (" getProductById : id = " + productId);
 
-        return makeProfileByDescriptor( result.getDescriptor() );
+        return null;
     }
 
-*/
-    @Autowired
-    HttpServletRequest httpRequest;
-
-//    @Autowired
-//    SessionService sessionService;
 
     @Autowired
-    private ru.protei.portal.core.service.dict.ProductService productService;
+    ru.protei.portal.core.service.dict.ProductService productService;
 
     private static final Logger log = LoggerFactory.getLogger( "web" );
 }

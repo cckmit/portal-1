@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.product.client.view.list;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
@@ -10,7 +11,7 @@ import ru.protei.portal.ui.product.client.activity.list.AbstractProductListActiv
 import ru.protei.portal.ui.product.client.activity.list.AbstractProductListView;
 
 /**
- *  Список продуктов
+ * Вид списка продуктов
  */
 public class ProductListView extends Composite implements AbstractProductListView {
 
@@ -27,9 +28,15 @@ public class ProductListView extends Composite implements AbstractProductListVie
         return productContainer;
     }
 
+    @Override
+    public String getName() {
+        return null;
+    }
 
     @UiField
     HTMLPanel productContainer;
+    @UiField
+    DivElement fltActive;
 
     AbstractProductListActivity activity;
 

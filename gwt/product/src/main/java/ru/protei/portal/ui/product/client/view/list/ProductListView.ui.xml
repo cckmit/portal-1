@@ -15,7 +15,7 @@
                         </div>
                     </div>
                     <div class="regulator">
-                        <div class="checkbox active"></div>Показывать deprecated
+                        <div ui:field="fltActive" class="checkbox active"></div><ui:text from="{lang.showDepricated}"/>
                     </div>
                 </div>
             </div>

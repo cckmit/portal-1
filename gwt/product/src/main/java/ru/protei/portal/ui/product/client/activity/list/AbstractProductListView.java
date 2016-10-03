@@ -8,4 +8,6 @@ public interface AbstractProductListView extends IsWidget {
     void setActivity( AbstractProductListActivity activity );
 
     HasWidgets getItemsContainer ();
+
+    String getName();
 }

@@ -19,4 +19,6 @@ public interface Lang extends Messages {
     String sortBy();
 
     String products();
+
+    String showDepricated();
 }

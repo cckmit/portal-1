@@ -21,7 +21,7 @@ public class HttpListResult<T> {
 //    private String errorCode;
 
     @JsonProperty("items")
-    private List<T> items;
+    public List<T> items;
 
 
     public HttpListResult () {
