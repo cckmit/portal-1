@@ -1,12 +1,11 @@
 package ru.protei.portal.ui.product.client.view.list;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.HasWidgets;
+import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.ui.product.client.activity.list.AbstractProductListActivity;
 import ru.protei.portal.ui.product.client.activity.list.AbstractProductListView;
 
@@ -16,7 +15,7 @@ import ru.protei.portal.ui.product.client.activity.list.AbstractProductListView;
 public class ProductListView extends Composite implements AbstractProductListView {
 
     public ProductListView() {
-        initWidget (ourUiBinder.createAndBindUi (this));
+        initWidget(ourUiBinder.createAndBindUi(this));
     }
 
     public void setActivity(AbstractProductListActivity activity) {
@@ -29,14 +28,29 @@ public class ProductListView extends Composite implements AbstractProductListVie
     }
 
     @Override
-    public String getName() {
+    public String getParam() {
         return null;
+    }
+
+    @Override
+    public HasValue<Boolean> isShowDepricated() {
+        return showDepricated;
+    }
+
+    @UiHandler("showDepricated")
+    public void onShowDepricatedClick (ClickEvent event)
+    {
+        if (showDepricated.getValue())
+            showDepricated.addStyleName("active");
+        else
+            showDepricated.removeStyleName("checkbox");
+        activity.onShowDepricatedClick();
     }
 
     @UiField
     HTMLPanel productContainer;
     @UiField
-    DivElement fltActive;
+    ToggleButton showDepricated;
 
     AbstractProductListActivity activity;
 

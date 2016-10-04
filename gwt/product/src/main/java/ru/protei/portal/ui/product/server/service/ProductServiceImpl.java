@@ -20,12 +20,31 @@ import java.util.List;
 public class ProductServiceImpl extends RemoteServiceServlet implements ProductService {
 
     @Override
-    public List<Product> getProductList(String name) throws RequestFailedException {
+    public List<Product> getProductList(String param, boolean showDepricated) throws RequestFailedException {
 
-        log.info (" getProductList : ");
-        HttpListResult<Product> result = productService.list(name);
+        log.info (" getProductList : param = " + param + " showDepricated = " + showDepricated);
 
-        return result.items;
+        //HttpListResult<Product> result = productService.list(param);
+        //return result.items;
+
+        // временная заглушка вместо получения списка из БД
+        List <Product> products = new ArrayList<Product>();
+        Product pr = new Product();
+        pr.setPname("EACD4");
+        products.add(pr);
+
+        pr = new Product();
+        pr.setPname("WelcomeSMS");
+        products.add(pr);
+
+        if (showDepricated)
+        {
+            pr = new Product();
+            pr.setPname("CWS");
+            products.add(pr);
+        }
+
+        return products;
    }
 
     @Override

@@ -10,17 +10,20 @@ import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.ProductEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
+import ru.protei.portal.ui.product.client.activity.item.AbstractProductItemActivity;
 import ru.protei.portal.ui.product.client.activity.item.AbstractProductItemView;
 import ru.protei.portal.ui.product.client.service.ProductServiceAsync;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public abstract class ProductListActivity implements AbstractProductListActivity, Activity {
+public abstract class ProductListActivity implements AbstractProductListActivity, AbstractProductItemActivity, Activity {
 
     @PostConstruct
     public void onInit() {
         view.setActivity(this);
+
     }
 
     @Event
@@ -30,54 +33,9 @@ public abstract class ProductListActivity implements AbstractProductListActivity
         init.parent.clear();
         init.parent.add(view.asWidget());
 
-        view.getItemsContainer().clear();
-
         initProducts();
     }
 
-    private void initProducts() {
-
-        products.clear();
-
-        productService.getProductList(view.getName(), new RequestCallback<List<Product>>() {
-            @Override
-            public void onError(Throwable throwable) {
-                patchView();
-                fillView();
-            }
-
-            @Override
-            public void onSuccess(List<Product> result) {
-                products.addAll(result);
-                fillView();
-            }
-        });
-    }
-
-    private void patchView ()
-    {
-        // временная заглушка
-        products = new ArrayList<Product>();
-        Product pr = new Product();
-        pr.setPname("EACD4");
-        products.add(pr);
-
-        pr = new Product();
-        pr.setPname("WelcomSMS");
-        products.add(pr);
-    }
-
-    private void fillView ()
-    {
-        // цикл добавления items
-        for (Product p : products) {
-
-            AbstractProductItemView itemView = provider.get();
-            itemView.setName(p.getPname());
-            itemView.setActivity(this);
-            view.getItemsContainer().add(itemView.asWidget());
-        }
-    }
 
     @Event
     public void onInitDetails(AppEvents.InitDetails event) {
@@ -85,8 +43,48 @@ public abstract class ProductListActivity implements AbstractProductListActivity
     }
 
 
-    private List<Product> products = new ArrayList<Product>();
-    private AppEvents.InitDetails init;
+    @Override
+    public void onShowDepricatedClick() {
+        initProducts();
+    }
+
+    private void initProducts() {
+
+        view.getItemsContainer().clear();
+        map.clear();
+
+        productService.getProductList(view.getParam(), view.isShowDepricated().getValue(), new RequestCallback<List<Product>>() {
+            @Override
+            public void onError(Throwable throwable) {
+            }
+
+            @Override
+            public void onSuccess(List<Product> result) {
+                fillView(result);
+            }
+        });
+    }
+
+    private void fillView (List<Product> products)
+    {
+        for (Product product : products) {
+            AbstractProductItemView itemView = makeItemView (product);
+
+            view.getItemsContainer().add(itemView.asWidget());
+            map.put(product, itemView);
+        }
+    }
+
+    private AbstractProductItemView makeItemView (Product product)
+    {
+        AbstractProductItemView itemView = provider.get();
+        itemView.setName(product.getPname());
+        itemView.setActivity(this);
+
+        return itemView;
+    }
+
+
 
     @Inject
     AbstractProductListView view;
@@ -97,4 +95,8 @@ public abstract class ProductListActivity implements AbstractProductListActivity
     Provider<AbstractProductItemView> provider;
     @Inject
     ProductServiceAsync productService;
+
+    private Map<Product, AbstractProductItemView> map = new HashMap<Product, AbstractProductItemView>();
+    private AppEvents.InitDetails init;
+
 }

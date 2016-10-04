@@ -13,7 +13,7 @@ import java.util.List;
 @RemoteServiceRelativePath( "springGwtServices/ProductService" )
 public interface ProductService extends RemoteService {
 
-    List<Product> getProductList( String name ) throws RequestFailedException;
+    List<Product> getProductList( String param, boolean showDepricated ) throws RequestFailedException;
 
     Product getProductById (Long productId) throws RequestFailedException;
 
