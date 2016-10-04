@@ -7,7 +7,8 @@ import com.google.gwt.user.client.ui.IsWidget;
  * Created by turik on 27.09.16.
  */
 public interface AbstractCompanyListView extends IsWidget {
-    void setActivity(AbstractCompanyListActivity activity);
+
+    void setActivity( AbstractCompanyListActivity activity );
     HasWidgets getCompanyContainer();
     String getSearchPattern();
 }

@@ -10,15 +10,15 @@ import ru.protei.portal.ui.company.client.activity.list.AbstractCompanyListActiv
 import ru.protei.portal.ui.company.client.activity.list.AbstractCompanyListView;
 
 /**
- * Вид формы список компаний
+ * Вид формы списка компаний
  */
 public class CompanyListView extends Composite implements AbstractCompanyListView {
 
     public CompanyListView() {
-        initWidget (ourUiBinder.createAndBindUi (this));
+        initWidget( ourUiBinder.createAndBindUi( this ) );
     }
 
-    public void setActivity(AbstractCompanyListActivity activity) {
+    public void setActivity( AbstractCompanyListActivity activity ) {
         this.activity = activity;
     }
 
@@ -29,21 +29,21 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
 
     @Override
     public String getSearchPattern() {
-        return search.getText ();
+        return search.getText();
     }
 
-    @UiHandler( "customersButton")
+    @UiHandler( "customersButton" )
     public void onCustomersClicked( ClickEvent event ) {
     }
 
-    @UiHandler( "partnersButton")
+    @UiHandler( "partnersButton" )
     public void onPartnersClicked( ClickEvent event ) {
     }
 
-    @UiHandler( "searchButton")
+    @UiHandler( "searchButton" )
     public void onSearchClicked( ClickEvent event ) {
-        if (activity != null) {
-            activity.onSearchClicked ();
+        if ( activity != null ) {
+            activity.onSearchClicked();
         }
     }
 
@@ -64,7 +64,7 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
 
     AbstractCompanyListActivity activity;
 
-    private static CompanyViewUiBinder ourUiBinder = GWT.create (CompanyViewUiBinder.class);
-    interface CompanyViewUiBinder extends UiBinder<HTMLPanel, CompanyListView > {}
+    private static CompanyViewUiBinder ourUiBinder = GWT.create( CompanyViewUiBinder.class );
+    interface CompanyViewUiBinder extends UiBinder<HTMLPanel, CompanyListView> {}
 
 }

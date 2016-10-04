@@ -5,5 +5,5 @@ package ru.protei.portal.ui.company.client.activity.list;
  */
 public interface AbstractCompanyListActivity {
 
-    public void onSearchClicked();
+    void onSearchClicked();
 }

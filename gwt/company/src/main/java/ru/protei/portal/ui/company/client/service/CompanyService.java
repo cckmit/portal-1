@@ -18,5 +18,5 @@ public interface CompanyService extends RemoteService {
      * @param param шаблон поиска
      * @return список компаний
      */
-    List<Company> getCompanies(String param) throws RequestFailedException;
+    List<Company> getCompanies( String param ) throws RequestFailedException;
 }

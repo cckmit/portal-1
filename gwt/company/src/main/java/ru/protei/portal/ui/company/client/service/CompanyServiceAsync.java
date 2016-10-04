@@ -15,5 +15,5 @@ public interface CompanyServiceAsync {
      * @param param шаблон поиска
      * @return список компаний
      */
-    void getCompanies (String param, AsyncCallback<List<Company>> async);
+    void getCompanies( String param, AsyncCallback<List<Company>> async );
 }

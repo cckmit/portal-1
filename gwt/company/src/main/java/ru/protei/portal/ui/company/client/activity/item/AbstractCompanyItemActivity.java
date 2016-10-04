@@ -6,9 +6,9 @@ import ru.protei.portal.ui.company.client.activity.list.AbstractCompanyListActiv
 /**
  * Created by turik on 30.09.16.
  */
-public interface AbstractCompanyItemView extends IsWidget {
+public interface AbstractCompanyItemActivity {
 
-    void setActivity( AbstractCompanyItemActivity activity );
-    void setName( String name );
-    void setType( String type );
+    void onMenuClicked( AbstractCompanyItemView itemView );
+
+    void onFavoriteClicked( AbstractCompanyItemView itemView );
 }

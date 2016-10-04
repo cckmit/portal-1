@@ -13,8 +13,9 @@ import ru.protei.portal.ui.company.client.view.item.CompanyItemView;
  */
 public class CompanyClientModule extends AbstractGinModule {
     @Override
-    protected void configure()    {
-        bind( CompanyListActivity.class ).asEagerSingleton ();
+    protected void configure() {
+
+        bind( CompanyListActivity.class ).asEagerSingleton();
         bind( AbstractCompanyListView.class ).to( CompanyListView.class ).in( Singleton.class );
         bind ( AbstractCompanyItemView.class ).to( CompanyItemView.class );
     }

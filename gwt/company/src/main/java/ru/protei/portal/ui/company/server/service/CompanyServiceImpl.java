@@ -15,21 +15,23 @@ import java.util.List;
 /**
  * Реализация сервиса по работе с компаниями
  */
-@Service("CompanyService")
+@Service( "CompanyService" )
 public class CompanyServiceImpl extends RemoteServiceServlet implements CompanyService {
 
     @Override
-    public List<Company> getCompanies(String param) throws RequestFailedException {
+    public List<Company> getCompanies( String param ) throws RequestFailedException {
 
-        log.debug("getCompanies: param={}", param);
+        log.debug( "getCompanies: param={}", param );
 
-        HttpListResult<Company> result = companyService.list (param);
+        HttpListResult<Company> result = companyService.list( param );
 
-        return result.getItems ();
+        return result.getItems();
+
     }
 
     @Autowired
     private ru.protei.portal.core.service.dict.CompanyService companyService;
 
-    private static final Logger log = LoggerFactory.getLogger ("web");
+    private static final Logger log = LoggerFactory.getLogger( "web" );
+
 }
