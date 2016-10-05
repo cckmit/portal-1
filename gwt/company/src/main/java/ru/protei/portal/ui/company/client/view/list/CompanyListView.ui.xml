@@ -1,113 +1,24 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'>
-    <g:HTMLPanel styleName="UserList list_showing">
-            <div class="controlButtons">
-                <div class="buttons_group">
-                    <div id="showLeaders_but" class="button whiteC switcher">Группы компаний</div>
-                </div>
-
-                <div class="buttons_group">
-                    <div class="regulator">Сортировать по
-                        <div class="button_wrap">
-                            <div id="sorting_but" class="button selected whiteC">Название</div>
-                        </div>
-                        <div id="sortingDirection_but" class="button empty switcher whiteC">
-                            <span class="icon-down"></span>
-                        </div>
-                    </div>
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+    <g:HTMLPanel styleName="OrganizationList">
+        <div class="controlButtons">
+            <g:Button ui:field="customersButton" text="{lang.customers}" styleName="button whiteC switcher"/>
+            <g:Button ui:field="partnersButton" text="{lang.partners}" styleName="button whiteC switcher"/>
+            <div class="buttons_group">
+                <!--g:ListBox ui:field="groups" styleName="inputField"/-->
+                <input placeholder="Группа компаний" class="inputField"/><div class="button selected sticky empty whiteC"></div>
+            </div>
+            <div class="buttons_group">
+                <div class="regulator">Сортировать по<div class="button selected whiteC switcher">Название</div>
+                    <g:Button ui:field="directionButton" styleName="button empty switcher whiteC"><span class="icon-down"></span></g:Button>
                 </div>
             </div>
-            <div id="letters" class="letters scrollFixBlock">
-                <div class="button whiteC switcher">А</div>
-                <div onclick="showStartingWithLetter(event)" class="button whiteC switcher">Б</div>
-                <div onclick="showStartingWithLetter(event)" class="button whiteC switcher">В</div>
-                <div onclick="showStartingWithLetter(event)" class="button whiteC switcher">Г</div>
-                <div onclick="showStartingWithLetter(event)" class="button whiteC switcher">Д</div>
-                <div onclick="showStartingWithLetter(event)" class="button whiteC switcher">Е</div>
-                <div onclick="showStartingWithLetter(event)" class="button whiteC switcher">Ж</div>
-                <div onclick="showStartingWithLetter(event)" class="button whiteC switcher">З</div>
-                <div onclick="showStartingWithLetter(event)" class="button whiteC switcher">И</div>
-                <div onclick="showStartingWithLetter(event)" class="button whiteC switcher">К</div>
-                <div onclick="showStartingWithLetter(event)" class="button whiteC switcher">Л</div>
-                <div onclick="showStartingWithLetter(event)" class="button whiteC switcher">М</div>
-                <div onclick="showStartingWithLetter(event)" class="button whiteC switcher">Н</div>
-                <div onclick="showStartingWithLetter(event)" class="button whiteC switcher">О</div>
-                <div onclick="showStartingWithLetter(event)" class="button whiteC switcher">П</div>
-                <div onclick="showStartingWithLetter(event)" class="button whiteC switcher">Р</div>
-                <div onclick="showStartingWithLetter(event)" class="button whiteC switcher">С</div>
-                <div onclick="showStartingWithLetter(event)" class="button whiteC switcher">Т</div>
-                <div onclick="showStartingWithLetter(event)" class="button whiteC switcher">У</div>
-                <div onclick="showStartingWithLetter(event)" class="button whiteC switcher">Ф</div>
-                <div onclick="showStartingWithLetter(event)" class="button whiteC switcher">Х</div>
-                <div onclick="showStartingWithLetter(event)" class="button whiteC switcher">Ц</div>
-                <div onclick="showStartingWithLetter(event)" class="button whiteC switcher">Ч</div>
-                <div onclick="showStartingWithLetter(event)" class="button whiteC switcher">Ш</div>
-                <div onclick="showStartingWithLetter(event)" class="button whiteC switcher">Щ</div>
-                <div onclick="showStartingWithLetter(event)" class="button whiteC switcher">Э</div>
-                <div onclick="showStartingWithLetter(event)" class="button whiteC switcher">Ю</div>
-                <div onclick="showStartingWithLetter(event)" class="button whiteC switcher">Я</div>
+            <div class="rightSide">
+                <g:TextBox ui:field="search" styleName="inputField"/>
+                <g:Button ui:field="searchButton" styleName="button empty sticky blueC"><span class="icon-search"></span></g:Button>
             </div>
-            <div class="users">
-                <div class="user">
-                    <div class="wrapper">
-                        <img class="ava" src="/pub/images/avatars/148.jpg"/>
-                        <div class="wrapper">
-                            <div class="post"></div>
-                            <div class="name">Мегафон</div>
-                            <div class="menu_button"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="user">
-                    <div class="wrapper">
-                        <img class="ava" src="/pub/images/avatars/148.jpg"/>
-                        <div class="wrapper">
-                            <div class="post"></div>
-                            <div class="name">Ростелеком</div>
-                            <div class="menu_button"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="user">
-                    <div class="wrapper">
-                        <img class="ava" src="/pub/images/avatars/148.jpg"/>
-                        <div class="wrapper">
-                            <div class="post"></div>
-                            <div class="name">АРКТЕЛ</div>
-                            <div class="menu_button"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="user">
-                    <div class="wrapper">
-                        <img class="ava" src="/pub/images/avatars/148.jpg"/>
-                        <div class="wrapper">
-                            <div class="post"></div>
-                            <div class="name">Ситилайн</div>
-                            <div class="menu_button"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="user">
-                    <div class="wrapper">
-                        <img class="ava" src="/pub/images/avatars/148.jpg"/>
-                        <div class="wrapper">
-                            <div class="post"></div>
-                            <div class="name">СОТКОМ</div>
-                            <div class="menu_button"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="user">
-                    <div class="wrapper">
-                        <img class="ava" src="/pub/images/avatars/148.jpg"/>
-                        <div class="wrapper">
-                            <div class="post"></div>
-                            <div class="name">WellCOM GSM</div>
-                            <div class="menu_button"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        </div>
+        <g:HTMLPanel ui:field="companyContainer" styleName="organizations"/>
     </g:HTMLPanel>
 </ui:UiBinder>

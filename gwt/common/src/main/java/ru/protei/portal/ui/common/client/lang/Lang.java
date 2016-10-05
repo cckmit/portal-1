@@ -21,4 +21,13 @@ public interface Lang extends Messages {
     String products();
 
     String showDepricated();
+
+    String customers();
+
+    String partners();
+
+    String customer();
+
+    String partner();
+
 }
