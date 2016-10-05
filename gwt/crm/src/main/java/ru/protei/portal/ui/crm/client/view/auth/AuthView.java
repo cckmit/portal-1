@@ -17,7 +17,7 @@ import ru.protei.portal.ui.crm.client.activity.auth.AbstractAuthActivity;
 import ru.protei.portal.ui.crm.client.activity.auth.AbstractAuthView;
 
 /**
- * Created by turik on 23.09.16.
+ * Вид формы авторизации
  */
 public class AuthView extends Composite implements AbstractAuthView, KeyPressHandler {
 

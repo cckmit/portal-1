@@ -13,6 +13,8 @@ public class Profile implements Serializable {
 
     private String login;
 
+    private String name;
+
     public UserRole getRole() {
         return role;
     }
@@ -28,4 +30,13 @@ public class Profile implements Serializable {
     public void setLogin( String login ) {
         this.login = login;
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
 }

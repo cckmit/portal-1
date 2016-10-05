@@ -71,6 +71,14 @@ public class AppView extends Composite implements AbstractAppView, KeyUpHandler,
         }
     }
 
+    @UiHandler("products")
+    public void onProductsClicked(ClickEvent event) {
+        event.preventDefault();
+        if ( activity != null ) {
+            activity.onProductsClicked();
+        }
+    }
+
     @Override
     public void onKeyUp (KeyUpEvent event) {
 
@@ -130,6 +138,8 @@ public class AppView extends Composite implements AbstractAppView, KeyUpHandler,
 
     @UiField
     Anchor companies;
+    @UiField
+    Anchor products;
 
 
 //    @UiField

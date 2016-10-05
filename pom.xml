@@ -33,6 +33,7 @@
 
                 <module>gwt/common</module>
                 <module>gwt/company</module>
+                <module>gwt/product</module>
                 <module>gwt/crm</module>
 
                 <module>app/crm</module>
