@@ -5,18 +5,13 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.AuthEvents;
-import ru.protei.portal.ui.common.client.events.CompanyEvents;
-import ru.protei.portal.ui.common.client.events.ProductEvents;
+import ru.protei.portal.ui.common.client.events.*;
 
 /**
  * Активность приложения
  */
 public abstract class AppActivity
         implements Activity, AbstractAppActivity {
-
-    private AppEvents.Init init;
 
     @PostConstruct
     public void onInit() {
@@ -28,6 +23,7 @@ public abstract class AppActivity
         this.init = event;
 
         fireEvent(new AppEvents.InitDetails(view.getDetailsContainer()));
+        fireEvent(new NotifyEvents.Init(view.getNotifyContainer()));
     }
 
     @Event
@@ -49,6 +45,16 @@ public abstract class AppActivity
         view.setPanelName(event.panelName);
     }
 
+    @Override
+    public void onCompaniesClicked() {
+        fireEvent(new CompanyEvents.Show());
+    }
+
+    @Override
+    public void onProductsClicked() {
+        fireEvent(new ProductEvents.Show());
+    }
+
     public void onUserClicked() {
         Window.alert("Wow! User clicked!");
     }
@@ -57,16 +63,8 @@ public abstract class AppActivity
         fireEvent(new AppEvents.Logout());
     }
 
-    @Override
-    public void onCompaniesClicked() {
-        fireEvent( new CompanyEvents.Show ( ));
-    }
-
-    @Override
-    public void onProductsClicked() {
-        fireEvent( new ProductEvents.Show ( ));
-    }
-
     @Inject
     AbstractAppView view;
+
+    private AppEvents.Init init;
 }

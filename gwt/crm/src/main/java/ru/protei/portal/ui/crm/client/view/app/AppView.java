@@ -40,6 +40,11 @@ public class AppView extends Composite implements AbstractAppView, KeyUpHandler,
         return container;
     }
 
+    @Override
+    public HasWidgets getNotifyContainer() {
+        return notifyContainer;
+    }
+
     @UiHandler("user")
     public void onUserClicked( ClickEvent event ) {
         event.preventDefault();
@@ -140,6 +145,8 @@ public class AppView extends Composite implements AbstractAppView, KeyUpHandler,
     Anchor companies;
     @UiField
     Anchor products;
+    @UiField
+    HTMLPanel notifyContainer;
 
 
 //    @UiField

@@ -98,6 +98,8 @@
 
         <!--g:HTMLPanel ui:field="footer" styleName="">Footer</g:HTMLPanel-->
 
+        <g:HTMLPanel ui:field="notifyContainer" styleName="notifications" />
+
     </g:HTMLPanel>
 
 </ui:UiBinder>
