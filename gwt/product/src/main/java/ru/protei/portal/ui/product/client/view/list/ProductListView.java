@@ -43,14 +43,14 @@ public class ProductListView extends Composite implements AbstractProductListVie
         if (showDepricated.getValue())
             showDepricated.addStyleName("active");
         else
-            showDepricated.removeStyleName("checkbox");
+            showDepricated.removeStyleName("active");
         activity.onShowDepricatedClick();
     }
 
     @UiField
     HTMLPanel productContainer;
     @UiField
-    ToggleButton showDepricated;
+    CheckBox showDepricated;
 
     AbstractProductListActivity activity;
 

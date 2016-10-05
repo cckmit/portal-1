@@ -1,6 +1,5 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
-             xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:checkbox="urn:import:ru.protei.portal.ui.product.client.widgets">
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
@@ -8,10 +7,10 @@
 
         <div class="wrapper">
             <div class="department">Messaging</div>
-            <div ui:field="name" class="name"/>
+            <div ui:field="pname" class="name" />
             <div class="buttons"><span class="icon-menu"></span></div>
-            <div class="favorite"></div>
-            <checkbox:CheckBoxWidget ui:field="active" />
+            <div class="favorite"/>
+            <div class="checkbox"/>
         </div>
 
     </g:HTMLPanel>

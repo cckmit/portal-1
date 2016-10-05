@@ -8,7 +8,6 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import ru.protei.portal.ui.product.client.activity.item.AbstractProductItemActivity;
 import ru.protei.portal.ui.product.client.activity.item.AbstractProductItemView;
-import ru.protei.portal.ui.product.client.widgets.CheckBoxWidget;
 
 /**
  * Вид карточки продукта
@@ -25,18 +24,15 @@ public class ProductItemView extends Composite implements AbstractProductItemVie
 
     @Override
     public void setName(String name) {
-        this.name.setInnerText(name);
+        this.pname.setInnerText(name);
     }
+
+
+    @UiField
+    DivElement pname;
 
     AbstractProductItemActivity activity;
 
     private static ProductViewUiBinder ourUiBinder = GWT.create (ProductViewUiBinder.class);
-
-    @UiField
-    DivElement name;
-    @UiField
-    CheckBoxWidget active;
-
     interface ProductViewUiBinder extends UiBinder<HTMLPanel, ProductItemView> {}
-
 }
