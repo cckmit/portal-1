@@ -45,14 +45,14 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
         authService.authentificate( view.getUserName(), view.getPassword(), new RequestCallback< Profile >() {
             @Override
             public void onError( Throwable caught ) {
-                Window.alert("Autentification error!");
+                Window.alert("Authentification error!");
             }
 
             @Override
             public void onSuccess( Profile profile ) {
                 fireEvent( new AuthEvents.Success( profile ) );
                 fireEvent( new AppEvents.Show() );
-                fireEvent(new NotifyEvents.Show("Autentification", "Hello, darling!", NotifyEvents.NotifyType.DEFAULT));
+                fireEvent(new NotifyEvents.Show("Authentification", "Hello, darling!", NotifyEvents.NotifyType.DEFAULT));
             }
         } );
     }
