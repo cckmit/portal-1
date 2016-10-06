@@ -1,11 +1,12 @@
 package ru.protei.portal.ui.common.client.animation;
 
 import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 
 /**
- * Анимация нотификаций
+ * Анимация уведомления
  */
 public class NotifyAnimation {
 
@@ -13,10 +14,10 @@ public class NotifyAnimation {
         this.wrapper = wrapper;
     }
     public void show( final IsWidget notify ) {
-        notify.asWidget().removeStyleName( "active" );
-        notify.asWidget().addStyleName( "active" );
+        notify.asWidget().removeStyleName("notify-hide" );
+        notify.asWidget().addStyleName("notify-show" );
 
-        wrapper.add( notify.asWidget() );
+        wrapper.add(notify.asWidget() );
 
         Timer prepareCloseTimer = new Timer() {
             @Override
@@ -25,12 +26,12 @@ public class NotifyAnimation {
             }
         };
 
-        prepareCloseTimer.schedule( AUTO_CLOSE_TIME );
+        prepareCloseTimer.schedule(AUTO_CLOSE_TIME );
     }
 
     public void close( final IsWidget notify ) {
-        notify.asWidget().removeStyleName( "active" );
-        notify.asWidget().addStyleName( "active" );
+        notify.asWidget().removeStyleName( "notify-show" );
+        notify.asWidget().addStyleName( "notify-hide" );
 
         Timer closeTimer = new Timer() {
             @Override
@@ -39,7 +40,7 @@ public class NotifyAnimation {
             }
         };
 
-        closeTimer.schedule( CLOSE_TIME );
+        closeTimer.schedule(CLOSE_TIME);
     }
 
     private HasWidgets wrapper;

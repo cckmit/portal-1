@@ -25,11 +25,7 @@ public abstract class NotifyActivity
         AbstractNotifyView view = provider.get();
         view.setActivity(this);
 
-        if (event.type == null)
-            view.setType( "default" );
-        else
-            view.setType( event.type );
-
+        view.setType( event.type.getStyle() );
         view.setTitle( event.title );
         view.setMessage( event.message );
 
@@ -40,7 +36,6 @@ public abstract class NotifyActivity
     public void onCloseClicked( AbstractNotifyView view ) {
         animation.close(view.asWidget());
     }
-
 
     @Inject
     NotifyAnimation animation;

@@ -23,7 +23,14 @@ public class NotifyEvents {
      *  Отобразить уведомление
      */
     public static class Show {
-        public Show( String title, String message, String type){
+
+        public Show( String title, String message) {
+            this.title = title;
+            this.message = message;
+            this.type = NotifyType.DEFAULT;
+        }
+
+        public Show( String title, String message, NotifyType type){
             this.title = title;
             this.message = message;
             this.type = type;
@@ -31,7 +38,20 @@ public class NotifyEvents {
 
         public String title;
         public String message;
-        public String type;
+        public NotifyType type;
+    }
+
+    public enum NotifyType {
+        DEFAULT ("default"),
+        ERROR ("error"),
+        SUCCESS ("success"),
+        WARNING ("warning");
+
+        private final String style;
+
+        NotifyType (String type) { this.style = type; }
+
+        public String getStyle() { return style; }
     }
 
 }

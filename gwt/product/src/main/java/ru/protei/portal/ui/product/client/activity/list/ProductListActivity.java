@@ -7,6 +7,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.Product;
 import ru.protei.portal.ui.common.client.events.AppEvents;
+import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.ProductEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
@@ -33,6 +34,8 @@ public abstract class ProductListActivity implements AbstractProductListActivity
         init.parent.clear();
         init.parent.add(view.asWidget());
 
+        fireEvent(new NotifyEvents.Show("Get Product List", "Common!", NotifyEvents.NotifyType.DEFAULT));
+
         initProducts();
     }
 
@@ -56,10 +59,12 @@ public abstract class ProductListActivity implements AbstractProductListActivity
         productService.getProductList(view.getParam(), view.isShowDepricated().getValue(), new RequestCallback<List<Product>>() {
             @Override
             public void onError(Throwable throwable) {
+                fireEvent ( new NotifyEvents.Show( "Get Product List", "Error!", NotifyEvents.NotifyType.ERROR ) );
             }
 
             @Override
             public void onSuccess(List<Product> result) {
+                fireEvent ( new NotifyEvents.Show( "Get Product List", "Success!", NotifyEvents.NotifyType.SUCCESS ) );
                 fillView(result);
             }
         });
