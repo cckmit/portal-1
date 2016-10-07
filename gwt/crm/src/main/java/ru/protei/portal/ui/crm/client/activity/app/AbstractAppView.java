@@ -15,5 +15,7 @@ public interface AbstractAppView extends IsWidget {
 
     HasWidgets getDetailsContainer();
 
+    HasWidgets getNotifyContainer();
+
     void setFocus();
 }

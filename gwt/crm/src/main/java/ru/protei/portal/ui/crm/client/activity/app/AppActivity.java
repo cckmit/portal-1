@@ -5,18 +5,13 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.AuthEvents;
-import ru.protei.portal.ui.common.client.events.CompanyEvents;
-import ru.protei.portal.ui.common.client.events.ProductEvents;
+import ru.protei.portal.ui.common.client.events.*;
 
 /**
  * Активность приложения
  */
 public abstract class AppActivity
         implements Activity, AbstractAppActivity {
-
-    private AppEvents.Init init;
 
     @PostConstruct
     public void onInit() {
@@ -28,6 +23,7 @@ public abstract class AppActivity
         this.init = event;
 
         fireEvent(new AppEvents.InitDetails(view.getDetailsContainer()));
+        fireEvent(new NotifyEvents.Init(view.getNotifyContainer()));
     }
 
     @Event
@@ -69,4 +65,6 @@ public abstract class AppActivity
 
     @Inject
     AbstractAppView view;
+
+    private AppEvents.Init init;
 }
