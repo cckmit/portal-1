@@ -5,9 +5,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.AuthEvents;
-import ru.protei.portal.ui.common.client.events.CompanyEvents;
+import ru.protei.portal.ui.common.client.events.*;
 
 /**
  * Активность приложения
@@ -15,23 +13,22 @@ import ru.protei.portal.ui.common.client.events.CompanyEvents;
 public abstract class AppActivity
         implements Activity, AbstractAppActivity {
 
-    private AppEvents.Init init;
-
     @PostConstruct
     public void onInit() {
-        view.setActivity( this );
+        view.setActivity(this);
     }
 
     @Event
     public void onInit(AppEvents.Init event) {
         this.init = event;
 
-        fireEvent( new AppEvents.InitDetails( view.getDetailsContainer() ) );
+        fireEvent(new AppEvents.InitDetails(view.getDetailsContainer()));
+        fireEvent(new NotifyEvents.Init(view.getNotifyContainer()));
     }
 
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
-        view.setUsername( event.profile.getLogin() );
+        view.setUsername(event.profile.getName());
     }
 
     @Event
@@ -39,20 +36,21 @@ public abstract class AppActivity
         init.parent.clear();
         init.parent.add(view.asWidget());
 
-        fireEvent( new CompanyEvents.Show ( ));
+        //fireEvent(new CompanyEvents.Show());
+        //fireEvent(new ProductEvents.Show());
     }
 
     @Event
     public void onInitPanelName(AppEvents.InitPanelName event) {
-        view.setPanelName( event.panelName );
+        view.setPanelName(event.panelName);
     }
 
     public void onUserClicked() {
-        Window.alert( "Wow! User clicked!" );
+        Window.alert("Wow! User clicked!");
     }
 
     public void onLogoutClicked() {
-        fireEvent( new AppEvents.Logout() );
+        fireEvent(new AppEvents.Logout());
     }
 
     @Override
@@ -60,6 +58,13 @@ public abstract class AppActivity
         fireEvent( new CompanyEvents.Show ( ));
     }
 
+    @Override
+    public void onProductsClicked() {
+        fireEvent( new ProductEvents.Show ( ));
+    }
+
     @Inject
     AbstractAppView view;
+
+    private AppEvents.Init init;
 }

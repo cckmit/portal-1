@@ -1,0 +1,11 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+    <g:HTMLPanel styleName="organization">
+        <div class="wrapper">
+            <div ui:field="type" class="type"/>
+            <div ui:field="name" class="name"/>
+            <g:PushButton ui:field="menuButton" styleName="menu_button"/>
+            <g:PushButton ui:field="favoriteButton" styleName="favorite_button"/>
+        </div>
+    </g:HTMLPanel>
+</ui:UiBinder>

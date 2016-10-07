@@ -21,7 +21,7 @@ public class HttpListResult<T> {
 //    private String errorCode;
 
     @JsonProperty("items")
-    private List<T> items;
+    public List<T> items;
 
 
     public HttpListResult () {
@@ -36,5 +36,13 @@ public class HttpListResult<T> {
         this.totalSize = items.size();
         this.hasMore = more;
 //        this.errorCode = null;
+    }
+
+    public List<T> getItems () {
+        return items;
+    }
+
+    public int getTotalSize() {
+        return totalSize;
     }
 }

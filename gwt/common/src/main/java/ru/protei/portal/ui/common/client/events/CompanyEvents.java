@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.events;
 
 import ru.brainworm.factory.context.client.annotation.Url;
+
 /**
  * Created by turik on 27.09.16.
  */

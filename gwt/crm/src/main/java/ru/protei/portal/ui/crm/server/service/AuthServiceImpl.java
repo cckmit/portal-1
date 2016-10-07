@@ -53,6 +53,7 @@ public class AuthServiceImpl extends RemoteServiceServlet implements AuthService
         Profile profile = new Profile();
         profile.setRole( sessionDescriptor.getUrole() );
         profile.setLogin( sessionDescriptor.getLogin().getUlogin() );
+        profile.setName( sessionDescriptor.getPerson().getFirstName() );
 
         return profile;
     }
