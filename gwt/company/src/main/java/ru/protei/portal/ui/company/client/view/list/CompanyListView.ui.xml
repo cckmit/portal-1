@@ -1,7 +1,7 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'>
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
-    <ui:import field="ru.protei.portal.ui.common.shared.enums.SortField.*"/>
+    <ui:import field="ru.protei.portal.core.model.dict.En_SortField.*"/>
     <g:HTMLPanel styleName="OrganizationList">
         <div class="controlButtons">
             <g:Button ui:field="customersButton" text="{lang.customers}" styleName="button whiteC switcher"/>
@@ -13,8 +13,8 @@
             <div class="buttons_group">
                 <div class="regulator">Сортировать по
                     <g:ListBox ui:field="sortList" styleName="inputField">
-                        <g:item value="{COMPANY_NAME.getField}"><ui:text from="{lang.name}"/></g:item>
-                        <g:item value="{CREATED.getField}"><ui:text from="{lang.date}"/></g:item>
+                        <g:item value="{comp_name.getFieldName}"><ui:text from="{lang.name}"/></g:item>
+                        <g:item value="{creation_date.getFieldName}"><ui:text from="{lang.date}"/></g:item>
                     </g:ListBox>
                     <g:Button ui:field="directionButton" styleName="button empty switcher whiteC"><span class="icon-down"></span></g:Button>
                 </div>
