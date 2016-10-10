@@ -1,0 +1,23 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+
+    <g:HTMLPanel styleName="popupBlock">
+            <div class="popup active" ui:field="dialog">
+                <div class="head">
+                    <span class="part name" ui:field="header"/>
+                    <div class="rightSide">
+                        <g:Label ui:field="close" styleName="close_button"/>
+                    </div>
+                </div>
+
+                <g:HTMLPanel ui:field="bodyContainer" styleName='body' />
+
+                <div class="footer">
+                    <g:Anchor href='javascript;;' ui:field="save" styleName="save"><ui:text from="{lang.buttonSave}"/></g:Anchor>
+                    <g:Anchor href='#' ui:field="cancel" styleName="cancel"><ui:text from="{lang.buttonCancel}"/></g:Anchor>
+                </div>
+            </div>
+    </g:HTMLPanel>
+</ui:UiBinder>
