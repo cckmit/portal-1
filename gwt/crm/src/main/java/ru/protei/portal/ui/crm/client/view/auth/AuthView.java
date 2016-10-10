@@ -68,6 +68,12 @@ public class AuthView extends Composite implements AbstractAuthView, KeyPressHan
         login.setFocus(true);
     }
 
+    public void reset()
+    {
+        login.setText("");
+        password.setText("");
+    }
+
     @UiField
     TextBox login;
 

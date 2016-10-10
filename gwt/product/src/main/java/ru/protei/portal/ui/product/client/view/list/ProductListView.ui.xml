@@ -3,20 +3,28 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel>
+    <g:HTMLPanel styleName="OrganizationList">
             <div class="controlButtons">
                 <div class="buttons_group">
                     <div class="regulator"><ui:text from="{lang.sortBy}"/>
                         <div class="button_wrap">
-                            <div id="sorting_but" class="button selected whiteC"><ui:text from="{lang.name}"/></div>
+                            <!--div id="sorting_but" class="button selected whiteC"><ui:text from="{lang.name}"/></div-->
+                            <!--g:ListBox ui:field="sortFields" styleName="inputField">
+                                <g:item value="{PNAME.getField}"><ui:text from="{PNAME.getName}"/></g:item>
+                                <g:item value="{CDATE.getField}"><ui:text from="{lang.name}"/></g:item>
+                            </g:ListBox-->
                         </div>
-                        <div id="sortingDirection_but" class="button empty switcher whiteC">
-                            <span class="icon-down"></span>
-                        </div>
+                        <g:ToggleButton ui:field="sortDir" styleName="button empty active switcher icon-down">
+                            <!--<span class="icon-down"></span>-->
+                        </g:ToggleButton>
                     </div>
                    <div class="regulator">
                         <g:CheckBox ui:field="showDepricated"/><ui:text from="{lang.showDepricated}"/>
                     </div>
+                </div>
+                <div class="rightSide">
+                    <g:TextBox ui:field="search" styleName="inputField"/>
+                    <g:Button ui:field="searchButton" styleName="button empty sticky blueC"><span class="icon-search"></span></g:Button>
                 </div>
             </div>
 

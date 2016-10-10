@@ -1,9 +1,9 @@
 package ru.protei.portal.ui.common.client.factory;
 
 import com.google.gwt.inject.client.AbstractGinModule;
-import ru.protei.portal.ui.common.client.notify.activity.AbstractNotifyView;
-import ru.protei.portal.ui.common.client.notify.activity.NotifyActivity;
-import ru.protei.portal.ui.common.client.notify.view.NotifyView;
+import ru.protei.portal.ui.common.client.activity.notify.AbstractNotifyView;
+import ru.protei.portal.ui.common.client.activity.notify.NotifyActivity;
+import ru.protei.portal.ui.common.client.view.notify.NotifyView;
 
 /**
  * Описание классов фабрики

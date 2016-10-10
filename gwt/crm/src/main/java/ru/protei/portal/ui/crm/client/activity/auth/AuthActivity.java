@@ -36,6 +36,7 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
 
             @Override
             public void onSuccess( Void result ) {
+                view.reset();
                 fireEvent( new AuthEvents.Show() );
             }
         } );

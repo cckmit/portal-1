@@ -27,6 +27,12 @@ public class ProductItemView extends Composite implements AbstractProductItemVie
         this.pname.setInnerText(name);
     }
 
+    @Override
+    public void setDepricated(boolean value) {
+        if (value)
+            this.getElement().getFirstChildElement().addClassName("inactive");
+    }
+
 
     @UiField
     DivElement pname;

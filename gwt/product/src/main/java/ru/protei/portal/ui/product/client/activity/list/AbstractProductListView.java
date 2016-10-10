@@ -10,7 +10,12 @@ public interface AbstractProductListView extends IsWidget {
 
     HasWidgets getItemsContainer ();
 
-    String getParam();
+    String getSearchPattern();
 
     HasValue<Boolean> isShowDepricated();
+
+    String getSortField ();
+    HasValue<Boolean> getSortDir();
+
+    void reset();
 }

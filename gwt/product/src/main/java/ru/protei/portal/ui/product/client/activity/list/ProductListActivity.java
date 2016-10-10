@@ -24,6 +24,7 @@ public abstract class ProductListActivity implements AbstractProductListActivity
     @PostConstruct
     public void onInit() {
         view.setActivity(this);
+        view.reset();
 
     }
 
@@ -34,7 +35,7 @@ public abstract class ProductListActivity implements AbstractProductListActivity
         init.parent.clear();
         init.parent.add(view.asWidget());
 
-        fireEvent(new NotifyEvents.Show("Get Product List", "Common!", NotifyEvents.NotifyType.DEFAULT));
+        //fireEvent(new NotifyEvents.Show("Get Product List", "Common!", NotifyEvents.NotifyType.DEFAULT));
 
         initProducts();
     }
@@ -51,12 +52,23 @@ public abstract class ProductListActivity implements AbstractProductListActivity
         initProducts();
     }
 
+    @Override
+    public void onSearchClicked() {
+
+    }
+
+    @Override
+    public void onSearchFieldKeyPress() {
+        if ( view.getSearchPattern().trim().length() >= 2 )
+            initProducts();
+    }
+
     private void initProducts() {
 
         view.getItemsContainer().clear();
         map.clear();
 
-        productService.getProductList(view.getParam(), view.isShowDepricated().getValue(), new RequestCallback<List<Product>>() {
+        productService.getProductList(view.getSearchPattern(), view.isShowDepricated().getValue(), new RequestCallback<List<Product>>() {
             @Override
             public void onError(Throwable throwable) {
                 fireEvent ( new NotifyEvents.Show( "Get Product List", "Error!", NotifyEvents.NotifyType.ERROR ) );
@@ -64,7 +76,7 @@ public abstract class ProductListActivity implements AbstractProductListActivity
 
             @Override
             public void onSuccess(List<Product> result) {
-                fireEvent ( new NotifyEvents.Show( "Get Product List", "Success!", NotifyEvents.NotifyType.SUCCESS ) );
+                //fireEvent ( new NotifyEvents.Show( "Get Product List", "Success!", NotifyEvents.NotifyType.SUCCESS ) );
                 fillView(result);
             }
         });
@@ -84,6 +96,7 @@ public abstract class ProductListActivity implements AbstractProductListActivity
     {
         AbstractProductItemView itemView = provider.get();
         itemView.setName(product.getPname());
+        itemView.setDepricated(product.getDepricated());
         itemView.setActivity(this);
 
         return itemView;

@@ -26,16 +26,15 @@ public class Product implements Serializable {
     @JdbcColumn(name="created")
     private Date created;
 
+    @JdbcColumn(name="state")
+    private boolean depricated;
+
     public Product() {
     }
 
-    public String getPname() {
-        return this.pname;
-    }
+    public String getPname() { return this.pname; }
 
-    public Long getId() {
-        return this.id;
-    }
+    public Long getId() { return this.id; }
 
     public String getInfo() {
         return this.info;
@@ -43,6 +42,10 @@ public class Product implements Serializable {
 
     public Date getCreated() {
         return this.created;
+    }
+
+    public boolean getDepricated() {
+        return this.depricated;
     }
 
     public void setPname(String pname) {
@@ -59,6 +62,10 @@ public class Product implements Serializable {
 
     public void setCreated(Date created) {
         this.created = created;
+    }
+
+    public void setDepricated(boolean depricated) {
+        this.depricated = depricated;
     }
 
 }

@@ -5,7 +5,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.protei.portal.api.struct.HttpListResult;
 import ru.protei.portal.core.model.ent.Product;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.product.client.service.ProductService;
@@ -31,17 +30,36 @@ public class ProductServiceImpl extends RemoteServiceServlet implements ProductS
         List <Product> products = new ArrayList<Product>();
         Product pr = new Product();
         pr.setPname("EACD4");
+        pr.setDepricated(false);
         products.add(pr);
 
         pr = new Product();
         pr.setPname("WelcomeSMS");
+        pr.setDepricated(false);
+        products.add(pr);
+
+        pr = new Product();
+        pr.setPname("SMS_Firewall");
+        pr.setDepricated(false);
         products.add(pr);
 
         if (showDepricated)
         {
             pr = new Product();
             pr.setPname("CWS");
+            pr.setDepricated(true);
             products.add(pr);
+        }
+
+        if (param != null && !param.trim().isEmpty())
+        {
+            List<Product> flt_products = new ArrayList<Product>();
+            for (Product p : products)
+            {
+                if (p.getPname().contains(param))
+                    flt_products.add(p);
+            }
+            return flt_products;
         }
 
         return products;
