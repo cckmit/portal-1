@@ -30,4 +30,9 @@ public interface Lang extends Messages {
 
     String partner();
 
+    String buttonSave();
+
+    String buttonCancel();
+
+    String searchNoMatchesFound();
 }
