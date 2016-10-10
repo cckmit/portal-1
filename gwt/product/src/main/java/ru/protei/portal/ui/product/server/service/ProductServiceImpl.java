@@ -5,8 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.protei.portal.api.struct.HttpListResult;
-import ru.protei.portal.core.model.ent.Product;
+import ru.protei.portal.core.model.view.ProductView;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.product.client.service.ProductService;
 
@@ -20,27 +19,27 @@ import java.util.List;
 public class ProductServiceImpl extends RemoteServiceServlet implements ProductService {
 
     @Override
-    public List<Product> getProductList(String param, boolean showDepricated) throws RequestFailedException {
+    public List<ProductView> getProductList(String param, boolean showDepricated) throws RequestFailedException {
 
         log.info (" getProductList : param = " + param + " showDepricated = " + showDepricated);
 
-        //HttpListResult<Product> result = productService.list(param);
+        //HttpListResult<ProductView> result = productService.list(param);
         //return result.items;
 
         // временная заглушка вместо получения списка из БД
-        List <Product> products = new ArrayList<Product>();
-        Product pr = new Product();
-        pr.setPname("EACD4");
+        List <ProductView> products = new ArrayList<ProductView>();
+        ProductView pr = new ProductView();
+        pr.setName("EACD4");
         products.add(pr);
 
-        pr = new Product();
-        pr.setPname("WelcomeSMS");
+        pr = new ProductView();
+        pr.setName("WelcomeSMS");
         products.add(pr);
 
         if (showDepricated)
         {
-            pr = new Product();
-            pr.setPname("CWS");
+            pr = new ProductView();
+            pr.setName("CWS");
             products.add(pr);
         }
 
@@ -48,7 +47,7 @@ public class ProductServiceImpl extends RemoteServiceServlet implements ProductS
    }
 
     @Override
-    public Product getProductById(Long productId) throws RequestFailedException {
+    public ProductView getProductById(Long productId) throws RequestFailedException {
 
         log.info (" getProductById : id = " + productId);
 
