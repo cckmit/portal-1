@@ -1,5 +1,7 @@
 package ru.protei.portal.ui.company.client.activity.list;
 
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -37,8 +39,34 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
         initDetails.parent.clear();
         initDetails.parent.add( view.asWidget() );
 
+        view.getGroupList().clear();
+        initGroups();
+
         view.getCompanyContainer().clear();
         initCompanies();
+    }
+
+    @Event
+    public void onInitDetails( AppEvents.InitDetails initDetails ) {
+        this.initDetails = initDetails;
+    }
+
+    public void onSearchClicked() {
+
+        view.getCompanyContainer().clear();
+        initCompanies();
+    }
+
+    @Override
+    public void onMenuClicked( AbstractCompanyItemView itemView ) {
+
+        Window.alert( "Clicked on menu of company with id = " + map.get( itemView ).getId() + "!" );
+    }
+
+    @Override
+    public void onFavoriteClicked( AbstractCompanyItemView itemView ) {
+
+        Window.alert( "Clicked on favorite of company with id = " + map.get( itemView ).getId() + "!" );
     }
 
     private void initCompanies() {
@@ -60,16 +88,16 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
 
     private void fillView() {
 
-        int recNum = 1;
+        //int recNum = 1;
         for ( Company company : list ) {
             AbstractCompanyItemView itemView = makeView( company );
 
             map.put( itemView, company );
             view.getCompanyContainer().add( itemView.asWidget() );
 
-            if ( ++recNum > 500 ) {
+            /*if ( ++recNum > 500 ) {
                 break;
-            }
+            }*/
         }
     }
 
@@ -82,27 +110,17 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
         return itemView;
     }
 
-    public void onSearchClicked() {
-
-        view.getCompanyContainer().clear();
-        initCompanies();
-    }
-
-    @Override
-    public void onMenuClicked( AbstractCompanyItemView itemView ) {
-
-        Window.alert( "Clicked on menu of company with id = " + map.get( itemView ).getId() + "!" );
-    }
-
-    @Override
-    public void onFavoriteClicked( AbstractCompanyItemView itemView ) {
-
-        Window.alert( "Clicked on favorite of company with id = " + map.get( itemView ).getId() + "!" );
-    }
-
-    @Event
-    public void onInitDetails( AppEvents.InitDetails initDetails ) {
-        this.initDetails = initDetails;
+    private void initGroups() {
+        view.getGroupList().addItem("Группа компаний", "-1");
+        view.getGroupList().addItem("Мегафон", "1");
+        view.getGroupList().addItem("DPI_Мегафон", "2");
+        view.getGroupList().addChangeHandler(new ChangeHandler() {
+            @Override
+            public void onChange(ChangeEvent changeEvent) {
+                view.getCompanyContainer().clear();
+                initCompanies();
+            }
+        });
     }
 
     @Inject

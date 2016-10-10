@@ -30,4 +30,6 @@ public interface Lang extends Messages {
 
     String partner();
 
+    String date();
+
 }

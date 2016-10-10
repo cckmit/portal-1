@@ -32,6 +32,11 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
         return search.getText();
     }
 
+    @Override
+    public ListBox getGroupList() {
+        return groupList;
+    }
+
     @UiHandler( "customersButton" )
     public void onCustomersClicked( ClickEvent event ) {
     }
@@ -47,8 +52,6 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
         }
     }
 
-    //@UiField
-    //ListBox groups;
     @UiField
     TextBox search;
     @UiField
@@ -61,6 +64,10 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
     Button searchButton;
     @UiField
     Button directionButton;
+    @UiField
+    ListBox groupList;
+    @UiField
+    ListBox sortList;
 
     AbstractCompanyListActivity activity;
 
