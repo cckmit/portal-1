@@ -27,4 +27,9 @@ public abstract class PortalBaseJdbcDAO<T> extends JdbcBaseDAO<Long,T> implement
 
         return jdbcTemplate.queryForObject(query, type, args == null ? EMPTY_ARG_SET : args);
     }
+
+
+    public Long getIdValue (T obj) {
+        return this.getObjectMapper().getIdValue(obj);
+    }
 }

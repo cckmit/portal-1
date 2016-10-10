@@ -19,12 +19,27 @@ import ru.protei.portal.core.utils.SimpleSidGenerator;
 public class MainConfiguration {
 
     @Bean
-    public CompanyService getCompanyService () {
+    public CompanyGroupDAO getCompanyGroupDAO() {
+        return new CompanyGroupDAO_Impl();
+    }
+
+    @Bean
+    CompanyGroupItemDAO getCompanyGroupItemDAO() {
+        return new CompanyGroupItemDAO_Impl();
+    }
+
+    @Bean
+    PersonCompanyEntryDAO getPersonCompanyEntryDAO() {
+        return new PersonCompanyEntryDAO_Impl();
+    }
+
+    @Bean
+    public CompanyService getCompanyService() {
         return new CompanyServiceImpl();
     }
 
     @Bean
-    public ProductService getProductService () {
+    public ProductService getProductService() {
         return new ProductServiceImpl();
     }
 
@@ -34,10 +49,14 @@ public class MainConfiguration {
     }
 
     @Bean
-    public MigrationEntryDAO getMigrationEntryDAO () { return  new MigrationEntryDAO_Impl(); }
+    public MigrationEntryDAO getMigrationEntryDAO() {
+        return new MigrationEntryDAO_Impl();
+    }
 
     @Bean
-    public CompanyGroupHomeDAO getCompanyGroupHomeDAO () { return new CompanyGroupHomeDAO_Impl(); }
+    public CompanyGroupHomeDAO getCompanyGroupHomeDAO() {
+        return new CompanyGroupHomeDAO_Impl();
+    }
 
     @Bean
     public AbsenceReasonDAO getAbsenceReasonDAO() {
@@ -67,11 +86,6 @@ public class MainConfiguration {
     @Bean
     public CompanyDAO getCompanyDAO() {
         return new CompanyDAO_Impl();
-    }
-
-    @Bean
-    public ProductDAO getProductDAO() {
-        return new ProductDAO_Impl();
     }
 
     @Bean
@@ -140,12 +154,18 @@ public class MainConfiguration {
     }
 
     @Bean
-    public CompanyDepartmentDAO getCompanyDepartmentDAO() { return new CompanyDepartmentDAO_Impl (); }
+    public CompanyDepartmentDAO getCompanyDepartmentDAO() {
+        return new CompanyDepartmentDAO_Impl();
+    }
 
     @Bean
-    public WorkerPositionDAO getWorkerPositionDAO() { return new WorkerPositionDAO_Impl (); }
+    public WorkerPositionDAO getWorkerPositionDAO() {
+        return new WorkerPositionDAO_Impl();
+    }
 
     @Bean
-    public WorkerEntryDAO getWorkerEntryDAO() { return new WorkerEntryDAO_Impl (); }
+    public WorkerEntryDAO getWorkerEntryDAO() {
+        return new WorkerEntryDAO_Impl();
+    }
 
 }
