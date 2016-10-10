@@ -1,6 +1,7 @@
 package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_DevUnitState;
+import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.winter.jdbc.annotations.IdInsertMode;
 import ru.protei.winter.jdbc.annotations.JdbcColumn;
 import ru.protei.winter.jdbc.annotations.JdbcEntity;
@@ -129,5 +130,9 @@ public class DevUnit {
 
     public boolean isActiveUnit () {
         return getState() == En_DevUnitState.ACTIVE;
+    }
+
+    public En_DevUnitType getType () {
+        return En_DevUnitType.forId(this.typeId);
     }
 }

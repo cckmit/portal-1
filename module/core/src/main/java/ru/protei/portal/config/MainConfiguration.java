@@ -5,10 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import ru.protei.portal.core.controller.auth.AuthInterceptor;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
-import ru.protei.portal.core.service.dict.CompanyService;
-import ru.protei.portal.core.service.dict.CompanyServiceImpl;
-import ru.protei.portal.core.service.dict.ProductService;
-import ru.protei.portal.core.service.dict.ProductServiceImpl;
+import ru.protei.portal.core.service.dict.*;
 import ru.protei.portal.core.service.user.AuthService;
 import ru.protei.portal.core.service.user.AuthServiceImpl;
 import ru.protei.portal.core.service.user.LDAPAuthProvider;
@@ -32,6 +29,10 @@ public class MainConfiguration {
     PersonCompanyEntryDAO getPersonCompanyEntryDAO() {
         return new PersonCompanyEntryDAO_Impl();
     }
+
+
+    @Bean
+    public EmployeeService getEmployeeService () { return new EmployeeServiceImpl(); }
 
     @Bean
     public CompanyService getCompanyService() {

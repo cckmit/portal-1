@@ -77,6 +77,19 @@ public class EntityCache<T> {
         return collectAll(new ArrayList<T>(entries.size()));
     }
 
+    public boolean exists (EntitySelector<T> selector) {
+        return findFirst(selector) != null;
+    }
+
+    public T findFirst (EntitySelector<T> selector) {
+        ensureCacheIsNotExpired();
+        for (T t : entries.values())
+            if (selector.matches(t))
+                return t;
+
+        return null;
+    }
+
     public <R> List<R> collectAndConvert (EntitySelector<T> selector, List<R> list, Converter<T,R> converter) {
         ensureCacheIsNotExpired();
         for (T t : entries.values()) {
@@ -101,10 +114,22 @@ public class EntityCache<T> {
     }
 
 
+    public void walkThrough (Visitor<T> visitor) {
+        ensureCacheIsNotExpired();
+        long idx = 0;
+        for (T t : entries.values()) {
+            visitor.visitEntry(idx, t);
+            idx++;
+        }
+    }
+
     public interface OnRebuild<T> {
         void onCacheRebuild (Map<Long, T> map);
     }
 
+    public interface Visitor<T> {
+        void visitEntry (long idx, T t);
+    }
 
 //    public static <A> EntityCache<A> create (PortalBaseDAO<A> dao, TimeUnit cacheTime) {
 //        return new EntityCache<A>(dao, cacheTime);
