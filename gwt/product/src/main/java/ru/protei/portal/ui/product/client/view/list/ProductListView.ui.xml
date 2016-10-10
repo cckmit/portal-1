@@ -2,6 +2,7 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+    <ui:import field="ru.protei.portal.core.model.dict.En_SortField.*" />
 
     <g:HTMLPanel styleName="OrganizationList">
             <div class="controlButtons">
@@ -15,7 +16,7 @@
                             </g:ListBox-->
                         </div>
                         <g:ToggleButton ui:field="sortDir" styleName="button empty active switcher icon-down">
-                            <!--<span class="icon-down"></span>-->
+                            <!--span class="icon-down"></span-->
                         </g:ToggleButton>
                     </div>
                    <div class="regulator">
