@@ -4,6 +4,9 @@ import com.google.gwt.inject.client.AbstractGinModule;
 import ru.protei.portal.ui.common.client.activity.notify.AbstractNotifyView;
 import ru.protei.portal.ui.common.client.activity.notify.NotifyActivity;
 import ru.protei.portal.ui.common.client.view.notify.NotifyView;
+import com.google.inject.Singleton;
+import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
+import ru.protei.portal.ui.common.client.view.dialogdetails.DialogDetailsView;
 
 /**
  * Описание классов фабрики
@@ -11,10 +14,10 @@ import ru.protei.portal.ui.common.client.view.notify.NotifyView;
 public class CommonClientModule extends AbstractGinModule {
     @Override
     protected void configure()    {
+        bind( AbstractDialogDetailsView.class ).to( DialogDetailsView.class ).in( Singleton.class );
 
         bind( NotifyActivity.class ).asEagerSingleton();
         bind( AbstractNotifyView.class ).to( NotifyView.class );
-
     }
 }
 

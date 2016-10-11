@@ -5,6 +5,7 @@
     <stylesheet src="css/portal-classic.css"/>
     <stylesheet src="css/animate.css"/>
     <stylesheet src="css/notify.css"/>
+    <stylesheet src="css/modal.css"/>
 
     <source path='client'/>
     <source path='shared'/>

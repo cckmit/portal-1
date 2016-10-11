@@ -5,10 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import ru.protei.portal.core.controller.auth.AuthInterceptor;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
-import ru.protei.portal.core.service.dict.CompanyService;
-import ru.protei.portal.core.service.dict.CompanyServiceImpl;
-import ru.protei.portal.core.service.dict.ProductService;
-import ru.protei.portal.core.service.dict.ProductServiceImpl;
+import ru.protei.portal.core.service.dict.*;
 import ru.protei.portal.core.service.user.AuthService;
 import ru.protei.portal.core.service.user.AuthServiceImpl;
 import ru.protei.portal.core.service.user.LDAPAuthProvider;
@@ -19,12 +16,31 @@ import ru.protei.portal.core.utils.SimpleSidGenerator;
 public class MainConfiguration {
 
     @Bean
-    public CompanyService getCompanyService () {
+    public CompanyGroupDAO getCompanyGroupDAO() {
+        return new CompanyGroupDAO_Impl();
+    }
+
+    @Bean
+    CompanyGroupItemDAO getCompanyGroupItemDAO() {
+        return new CompanyGroupItemDAO_Impl();
+    }
+
+    @Bean
+    PersonCompanyEntryDAO getPersonCompanyEntryDAO() {
+        return new PersonCompanyEntryDAO_Impl();
+    }
+
+
+    @Bean
+    public EmployeeService getEmployeeService () { return new EmployeeServiceImpl(); }
+
+    @Bean
+    public CompanyService getCompanyService() {
         return new CompanyServiceImpl();
     }
 
     @Bean
-    public ProductService getProductService () {
+    public ProductService getProductService() {
         return new ProductServiceImpl();
     }
 
@@ -34,10 +50,14 @@ public class MainConfiguration {
     }
 
     @Bean
-    public MigrationEntryDAO getMigrationEntryDAO () { return  new MigrationEntryDAO_Impl(); }
+    public MigrationEntryDAO getMigrationEntryDAO() {
+        return new MigrationEntryDAO_Impl();
+    }
 
     @Bean
-    public CompanyGroupHomeDAO getCompanyGroupHomeDAO () { return new CompanyGroupHomeDAO_Impl(); }
+    public CompanyGroupHomeDAO getCompanyGroupHomeDAO() {
+        return new CompanyGroupHomeDAO_Impl();
+    }
 
     @Bean
     public AbsenceReasonDAO getAbsenceReasonDAO() {
@@ -67,11 +87,6 @@ public class MainConfiguration {
     @Bean
     public CompanyDAO getCompanyDAO() {
         return new CompanyDAO_Impl();
-    }
-
-    @Bean
-    public ProductDAO getProductDAO() {
-        return new ProductDAO_Impl();
     }
 
     @Bean
@@ -140,12 +155,18 @@ public class MainConfiguration {
     }
 
     @Bean
-    public CompanyDepartmentDAO getCompanyDepartmentDAO() { return new CompanyDepartmentDAO_Impl (); }
+    public CompanyDepartmentDAO getCompanyDepartmentDAO() {
+        return new CompanyDepartmentDAO_Impl();
+    }
 
     @Bean
-    public WorkerPositionDAO getWorkerPositionDAO() { return new WorkerPositionDAO_Impl (); }
+    public WorkerPositionDAO getWorkerPositionDAO() {
+        return new WorkerPositionDAO_Impl();
+    }
 
     @Bean
-    public WorkerEntryDAO getWorkerEntryDAO() { return new WorkerEntryDAO_Impl (); }
+    public WorkerEntryDAO getWorkerEntryDAO() {
+        return new WorkerEntryDAO_Impl();
+    }
 
 }

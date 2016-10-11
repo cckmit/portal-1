@@ -19,8 +19,6 @@ import ru.protei.portal.config.MainConfiguration;
 import ru.protei.portal.core.controller.auth.AuthInterceptor;
 import ru.protei.portal.tools.migrate.MigrateConfiguration;
 import ru.protei.portal.tools.migrate.MigrationRunner;
-import ru.protei.portal.webui.controller.dict.WorkersAPI;
-import ru.protei.portal.webui.controller.dict.WorkersAPI_Impl;
 import ru.protei.portal.webui.controller.ws.service.WorkerService;
 import ru.protei.portal.webui.controller.ws.service.WorkerServiceImpl;
 import ru.protei.portal.webui.controller.ws.tools.migrate.WSMigrationManager;
@@ -45,10 +43,6 @@ public class PortalWebConfiguration extends WebMvcConfigurerAdapter {
         return new MigrationRunner();
     }
 
-    @Bean
-    public WorkersAPI getWorkersController() {
-        return new WorkersAPI_Impl();
-    }
 
     @Bean
     public AuthInterceptor getAuthInterceptor() {

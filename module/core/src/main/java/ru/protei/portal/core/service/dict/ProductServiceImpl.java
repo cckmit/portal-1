@@ -3,7 +3,9 @@ package ru.protei.portal.core.service.dict;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.protei.portal.api.struct.HttpListResult;
-import ru.protei.portal.core.model.dao.ProductDAO;
+import ru.protei.portal.core.model.dao.DevUnitDAO;
+import ru.protei.portal.core.model.dict.En_SortDir;
+import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.view.ProductView;
 import ru.protei.portal.core.utils.HelperFunc;
 import ru.protei.winter.jdbc.JdbcSort;
@@ -14,15 +16,16 @@ import ru.protei.winter.jdbc.JdbcSort;
 public class ProductServiceImpl implements ProductService {
 
     @Autowired
-    ProductDAO productDAO;
+    DevUnitDAO devUnitDAO;
 
     @Override
-    public HttpListResult<ProductView> list(@RequestParam(name = "q", defaultValue = "") String param) {
+    public HttpListResult<ProductView> list(@RequestParam(name = "q", defaultValue = "") String param,
+                                            @RequestParam(name = "sortBy", defaultValue = "") String sortField,
+                                            @RequestParam(name = "sortDir", defaultValue = "") String sortDir) {
+        param = HelperFunc.makeLikeArg(param, true);
 
-        param = HelperFunc.makeLikeArg(param,true);
+        JdbcSort sort = new JdbcSort(En_SortDir.toWinter(sortDir), En_SortField.parse(sortField, En_SortField.prod_name).getFieldName());
 
-        JdbcSort sort = new JdbcSort(JdbcSort.Direction.ASC, "name");
-
-        return new HttpListResult<>(productDAO.getListByCondition("name like ?", sort, param), false);
+        return new HttpListResult<ProductView>(devUnitDAO.getProductsByCondition(param, sort), false);
     }
 }

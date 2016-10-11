@@ -91,7 +91,7 @@ public abstract class ProductListActivity implements AbstractProductListActivity
     {
         AbstractProductItemView itemView = provider.get();
         itemView.setName(product.getName());
-        itemView.setDepricated(/*product.getDepricated()*/false);
+        itemView.setDepricated(!product.isActive());
         itemView.setActivity(this);
 
         return itemView;

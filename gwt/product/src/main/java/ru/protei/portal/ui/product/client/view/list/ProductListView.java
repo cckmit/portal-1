@@ -66,19 +66,11 @@ public class ProductListView extends Composite implements AbstractProductListVie
         activity.onShowDepricatedClick();
     }
 
-//    @UiHandler( "search" )
-//    public void onSearchFieldKeyPress (KeyPressEvent event)
-//    {
-//        if ( activity != null ) {
-//            activity.onSearchFieldKeyPress();
-//        }
-//    }
-
     @UiHandler( "search" )
     public void onSearchFieldKeyUp (KeyUpEvent event)
     {
         changeTimer.cancel();
-        changeTimer.schedule( 500 );
+        changeTimer.schedule( 300 );
     }
 
    @UiHandler( "sortDir" )

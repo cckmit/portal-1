@@ -17,4 +17,9 @@ public enum En_DevUnitState {
     public int getId() {
         return id;
     }
+
+
+    public static En_DevUnitState forId (int state) {
+        return state == DEPRECATED.getId() ? DEPRECATED : ACTIVE;
+    }
 }

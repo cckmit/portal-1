@@ -30,24 +30,24 @@ public class ProductServiceImpl extends RemoteServiceServlet implements ProductS
         List <ProductView> products = new ArrayList<ProductView>();
         ProductView pr = new ProductView();
         pr.setName("EACD4");
-        //pr.setDepricated(false);
+        pr.setActive(true);
         products.add(pr);
 
         pr = new ProductView();
         pr.setName("WelcomeSMS");
-        //pr.setDepricated(false);
+        pr.setActive(true);
         products.add(pr);
 
         pr = new ProductView();
         pr.setName("SMS_Firewall");
-        //pr.setDepricated(false);
+        pr.setActive(true);
         products.add(pr);
 
         if (showDepricated)
         {
             pr = new ProductView();
             pr.setName("CWS");
-            //pr.setDepricated(true);
+            pr.setActive(false);
             products.add(pr);
         }
 

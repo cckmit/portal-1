@@ -16,4 +16,12 @@ public enum En_DevUnitType {
     public int getId() {
         return id;
     }
+
+    public static En_DevUnitType forId (int id) {
+        for (En_DevUnitType it : En_DevUnitType.values())
+            if (it.getId() == id)
+                return it;
+
+        return null;
+    }
 }

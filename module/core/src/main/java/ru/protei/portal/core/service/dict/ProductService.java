@@ -14,6 +14,9 @@ import ru.protei.portal.core.model.view.ProductView;
 public interface ProductService {
 
     @RequestMapping(path = "/list")
-    public HttpListResult<ProductView> list(@RequestParam(name = "q", defaultValue = "") String param);
+    public HttpListResult<ProductView> list(@RequestParam(name = "q", defaultValue = "") String param,
+                                            @RequestParam(name = "sortBy",defaultValue = "") String sortField,
+                                            @RequestParam(name = "sortDir", defaultValue = "") String sortDir
+                                            );
 
 }

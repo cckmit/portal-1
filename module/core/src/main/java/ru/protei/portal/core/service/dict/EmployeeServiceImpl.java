@@ -1,8 +1,9 @@
-package ru.protei.portal.webui.controller.dict;
+package ru.protei.portal.core.service.dict;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.protei.portal.api.struct.HttpListResult;
 import ru.protei.portal.core.model.dao.CompanyDAO;
@@ -22,7 +23,7 @@ import java.util.*;
 /**
  * Created by michael on 06.04.16.
  */
-public class WorkersAPI_Impl implements WorkersAPI {
+public class EmployeeServiceImpl implements EmployeeService {
 
     @Autowired
     CompanyGroupHomeDAO groupHomeDAO;
@@ -37,16 +38,14 @@ public class WorkersAPI_Impl implements WorkersAPI {
     PersonAbsenceDAO absenceDAO;
 
 
-
-    @GetMapping(path = "/gate/employees/{id:[0-9]+}/absences.json", params = {"from", "till", "full"})
     public EmployeeDetailView getEmployeeAbsences(@PathVariable("id") Long id, @RequestParam("from") Long tFrom, @RequestParam("till") Long tTill, @RequestParam("full") Boolean isFull){
 
-        Person p = personDAO.get(id);
-        if (p == null || !groupHomeDAO.checkIfHome(p.getCompanyId())) {
+        Person p = personDAO.getEmployeeById(id);
+        if (p == null) {
             return null;
         }
 
-        List<PersonAbsence> personAbsences =absenceDAO.getForRange(id, new Date(tFrom), new Date(tTill));
+        List<PersonAbsence> personAbsences = absenceDAO.getForRange(id, new Date(tFrom), new Date(tTill));
         if(isFull){
             fillAbsencesOfCreators(personAbsences);
         }
@@ -85,11 +84,11 @@ public class WorkersAPI_Impl implements WorkersAPI {
 
 
 
-    @GetMapping("/gate/employees/{id:[0-9]+}.json")
+
     public EmployeeDetailView getEmployeeProfile(@PathVariable("id") Long id){
 
-        Person p = personDAO.get(id);
-        if (p == null || !groupHomeDAO.checkIfHome(p.getCompanyId())) {
+        Person p = personDAO.getEmployeeById(id);
+        if (p == null) {
             return null;
         }
 
@@ -101,24 +100,24 @@ public class WorkersAPI_Impl implements WorkersAPI {
     }
 
 
-    @GetMapping(path = "/gate/currentMissingEmployeesIDs.json")
-    public String getCurrentMissingEmployeeIDs() {
-        List<PersonAbsence> currentAbsences = absenceDAO.getCurrentAbsences(null);
+//    public String getCurrentMissingEmployeeIDs() {
+//        List<PersonAbsence> currentAbsences = absenceDAO.getCurrentAbsences(null);
+//
+//        StringBuilder IDs = new StringBuilder();
+//        IDs.append("[");
+//
+//        for(int i = 0; i < currentAbsences.size(); i++){
+//            if(i>0)
+//                IDs.append(",");
+//            IDs.append(currentAbsences.get(i).getPersonId());
+//        }
+//
+//        IDs.append("]");
+//        return IDs.toString();
+//    }
 
-        StringBuilder IDs = new StringBuilder();
-        IDs.append("[");
 
-        for(int i = 0; i < currentAbsences.size(); i++){
-            if(i>0)
-                IDs.append(",");
-            IDs.append(currentAbsences.get(i).getPersonId());
-        }
-
-        IDs.append("]");
-        return IDs.toString();
-    }
-
-
+    @Override
     public HttpListResult<WorkerView> list(@RequestParam(name = "q", defaultValue = "") String param) {
 
         // temp-hack, hardcoded company-id. must be replaced to sys_config.ownCompanyId
