@@ -10,4 +10,6 @@ import java.util.List;
 public interface PersonDAO extends PortalBaseDAO<Person> {
 
     public List<Person> getEmployeesAll();
+
+    public Person getEmployeeById (long id);
 }

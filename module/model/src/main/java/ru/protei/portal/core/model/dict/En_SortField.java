@@ -38,6 +38,7 @@ public enum En_SortField {
         this(fieldName, "db_field_" + fieldName);
     }
 
+
     En_SortField(String fieldName, String bundleKey) {
         this.fieldName = fieldName;
         this.bundleKey = bundleKey;
@@ -49,5 +50,14 @@ public enum En_SortField {
 
     public String getBundleKey() {
         return bundleKey;
+    }
+
+
+    public static En_SortField parse (String value, En_SortField def) {
+        if (value == null || value.trim().isEmpty())
+            return def;
+
+        En_SortField f = En_SortField.valueOf(value.toLowerCase());
+        return f != null ? f : def;
     }
 }

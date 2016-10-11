@@ -51,7 +51,7 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
         this.initDetails = initDetails;
     }
 
-    public void onSearchClicked() {
+    public void onFilterChanged() {
 
         view.getCompanyContainer().clear();
         initCompanies();
@@ -140,4 +140,6 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
     private Map<AbstractCompanyItemView, Company> map = new HashMap<AbstractCompanyItemView, Company>();
 
     private AppEvents.InitDetails initDetails;
+
+
 }

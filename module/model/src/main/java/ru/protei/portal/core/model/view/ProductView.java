@@ -23,6 +23,9 @@ public class ProductView implements Serializable {
     @JsonProperty
     private Date created;
 
+    @JsonProperty
+    private boolean active;
+
     public ProductView() {
     }
 
@@ -31,6 +34,7 @@ public class ProductView implements Serializable {
         this.name = unit.getName();
         this.info = unit.getInfo();
         this.created = unit.getCreated();
+        this.active = unit.isActiveUnit();
     }
 
 
@@ -66,4 +70,11 @@ public class ProductView implements Serializable {
         this.created = created;
     }
 
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
 }
