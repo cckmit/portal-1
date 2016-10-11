@@ -16,6 +16,8 @@ public interface Lang extends Messages {
 
     String name();
 
+    String created();
+
     String sortBy();
 
     String products();

@@ -11,7 +11,7 @@ import java.util.List;
  */
 public interface ProductServiceAsync {
 
-    void getProductList(String param, boolean showDepricated, AsyncCallback<List<ProductView>> async);
+    void getProductList(String param, boolean showDepricated, String sortField, String sortDir, AsyncCallback<List<ProductView>> async);
 
     void getProductById(Long productId, AsyncCallback<ProductView> async);
 }

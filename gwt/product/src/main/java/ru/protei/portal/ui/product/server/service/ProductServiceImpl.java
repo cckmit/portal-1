@@ -19,11 +19,11 @@ import java.util.List;
 public class ProductServiceImpl extends RemoteServiceServlet implements ProductService {
 
     @Override
-    public List<ProductView> getProductList(String param, boolean showDepricated) throws RequestFailedException {
+    public List<ProductView> getProductList(String param, boolean showDepricated, String sortField, String sortDir) throws RequestFailedException {
 
         log.info (" getProductList : param = " + param + " showDepricated = " + showDepricated);
 
-        //HttpListResult<ProductView> result = productService.list(param);
+        //HttpListResult<ProductView> result = productService.list(param, sortField, sortDir );
         //return result.items;
 
         // временная заглушка вместо получения списка из БД

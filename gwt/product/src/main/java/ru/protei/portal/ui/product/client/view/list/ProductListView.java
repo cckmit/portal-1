@@ -3,20 +3,29 @@ package ru.protei.portal.ui.product.client.view.list;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
+import com.google.inject.Inject;
+import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.ui.product.client.activity.list.AbstractProductListActivity;
 import ru.protei.portal.ui.product.client.activity.list.AbstractProductListView;
+import ru.protei.portal.ui.product.client.widgets.sortfieldselector.SortFieldSelector;
 
 /**
  * Вид списка продуктов
  */
 public class ProductListView extends Composite implements AbstractProductListView {
 
-    public ProductListView() {
+//    public ProductListView() {
+//        initWidget(ourUiBinder.createAndBindUi(this));
+//    }
+
+    @Inject
+    public void init() {
         initWidget(ourUiBinder.createAndBindUi(this));
     }
 
@@ -30,8 +39,8 @@ public class ProductListView extends Composite implements AbstractProductListVie
     }
 
     @Override
-    public String getSearchPattern() {
-        return search.getText();
+    public HasText getSearchPattern() {
+        return search;
     }
 
     @Override
@@ -40,15 +49,10 @@ public class ProductListView extends Composite implements AbstractProductListVie
     }
 
     @Override
-    public String getSortField() {
-        //return sortFields.getSelectedValue();
-        return null;
-    }
+    public HasValue<En_SortField> getSortField() { return sortFields; }
 
     @Override
-    public HasValue<Boolean> getSortDir() {
-        return sortDir;
-    }
+    public HasValue<Boolean> getSortDir() { return sortDir; }
 
     @Override
     public void reset() {
@@ -71,6 +75,13 @@ public class ProductListView extends Composite implements AbstractProductListVie
     {
         changeTimer.cancel();
         changeTimer.schedule( 300 );
+    }
+
+    @UiHandler( "sortFields" )
+    public void onSortFieldChanged( ValueChangeEvent<En_SortField> event ) {
+        if ( activity != null ) {
+            activity.onFilterChanged();
+        }
     }
 
    @UiHandler( "sortDir" )
@@ -105,8 +116,9 @@ public class ProductListView extends Composite implements AbstractProductListVie
     HTMLPanel productContainer;
     @UiField
     CheckBox showDepricated;
-    //@UiField
-    //ListBox sortFields;
+    @Inject
+    @UiField(provided = true)
+    SortFieldSelector sortFields;
     @UiField
     ToggleButton sortDir;
 

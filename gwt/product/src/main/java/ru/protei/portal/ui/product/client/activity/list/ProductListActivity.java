@@ -19,6 +19,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Активность списка продуктов
+ */
 public abstract class ProductListActivity implements AbstractProductListActivity, AbstractProductItemActivity, Activity {
 
     @PostConstruct
@@ -63,7 +66,11 @@ public abstract class ProductListActivity implements AbstractProductListActivity
         view.getItemsContainer().clear();
         map.clear();
 
-        productService.getProductList(view.getSearchPattern(), view.isShowDepricated().getValue(), new RequestCallback<List<ProductView>>() {
+        productService.getProductList(view.getSearchPattern().getText(),
+                view.isShowDepricated().getValue(),
+                view.getSortField().getValue().getFieldName(),
+                view.getSortDir().getValue() ? "asc" : "desc",
+                new RequestCallback<List<ProductView>>() {
             @Override
             public void onError(Throwable throwable) {
                 fireEvent ( new NotifyEvents.Show( "Get ProductView List", "Error!", NotifyEvents.NotifyType.ERROR ) );
