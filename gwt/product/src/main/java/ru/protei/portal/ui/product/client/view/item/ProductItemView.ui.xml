@@ -7,7 +7,7 @@
 
         <div class="wrapper">
             <div class="department">Messaging</div>
-            <div ui:field="name" class="name" />
+            <div ui:field="pname" class="name" />
             <div class="buttons"><span class="icon-menu"></span></div>
             <div class="favorite"/>
             <div class="checkbox"/>

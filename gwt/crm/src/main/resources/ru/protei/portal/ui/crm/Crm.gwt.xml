@@ -8,6 +8,9 @@
 
     <entry-point class='ru.protei.portal.ui.crm.client.Main'/>
 
+    <!--<set-property name="gin.classloading.exceptedPackages" value="com.google.gwt.core.client, com.google.gwt.core.client.impl" />-->
+
     <source path='client'/>
     <source path='shared'/>
+
 </module>
