@@ -3,7 +3,7 @@
     <inherits name='com.google.gwt.user.User'/>
     <inherits name="com.google.gwt.inject.Inject" />
 
-    <inherits name="ru.protei.portal.core.Model"/>
+    <inherits name="ru.protei.portal.core.model.Model"/>
 
     <inherits name="ru.brainworm.factory.generator.injector.Injector"/>
     <inherits name="ru.brainworm.factory.generator.activity.Activity"/>
