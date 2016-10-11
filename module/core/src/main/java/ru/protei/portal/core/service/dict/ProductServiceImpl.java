@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.protei.portal.api.struct.HttpListResult;
 import ru.protei.portal.core.model.dao.ProductDAO;
-import ru.protei.portal.core.model.ent.Product;
+import ru.protei.portal.core.model.view.ProductView;
 import ru.protei.portal.core.utils.HelperFunc;
 import ru.protei.winter.jdbc.JdbcSort;
 
@@ -17,12 +17,12 @@ public class ProductServiceImpl implements ProductService {
     ProductDAO productDAO;
 
     @Override
-    public HttpListResult<Product> list(@RequestParam(name = "q", defaultValue = "") String param) {
+    public HttpListResult<ProductView> list(@RequestParam(name = "q", defaultValue = "") String param) {
 
         param = HelperFunc.makeLikeArg(param,true);
 
-        JdbcSort sort = new JdbcSort(JdbcSort.Direction.ASC, "pname");
+        JdbcSort sort = new JdbcSort(JdbcSort.Direction.ASC, "name");
 
-        return new HttpListResult<>(productDAO.getListByCondition("pname like ?", sort, param), false);
+        return new HttpListResult<>(productDAO.getListByCondition("name like ?", sort, param), false);
     }
 }

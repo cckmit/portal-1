@@ -2,12 +2,11 @@ package ru.protei.portal.ui.product.client.view.list;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.ui.product.client.activity.list.AbstractProductListActivity;
 import ru.protei.portal.ui.product.client.activity.list.AbstractProductListView;
@@ -67,49 +66,49 @@ public class ProductListView extends Composite implements AbstractProductListVie
         activity.onShowDepricatedClick();
     }
 
-    @UiHandler( "searchButton" )
-    public void onSearchClicked( ClickEvent event ) {
-        if ( activity != null ) {
-            activity.onSearchClicked();
-        }
-    }
-
-    @UiHandler( "search" )
-    public void onSearchFieldKeyPress (KeyPressEvent event)
-    {
-        if ( activity != null ) {
-            activity.onSearchFieldKeyPress();
-        }
-    }
+//    @UiHandler( "search" )
+//    public void onSearchFieldKeyPress (KeyPressEvent event)
+//    {
+//        if ( activity != null ) {
+//            activity.onSearchFieldKeyPress();
+//        }
+//    }
 
     @UiHandler( "search" )
     public void onSearchFieldKeyUp (KeyUpEvent event)
     {
-        if ( activity != null ) {
-            activity.onSearchFieldKeyPress();
-        }
+        changeTimer.cancel();
+        changeTimer.schedule( 500 );
     }
 
-
-    @UiHandler( "search" )
-    public void onSearchFieldChanged (ValueChangeEvent<String> event)
-    {
-        if ( activity != null ) {
-            activity.onSearchFieldKeyPress();
-        }
-    }
-
-    @UiHandler( "sortDir" )
+   @UiHandler( "sortDir" )
     public void onSortDirClicked ( ClickEvent event ) {
-//        if ( activity != null ) {
-//            activity.onSearchFieldKeyPress();
-//        }
+       if ( activity != null ) {
+           activity.onFilterChanged();
+       }
     }
+
+    @Override
+    protected void onDetach() {
+        super.onDetach();
+
+        changeTimer.cancel();
+    }
+
+    Timer changeTimer = new Timer() {
+        @Override
+        public void run() {
+            changeTimer.cancel();
+            if ( activity != null ) {
+                activity.onFilterChanged();
+            }
+        }
+    };
 
     @UiField
     TextBox search;
-    @UiField
-    Button searchButton;
+//    @UiField
+//    Button searchButton;
     @UiField
     HTMLPanel productContainer;
     @UiField

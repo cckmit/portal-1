@@ -25,7 +25,7 @@
                 </div>
                 <div class="rightSide">
                     <g:TextBox ui:field="search" styleName="inputField"/>
-                    <g:Button ui:field="searchButton" styleName="button empty sticky blueC"><span class="icon-search"></span></g:Button>
+                    <!--g:Button ui:field="searchButton" styleName="button empty sticky blueC"><span class="icon-search"></span></g:Button-->
                 </div>
             </div>
 

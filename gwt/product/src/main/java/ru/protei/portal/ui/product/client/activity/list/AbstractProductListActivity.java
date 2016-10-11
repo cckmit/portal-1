@@ -7,7 +7,5 @@ public interface AbstractProductListActivity {
 
     void onShowDepricatedClick();
 
-    void onSearchClicked();
-
-    void onSearchFieldKeyPress();
+    void onFilterChanged();
 }

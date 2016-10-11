@@ -3,6 +3,8 @@
     <inherits name='com.google.gwt.user.User'/>
 
     <stylesheet src="css/portal-classic.css"/>
+    <stylesheet src="css/animate.css"/>
+    <stylesheet src="css/notify.css"/>
 
     <source path='client'/>
     <source path='shared'/>

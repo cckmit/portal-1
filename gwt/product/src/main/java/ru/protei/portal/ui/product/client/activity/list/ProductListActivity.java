@@ -5,7 +5,7 @@ import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.ent.Product;
+import ru.protei.portal.core.model.view.ProductView;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.ProductEvents;
@@ -35,7 +35,7 @@ public abstract class ProductListActivity implements AbstractProductListActivity
         init.parent.clear();
         init.parent.add(view.asWidget());
 
-        //fireEvent(new NotifyEvents.Show("Get Product List", "Common!", NotifyEvents.NotifyType.DEFAULT));
+        //fireEvent(new NotifyEvents.Show("Get ProductView List", "Common!", NotifyEvents.NotifyType.DEFAULT));
 
         initProducts();
     }
@@ -52,15 +52,10 @@ public abstract class ProductListActivity implements AbstractProductListActivity
         initProducts();
     }
 
-    @Override
-    public void onSearchClicked() {
-
-    }
 
     @Override
-    public void onSearchFieldKeyPress() {
-        if ( view.getSearchPattern().trim().length() >= 2 )
-            initProducts();
+    public void onFilterChanged() {
+        initProducts();
     }
 
     private void initProducts() {
@@ -68,23 +63,23 @@ public abstract class ProductListActivity implements AbstractProductListActivity
         view.getItemsContainer().clear();
         map.clear();
 
-        productService.getProductList(view.getSearchPattern(), view.isShowDepricated().getValue(), new RequestCallback<List<Product>>() {
+        productService.getProductList(view.getSearchPattern(), view.isShowDepricated().getValue(), new RequestCallback<List<ProductView>>() {
             @Override
             public void onError(Throwable throwable) {
-                fireEvent ( new NotifyEvents.Show( "Get Product List", "Error!", NotifyEvents.NotifyType.ERROR ) );
+                fireEvent ( new NotifyEvents.Show( "Get ProductView List", "Error!", NotifyEvents.NotifyType.ERROR ) );
             }
 
             @Override
-            public void onSuccess(List<Product> result) {
+            public void onSuccess(List<ProductView> result) {
                 //fireEvent ( new NotifyEvents.Show( "Get Product List", "Success!", NotifyEvents.NotifyType.SUCCESS ) );
                 fillView(result);
             }
         });
     }
 
-    private void fillView (List<Product> products)
+    private void fillView (List<ProductView> products)
     {
-        for (Product product : products) {
+        for (ProductView product : products) {
             AbstractProductItemView itemView = makeItemView (product);
 
             view.getItemsContainer().add(itemView.asWidget());
@@ -92,11 +87,11 @@ public abstract class ProductListActivity implements AbstractProductListActivity
         }
     }
 
-    private AbstractProductItemView makeItemView (Product product)
+    private AbstractProductItemView makeItemView (ProductView product)
     {
         AbstractProductItemView itemView = provider.get();
-        itemView.setName(product.getPname());
-        itemView.setDepricated(product.getDepricated());
+        itemView.setName(product.getName());
+        itemView.setDepricated(/*product.getDepricated()*/false);
         itemView.setActivity(this);
 
         return itemView;
@@ -114,7 +109,7 @@ public abstract class ProductListActivity implements AbstractProductListActivity
     @Inject
     ProductServiceAsync productService;
 
-    private Map<Product, AbstractProductItemView> map = new HashMap<Product, AbstractProductItemView>();
+    private Map<ProductView, AbstractProductItemView> map = new HashMap<ProductView, AbstractProductItemView>();
     private AppEvents.InitDetails init;
 
 }
