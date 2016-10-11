@@ -17,14 +17,8 @@ import java.util.List;
 public class DevUnitDAO_Impl extends PortalBaseJdbcDAO<DevUnit> implements DevUnitDAO {
 
     @Override
-    public List<ProductView> getProductsByCondition(String searchString, JdbcSort sort) {
-
-        List<ProductView> rez = new ArrayList<ProductView>();
-
-        for (DevUnit u : getUnitsByCondition(En_DevUnitType.PRODUCT, searchString, sort))
-            rez.add(new ProductView(u));
-
-        return rez;
+    public List<DevUnit> getProductsByCondition(String searchString, JdbcSort sort) {
+        return getUnitsByCondition(En_DevUnitType.PRODUCT, searchString, sort);
     }
 
     @Override

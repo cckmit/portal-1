@@ -12,7 +12,7 @@ import java.util.List;
  */
 public interface DevUnitDAO extends PortalBaseDAO<DevUnit> {
 
-    public List<ProductView> getProductsByCondition(String q, JdbcSort sort);
+    public List<DevUnit> getProductsByCondition(String q, JdbcSort sort);
 
     public List<DevUnit> getComponentsByCondition(String q, JdbcSort sort);
 

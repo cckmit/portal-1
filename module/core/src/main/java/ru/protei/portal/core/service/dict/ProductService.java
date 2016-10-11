@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.protei.portal.api.struct.HttpListResult;
+import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.view.ProductView;
 
 /**
@@ -14,9 +15,8 @@ import ru.protei.portal.core.model.view.ProductView;
 public interface ProductService {
 
     @RequestMapping(path = "/list")
-    public HttpListResult<ProductView> list(@RequestParam(name = "q", defaultValue = "") String param,
-                                            @RequestParam(name = "sortBy",defaultValue = "") String sortField,
-                                            @RequestParam(name = "sortDir", defaultValue = "") String sortDir
-                                            );
+    public HttpListResult<DevUnit> list(@RequestParam(name = "q", defaultValue = "") String param,
+                                        @RequestParam(name = "sortBy",defaultValue = "") String sortField,
+                                        @RequestParam(name = "sortDir", defaultValue = "") String sortDir);
 
 }

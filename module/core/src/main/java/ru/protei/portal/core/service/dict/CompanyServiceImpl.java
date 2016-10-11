@@ -1,6 +1,7 @@
 package ru.protei.portal.core.service.dict;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.protei.portal.api.struct.HttpListResult;
@@ -25,6 +26,7 @@ import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 
 /**
@@ -70,38 +72,49 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
 
-
     @Override
-    public HttpListResult<Company> list(@RequestParam(name = "q", defaultValue = "") String param,
-                                        @RequestParam(name = "sortBy", defaultValue = "") String sortField,
-                                        @RequestParam(name = "sortDir", defaultValue = "") String sortDir) {
+    public Company getProfile(@PathVariable("id") Long id) {
+        return companyCache.get(id);
+    }
+
+    /*@Override
+    public HttpListResult<Company> list(@RequestParam(name = "q", required = false) String param,
+                                        @RequestParam(name = "sortBy", required = false) En_SortField sortField,
+                                        @RequestParam(name = "sortDir", required = false) String sortDir) {
 
         param = HelperFunc.makeLikeArg(param, true);
 
-        JdbcSort sort = new JdbcSort(En_SortDir.toWinter(sortDir), En_SortField.parse(sortField, En_SortField.comp_name).getFieldName());
+        if (sortField == null)
+            sortField = En_SortField.comp_name;
+
+        JdbcSort sort = new JdbcSort(En_SortDir.toWinter(sortDir), sortField.getFieldName());
 
         return new HttpListResult<>(companyDAO.getListByCondition("cname like ?", sort, param), false);
-    }
+    }*/
 
 
     @Override
-    public HttpListResult<CompanyView> listView(@RequestParam(name = "q", defaultValue = "") String param,
-                                                @RequestParam(name = "sortBy", defaultValue = "") String sortField,
-                                                @RequestParam(name = "sortDir", defaultValue = "") String sortDir) {
+    public HttpListResult<Company> list(@RequestParam(name = "q", required = false) String param,
+                                                @RequestParam(name = "sortBy", required = false) En_SortField sortField,
+                                                @RequestParam(name = "sortDir", required = false) String sortDir) {
+        if (sortField == null)
+            sortField = En_SortField.comp_name;
 
         return new HttpListResult<>(
-                companyCache.collectAndConvert(
+                companyCache.collect(
                             new CompanySearchSelector(param),
-                            new ArrayList<>(),
-                            new CompanyToViewConverter()
+                            new ArrayList<>()
                 ), false
         );
     }
 
     @Override
-    public HttpListResult<CompanyGroup> groupList(@RequestParam(name = "q", defaultValue = "") String param,
-                                                  @RequestParam(name = "sortBy", defaultValue = "") String sortField,
-                                                  @RequestParam(name = "sortDir", defaultValue = "") String sortDir) {
+    public HttpListResult<CompanyGroup> groupList(@RequestParam(name = "q", required = false) String param,
+                                                  @RequestParam(name = "sortBy", required = false) En_SortField sortField,
+                                                  @RequestParam(name = "sortDir", required = false) String sortDir) {
+
+        if (sortField == null)
+            sortField = En_SortField.comp_name;
 
         return new HttpListResult<>(
                 companyGroupCache.collect(
@@ -130,15 +143,22 @@ public class CompanyServiceImpl implements CompanyService {
      */
     private static class CompanySearchSelector implements EntitySelector<Company> {
 
-        private String expr;
+        //private String expr;
+        private Pattern pattern;
 
         public CompanySearchSelector(String expr) {
-            this.expr = expr == null || expr.trim().isEmpty() ? null : expr.toLowerCase();
+            //this.expr = expr == null || expr.trim().isEmpty() ? null : expr.toLowerCase();
+            if (expr == null || expr.trim().isEmpty()) {
+                pattern = null;
+            }
+            else {
+                pattern = Pattern.compile(expr.toLowerCase().replace("%",".*").replace("_","."));
+            }
         }
 
         @Override
         public boolean matches(Company company) {
-            return expr == null || company.getCname().toLowerCase().contains(expr);
+            return pattern == null || pattern.matcher(company.getCname().toLowerCase()).matches();
         }
     }
 
