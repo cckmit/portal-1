@@ -6,7 +6,10 @@ import ru.protei.winter.jdbc.annotations.JdbcEntity;
 import ru.protei.winter.jdbc.annotations.JdbcId;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author michael
@@ -47,7 +50,13 @@ public class Company implements Serializable {
     @JdbcColumn(name="website")
     private String website;
 
+
+    @SuppressWarnings("GwtInconsistentSerializableClass")
+    private List<CompanyGroup> groups;
+
+
     public Company() {
+        groups = null;
     }
 
     public Long getParentCompanyId() {
@@ -140,4 +149,12 @@ public class Company implements Serializable {
         this.website = website;
     }
 
+
+    public void setGroups(List<CompanyGroup> groups) {
+        this.groups = groups;
+    }
+
+    public List<CompanyGroup> getGroups() {
+        return groups;
+    }
 }

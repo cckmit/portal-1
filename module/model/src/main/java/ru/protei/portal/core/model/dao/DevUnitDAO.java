@@ -2,7 +2,6 @@ package ru.protei.portal.core.model.dao;
 
 import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.ent.DevUnit;
-import ru.protei.portal.core.model.view.ProductView;
 import ru.protei.winter.jdbc.JdbcSort;
 
 import java.util.List;

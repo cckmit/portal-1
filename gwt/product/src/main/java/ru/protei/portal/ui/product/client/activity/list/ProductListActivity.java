@@ -5,7 +5,7 @@ import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.view.ProductView;
+import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.ProductEvents;
@@ -56,23 +56,23 @@ public abstract class ProductListActivity implements AbstractProductListActivity
         view.getItemsContainer().clear();
         map.clear();
 
-        productService.getProductList(view.getParam(), view.isShowDepricated().getValue(), new RequestCallback<List<ProductView>>() {
+        productService.getProductList(view.getParam(), view.isShowDepricated().getValue(), new RequestCallback<List<DevUnit>>() {
             @Override
             public void onError(Throwable throwable) {
                 fireEvent ( new NotifyEvents.Show( "Get ProductView List", "Error!", NotifyEvents.NotifyType.ERROR ) );
             }
 
             @Override
-            public void onSuccess(List<ProductView> result) {
+            public void onSuccess(List<DevUnit> result) {
                 fireEvent ( new NotifyEvents.Show( "Get ProductView List", "Success!", NotifyEvents.NotifyType.SUCCESS ) );
                 fillView(result);
             }
         });
     }
 
-    private void fillView (List<ProductView> products)
+    private void fillView (List<DevUnit> products)
     {
-        for (ProductView product : products) {
+        for (DevUnit product : products) {
             AbstractProductItemView itemView = makeItemView (product);
 
             view.getItemsContainer().add(itemView.asWidget());
@@ -80,7 +80,7 @@ public abstract class ProductListActivity implements AbstractProductListActivity
         }
     }
 
-    private AbstractProductItemView makeItemView (ProductView product)
+    private AbstractProductItemView makeItemView (DevUnit product)
     {
         AbstractProductItemView itemView = provider.get();
         itemView.setName(product.getName());
@@ -101,7 +101,7 @@ public abstract class ProductListActivity implements AbstractProductListActivity
     @Inject
     ProductServiceAsync productService;
 
-    private Map<ProductView, AbstractProductItemView> map = new HashMap<ProductView, AbstractProductItemView>();
+    private Map<DevUnit, AbstractProductItemView> map = new HashMap<DevUnit, AbstractProductItemView>();
     private AppEvents.InitDetails init;
 
 }

@@ -5,7 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.protei.portal.core.model.view.ProductView;
+import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.product.client.service.ProductService;
 
@@ -19,7 +19,7 @@ import java.util.List;
 public class ProductServiceImpl extends RemoteServiceServlet implements ProductService {
 
     @Override
-    public List<ProductView> getProductList(String param, boolean showDepricated) throws RequestFailedException {
+    public List<DevUnit> getProductList(String param, boolean showDepricated) throws RequestFailedException {
 
         log.info (" getProductList : param = " + param + " showDepricated = " + showDepricated);
 
@@ -27,18 +27,18 @@ public class ProductServiceImpl extends RemoteServiceServlet implements ProductS
         //return result.items;
 
         // временная заглушка вместо получения списка из БД
-        List <ProductView> products = new ArrayList<ProductView>();
-        ProductView pr = new ProductView();
+        List <DevUnit> products = new ArrayList<DevUnit>();
+        DevUnit pr = new DevUnit();
         pr.setName("EACD4");
         products.add(pr);
 
-        pr = new ProductView();
+        pr = new DevUnit();
         pr.setName("WelcomeSMS");
         products.add(pr);
 
         if (showDepricated)
         {
-            pr = new ProductView();
+            pr = new DevUnit();
             pr.setName("CWS");
             products.add(pr);
         }
@@ -47,7 +47,7 @@ public class ProductServiceImpl extends RemoteServiceServlet implements ProductS
    }
 
     @Override
-    public ProductView getProductById(Long productId) throws RequestFailedException {
+    public DevUnit getProductById(Long productId) throws RequestFailedException {
 
         log.info (" getProductById : id = " + productId);
 

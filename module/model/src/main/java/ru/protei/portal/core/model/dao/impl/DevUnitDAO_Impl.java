@@ -3,12 +3,8 @@ package ru.protei.portal.core.model.dao.impl;
 import ru.protei.portal.core.model.dao.DevUnitDAO;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.ent.DevUnit;
-import ru.protei.portal.core.model.view.ProductView;
-import ru.protei.winter.core.utils.collections.CollectionUtils;
-import ru.protei.winter.core.utils.collections.Converter;
 import ru.protei.winter.jdbc.JdbcSort;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**

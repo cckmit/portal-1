@@ -51,9 +51,13 @@ public class EntityCache<T> {
 
             this.lastReadTime = System.currentTimeMillis();
 
-            if (this.rebuildEventHandler != null) {
-                this.rebuildEventHandler.onCacheRebuild(this.entries);
-            }
+            invokeRebuildEvent();
+        }
+    }
+
+    private void invokeRebuildEvent() {
+        if (this.rebuildEventHandler != null) {
+            this.rebuildEventHandler.onCacheRebuild(this.entries);
         }
     }
 
@@ -71,6 +75,21 @@ public class EntityCache<T> {
         ensureCacheIsNotExpired();
         list.addAll(entries.values());
         return list;
+    }
+
+    public void putIfNotExists (T item) {
+        if (entries.putIfAbsent(dao.getIdValue(item), item) == null)
+            invokeRebuildEvent();
+    }
+
+    public void remove (T item) {
+        if (entries.remove(dao.getIdValue(item)) != null)
+            invokeRebuildEvent();
+    }
+
+    public void remove (Long key) {
+        if (entries.remove(key) != null)
+            invokeRebuildEvent();
     }
 
     public List<T> all () {
