@@ -31,7 +31,7 @@
             <modules>
                 <module>module/model</module>
                 <module>module/core</module>
-                <module>app/web-ui</module>
+                <!--<module>app/web-ui</module>-->
                 
                 <module>skin/classic</module>
 

@@ -2,6 +2,7 @@ package ru.protei.portal.core.model.view;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import ru.protei.portal.core.model.ent.DevUnit;
+import ru.protei.winter.jdbc.annotations.JdbcEntity;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -9,6 +10,7 @@ import java.util.Date;
 /**
  * @author michael
  */
+@JdbcEntity( table = "ProductView" )
 public class ProductView implements Serializable {
 
     @JsonProperty

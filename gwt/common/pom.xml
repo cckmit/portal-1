@@ -36,7 +36,6 @@
             <version>${project.gwt.version}</version>
         </dependency>
 
-
         <!-- Project client dependency -->
         <dependency>
             <groupId>ru.brainworm</groupId>
@@ -72,17 +71,17 @@
         </dependency>
 
         <!-- RESTy GWT dependency -->
-        <dependency>
-            <groupId>org.fusesource.restygwt</groupId>
-            <artifactId>restygwt</artifactId>
-            <version>2.2.0</version>
-        </dependency>
-        <dependency>
-            <groupId>javax.ws.rs</groupId>
-            <artifactId>jsr311-api</artifactId>
-            <version>1.1</version>
-            <scope>provided</scope>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.fusesource.restygwt</groupId>-->
+            <!--<artifactId>restygwt</artifactId>-->
+            <!--<version>2.2.0</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>javax.ws.rs</groupId>-->
+            <!--<artifactId>jsr311-api</artifactId>-->
+            <!--<version>1.1</version>-->
+            <!--<scope>provided</scope>-->
+        <!--</dependency>-->
 
     </dependencies>
 
