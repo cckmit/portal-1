@@ -1,22 +1,18 @@
 package ru.protei.portal.core.service.dict;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.api.struct.HttpListResult;
 import ru.protei.portal.core.model.dao.CompanyDAO;
 import ru.protei.portal.core.model.dao.CompanyGroupDAO;
 import ru.protei.portal.core.model.dao.CompanyGroupItemDAO;
-import ru.protei.portal.core.model.dict.En_SortDir;
-import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanyGroup;
 import ru.protei.portal.core.model.ent.CompanyGroupItem;
+import ru.protei.portal.core.model.query.BaseQuery;
+import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.utils.EntityCache;
 import ru.protei.portal.core.utils.EntitySelector;
-import ru.protei.portal.core.utils.HelperFunc;
-import ru.protei.winter.jdbc.JdbcSort;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -88,7 +84,7 @@ public class CompanyServiceImpl implements CompanyService {
 
 
     @Override
-    public CoreResponse<CompanyGroup> createGroup(@RequestParam(name = "name") String name, @RequestParam(name = "info") String info) {
+    public CoreResponse<CompanyGroup> createGroup(String name, String info) {
 
         CompanyGroup group = new CompanyGroup();
         group.setCreated(new Date());
@@ -108,7 +104,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public CoreResponse<CompanyGroupItem> addCompanyToGroup(@RequestParam(name = "group") Long groupId, @RequestParam(name = "company") Long companyId) {
+    public CoreResponse<CompanyGroupItem> addCompanyToGroup(Long groupId, Long companyId) {
 
         CompanyGroupItem link = new CompanyGroupItem();
         link.setCompanyId(companyId);
@@ -122,7 +118,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public CoreResponse<CompanyGroupItem> delCompanyFromGroup(@RequestParam(name = "group") Long groupId, @RequestParam(name = "company") Long companyId) {
+    public CoreResponse<CompanyGroupItem> delCompanyFromGroup(Long groupId, Long companyId) {
         CompanyGroupItem link = companyGroupItemDAO.getByCondition("company_id=? and group_id=?", companyId, groupId);
         if (link != null) {
             companyGroupItemDAO.remove(link);
@@ -152,61 +148,28 @@ public class CompanyServiceImpl implements CompanyService {
 
 
     @Override
-    public Company getProfile(@PathVariable("id") Long id) {
+    public Company getProfile(Long id) {
+
         return complete(companyDAO.get(id));
+
     }
 
-    /*@Override
-    public HttpListResult<Company> list(@RequestParam(name = "q", required = false) String param,
-                                        @RequestParam(name = "sortBy", required = false) En_SortField sortField,
-                                        @RequestParam(name = "sortDir", required = false) String sortDir) {
-
-        param = HelperFunc.makeLikeArg(param, true);
-
-        if (sortField == null)
-            sortField = En_SortField.comp_name;
-
-        JdbcSort sort = new JdbcSort(En_SortDir.toWinter(sortDir), sortField.getFieldName());
-
-        return new HttpListResult<>(companyDAO.getListByCondition("cname like ?", sort, param), false);
-    }*/
 
 
     @Override
-    public HttpListResult<Company> list(@RequestParam(name = "q", required = false) String param,
-                                        @RequestParam(name = "group", required = false) Long groupId,
-                                        @RequestParam(name = "sortBy", required = false) En_SortField sortField,
-                                        @RequestParam(name = "sortDir", required = false) String sortDir) {
-        if (sortField == null)
-            sortField = En_SortField.comp_name;
-
-        JdbcSort sort = new JdbcSort(En_SortDir.toWinter(sortDir), sortField.getFieldName());
-
-        param = HelperFunc.makeLikeArg(param, true);
+    public HttpListResult<Company> list(CompanyQuery query) {
 
         return new HttpListResult<Company> (
-               completeList(companyDAO.getList (param, groupId, sort)), false
+               companyDAO.getListByQuery (query), false
         );
-
-//        return new HttpListResult<>(
-//                companyCache.collect(
-//                            new CompanySearchSelector(param),
-//                            new ArrayList<>()
-//                ), false
-//        );
     }
 
     @Override
-    public HttpListResult<CompanyGroup> groupList(@RequestParam(name = "q", required = false) String param,
-                                                  @RequestParam(name = "sortBy", required = false) En_SortField sortField,
-                                                  @RequestParam(name = "sortDir", required = false) String sortDir) {
-
-        if (sortField == null)
-            sortField = En_SortField.comp_name;
+    public HttpListResult<CompanyGroup> groupList(BaseQuery query) {
 
         return new HttpListResult<>(
                 companyGroupCache.collect(
-                        new CompanyGroupSearchSelector(param),
+                        new CompanyGroupSearchSelector(query.getSearchString()),
                         new ArrayList<>()
                 ), false
         );
@@ -214,43 +177,8 @@ public class CompanyServiceImpl implements CompanyService {
 
 
     /**
-     * converters implementation
+     * company-group search
      */
-
-//    private static class CompanyToViewConverter implements Converter<Company, CompanyView> {
-//        @Override
-//        public CompanyView convert(Company company) {
-//            return new CompanyView(company, null);
-//        }
-//    }
-
-//    /**
-//     *
-//     * predicates implementation
-//     *
-//     */
-//    private static class CompanySearchSelector implements EntitySelector<Company> {
-//
-//        //private String expr;
-//        private Pattern pattern;
-//
-//        public CompanySearchSelector(String expr) {
-//            //this.expr = expr == null || expr.trim().isEmpty() ? null : expr.toLowerCase();
-//            if (expr == null || expr.trim().isEmpty()) {
-//                pattern = null;
-//            }
-//            else {
-//                pattern = Pattern.compile(expr.toLowerCase().replace("%",".*").replace("_","."));
-//            }
-//        }
-//
-//        @Override
-//        public boolean matches(Company company) {
-//            return pattern == null || pattern.matcher(company.getCname().toLowerCase()).matches();
-//        }
-//    }
-
-
     private static class CompanyGroupSearchSelector implements EntitySelector<CompanyGroup> {
 
         private String expr;

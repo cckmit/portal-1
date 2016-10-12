@@ -6,8 +6,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
+import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.DevUnit;
+import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.product.client.service.ProductService;
 
@@ -23,34 +25,72 @@ public class ProductServiceImpl extends RemoteServiceServlet implements ProductS
     @Override
     public List<DevUnit> getProductList(String param, Boolean state, En_SortField sortField, Boolean sortDir) throws RequestFailedException {
 
-        log.info (" getProductList : param = " + param + " showDepricated = " + state + " sortField = " + sortField.getFieldName() + " " + sortDir.toString());
+        log.info (" getProductList : param = " + param + " showDepricated = " + state + " sortField = " + sortField.getFieldName() + " order " + sortDir.toString());
 
-        //HttpListResult<DevUnit> result = productService.list(param, state.booleanValue() ? null : En_DevUnitState.ACTIVE, sortField, sortDir.booleanValue() ? En_SortDir.ASC.toString() : En_SortDir.DESC.toString());
+        productQuery = new ProductQuery();
+        productQuery.setSearchString(param);
+        productQuery.setState(state ? null : En_DevUnitState.ACTIVE);
+        productQuery.setSortField(sortField);
+        productQuery.setSortDir(sortDir ? En_SortDir.ASC : En_SortDir.DESC);
+
+        //HttpListResult<DevUnit> result = productService.list(productQuery);
         //return result.items;
 
         // временная заглушка вместо получения списка из БД
         List <DevUnit> products = new ArrayList<DevUnit>();
-        DevUnit pr = new DevUnit();
-        pr.setName("EACD4");
-        pr.setStateId(En_DevUnitState.ACTIVE.getId());
-        products.add(pr);
+        DevUnit pr;
 
-        pr = new DevUnit();
-        pr.setName("WelcomeSMS");
-        pr.setStateId(En_DevUnitState.ACTIVE.getId());
-        products.add(pr);
+        if (sortDir) {
 
-        pr = new DevUnit();
-        pr.setName("SMS_Firewall");
-        pr.setStateId(En_DevUnitState.ACTIVE.getId());
-        products.add(pr);
+            if (state)
+            {
+                pr = new DevUnit();
+                pr.setName("CWS");
+                pr.setStateId(En_DevUnitState.DEPRECATED.getId());
+                products.add(pr);
+            }
 
-        if (state.booleanValue())
+            pr = new DevUnit();
+            pr.setName("EACD4");
+            pr.setStateId(En_DevUnitState.ACTIVE.getId());
+            products.add(pr);
+
+            pr = new DevUnit();
+            pr.setName("SMS_Firewall");
+            pr.setStateId(En_DevUnitState.ACTIVE.getId());
+            products.add(pr);
+
+            pr = new DevUnit();
+            pr.setName("WelcomeSMS");
+            pr.setStateId(En_DevUnitState.ACTIVE.getId());
+            products.add(pr);
+
+
+        }
+        else
         {
             pr = new DevUnit();
-            pr.setName("CWS");
-            pr.setStateId(En_DevUnitState.DEPRECATED.getId());
+            pr.setName("WelcomeSMS");
+            pr.setStateId(En_DevUnitState.ACTIVE.getId());
             products.add(pr);
+
+            pr = new DevUnit();
+            pr.setName("SMS_Firewall");
+            pr.setStateId(En_DevUnitState.ACTIVE.getId());
+            products.add(pr);
+
+            pr = new DevUnit();
+            pr.setName("EACD4");
+            pr.setStateId(En_DevUnitState.ACTIVE.getId());
+            products.add(pr);
+
+            if (state)
+            {
+                pr = new DevUnit();
+                pr.setName("CWS");
+                pr.setStateId(En_DevUnitState.DEPRECATED.getId());
+                products.add(pr);
+            }
         }
 
         if (param != null && !param.trim().isEmpty())
@@ -78,6 +118,8 @@ public class ProductServiceImpl extends RemoteServiceServlet implements ProductS
 
     @Autowired
     ru.protei.portal.core.service.dict.ProductService productService;
+
+    private ProductQuery productQuery;
 
     private static final Logger log = LoggerFactory.getLogger( "web" );
 }

@@ -8,8 +8,8 @@ import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.HttpListResult;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
-import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.company.client.service.CompanyService;
 
@@ -26,7 +26,9 @@ public class CompanyServiceImpl extends RemoteServiceServlet implements CompanyS
 
         log.debug( "getCompanies: param={}", param );
 
-        HttpListResult<Company> result = companyService.list( param, null, En_SortField.comp_name, "asc" );
+        CompanyQuery query = new CompanyQuery(param, En_SortField.comp_name, En_SortDir.ASC);
+
+        HttpListResult<Company> result = companyService.list( query );
 
         return result.getItems();
 

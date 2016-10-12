@@ -13,7 +13,7 @@
                         <sortField:SortFieldSelector ui:field="sortFields" />
 
                         <div class="button empty switcher">
-                            <g:ToggleButton ui:field="sortDir" styleName="button empty switcher icon-down" />
+                            <g:ToggleButton ui:field="sortDir" styleName="sorting_button" />
                         </div>
 
                     </div>

@@ -1,10 +1,6 @@
 package ru.protei.portal.core.service.dict;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import ru.protei.portal.api.struct.HttpListResult;
 import ru.protei.portal.core.model.dao.CompanyDAO;
 import ru.protei.portal.core.model.dao.CompanyGroupHomeDAO;
@@ -15,6 +11,7 @@ import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.PersonAbsence;
 import ru.protei.portal.core.model.view.EmployeeDetailView;
 import ru.protei.portal.core.model.view.WorkerView;
+import ru.protei.portal.core.utils.HelperFunc;
 import ru.protei.winter.jdbc.JdbcSort;
 
 import java.util.*;
@@ -37,8 +34,8 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Autowired
     PersonAbsenceDAO absenceDAO;
 
-
-    public EmployeeDetailView getEmployeeAbsences(@PathVariable("id") Long id, @RequestParam("from") Long tFrom, @RequestParam("till") Long tTill, @RequestParam("full") Boolean isFull){
+    @Override
+    public EmployeeDetailView getEmployeeAbsences(Long id, Long tFrom, Long tTill, Boolean isFull) {
 
         Person p = personDAO.getEmployeeById(id);
         if (p == null) {
@@ -85,7 +82,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 
 
-    public EmployeeDetailView getEmployeeProfile(@PathVariable("id") Long id){
+    public EmployeeDetailView getEmployeeProfile(Long id){
 
         Person p = personDAO.getEmployeeById(id);
         if (p == null) {
@@ -118,22 +115,14 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 
     @Override
-    public HttpListResult<WorkerView> list(@RequestParam(name = "q", defaultValue = "") String param) {
+    public HttpListResult<WorkerView> list(String param) {
 
         // temp-hack, hardcoded company-id. must be replaced to sys_config.ownCompanyId
         Company our_comp = companyDAO.get(1L);
 
         List<WorkerView> r = new ArrayList<>();
 
-        if (param == null || param.isEmpty()) {
-            param = "%";
-        } else {
-            if (!param.startsWith("%"))
-                param = "%" + param;
-
-            if (!param.endsWith("%"))
-                param = param + "%";
-        }
+        param = HelperFunc.makeLikeArg(param, true);
 
         JdbcSort sort = new JdbcSort(JdbcSort.Direction.ASC, "displayName");
 

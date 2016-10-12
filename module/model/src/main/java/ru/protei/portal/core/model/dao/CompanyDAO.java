@@ -1,7 +1,7 @@
 package ru.protei.portal.core.model.dao;
 
 import ru.protei.portal.core.model.ent.Company;
-import ru.protei.winter.jdbc.JdbcSort;
+import ru.protei.portal.core.model.query.CompanyQuery;
 
 import java.util.List;
 
@@ -10,5 +10,5 @@ import java.util.List;
  */
 public interface CompanyDAO extends PortalBaseDAO<Company> {
 
-    public List<Company> getList (String searchExpression, Long groupId, JdbcSort sort);
+    public List<Company> getListByQuery (CompanyQuery query);
 }

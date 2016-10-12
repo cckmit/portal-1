@@ -10,8 +10,8 @@ import ru.protei.portal.config.MainConfiguration;
 import ru.protei.portal.core.model.dao.DevUnitDAO;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
-import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.DevUnit;
+import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.core.service.dict.ProductService;
 import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
@@ -49,7 +49,7 @@ public class ProductServiceTest {
         Assert.assertNotNull(ctx.getBean(DevUnitDAO.class).persist(product));
 
 
-        HttpListResult<DevUnit> result = ctx.getBean(ProductService.class).list("%",null,En_SortField.prod_name,"asc");
+        HttpListResult<DevUnit> result = ctx.getBean(ProductService.class).list(new ProductQuery());
 
         Assert.assertNotNull(result);
         Assert.assertTrue(result.getTotalSize() > 0);

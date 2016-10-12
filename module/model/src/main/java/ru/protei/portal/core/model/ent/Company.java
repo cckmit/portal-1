@@ -20,34 +20,37 @@ public class Company implements Serializable {
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
 
-    @JdbcColumn(name="parent_company")
+    @JdbcColumn(name = "category_id")
+    private Long categoryId;
+
+    @JdbcColumn(name = "parent_company")
     private Long parentCompanyId;
 
-    @JdbcColumn(name="address_dejure")
+    @JdbcColumn(name = "address_dejure")
     private String addressDejure;
 
-    @JdbcColumn(name="address_fact")
+    @JdbcColumn(name = "address_fact")
     private String addressFact;
 
-    @JdbcColumn(name="cname")
+    @JdbcColumn(name = "cname")
     private String cname;
 
-    @JdbcColumn(name="email")
+    @JdbcColumn(name = "email")
     private String email;
 
-    @JdbcColumn(name="fax")
+    @JdbcColumn(name = "fax")
     private String fax;
 
-    @JdbcColumn(name="info")
+    @JdbcColumn(name = "info")
     private String info;
 
-    @JdbcColumn(name="phone")
+    @JdbcColumn(name = "phone")
     private String phone;
 
-    @JdbcColumn(name="created")
+    @JdbcColumn(name = "created")
     private Date created;
 
-    @JdbcColumn(name="website")
+    @JdbcColumn(name = "website")
     private String website;
 
 
@@ -114,6 +117,14 @@ public class Company implements Serializable {
 
     public void setAddressFact(String addressFact) {
         this.addressFact = addressFact;
+    }
+
+    public Long getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(Long categoryId) {
+        this.categoryId = categoryId;
     }
 
     public void setCname(String cname) {

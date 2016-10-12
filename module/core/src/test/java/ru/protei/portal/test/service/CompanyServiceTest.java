@@ -9,10 +9,10 @@ import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.api.struct.HttpListResult;
 import ru.protei.portal.config.MainConfiguration;
 import ru.protei.portal.core.model.dao.CompanyGroupItemDAO;
-import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanyGroup;
 import ru.protei.portal.core.model.ent.CompanyGroupItem;
+import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.service.dict.CompanyService;
 import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
@@ -37,7 +37,7 @@ public class CompanyServiceTest {
 
         Assert.assertNotNull(service);
 
-        HttpListResult<Company> result = service.list("%", null, En_SortField.comp_name,"asc");
+        HttpListResult<Company> result = service.list(new CompanyQuery());
 
         Assert.assertNotNull(result);
         Assert.assertNotNull(result.getItems());

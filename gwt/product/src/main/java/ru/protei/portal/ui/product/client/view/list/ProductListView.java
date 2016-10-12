@@ -58,9 +58,9 @@ public class ProductListView extends Composite implements AbstractProductListVie
     public void onShowDepricatedClick (ClickEvent event)
     {
         if (showDepricated.getValue())
-            showDepricated.addStyleName("active");
-        else
             showDepricated.removeStyleName("active");
+        else
+            showDepricated.addStyleName("active");
         activity.onShowDepricatedClick();
     }
 
@@ -81,15 +81,12 @@ public class ProductListView extends Composite implements AbstractProductListVie
    @UiHandler( "sortDir" )
     public void onSortDirClicked ( ClickEvent event ) {
 
-       if (sortDir.getValue().booleanValue()) {
-           sortDir.removeStyleName("icon-up");
-           sortDir.addStyleName("icon-down");
-       }
-       else {
-           sortDir.removeStyleName("icon-down");
-           sortDir.addStyleName("icon-up");
-       }
+       if (sortDir.getValue())
+           sortDir.removeStyleName("active");
+       else
+           sortDir.addStyleName("active");
 
+       sortDir.setFocus(false);
        if ( activity != null ) {
            activity.onFilterChanged();
        }
