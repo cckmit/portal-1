@@ -8,15 +8,19 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
+import com.google.inject.Inject;
+import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.ui.company.client.activity.list.AbstractCompanyListActivity;
 import ru.protei.portal.ui.company.client.activity.list.AbstractCompanyListView;
+import ru.protei.portal.ui.company.client.widget.selector.SortFieldSelector;
 
 /**
  * Вид формы списка компаний
  */
 public class CompanyListView extends Composite implements AbstractCompanyListView, KeyUpHandler {
 
-    public CompanyListView() {
+    @Inject
+    public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
         initHandlers();
     }
@@ -38,6 +42,11 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
     @Override
     public ListBox getGroupList() {
         return groupList;
+    }
+
+    @Override
+    public HasValue<En_SortField> sortField() {
+        return sortField;
     }
 
     @UiHandler( "customersButton" )
@@ -71,8 +80,8 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
     Button directionButton;
     @UiField
     ListBox groupList;
-    @UiField
-    ListBox sortList;
+    //@UiField
+    //ListBox sortList;
 
     Timer timer = new Timer() {
         @Override
@@ -82,6 +91,10 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
             }
         }
     };
+
+    @Inject
+    @UiField( provided = true )
+    SortFieldSelector sortField;
 
     AbstractCompanyListActivity activity;
 

@@ -5,13 +5,14 @@ import ru.protei.winter.jdbc.annotations.JdbcColumn;
 import ru.protei.winter.jdbc.annotations.JdbcEntity;
 import ru.protei.winter.jdbc.annotations.JdbcId;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Created by michael on 10.10.16.
  */
 @JdbcEntity(table = "company_group")
-public class CompanyGroup {
+public class CompanyGroup implements Serializable {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
