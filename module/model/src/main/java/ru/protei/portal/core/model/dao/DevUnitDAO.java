@@ -1,8 +1,8 @@
 package ru.protei.portal.core.model.dao;
 
+import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.ent.DevUnit;
-import ru.protei.portal.core.model.view.ProductView;
 import ru.protei.winter.jdbc.JdbcSort;
 
 import java.util.List;
@@ -12,9 +12,9 @@ import java.util.List;
  */
 public interface DevUnitDAO extends PortalBaseDAO<DevUnit> {
 
-    public List<ProductView> getProductsByCondition(String q, JdbcSort sort);
+    public List<DevUnit> getProductsByCondition(String searchExpression, JdbcSort sort);
 
-    public List<DevUnit> getComponentsByCondition(String q, JdbcSort sort);
+    public List<DevUnit> getComponentsByCondition(String searchExpression, JdbcSort sort);
 
-    public List<DevUnit> getUnitsByCondition(En_DevUnitType type, String q, JdbcSort sort);
+    public List<DevUnit> getUnitsByCondition(En_DevUnitType type, En_DevUnitState state,  String searchExpression, JdbcSort sort);
 }

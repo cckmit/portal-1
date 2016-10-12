@@ -11,9 +11,6 @@ import ru.protei.portal.core.utils.HelperFunc;
  */
 public class AbsenceEntryView {
 
-    @Autowired
-    PersonDAO personDAO;
-
     @JsonProperty
     private String creator;
 

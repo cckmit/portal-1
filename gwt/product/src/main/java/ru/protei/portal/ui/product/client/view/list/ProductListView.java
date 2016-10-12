@@ -8,8 +8,10 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.ui.product.client.activity.list.AbstractProductListActivity;
 import ru.protei.portal.ui.product.client.activity.list.AbstractProductListView;
@@ -24,14 +26,14 @@ public class ProductListView extends Composite implements AbstractProductListVie
 //        initWidget(ourUiBinder.createAndBindUi(this));
 //    }
 
-    @Inject
-    public void init() {
+    @PostConstruct
+    public void onInit() {
+//        this.sortFields=sortFields;
+        Window.alert("onInit"+sortFields);
         initWidget(ourUiBinder.createAndBindUi(this));
     }
 
-    public void setActivity(AbstractProductListActivity activity) {
-        this.activity = activity;
-    }
+    public void setActivity(AbstractProductListActivity activity) { this.activity = activity;  }
 
     @Override
     public HasWidgets getItemsContainer() {
@@ -39,9 +41,7 @@ public class ProductListView extends Composite implements AbstractProductListVie
     }
 
     @Override
-    public HasText getSearchPattern() {
-        return search;
-    }
+    public HasText getSearchPattern() { return search; }
 
     @Override
     public HasValue<Boolean> isShowDepricated() {
@@ -56,8 +56,10 @@ public class ProductListView extends Composite implements AbstractProductListVie
 
     @Override
     public void reset() {
-        showDepricated.setValue(false);
         search.setText("");
+        showDepricated.setValue(false);
+        sortFields.setValue(En_SortField.prod_name);
+        sortDir.setValue(true);
     }
 
     @UiHandler("showDepricated")

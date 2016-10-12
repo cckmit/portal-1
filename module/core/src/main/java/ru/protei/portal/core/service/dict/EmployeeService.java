@@ -13,13 +13,13 @@ import ru.protei.portal.core.model.view.WorkerView;
 public interface EmployeeService {
 
     @RequestMapping(path = "/list")
-    public HttpListResult<WorkerView> list(@RequestParam(name = "q", defaultValue = "") String param);
+    HttpListResult<WorkerView> list(@RequestParam(name = "q", defaultValue = "") String param);
 
     @GetMapping("/profile/{id:[0-9]+}.json")
-    public EmployeeDetailView getEmployeeProfile (@PathVariable("id") Long id);
+    EmployeeDetailView getEmployeeProfile (@PathVariable("id") Long id);
 
     @GetMapping(path = "/profile/{id:[0-9]+}/absences.json", params = {"from", "till", "full"})
-    public EmployeeDetailView getEmployeeAbsences(@PathVariable("id") Long id, @RequestParam("from") Long tFrom, @RequestParam("till") Long tTill, @RequestParam("full") Boolean isFull);
+    EmployeeDetailView getEmployeeAbsences(@PathVariable("id") Long id, @RequestParam("from") Long tFrom, @RequestParam("till") Long tTill, @RequestParam("full") Boolean isFull);
 
 //    @GetMapping(path = "/currentMissingEmployeesIDs.json")
 //    public String getCurrentMissingEmployeeIDs();

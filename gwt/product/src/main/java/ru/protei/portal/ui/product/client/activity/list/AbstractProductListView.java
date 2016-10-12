@@ -17,6 +17,7 @@ public interface AbstractProductListView extends IsWidget {
     HasValue<Boolean> isShowDepricated();
 
     HasValue<En_SortField> getSortField ();
+
     HasValue<Boolean> getSortDir();
 
     void reset();
