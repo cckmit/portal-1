@@ -16,8 +16,4 @@ public enum En_SortDir {
                 DESC.name().equalsIgnoreCase(value.trim()) ? DESC : ASC;
     }
 
-    public static JdbcSort.Direction toWinter (String value) {
-        return parse(value) == DESC ? JdbcSort.Direction.DESC : JdbcSort.Direction.ASC;
-    }
-
 }

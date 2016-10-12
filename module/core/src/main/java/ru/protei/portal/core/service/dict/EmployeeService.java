@@ -8,18 +8,13 @@ import ru.protei.portal.core.model.view.WorkerView;
 /**
  * Created by michael on 06.04.16.
  */
-@RestController
-@RequestMapping(path = "/api/gate/employee")
 public interface EmployeeService {
 
-    @RequestMapping(path = "/list")
-    HttpListResult<WorkerView> list(@RequestParam(name = "q", defaultValue = "") String param);
+    HttpListResult<WorkerView> list(String param);
 
-    @GetMapping("/profile/{id:[0-9]+}.json")
-    EmployeeDetailView getEmployeeProfile (@PathVariable("id") Long id);
+    EmployeeDetailView getEmployeeProfile (Long id);
 
-    @GetMapping(path = "/profile/{id:[0-9]+}/absences.json", params = {"from", "till", "full"})
-    EmployeeDetailView getEmployeeAbsences(@PathVariable("id") Long id, @RequestParam("from") Long tFrom, @RequestParam("till") Long tTill, @RequestParam("full") Boolean isFull);
+    EmployeeDetailView getEmployeeAbsences(Long id, Long tFrom, Long tTill, Boolean isFull);
 
 //    @GetMapping(path = "/currentMissingEmployeesIDs.json")
 //    public String getCurrentMissingEmployeeIDs();

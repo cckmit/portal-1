@@ -17,6 +17,7 @@ import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanyGroup;
 import ru.protei.portal.core.model.ent.CompanyGroupItem;
 import ru.protei.portal.core.model.ent.DevUnit;
+import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.core.service.dict.CompanyService;
 import ru.protei.portal.core.service.dict.ProductService;
 import ru.protei.winter.core.CoreConfigurationContext;
@@ -55,7 +56,7 @@ public class ProductServiceTest {
         Assert.assertNotNull(ctx.getBean(DevUnitDAO.class).persist(product));
 
 
-        HttpListResult<DevUnit> result = ctx.getBean(ProductService.class).list("%",null,En_SortField.prod_name,"asc");
+        HttpListResult<DevUnit> result = ctx.getBean(ProductService.class).list(new ProductQuery());
 
         Assert.assertNotNull(result);
         Assert.assertTrue(result.getTotalSize() > 0);
