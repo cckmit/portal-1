@@ -38,7 +38,7 @@ public class AuthServiceImpl extends RemoteServiceServlet implements AuthService
             throw new RequestFailedException( result.getResult().name() );
         }
 
-        sessionService.setUserSessionDescriptor( httpRequest, result.getDescriptor() );
+        //sessionService.setUserSessionDescriptor( httpRequest, result.getDescriptor() );
         return makeProfileByDescriptor( result.getDescriptor() );
     }
 

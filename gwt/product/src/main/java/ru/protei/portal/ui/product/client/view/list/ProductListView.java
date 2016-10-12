@@ -8,10 +8,8 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.ui.product.client.activity.list.AbstractProductListActivity;
 import ru.protei.portal.ui.product.client.activity.list.AbstractProductListView;
@@ -22,14 +20,8 @@ import ru.protei.portal.ui.product.client.widgets.sortfieldselector.SortFieldSel
  */
 public class ProductListView extends Composite implements AbstractProductListView {
 
-//    public ProductListView() {
-//        initWidget(ourUiBinder.createAndBindUi(this));
-//    }
-
-    @PostConstruct
+    @Inject
     public void onInit() {
-//        this.sortFields=sortFields;
-        Window.alert("onInit"+sortFields);
         initWidget(ourUiBinder.createAndBindUi(this));
     }
 
@@ -88,6 +80,16 @@ public class ProductListView extends Composite implements AbstractProductListVie
 
    @UiHandler( "sortDir" )
     public void onSortDirClicked ( ClickEvent event ) {
+
+       if (sortDir.getValue().booleanValue()) {
+           sortDir.removeStyleName("icon-up");
+           sortDir.addStyleName("icon-down");
+       }
+       else {
+           sortDir.removeStyleName("icon-down");
+           sortDir.addStyleName("icon-up");
+       }
+
        if ( activity != null ) {
            activity.onFilterChanged();
        }

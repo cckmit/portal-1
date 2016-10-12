@@ -1,11 +1,11 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'>
 
-    <g:HTMLPanel styleName="dropdown-menu open animated fadeIn" ui:field="root">
+    <g:HTMLPanel styleName="selectList" ui:field="root" >
         <div class="dropdown-searchbox hide" ui:field="searchContainer">
-            <g:TextBox ui:field="search"/>
+            <g:TextBox ui:field="search" />
             <i class="fa fa-search"></i>
         </div>
-        <g:HTMLPanel ui:field="childContainer" tag="ul" styleName="dropdown-menu inner"/>
+        <g:HTMLPanel ui:field="childContainer" />
     </g:HTMLPanel>
 </ui:UiBinder>

@@ -1,2 +1,13 @@
 @import "_fonts";
 @import "_style";
+
+
+
+.body_global .UserList.list_showing >.controlButtons .sorting_button:before {
+  content: "\e98b";
+  vertical-align: middle;
+}
+.body_global .UserList.list_showing >.controlButtons .sorting_button.active:before {
+  content: "\e968";
+  vertical-align: middle;
+}
