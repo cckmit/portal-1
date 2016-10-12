@@ -8,6 +8,7 @@ import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.CompanyEvents;
@@ -30,6 +31,7 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
     @PostConstruct
     public void onInit() {
         view.setActivity( this );
+        view.resetFilter();
     }
 
     @Event
@@ -38,9 +40,6 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
         this.fireEvent( new AppEvents.InitPanelName( lang.companies() ) );
         initDetails.parent.clear();
         initDetails.parent.add( view.asWidget() );
-
-        view.getGroupList().clear();
-        initGroups();
 
         view.getCompanyContainer().clear();
         initCompanies();
@@ -71,15 +70,14 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
 
     private void initCompanies() {
 
-        list.clear();
-        companyService.getCompanies( view.getSearchPattern(), new RequestCallback<List<Company>>() {
+        companyService.getCompanies( view.getSearchPattern(), view.getCompanyGroup().getValue(), view.getSortField().getValue(), new RequestCallback< List < Company > >() {
 
             @Override
-            public void onError( Throwable throwable ) {
-            }
+            public void onError( Throwable throwable ) {}
 
             @Override
-            public void onSuccess( List<Company> companies ) {
+            public void onSuccess( List< Company > companies ) {
+                list.clear();
                 list.addAll( companies );
                 fillView();
             }
@@ -88,16 +86,11 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
 
     private void fillView() {
 
-        //int recNum = 1;
         for ( Company company : list ) {
             AbstractCompanyItemView itemView = makeView( company );
 
             map.put( itemView, company );
             view.getCompanyContainer().add( itemView.asWidget() );
-
-            /*if ( ++recNum > 500 ) {
-                break;
-            }*/
         }
     }
 
@@ -110,21 +103,8 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
         return itemView;
     }
 
-    private void initGroups() {
-        view.getGroupList().addItem("Группа компаний", "-1");
-        view.getGroupList().addItem("Мегафон", "1");
-        view.getGroupList().addItem("DPI_Мегафон", "2");
-        view.getGroupList().addChangeHandler(new ChangeHandler() {
-            @Override
-            public void onChange(ChangeEvent changeEvent) {
-                view.getCompanyContainer().clear();
-                initCompanies();
-            }
-        });
-    }
-
     @Inject
-    Provider<AbstractCompanyItemView> factory;
+    Provider< AbstractCompanyItemView > factory;
 
     @Inject
     AbstractCompanyListView view;
@@ -135,9 +115,9 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
     @Inject
     CompanyServiceAsync companyService;
 
-    private List<Company> list = new ArrayList<Company>();
+    private List< Company > list = new ArrayList< Company >();
 
-    private Map<AbstractCompanyItemView, Company> map = new HashMap<AbstractCompanyItemView, Company>();
+    private Map< AbstractCompanyItemView, Company > map = new HashMap< AbstractCompanyItemView, Company >();
 
     private AppEvents.InitDetails initDetails;
 

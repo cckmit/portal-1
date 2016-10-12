@@ -2,7 +2,7 @@ package ru.protei.portal.ui.product.client.service;
 
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import ru.protei.portal.core.model.view.ProductView;
+import ru.protei.portal.core.model.ent.DevUnit;
 
 import java.util.List;
 
@@ -11,7 +11,7 @@ import java.util.List;
  */
 public interface ProductServiceAsync {
 
-    void getProductList(String param, boolean showDepricated, AsyncCallback<List<ProductView>> async);
+    void getProductList(String param, boolean showDepricated, AsyncCallback<List<DevUnit>> async);
 
-    void getProductById(Long productId, AsyncCallback<ProductView> async);
+    void getProductById(Long productId, AsyncCallback<DevUnit> async);
 }

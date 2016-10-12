@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class CoreResponse<T> {
 
     @JsonProperty
-    private boolean isOk;
+    private boolean ok;
 
     @JsonProperty
     private String message;
@@ -26,7 +26,7 @@ public class CoreResponse<T> {
 
 
     public CoreResponse () {
-        this.isOk = true;
+        this.ok = true;
     }
 
     public CoreResponse (String errMsg) {
@@ -34,10 +34,30 @@ public class CoreResponse<T> {
     }
 
 
+    public boolean isOk () {
+        return ok;
+    }
+
+    public boolean isError () {
+        return !ok;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public String getErrCode () {
+        return errCode;
+    }
+
+    public T getData () {
+        return data;
+    }
+
     public CoreResponse<T> error (String msg, String code) {
         this.message = msg;
         this.errCode = code;
-        this.isOk = false;
+        this.ok = false;
         return this;
     }
 
@@ -48,7 +68,7 @@ public class CoreResponse<T> {
 
     public CoreResponse<T> success (T data) {
         this.data = data;
-        this.isOk = true;
+        this.ok = true;
         return this;
     }
 }

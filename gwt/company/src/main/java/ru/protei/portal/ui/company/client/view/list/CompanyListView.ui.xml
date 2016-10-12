@@ -1,23 +1,20 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:sortfieldselector='urn:import:ru.protei.portal.ui.company.client.widget.selector'>
+             xmlns:sortfieldselector='urn:import:ru.protei.portal.ui.company.client.widget.sortfieldselector'
+             xmlns:companygroupselector='urn:import:ru.protei.portal.ui.company.client.widget.companygroupselector'>
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
     <ui:import field="ru.protei.portal.core.model.dict.En_SortField.*"/>
     <g:HTMLPanel styleName="OrganizationList">
         <div class="controlButtons">
             <g:Button ui:field="customersButton" text="{lang.customers}" styleName="button whiteC switcher"/>
             <g:Button ui:field="partnersButton" text="{lang.partners}" styleName="button whiteC switcher"/>
-            <div class="buttons_group">
-                <g:ListBox ui:field="groupList" styleName="inputField"/>
+            <!--div class="buttons_group"-->
+                <companygroupselector:CompanyGroupSelector ui:field="companyGroup"/>
                 <!--input placeholder="Группа компаний" class="inputField"/><div class="button selected sticky empty whiteC"></div-->
-            </div>
+            <!--/div-->
             <div class="buttons_group">
                 <div class="regulator">Сортировать по
                     <sortfieldselector:SortFieldSelector ui:field="sortField"/>
-                    <!--g:ListBox ui:field="sortList" styleName="inputField">
-                        <g:item value="{comp_name.getFieldName}"><ui:text from="{lang.name}"/></g:item>
-                        <g:item value="{creation_date.getFieldName}"><ui:text from="{lang.date}"/></g:item>
-                    </g:ListBox-->
                     <g:Button ui:field="directionButton" styleName="button empty switcher whiteC"><span class="icon-down"></span></g:Button>
                 </div>
             </div>

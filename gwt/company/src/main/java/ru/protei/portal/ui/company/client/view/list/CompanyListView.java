@@ -2,6 +2,7 @@ package ru.protei.portal.ui.company.client.view.list;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.*;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -10,9 +11,11 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.ent.CompanyGroup;
 import ru.protei.portal.ui.company.client.activity.list.AbstractCompanyListActivity;
 import ru.protei.portal.ui.company.client.activity.list.AbstractCompanyListView;
-import ru.protei.portal.ui.company.client.widget.selector.SortFieldSelector;
+import ru.protei.portal.ui.company.client.widget.companygroupselector.CompanyGroupSelector;
+import ru.protei.portal.ui.company.client.widget.sortfieldselector.SortFieldSelector;
 
 /**
  * Вид формы списка компаний
@@ -40,13 +43,13 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
     }
 
     @Override
-    public ListBox getGroupList() {
-        return groupList;
+    public HasValue< En_SortField > getSortField() {
+        return sortField;
     }
 
     @Override
-    public HasValue<En_SortField> sortField() {
-        return sortField;
+    public HasValue< CompanyGroup > getCompanyGroup() {
+        return companyGroup;
     }
 
     @UiHandler( "customersButton" )
@@ -57,10 +60,30 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
     public void onPartnersClicked( ClickEvent event ) {
     }
 
+    @UiHandler( "sortField" )
+    public void onSortFieldSelected( ValueChangeEvent< En_SortField > event ) {
+        if ( activity != null ) {
+            activity.onFilterChanged();
+        }
+    }
+
+    @UiHandler( "companyGroup" )
+    public void onCompanyGroupSelected( ValueChangeEvent< CompanyGroup > event ) {
+        if ( activity != null ) {
+            activity.onFilterChanged();
+        }
+    }
+
     @Override
     public void onKeyUp( KeyUpEvent keyUpEvent ) {
         timer.cancel();
         timer.schedule( 300 );
+    }
+
+    public void resetFilter() {
+        companyGroup.setValue( null );
+        sortField.setValue( En_SortField.comp_name );
+        search.setText( "" );
     }
 
     private void initHandlers() {
@@ -78,10 +101,6 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
     HTMLPanel companyContainer;
     @UiField
     Button directionButton;
-    @UiField
-    ListBox groupList;
-    //@UiField
-    //ListBox sortList;
 
     Timer timer = new Timer() {
         @Override
@@ -96,9 +115,13 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
     @UiField( provided = true )
     SortFieldSelector sortField;
 
+    @Inject
+    @UiField( provided = true )
+    CompanyGroupSelector companyGroup;
+
     AbstractCompanyListActivity activity;
 
     private static CompanyViewUiBinder ourUiBinder = GWT.create( CompanyViewUiBinder.class );
-    interface CompanyViewUiBinder extends UiBinder<HTMLPanel, CompanyListView> {}
+    interface CompanyViewUiBinder extends UiBinder< HTMLPanel, CompanyListView > {}
 
 }

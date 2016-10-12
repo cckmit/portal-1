@@ -5,6 +5,7 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.ListBox;
 import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.ent.CompanyGroup;
 
 /**
  * Created by turik on 27.09.16.
@@ -14,6 +15,7 @@ public interface AbstractCompanyListView extends IsWidget {
     void setActivity( AbstractCompanyListActivity activity );
     HasWidgets getCompanyContainer();
     String getSearchPattern();
-    ListBox getGroupList();
-    HasValue<En_SortField> sortField();
+    HasValue< CompanyGroup > getCompanyGroup();
+    HasValue< En_SortField > getSortField();
+    void resetFilter();
 }

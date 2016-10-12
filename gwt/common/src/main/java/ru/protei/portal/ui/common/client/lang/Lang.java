@@ -37,4 +37,6 @@ public interface Lang extends Messages {
     String buttonCancel();
 
     String searchNoMatchesFound();
+
+    String companyGroup();
 }

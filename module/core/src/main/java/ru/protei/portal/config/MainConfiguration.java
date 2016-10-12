@@ -16,35 +16,6 @@ import ru.protei.portal.core.utils.SimpleSidGenerator;
 public class MainConfiguration {
 
     @Bean
-    public CompanyGroupDAO getCompanyGroupDAO() {
-        return new CompanyGroupDAO_Impl();
-    }
-
-    @Bean
-    CompanyGroupItemDAO getCompanyGroupItemDAO() {
-        return new CompanyGroupItemDAO_Impl();
-    }
-
-    @Bean
-    PersonCompanyEntryDAO getPersonCompanyEntryDAO() {
-        return new PersonCompanyEntryDAO_Impl();
-    }
-
-
-    @Bean
-    public EmployeeService getEmployeeService () { return new EmployeeServiceImpl(); }
-
-    @Bean
-    public CompanyService getCompanyService() {
-        return new CompanyServiceImpl();
-    }
-
-    @Bean
-    public ProductService getProductService() {
-        return new ProductServiceImpl();
-    }
-
-    @Bean
     public LDAPAuthProvider getLDAPAuthProvider() {
         return new LDAPAuthProvider();
     }
@@ -169,4 +140,43 @@ public class MainConfiguration {
         return new WorkerEntryDAO_Impl();
     }
 
+
+    @Bean
+    public CompanyGroupDAO getCompanyGroupDAO() {
+        return new CompanyGroupDAO_Impl();
+    }
+
+    @Bean
+    public CompanyGroupItemDAO getCompanyGroupItemDAO() {
+        return new CompanyGroupItemDAO_Impl();
+    }
+
+    @Bean
+    public PersonCompanyEntryDAO getPersonCompanyEntryDAO() {
+        return new PersonCompanyEntryDAO_Impl();
+    }
+
+
+/**
+ *
+ *
+ *
+ * SERVICES
+ *
+ *
+ *
+ **/
+
+    @Bean
+    public EmployeeService getEmployeeService () { return new EmployeeServiceImpl(); }
+
+    @Bean
+    public CompanyService getCompanyService() {
+        return new CompanyServiceImpl();
+    }
+
+    @Bean
+    public ProductService getProductService() {
+        return new ProductServiceImpl();
+    }
 }

@@ -1,14 +1,14 @@
-package ru.protei.portal.ui.company.client.widget.selector;
+package ru.protei.portal.ui.company.client.widget.sortfieldselector;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
+import ru.protei.portal.ui.common.client.widget.selector.input.InputSelector;
 
 /**
- * Created by turik on 11.10.16.
+ * Селектор списка сортировки
  */
-public class SortFieldSelector extends Selector<En_SortField>{
+public class SortFieldSelector extends InputSelector< En_SortField > {
 
     @Inject
     public void init() {
@@ -20,10 +20,6 @@ public class SortFieldSelector extends Selector<En_SortField>{
 
         addOption( lang.name(), En_SortField.comp_name );
         addOption( lang.date(), En_SortField.creation_date );
-    }
-
-    @Override
-    public void fillSelectorView( String selectedValue ) {
     }
 
     @Inject
