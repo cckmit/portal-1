@@ -187,7 +187,9 @@
 }
 
 .button .caret {
-  margin-right: 0;
+  position: absolute;
+  top: 11px;
+  right: 8px;
 }
 
 .dropdown-menu {
