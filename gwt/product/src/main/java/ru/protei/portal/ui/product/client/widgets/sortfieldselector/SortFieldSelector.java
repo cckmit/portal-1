@@ -3,13 +3,13 @@ package ru.protei.portal.ui.product.client.widgets.sortfieldselector;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.ui.common.client.lang.En_SortFieldLang;
-import ru.protei.portal.ui.common.client.widget.selector.input.InputSelector;
+import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 
 /**
  * Селектор полей сортировки продуктов
  */
 public class SortFieldSelector
-        extends InputSelector<En_SortField>
+        extends ButtonSelector<En_SortField>
 {
     @Inject
     public void init() {
