@@ -14,9 +14,7 @@
                             <span class="icon-down"></span>
                         </div>
                     </div>
-                   <div class="regulator">
-                        <g:CheckBox ui:field="showDepricated"/><ui:text from="{lang.showDepricated}"/>
-                    </div>
+                    <g:CheckBox ui:field="showDepricated" styleName="checkbox" text="{lang.showDepricated}"/>
                 </div>
             </div>
 

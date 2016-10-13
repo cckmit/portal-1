@@ -4,7 +4,6 @@
 .icon-saveFilter:before,
 .global .signIn_block .t_wrapper .tc_wrapper .block .head .company .logo:before,
 .button.selected:after,
-.checkbox:before,
 .simpleCheckbox.active:before,
 .header_global >.leftBlock .company .logo:before,
 .body_global >.rightBlock .caseListsBlock .block>.wrapper2 .leftButton:before,
@@ -779,7 +778,6 @@ body {
 .favorite:hover >.count {
   opacity: 1;
 }
-.checkbox,
 .simpleCheckbox {
   display: inline-block;
   cursor: pointer;
@@ -791,22 +789,7 @@ body {
   text-align: center;
   line-height: 13px;
 }
-.checkbox:before {
-  content: "\e80c";
-  vertical-align: 0;
-}
-.checkbox.active {
-  border-color: transparent;
-}
-.checkbox.active,
-.checkbox:hover,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.caseTimeFix .commitComponents .components table.wrapper td.component:hover .checkbox {
-  color: #de676b;
-}
-.checkbox:hover,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.caseTimeFix .commitComponents .components table.wrapper td.component:hover .checkbox {
-  border-color: #d1d7db;
-}
+
 .simpleCheckbox {
   vertical-align: middle;
 }
@@ -814,9 +797,7 @@ body {
   content: "\e80c";
   vertical-align: 0;
 }
-.regulator .checkbox {
-  margin-right: 4px;
-}
+
 .header_global {
   width: 100%;
   height: 58px;
@@ -4852,15 +4833,7 @@ body {
   line-height: 56px;
   padding-left: 35px;
 }
-.body_global >.rightBlock .caseListsBlock table.caseList tr.case .checkbox {
-  position: absolute;
-  right: 18px;
-  top: 18px;
-  width: 18px;
-  height: 18px;
-  border: 1px solid #d2d6dc;
-  text-align: center;
-}
+
 .body_global >.rightBlock .caseListsBlock table.caseList tr.case .quickInfo {
   display: inline-block;
   vertical-align: middle;
@@ -4898,25 +4871,7 @@ body {
 .body_global >.rightBlock .caseListsBlock table.caseList tr.case .extraButtons > .button + .button {
   margin-left: 2px;
 }
-.body_global >.rightBlock .caseListsBlock table.caseList tr.case .checkBox {
-  position: absolute;
-  right: 15px;
-  top: 15px;
-  width: 18px;
-  height: 18px;
-  border: 1px solid #d2d6dc;
-  text-align: center;
-}
-.body_global >.rightBlock .caseListsBlock table.caseList tr.case .checkBox .icon-checkmark {
-  color: transparent;
-}
-.body_global >.rightBlock .caseListsBlock table.caseList tr.case .checkBox .icon-checkmark:before {
-  content: "\e80c";
-  vertical-align: -1px;
-}
-.body_global >.rightBlock .caseListsBlock table.caseList tr.case .checkBox.active .icon-checkmark {
-  color: #de676b;
-}
+
 .body_global >.rightBlock .caseListsBlock table.caseList tr.case > .favorite {
   position: absolute;
   top: 0px;
@@ -5697,9 +5652,7 @@ body {
   background-color: #fff;
   cursor: pointer;
 }
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper:hover .checkbox {
-  opacity: 1;
-}
+
 .body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava,
 .body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper >.wrapper,
 .body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava {
@@ -5997,20 +5950,7 @@ body {
 .body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .buttons .icon-menu:hover {
   color: #f00;
 }
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .checkbox,
-.body_global >.rightBlock .productListsBlock.reportBlock >.block .productList .product >.wrapper .checkbox,
-.body_global >.rightBlock .componentListsBlock.reportBlock >.block .componentList .component >.wrapper .checkbox {
-  transition-duration: 0.2s;
-  opacity: 0;
-  position: absolute;
-  top: -1px;
-  left: -1px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .checkbox.active,
-.body_global >.rightBlock .productListsBlock.reportBlock >.block .productList .product >.wrapper .checkbox.active,
-.body_global >.rightBlock .componentListsBlock.reportBlock >.block .componentList .component >.wrapper .checkbox.active {
-  opacity: 1;
-}
+
 .body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .favorite,
 .body_global >.rightBlock .productListsBlock.reportBlock >.block .productList .product >.wrapper .favorite,
 .body_global >.rightBlock .componentListsBlock.reportBlock >.block .componentList .component >.wrapper .favorite {
@@ -6146,10 +6086,6 @@ body {
 .body_global >.rightBlock .componentListsBlock.reportBlock >.block .componentList .component >.wrapper:hover {
   background-color: #fff;
   cursor: pointer;
-}
-.body_global >.rightBlock .productListsBlock.reportBlock >.block .productList .product >.wrapper:hover .checkbox,
-.body_global >.rightBlock .componentListsBlock.reportBlock >.block .componentList .component >.wrapper:hover .checkbox {
-  opacity: 1;
 }
 .body_global >.rightBlock .productListsBlock.reportBlock >.block .productList .product >.wrapper .department,
 .body_global >.rightBlock .componentListsBlock.reportBlock >.block .componentList .component >.wrapper .department {
@@ -10815,20 +10751,7 @@ body {
   cursor: pointer;
   color: #314157;
 }
-.body_global .Subscriptions table.rules tr.rule >td.emailAlert .checkbox,
-.body_global .Subscriptions table.rules tr.rule >td.portalAlert .checkbox {
-  background-color: #dee4e5;
-  color: #dee4e5;
-  border-color: #cfd4d9;
-}
-.body_global .Subscriptions table.rules tr.rule >td.emailAlert .checkbox.active,
-.body_global .Subscriptions table.rules tr.rule >td.portalAlert .checkbox.active,
-.body_global .Subscriptions table.rules tr.rule >td.emailAlert .checkbox:hover,
-.body_global .Subscriptions table.rules tr.rule >td.portalAlert .checkbox:hover {
-  color: #fff;
-  background-color: #67af53;
-  border-color: #67af53;
-}
+
 .body_global .Subscriptions table.rules tr.rule.activeFilter td.creator {
   border-right: 1px solid #aac1e3;
 }
@@ -14266,15 +14189,7 @@ body {
   line-height: 56px;
   padding-left: 35px;
 }
-.caseListsBlock table.caseList tr.case .checkbox {
-  position: absolute;
-  right: 18px;
-  top: 18px;
-  width: 18px;
-  height: 18px;
-  border: 1px solid #d2d6dc;
-  text-align: center;
-}
+
 .caseListsBlock table.caseList tr.case .quickInfo {
   display: inline-block;
   vertical-align: middle;
@@ -14312,25 +14227,7 @@ body {
 .caseListsBlock table.caseList tr.case .extraButtons > .button + .button {
   margin-left: 2px;
 }
-.caseListsBlock table.caseList tr.case .checkBox {
-  position: absolute;
-  right: 15px;
-  top: 15px;
-  width: 18px;
-  height: 18px;
-  border: 1px solid #d2d6dc;
-  text-align: center;
-}
-.caseListsBlock table.caseList tr.case .checkBox .icon-checkmark {
-  color: transparent;
-}
-.caseListsBlock table.caseList tr.case .checkBox .icon-checkmark:before {
-  content: "\e80c";
-  vertical-align: -1px;
-}
-.caseListsBlock table.caseList tr.case .checkBox.active .icon-checkmark {
-  color: #de676b;
-}
+
 .caseListsBlock table.caseList tr.case > .favorite {
   position: absolute;
   top: 0px;
