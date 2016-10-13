@@ -34,6 +34,8 @@ public interface Lang extends Messages {
 
     String partner();
 
+    String date();
+
     String buttonSave();
 
     String buttonCancel();
@@ -47,4 +49,6 @@ public interface Lang extends Messages {
     String hello();
 
     String unknownField();
+
+    String companyGroup();
 }
