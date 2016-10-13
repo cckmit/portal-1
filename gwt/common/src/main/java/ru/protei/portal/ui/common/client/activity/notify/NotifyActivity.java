@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.common.client.notify.activity;
+package ru.protei.portal.ui.common.client.activity.notify;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;

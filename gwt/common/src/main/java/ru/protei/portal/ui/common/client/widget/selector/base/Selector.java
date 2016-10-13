@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Базова логика селектора
+ * Базовая логика селектора
  */
 public abstract class Selector<T>
         extends Composite

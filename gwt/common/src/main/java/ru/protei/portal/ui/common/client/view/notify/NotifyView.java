@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.common.client.notify.view;
+package ru.protei.portal.ui.common.client.view.notify;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.ParagraphElement;
@@ -11,8 +11,8 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
-import ru.protei.portal.ui.common.client.notify.activity.AbstractNotifyActivity;
-import ru.protei.portal.ui.common.client.notify.activity.AbstractNotifyView;
+import ru.protei.portal.ui.common.client.activity.notify.AbstractNotifyActivity;
+import ru.protei.portal.ui.common.client.activity.notify.AbstractNotifyView;
 
 /**
  * Представление уведомление

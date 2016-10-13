@@ -1,0 +1,13 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+
+    <g:HTMLPanel styleName="buttons_group" ui:field="inputContainer">
+        <label ui:field="label"/>
+
+        <g:TextBox ui:field="input" styleName="inputField" enabled="false"/>
+
+        <g:Button ui:field="button" styleName="button selected sticky empty whiteC caret"/>
+
+    </g:HTMLPanel>
+
+</ui:UiBinder>

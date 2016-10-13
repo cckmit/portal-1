@@ -1,6 +1,5 @@
 package ru.protei.portal.core.service.dict;
 
-import org.springframework.web.bind.annotation.*;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.api.struct.HttpListResult;
 import ru.protei.portal.core.model.ent.Company;

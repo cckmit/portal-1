@@ -5,11 +5,9 @@ import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.utils.HelperFunc;
 import ru.protei.portal.core.utils.TypeConverters;
-import ru.protei.winter.jdbc.JdbcSort;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Observable;
 
 /**
  * Created by michael on 01.04.16.
