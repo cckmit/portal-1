@@ -6,9 +6,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.HttpListResult;
+import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanyGroup;
+import ru.protei.portal.core.model.query.BaseQuery;
+import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.company.client.service.CompanyService;
 
@@ -26,17 +29,19 @@ public class CompanyServiceImpl extends RemoteServiceServlet implements CompanyS
         Long groupId = null;
         if ( group != null ) groupId = group.getId();
 
-        String directionSort = dirSort ? "asc" : "desc";
-
         log.debug( "getCompanies: searchPattern={}", searchPattern );
 
-        log.debug( "getCompanies: group={}", groupId );
+        log.debug( "getCompanies: group={}", group != null ? group.getId() : null );
 
         log.debug( "getCompanies: sortField={}", sortField );
 
-        HttpListResult< Company > result = companyService.list( searchPattern, groupId, sortField, directionSort );
+        log.debug( "getCompanies: dirSort={}", dirSort ? En_SortDir.ASC : En_SortDir.DESC );
 
-        log.debug( "getCompanies: result={}", result != null && result.getItems() != null ? result.getItems().size() : null);
+        CompanyQuery query = new CompanyQuery( searchPattern, sortField, dirSort ? En_SortDir.ASC : En_SortDir.DESC );
+        query.setGroupId( groupId );
+        query.setCategoryId( null );
+
+        HttpListResult< Company > result = companyService.list( query );
 
         return result.getItems();
     }
@@ -46,12 +51,11 @@ public class CompanyServiceImpl extends RemoteServiceServlet implements CompanyS
 
         log.debug( "getCompanyGroups: searchPattern={}", searchPattern );
 
-        HttpListResult< CompanyGroup > result = companyService.groupList( searchPattern, En_SortField.group_name, "asc" );
+        BaseQuery query = new BaseQuery( searchPattern, En_SortField.group_name, En_SortDir.ASC );
 
-        log.debug( "getCompanyGroups: result={}", result != null && result.getItems() != null ? result.getItems().size() : null);
+        HttpListResult< CompanyGroup > result = companyService.groupList( query );
 
         return result.getItems();
-
     }
 
     @Autowired

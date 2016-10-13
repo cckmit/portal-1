@@ -3,24 +3,24 @@
              xmlns:sortfieldselector='urn:import:ru.protei.portal.ui.company.client.widget.sortfieldselector'
              xmlns:companygroupselector='urn:import:ru.protei.portal.ui.company.client.widget.companygroupselector'>
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
-    <ui:import field="ru.protei.portal.core.model.dict.En_SortField.*"/>
     <g:HTMLPanel styleName="OrganizationList">
         <div class="controlButtons">
             <g:Button ui:field="customersButton" text="{lang.customers}" styleName="button whiteC switcher"/>
             <g:Button ui:field="partnersButton" text="{lang.partners}" styleName="button whiteC switcher"/>
-            <!--div class="buttons_group"-->
-                <companygroupselector:CompanyGroupSelector ui:field="companyGroup"/>
-                <!--input placeholder="Группа компаний" class="inputField"/><div class="button selected sticky empty whiteC"></div-->
-            <!--/div-->
             <div class="buttons_group">
-                <div class="regulator">Сортировать по
+                <companygroupselector:CompanyGroupSelector ui:field="companyGroup"/>
+            </div>
+            <div class="buttons_group">
+                <div class="regulator">
+                    <ui:text from="{lang.sortBy}"/>
                     <sortfieldselector:SortFieldSelector ui:field="sortField"/>
-                    <g:ToggleButton ui:field="directionButton" styleName="button empty switcher whiteC icon-down"/>
+                    <!--div class="button empty switcher"-->
+                        <g:ToggleButton ui:field="directionButton" styleName="button empty switcher whiteC"/>
+                    <!--/div-->
                 </div>
             </div>
             <div class="rightSide">
                 <g:TextBox ui:field="search" styleName="inputField"/>
-                <!--g:Button ui:field="searchButton" styleName="button empty sticky blueC"><span class="icon-search"></span></g:Button-->
             </div>
         </div>
         <g:HTMLPanel ui:field="companyContainer" styleName="organizations"/>

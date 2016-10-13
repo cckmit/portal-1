@@ -81,6 +81,12 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
 
     @UiHandler( "directionButton" )
     public void onDirectionClicked( ClickEvent event ) {
+
+        /*if (directionButton.getValue())
+            directionButton.removeStyleName("active");
+        else
+            directionButton.addStyleName("active");*/
+
         if ( activity != null ) {
             activity.onFilterChanged();
         }
