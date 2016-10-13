@@ -9,7 +9,20 @@ import javax.inject.Inject;
  */
 public class En_SortFieldLang {
     public String getName( En_SortField value ) {
-        return null;
+        switch (value)
+        {
+            case creation_date:
+                return lang.created();
+            case prod_name:
+                return lang.name();
+            case comp_name:
+                return lang.name();
+            case last_update:
+                return lang.updated();
+
+            default:
+                return lang.unknownField();
+        }
     }
 
     @Inject
