@@ -45,4 +45,6 @@ public interface Lang extends Messages {
     String authentification();
 
     String hello();
+
+    String unknownField();
 }
