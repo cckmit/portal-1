@@ -2,3 +2,85 @@
 @import "_style";
 @import "animate";
 @import "notify";
+
+
+
+.checkbox {
+  padding-left: 20px;
+  display: inline-block;
+}
+
+.checkbox label {
+  padding-left: 7px;
+  position: relative;
+  cursor: pointer;
+}
+
+.checkbox label::before {
+  -o-transition: .3s ease-in-out;
+  -webkit-transition: .3s ease-in-out;
+  background-color: #ffffff;
+  border-radius: 1px;
+  border: 1px solid rgba(120, 130, 140, 0.13);
+  content: "";
+  display: inline-block;
+  height: 17px;
+  left: 0;
+  margin-left: -20px;
+  position: absolute;
+  transition: .3s ease-in-out;
+  width: 17px;
+  outline: none !important;
+  top: -2px;
+}
+
+.checkbox label::after {
+  color: #5481c1;
+  display: inline-block;
+  font-size: 12px;
+  height: 16px;
+  left: 1px;
+  margin-left: -20px;
+  padding-left: 3px;
+  padding-top: 1px;
+  position: absolute;
+  top: -7px;
+  width: 16px;
+}
+
+.checkbox input[type="checkbox"] {
+  cursor: pointer;
+  opacity: 0;
+  z-index: 1;
+  outline: none !important;
+}
+
+.checkbox input[type="checkbox"]:disabled + label {
+  opacity: 0.65;
+}
+
+.checkbox input[type="checkbox"]:focus + label::before {
+  outline-offset: -2px;
+  outline: none;
+  outline: thin dotted;
+}
+
+.checkbox input[type="checkbox"]:hover + label::after,
+.checkbox input[type="checkbox"]:checked + label::after {
+  content: "\e80c";
+  font-family: 'icomoon';
+  opacity: 1;
+}
+
+.checkbox input[type="checkbox"]:hover:not(:checked) + label::after {
+  opacity: 0.6;
+}
+
+.checkbox input[type="checkbox"]:disabled + label::before {
+  background-color: #e9ecef;
+  cursor: not-allowed;
+}
+
+.checkbox input[type="checkbox"]:disabled + label::after {
+  color: #c3c3c3;
+}
