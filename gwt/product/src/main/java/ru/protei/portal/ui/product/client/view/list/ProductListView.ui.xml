@@ -8,9 +8,7 @@
             <div class="controlButtons">
                 <div class="buttons_group">
                     <div class="regulator">
-                        <ui:text from="{lang.sortBy}"/>
-
-                        <sortField:SortFieldSelector ui:field="sortFields" />
+                        <sortField:SortFieldSelector ui:field="sortFields" header="{lang.sortBy}"/>
 
                         <div class="button empty switcher">
                             <g:ToggleButton ui:field="sortDir" styleName="sorting_button" />
