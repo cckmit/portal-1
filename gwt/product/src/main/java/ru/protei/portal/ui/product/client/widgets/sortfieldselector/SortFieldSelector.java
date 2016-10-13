@@ -2,7 +2,7 @@ package ru.protei.portal.ui.product.client.widgets.sortfieldselector;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_SortField;
-import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.lang.En_SortFieldLang;
 import ru.protei.portal.ui.common.client.widget.selector.input.InputSelector;
 
 /**
@@ -20,11 +20,11 @@ public class SortFieldSelector
     public void fillOptions() {
         clearOptions();
 
-        addOption( lang.name(), En_SortField.prod_name );
-        addOption( lang.created(), En_SortField.creation_date );
+        addOption( lang.getName(En_SortField.prod_name), En_SortField.prod_name );
+        addOption( lang.getName(En_SortField.creation_date), En_SortField.creation_date );
     }
 
     @Inject
-    private Lang lang;
+    private En_SortFieldLang lang;
 
 }

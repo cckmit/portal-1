@@ -8,5 +8,5 @@ public interface AbstractProductItemView extends IsWidget {
 
     void setName (String name);
 
-    void setDepricated (boolean value);
+    void setDeprecated(boolean value);
 }

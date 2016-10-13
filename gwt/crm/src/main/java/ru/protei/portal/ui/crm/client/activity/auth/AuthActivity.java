@@ -4,11 +4,12 @@ import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
-import ru.protei.portal.ui.common.shared.model.Profile;
-import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.shared.model.Profile;
+import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.crm.client.service.AuthServiceAsync;
 
 /**
@@ -53,7 +54,7 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
             public void onSuccess( Profile profile ) {
                 fireEvent( new AuthEvents.Success( profile ) );
                 fireEvent( new AppEvents.Show() );
-                fireEvent(new NotifyEvents.Show("Authentification", "Hello, darling!", NotifyEvents.NotifyType.DEFAULT));
+                fireEvent(new NotifyEvents.Show(lang.authentification(), lang.hello(), NotifyEvents.NotifyType.DEFAULT));
             }
         } );
     }
@@ -93,6 +94,9 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
 
     @Inject
     AuthServiceAsync authService;
+
+    @Inject
+    Lang lang;
 
     private AuthEvents.Init init;
 }

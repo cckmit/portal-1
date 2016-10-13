@@ -28,7 +28,7 @@ public class ProductItemView extends Composite implements AbstractProductItemVie
     }
 
     @Override
-    public void setDepricated(boolean value) {
+    public void setDeprecated(boolean value) {
         if (value)
             this.getElement().getFirstChildElement().addClassName("inactive");
     }

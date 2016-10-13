@@ -25,7 +25,7 @@ public class ProductServiceImpl extends RemoteServiceServlet implements ProductS
     @Override
     public List<DevUnit> getProductList(String param, Boolean state, En_SortField sortField, Boolean sortDir) throws RequestFailedException {
 
-        log.info (" getProductList : param = " + param + " showDepricated = " + state + " sortField = " + sortField.getFieldName() + " order " + sortDir.toString());
+        log.info (" getProductList : param = " + param + " showDeprecated = " + state + " sortField = " + sortField.getFieldName() + " order " + sortDir.toString());
 
         productQuery = new ProductQuery();
         productQuery.setSearchString(param);

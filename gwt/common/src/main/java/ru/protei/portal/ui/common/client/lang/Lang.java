@@ -18,11 +18,13 @@ public interface Lang extends Messages {
 
     String created();
 
+    String updated();
+
     String sortBy();
 
     String products();
 
-    String showDepricated();
+    String showDeprecated();
 
     String customers();
 
@@ -37,4 +39,10 @@ public interface Lang extends Messages {
     String buttonCancel();
 
     String searchNoMatchesFound();
+
+    String errorGetList();
+
+    String authentification();
+
+    String hello();
 }

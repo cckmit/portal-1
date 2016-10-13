@@ -36,8 +36,8 @@ public class ProductListView extends Composite implements AbstractProductListVie
     public HasText getSearchPattern() { return search; }
 
     @Override
-    public HasValue<Boolean> isShowDepricated() {
-        return showDepricated;
+    public HasValue<Boolean> isShowDeprecated() {
+        return showDeprecated;
     }
 
     @Override
@@ -49,19 +49,19 @@ public class ProductListView extends Composite implements AbstractProductListVie
     @Override
     public void reset() {
         search.setText("");
-        showDepricated.setValue(false);
+        showDeprecated.setValue(false);
         sortFields.setValue(En_SortField.prod_name);
         sortDir.setValue(true);
     }
 
-    @UiHandler("showDepricated")
-    public void onShowDepricatedClick (ClickEvent event)
+    @UiHandler("showDeprecated")
+    public void onShowDeprecatedClick(ClickEvent event)
     {
-        if (showDepricated.getValue())
-            showDepricated.removeStyleName("active");
+        if (showDeprecated.getValue())
+            showDeprecated.removeStyleName("active");
         else
-            showDepricated.addStyleName("active");
-        activity.onShowDepricatedClick();
+            showDeprecated.addStyleName("active");
+        activity.onShowDeprecatedClick();
     }
 
     @UiHandler( "search" )
@@ -116,7 +116,7 @@ public class ProductListView extends Composite implements AbstractProductListVie
     @UiField
     HTMLPanel productContainer;
     @UiField
-    CheckBox showDepricated;
+    CheckBox showDeprecated;
     @Inject
     @UiField(provided = true)
     SortFieldSelector sortFields;

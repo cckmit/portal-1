@@ -14,7 +14,7 @@ public interface AbstractProductListView extends IsWidget {
 
     HasText getSearchPattern();
 
-    HasValue<Boolean> isShowDepricated();
+    HasValue<Boolean> isShowDeprecated();
 
     HasValue<En_SortField> getSortField ();
 

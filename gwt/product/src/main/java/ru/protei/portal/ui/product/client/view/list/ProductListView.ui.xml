@@ -18,7 +18,7 @@
 
                     </div>
                     <div class="regulator">
-                        <g:CheckBox ui:field="showDepricated"/><ui:text from="{lang.showDepricated}"/>
+                        <g:CheckBox ui:field="showDeprecated"/><ui:text from="{lang.showDeprecated}"/>
                     </div>
                 </div>
                 <div class="rightSide">
