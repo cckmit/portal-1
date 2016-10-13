@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * Сервис по работе с компаниями
  */
-@RemoteServiceRelativePath ("springGwtServices/CompanyService")
+@RemoteServiceRelativePath( "springGwtServices/CompanyService" )
 public interface CompanyService extends RemoteService {
 
     /**
@@ -23,7 +23,7 @@ public interface CompanyService extends RemoteService {
      * @param sortField поле для сортировки
      * @return список компаний
      */
-    List<Company> getCompanies( String searchPattern, CompanyGroup group, En_SortField sortField ) throws RequestFailedException;
+    List<Company> getCompanies( String searchPattern, CompanyGroup group, En_SortField sortField, Boolean dirSort ) throws RequestFailedException;
 
     /**
      * Получение списка групп компаний

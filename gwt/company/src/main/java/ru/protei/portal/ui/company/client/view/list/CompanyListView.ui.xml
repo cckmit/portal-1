@@ -15,7 +15,7 @@
             <div class="buttons_group">
                 <div class="regulator">Сортировать по
                     <sortfieldselector:SortFieldSelector ui:field="sortField"/>
-                    <g:Button ui:field="directionButton" styleName="button empty switcher whiteC"><span class="icon-down"></span></g:Button>
+                    <g:ToggleButton ui:field="directionButton" styleName="button empty switcher whiteC icon-down"/>
                 </div>
             </div>
             <div class="rightSide">

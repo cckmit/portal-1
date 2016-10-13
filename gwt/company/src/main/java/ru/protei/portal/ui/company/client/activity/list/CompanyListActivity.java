@@ -70,7 +70,8 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
 
     private void initCompanies() {
 
-        companyService.getCompanies( view.getSearchPattern(), view.getCompanyGroup().getValue(), view.getSortField().getValue(), new RequestCallback< List < Company > >() {
+        companyService.getCompanies( view.getSearchPattern(), view.getCompanyGroup().getValue(),
+                view.getSortField().getValue(), view.getDirSort(), new RequestCallback< List < Company > >() {
 
             @Override
             public void onError( Throwable throwable ) {}

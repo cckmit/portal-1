@@ -21,10 +21,12 @@ import java.util.List;
 public class CompanyServiceImpl extends RemoteServiceServlet implements CompanyService {
 
     @Override
-    public List< Company > getCompanies( String searchPattern, CompanyGroup group, En_SortField sortField ) throws RequestFailedException {
+    public List< Company > getCompanies( String searchPattern, CompanyGroup group, En_SortField sortField, Boolean dirSort ) throws RequestFailedException {
 
         Long groupId = null;
         if ( group != null ) groupId = group.getId();
+
+        String directionSort = dirSort ? "asc" : "desc";
 
         log.debug( "getCompanies: searchPattern={}", searchPattern );
 
@@ -32,7 +34,7 @@ public class CompanyServiceImpl extends RemoteServiceServlet implements CompanyS
 
         log.debug( "getCompanies: sortField={}", sortField );
 
-        HttpListResult< Company > result = companyService.list( searchPattern, groupId, sortField, "asc" );
+        HttpListResult< Company > result = companyService.list( searchPattern, groupId, sortField, directionSort );
 
         log.debug( "getCompanies: result={}", result != null && result.getItems() != null ? result.getItems().size() : null);
 

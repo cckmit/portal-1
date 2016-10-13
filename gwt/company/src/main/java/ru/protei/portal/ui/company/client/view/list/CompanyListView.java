@@ -52,6 +52,11 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
         return companyGroup;
     }
 
+    @Override
+    public Boolean getDirSort() {
+        return directionButton.getValue();
+    }
+
     @UiHandler( "customersButton" )
     public void onCustomersClicked( ClickEvent event ) {
     }
@@ -74,6 +79,13 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
         }
     }
 
+    @UiHandler( "directionButton" )
+    public void onDirectionClicked( ClickEvent event ) {
+        if ( activity != null ) {
+            activity.onFilterChanged();
+        }
+    }
+
     @Override
     public void onKeyUp( KeyUpEvent keyUpEvent ) {
         timer.cancel();
@@ -83,6 +95,7 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
     public void resetFilter() {
         companyGroup.setValue( null );
         sortField.setValue( En_SortField.comp_name );
+        directionButton.setValue(true);
         search.setText( "" );
     }
 
@@ -100,7 +113,7 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
     @UiField
     HTMLPanel companyContainer;
     @UiField
-    Button directionButton;
+    ToggleButton directionButton;
 
     Timer timer = new Timer() {
         @Override

@@ -19,13 +19,13 @@ public interface CompanyServiceAsync {
      * @param  sortField поле для сортировки
      * @return список компаний
      */
-    void getCompanies( String searchPattern, CompanyGroup group, En_SortField sortField, AsyncCallback<List<Company>> async );
+    void getCompanies( String searchPattern, CompanyGroup group, En_SortField sortField, Boolean dirSort, AsyncCallback< List< Company > > async );
 
     /**
      * Получение списка групп компаний
      * @param searchPattern шаблон поиска
      * @return список компаний
      */
-    void getCompanyGroups( String searchPattern, AsyncCallback<List<CompanyGroup>> async );
+    void getCompanyGroups( String searchPattern, AsyncCallback<List < CompanyGroup > > async );
 
 }
