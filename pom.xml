@@ -27,7 +27,7 @@
             <modules>
                 <module>module/model</module>
                 <module>module/core</module>
-                <module>app/web-ui</module>
+                <!--<module>app/web-ui</module>-->
                 
                 <module>skin/classic</module>
 
@@ -36,7 +36,7 @@
                 <module>gwt/product</module>
                 <module>gwt/crm</module>
 
-                <module>app/crm</module>
+                <!--<module>app/crm</module>-->
             </modules>
         </profile>
     </profiles>

@@ -22,7 +22,7 @@
         <url-pattern>/Crm/springGwtServices/*</url-pattern>
     </servlet-mapping>
 
-    <!-- Инвалидация кэша Tomcat -->
+     Инвалидация кэша Tomcat
     <!--<filter>-->
         <!--<filter-name>ExpiresFilter</filter-name>-->
         <!--<filter-class>org.apache.catalina.filters.ExpiresFilter</filter-class>-->
@@ -37,6 +37,17 @@
         <!--<url-pattern>/*</url-pattern>-->
         <!--<dispatcher>REQUEST</dispatcher>-->
     <!--</filter-mapping>-->
+
+    <filter>
+        <filter-name>gwtCacheControlFilter</filter-name>
+        <filter-class>ru.protei.portal.ui.common.server.GWTCacheControlFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>gwtCacheControlFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+    </filter-mapping>
 
 
     <welcome-file-list>
