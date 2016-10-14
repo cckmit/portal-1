@@ -38,6 +38,7 @@ public abstract class ProductListActivity implements AbstractProductListActivity
         init.parent.add(view.asWidget());
 
         requestProducts();
+        fireEvent(new NotifyEvents.Show("Common!", NotifyEvents.NotifyType.INFO));
     }
 
     @Event
@@ -74,7 +75,7 @@ public abstract class ProductListActivity implements AbstractProductListActivity
                 new RequestCallback<List<DevUnit>>() {
             @Override
             public void onError(Throwable throwable) {
-                fireEvent ( new NotifyEvents.Show( lang.products(), lang.errorGetList(), NotifyEvents.NotifyType.ERROR ) );
+                fireEvent ( new NotifyEvents.Show(lang.errorGetList(), NotifyEvents.NotifyType.ERROR ) );
             }
 
             @Override

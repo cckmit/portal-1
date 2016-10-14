@@ -17,7 +17,7 @@ public interface AbstractNotifyView extends IsWidget {
     /**
      * Задает заголовок уведомления
      */
-    void setTitle( String title );
+    //void setTitle( String title );
 
     /**
      * Задает тип уведомления
