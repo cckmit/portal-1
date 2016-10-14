@@ -107,7 +107,7 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
     }
 
     public void resetFilter() {
-
+        companyCategory.getValue().clear();
         companyGroup.setValue( null );
         sortField.setValue( En_SortField.comp_name );
         directionButton.setValue( true );
