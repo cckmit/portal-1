@@ -1,24 +1,5 @@
-<!--ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
-             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
-
-    <g:HTMLPanel styleName="body">
-        <div class="date">
-            <div ui:field="header" class="dateTitle" >
-                <g:Button ui:field="close" styleName="closeButton" />
-            </div>
-            <div class="notes">
-                <div ui:field="message" class="note"/>
-            </div>
-        </div>
-    </g:HTMLPanel>
-
-
-</ui:UiBinder-->
-
-
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'>
-
 
     <g:HTMLPanel ui:field="notify" styleName="notify">
         <div class="body">

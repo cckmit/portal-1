@@ -31,18 +31,13 @@ public class NotifyView extends Composite implements AbstractNotifyView, ClickHa
 
     @Override
     public void setMessage( String text ) {
-        message.setInnerText(text); // ??? может быть не просто текст, а еще и верстка внутри?
+        message.setInnerText(text);
     }
 
     @Override
     public void setType(String type) {
         notify.addStyleName(type);
     }
-
-//    @Override
-//    public void setTitle( String title ) {
-//        header.setInnerText( title );
-//    }
 
     @Override
     public void onClick( ClickEvent event ) {

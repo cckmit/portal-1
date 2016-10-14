@@ -70,10 +70,15 @@ public class AuthView extends Composite implements AbstractAuthView, KeyPressHan
         login.setFocus(true);
     }
 
+    @Override
+    public void showError(String msg){
+        authErrorPanel.setInnerText(msg);
+        authErrorPanel.addClassName("active");
+    }
 
     @Override
-    public Element getErrorPanel(){
-        return authErrorPanel;
+    public void hideError(){
+        authErrorPanel.removeClassName("active");
     }
 
     @UiField

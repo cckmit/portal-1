@@ -16,7 +16,6 @@ public class NotifyAnimation {
         this.parentWrapper = wrapper;
     }
     public void show( final IsWidget notify ) {
-        //notify.asWidget().removeStyleName("notify-hide" );
         notify.asWidget().addStyleName("active" );
 
         parentWrapper.add(notify.asWidget());
@@ -32,7 +31,6 @@ public class NotifyAnimation {
     }
 
     public void close( final IsWidget notify ) {
-
         notify.asWidget().removeStyleName("active");
 
         notify.asWidget().getElement().getStyle().setMarginBottom(

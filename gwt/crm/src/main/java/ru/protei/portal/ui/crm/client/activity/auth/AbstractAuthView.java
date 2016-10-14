@@ -18,7 +18,8 @@ public interface AbstractAuthView extends IsWidget {
 
     void setFocus();
 
-    public Element getErrorPanel();
+    void showError(String msg);
 
+    void hideError();
 
 }

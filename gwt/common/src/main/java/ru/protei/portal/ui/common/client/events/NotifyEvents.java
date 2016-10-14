@@ -39,11 +39,9 @@ public class NotifyEvents {
     }
 
     public enum NotifyType {
-        //DEFAULT ("default"),
         INFO ("info"),
         ERROR ("warning"),
         SUCCESS ("success");
-        //WARNING ("warning");
 
         private final String style;
 

@@ -1,91 +1,4 @@
-.notify-wrapper {
-  z-index: 5000;
-  position: fixed;
-  top: 60px;
-  right: 10px;
-
-  .notify-item {
-    width: 340px;
-    display: block;
-    background: rgba(39, 41, 48, 0.8);
-    color: #eee;
-    margin-bottom: 10px;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.32);
-    position: relative;
-    border-radius: 3px;
-    padding: 15px 27px 15px 15px;
-
-    &.notify-show {
-      pointer-events: auto;
-      -webkit-animation-name: animJelly;
-      animation-name: animJelly;
-      -webkit-animation-duration: 1s;
-      animation-duration: 1s;
-      -webkit-animation-timing-function: linear;
-      animation-timing-function: linear;
-    }
-
-    &.notify-hide {
-      -webkit-animation-name: animFade;
-      animation-name: animFade;
-      -webkit-animation-duration: 0.3s;
-      animation-duration: 0.3s;
-      -webkit-animation-direction: reverse;
-      animation-direction: reverse;
-    }
-
-    .notify-close {
-      float: right;
-      font-size: 20px;
-      font-weight: 600;
-      line-height: 1;
-      color: white;
-      -webkit-appearance: none;
-      padding: 0;
-      cursor: pointer;
-      background: 0 0;
-      border: 0;
-      position: relative;
-      right: -16px;
-      top: -8px;
-    }
-
-    .notify-content {
-      .notify-title {
-        padding: 0 0 8px 0;
-        text-shadow: none;
-        font-weight: 300;
-        font-size: 17px;
-      }
-
-      p {
-        text-shadow: none;
-        font-weight: 300;
-        font-size: 12px;
-        line-height: 19px;
-      }
-    }
-  }
-
-
-  .default {
-    background-color : cornflowerblue !important;
-    color: #000000;
-  }
-
-  .error {
-    background-color : palevioletred;
-    color: #000000;
-  }
-
-  .success {
-    background-color : palegreen;
-    color: #000000;
-  }
-
-}
-
-.NotifyPanel {
+.notifyPanel {
   position: fixed;
   right: 14px;
   bottom: 14px;
@@ -93,7 +6,7 @@
   width: 430px;
   transition-duration: 0.3s;
 }
-.NotifyPanel .notify {
+.notifyPanel .notify {
   position: relative;
   cursor: pointer;
   opacity: 0;
@@ -101,64 +14,64 @@
   box-shadow: 0 1px 1px 0px rgba(0,0,0,0.68);
   transition-duration: 0.3s;
 }
-.NotifyPanel .notify.active {
+.notifyPanel .notify.active {
   opacity: 1;
 }
-.NotifyPanel .notify.warning {
+.notifyPanel .notify.warning {
   background: #d04141;
 }
-.NotifyPanel .notify.warning .body {
+.notifyPanel .notify.warning .body {
   border-top: 1px solid #ff4e4e;
 }
-.NotifyPanel .notify.warning .icon-mIcon {
+.notifyPanel .notify.warning .icon-mIcon {
   background: #eb5757;
 }
-.NotifyPanel .notify.warning .icon-mIcon:before {
+.notifyPanel .notify.warning .icon-mIcon:before {
   content: "\e987";
   vertical-align: 0;
 }
-.NotifyPanel .notify.warning:hover {
+.notifyPanel .notify.warning:hover {
   background: #dc4747;
 }
-.NotifyPanel .notify.info {
+.notifyPanel .notify.info {
   background: #4673b3;
 }
-.NotifyPanel .notify.info .body {
+.notifyPanel .notify.info .body {
   border-top: 1px solid #8caaff;
 }
-.NotifyPanel .notify.info .icon-mIcon {
+.notifyPanel .notify.info .icon-mIcon {
   background: #5489d3;
 }
-.NotifyPanel .notify.info .icon-mIcon:before {
+.notifyPanel .notify.info .icon-mIcon:before {
   content: "\e989";
   vertical-align: -1px;
 }
-.NotifyPanel .notify.info:hover {
+.notifyPanel .notify.info:hover {
   background: #4b7cc1;
 }
-.NotifyPanel .notify.success {
+.notifyPanel .notify.success {
   background: #63a251;
 }
-.NotifyPanel .notify.success .body {
+.notifyPanel .notify.success .body {
   border-top: 1px solid #97dc84;
 }
-.NotifyPanel .notify.success .icon-mIcon {
+.notifyPanel .notify.success .icon-mIcon {
   background: #74b960;
 }
-.NotifyPanel .notify.success .icon-mIcon:before {
+.notifyPanel .notify.success .icon-mIcon:before {
   content: "\e988";
   vertical-align: -1px;
 }
-.NotifyPanel .notify.success:hover {
+.notifyPanel .notify.success:hover {
   background: #6aac58;
 }
-.NotifyPanel .notify .body {
+.notifyPanel .notify .body {
   text-align: center;
   position: relative;
   padding: 24px;
   padding-left: 46px;
 }
-.NotifyPanel .notify .body .icon-mIcon {
+.notifyPanel .notify .body .icon-mIcon {
   color: #fff;
   font-size: 18px;
   position: absolute;
@@ -172,12 +85,12 @@
   padding-top: 15px;
   margin-top: -25px;
 }
-.NotifyPanel .notify .body .text {
+.notifyPanel .notify .body .text {
   font-size: 14px;
   color: #fff;
   line-height: 1.6em;
 }
-.NotifyPanel .notify .body .timer {
+.notifyPanel .notify .body .timer {
   position: absolute;
   top: 7px;
   right: 10px;

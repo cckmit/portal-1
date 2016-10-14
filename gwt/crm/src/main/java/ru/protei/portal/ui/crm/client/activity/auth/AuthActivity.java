@@ -45,16 +45,14 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
 
     public void onLoginClicked() {
         authService.authentificate( view.getUserName(), view.getPassword(), new RequestCallback< Profile >() {
-            Element errorPanel = view.getErrorPanel();
             @Override
             public void onError( Throwable caught ) {
-                errorPanel.setInnerText("Ошибка! Неправильный логин или пароль");
-                errorPanel.addClassName("active");
+                view.showError("Ошибка! Неправильный логин или пароль");
             }
 
             @Override
             public void onSuccess( Profile profile ) {
-                errorPanel.removeClassName("active"); // убираем ошибку если таковая была
+                view.hideError();
                 fireEvent(new AuthEvents.Success(profile ) );
                 fireEvent( new AppEvents.Show() );
                 fireEvent(new NotifyEvents.Show("Hello, darling!", NotifyEvents.NotifyType.INFO));
