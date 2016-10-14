@@ -1,9 +1,9 @@
 package ru.protei.portal.core.service.dict;
 
-import org.springframework.web.bind.annotation.*;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.api.struct.HttpListResult;
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.ent.CompanyCategory;
 import ru.protei.portal.core.model.ent.CompanyGroup;
 import ru.protei.portal.core.model.ent.CompanyGroupItem;
 import ru.protei.portal.core.model.query.BaseQuery;
@@ -20,6 +20,7 @@ public interface CompanyService {
 
     HttpListResult<CompanyGroup> groupList (BaseQuery query);
 
+    HttpListResult<CompanyCategory> categoryList (BaseQuery query);
 
     /**
      * methods below are for testing purpose only

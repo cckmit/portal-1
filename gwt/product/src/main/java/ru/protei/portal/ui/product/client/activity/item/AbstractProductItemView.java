@@ -7,4 +7,6 @@ public interface AbstractProductItemView extends IsWidget {
     void setActivity(AbstractProductItemActivity activity);
 
     void setName (String name);
+
+    void setDeprecated(boolean value);
 }

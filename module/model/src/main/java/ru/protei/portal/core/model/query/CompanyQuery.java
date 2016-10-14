@@ -3,6 +3,8 @@ package ru.protei.portal.core.model.query;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 
+import java.util.List;
+
 /**
  * Created by michael on 12.10.16.
  */
@@ -14,10 +16,9 @@ public class CompanyQuery extends BaseQuery {
     public Long groupId;
 
     /**
-     * company category (a partner, dealer, customer, etc)
+     * list of company category (a partner, dealer, customer, etc)
      */
-    public Long categoryId;
-
+    public List<Long> categoryIds;
 
     public CompanyQuery() {
         super("", En_SortField.comp_name, En_SortDir.ASC);
@@ -35,11 +36,11 @@ public class CompanyQuery extends BaseQuery {
         this.groupId = groupId;
     }
 
-    public Long getCategoryId() {
-        return categoryId;
+    public List<Long> getCategoryIds() {
+        return categoryIds;
     }
 
-    public void setCategoryId(Long categoryId) {
-        this.categoryId = categoryId;
-    }
+    public void setCategoryIds(List<Long> categoryIds) {
+        this.categoryIds = categoryIds;
+    };
 }

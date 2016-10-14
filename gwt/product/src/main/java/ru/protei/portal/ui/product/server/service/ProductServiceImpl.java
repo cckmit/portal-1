@@ -5,11 +5,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.protei.portal.api.struct.HttpListResult;
+import ru.protei.portal.core.model.dict.En_DevUnitState;
+import ru.protei.portal.core.model.dict.En_SortDir;
+import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.DevUnit;
+import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.product.client.service.ProductService;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,31 +23,20 @@ import java.util.List;
 public class ProductServiceImpl extends RemoteServiceServlet implements ProductService {
 
     @Override
-    public List<DevUnit> getProductList(String param, boolean showDepricated) throws RequestFailedException {
+    public List<DevUnit> getProductList(String param, Boolean state, En_SortField sortField, Boolean sortDir) throws RequestFailedException {
 
-        log.info (" getProductList : param = " + param + " showDepricated = " + showDepricated);
+        log.info (" getProductList : param = " + param + " showDeprecated = " + state + " sortField = " + sortField.getFieldName() + " order " + sortDir.toString());
 
-        //HttpListResult<ProductView> result = productService.list(param);
-        //return result.items;
+        productQuery = new ProductQuery();
+        productQuery.setSearchString(param);
+        productQuery.setState(state ? null : En_DevUnitState.ACTIVE);
+        productQuery.setSortField(sortField);
+        productQuery.setSortDir(sortDir ? En_SortDir.ASC : En_SortDir.DESC);
 
-        // временная заглушка вместо получения списка из БД
-        List <DevUnit> products = new ArrayList<DevUnit>();
-        DevUnit pr = new DevUnit();
-        pr.setName("EACD4");
-        products.add(pr);
+        HttpListResult<DevUnit> result = productService.list(productQuery);
 
-        pr = new DevUnit();
-        pr.setName("WelcomeSMS");
-        products.add(pr);
+        return result.items;
 
-        if (showDepricated)
-        {
-            pr = new DevUnit();
-            pr.setName("CWS");
-            products.add(pr);
-        }
-
-        return products;
    }
 
     @Override
@@ -57,6 +50,8 @@ public class ProductServiceImpl extends RemoteServiceServlet implements ProductS
 
     @Autowired
     ru.protei.portal.core.service.dict.ProductService productService;
+
+    private ProductQuery productQuery;
 
     private static final Logger log = LoggerFactory.getLogger( "web" );
 }

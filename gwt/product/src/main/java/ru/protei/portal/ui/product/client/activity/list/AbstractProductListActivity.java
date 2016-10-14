@@ -5,5 +5,7 @@ package ru.protei.portal.ui.product.client.activity.list;
  */
 public interface AbstractProductListActivity {
 
-    void onShowDepricatedClick();
+    void onShowDeprecatedClick();
+
+    void onFilterChanged();
 }

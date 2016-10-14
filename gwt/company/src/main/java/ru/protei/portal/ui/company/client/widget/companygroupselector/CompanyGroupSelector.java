@@ -4,14 +4,14 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.CompanyGroup;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
-import ru.protei.portal.ui.common.client.widget.selector.input.InputSelector;
+import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 
 import java.util.List;
 
 /**
  * Селектор списка групп компаний
  */
-public class CompanyGroupSelector extends InputSelector<CompanyGroup> implements ModelSelector<CompanyGroup> {
+public class CompanyGroupSelector extends ButtonSelector< CompanyGroup > implements ModelSelector< CompanyGroup > {
 
     @Inject
     public void init( CompanyGroupModel companyGroupModel ) {

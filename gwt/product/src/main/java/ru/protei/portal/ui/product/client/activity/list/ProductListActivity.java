@@ -7,6 +7,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.ui.common.client.events.AppEvents;
+import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.ProductEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -19,12 +20,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Активность списка продуктов
+ */
 public abstract class ProductListActivity implements AbstractProductListActivity, AbstractProductItemActivity, Activity {
 
     @PostConstruct
     public void onInit() {
         view.setActivity(this);
-
     }
 
     @Event
@@ -34,11 +37,13 @@ public abstract class ProductListActivity implements AbstractProductListActivity
         init.parent.clear();
         init.parent.add(view.asWidget());
 
-        fireEvent(new NotifyEvents.Show("Get ProductView List", "Common!", NotifyEvents.NotifyType.DEFAULT));
-
-        initProducts();
+        requestProducts();
     }
 
+    @Event
+    public void onAuthorize (AuthEvents.Success event) {
+        view.reset();
+    }
 
     @Event
     public void onInitDetails(AppEvents.InitDetails event) {
@@ -47,24 +52,33 @@ public abstract class ProductListActivity implements AbstractProductListActivity
 
 
     @Override
-    public void onShowDepricatedClick() {
-        initProducts();
+    public void onShowDeprecatedClick() {
+        requestProducts();
     }
 
-    private void initProducts() {
+
+    @Override
+    public void onFilterChanged() {
+        requestProducts();
+    }
+
+    private void requestProducts() {
 
         view.getItemsContainer().clear();
-        map.clear();
+        modelToView.clear();
 
-        productService.getProductList(view.getParam(), view.isShowDepricated().getValue(), new RequestCallback<List<DevUnit>>() {
+        productService.getProductList(view.getSearchPattern().getText(),
+                view.isShowDeprecated().getValue(),
+                view.getSortField().getValue(),
+                view.getSortDir().getValue(),
+                new RequestCallback<List<DevUnit>>() {
             @Override
             public void onError(Throwable throwable) {
-                fireEvent ( new NotifyEvents.Show( "Get ProductView List", "Error!", NotifyEvents.NotifyType.ERROR ) );
+                fireEvent ( new NotifyEvents.Show( lang.products(), lang.errorGetList(), NotifyEvents.NotifyType.ERROR ) );
             }
 
             @Override
             public void onSuccess(List<DevUnit> result) {
-                fireEvent ( new NotifyEvents.Show( "Get ProductView List", "Success!", NotifyEvents.NotifyType.SUCCESS ) );
                 fillView(result);
             }
         });
@@ -76,7 +90,7 @@ public abstract class ProductListActivity implements AbstractProductListActivity
             AbstractProductItemView itemView = makeItemView (product);
 
             view.getItemsContainer().add(itemView.asWidget());
-            map.put(product, itemView);
+            modelToView.put(product, itemView);
         }
     }
 
@@ -84,6 +98,7 @@ public abstract class ProductListActivity implements AbstractProductListActivity
     {
         AbstractProductItemView itemView = provider.get();
         itemView.setName(product.getName());
+        itemView.setDeprecated(product.getStateId() > 1);
         itemView.setActivity(this);
 
         return itemView;
@@ -101,7 +116,7 @@ public abstract class ProductListActivity implements AbstractProductListActivity
     @Inject
     ProductServiceAsync productService;
 
-    private Map<DevUnit, AbstractProductItemView> map = new HashMap<DevUnit, AbstractProductItemView>();
+    private Map<DevUnit, AbstractProductItemView> modelToView = new HashMap<DevUnit, AbstractProductItemView>();
     private AppEvents.InitDetails init;
 
 }

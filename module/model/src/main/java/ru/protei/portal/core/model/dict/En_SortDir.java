@@ -1,7 +1,5 @@
 package ru.protei.portal.core.model.dict;
 
-import ru.protei.winter.jdbc.JdbcSort;
-
 /**
  * Created by michael on 10.10.16.
  */

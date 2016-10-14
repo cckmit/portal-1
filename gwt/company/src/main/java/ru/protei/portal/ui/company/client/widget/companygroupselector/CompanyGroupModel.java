@@ -40,6 +40,7 @@ public abstract class CompanyGroupModel implements Activity {
             selector.refreshValue();
         }
     }
+
     private void refreshOptions() {
 
         companyService.getCompanyGroups( "", new RequestCallback< List< CompanyGroup > >() {
@@ -47,9 +48,9 @@ public abstract class CompanyGroupModel implements Activity {
             public void onError( Throwable throwable ) {}
 
             @Override
-            public void onSuccess( List< CompanyGroup > companyGroups ) {
+            public void onSuccess( List< CompanyGroup > groups ) {
                 list.clear();
-                list.addAll( companyGroups );
+                list.addAll( groups );
 
                 notifySubscribers();
             }

@@ -1,12 +1,15 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:companycategorybtngroup='urn:import:ru.protei.portal.ui.company.client.widget.companycategorybtngroup'
              xmlns:sortfieldselector='urn:import:ru.protei.portal.ui.company.client.widget.sortfieldselector'
              xmlns:companygroupselector='urn:import:ru.protei.portal.ui.company.client.widget.companygroupselector'>
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
     <g:HTMLPanel styleName="OrganizationList">
         <div class="controlButtons">
-            <g:Button ui:field="customersButton" text="{lang.customers}" styleName="button whiteC switcher"/>
-            <g:Button ui:field="partnersButton" text="{lang.partners}" styleName="button whiteC switcher"/>
+            <companycategorybtngroup:CompanyCategoryBtnGroup ui:field="companyCategory"/>
+            <!--g:Button ui:field="customersButton" text="{lang.customers}" styleName="button whiteC switcher"/>
+            <g:Button ui:field="partnersButton" text="{lang.partners}" styleName="button whiteC switcher"/-->
+
             <div class="buttons_group">
                 <companygroupselector:CompanyGroupSelector ui:field="companyGroup"/>
             </div>
@@ -14,9 +17,9 @@
                 <div class="regulator">
                     <ui:text from="{lang.sortBy}"/>
                     <sortfieldselector:SortFieldSelector ui:field="sortField"/>
-                    <!--div class="button empty switcher"-->
-                        <g:ToggleButton ui:field="directionButton" styleName="button empty switcher whiteC"/>
-                    <!--/div-->
+                    <div class="button empty switcher">
+                        <g:ToggleButton ui:field="directionButton" styleName="sorting_button"/>
+                    </div>
                 </div>
             </div>
             <div class="rightSide">
