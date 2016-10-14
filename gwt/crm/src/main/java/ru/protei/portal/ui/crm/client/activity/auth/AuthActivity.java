@@ -1,5 +1,7 @@
 package ru.protei.portal.ui.crm.client.activity.auth;
 
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -43,16 +45,19 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
 
     public void onLoginClicked() {
         authService.authentificate( view.getUserName(), view.getPassword(), new RequestCallback< Profile >() {
+            Element errorPanel = view.getErrorPanel();
             @Override
             public void onError( Throwable caught ) {
-                Window.alert("Authentification error!");
+                errorPanel.setInnerText("Ошибка! Неправильный логин или пароль");
+                errorPanel.addClassName("active");
             }
 
             @Override
             public void onSuccess( Profile profile ) {
-                fireEvent( new AuthEvents.Success( profile ) );
+                errorPanel.removeClassName("active"); // убираем ошибку если таковая была
+                fireEvent(new AuthEvents.Success(profile ) );
                 fireEvent( new AppEvents.Show() );
-                fireEvent(new NotifyEvents.Show("Authentification", "Hello, darling!", NotifyEvents.NotifyType.DEFAULT));
+                fireEvent(new NotifyEvents.Show("Hello, darling!", NotifyEvents.NotifyType.INFO));
             }
         } );
     }

@@ -85,3 +85,124 @@
 
 }
 
+.NotifyPanel {
+  position: fixed;
+  right: 14px;
+  bottom: 14px;
+  z-index: 50;
+  width: 430px;
+  transition-duration: 0.3s;
+}
+.NotifyPanel .notify {
+  position: relative;
+  cursor: pointer;
+  opacity: 0;
+  margin-bottom: 14px;
+  box-shadow: 0 1px 1px 0px rgba(0,0,0,0.68);
+  transition-duration: 0.3s;
+}
+.NotifyPanel .notify.active {
+  opacity: 1;
+}
+.NotifyPanel .notify.warning {
+  background: #d04141;
+}
+.NotifyPanel .notify.warning .body {
+  border-top: 1px solid #ff4e4e;
+}
+.NotifyPanel .notify.warning .icon-mIcon {
+  background: #eb5757;
+}
+.NotifyPanel .notify.warning .icon-mIcon:before {
+  content: "\e987";
+  vertical-align: 0;
+}
+.NotifyPanel .notify.warning:hover {
+  background: #dc4747;
+}
+.NotifyPanel .notify.info {
+  background: #4673b3;
+}
+.NotifyPanel .notify.info .body {
+  border-top: 1px solid #8caaff;
+}
+.NotifyPanel .notify.info .icon-mIcon {
+  background: #5489d3;
+}
+.NotifyPanel .notify.info .icon-mIcon:before {
+  content: "\e989";
+  vertical-align: -1px;
+}
+.NotifyPanel .notify.info:hover {
+  background: #4b7cc1;
+}
+.NotifyPanel .notify.success {
+  background: #63a251;
+}
+.NotifyPanel .notify.success .body {
+  border-top: 1px solid #97dc84;
+}
+.NotifyPanel .notify.success .icon-mIcon {
+  background: #74b960;
+}
+.NotifyPanel .notify.success .icon-mIcon:before {
+  content: "\e988";
+  vertical-align: -1px;
+}
+.NotifyPanel .notify.success:hover {
+  background: #6aac58;
+}
+.NotifyPanel .notify .body {
+  text-align: center;
+  position: relative;
+  padding: 24px;
+  padding-left: 46px;
+}
+.NotifyPanel .notify .body .icon-mIcon {
+  color: #fff;
+  font-size: 18px;
+  position: absolute;
+  left: -25px;
+  border-radius: 50%;
+  top: 50%;
+  box-sizing: border-box;
+  height: 50px;
+  width: 50px;
+  box-shadow: 3px 2px 6px -3px rgba(0,0,0,0.28);
+  padding-top: 15px;
+  margin-top: -25px;
+}
+.NotifyPanel .notify .body .text {
+  font-size: 14px;
+  color: #fff;
+  line-height: 1.6em;
+}
+.NotifyPanel .notify .body .timer {
+  position: absolute;
+  top: 7px;
+  right: 10px;
+  color: #fff;
+  font-weight: bold;
+  animation: animation-13 0.5s step-end 0s infinite alternate forwards running;
+}
+@-moz-keyframes animation-13 {
+  50% {
+    color: rgba(255,255,255,0.5);
+  }
+}
+@-webkit-keyframes animation-13 {
+  50% {
+    color: rgba(255,255,255,0.5);
+  }
+}
+@-o-keyframes animation-13 {
+  50% {
+    color: rgba(255,255,255,0.5);
+  }
+}
+@keyframes animation-13 {
+  50% {
+    color: rgba(255,255,255,0.5);
+  }
+}
+

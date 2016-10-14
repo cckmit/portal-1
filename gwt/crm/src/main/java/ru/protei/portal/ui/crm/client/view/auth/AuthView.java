@@ -1,6 +1,8 @@
 package ru.protei.portal.ui.crm.client.view.auth;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressEvent;
@@ -68,6 +70,12 @@ public class AuthView extends Composite implements AbstractAuthView, KeyPressHan
         login.setFocus(true);
     }
 
+
+    @Override
+    public Element getErrorPanel(){
+        return authErrorPanel;
+    }
+
     @UiField
     TextBox login;
 
@@ -79,6 +87,9 @@ public class AuthView extends Composite implements AbstractAuthView, KeyPressHan
 
     @UiField
     HTMLPanel loginPanel;
+
+    @UiField
+    DivElement authErrorPanel;
 
     AbstractAuthActivity activity;
 

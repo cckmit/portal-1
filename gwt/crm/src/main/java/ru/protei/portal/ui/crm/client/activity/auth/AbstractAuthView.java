@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.crm.client.activity.auth;
 
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.IsWidget;
 
 /**
@@ -16,4 +17,8 @@ public interface AbstractAuthView extends IsWidget {
     void setPassword(String password);
 
     void setFocus();
+
+    public Element getErrorPanel();
+
+
 }

@@ -18,6 +18,7 @@ import ru.protei.portal.ui.product.client.service.ProductServiceAsync;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 public abstract class ProductListActivity implements AbstractProductListActivity, AbstractProductItemActivity, Activity {
 
@@ -34,7 +35,7 @@ public abstract class ProductListActivity implements AbstractProductListActivity
         init.parent.clear();
         init.parent.add(view.asWidget());
 
-        fireEvent(new NotifyEvents.Show("Get ProductView List", "Common!", NotifyEvents.NotifyType.DEFAULT));
+        fireEvent(new NotifyEvents.Show("Common!", NotifyEvents.NotifyType.INFO));
 
         initProducts();
     }
@@ -59,12 +60,12 @@ public abstract class ProductListActivity implements AbstractProductListActivity
         productService.getProductList(view.getParam(), view.isShowDepricated().getValue(), new RequestCallback<List<ProductView>>() {
             @Override
             public void onError(Throwable throwable) {
-                fireEvent ( new NotifyEvents.Show( "Get ProductView List", "Error!", NotifyEvents.NotifyType.ERROR ) );
+                fireEvent ( new NotifyEvents.Show( "Error!", NotifyEvents.NotifyType.ERROR ) );
             }
 
             @Override
             public void onSuccess(List<ProductView> result) {
-                fireEvent ( new NotifyEvents.Show( "Get ProductView List", "Success!", NotifyEvents.NotifyType.SUCCESS ) );
+                fireEvent ( new NotifyEvents.Show( "Success! rand#" + new Random().nextFloat(), NotifyEvents.NotifyType.SUCCESS ) );
                 fillView(result);
             }
         });

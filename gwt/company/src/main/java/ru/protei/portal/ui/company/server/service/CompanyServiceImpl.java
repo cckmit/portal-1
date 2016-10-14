@@ -23,9 +23,10 @@ public class CompanyServiceImpl extends RemoteServiceServlet implements CompanyS
 
         log.debug( "getCompanies: param={}", param );
 
-        HttpListResult<Company> result = companyService.list( param );
+        //HttpListResult<Company> result = companyService.list( param );
 
-        return result.getItems();
+        //return result.getItems();
+        return null;
 
     }
 

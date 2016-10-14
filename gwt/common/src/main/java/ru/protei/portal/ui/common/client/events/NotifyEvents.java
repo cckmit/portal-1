@@ -24,28 +24,26 @@ public class NotifyEvents {
      */
     public static class Show {
 
-        public Show( String title, String message) {
-            this.title = title;
+        public Show( String message) {
             this.message = message;
-            this.type = NotifyType.DEFAULT;
+            this.type = NotifyType.INFO;
         }
 
-        public Show( String title, String message, NotifyType type){
-            this.title = title;
+        public Show( String message, NotifyType type){
             this.message = message;
             this.type = type;
         }
 
-        public String title;
         public String message;
         public NotifyType type;
     }
 
     public enum NotifyType {
-        DEFAULT ("default"),
-        ERROR ("error"),
-        SUCCESS ("success"),
-        WARNING ("warning");
+        //DEFAULT ("default"),
+        INFO ("info"),
+        ERROR ("warning"),
+        SUCCESS ("success");
+        //WARNING ("warning");
 
         private final String style;
 

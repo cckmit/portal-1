@@ -26,7 +26,6 @@ public abstract class NotifyActivity
         view.setActivity(this);
 
         view.setType( event.type.getStyle() );
-        view.setTitle( event.title );
         view.setMessage( event.message );
 
         animation.show(view);

@@ -144,6 +144,7 @@ body {
   display: inline-block;
   vertical-align: top;
 }
+
 .global .signIn_block {
   position: absolute;
   width: 100%;
@@ -167,14 +168,15 @@ body {
   background-color: rgba(246,247,248,0.9);
   box-shadow: 0 1px 5px 0px rgba(0,0,0,0.74);
   border: 1px solid #fff;
-  padding: 49px 56px 56px;
   display: inline-block;
-  width: 236px;
 }
-.global .signIn_block .t_wrapper .tc_wrapper .block .head .company {
+.global .signIn_block .t_wrapper .tc_wrapper .block .authForm {
+  margin: 49px 56px 56px;
+}
+.global .signIn_block .t_wrapper .tc_wrapper .block .authForm .head .company {
   margin-bottom: 14px;
 }
-.global .signIn_block .t_wrapper .tc_wrapper .block .head .company .logo {
+.global .signIn_block .t_wrapper .tc_wrapper .block .authForm .head .company .logo {
   font-size: 20pt;
   color: #e7ebee;
   padding: 4px 6px;
@@ -185,11 +187,11 @@ body {
   transition-duration: 1s;
   overflow: hidden;
 }
-.global .signIn_block .t_wrapper .tc_wrapper .block .head .company .logo:before {
+.global .signIn_block .t_wrapper .tc_wrapper .block .authForm .head .company .logo:before {
   content: "\e80d";
   vertical-align: -2.5px;
 }
-.global .signIn_block .t_wrapper .tc_wrapper .block .head .company .logo:after {
+.global .signIn_block .t_wrapper .tc_wrapper .block .authForm .head .company .logo:after {
   content: "";
   position: absolute;
   top: -100%;
@@ -228,55 +230,72 @@ body {
     left: 1000%;
   }
 }
-.global .signIn_block .t_wrapper .tc_wrapper .block .head .company .name {
+.global .signIn_block .t_wrapper .tc_wrapper .block .authForm .head .company .name {
   padding: 0 14px;
   font-size: 20pt;
   vertical-align: middle;
   font-weight: bold;
   color: #5481c1;
 }
-.global .signIn_block .t_wrapper .tc_wrapper .block .body .button {
+.global .signIn_block .t_wrapper .tc_wrapper .block .authForm .body .button {
   vertical-align: top;
 }
-.global .signIn_block .t_wrapper .tc_wrapper .block .body .button.grayC:hover {
+.global .signIn_block .t_wrapper .tc_wrapper .block .authForm .body .button.grayC:hover {
   background-image: linear-gradient(to bottom, #e6e9f0, #cfd7d9);
   cursor: auto;
 }
-.global .signIn_block .t_wrapper .tc_wrapper .block .body .user,
-.global .signIn_block .t_wrapper .tc_wrapper .block .body .password {
+.global .signIn_block .t_wrapper .tc_wrapper .block .authForm .body .user,
+.global .signIn_block .t_wrapper .tc_wrapper .block .authForm .body .password {
   display: table;
   width: 100%;
 }
-.global .signIn_block .t_wrapper .tc_wrapper .block .body .user .button,
-.global .signIn_block .t_wrapper .tc_wrapper .block .body .password .button,
-.global .signIn_block .t_wrapper .tc_wrapper .block .body .user .inputField,
-.global .signIn_block .t_wrapper .tc_wrapper .block .body .password .inputField {
+.global .signIn_block .t_wrapper .tc_wrapper .block .authForm .body .user .button,
+.global .signIn_block .t_wrapper .tc_wrapper .block .authForm .body .password .button,
+.global .signIn_block .t_wrapper .tc_wrapper .block .authForm .body .user .inputField,
+.global .signIn_block .t_wrapper .tc_wrapper .block .authForm .body .password .inputField {
   display: table-cell;
 }
-.global .signIn_block .t_wrapper .tc_wrapper .block .body .inputField {
+.global .signIn_block .t_wrapper .tc_wrapper .block .authForm .body .inputField {
   width: 100%;
 }
-.global .signIn_block .t_wrapper .tc_wrapper .block .body .icon-user {
+.global .signIn_block .t_wrapper .tc_wrapper .block .authForm .body .icon-user {
   color: #8493a4;
 }
-.global .signIn_block .t_wrapper .tc_wrapper .block .body .icon-user:before {
+.global .signIn_block .t_wrapper .tc_wrapper .block .authForm .body .icon-user:before {
   content: "\e90e";
   vertical-align: 0;
 }
-.global .signIn_block .t_wrapper .tc_wrapper .block .body .icon-lock {
+.global .signIn_block .t_wrapper .tc_wrapper .block .authForm .body .icon-lock {
   color: #8493a4;
 }
-.global .signIn_block .t_wrapper .tc_wrapper .block .body .icon-lock:before {
+.global .signIn_block .t_wrapper .tc_wrapper .block .authForm .body .icon-lock:before {
   content: "\e939";
   vertical-align: 0;
 }
-.global .signIn_block .t_wrapper .tc_wrapper .block .body .password {
+.global .signIn_block .t_wrapper .tc_wrapper .block .authForm .body .password {
   margin-top: 7px;
 }
-.global .signIn_block .t_wrapper .tc_wrapper .block .body .submitBlock .button {
+.global .signIn_block .t_wrapper .tc_wrapper .block .authForm .body .submitBlock .button {
   width: 100%;
   margin-top: 14px;
 }
+.global .signIn_block .t_wrapper .tc_wrapper .block .errorNotice {
+  padding: 0;
+  background: #d04141;
+  max-height: 0;
+  opacity: 0;
+  transition-duration: 0.4s;
+}
+.global .signIn_block .t_wrapper .tc_wrapper .block .errorNotice.active {
+  padding: 24px;
+  line-height: 1.6em;
+  font-size: 14px;
+  color: #fff;
+  opacity: 1;
+  max-height: 200px;
+}
+
+
 .global >.leftBlock,
 .header_global >.leftBlock,
 .body_global >.leftBlock {

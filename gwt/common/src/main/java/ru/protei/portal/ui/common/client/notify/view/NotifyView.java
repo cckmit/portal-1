@@ -4,23 +4,24 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.ParagraphElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.ui.common.client.notify.activity.AbstractNotifyActivity;
 import ru.protei.portal.ui.common.client.notify.activity.AbstractNotifyView;
 
 /**
  * Представление уведомление
  */
-public class NotifyView extends Composite implements AbstractNotifyView {
+public class NotifyView extends Composite implements AbstractNotifyView, ClickHandler {
 
     public NotifyView() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+        notify.sinkEvents(Event.ONCLICK);
+        notify.addHandler(this, ClickEvent.getType());
     }
 
     @Override
@@ -30,7 +31,7 @@ public class NotifyView extends Composite implements AbstractNotifyView {
 
     @Override
     public void setMessage( String text ) {
-        message.setInnerHTML( text ); // ??? может быть не просто текст, а еще и верстка внутри?
+        message.setInnerText(text); // ??? может быть не просто текст, а еще и верстка внутри?
     }
 
     @Override
@@ -38,24 +39,20 @@ public class NotifyView extends Composite implements AbstractNotifyView {
         notify.addStyleName(type);
     }
 
-    @Override
-    public void setTitle( String title ) {
-        header.setInnerText( title );
-    }
+//    @Override
+//    public void setTitle( String title ) {
+//        header.setInnerText( title );
+//    }
 
-    @UiHandler( "close" )
-    public void onCloseClicked( ClickEvent event ) {
+    @Override
+    public void onClick( ClickEvent event ) {
         if ( activity != null ) {
             activity.onCloseClicked( this );
         }
     }
 
     @UiField
-    Button close;
-    @UiField
-    SpanElement header;
-    @UiField
-    ParagraphElement message;
+    SpanElement message;
     @UiField
     HTMLPanel notify;
 
