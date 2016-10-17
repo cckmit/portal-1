@@ -1,9 +1,11 @@
 package ru.protei.portal.ui.common.client.animation;
 
-import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.Window;
+import com.google.gwt.dom.client.Style;
+import com.google.gwt.user.client.*;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
+
+import java.awt.*;
 
 /**
  * Анимация уведомления
@@ -11,13 +13,12 @@ import com.google.gwt.user.client.ui.IsWidget;
 public class NotifyAnimation {
 
     public void setWrapper( HasWidgets wrapper ) {
-        this.wrapper = wrapper;
+        this.parentWrapper = wrapper;
     }
     public void show( final IsWidget notify ) {
-        notify.asWidget().removeStyleName("notify-hide" );
-        notify.asWidget().addStyleName("notify-show" );
+        notify.asWidget().addStyleName("active" );
 
-        wrapper.add(notify.asWidget() );
+        parentWrapper.add(notify.asWidget());
 
         Timer prepareCloseTimer = new Timer() {
             @Override
@@ -30,8 +31,11 @@ public class NotifyAnimation {
     }
 
     public void close( final IsWidget notify ) {
-        notify.asWidget().removeStyleName( "notify-show" );
-        notify.asWidget().addStyleName( "notify-hide" );
+        notify.asWidget().removeStyleName("active");
+
+        notify.asWidget().getElement().getStyle().setMarginBottom(
+                notify.asWidget().getOffsetHeight() * -1, Style.Unit.PX
+        );
 
         Timer closeTimer = new Timer() {
             @Override
@@ -43,7 +47,7 @@ public class NotifyAnimation {
         closeTimer.schedule(CLOSE_TIME);
     }
 
-    private HasWidgets wrapper;
+    private HasWidgets parentWrapper;
     private static final int AUTO_CLOSE_TIME = 5000;
     private static final int CLOSE_TIME = 300;
 }
