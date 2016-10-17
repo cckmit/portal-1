@@ -10,19 +10,17 @@
                     <div class="regulator">
                         <sortField:SortFieldSelector ui:field="sortFields" header="{lang.sortBy}"/>
 
-                        <div class="button empty switcher">
+                        <div class="button empty whiteC switcher">
                             <g:ToggleButton ui:field="sortDir" styleName="sorting_button" />
                         </div>
 
                     </div>
                     <div class="regulator">
-                        <!--g:CheckBox ui:field="showDeprecated"/><ui:text from="{lang.showDeprecated}"/-->
                         <g:CheckBox ui:field="showDeprecated" styleName="checkbox" text="{lang.showDeprecated}"/>
                     </div>
                 </div>
                 <div class="rightSide">
                     <g:TextBox ui:field="search" styleName="inputField"/>
-                    <!--g:Button ui:field="searchButton" styleName="button empty sticky blueC"><span class="icon-search"></span></g:Button-->
                 </div>
             </div>
 
