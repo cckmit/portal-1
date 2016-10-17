@@ -21,6 +21,11 @@ public enum En_SortField {
     group_name ("group_name"),
 
     /**
+     * Category name (Company-category name for example)
+     */
+    category_name ("category_name"),
+
+    /**
      * date of creation
      */
     creation_date ("created"),

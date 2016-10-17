@@ -1,6 +1,8 @@
 package ru.protei.portal.core.utils;
 
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by michael on 06.07.16.
@@ -38,5 +40,4 @@ public class HelperFunc {
 
         return arg;
     }
-
 }

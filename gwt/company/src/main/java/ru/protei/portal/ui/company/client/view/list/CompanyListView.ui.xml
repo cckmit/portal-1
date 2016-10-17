@@ -1,14 +1,14 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:sortfieldselector='urn:import:ru.protei.portal.ui.company.client.widget.sortfieldselector'
-             xmlns:companygroupselector='urn:import:ru.protei.portal.ui.company.client.widget.companygroupselector'>
+             xmlns:companycategorybtngroup='urn:import:ru.protei.portal.ui.company.client.widget.category.btngroup'
+             xmlns:sortfieldselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.sortfield'
+             xmlns:companygroupselector='urn:import:ru.protei.portal.ui.company.client.widget.group.selector'>
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
     <g:HTMLPanel styleName="OrganizationList">
         <div class="controlButtons">
-            <g:Button ui:field="customersButton" text="{lang.customers}" styleName="button whiteC switcher"/>
-            <g:Button ui:field="partnersButton" text="{lang.partners}" styleName="button whiteC switcher"/>
+            <companycategorybtngroup:CategoryBtnGroup ui:field="categories"/>
             <div class="buttons_group">
-                <companygroupselector:CompanyGroupSelector ui:field="companyGroup"/>
+                <companygroupselector:GroupSelector ui:field="group"/>
             </div>
             <div class="buttons_group">
                 <div class="regulator">
@@ -23,6 +23,6 @@
                 <g:TextBox ui:field="search" styleName="inputField"/>
             </div>
         </div>
-        <g:HTMLPanel ui:field="companyContainer" styleName="organizations"/>
+        <g:HTMLPanel ui:field="childContainer" styleName="organizations"/>
     </g:HTMLPanel>
 </ui:UiBinder>

@@ -9,13 +9,16 @@ import ru.protei.portal.api.struct.HttpListResult;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.ent.CompanyCategory;
 import ru.protei.portal.core.model.ent.CompanyGroup;
 import ru.protei.portal.core.model.query.BaseQuery;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.company.client.service.CompanyService;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Реализация сервиса по работе с компаниями
@@ -24,12 +27,19 @@ import java.util.List;
 public class CompanyServiceImpl extends RemoteServiceServlet implements CompanyService {
 
     @Override
-    public List< Company > getCompanies( String searchPattern, CompanyGroup group, En_SortField sortField, Boolean dirSort ) throws RequestFailedException {
+    public List< Company > getCompanies( String searchPattern, Set< CompanyCategory > categories, CompanyGroup group, En_SortField sortField, Boolean dirSort ) throws RequestFailedException {
 
-        Long groupId = null;
-        if ( group != null ) groupId = group.getId();
+        List< Long > categoryIds = new ArrayList< Long >();
+        if ( categories != null && !categories.isEmpty() ) {
+            for ( CompanyCategory category : categories ) {
+                if ( category != null )
+                    categoryIds.add( category.getId() );
+            }
+        }
 
         log.debug( "getCompanies: searchPattern={}", searchPattern );
+
+        log.debug( "getCompanies: categories={}", categoryIds.toString() );
 
         log.debug( "getCompanies: group={}", group != null ? group.getId() : null );
 
@@ -38,10 +48,10 @@ public class CompanyServiceImpl extends RemoteServiceServlet implements CompanyS
         log.debug( "getCompanies: dirSort={}", dirSort ? En_SortDir.ASC : En_SortDir.DESC );
 
         CompanyQuery query = new CompanyQuery( searchPattern, sortField, dirSort ? En_SortDir.ASC : En_SortDir.DESC );
-        query.setGroupId( groupId );
-        query.setCategoryId( null );
+        query.setGroupId( group != null ? group.getId() : null );
+        query.setCategoryIds( categoryIds );
 
-        HttpListResult< Company > result = companyService.list( query );
+        HttpListResult< Company> result = companyService.list( query );
 
         return result.getItems();
     }
@@ -54,6 +64,16 @@ public class CompanyServiceImpl extends RemoteServiceServlet implements CompanyS
         BaseQuery query = new BaseQuery( searchPattern, En_SortField.group_name, En_SortDir.ASC );
 
         HttpListResult< CompanyGroup > result = companyService.groupList( query );
+
+        return result.getItems();
+    }
+
+    @Override
+    public List<CompanyCategory> getCompanyCategories() throws RequestFailedException {
+
+        log.debug( "getCompanyCategories");
+
+        HttpListResult< CompanyCategory > result = companyService.categoryList();
 
         return result.getItems();
     }

@@ -3,16 +3,21 @@ package ru.protei.portal.core.service.dict;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.api.struct.HttpListResult;
+import ru.protei.portal.core.model.dao.CompanyCategoryDAO;
 import ru.protei.portal.core.model.dao.CompanyDAO;
 import ru.protei.portal.core.model.dao.CompanyGroupDAO;
 import ru.protei.portal.core.model.dao.CompanyGroupItemDAO;
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.ent.CompanyCategory;
 import ru.protei.portal.core.model.ent.CompanyGroup;
 import ru.protei.portal.core.model.ent.CompanyGroupItem;
 import ru.protei.portal.core.model.query.BaseQuery;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.utils.EntityCache;
 import ru.protei.portal.core.utils.EntitySelector;
+import ru.protei.portal.core.utils.TypeConverters;
+import ru.protei.winter.jdbc.JdbcQueryParameters;
+import ru.protei.winter.jdbc.JdbcSort;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -34,6 +39,8 @@ public class CompanyServiceImpl implements CompanyService {
     @Autowired
     CompanyGroupItemDAO companyGroupItemDAO;
 
+    @Autowired
+    CompanyCategoryDAO companyCategoryDAO;
     /**
      * caches
      */
@@ -146,15 +153,12 @@ public class CompanyServiceImpl implements CompanyService {
         return companies;
     }
 
-
     @Override
     public Company getProfile(Long id) {
 
         return complete(companyDAO.get(id));
 
     }
-
-
 
     @Override
     public HttpListResult<Company> list(CompanyQuery query) {
@@ -175,6 +179,11 @@ public class CompanyServiceImpl implements CompanyService {
         );
     }
 
+    @Override
+    public HttpListResult<CompanyCategory> categoryList() {
+
+        return new HttpListResult<>(companyCategoryDAO.getAll(), false);
+    }
 
     /**
      * company-group search

@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.company.client.widget.companygroupselector;
+package ru.protei.portal.ui.company.client.widget.group.selector;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.CompanyGroup;
@@ -11,11 +11,11 @@ import java.util.List;
 /**
  * Селектор списка групп компаний
  */
-public class CompanyGroupSelector extends ButtonSelector<CompanyGroup> implements ModelSelector<CompanyGroup> {
+public class GroupSelector extends ButtonSelector< CompanyGroup > implements ModelSelector< CompanyGroup > {
 
     @Inject
-    public void init( CompanyGroupModel companyGroupModel ) {
-        companyGroupModel.subscribe( this );
+    public void init( GroupModel groupModel) {
+        groupModel.subscribe( this );
     }
 
     public void fillOptions( List< CompanyGroup > groups ) {

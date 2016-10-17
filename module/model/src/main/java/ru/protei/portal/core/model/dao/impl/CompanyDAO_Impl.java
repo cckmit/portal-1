@@ -8,6 +8,7 @@ import ru.protei.portal.core.utils.TypeConverters;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by michael on 01.04.16.
@@ -25,11 +26,9 @@ public class CompanyDAO_Impl extends PortalBaseJdbcDAO<Company> implements Compa
             args.add(query.getGroupId());
         }
 
-        if (query.getCategoryId() != null && query.getCategoryId() > 0) {
-            condition.append(" and category_id = ?");
-            args.add(query.getCategoryId());
+        if (query.getCategoryIds() != null && !query.getCategoryIds().isEmpty()) {
+            condition.append(" and category_id in (" + query.getCategoryIds().stream().map(Object::toString).collect(Collectors.joining(",")) + ")");
         }
-
 
         return getListByCondition(condition.toString(), TypeConverters.createSort(query), args);
     }

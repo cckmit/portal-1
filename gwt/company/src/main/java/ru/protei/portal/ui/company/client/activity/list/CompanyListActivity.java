@@ -1,14 +1,11 @@
 package ru.protei.portal.ui.company.client.activity.list;
 
-import com.google.gwt.event.dom.client.ChangeEvent;
-import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
@@ -46,7 +43,7 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
         initDetails.parent.clear();
         initDetails.parent.add( view.asWidget() );
 
-        view.getCompanyContainer().clear();
+        view.getChildContainer().clear();
         initCompanies();
     }
 
@@ -57,7 +54,7 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
 
     public void onFilterChanged() {
 
-        view.getCompanyContainer().clear();
+        view.getChildContainer().clear();
         initCompanies();
     }
 
@@ -75,7 +72,7 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
 
     private void initCompanies() {
 
-        companyService.getCompanies( view.getSearchPattern(), view.getCompanyGroup().getValue(),
+        companyService.getCompanies( view.getSearchPattern(), view.getCategories().getValue(), view.getGroup().getValue(),
                 view.getSortField().getValue(), view.getDirSort(), new RequestCallback< List < Company > >() {
 
             @Override
@@ -96,7 +93,7 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
             AbstractCompanyItemView itemView = makeView( company );
 
             map.put( itemView, company );
-            view.getCompanyContainer().add( itemView.asWidget() );
+            view.getChildContainer().add( itemView.asWidget() );
         }
     }
 

@@ -156,6 +156,10 @@ public class MainConfiguration {
         return new PersonCompanyEntryDAO_Impl();
     }
 
+    @Bean
+    public CompanyCategoryDAO getCompanyCategoryDAO() {
+        return new CompanyCategoryDAO_Impl();
+    }
 
 /**
  *
