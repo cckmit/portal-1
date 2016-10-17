@@ -7,7 +7,7 @@ import ru.protei.portal.ui.company.client.activity.list.CompanyListActivity;
 import ru.protei.portal.ui.company.client.activity.item.AbstractCompanyItemView;
 import ru.protei.portal.ui.company.client.view.list.CompanyListView;
 import ru.protei.portal.ui.company.client.view.item.CompanyItemView;
-import ru.protei.portal.ui.company.client.widget.companygroupselector.CompanyGroupModel;
+import ru.protei.portal.ui.company.client.widget.group.selector.GroupModel;
 
 /**
  * Описание классов фабрики
@@ -19,7 +19,7 @@ public class CompanyClientModule extends AbstractGinModule {
         bind( CompanyListActivity.class ).asEagerSingleton();
         bind( AbstractCompanyListView.class ).to( CompanyListView.class ).in( Singleton.class );
         bind ( AbstractCompanyItemView.class ).to( CompanyItemView.class );
-        bind( CompanyGroupModel.class ).asEagerSingleton();
+        bind( GroupModel.class ).asEagerSingleton();
     }
 }
 

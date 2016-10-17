@@ -1,11 +1,10 @@
-package ru.protei.portal.ui.company.client.widget.companygroupselector;
+package ru.protei.portal.ui.company.client.widget.group.selector;
 
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.ent.CompanyGroup;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
-import ru.protei.portal.ui.common.client.events.CompanyEvents;
 import ru.protei.portal.ui.common.client.events.CompanyGroupEvents;
 import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
@@ -17,7 +16,7 @@ import java.util.List;
 /**
  * Модель селектора групп компаний
  */
-public abstract class CompanyGroupModel implements Activity {
+public abstract class GroupModel implements Activity {
 
     @Event
     public void onInit( AuthEvents.Success event ) {
@@ -29,7 +28,7 @@ public abstract class CompanyGroupModel implements Activity {
         refreshOptions();
     }
 
-    public void subscribe( CompanyGroupSelector selector ) {
+    public void subscribe( GroupSelector selector ) {
         subscribers.add( selector );
         selector.fillOptions( list );
     }
@@ -43,7 +42,7 @@ public abstract class CompanyGroupModel implements Activity {
 
     private void refreshOptions() {
 
-        companyService.getCompanyGroups( "", new RequestCallback< List< CompanyGroup > >() {
+        companyService.getCompanyGroups( null, new RequestCallback< List< CompanyGroup > >() {
             @Override
             public void onError( Throwable throwable ) {}
 

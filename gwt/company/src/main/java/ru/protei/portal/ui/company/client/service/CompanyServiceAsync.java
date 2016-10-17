@@ -32,9 +32,8 @@ public interface CompanyServiceAsync {
 
     /**
      * Получение списка категорий компаний
-     * @param searchPattern шаблон поиска
      * @return список категорий
      */
-    void getCompanyCategories( String searchPattern, AsyncCallback<List <CompanyCategory> > async  );
+    void getCompanyCategories( AsyncCallback<List <CompanyCategory> > async  );
 
 }

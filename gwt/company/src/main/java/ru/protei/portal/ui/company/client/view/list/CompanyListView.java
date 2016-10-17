@@ -15,9 +15,10 @@ import ru.protei.portal.core.model.ent.CompanyCategory;
 import ru.protei.portal.core.model.ent.CompanyGroup;
 import ru.protei.portal.ui.company.client.activity.list.AbstractCompanyListActivity;
 import ru.protei.portal.ui.company.client.activity.list.AbstractCompanyListView;
-import ru.protei.portal.ui.company.client.widget.companycategorybtngroup.CompanyCategoryBtnGroup;
-import ru.protei.portal.ui.company.client.widget.companygroupselector.CompanyGroupSelector;
-import ru.protei.portal.ui.company.client.widget.sortfieldselector.SortFieldSelector;
+import ru.protei.portal.ui.company.client.widget.category.btngroup.CategoryBtnGroup;
+import ru.protei.portal.ui.company.client.widget.group.selector.GroupSelector;
+import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
+import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 
 import java.util.Set;
 
@@ -30,6 +31,7 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
         initHandlers();
+        sortField.fillOptions( ModuleType.COMPANY );
     }
 
     public void setActivity( AbstractCompanyListActivity activity ) {
@@ -37,8 +39,8 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
     }
 
     @Override
-    public HasWidgets getCompanyContainer() {
-        return companyContainer;
+    public HasWidgets getChildContainer() {
+        return childContainer;
     }
 
     @Override
@@ -52,13 +54,13 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
     }
 
     @Override
-    public HasValue< CompanyGroup > getCompanyGroup() {
-        return companyGroup;
+    public HasValue< CompanyGroup > getGroup() {
+        return group;
     }
 
     @Override
-    public HasValue< Set < CompanyCategory > > getCompanyCategory() {
-        return companyCategory;
+    public HasValue< Set < CompanyCategory > > getCategories() {
+        return categories;
     }
 
     @Override
@@ -73,14 +75,14 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
         }
     }
 
-    @UiHandler( "companyGroup" )
+    @UiHandler("group")
     public void onCompanyGroupSelected( ValueChangeEvent< CompanyGroup > event ) {
         if ( activity != null ) {
             activity.onFilterChanged();
         }
     }
 
-    @UiHandler( "companyCategory" )
+    @UiHandler( "categories" )
     public void onCompanyCategorySelected( ValueChangeEvent< Set< CompanyCategory> > event ) {
         if ( activity != null ) {
             activity.onFilterChanged();
@@ -107,8 +109,8 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
     }
 
     public void resetFilter() {
-        companyCategory.getValue().clear();
-        companyGroup.setValue( null );
+        categories.setValue(null);
+        group.setValue(null);
         sortField.setValue( En_SortField.comp_name );
         directionButton.setValue( true );
         search.setText( "" );
@@ -123,7 +125,7 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
     TextBox search;
 
     @UiField
-    HTMLPanel companyContainer;
+    HTMLPanel childContainer;
 
     @UiField
     ToggleButton directionButton;
@@ -134,11 +136,11 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
 
     @Inject
     @UiField( provided = true )
-    CompanyGroupSelector companyGroup;
+    GroupSelector group;
 
     @Inject
     @UiField( provided = true )
-    CompanyCategoryBtnGroup companyCategory;
+    CategoryBtnGroup categories;
 
     Timer timer = new Timer() {
         @Override

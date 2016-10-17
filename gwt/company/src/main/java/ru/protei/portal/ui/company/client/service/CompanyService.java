@@ -36,9 +36,8 @@ public interface CompanyService extends RemoteService {
 
     /**
      * Получение списка категорий компаний
-     * @param searchPattern шаблон поиска
      * @return список категорий
      */
-    List<CompanyCategory> getCompanyCategories( String searchPattern ) throws RequestFailedException;
+    List<CompanyCategory> getCompanyCategories() throws RequestFailedException;
 
 }

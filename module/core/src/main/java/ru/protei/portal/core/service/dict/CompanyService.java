@@ -20,7 +20,7 @@ public interface CompanyService {
 
     HttpListResult<CompanyGroup> groupList (BaseQuery query);
 
-    HttpListResult<CompanyCategory> categoryList (BaseQuery query);
+    HttpListResult<CompanyCategory> categoryList ();
 
     /**
      * methods below are for testing purpose only

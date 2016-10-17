@@ -180,7 +180,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public HttpListResult<CompanyCategory> categoryList(BaseQuery query) {
+    public HttpListResult<CompanyCategory> categoryList() {
 
         return new HttpListResult<>(companyCategoryDAO.getAll(), false);
     }

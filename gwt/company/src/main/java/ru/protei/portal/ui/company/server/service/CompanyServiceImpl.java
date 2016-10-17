@@ -69,13 +69,11 @@ public class CompanyServiceImpl extends RemoteServiceServlet implements CompanyS
     }
 
     @Override
-    public List<CompanyCategory> getCompanyCategories(String searchPattern) throws RequestFailedException {
+    public List<CompanyCategory> getCompanyCategories() throws RequestFailedException {
 
-        log.debug( "getCompanyCategories: searchPattern={}", searchPattern );
+        log.debug( "getCompanyCategories");
 
-        BaseQuery query = new BaseQuery( searchPattern, En_SortField.category_name, En_SortDir.ASC );
-
-        HttpListResult< CompanyCategory > result = companyService.categoryList( query );
+        HttpListResult< CompanyCategory > result = companyService.categoryList();
 
         return result.getItems();
     }
