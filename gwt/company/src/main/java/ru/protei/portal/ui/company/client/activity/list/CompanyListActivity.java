@@ -11,12 +11,12 @@ import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.CompanyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.PeriodicTaskService;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.company.client.activity.item.AbstractCompanyItemActivity;
 import ru.protei.portal.ui.company.client.activity.item.AbstractCompanyItemView;
 import ru.protei.portal.ui.company.client.service.CompanyServiceAsync;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,6 +72,9 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
 
     private void initCompanies() {
 
+        if ( fillViewHandler != null ) {
+            fillViewHandler.cancel();
+        }
         companyService.getCompanies( view.getSearchPattern(), view.getCategories().getValue(), view.getGroup().getValue(),
                 view.getSortField().getValue(), view.getDirSort(), new RequestCallback< List < Company > >() {
 
@@ -80,25 +83,22 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
 
             @Override
             public void onSuccess( List< Company > companies ) {
-                list.clear();
-                list.addAll( companies );
-                fillView();
+                fillViewHandler = taskService.startPeriodicTask( companies, fillViewer, 50, 50 );
             }
         });
     }
 
-    private void fillView() {
-
-        for ( Company company : list ) {
+    PeriodicTaskService.TaskConsumer< Company > fillViewer = new PeriodicTaskService.TaskConsumer< Company >() {
+        @Override
+        public void consume( Company company ) {
             AbstractCompanyItemView itemView = makeView( company );
 
             map.put( itemView, company );
             view.getChildContainer().add( itemView.asWidget() );
         }
-    }
+    };
 
     private AbstractCompanyItemView makeView( Company company ) {
-
         AbstractCompanyItemView itemView = factory.get();
         itemView.setActivity( this );
         itemView.setName( company.getCname () );
@@ -118,11 +118,12 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
     @Inject
     CompanyServiceAsync companyService;
 
-    private List< Company > list = new ArrayList< Company >();
+    @Inject
+    PeriodicTaskService taskService;
+
+    PeriodicTaskService.PeriodicTaskHandler fillViewHandler;
 
     private Map< AbstractCompanyItemView, Company > map = new HashMap< AbstractCompanyItemView, Company >();
 
     private AppEvents.InitDetails initDetails;
-
-
 }
