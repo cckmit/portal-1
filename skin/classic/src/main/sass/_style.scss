@@ -17426,6 +17426,9 @@ body {
 .list-group-item >.wrapper:hover:after {
   background-image: linear-gradient(to right, transparent, #fff 25px);
 }
+.list-group-item >.wrapper.inactive:after {
+  background-image: linear-gradient(to right, transparent, #dee4e5 25px) !important;
+}
 .grid:after {
   content: "";
   display: block;
@@ -17548,7 +17551,7 @@ body {
     width: 8.33333333%;
   }
 }
-@media (min-width: 1200px) {
+@media (min-width: 1400px) {
   .grid .col-lg-12 {
     width: 100%;
   }
