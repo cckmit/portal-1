@@ -11,6 +11,7 @@ import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.ProductEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.PeriodicTaskService;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.product.client.activity.item.AbstractProductItemActivity;
 import ru.protei.portal.ui.product.client.activity.item.AbstractProductItemView;
@@ -19,6 +20,7 @@ import ru.protei.portal.ui.product.client.service.ProductServiceAsync;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * Активность списка продуктов
@@ -39,7 +41,6 @@ public abstract class ProductListActivity implements AbstractProductListActivity
         init.parent.add(view.asWidget());
 
         requestProducts();
-        fireEvent(new NotifyEvents.Show("Common!", NotifyEvents.NotifyType.INFO));
     }
 
     @Event
@@ -53,16 +54,15 @@ public abstract class ProductListActivity implements AbstractProductListActivity
     }
 
     @Override
-    public void onShowDeprecatedClick() {
-        requestProducts();
-    }
-
-    @Override
     public void onFilterChanged() {
         requestProducts();
     }
 
     private void requestProducts() {
+
+        if ( fillViewHandler != null ) {
+            fillViewHandler.cancel();
+        }
 
         view.getItemsContainer().clear();
         modelToView.clear();
@@ -74,27 +74,28 @@ public abstract class ProductListActivity implements AbstractProductListActivity
                 new RequestCallback<List<DevUnit>>() {
                     @Override
                     public void onError(Throwable throwable) {
-                        fireEvent ( new NotifyEvents.Show(lang.errorGetList(), NotifyEvents.NotifyType.ERROR ) );
+                        fireEvent(new NotifyEvents.Show(lang.errorGetList(), NotifyEvents.NotifyType.ERROR));
                     }
 
                     @Override
                     public void onSuccess(List<DevUnit> result) {
-                        fillView(result);
+                        fillViewHandler = taskService.startPeriodicTask( result, fillViewer, 50, 50 );
                     }
                 });
     }
 
-    private void fillView (List<DevUnit> products)
-    {
-        products.forEach( (product)->{
-            AbstractProductItemView itemView = makeItemView (product);
+    Consumer<DevUnit> fillViewer = new Consumer<DevUnit> () {
 
-            view.getItemsContainer().add(itemView.asWidget());
-            modelToView.put(product, itemView);
-        } );
-    }
+        @Override
+        public void accept( DevUnit product ) {
+            AbstractProductItemView itemView = makeItemView(product);
 
-    private AbstractProductItemView makeItemView (DevUnit product)
+            modelToView.put( product, itemView );
+            view.getItemsContainer().add( itemView.asWidget() );
+        }
+    };
+
+     private AbstractProductItemView makeItemView (DevUnit product)
     {
         AbstractProductItemView itemView = provider.get();
         itemView.setName(product.getName());
@@ -115,6 +116,10 @@ public abstract class ProductListActivity implements AbstractProductListActivity
     Provider<AbstractProductItemView> provider;
     @Inject
     ProductServiceAsync productService;
+
+    @Inject
+    PeriodicTaskService taskService;
+    PeriodicTaskService.PeriodicTaskHandler fillViewHandler;
 
     private Map<DevUnit, AbstractProductItemView> modelToView = new HashMap<DevUnit, AbstractProductItemView>();
     private AppEvents.InitDetails init;

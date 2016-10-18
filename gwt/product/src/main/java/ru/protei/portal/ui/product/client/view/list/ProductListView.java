@@ -61,7 +61,7 @@ public class ProductListView extends Composite implements AbstractProductListVie
             showDeprecated.removeStyleName("active");
         else
             showDeprecated.addStyleName("active");
-        activity.onShowDeprecatedClick();
+        activity.onFilterChanged();
     }
 
     @UiHandler( "search" )
@@ -111,8 +111,6 @@ public class ProductListView extends Composite implements AbstractProductListVie
 
     @UiField
     TextBox search;
-//    @UiField
-//    Button searchButton;
     @UiField
     HTMLPanel productContainer;
     @UiField

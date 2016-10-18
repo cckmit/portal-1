@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.CompanyEvents;
+import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.PeriodicTaskService;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
@@ -80,7 +81,9 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
                 view.getSortField().getValue(), view.getDirSort(), new RequestCallback< List < Company > >() {
 
             @Override
-            public void onError( Throwable throwable ) {}
+            public void onError( Throwable throwable ) {
+                fireEvent(new NotifyEvents.Show(lang.errorGetList(), NotifyEvents.NotifyType.ERROR));
+            }
 
             @Override
             public void onSuccess( List< Company > companies ) {
