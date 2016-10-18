@@ -10,9 +10,8 @@
 [class*="_button"]:before,
 [class*="_button"]:after,
 .icon-saveFilter:before,
-.global .signIn_block .t_wrapper .tc_wrapper .block .head .company .logo:before,
+.global .signIn_block .t_wrapper .tc_wrapper .block .authForm .head .company .logo:before,
 .button.selected:after,
-.simpleCheckbox.active:before,
 .header_global >.leftBlock .company .logo:before,
 .body_global >.rightBlock .caseListsBlock .block>.wrapper2 .leftButton:before,
 .body_global >.rightBlock .caseListsBlock .block>.wrapper2 .rightButton:before,
@@ -28,13 +27,24 @@
 .body_global .case >.body .executorsBlock >.content table.diagramGantt .leftButton:before,
 .body_global .case >.body .executorsBlock >.content table.diagramGantt .rightButton:before,
 .body_global .Subscriptions table.rules tr.rule >td.filter:before,
+.body_global .CompanyConstruction >.body .row .field.selected:before,
+.body_global .CompanyConstruction >.body .row .field.verifiable:before,
 .caseListsBlock .block>.wrapper2 .leftButton:before,
 .caseListsBlock .block>.wrapper2 .rightButton:before,
 .caseListsBlock.taskBoard .case .timeRefresh:before,
 .caseListsBlock.taskBoard .case .timeSpent:before,
 .caseListsBlock.taskBoard .case .executors:before,
 .caseListsBlock table.caseList.unconfirmed tr.case .delete_button .icon_delete:before,
-.caseListsBlock table.caseList tr.case .hideCase:before {
+.caseListsBlock table.caseList tr.case .hideCase:before,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tbody tr td >.time >.from.timeLimit:before,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tbody tr td >.time >.to.timeLimit:before,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .dateTime .dateTimePicker .toUp:before,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .dateTime .dateTimePicker .toDown:before,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tbody tr td >.time >.from.timeLimit:before,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tbody tr td >.time >.to.timeLimit:before,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tbody tr td .dateTimePickerRange .dateTimePicker .toUp:before,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tbody tr td .dateTimePickerRange .dateTimePicker .toDown:before,
+.ControlBottomPanel >.body .selectedElem:after {
   font-family: 'icomoon';
   speak: none;
   font-style: normal;
@@ -43,7 +53,7 @@
   text-transform: none;
   line-height: 1;
   vertical-align: middle;
-/* Better Font Rendering =========== */
+  /* Better Font Rendering =========== */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -71,6 +81,13 @@ td {
 }
 .relativeBlock {
   position: relative;
+}
+.sizeDiscover {
+  position: absolute;
+  left: 0;
+  visibility: hidden;
+  top: 0;
+  width: auto;
 }
 .noAnimation {
   transition: none;
@@ -151,7 +168,6 @@ body {
   display: inline-block;
   vertical-align: top;
 }
-
 .global .signIn_block {
   position: absolute;
   width: 100%;
@@ -301,8 +317,6 @@ body {
   opacity: 1;
   max-height: 200px;
 }
-
-
 .global >.leftBlock,
 .header_global >.leftBlock,
 .body_global >.leftBlock {
@@ -320,11 +334,6 @@ body {
   overflow: hidden;
   z-index: 5;
 }
-.global >.leftBlock.inactive .company,
-.header_global >.leftBlock.inactive .company,
-.body_global >.leftBlock.inactive .company {
-  opacity: 0;
-}
 .global >.leftBlock.inactive .hideBar_button,
 .header_global >.leftBlock.inactive .hideBar_button,
 .body_global >.leftBlock.inactive .hideBar_button {
@@ -335,6 +344,11 @@ body {
 .body_global >.leftBlock.inactive+.rightBlock {
   padding-left: 10px;
 }
+.global >.leftBlock.inactive+.rightBlock >.BottomPanels,
+.header_global >.leftBlock.inactive+.rightBlock >.BottomPanels,
+.body_global >.leftBlock.inactive+.rightBlock >.BottomPanels {
+  left: 10px;
+}
 .global >.leftBlock.inactive:hover,
 .header_global >.leftBlock.inactive:hover,
 .body_global >.leftBlock.inactive:hover {
@@ -342,11 +356,8 @@ body {
 }
 .global >.leftBlock.inactive+.rightBlock >.absoluteBlock,
 .header_global >.leftBlock.inactive+.rightBlock >.absoluteBlock,
-.body_global >.leftBlock.inactive+.rightBlock >.absoluteBlock,
-.global >.leftBlock.inactive+.rightBlock .caseListsBlock.taskBoard,
-.header_global >.leftBlock.inactive+.rightBlock .caseListsBlock.taskBoard,
-.body_global >.leftBlock.inactive+.rightBlock .caseListsBlock.taskBoard {
-  left: 10px;
+.body_global >.leftBlock.inactive+.rightBlock >.absoluteBlock {
+  margin-left: 10px;
 }
 .global >.rightBlock,
 .header_global >.rightBlock,
@@ -420,6 +431,7 @@ body {
 .selectList {
   position: absolute;
   z-index: 10;
+  left: 0;
   border: 1px solid #ced2d7;
   display: none;
   border-radius: 4px;
@@ -439,6 +451,7 @@ body {
   height: 2px;
   background: #71767d;
   z-index: 1;
+  left: 0;
 }
 .selectList.moreTop:before {
   top: 0;
@@ -465,7 +478,16 @@ body {
 .menu_popup .menu .item.hover {
   background: #f1f1f1;
 }
+.selectList .item.active,
+.menu_popup .menu .item.active {
+  background: #5189d9;
+  color: #fff;
+  font-weight: bold;
+}
 .selectList .item.show {
+  display: block;
+}
+.selectList.active {
   display: block;
 }
 .regulator.checked .inputField {
@@ -499,14 +521,15 @@ body {
   border-color: #7fa9dc #4f76ad #517ab4;
   color: #fff;
 }
-.button.blueC:hover {
+.button.blueC:hover,
+.button.blueC:focus {
   background: #5e95d0;
 }
 .button.blueC:active,
 .button.blueC.active {
   border-color: #4672a7 #6586b2 #7196c3;
   color: #fff;
-  text-shadow: -1px -1px 0px #466694;
+  text-shadow: -1px -1px 0px #4f77aa;
   box-shadow: 0px 2px 6px -3px #000 inset;
 }
 .button.greenC {
@@ -515,7 +538,8 @@ body {
   border-color: #71bb5c #4aa148 #5a9948;
   color: #fff;
 }
-.button.greenC:hover {
+.button.greenC:hover,
+.button.greenC:focus {
   background: #69b753;
 }
 .button.greenC:active,
@@ -531,22 +555,34 @@ body {
   color: #314157;
   border-color: #d0d8da #adbbc2 #acb7c6;
 }
-.button.grayC:hover {
-  background-color: #e6e9f0;
+.button.grayC:hover,
+.button.grayC:focus {
+  background: linear-gradient(to bottom, #edeef1, #dae1e3);
 }
 .button.grayC:active,
 .button.grayC.active {
   border-color: #acb7c6 #adbbc2 #bac7cc;
   box-shadow: 0px 2px 6px -3px #000 inset;
 }
-.button.redC {
-  background-image: linear-gradient(to bottom, #be3838, #f37777);
-  background-color: #d35151;
-  border-color: #f39090 #e15858 #bf3939;
+.button.redC,
+.popup_backgroundBlock >.wrapper .popupBlock .confirmGenerator.warning .confirm_button {
+  background-image: linear-gradient(to bottom, #c44141, #e35353);
+  background-color: #d44e4e;
+  border-color: #ff6969 #bf3939 #bf3939;
   color: #fff;
 }
-.button.redC:hover {
-  background: #de5858;
+.button.redC:hover,
+.popup_backgroundBlock >.wrapper .popupBlock .confirmGenerator.warning .confirm_button:hover,
+.button.redC:focus,
+.popup_backgroundBlock >.wrapper .popupBlock .confirmGenerator.warning .confirm_button:focus {
+  background: #e54f4f;
+}
+.button.redC:active,
+.popup_backgroundBlock >.wrapper .popupBlock .confirmGenerator.warning .confirm_button:active,
+.button.redC.active,
+.popup_backgroundBlock >.wrapper .popupBlock .confirmGenerator.warning .confirm_button.active {
+  box-shadow: 0px 2px 6px -3px #2c2929 inset;
+  border-color: #a43636 #bf3939 #d26060;
 }
 .button.whiteC {
   background-image: linear-gradient(to bottom, #f1f3f5, #fff);
@@ -554,14 +590,31 @@ body {
   border-color: #ced2d7 #c5cad0 #ced2d7;
   color: #506177;
 }
-.button.whiteC:hover {
+.button.whiteC:hover,
+.button.whiteC:focus {
   background: #f4f6fd;
 }
 .button.whiteC:active,
 .button.whiteC.active {
   color: #314157;
   box-shadow: 0px 2px 6px -3px #575f6f inset;
-  border-color: #acb7c6 #bec5ce #c5c8cd;
+  border-color: #9ca7b7 #bec5ce #d3d8db;
+}
+.button.yellowC {
+  background-image: linear-gradient(to bottom, #cb9f19, #e2be12);
+  background-color: #cea616;
+  border-color: #d9b312 #d5ad12 #c19610;
+  color: #fff;
+}
+.button.yellowC:hover,
+.button.yellowC:focus {
+  background: #d6af12;
+}
+.button.yellowC.active,
+.button.yellowC:active {
+  box-shadow: 0px 2px 6px -3px #372c00 inset;
+  text-shadow: -1px -1px 0px #b2910e;
+  border-color: #987d0c #a6880d #ceaa17;
 }
 .button {
   display: inline-block;
@@ -805,26 +858,6 @@ body {
 .favorite:hover >.count {
   opacity: 1;
 }
-.simpleCheckbox {
-  display: inline-block;
-  cursor: pointer;
-  height: 13px;
-  width: 13px;
-  border: 1px solid #d1d7db;
-  color: #d1d7db;
-  font-size: 12px;
-  text-align: center;
-  line-height: 13px;
-}
-
-.simpleCheckbox {
-  vertical-align: middle;
-}
-.simpleCheckbox.active:before {
-  content: "\e80c";
-  vertical-align: 0;
-}
-
 .header_global {
   width: 100%;
   height: 58px;
@@ -1108,23 +1141,20 @@ body {
   margin-left: 8px;
   font-size: 22px;
 }
-
 .header_global >.rightBlock .icons .exit_button:before {
   content: "\e967";
   vertical-align: -2px;
 }
-
 .header_global >.rightBlock .icons .user_button {
   margin-left: 8px;
-  margin-right: 8px;
   font-size: 22px;
+  margin-right: 8px;
 }
 .header_global >.rightBlock .icons .user_button:before {
   content: "\e90e";
   vertical-align: -2px;
   padding-right: 5px;
 }
-
 .header_global >.rightBlock .icons .notifications_button {
   font-size: 22px;
   position: relative;
@@ -2377,23 +2407,32 @@ body {
 }
 .body_global >.rightBlock .CaseList table.cases tr.case .favorite_button,
 .body_global .OrganizationList .organizations .organization >.wrapper .favorite_button,
-.body_global .UserList.list_showing .users .user >.wrapper .favorite_button {
+.body_global .UserList.list_showing .users .user >.wrapper .favorite_button,
+.body_global .Profile .UserPassport >.head .userInfo .favorite_button,
+.body_global >.rightBlock .productListsBlock.reportBlock >.block .productList .product >.wrapper .favorite_button {
   font-size: 19px;
   color: #c8cfd3;
   cursor: pointer;
 }
 .body_global >.rightBlock .CaseList table.cases tr.case .favorite_button:before,
 .body_global .OrganizationList .organizations .organization >.wrapper .favorite_button:before,
-.body_global .UserList.list_showing .users .user >.wrapper .favorite_button:before {
+.body_global .UserList.list_showing .users .user >.wrapper .favorite_button:before,
+.body_global .Profile .UserPassport >.head .userInfo .favorite_button:before,
+.body_global >.rightBlock .productListsBlock.reportBlock >.block .productList .product >.wrapper .favorite_button:before,
+.body_global .Profile .UserPassport >.head .userInfo .icon-favorite:before {
   content: "\e800";
   vertical-align: -1px;
 }
 .body_global >.rightBlock .CaseList table.cases tr.case .favorite_button.active,
 .body_global .OrganizationList .organizations .organization >.wrapper .favorite_button.active,
 .body_global .UserList.list_showing .users .user >.wrapper .favorite_button.active,
+.body_global .Profile .UserPassport >.head .userInfo .favorite_button.active,
+.body_global >.rightBlock .productListsBlock.reportBlock >.block .productList .product >.wrapper .favorite_button.active,
 .body_global >.rightBlock .CaseList table.cases tr.case .favorite_button:hover,
 .body_global .OrganizationList .organizations .organization >.wrapper .favorite_button:hover,
-.body_global .UserList.list_showing .users .user >.wrapper .favorite_button:hover {
+.body_global .UserList.list_showing .users .user >.wrapper .favorite_button:hover,
+.body_global .Profile .UserPassport >.head .userInfo .favorite_button:hover,
+.body_global >.rightBlock .productListsBlock.reportBlock >.block .productList .product >.wrapper .favorite_button:hover {
   color: #d0ac19;
 }
 .body_global >.rightBlock .CaseList .timingDiagram >.left_button,
@@ -2472,9 +2511,8 @@ body {
 }
 .body_global >.rightBlock .CaseList .timingDiagram table.diagram tr.headers td.newMonth,
 .body_global .UserPassport .absences .timingDiagram table.diagram tr.headers td.newMonth {
-  min-width: 120px;
-  max-width: 120px;
   color: #314157;
+  font-weight: bold;
 }
 .body_global >.rightBlock .CaseList .timingDiagram table.diagram tbody.workLines tr td {
   height: 55px;
@@ -4860,7 +4898,15 @@ body {
   line-height: 56px;
   padding-left: 35px;
 }
-
+.body_global >.rightBlock .caseListsBlock table.caseList tr.case .checkbox {
+  position: absolute;
+  right: 18px;
+  top: 18px;
+  width: 18px;
+  height: 18px;
+  border: 1px solid #d2d6dc;
+  text-align: center;
+}
 .body_global >.rightBlock .caseListsBlock table.caseList tr.case .quickInfo {
   display: inline-block;
   vertical-align: middle;
@@ -4898,7 +4944,25 @@ body {
 .body_global >.rightBlock .caseListsBlock table.caseList tr.case .extraButtons > .button + .button {
   margin-left: 2px;
 }
-
+.body_global >.rightBlock .caseListsBlock table.caseList tr.case .checkBox {
+  position: absolute;
+  right: 15px;
+  top: 15px;
+  width: 18px;
+  height: 18px;
+  border: 1px solid #d2d6dc;
+  text-align: center;
+}
+.body_global >.rightBlock .caseListsBlock table.caseList tr.case .checkBox .icon-checkmark {
+  color: transparent;
+}
+.body_global >.rightBlock .caseListsBlock table.caseList tr.case .checkBox .icon-checkmark:before {
+  content: "\e80c";
+  vertical-align: -1px;
+}
+.body_global >.rightBlock .caseListsBlock table.caseList tr.case .checkBox.active .icon-checkmark {
+  color: #de676b;
+}
 .body_global >.rightBlock .caseListsBlock table.caseList tr.case > .favorite {
   position: absolute;
   top: 0px;
@@ -5642,9 +5706,7 @@ body {
 .body_global >.rightBlock .userListsBlock.list_showing .userList .user:nth-child(3n) {
   padding-right: 0;
 }
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper,
-.body_global >.rightBlock .productListsBlock.reportBlock >.block .productList .product >.wrapper,
-.body_global >.rightBlock .componentListsBlock.reportBlock >.block .componentList .component >.wrapper {
+.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper {
   padding: 14px;
   box-sizing: border-box;
   position: relative;
@@ -5679,7 +5741,9 @@ body {
   background-color: #fff;
   cursor: pointer;
 }
-
+.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper:hover .checkbox {
+  opacity: 1;
+}
 .body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava,
 .body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper >.wrapper,
 .body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava {
@@ -5694,206 +5758,6 @@ body {
   border: 1px solid #c0c8d0;
   border-radius: 10px;
   box-sizing: border-box;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user120,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user120 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=120") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user121,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user121 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=121") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user122,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user122 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=122") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user123,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user123 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=123") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user124,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user124 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=124") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user125,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user125 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=125") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user126,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user126 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=126") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user127,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user127 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=127") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user128,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user128 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=128") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user129,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user129 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=129") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user130,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user130 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=130") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user131,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user131 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=131") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user132,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user132 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=132") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user133,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user133 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=133") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user134,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user134 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=134") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user135,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user135 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=135") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user136,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user136 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=136") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user137,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user137 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=137") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user138,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user138 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=138") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user139,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user139 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=139") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user140,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user140 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=140") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user141,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user141 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=141") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user142,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user142 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=142") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user143,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user143 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=143") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user144,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user144 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=144") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user145,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user145 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=145") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user146,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user146 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=146") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user147,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user147 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=147") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user148,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user148 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=148") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user149,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user149 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=149") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user150,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user150 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=150") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user151,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user151 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=151") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user152,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user152 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=152") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user153,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user153 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=153") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user154,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user154 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=154") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user155,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user155 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=155") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user156,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user156 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=156") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user157,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user157 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=157") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user158,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user158 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=158") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user159,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user159 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=159") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user160,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user160 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=160") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user161,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user161 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=161") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user162,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user162 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=162") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user163,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user163 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=163") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user164,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user164 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=164") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user165,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user165 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=165") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user166,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user166 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=166") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user167,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user167 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=167") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user168,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user168 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=168") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user169,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user169 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=169") no-repeat scroll 0px -1px/80px;
 }
 .body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper >.wrapper {
   padding-left: 14px;
@@ -5977,10 +5841,21 @@ body {
 .body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .buttons .icon-menu:hover {
   color: #f00;
 }
-
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .favorite,
-.body_global >.rightBlock .productListsBlock.reportBlock >.block .productList .product >.wrapper .favorite,
-.body_global >.rightBlock .componentListsBlock.reportBlock >.block .componentList .component >.wrapper .favorite {
+.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .checkbox,
+.body_global >.rightBlock .productListsBlock.reportBlock >.block .productList .product >.wrapper .checkbox,
+.body_global >.rightBlock .componentListsBlock.reportBlock >.block .componentList .component >.wrapper .checkbox {
+  transition-duration: 0.2s;
+  opacity: 0;
+  position: absolute;
+  top: -1px;
+  left: -1px;
+}
+.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .checkbox.active,
+.body_global >.rightBlock .productListsBlock.reportBlock >.block .productList .product >.wrapper .checkbox.active,
+.body_global >.rightBlock .componentListsBlock.reportBlock >.block .componentList .component >.wrapper .checkbox.active {
+  opacity: 1;
+}
+.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .favorite {
   top: 5px;
   right: 5px;
   border-width: 20px;
@@ -6082,37 +5957,16 @@ body {
 .body_global >.rightBlock .productListsBlock {
   margin: 14px;
 }
+.body_global >.rightBlock .productListsBlock >.controlButtons {
+  margin-bottom: 14px;
+}
 .body_global >.rightBlock .productListsBlock.reportBlock .letters,
 .body_global >.rightBlock .componentListsBlock.reportBlock .letters {
   margin-top: 7px;
 }
-.body_global >.rightBlock .productListsBlock.reportBlock >.block {
-  width: auto;
-  padding-right: 60px;
-}
-.body_global >.rightBlock .productListsBlock.reportBlock >.block .productList {
-  margin-top: -7px;
-}
-.body_global >.rightBlock .productListsBlock.reportBlock >.block .productList .product,
-.body_global >.rightBlock .componentListsBlock.reportBlock >.block .componentList .component {
-  padding: 7px;
-  display: inline-block;
-  width: 25%;
-  box-sizing: border-box;
-  vertical-align: top;
-}
-.body_global >.rightBlock .productListsBlock.reportBlock >.block .productList .product:nth-child(4n-3),
-.body_global >.rightBlock .componentListsBlock.reportBlock >.block .componentList .component:nth-child(4n-3) {
-  padding-left: 0;
-}
-.body_global >.rightBlock .productListsBlock.reportBlock >.block .productList .product:nth-child(4n),
-.body_global >.rightBlock .componentListsBlock.reportBlock >.block .componentList .component:nth-child(4n) {
-  padding-right: 0;
-}
-.body_global >.rightBlock .productListsBlock.reportBlock >.block .productList .product >.wrapper:hover,
-.body_global >.rightBlock .componentListsBlock.reportBlock >.block .componentList .component >.wrapper:hover {
-  background-color: #fff;
-  cursor: pointer;
+.body_global >.rightBlock .productListsBlock.reportBlock >.block .productList .product >.wrapper:hover .checkbox,
+.body_global >.rightBlock .componentListsBlock.reportBlock >.block .componentList .component >.wrapper:hover .checkbox {
+  opacity: 1;
 }
 .body_global >.rightBlock .productListsBlock.reportBlock >.block .productList .product >.wrapper .department,
 .body_global >.rightBlock .componentListsBlock.reportBlock >.block .componentList .component >.wrapper .department {
@@ -7158,50 +7012,6 @@ body {
   content: "\e904";
   vertical-align: middle;
 }
-.body_global .OrganizationList .organizations .organization {
-  padding: 7px;
-  display: inline-block;
-  width: 25%;
-  box-sizing: border-box;
-  vertical-align: top;
-}
-.body_global .OrganizationList .organizations .organization:nth-child(4n-3) {
-  padding-left: 0;
-}
-.body_global .OrganizationList .organizations .organization:nth-child(4n) {
-  padding-right: 0;
-}
-.body_global .OrganizationList .organizations .organization:nth-child(-n+4) {
-  padding-top: 0;
-}
-.body_global .OrganizationList .organizations .organization:nth-last-child(-n+4) {
-  padding-bottom: 0;
-}
-.body_global .OrganizationList .organizations .organization >.wrapper,
-.body_global .UserList.list_showing .users .user >.wrapper {
-  padding: 14px;
-  box-sizing: border-box;
-  position: relative;
-  background-color: #f6f7f8;
-  border: 1px solid #fff;
-  overflow: hidden;
-  white-space: nowrap;
-  box-shadow: 0 1px 4px 0px rgba(53,64,79,0.3);
-  border-radius: 3px;
-  z-index: 1;
-  transition-duration: 0.5s;
-  transition-property: padding, border;
-}
-.body_global .OrganizationList .organizations .organization >.wrapper:after,
-.body_global .UserList.list_showing .users .user >.wrapper:after {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 50px;
-  content: "";
-  right: 0;
-  background-image: linear-gradient(to right, transparent, #f6f7f8 25px);
-}
 .body_global .OrganizationList .organizations .organization >.wrapper .type {
   font-size: 12px;
 }
@@ -7221,7 +7031,9 @@ body {
   z-index: 1;
 }
 .body_global .OrganizationList .organizations .organization >.wrapper .favorite_button,
-.body_global .UserList.list_showing .users .user >.wrapper .favorite_button {
+.body_global .UserList.list_showing .users .user >.wrapper .favorite_button,
+.body_global .Profile .UserPassport >.head .userInfo .favorite_button,
+.body_global >.rightBlock .productListsBlock.reportBlock >.block .productList .product >.wrapper .favorite_button {
   font-size: 20px;
   position: absolute;
   top: 3px;
@@ -7548,23 +7360,39 @@ body {
 .body_global .UserList.list_showing {
   margin: 14px;
 }
-.body_global .UserList.list_showing .controlButtons {
+.body_global .UserList.list_showing >.controlButtons {
   margin-bottom: 14px;
 }
-.body_global .UserList.list_showing .controlButtons .icon-search {
+.body_global .UserList.list_showing >.controlButtons .icon-search {
   font-size: 15px;
 }
-.body_global .UserList.list_showing .controlButtons .icon-search:before {
+.body_global .UserList.list_showing >.controlButtons .icon-search:before {
   content: "\e904";
   vertical-align: 0;
 }
-.body_global .UserList.list_showing .controlButtons .inputField {
+.body_global .UserList.list_showing >.controlButtons .inputField {
   width: 250px;
+}
+.body_global .UserList.list_showing >.controlButtons .count {
+  font-weight: bold;
+  color: #4073bc;
+  margin-left: 5px;
+}
+.body_global .UserList.list_showing >.controlButtons .sorting_button:before {
+  content: "\e98b";
+  vertical-align: middle;
+}
+.body_global .UserList.list_showing >.controlButtons .sorting_button.active:before {
+  content: "\e968";
+  vertical-align: middle;
 }
 .body_global .UserList.list_showing .letters {
   padding: 8px;
   background-color: #c6ccd4;
   right: 14px;
+}
+.body_global .UserList.list_showing .letters.bottomPanel_showing {
+  margin-bottom: 70px;
 }
 .body_global .UserList.list_showing .letters .button {
   display: block;
@@ -7580,10 +7408,13 @@ body {
   padding-right: 60px;
   margin: -7px -7px 0 -7px;
 }
+.body_global .UserList.list_showing .users.bottomPanel_showing {
+  margin-bottom: 63px;
+}
 .body_global .UserList.list_showing .users .user {
   padding: 7px;
   display: inline-block;
-  width: 33.1%;
+  width: 33.333333333333336%;
   box-sizing: border-box;
   vertical-align: top;
 }
@@ -7592,7 +7423,13 @@ body {
     width: 50%;
   }
 }
-.body_global .UserList.list_showing .users .user >.wrapper .ava {
+.body_global .UserList.list_showing .users .user >.wrapper.flatBottom {
+  z-index: 2;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.body_global .UserList.list_showing .users .user >.wrapper .ava,
+.body_global .Profile .UserPassport >.head .ava {
   display: inline-block;
   vertical-align: middle;
   height: 80px;
@@ -7601,160 +7438,12 @@ body {
   border: 1px solid #e4e6e9;
   box-sizing: border-box;
 }
-.body_global .UserList.list_showing .users .user >.wrapper .ava.user120 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=120") no-repeat scroll 0px -1px/80px;
-}
-.body_global .UserList.list_showing .users .user >.wrapper .ava.user121 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=121") no-repeat scroll 0px -1px/80px;
-}
-.body_global .UserList.list_showing .users .user >.wrapper .ava.user122 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=122") no-repeat scroll 0px -1px/80px;
-}
-.body_global .UserList.list_showing .users .user >.wrapper .ava.user123 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=123") no-repeat scroll 0px -1px/80px;
-}
-.body_global .UserList.list_showing .users .user >.wrapper .ava.user124 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=124") no-repeat scroll 0px -1px/80px;
-}
-.body_global .UserList.list_showing .users .user >.wrapper .ava.user125 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=125") no-repeat scroll 0px -1px/80px;
-}
-.body_global .UserList.list_showing .users .user >.wrapper .ava.user126 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=126") no-repeat scroll 0px -1px/80px;
-}
-.body_global .UserList.list_showing .users .user >.wrapper .ava.user127 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=127") no-repeat scroll 0px -1px/80px;
-}
-.body_global .UserList.list_showing .users .user >.wrapper .ava.user128 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=128") no-repeat scroll 0px -1px/80px;
-}
-.body_global .UserList.list_showing .users .user >.wrapper .ava.user129 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=129") no-repeat scroll 0px -1px/80px;
-}
-.body_global .UserList.list_showing .users .user >.wrapper .ava.user130 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=130") no-repeat scroll 0px -1px/80px;
-}
-.body_global .UserList.list_showing .users .user >.wrapper .ava.user131 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=131") no-repeat scroll 0px -1px/80px;
-}
-.body_global .UserList.list_showing .users .user >.wrapper .ava.user132 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=132") no-repeat scroll 0px -1px/80px;
-}
-.body_global .UserList.list_showing .users .user >.wrapper .ava.user133 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=133") no-repeat scroll 0px -1px/80px;
-}
-.body_global .UserList.list_showing .users .user >.wrapper .ava.user134 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=134") no-repeat scroll 0px -1px/80px;
-}
-.body_global .UserList.list_showing .users .user >.wrapper .ava.user135 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=135") no-repeat scroll 0px -1px/80px;
-}
-.body_global .UserList.list_showing .users .user >.wrapper .ava.user136 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=136") no-repeat scroll 0px -1px/80px;
-}
-.body_global .UserList.list_showing .users .user >.wrapper .ava.user137 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=137") no-repeat scroll 0px -1px/80px;
-}
-.body_global .UserList.list_showing .users .user >.wrapper .ava.user138 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=138") no-repeat scroll 0px -1px/80px;
-}
-.body_global .UserList.list_showing .users .user >.wrapper .ava.user139 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=139") no-repeat scroll 0px -1px/80px;
-}
-.body_global .UserList.list_showing .users .user >.wrapper .ava.user140 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=140") no-repeat scroll 0px -1px/80px;
-}
-.body_global .UserList.list_showing .users .user >.wrapper .ava.user141 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=141") no-repeat scroll 0px -1px/80px;
-}
-.body_global .UserList.list_showing .users .user >.wrapper .ava.user142 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=142") no-repeat scroll 0px -1px/80px;
-}
-.body_global .UserList.list_showing .users .user >.wrapper .ava.user143 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=143") no-repeat scroll 0px -1px/80px;
-}
-.body_global .UserList.list_showing .users .user >.wrapper .ava.user144 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=144") no-repeat scroll 0px -1px/80px;
-}
-.body_global .UserList.list_showing .users .user >.wrapper .ava.user145 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=145") no-repeat scroll 0px -1px/80px;
-}
-.body_global .UserList.list_showing .users .user >.wrapper .ava.user146 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=146") no-repeat scroll 0px -1px/80px;
-}
-.body_global .UserList.list_showing .users .user >.wrapper .ava.user147 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=147") no-repeat scroll 0px -1px/80px;
-}
-.body_global .UserList.list_showing .users .user >.wrapper .ava.user148 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=148") no-repeat scroll 0px -1px/80px;
-}
-.body_global .UserList.list_showing .users .user >.wrapper .ava.user149 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=149") no-repeat scroll 0px -1px/80px;
-}
-.body_global .UserList.list_showing .users .user >.wrapper .ava.user150 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=150") no-repeat scroll 0px -1px/80px;
-}
-.body_global .UserList.list_showing .users .user >.wrapper .ava.user151 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=151") no-repeat scroll 0px -1px/80px;
-}
-.body_global .UserList.list_showing .users .user >.wrapper .ava.user152 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=152") no-repeat scroll 0px -1px/80px;
-}
-.body_global .UserList.list_showing .users .user >.wrapper .ava.user153 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=153") no-repeat scroll 0px -1px/80px;
-}
-.body_global .UserList.list_showing .users .user >.wrapper .ava.user154 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=154") no-repeat scroll 0px -1px/80px;
-}
-.body_global .UserList.list_showing .users .user >.wrapper .ava.user155 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=155") no-repeat scroll 0px -1px/80px;
-}
-.body_global .UserList.list_showing .users .user >.wrapper .ava.user156 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=156") no-repeat scroll 0px -1px/80px;
-}
-.body_global .UserList.list_showing .users .user >.wrapper .ava.user157 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=157") no-repeat scroll 0px -1px/80px;
-}
-.body_global .UserList.list_showing .users .user >.wrapper .ava.user158 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=158") no-repeat scroll 0px -1px/80px;
-}
-.body_global .UserList.list_showing .users .user >.wrapper .ava.user159 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=159") no-repeat scroll 0px -1px/80px;
-}
-.body_global .UserList.list_showing .users .user >.wrapper .ava.user160 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=160") no-repeat scroll 0px -1px/80px;
-}
-.body_global .UserList.list_showing .users .user >.wrapper .ava.user161 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=161") no-repeat scroll 0px -1px/80px;
-}
-.body_global .UserList.list_showing .users .user >.wrapper .ava.user162 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=162") no-repeat scroll 0px -1px/80px;
-}
-.body_global .UserList.list_showing .users .user >.wrapper .ava.user163 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=163") no-repeat scroll 0px -1px/80px;
-}
-.body_global .UserList.list_showing .users .user >.wrapper .ava.user164 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=164") no-repeat scroll 0px -1px/80px;
-}
-.body_global .UserList.list_showing .users .user >.wrapper .ava.user165 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=165") no-repeat scroll 0px -1px/80px;
-}
-.body_global .UserList.list_showing .users .user >.wrapper .ava.user166 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=166") no-repeat scroll 0px -1px/80px;
-}
-.body_global .UserList.list_showing .users .user >.wrapper .ava.user167 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=167") no-repeat scroll 0px -1px/80px;
-}
-.body_global .UserList.list_showing .users .user >.wrapper .ava.user168 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=168") no-repeat scroll 0px -1px/80px;
-}
-.body_global .UserList.list_showing .users .user >.wrapper .ava.user169 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=169") no-repeat scroll 0px -1px/80px;
-}
 .body_global .UserList.list_showing .users .user >.wrapper >.wrapper {
-  display: inline-block;
-  vertical-align: middle;
-  padding-left: 14px;
+  overflow: hidden;
+  position: absolute;
+  top: 26px;
+  right: 0;
+  left: 108px;
 }
 .body_global .UserList.list_showing .users .user >.wrapper .post,
 .body_global .UserList.list_showing .users .user >.wrapper .birthday {
@@ -7770,30 +7459,55 @@ body {
 .body_global .UserList.list_showing .users .user >.wrapper .menu_button {
   top: 50px;
 }
-.body_global .UserList.list_showing .users .user.inactive:not(.active) >.wrapper {
+.body_global .UserList.list_showing .users .user >.wrapper .id {
+  position: absolute;
+  top: 88px;
+  right: 5px;
+  text-align: right;
+  z-index: 1;
+  color: #a5acb5;
+}
+.body_global .UserList.list_showing .users .user >.wrapper .id:hover {
+  color: #314157;
+}
+.body_global .UserList.list_showing .users .user >.wrapper >.absencePopup_block {
+  left: -1px;
+  right: -1px;
+  cursor: auto;
+  box-shadow: 0 2px 4px 0px rgba(53,64,79,0.3);
+  border: 1px solid #fff;
+  border-top: 1px solid #e1e4e5;
+  opacity: 0;
+  transition-duration: 0.2s;
+  top: 100%;
+  margin-top: 1px;
+  border-bottom-right-radius: 3px;
+  border-bottom-left-radius: 3px;
+}
+.body_global .UserList.list_showing .users .user >.wrapper >.absencePopup_block:after {
+  content: normal;
+}
+.body_global .UserList.list_showing .users .user >.wrapper >.absencePopup_block:before {
+  content: normal;
+}
+.body_global .UserList.list_showing .users .user >.wrapper >.absencePopup_block.active {
+  opacity: 1;
+}
+.body_global .UserList.list_showing .users .user.inactive:not(.active) >.wrapper:not(:hover) {
   background-color: #dee4e5;
   box-shadow: none;
   color: #7d8895;
   border-color: #dee4e5;
 }
-.body_global .UserList.list_showing .users .user.inactive:not(.active) >.wrapper .ava {
+.body_global .UserList.list_showing .users .user.inactive:not(.active) >.wrapper:not(:hover) .ava {
   transition-duration: 0.3s;
   opacity: 0.2;
 }
-.body_global .UserList.list_showing .users .user.inactive:not(.active) >.wrapper .name {
+.body_global .UserList.list_showing .users .user.inactive:not(.active) >.wrapper:not(:hover) .name {
   color: #909ca9;
   text-shadow: 1px 1px 1px #e1ebed;
 }
-.body_global .UserList.list_showing .users .user.inactive:not(.active) >.wrapper:hover >.wrapper {
-  color: #314157;
-}
-.body_global .UserList.list_showing .users .user.inactive:not(.active) >.wrapper:hover >.wrapper .name {
-  color: #707d8b;
-}
-.body_global .UserList.list_showing .users .user.inactive:not(.active) >.wrapper:hover .ava {
-  opacity: 1;
-}
-.body_global .UserList.list_showing .users .user.inactive:not(.active) >.wrapper:after {
+.body_global .UserList.list_showing .users .user.inactive:not(.active) >.wrapper:not(:hover):after {
   background-image: linear-gradient(to right, transparent, #dee4e5 25px);
 }
 .body_global .UserList.list_showing .users .user.leader >.wrapper .name,
@@ -7863,6 +7577,9 @@ body {
 .body_global .UserPassport .absences {
   margin-top: 14px;
 }
+.body_global .UserPassport .absences .controlButtons {
+  margin-bottom: 14px;
+}
 .body_global .UserPassport .absences .controlButtons .icon-add {
   padding-right: 7px;
   font-size: 11px;
@@ -7877,11 +7594,30 @@ body {
 }
 .body_global .UserPassport .absences .timingDiagram >.left_button,
 .body_global .UserPassport .absences .timingDiagram >.right_button {
-  background-color: #e9e9e9;
+  background-image: linear-gradient(to bottom, #5d8dc6, #51a1eb);
+  border: 1px solid #5c8dc6;
+  color: #fff;
+  border-top: 0;
+  width: 22px;
+  text-align: center;
 }
 .body_global .UserPassport .absences .timingDiagram >.left_button:hover,
 .body_global .UserPassport .absences .timingDiagram >.right_button:hover {
-  background-color: #d1d3d6;
+  color: #a3c6e6;
+}
+.body_global .UserPassport .absences .timingDiagram >.month {
+  background-color: #e9e9e9;
+  color: #314157;
+  font-weight: bold;
+  border-right: 1px solid #d0d4d7;
+  border-bottom: 1px solid #d0d4d7;
+  width: 168px;
+  height: 22px;
+  line-height: 22px;
+  font-size: 11px;
+  position: absolute;
+  left: 24px;
+  text-align: center;
 }
 .body_global .UserPassport .absences .timingDiagram table.diagram {
   width: 100%;
@@ -7924,6 +7660,7 @@ body {
 .body_global .UserPassport .absences .timingDiagram table.diagram tr.absenceLines td .line:hover {
   height: 12px;
   margin-top: -6px;
+  z-index: 2;
 }
 .body_global .UserPassport .absences .timingDiagram table.diagram tr.absenceLines td .line.reason1 {
   border: 1px solid #d02a2a;
@@ -7964,6 +7701,10 @@ body {
 .body_global .UserPassport .absences .timingDiagram table.diagram tr.absenceLines td .line.reason10 {
   border: 1px solid #709d0f;
   background-image: linear-gradient(to bottom, #9fdf5e, #7fab1c);
+}
+.body_global .UserPassport .absences .timingDiagram table.diagram tr.absenceLines td .line.reason11 {
+  border: 1px solid #5235d0;
+  background-image: linear-gradient(to bottom, #8f72f6, #4d30cd);
 }
 .body_global .case >.head {
   line-height: 28px;
@@ -9372,11 +9113,11 @@ body {
 .body_global .case >.body .logsBlock .content .activityFeed .comment {
   padding: 14px;
   border-top: 1px solid #e3e6e9;
-/*	text-align right
-							.dateUpdate{
-								extend('>.head .dateCreation $', 2)
-							}
-						}*/
+  /*	text-align right
+                              .dateUpdate{
+                                  extend('>.head .dateCreation $', 2)
+                              }
+                          }*/
 }
 .body_global .case >.body .logsBlock .content .activityFeed .comment .to,
 .body_global .case >.body .logsBlock .content .newMessageBlock >.head .to {
@@ -10660,11 +10401,18 @@ body {
 .AbsenceList table.absences tr.absence td.control .edit_button,
 .AbsenceList table.absences tr.absence td.control .duplicate_button,
 .AbsenceList table.absences tr.absence td.control .delete_button,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .controlButtons .edit_button,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .controlButtons .duplicate_button,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .controlButtons .delete_button,
+
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .controlButtons .duplicate_button,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .controlButtons .delete_button,
 .absencePopup_block .info .delete_button,
 .absencePopup_block .info .duplicate_button,
-.absencePopup_block .info .edit_button {
+.absencePopup_block .info .edit_button,
+.absencePopup_block .info .openOutside_button {
   margin-left: 9px;
-  font-size: 11px;
+  font-size: 12px;
   color: #aeb4b8;
   cursor: pointer;
 }
@@ -10674,9 +10422,16 @@ body {
 .AbsenceList table.absences tr.absence td.control .edit_button:hover,
 .AbsenceList table.absences tr.absence td.control .duplicate_button:hover,
 .AbsenceList table.absences tr.absence td.control .delete_button:hover,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .controlButtons .edit_button:hover,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .controlButtons .duplicate_button:hover,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .controlButtons .delete_button:hover,
+
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .controlButtons .duplicate_button:hover,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .controlButtons .delete_button:hover,
 .absencePopup_block .info .delete_button:hover,
 .absencePopup_block .info .duplicate_button:hover,
-.absencePopup_block .info .edit_button:hover {
+.absencePopup_block .info .edit_button:hover,
+.absencePopup_block .info .openOutside_button:hover {
   color: #314157;
 }
 .body_global .Subscriptions table.rules tr.rule >td.control .edit_button.inactive,
@@ -10685,23 +10440,36 @@ body {
 .AbsenceList table.absences tr.absence td.control .edit_button.inactive,
 .AbsenceList table.absences tr.absence td.control .duplicate_button.inactive,
 .AbsenceList table.absences tr.absence td.control .delete_button.inactive,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .controlButtons .edit_button.inactive,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .controlButtons .duplicate_button.inactive,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .controlButtons .delete_button.inactive,
+
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .controlButtons .duplicate_button.inactive,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .controlButtons .delete_button.inactive,
 .absencePopup_block .info .delete_button.inactive,
 .absencePopup_block .info .duplicate_button.inactive,
-.absencePopup_block .info .edit_button.inactive {
+.absencePopup_block .info .edit_button.inactive,
+.absencePopup_block .info .openOutside_button.inactive {
   color: #d1d7db;
   cursor: not-allowed;
 }
 .body_global .Subscriptions table.rules tr.rule >td.control .edit_button:before,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .controlButtons .edit_button:before,
+
 .absencePopup_block .info .edit_button:before {
   content: "\e804";
   vertical-align: middle;
 }
 .body_global .Subscriptions table.rules tr.rule >td.control .duplicate_button:before,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .controlButtons .duplicate_button:before,
+
 .absencePopup_block .info .duplicate_button:before {
-  content: "\e96c";
+  content: "\e990";
   vertical-align: middle;
 }
 .body_global .Subscriptions table.rules tr.rule >td.control .delete_button:before,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .controlButtons .delete_button:before,
+
 .absencePopup_block .info .delete_button:before {
   content: "\e80b";
   vertical-align: middle;
@@ -10778,7 +10546,20 @@ body {
   cursor: pointer;
   color: #314157;
 }
-
+.body_global .Subscriptions table.rules tr.rule >td.emailAlert .checkbox,
+.body_global .Subscriptions table.rules tr.rule >td.portalAlert .checkbox {
+  background-color: #dee4e5;
+  color: #dee4e5;
+  border-color: #cfd4d9;
+}
+.body_global .Subscriptions table.rules tr.rule >td.emailAlert .checkbox.active,
+.body_global .Subscriptions table.rules tr.rule >td.portalAlert .checkbox.active,
+.body_global .Subscriptions table.rules tr.rule >td.emailAlert .checkbox:hover,
+.body_global .Subscriptions table.rules tr.rule >td.portalAlert .checkbox:hover {
+  color: #fff;
+  background-color: #67af53;
+  border-color: #67af53;
+}
 .body_global .Subscriptions table.rules tr.rule.activeFilter td.creator {
   border-right: 1px solid #aac1e3;
 }
@@ -11136,30 +10917,15 @@ body {
   margin: 14px;
 }
 .body_global .Profile .UserPassport {
-  background-color: #fff;
-  box-shadow: 0 0 10px -2px rgba(49,65,87,0.5);
-  padding: 14px;
+  margin: 0;
+  display: block;
 }
 .body_global .Profile .UserPassport >.head {
   margin-bottom: 14px;
   padding-bottom: 14px;
 }
-.body_global .Profile .UserPassport >.head .tabs {
-  width: 100%;
-}
-.body_global .Profile .UserPassport >.head .tabs .tab {
-  width: 20%;
-}
 .body_global .Profile .UserPassport >.head .ava {
-  height: 80px;
-  width: 80px;
-  border: 1px solid #c0c8d0;
-  border-radius: 10px;
-  box-sizing: border-box;
   position: absolute;
-}
-.body_global .Profile .UserPassport >.head .ava.user124 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=124") no-repeat scroll 0px -1px/80px;
 }
 .body_global .Profile .UserPassport >.head >.wrapper {
   width: 100%;
@@ -11177,47 +10943,25 @@ body {
   vertical-align: middle;
   margin-right: 14px;
 }
-.body_global .Profile .UserPassport >.head .userInfo .workNow,
-.body_global .Profile .UserPassport >.head .userInfo .lastActivity,
 .body_global .Profile .UserPassport >.head .userInfo .missingNow {
-  font-size: 11px;
   vertical-align: middle;
   font-weight: bold;
   color: #fff;
   margin-right: 7px;
-  padding: 5px 10px;
-}
-.body_global .Profile .UserPassport >.head .userInfo .workNow {
-  background-color: #67af53;
-}
-.body_global .Profile .UserPassport >.head .userInfo .lastActivity {
-  background-color: #5e93ce;
-}
-.body_global .Profile .UserPassport >.head .userInfo .lastActivity .icon-activity {
-  font-size: 15px;
-  padding-right: 7px;
-}
-.body_global .Profile .UserPassport >.head .userInfo .lastActivity .icon-activity:before {
-  content: "\e92d";
-  vertical-align: 1px;
+  padding: 0 10px;
+  line-height: 26px;
+  display: inline-block;
 }
 .body_global .Profile .UserPassport >.head .userInfo .missingNow {
-  background-color: #f1343b;
+  background-color: #c94141;
+}
+.body_global .Profile .UserPassport >.head .userInfo .favorite_button {
+  position: static;
 }
 .body_global .Profile .UserPassport >.head .userInfo .icon-favorite {
-  font-size: 18px;
-}
-.body_global .Profile .UserPassport >.head .userInfo .icon-favorite:before {
-  content: "\e800";
-  vertical-align: 2px;
-  padding-left: 1px;
-}
-.body_global .Profile .UserPassport >.head .userInfo .icon-follow {
-  font-size: 15px;
-}
-.body_global .Profile .UserPassport >.head .userInfo .icon-follow:before {
-  content: "\e964";
-  vertical-align: 0;
+  font-size: 17px;
+  vertical-align: -2px;
+  padding-right: 7px;
 }
 .body_global .Favorites {
   margin: 14px;
@@ -11345,6 +11089,198 @@ body {
 .body_global .UserList.list_showing >.footer .btn:hover,
 .AbsenceList >.footer .btn:hover {
   background-color: #c6ced2;
+}
+.body_global .Company {
+  margin: 14px;
+}
+.body_global .CompanyConstruction >.body {
+  padding: 14px;
+  position: relative;
+  background: #dee4e5;
+  text-align: left;
+  box-sizing: border-box;
+}
+.body_global .CompanyConstruction >.body .row {
+  clear: both;
+}
+.body_global .CompanyConstruction >.body .row +.row {
+  padding-top: 7px;
+}
+.body_global .CompanyConstruction >.body .row .col {
+  display: inline-block;
+  width: calc(50% - 7px);
+  vertical-align: top;
+}
+.body_global .CompanyConstruction >.body .row .col +.col {
+  float: right;
+}
+.body_global .CompanyConstruction >.body .row .button.selected,
+.body_global .CompanyConstruction >.body .row .inputField {
+  width: 100%;
+  box-shadow: rgba(49,65,87,0.4) 0px 0px 1px 0px;
+  line-height: 30px;
+  height: 30px;
+  border: 0;
+  max-height: none;
+}
+.body_global .CompanyConstruction >.body .row .button.selected:after {
+  float: right;
+  line-height: 30px;
+}
+.body_global .CompanyConstruction >.body .row .selectList {
+  top: 100%;
+}
+.body_global .CompanyConstruction >.body .row .label {
+  padding: 0 12px;
+  background: #a9b4bb;
+  border-bottom-left-radius: 4px;
+  border-top-left-radius: 4px;
+  color: #fff;
+  font-weight: bold;
+  line-height: 30px;
+}
+.body_global .CompanyConstruction >.body .row .button {
+  line-height: 30px;
+  height: 30px;
+  min-height: 0;
+}
+.body_global .CompanyConstruction >.body .row .button.max {
+  width: 100%;
+  text-align: center;
+}
+.body_global .CompanyConstruction >.body .row .button.empty {
+  min-width: 33px;
+}
+.body_global .CompanyConstruction >.body .row .field {
+  display: flex;
+  position: relative;
+}
+.body_global .CompanyConstruction >.body .row .field +.field {
+  margin-top: 7px;
+}
+.body_global .CompanyConstruction >.body .row .field .val {
+  width: 40%;
+  margin-right: 7px;
+}
+.body_global .CompanyConstruction >.body .row .field .comment {
+  margin-right: 7px;
+}
+.body_global .CompanyConstruction >.body .row .field.selected {
+  width: 100%;
+  margin-right: 7px;
+}
+.body_global .CompanyConstruction >.body .row .field.selected:before {
+  content: "\e807";
+  vertical-align: middle;
+  position: absolute;
+  font-size: 7pt;
+  right: 7px;
+  top: 50%;
+  line-height: 0;
+}
+.body_global .CompanyConstruction >.body .row .field.selected .inputField {
+  padding-right: 24px;
+}
+.body_global .CompanyConstruction >.body .row .field.verifiable:before {
+  content: "\e995";
+  vertical-align: middle;
+  position: absolute;
+  right: 5px;
+  font-size: 18px;
+  top: 50%;
+  line-height: 0;
+  color: #a2acb3;
+  animation: animation-8 1s linear 0s infinite normal forwards running;
+}
+@-moz-keyframes animation-8 {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+@-webkit-keyframes animation-8 {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+@-o-keyframes animation-8 {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+@keyframes animation-8 {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+.body_global .CompanyConstruction >.body .row .field.verifiable .inputField {
+  padding-right: 30px;
+}
+.body_global .CompanyConstruction >.body .row .field.verifiable.error:before {
+  content: "\e987" !important;
+  color: #d84d4d !important;
+  animation: none;
+}
+.body_global .CompanyConstruction >.body .row .field.verifiable.success:before {
+  content: "\e988" !important;
+  color: #6fb55b !important;
+  animation: none;
+}
+.body_global .CompanyConstruction >.body .add_button {
+  font-size: 11px;
+}
+.body_global .CompanyConstruction >.body .add_button:before {
+  content: "\e805";
+  vertical-align: -1px;
+}
+.body_global .CompanyConstruction >.body .text {
+  resize: vertical;
+  min-height: 100px;
+}
+.body_global .CompanyConstruction >.body .delete_button {
+  font-size: 11px;
+}
+.body_global .CompanyConstruction >.body .delete_button:before {
+  content: "\e80b";
+  vertical-align: -1px;
+}
+.body_global .CompanyConstruction >.body .title {
+  font-size: 13px;
+  vertical-align: top;
+  line-height: 25px;
+}
+.body_global .CompanyConstruction >.body .title .required {
+  margin-left: 5px;
+  color: #f00;
+  font-size: 17px;
+  line-height: 0;
+}
+.body_global .CompanyConstruction >.body .title.bordered {
+  position: relative;
+}
+.body_global .CompanyConstruction >.body .title.bordered:after {
+  content: "";
+  height: 1px;
+  position: absolute;
+  background: #c1c9cd;
+  left: 130px;
+  top: 50%;
+  right: 0;
+}
+.body_global .CompanyConstruction >.footer {
+  text-align: right;
+  margin: 0 14px 14px 14px;
 }
 .bottom_global {
   position: fixed;
@@ -11777,9 +11713,9 @@ body {
   background: #389928;
 }
 .CaseList table.cases tr.case td .timer_button.active {
-  animation: animation-8 1s linear 0s infinite alternate forwards running;
+  animation: animation-9 1s linear 0s infinite alternate forwards running;
 }
-@-moz-keyframes animation-8 {
+@-moz-keyframes animation-9 {
   0% {
     box-shadow: 0 0 0 0 #6fce41;
   }
@@ -11787,7 +11723,7 @@ body {
     box-shadow: 0 0 30px 0 #6fce41;
   }
 }
-@-webkit-keyframes animation-8 {
+@-webkit-keyframes animation-9 {
   0% {
     box-shadow: 0 0 0 0 #6fce41;
   }
@@ -11795,7 +11731,7 @@ body {
     box-shadow: 0 0 30px 0 #6fce41;
   }
 }
-@-o-keyframes animation-8 {
+@-o-keyframes animation-9 {
   0% {
     box-shadow: 0 0 0 0 #6fce41;
   }
@@ -11803,7 +11739,7 @@ body {
     box-shadow: 0 0 30px 0 #6fce41;
   }
 }
-@keyframes animation-8 {
+@keyframes animation-9 {
   0% {
     box-shadow: 0 0 0 0 #6fce41;
   }
@@ -12183,9 +12119,8 @@ body {
   border-right: 1px solid #5c8dc6;
 }
 .CaseList .timingDiagram table.diagram tr.headers td.newMonth {
-  min-width: 120px;
-  max-width: 120px;
   color: #314157;
+  font-weight: bold;
 }
 .CaseList .timingDiagram table.diagram tbody.workLines tr td {
   height: 55px;
@@ -13440,24 +13375,24 @@ body {
 }
 .caseListsBlock.taskBoard >.block >.unconfirmedCases .emptyBlock.active {
   display: block;
-  animation: animation-9 0.5s linear 0.3s 1 alternate forwards running;
+  animation: animation-10 0.5s linear 0.3s 1 alternate forwards running;
 }
-@-moz-keyframes animation-9 {
+@-moz-keyframes animation-10 {
   100% {
     opacity: 1;
   }
 }
-@-webkit-keyframes animation-9 {
+@-webkit-keyframes animation-10 {
   100% {
     opacity: 1;
   }
 }
-@-o-keyframes animation-9 {
+@-o-keyframes animation-10 {
   100% {
     opacity: 1;
   }
 }
-@keyframes animation-9 {
+@keyframes animation-10 {
   100% {
     opacity: 1;
   }
@@ -14216,7 +14151,15 @@ body {
   line-height: 56px;
   padding-left: 35px;
 }
-
+.caseListsBlock table.caseList tr.case .checkbox {
+  position: absolute;
+  right: 18px;
+  top: 18px;
+  width: 18px;
+  height: 18px;
+  border: 1px solid #d2d6dc;
+  text-align: center;
+}
 .caseListsBlock table.caseList tr.case .quickInfo {
   display: inline-block;
   vertical-align: middle;
@@ -14254,7 +14197,25 @@ body {
 .caseListsBlock table.caseList tr.case .extraButtons > .button + .button {
   margin-left: 2px;
 }
-
+.caseListsBlock table.caseList tr.case .checkBox {
+  position: absolute;
+  right: 15px;
+  top: 15px;
+  width: 18px;
+  height: 18px;
+  border: 1px solid #d2d6dc;
+  text-align: center;
+}
+.caseListsBlock table.caseList tr.case .checkBox .icon-checkmark {
+  color: transparent;
+}
+.caseListsBlock table.caseList tr.case .checkBox .icon-checkmark:before {
+  content: "\e80c";
+  vertical-align: -1px;
+}
+.caseListsBlock table.caseList tr.case .checkBox.active .icon-checkmark {
+  color: #de676b;
+}
 .caseListsBlock table.caseList tr.case > .favorite {
   position: absolute;
   top: 0px;
@@ -14279,6 +14240,9 @@ body {
 .AbsenceList table.absences {
   width: 100%;
 }
+.AbsenceList table.absences tr.headers {
+  cursor: auto;
+}
 .AbsenceList table.absences tr.headers td:last-child {
   padding-right: 10px;
 }
@@ -14288,17 +14252,14 @@ body {
 .AbsenceList table.absences tr.absence:nth-child(odd) td {
   background-color: #f6f7f8;
 }
-.AbsenceList table.absences tr.absence:nth-child(odd) td .comment .relativeBlock:after {
-  background-image: linear-gradient(to right, transparent 0%, #f6f7f8 20px);
+.AbsenceList table.absences tr.absence:nth-child(odd) td.comment .relativeBlock:after {
+  background-image: linear-gradient(to right, transparent 0%, #f6f7f8 25px);
 }
-.AbsenceList table.absences tr.absence.closed {
-  opacity: 0.5;
+.AbsenceList table.absences tr.absence.closed:not(:hover) td.absenceRange {
+  color: rgba(49,65,87,0.3);
 }
-.AbsenceList table.absences tr.absence.closed td {
-  background: #f2f3f3;
-}
-.AbsenceList table.absences tr.absence.closed:hover {
-  opacity: 1;
+.AbsenceList table.absences tr.absence.closed:not(:hover) td.absenceRange .time {
+  color: rgba(36,100,190,0.3);
 }
 .AbsenceList table.absences tr.absence td.control .edit_button {
   margin-left: 0;
@@ -14315,10 +14276,22 @@ body {
   content: "\e80b";
   vertical-align: middle;
 }
+.AbsenceList table.absences tr.absence td.id {
+  text-align: left;
+  padding: 16px;
+}
+.AbsenceList table.absences tr.absence td.id .link {
+  cursor: pointer;
+  border-bottom: 1px dashed #a4acb0;
+  padding-bottom: 2px;
+}
+.AbsenceList table.absences tr.absence td.id .link:hover {
+  border-bottom-color: #314157;
+}
 .AbsenceList table.absences tr.absence td.absenceRange {
   padding: 0 16px;
   vertical-align: middle;
-  width: 100%;
+  width: 40%;
   word-spacing: 9px;
 }
 .AbsenceList table.absences tr.absence td.absenceRange .from,
@@ -14349,26 +14322,13 @@ body {
   font-weight: bold;
   color: #2464be;
 }
-.AbsenceList table.absences tr.absence td.dateCreation,
-.AbsenceList table.absences tr.absence td.dateUpdate {
-  word-spacing: 5px;
-}
-.AbsenceList table.absences tr.absence td.creator .link:hover {
-  cursor: pointer;
-  border-bottom: 1px solid;
-  padding-bottom: 2px;
-}
-.AbsenceList table.absences tr.absence td.creator.me {
-  color: #dc2929;
-  font-weight: bold;
-}
 .AbsenceList table.absences tr.absence td.type {
   padding: 0px 16px;
   vertical-align: middle;
 }
 .AbsenceList table.absences tr.absence td.type .typeName {
   padding: 0 10px;
-  line-height: 26px;
+  line-height: 28px;
   font-weight: bold;
   color: #fff;
   font-size: 11px;
@@ -14394,22 +14354,29 @@ body {
 }
 .AbsenceList table.absences tr.absence td.comment {
   padding: 0;
-  vertical-align: middle;
+  width: 60%;
 }
-.AbsenceList table.absences tr.absence td.comment .comment_button {
-  text-align: center;
-  font-size: 18px;
-  color: #8c96a2;
-  cursor: pointer;
-  display: inline-block;
-  vertical-align: middle;
+.AbsenceList table.absences tr.absence td.comment >.relativeBlock {
+  height: 54px;
+  line-height: 55px;
 }
-.AbsenceList table.absences tr.absence td.comment .comment_button:before {
-  content: "\e915";
-  vertical-align: 0;
+.AbsenceList table.absences tr.absence td.comment >.relativeBlock .relativeBlock {
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
 }
-.AbsenceList table.absences tr.absence td.comment .comment_button:hover {
-  color: #314157;
+.AbsenceList table.absences tr.absence td.comment >.relativeBlock .relativeBlock .text {
+  position: absolute;
+  padding-left: 16px;
+}
+.AbsenceList table.absences tr.absence td.comment >.relativeBlock:after {
+  content: "";
+  position: absolute;
+  right: 0;
+  width: 40px;
+  top: 1px;
+  bottom: 1px;
+  background-image: linear-gradient(to right, transparent 0%, #fff 25px);
 }
 .AbsenceList >.footer {
   margin: 14px 0;
@@ -14426,6 +14393,10 @@ body {
   display: none;
   overflow-y: auto;
   transition-duration: 0.3s;
+}
+.popup_backgroundBlock.simplePopup {
+  display: block;
+  background: rgba(0,0,0,0.36);
 }
 .popup_backgroundBlock.active {
   opacity: 1;
@@ -14450,9 +14421,105 @@ body {
   vertical-align: middle;
   text-align: center;
 }
+.popup_backgroundBlock >.wrapper .popupBlock .confirmGenerator {
+  display: inline-block;
+  box-shadow: 0 1px 4px 0 rgba(0,0,0,0.46);
+}
+.popup_backgroundBlock >.wrapper .popupBlock .confirmGenerator.warning {
+  background: #d04141;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .confirmGenerator.warning .confirm_button {
+  color: #fff;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .confirmGenerator.warning .body {
+  border-top: 1px solid #ff4e4e;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .confirmGenerator.warning .icon-mIcon {
+  background: #e05252;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .confirmGenerator.warning .icon-mIcon:before {
+  content: "\e987";
+  vertical-align: 0;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .confirmGenerator .body {
+  position: relative;
+  max-width: 500px;
+  padding: 56px 56px 42px;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .confirmGenerator .body .icon-mIcon {
+  color: #fff;
+  font-size: 31px;
+  position: absolute;
+  left: 50%;
+  border-radius: 50%;
+  top: -38px;
+  box-sizing: border-box;
+  height: 76px;
+  width: 76px;
+  margin-left: -30px;
+  box-shadow: 0 2px 6px -3px rgba(0,0,0,0.28);
+  padding-top: 20px;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .confirmGenerator .body .text {
+  text-align: center;
+  font-size: 18px;
+  color: #fff;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .confirmGenerator .footer {
+  text-align: right;
+  padding: 14px;
+  background-color: #f6f7f8;
+}
 .popup_backgroundBlock >.wrapper .popupBlock .popup {
-  box-shadow: 0 0 11px -2px rgba(0,3,8,0.6);
   margin: auto;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.CompanyConstruction,
+.popup_backgroundBlock >.wrapper .popupBlock .confirmGenerator {
+  opacity: 0;
+  top: -150px;
+  position: relative;
+  transition-duration: 0.4s;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence.active,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing.active,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer.active,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.CompanyConstruction.active,
+.popup_backgroundBlock >.wrapper .popupBlock .confirmGenerator.active {
+  top: 0;
+  opacity: 1;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup >.parentSections {
+  margin-bottom: 8px;
+  text-align: left;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup >.parentSections .parentSection {
+  color: #dee4e5;
+  font-size: 18px;
+  line-height: 56px;
+  padding: 0 32px;
+  font-weight: bold;
+  display: inline-block;
+  box-sizing: border-box;
+  background: rgba(47,59,74,0.3);
+  cursor: pointer;
+  transition-duration: 0.2s;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup >.parentSections .parentSection+.parentSection {
+  border-left: 1px solid rgba(255,255,255,0.3);
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup >.parentSections .parentSection:hover {
+  color: #fff;
+  background: rgba(47,59,74,0.6);
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup >.parentSections .parentSection .icon-toUp {
+  padding-right: 7px;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup >.parentSections .parentSection .icon-toUp:before {
+  content: "\e98d";
+  vertical-align: 0;
 }
 .popup_backgroundBlock >.wrapper .popupBlock .popup.objectEditor {
   width: 1100px;
@@ -14467,9 +14534,12 @@ body {
 }
 .popup_backgroundBlock >.wrapper .popupBlock .popup.objectEditor >.head,
 .popup_backgroundBlock >.wrapper .popupBlock .popup.caseTimeFix >.head,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.mainBlock >.head,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.scheduleBlock .schedule >.head,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.rightBlock >.head {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .head,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .head,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .head,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .head,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.rightBlock >.head,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.CompanyConstruction >.head {
   padding: 18px;
   font-size: 18px;
   background-color: #5481c1;
@@ -14478,6 +14548,17 @@ body {
   border: 1px solid;
   border-bottom: 0;
   border-color: #6999de #6290d1;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.objectEditor >.head .part + .part:before,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.caseTimeFix >.head .part + .part:before,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .head .part + .part:before,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .head .part + .part:before,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .head .part + .part:before,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .head .part + .part:before,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.rightBlock >.head .part + .part:before,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.CompanyConstruction >.head .part + .part:before {
+  content: "/";
+  margin: 0 14px;
 }
 .popup_backgroundBlock >.wrapper .popupBlock .popup.objectEditor >.head .caseType,
 .popup_backgroundBlock >.wrapper .popupBlock .popup.objectEditor >.head .criticality,
@@ -15174,7 +15255,7 @@ body {
   margin-bottom: 114px;
 }
 .popup_backgroundBlock >.wrapper .popupBlock .popup.timeFixer .datePicker,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.datePickerBlock .datePicker,
 .popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.leftBlock .datePicker {
   width: 308px;
   height: 350px;
@@ -15185,7 +15266,7 @@ body {
   border-right: 1px solid #2c3848;
 }
 .popup_backgroundBlock >.wrapper .popupBlock .popup.timeFixer .datePicker:before,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker:before,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.datePickerBlock .datePicker:before,
 .popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.leftBlock .datePicker:before {
   content: "";
   display: block;
@@ -15200,7 +15281,7 @@ body {
   border-color: #5892d2 #3b7abb #2f6094;
 }
 .popup_backgroundBlock >.wrapper .popupBlock .popup.timeFixer .datePicker:after,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker:after,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.datePickerBlock .datePicker:after,
 .popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.leftBlock .datePicker:after {
   content: "";
   position: absolute;
@@ -15211,52 +15292,52 @@ body {
   top: 0;
 }
 .popup_backgroundBlock >.wrapper .popupBlock .popup.timeFixer .datePicker .date-picker-wrapper table.month1 tr.caption,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tr.caption,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tr.caption,
 .popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.leftBlock .datePicker .date-picker-wrapper table.month1 tr.caption {
   line-height: 58px;
   color: #fff;
 }
 .popup_backgroundBlock >.wrapper .popupBlock .popup.timeFixer .datePicker .date-picker-wrapper table.month1 tr.caption .prev_button,
 .popup_backgroundBlock >.wrapper .popupBlock .popup.timeFixer .datePicker .date-picker-wrapper table.month1 tr.caption .next_button,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tr.caption .prev_button,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tr.caption .next_button,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tr.caption .prev_button,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tr.caption .next_button,
 .popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.leftBlock .datePicker .date-picker-wrapper table.month1 tr.caption .prev_button,
 .popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.leftBlock .datePicker .date-picker-wrapper table.month1 tr.caption .next_button {
   text-align: center;
   cursor: pointer;
 }
 .popup_backgroundBlock >.wrapper .popupBlock .popup.timeFixer .datePicker .date-picker-wrapper table.month1 tr.caption .prev_button:before,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tr.caption .prev_button:before,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tr.caption .prev_button:before,
 .popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.leftBlock .datePicker .date-picker-wrapper table.month1 tr.caption .prev_button:before {
   content: "\e80a";
   vertical-align: -1px;
 }
 .popup_backgroundBlock >.wrapper .popupBlock .popup.timeFixer .datePicker .date-picker-wrapper table.month1 tr.caption .next_button:before,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tr.caption .next_button:before,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tr.caption .next_button:before,
 .popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.leftBlock .datePicker .date-picker-wrapper table.month1 tr.caption .next_button:before {
   content: "\e806";
   vertical-align: -1px;
 }
 .popup_backgroundBlock >.wrapper .popupBlock .popup.timeFixer .datePicker .date-picker-wrapper table.month1 tr.caption .month-name,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tr.caption .month-name,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tr.caption .month-name,
 .popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.leftBlock .datePicker .date-picker-wrapper table.month1 tr.caption .month-name {
   font-size: 18px;
   font-weight: bold;
 }
 .popup_backgroundBlock >.wrapper .popupBlock .popup.timeFixer .datePicker .date-picker-wrapper table.month1 tr.week-name td,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tr.week-name td,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tr.week-name td,
 .popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.leftBlock .datePicker .date-picker-wrapper table.month1 tr.week-name td {
   line-height: 42px;
   font-weight: bold;
   color: #2b456a;
 }
 .popup_backgroundBlock >.wrapper .popupBlock .popup.timeFixer .datePicker .date-picker-wrapper table.month1 tbody td,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tbody td,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tbody td,
 .popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.leftBlock .datePicker .date-picker-wrapper table.month1 tbody td {
   width: 44px;
 }
 .popup_backgroundBlock >.wrapper .popupBlock .popup.timeFixer .datePicker .date-picker-wrapper table.month1 tbody td .day,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tbody td .day,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tbody td .day,
 .popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.leftBlock .datePicker .date-picker-wrapper table.month1 tbody td .day {
   line-height: 42px;
   width: 44px;
@@ -15265,42 +15346,41 @@ body {
 }
 .popup_backgroundBlock >.wrapper .popupBlock .popup.timeFixer .datePicker .date-picker-wrapper table.month1 tbody td .day.last-date-selected,
 .popup_backgroundBlock >.wrapper .popupBlock .popup.timeFixer .datePicker .date-picker-wrapper table.month1 tbody td .day.first-date-selected,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tbody td .day.last-date-selected,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tbody td .day.first-date-selected,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tbody td .day.last-date-selected,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tbody td .day.first-date-selected,
 .popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.leftBlock .datePicker .date-picker-wrapper table.month1 tbody td .day.last-date-selected,
 .popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.leftBlock .datePicker .date-picker-wrapper table.month1 tbody td .day.first-date-selected {
   background-color: #345a92 !important;
   font-weight: bold;
 }
 .popup_backgroundBlock >.wrapper .popupBlock .popup.timeFixer .datePicker .date-picker-wrapper table.month1 tbody td .day.lastMonth,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tbody td .day.lastMonth,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tbody td .day.lastMonth,
 .popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.leftBlock .datePicker .date-picker-wrapper table.month1 tbody td .day.lastMonth,
 .popup_backgroundBlock >.wrapper .popupBlock .popup.timeFixer .datePicker .date-picker-wrapper table.month1 tbody td .day.nextMonth,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tbody td .day.nextMonth,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tbody td .day.nextMonth,
 .popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.leftBlock .datePicker .date-picker-wrapper table.month1 tbody td .day.nextMonth {
   color: #7b9dca;
   font-weight: normal;
 }
 .popup_backgroundBlock >.wrapper .popupBlock .popup.timeFixer .datePicker .date-picker-wrapper table.month1 tbody td .day.hovering,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tbody td .day.hovering,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tbody td .day.hovering,
 .popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.leftBlock .datePicker .date-picker-wrapper table.month1 tbody td .day.hovering {
   color: #6592d1;
   background-color: #345a92;
 }
 .popup_backgroundBlock >.wrapper .popupBlock .popup.timeFixer .datePicker .date-picker-wrapper table.month1 tbody td .day.real-today,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tbody td .day.real-today,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tbody td .day.real-today,
 .popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.leftBlock .datePicker .date-picker-wrapper table.month1 tbody td .day.real-today {
   background-color: #fff;
   border-radius: 50%;
-  color: #2761a5;
-  background-image: linear-gradient(to bottom, #fff, #bfc7d2);
-  box-shadow: 0 0 9px 0px #415166;
+  color: #2761a5 !important;
+  background-image: linear-gradient(to bottom, #fff, #bfc7d2) !important;
 }
 .popup_backgroundBlock >.wrapper .popupBlock .popup.timeFixer .datePicker .date-picker-wrapper table.month1 tbody td .day.checked,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tbody td .day.checked,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tbody td .day.checked,
 .popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.leftBlock .datePicker .date-picker-wrapper table.month1 tbody td .day.checked,
 .popup_backgroundBlock >.wrapper .popupBlock .popup.timeFixer .datePicker .date-picker-wrapper table.month1 tbody td .day.toMonth.hovering,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tbody td .day.toMonth.hovering,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tbody td .day.toMonth.hovering,
 .popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.leftBlock .datePicker .date-picker-wrapper table.month1 tbody td .day.toMonth.hovering {
   background: #3c639a;
   color: #fff;
@@ -15308,17 +15388,17 @@ body {
   border-radius: 0;
 }
 .popup_backgroundBlock >.wrapper .popupBlock .popup.timeFixer .datePicker .date-picker-wrapper table.month1 tbody td .day.last-date-selected,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tbody td .day.last-date-selected,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tbody td .day.last-date-selected,
 .popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.leftBlock .datePicker .date-picker-wrapper table.month1 tbody td .day.last-date-selected {
   border-radius: 0 50% 50% 0;
 }
 .popup_backgroundBlock >.wrapper .popupBlock .popup.timeFixer .datePicker .date-picker-wrapper table.month1 tbody td .day.first-date-selected,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tbody td .day.first-date-selected,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tbody td .day.first-date-selected,
 .popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.leftBlock .datePicker .date-picker-wrapper table.month1 tbody td .day.first-date-selected {
   border-radius: 50% 0 0 50%;
 }
 .popup_backgroundBlock >.wrapper .popupBlock .popup.timeFixer .datePicker .date-picker-wrapper table.month1 tbody td .day.first-date-selected.last-date-selected,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tbody td .day.first-date-selected.last-date-selected,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.datePickerBlock .datePicker .date-picker-wrapper table.month1 tbody td .day.first-date-selected.last-date-selected,
 .popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.leftBlock .datePicker .date-picker-wrapper table.month1 tbody td .day.first-date-selected.last-date-selected {
   border-radius: 50%;
 }
@@ -15362,13 +15442,6 @@ body {
 .popup_backgroundBlock >.wrapper .popupBlock .popup.timeFixer >.body .section >.head .icon-search:before {
   content: "\e904";
   vertical-align: 0;
-}
-.popup_backgroundBlock >.wrapper .popupBlock .popup.timeFixer >.body .section >.head .icon-sortBy {
-  font-size: 13px;
-}
-.popup_backgroundBlock >.wrapper .popupBlock .popup.timeFixer >.body .section >.head .icon-sortBy:before {
-  content: "\e968";
-  vertical-align: 1px;
 }
 .popup_backgroundBlock >.wrapper .popupBlock .popup.timeFixer >.body .section >.t_wrapper {
   margin-top: 14px;
@@ -15458,125 +15531,422 @@ body {
   background-color: #c6ced2;
 }
 .popup_backgroundBlock >.wrapper .popupBlock .popup.timeFixer >.footer,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.footer,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.rightBlock >.footer {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .footer,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .footer,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.rightBlock >.footer,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.CompanyConstruction >.footer {
   margin-left: 337px;
   text-align: right;
   padding: 14px;
   box-sizing: border-box;
   background-color: #f6f7f8;
-  box-shadow: 0 0px 10px 0px rgba(140,152,170,0.23);
   border-top: 1px solid #cbcfd3;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence {
+  margin-top: 58px;
+  margin-bottom: 114px;
+  width: 758px;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence.schedule_showing {
+  width: 1100px;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence.journal_showing {
+  width: 1350px;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper {
+  box-shadow: 0 0 11px -2px rgba(0,3,8,0.6);
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body {
+  background-color: #dee4e5;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper {
+  width: 100%;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper {
+  vertical-align: top;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.mainBlock,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock {
+  background-color: #dee4e5;
+  width: 100%;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .head,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .head {
+  background-color: #5189d9;
+  text-align: left;
+  font-weight: bold;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .head .close_button,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .head .close_button {
+  font-size: 21px;
+  cursor: pointer;
+  color: #dfecff;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .head .close_button:before,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .head .close_button:before {
+  content: "\e80e";
+  vertical-align: 0;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .head .close_button:hover,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .head .close_button:hover {
+  color: #fff;
+  text-shadow: 0 0 0;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body {
+  padding: 14px;
+  border-bottom: 1px solid #cbcfd3;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo {
+  line-height: 28px;
+  text-align: left;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .dateTime,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .dateTime {
+  display: inline-block;
+  vertical-align: top;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .dateTime .val .time,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .dateTime .val .time,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .dateTime .val .date,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .dateTime .val .date {
+  font-size: 18px;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .dateTime .val .date,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .dateTime .val .date {
+  color: #4d7dc1;
+  font-weight: bold;
+  margin-right: 10px;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .dateTime .delim,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .dateTime .delim {
+  padding: 0 7px;
+  font-size: 18px;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .absenceReason_button,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .absenceReason_button {
+  padding: 0 12px;
+  color: #fff;
+  line-height: 28px;
+  min-width: 160px;
+  text-align: center;
+  display: inline-block;
+  margin-right: 14px;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .controlButtons{
+  display: inline-block;
+  margin-right: 14px;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .icon-journal{
+  font-size: 15px;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .icon-journal:before{
+  content: "\e934";
+  vertical-align: 0;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .comment,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .comment {
+  margin-top: 14px;
+  box-shadow: 0 1px 4px 0px rgba(53,64,79,0.3);
+  padding: 14px;
+  background-color: #fff;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .comment .icon-comment{
+  margin-right: 7px;
+  color: #b5bac2;
+  font-size: 15px;
+  float: left;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .comment .icon-comment:before{
+  content: "\e915";
+  vertical-align: 0;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .comment .text,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .comment .text {
+  text-align: left;
+  display: block;
+  max-width: 0;
+  min-width: 100%;
+  max-height: 0;
+  min-height: 200px;
+  line-height: 1.6em;
+  box-sizing: border-box;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock {
+  display: none;
+  background-color: #456da5;
+  transition-duration: 0.4s;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .oneWeek_showing .week,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .oneWeek_showing .week {
+  min-width: 248px !important;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .oneWeek_showing .week+ .week,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .oneWeek_showing .week+ .week {
+  display: none;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock.active,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock.active {
+  display: table-cell;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule {
+  border-left: 1px solid #456da5;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .head,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .head {
+  background-color: #5189d9;
+  text-align: left;
+  font-weight: bold;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body {
+  padding: 0 14px 14px 14px;
+  color: #fff;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table {
+  width: 100%;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table td,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table td {
+  line-height: 45px;
+  white-space: nowrap;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tr.headers td,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tr.headers td {
+  color: #7b9dca;
+  font-weight: bold;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tbody tr,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tbody tr {
+  border-top: 1px solid #6587b4;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tbody tr td,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tbody tr td {
+  padding: 0px 12px;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tbody tr td.day,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tbody tr td.day {
+  color: #7b9dca;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tbody tr td.week,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tbody tr td.week {
+  min-width: 112px;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tbody tr td >.time,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tbody tr td >.time {
+  display: inline;
+  font-size: 15px;
+  line-height: 0;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tbody tr td >.time >.from,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tbody tr td >.time >.from {
+  padding-right: 5px;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tbody tr td >.time >.from.timeLimit,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tbody tr td >.time >.from.timeLimit {
+  font-size: 16px;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tbody tr td >.time >.from.timeLimit:before,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tbody tr td >.time >.from.timeLimit:before {
+  content: "\e994";
+  vertical-align: -1px;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tbody tr td >.time >.to,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tbody tr td >.time >.to {
+  padding-left: 5px;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tbody tr td >.time >.to.timeLimit,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tbody tr td >.time >.to.timeLimit {
+  font-size: 16px;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tbody tr td >.time >.to.timeLimit:before,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tbody tr td >.time >.to.timeLimit:before {
+  content: "\e993";
+  vertical-align: -1px;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .footer,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .footer {
+  margin-left: 0;
+  border-top: 0;
 }
 .popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing {
   width: 1010px;
-  position: relative;
   margin-top: 58px;
   margin-bottom: 114px;
-  background-color: #dee4e5;
-  box-shadow: 0 0 11px -2px rgba(0,3,8,0.6);
-  transition-duration: 0.3s;
 }
 .popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing.schedule_showing {
   width: 1350px;
 }
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.mainBlock >.body .mainInfo .dateTime .time,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.mainBlock >.body .mainInfo .dateTime .date,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.scheduleBlock .schedule >.body table tbody tr td .time {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .dateTime .from > .val,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .dateTime .to > .val,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tbody tr td >.time:not(.newTime_button) {
   border-bottom: 1px dashed;
   padding-bottom: 2px;
   cursor: pointer;
 }
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper {
+  box-shadow: 0 0 11px -2px rgba(0,3,8,0.6);
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper {
   width: 100%;
 }
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper {
   vertical-align: top;
 }
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.datePickerBlock,
 .popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.leftBlock {
   background-color: #456da5;
 }
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.datePickerBlock .datePicker,
 .popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.leftBlock .datePicker {
   position: relative;
   box-shadow: none;
   background-color: transparent;
   border-right: 1px solid #456da5;
 }
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker:after,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.datePickerBlock .datePicker:after,
 .popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.leftBlock .datePicker:after {
   content: normal;
 }
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.datePickerBlock .datePicker:before,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.datePickerBlock .datePicker:before,
 .popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.leftBlock .datePicker:before {
   background-color: #4f8ed7;
   height: 58px;
   border-color: #6999de #6999de #456da5;
 }
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.mainBlock {
-  background-color: #dee4e5;
-  width: 100%;
-}
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.mainBlock >.head {
-  background-color: #5189d9;
-  text-align: left;
-}
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.mainBlock >.head .close_button {
-  font-size: 21px;
-  cursor: pointer;
-  color: #dfecff;
-}
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.mainBlock >.head .close_button:before {
-  content: "\e80e";
-  vertical-align: 0;
-}
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.mainBlock >.head .close_button:hover {
-  color: #fff;
-  text-shadow: 0 0 0;
-}
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.mainBlock >.body {
-  padding: 14px;
-  border-bottom: 1px solid #cbcfd3;
-}
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.mainBlock >.body .mainInfo {
-  line-height: 28px;
-  text-align: left;
-}
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.mainBlock >.body .mainInfo .dateTime {
-  font-size: 18px;
-  display: inline-block;
-  vertical-align: top;
-}
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.mainBlock >.body .mainInfo .dateTime .from {
-  padding-right: 7px;
-}
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.mainBlock >.body .mainInfo .dateTime .to {
-  padding-left: 7px;
-}
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.mainBlock >.body .mainInfo .dateTime .time {
-  margin-left: 10px;
-}
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.mainBlock >.body .mainInfo .dateTime .date {
-  color: #4d7dc1;
-  font-weight: bold;
-}
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.mainBlock >.body .mainInfo .dateTime .time,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.mainBlock >.body .mainInfo .dateTime .date {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .dateTime .to,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .dateTime .from {
+  position: relative;
   border-bottom-color: #a2a9b3;
 }
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.mainBlock >.body .mainInfo .dateTime .time:hover,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.mainBlock >.body .mainInfo .dateTime .date:hover {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .dateTime .to:hover,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .dateTime .from:hover {
   border-bottom-color: #314157;
 }
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.mainBlock >.body .mainInfo .absenceReason_button {
-  padding: 0 12px;
-  color: #fff;
-  cursor: pointer;
-  line-height: 28px;
-  min-width: 180px;
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .dateTime .dateTimePicker,
+
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tbody tr td .dateTimePickerRange {
+  box-shadow: 0 1px 4px 0px rgba(53,64,79,0.3);
+  background: #fff;
+  display: none;
+  position: absolute;
+  white-space: nowrap;
+  z-index: 12;
+  left: 0;
+  top: 100%;
+  text-align: center;
+  font-size: 15px;
+  margin-top: 4px;
 }
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.mainBlock >.body .mainInfo .absenceReason_button:after {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .dateTime .dateTimePicker.active{
+  display: block;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .dateTime .dateTimePicker .part,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tbody tr td .dateTimePickerRange .dateTimePicker .part {
+  display: inline-block;
+  vertical-align: middle;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .dateTime .dateTimePicker .part+.part,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tbody tr td .dateTimePickerRange .dateTimePicker .part+.part {
+  margin-left: 7px;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .dateTime .dateTimePicker .part.date,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tbody tr td .dateTimePickerRange .dateTimePicker .part.date {
+  margin-left: 14px;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .dateTime .dateTimePicker .part.hours,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tbody tr td .dateTimePickerRange .dateTimePicker .part.hours {
+  margin-right: 7px;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .dateTime .dateTimePicker .part .val,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tbody tr td .dateTimePickerRange .dateTimePicker .part .val {
+  min-width: 28px;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .dateTime .dateTimePicker .part .val:hover,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tbody tr td .dateTimePickerRange .dateTimePicker .part .val:hover {
+  color: #2478ee;
+  text-shadow: 0 0 0;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .dateTime .dateTimePicker .part.month .val,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tbody tr td .dateTimePickerRange .dateTimePicker .part.month .val {
+  width: 80px;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .dateTime .dateTimePicker .time{
+  margin-left: 14px !important;
+  padding: 14px;
+  background: #f5f5f5;
+  border-left: 1px solid #eaebeb;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .dateTime .dateTimePicker .time .timeParts.inactive,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tbody tr td .dateTimePickerRange .dateTimePicker .time .timeParts.inactive {
+  color: #b7c1cb;
+  position: relative;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .dateTime .dateTimePicker .time .timeParts.inactive:before,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tbody tr td .dateTimePickerRange .dateTimePicker .time .timeParts.inactive:before {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .dateTime .dateTimePicker .toUp,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .dateTime .dateTimePicker .toDown,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tbody tr td .dateTimePickerRange .dateTimePicker .toUp,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tbody tr td .dateTimePickerRange .dateTimePicker .toDown {
+  font-size: 11px;
+  line-height: 20px;
+  cursor: pointer;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .dateTime .dateTimePicker .toUp:hover,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .dateTime .dateTimePicker .toDown:hover,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tbody tr td .dateTimePickerRange .dateTimePicker .toUp:hover,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tbody tr td .dateTimePickerRange .dateTimePicker .toDown:hover {
+  color: #2a73d9;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .dateTime .dateTimePicker .timeLimit_button,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tbody tr td .dateTimePickerRange .dateTimePicker .timeLimit_button {
+  margin-left: 14px;
+  font-size: 18px;
+  cursor: pointer;
+  display: inline-block;
+  vertical-align: middle;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .dateTime .dateTimePicker .timeLimit_button.active,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tbody tr td .dateTimePickerRange .dateTimePicker .timeLimit_button.active,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .dateTime .dateTimePicker .timeLimit_button:hover,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tbody tr td .dateTimePickerRange .dateTimePicker .timeLimit_button:hover {
+  color: #0066f4;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .dateTime .dateTimePicker .timeLimit_button.from:before,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tbody tr td .dateTimePickerRange .dateTimePicker .timeLimit_button.from:before {
+  content: "\e994";
+  vertical-align: -2px;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .dateTime .dateTimePicker .timeLimit_button.till:before,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tbody tr td .dateTimePickerRange .dateTimePicker .timeLimit_button.till:before {
+  content: "\e993";
+  vertical-align: -2px;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .dateTime .dateTimePicker .toUp:before,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tbody tr td .dateTimePickerRange .dateTimePicker .toUp:before {
+  content: "\e96d";
+  vertical-align: middle;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .dateTime .dateTimePicker .toDown:before,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tbody tr td .dateTimePickerRange .dateTimePicker .toDown:before {
+  content: "\e93e";
+  vertical-align: middle;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .absenceReason_button {
+  margin-right: 0;
+  text-align: left;
+  cursor: pointer;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .absenceReason_button:after {
   content: "\e93e";
   vertical-align: middle;
   padding-left: 7px;
@@ -15584,52 +15954,52 @@ body {
   float: right;
   line-height: 28px;
 }
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.mainBlock >.body .timePicker {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .timePicker {
   margin: 14px 0;
-  padding: 6px 0;
 }
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.mainBlock >.body .timePicker .slider {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .timePicker .slider {
   background: #ced2de;
   border: 1px solid #afb2bd;
   box-shadow: 0 1px 0 #eef1f1;
   border-radius: 6px;
 }
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.mainBlock >.body .timePicker .slider.toRight .ui-slider-range {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .timePicker .slider.toRight .ui-slider-range {
   right: -9px;
 }
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.mainBlock >.body .timePicker .slider.toLeft .ui-slider-range {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .timePicker .slider.toLeft .ui-slider-range {
   left: -9px;
 }
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.mainBlock >.body .timePicker .twoDays {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .timePicker .twoDays {
   display: none;
   text-align: left;
+  line-height: 0;
 }
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.mainBlock >.body .timePicker .twoDays .slider {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .timePicker .twoDays .slider {
   display: inline-block;
   width: calc(50% - 7px);
   box-sizing: border-box;
 }
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.mainBlock >.body .timePicker .twoDays .slider+.slider {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .timePicker .twoDays .slider + .slider {
   margin-left: 14px;
 }
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.mainBlock >.body .timePicker .ui-slider-horizontal {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .timePicker .ui-slider-horizontal {
   margin: 0 9px;
   height: 8px;
   clear: both;
 }
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.mainBlock >.body .timePicker .ui-slider-horizontal .ui-slider-range {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .timePicker .ui-slider-horizontal .ui-slider-range {
   top: -1px;
   height: 100%;
 }
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.mainBlock >.body .timePicker .ui-slider-horizontal .ui-slider-handle {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .timePicker .ui-slider-horizontal .ui-slider-handle {
   top: -0.5em;
   margin-left: -0.6em;
 }
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.mainBlock >.body .timePicker .ui-slider {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .timePicker .ui-slider {
   position: relative;
   text-align: left;
 }
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.mainBlock >.body .timePicker .ui-slider .ui-slider-range {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .timePicker .ui-slider .ui-slider-range {
   position: absolute;
   z-index: 1;
   height: 8px;
@@ -15637,7 +16007,7 @@ body {
   border: 1px solid #5481c1;
   background-image: linear-gradient(to bottom, #8fb2e5, #2ea2c4);
 }
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.mainBlock >.body .timePicker .ui-slider .ui-slider-handle {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .timePicker .ui-slider .ui-slider-handle {
   width: 21px;
   height: 21px;
   border-radius: 50%;
@@ -15648,120 +16018,83 @@ body {
   border: 1px solid #9fa6b3;
   margin-left: -10px;
 }
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.mainBlock >.body .timePicker .ui-slider .ui-slider-handle:focus {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .timePicker .ui-slider .ui-slider-handle:focus {
   outline: 0;
 }
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.mainBlock >.body .comment {
-  margin-top: 14px;
-  box-shadow: 0 0 10px -2px rgba(49,65,87,0.5);
-  padding: 14px;
-  background-color: #fff;
-}
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.mainBlock >.body .comment .text {
-  display: block;
-  max-width: 0;
-  min-width: 100%;
-  max-height: 0;
-  min-height: 180px;
-  line-height: 1.6em;
-}
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.scheduleBlock {
-  display: none;
-  opacity: 0;
-  background-color: #456da5;
-  transition-duration: 0.3s;
-}
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.scheduleBlock.active {
-  display: table-cell;
-  opacity: 1;
-}
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.scheduleBlock .schedule {
-  border-left: 1px solid #456da5;
-}
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.scheduleBlock .schedule >.head {
-  background-color: #5189d9;
-  text-align: left;
-}
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.scheduleBlock .schedule >.head .weekParity_button {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .head .weekParity_button {
   border-bottom: 1px dashed #acc9f1;
   padding-bottom: 2px;
   cursor: pointer;
 }
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.scheduleBlock .schedule >.head .weekParity_button:hover {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .head .weekParity_button:hover {
   border-bottom-color: #fff;
 }
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.scheduleBlock .schedule >.body {
-  padding: 0 14px 14px 14px;
-  color: #fff;
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tbody tr td.week {
+  position: relative;
 }
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.scheduleBlock .schedule >.body table {
-  width: 100%;
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tbody tr td >.time {
+  cursor: pointer;
 }
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.scheduleBlock .schedule >.body table td {
-  line-height: 42px;
-  white-space: nowrap;
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tbody tr td >.time.newTime_button {
+  font-size: 13px;
 }
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.scheduleBlock .schedule >.body table tr.headers td {
-  color: #7b9dca;
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tbody tr td >.time.newTime_button:before {
+  content: "\e900";
+  vertical-align: 0;
 }
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.scheduleBlock .schedule >.body table tbody tr {
-  border-top: 1px solid #6587b4;
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tbody tr td >.time.newTime_button:hover {
+  text-shadow: 0 0 0;
 }
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.scheduleBlock .schedule >.body table tbody tr td {
-  padding: 0px 12px;
-}
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.scheduleBlock .schedule >.body table tbody tr td.day {
-  color: #7b9dca;
-}
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.scheduleBlock .schedule >.body table tbody tr td.week {
-  min-width: 112px;
-}
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.scheduleBlock .schedule >.body table tbody tr td .time {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tbody tr td >.time:not(.newTime_button) {
+  position: relative;
   border-bottom-color: #829dc2;
+  padding-bottom: 5px;
 }
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.scheduleBlock .schedule >.body table tbody tr td .time:hover {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tbody tr td >.time:not(.newTime_button):hover {
   border-bottom-color: #fff;
 }
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.scheduleBlock .schedule >.body table tbody tr td .time .from {
-  padding-right: 5px;
-}
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.scheduleBlock .schedule >.body table tbody tr td .time .to {
-  padding-left: 5px;
-}
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.scheduleBlock .schedule >.body table tbody tr td .delete_button {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tbody tr td .delete_button {
   cursor: pointer;
   color: #fff;
   vertical-align: middle;
   line-height: 0;
   padding-left: 7px;
 }
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.scheduleBlock .schedule >.body table tbody tr td .delete_button:before {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tbody tr td .delete_button:before {
   content: "\e80e";
   vertical-align: 0;
 }
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.scheduleBlock .schedule >.body table tbody tr td .delete_button:hover {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tbody tr td .delete_button:hover {
   text-shadow: 0 0 0;
 }
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.scheduleBlock .schedule >.body table tbody tr td .add_button {
-  cursor: pointer;
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tbody tr td .dateTimePickerRange {
+  color: #314157;
+  background: #f5f5f5;
 }
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.scheduleBlock .schedule >.body table tbody tr td .add_button:before {
-  content: "\e900";
-  vertical-align: 0;
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tbody tr td .dateTimePickerRange .dateTimePicker {
+  display: inline-block;
+  vertical-align: middle;
 }
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.scheduleBlock .schedule >.body table tbody tr td .add_button:hover {
-  text-shadow: 0 0 0;
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tbody tr td .dateTimePickerRange .dateTimePicker .time {
+  padding: 14px;
 }
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.footer {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tbody tr td .dateTimePickerRange .dateTimePicker .timeLimit_button.from {
   margin-left: 0;
-  border-top: 0;
+  margin-right: 14px;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tbody tr td .dateTimePickerRange .dateTimePicker .timeLimit_button.till {
+  margin-left: 14px;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.scheduleBlock .schedule > .body table tbody tr td .dateTimePickerRange.active {
+  display: block;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .footer {
+  position: relative;
 }
 .popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer {
-  width: 1450px;
+  width: 1350px;
   margin-top: 58px;
   margin-bottom: 114px;
-  box-shadow: none;
-  transition-duration: 0.3s;
 }
 .popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.leftBlock {
   position: absolute;
@@ -15775,6 +16108,7 @@ body {
   background-color: #5189d9;
   text-align: left;
   position: relative;
+  font-weight: bold;
 }
 .popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.rightBlock >.head .close_button {
   font-size: 21px;
@@ -15802,13 +16136,6 @@ body {
 }
 .popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.rightBlock >.body .controlButtons .dateTimeBy {
   margin-right: 14px;
-  border-bottom: 1px dashed;
-  padding-bottom: 2px;
-  cursor: pointer;
-  border-bottom-color: #a2a9b3;
-}
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.rightBlock >.body .controlButtons .dateTimeBy:hover {
-  border-bottom-color: #314157;
 }
 .popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.rightBlock >.body .controlButtons .dateTimeBy:after {
   content: ":";
@@ -15838,15 +16165,63 @@ body {
   vertical-align: 0;
 }
 .popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.rightBlock >.body .AbsenceList {
-  max-height: 900px;
-  overflow: auto;
-  box-shadow: 0 0 10px -2px rgba(49,65,87,0.5);
+  box-shadow: 0 1px 4px 0px rgba(53,64,79,0.3);
 }
 .popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.rightBlock >.body .EmptyBlock {
   height: 90px;
 }
 .popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer >.rightBlock >.footer {
   margin-left: 0;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer .message_popup {
+  line-height: 1.6em;
+  top: 0;
+  left: 0px;
+  right: 0px;
+  text-align: left;
+  box-shadow: 0 1px 4px 0px rgba(53,64,79,0.3);
+  border: 1px solid #fff;
+  border-bottom-right-radius: 3px;
+  border-bottom-left-radius: 3px;
+  opacity: 0;
+  position: absolute;
+  z-index: 15;
+  padding: 14px;
+  padding-top: 17px;
+  background: #fff;
+  white-space: normal;
+  transition-duration: 0.1s;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceViewer .message_popup.active {
+  opacity: 1;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.CompanyConstruction {
+  width: 800px;
+  margin-top: 58px;
+  margin-bottom: 114px;
+  box-shadow: 0 0 11px -2px rgba(0,3,8,0.9);
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.CompanyConstruction >.head {
+  background-color: #5189d9;
+  text-align: left;
+  position: relative;
+  font-weight: bold;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.CompanyConstruction >.head .close_button {
+  font-size: 21px;
+  cursor: pointer;
+  color: #dfecff;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.CompanyConstruction >.head .close_button:before {
+  content: "\e80e";
+  vertical-align: 0;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.CompanyConstruction >.head .close_button:hover {
+  color: #fff;
+  text-shadow: 0 0 0;
+}
+.popup_backgroundBlock >.wrapper .popupBlock .popup.CompanyConstruction >.footer {
+  margin: 0;
 }
 .popup_backgroundBlock.simpleMessage {
   background: 0;
@@ -15856,9 +16231,9 @@ body {
   max-width: 1000px;
   background: #fff;
   display: inline-block;
-/* min-height: 100px; */
+  /* min-height: 100px; */
   padding: 25px 40px;
-/* box-shadow: 0 1px 50px 3px rgb(84, 129, 193); */
+  /* box-shadow: 0 1px 50px 3px rgb(84, 129, 193); */
   border-radius: 7px;
   color: #fff;
   border: 1px solid #2862a6;
@@ -16385,7 +16760,7 @@ body {
   color: #fff;
   opacity: 0;
   line-height: 1.6em;
-  animation: animation-10 0.3s linear 0s 1 alternate forwards running;
+  animation: animation-11 0.3s linear 0s 1 alternate forwards running;
 }
 .tooltipPopup_block:before,
 .tooltipPopup_block:after {
@@ -16417,22 +16792,22 @@ body {
 .tooltipPopup_block.toCenter:after {
   content: normal;
 }
-@-moz-keyframes animation-10 {
+@-moz-keyframes animation-11 {
   100% {
     opacity: 1;
   }
 }
-@-webkit-keyframes animation-10 {
+@-webkit-keyframes animation-11 {
   100% {
     opacity: 1;
   }
 }
-@-o-keyframes animation-10 {
+@-o-keyframes animation-11 {
   100% {
     opacity: 1;
   }
 }
-@keyframes animation-10 {
+@keyframes animation-11 {
   100% {
     opacity: 1;
   }
@@ -16471,6 +16846,7 @@ body {
 .absencePopup_block .info {
   background-color: #fff;
   padding: 14px;
+  white-space: normal;
 }
 .absencePopup_block .info .date {
   text-align: left;
@@ -16507,57 +16883,81 @@ body {
 }
 .absencePopup_block .info .absenceReason.reason1,
 .AbsenceList table.absences tr.absence td.type .typeName.reason1,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.mainBlock >.body .mainInfo .absenceReason_button.reason1 {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .absenceReason_button.reason1,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .absenceReason_button.reason1 {
   background: #e53131;
 }
 .absencePopup_block .info .absenceReason.reason2,
 .AbsenceList table.absences tr.absence td.type .typeName.reason2,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.mainBlock >.body .mainInfo .absenceReason_button.reason2 {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .absenceReason_button.reason2,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .absenceReason_button.reason2 {
   background: #bf4f9d;
 }
 .absencePopup_block .info .absenceReason.reason3,
 .AbsenceList table.absences tr.absence td.type .typeName.reason3,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.mainBlock >.body .mainInfo .absenceReason_button.reason3 {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .absenceReason_button.reason3,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .absenceReason_button.reason3 {
   background: #ef8919;
 }
 .absencePopup_block .info .absenceReason.reason4,
 .AbsenceList table.absences tr.absence td.type .typeName.reason4,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.mainBlock >.body .mainInfo .absenceReason_button.reason4 {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .absenceReason_button.reason4,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .absenceReason_button.reason4 {
   background: #6091d5;
 }
 .absencePopup_block .info .absenceReason.reason5,
 .AbsenceList table.absences tr.absence td.type .typeName.reason5,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.mainBlock >.body .mainInfo .absenceReason_button.reason5 {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .absenceReason_button.reason5,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .absenceReason_button.reason5 {
   background: #dcc500;
 }
 .absencePopup_block .info .absenceReason.reason6,
 .AbsenceList table.absences tr.absence td.type .typeName.reason6,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.mainBlock >.body .mainInfo .absenceReason_button.reason6 {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .absenceReason_button.reason6,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .absenceReason_button.reason6 {
   background: #30b142;
 }
 .absencePopup_block .info .absenceReason.reason7,
 .AbsenceList table.absences tr.absence td.type .typeName.reason7,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.mainBlock >.body .mainInfo .absenceReason_button.reason7 {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .absenceReason_button.reason7,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .absenceReason_button.reason7 {
   background: #9a23c8;
 }
 .absencePopup_block .info .absenceReason.reason8,
 .AbsenceList table.absences tr.absence td.type .typeName.reason8,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.mainBlock >.body .mainInfo .absenceReason_button.reason8 {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .absenceReason_button.reason8,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .absenceReason_button.reason8 {
   background: #06a6a9;
 }
 .absencePopup_block .info .absenceReason.reason9,
 .AbsenceList table.absences tr.absence td.type .typeName.reason9,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.mainBlock >.body .mainInfo .absenceReason_button.reason9 {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .absenceReason_button.reason9,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .absenceReason_button.reason9 {
   background: #7e7e7e;
 }
 .absencePopup_block .info .absenceReason.reason10,
 .AbsenceList table.absences tr.absence td.type .typeName.reason10,
-.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.body .t_wrapper .tc_wrapper.mainBlock >.body .mainInfo .absenceReason_button.reason10 {
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .absenceReason_button.reason10,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .absenceReason_button.reason10 {
   background: #7fab1c;
 }
+.absencePopup_block .info .absenceReason.reason11,
+.AbsenceList table.absences tr.absence td.type .typeName.reason11,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absence > .wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .absenceReason_button.reason11,
+.popup_backgroundBlock >.wrapper .popupBlock .popup.absenceEditing >.wrapper > .body .t_wrapper .tc_wrapper.mainBlock > .body .mainInfo .absenceReason_button.reason11 {
+  background: #4d30cd;
+}
 .absencePopup_block .info .rightSide {
-  line-height: 30px;
+  line-height: 34px;
   margin-left: 14px;
+}
+.absencePopup_block .info .openOutside_button {
+  font-size: 13px;
+  margin-left: 10px;
+}
+.absencePopup_block .info .openOutside_button:before {
+  content: "\e992";
+  vertical-align: -3px;
 }
 .absencePopup_block .schedule {
   background: #d8e0ec;
@@ -16615,13 +17015,17 @@ body {
   border-top: 1px solid #d3d7de;
 }
 .absencePopup_block .comment .icon-comment {
-  vertical-align: top;
   padding-right: 7px;
   color: #acb1ba;
+  line-height: 1.4em;
 }
 .absencePopup_block .comment .icon-comment:before {
   content: "\e915";
-  vertical-align: -1px;
+  vertical-align: top;
+}
+.absencePopup_block .comment .text {
+  white-space: normal;
+  line-height: 1.6em;
 }
 .menu_popup {
   background: #fff;
@@ -16686,6 +17090,501 @@ body {
 .previewFile_popup .info .employee:before {
   content: 'by';
   margin-right: 7px;
+}
+.ControlBottomPanel,
+.MessagePanels .message {
+  position: relative;
+  height: 0;
+  line-height: 56px;
+  padding: 0 14px;
+  transition-duration: 0.3s;
+}
+.ControlBottomPanel.active,
+.MessagePanels .message.active {
+  height: 56px;
+}
+.ControlBottomPanel {
+  background: #293545;
+  color: #fff;
+  bottom: 0;
+}
+.ControlBottomPanel >.body {
+  display: inline-block;
+}
+.ControlBottomPanel >.body .selectedElem {
+  display: inline-block;
+  line-height: 28px;
+  background: #4673b3;
+  padding: 0px 10px;
+  color: #fff;
+  cursor: pointer;
+}
+.ControlBottomPanel >.body .selectedElem:after {
+  content: "\e80e";
+  vertical-align: middle;
+  padding-left: 7px;
+}
+.ControlBottomPanel >.body .selectedElem +.selectedElem {
+  margin-left: 7px;
+}
+.ControlBottomPanel >.body .selectedElem:hover {
+  background: #5481c1;
+}
+.ControlBottomPanel >.rightSide {
+  background: #293545;
+  position: absolute;
+  right: 0;
+  top: 0;
+  padding: 0 14px;
+}
+.ControlBottomPanel >.rightSide:before {
+  content: "";
+  width: 80px;
+  left: -80px;
+  height: 100%;
+  background-image: linear-gradient(to rigth, transparent, #293545);
+  position: absolute;
+}
+.ControlBottomPanel >.rightSide .revertLink {
+  padding: 0 10px;
+  color: #c6ccd4;
+  cursor: pointer;
+}
+.ControlBottomPanel >.rightSide .revertLink:hover {
+  color: #fff;
+}
+.BottomPanels {
+  position: fixed;
+  right: 0;
+  left: 240px;
+  z-index: 2;
+  bottom: 0;
+  transition-duration: 0.3s;
+}
+.MessagePanels {
+  position: fixed;
+  right: 0;
+  left: 0;
+  z-index: 50;
+  bottom: 0;
+  transition-duration: 0.3s;
+}
+.MessagePanels .message {
+  color: #fff;
+  font-size: 15px;
+  cursor: pointer;
+}
+.MessagePanels .message >.body {
+  display: inline-block;
+  padding-left: 3px;
+}
+.MessagePanels .message >.rightSide {
+  position: absolute;
+  right: 0;
+  top: 0;
+  padding: 0 14px;
+}
+.MessagePanels .message >.rightSide:before {
+  content: "";
+  width: 80px;
+  left: -80px;
+  height: 100%;
+  position: absolute;
+}
+.MessagePanels .message >.rightSide .timer {
+  font-weight: bold;
+  padding: 0 14px;
+  font-size: 18px;
+  animation: animation-12 0.5s step-end 0s infinite alternate forwards running;
+}
+@-moz-keyframes animation-12 {
+  50% {
+    color: rgba(255,255,255,0.5);
+  }
+}
+@-webkit-keyframes animation-12 {
+  50% {
+    color: rgba(255,255,255,0.5);
+  }
+}
+@-o-keyframes animation-12 {
+  50% {
+    color: rgba(255,255,255,0.5);
+  }
+}
+@keyframes animation-12 {
+  50% {
+    color: rgba(255,255,255,0.5);
+  }
+}
+.MessagePanels .message.info {
+  background: #4673b3;
+}
+.MessagePanels .message.info .icon-mIcon {
+  margin-right: 7px;
+  font-size: 22px;
+}
+.MessagePanels .message.info .icon-mIcon:before {
+  content: "\e989";
+  vertical-align: 0;
+}
+.MessagePanels .message.info >.rightSide:before {
+  background-image: linear-gradient(to rigth, transparent, #4673b3);
+}
+.MessagePanels .message.info:hover {
+  background: #4f7fc4;
+}
+.MessagePanels .message.success {
+  background: #64a452;
+}
+.MessagePanels .message.success .icon-mIcon {
+  margin-right: 7px;
+  font-size: 22px;
+}
+.MessagePanels .message.success .icon-mIcon:before {
+  content: "\e988";
+  vertical-align: 0;
+}
+.MessagePanels .message.success >.rightSide:before {
+  background-image: linear-gradient(to rigth, transparent, #64a452);
+}
+.MessagePanels .message.success:hover {
+  background: #6eb05b;
+}
+.MessagePanels .message.error {
+  background: #b4393c;
+}
+.MessagePanels .message.error .icon-mIcon {
+  margin-right: 7px;
+  font-size: 22px;
+}
+.MessagePanels .message.error .icon-mIcon:before {
+  content: "\e987";
+  vertical-align: 0;
+}
+.MessagePanels .message.error >.rightSide:before {
+  background-image: linear-gradient(to rigth, transparent, #b4393c);
+}
+.MessagePanels .message.error:hover {
+  background: #c04144;
+}
+.notifyPanel {
+  position: fixed;
+  right: 14px;
+  bottom: 14px;
+  z-index: 50;
+  width: 430px;
+  transition-duration: 0.3s;
+}
+.notifyPanel .notify {
+  position: relative;
+  cursor: pointer;
+  opacity: 0;
+  margin-bottom: 14px;
+  box-shadow: 0 1px 1px 0px rgba(0,0,0,0.68);
+  transition-duration: 0.3s;
+}
+.notifyPanel .notify.active {
+  opacity: 1;
+}
+.notifyPanel .notify.warning {
+  background: #d04141;
+}
+.notifyPanel .notify.warning .body {
+  border-top: 1px solid #ff4e4e;
+}
+.notifyPanel .notify.warning .icon-mIcon {
+  background: #eb5757;
+}
+.notifyPanel .notify.warning .icon-mIcon:before {
+  content: "\e987";
+  vertical-align: 0;
+}
+.notifyPanel .notify.warning:hover {
+  background: #dc4747;
+}
+.notifyPanel .notify.info {
+  background: #4673b3;
+}
+.notifyPanel .notify.info .body {
+  border-top: 1px solid #8caaff;
+}
+.notifyPanel .notify.info .icon-mIcon {
+  background: #5489d3;
+}
+.notifyPanel .notify.info .icon-mIcon:before {
+  content: "\e989";
+  vertical-align: -1px;
+}
+.notifyPanel .notify.info:hover {
+  background: #4b7cc1;
+}
+.notifyPanel .notify.success {
+  background: #63a251;
+}
+.notifyPanel .notify.success .body {
+  border-top: 1px solid #97dc84;
+}
+.notifyPanel .notify.success .icon-mIcon {
+  background: #74b960;
+}
+.notifyPanel .notify.success .icon-mIcon:before {
+  content: "\e988";
+  vertical-align: -1px;
+}
+.notifyPanel .notify.success:hover {
+  background: #6aac58;
+}
+.notifyPanel .notify .body {
+  text-align: center;
+  position: relative;
+  padding: 24px;
+  padding-left: 46px;
+}
+.notifyPanel .notify .body .icon-mIcon {
+  color: #fff;
+  font-size: 18px;
+  position: absolute;
+  left: -25px;
+  border-radius: 50%;
+  top: 50%;
+  box-sizing: border-box;
+  height: 50px;
+  width: 50px;
+  box-shadow: 3px 2px 6px -3px rgba(0,0,0,0.28);
+  padding-top: 15px;
+  margin-top: -25px;
+}
+.notifyPanel .notify .body .text {
+  font-size: 14px;
+  color: #fff;
+  line-height: 1.6em;
+}
+.notifyPanel .notify .body .timer {
+  position: absolute;
+  top: 7px;
+  right: 10px;
+  color: #fff;
+  font-weight: bold;
+  animation: animation-13 0.5s step-end 0s infinite alternate forwards running;
+}
+@-moz-keyframes animation-13 {
+  50% {
+    color: rgba(255,255,255,0.5);
+  }
+}
+@-webkit-keyframes animation-13 {
+  50% {
+    color: rgba(255,255,255,0.5);
+  }
+}
+@-o-keyframes animation-13 {
+  50% {
+    color: rgba(255,255,255,0.5);
+  }
+}
+@keyframes animation-13 {
+  50% {
+    color: rgba(255,255,255,0.5);
+  }
+}
+.list-group {
+  margin: -7px -7px 0 -7px;
+}
+.list-group-item {
+  padding: 7px;
+  display: inline-block;
+  box-sizing: border-box;
+  vertical-align: top;
+  width: 100%;
+}
+.list-group-item >.wrapper {
+  position: relative;
+  background-color: #f6f7f8;
+  border: 1px solid #fff;
+  white-space: nowrap;
+  box-shadow: 0 1px 4px 0px rgba(53,64,79,0.3);
+  border-radius: 3px;
+  z-index: 1;
+  transition-duration: 0.5s;
+  transition-property: padding;
+  padding: 14px;
+}
+.list-group-item >.wrapper:after {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50px;
+  content: "";
+  right: 0;
+  background-image: linear-gradient(to right, transparent, #f6f7f8 25px);
+}
+.list-group-item >.wrapper:hover {
+  background-color: #fff;
+  cursor: pointer;
+}
+.list-group-item >.wrapper:hover:after {
+  background-image: linear-gradient(to right, transparent, #fff 25px);
+}
+.grid:after {
+  content: "";
+  display: block;
+  clear: both;
+}
+.grid [class*='col-'] {
+  float: left;
+  position: relative;
+  min-height: 1px;
+}
+.grid .col-xs-12 {
+  width: 100%;
+}
+.grid .col-xs-11 {
+  width: 91.66666667%;
+}
+.grid .col-xs-10 {
+  width: 83.33333333%;
+}
+.grid .col-xs-9 {
+  width: 75%;
+}
+.grid .col-xs-8 {
+  width: 66.66666667%;
+}
+.grid .col-xs-7 {
+  width: 58.33333333%;
+}
+.grid .col-xs-6 {
+  width: 50%;
+}
+.grid .col-xs-5 {
+  width: 41.66666667%;
+}
+.grid .col-xs-4 {
+  width: 33.33333333%;
+}
+.grid .col-xs-3 {
+  width: 25%;
+}
+.grid .col-xs-2 {
+  width: 16.66666667%;
+}
+.grid .col-xs-1 {
+  width: 8.33333333%;
+}
+@media (min-width: 768px) {
+  .grid .col-sm-12 {
+    width: 100%;
+  }
+  .grid .col-sm-11 {
+    width: 91.66666667%;
+  }
+  .grid .col-sm-10 {
+    width: 83.33333333%;
+  }
+  .grid .col-sm-9 {
+    width: 75%;
+  }
+  .grid .col-sm-8 {
+    width: 66.66666667%;
+  }
+  .grid .col-sm-7 {
+    width: 58.33333333%;
+  }
+  .grid .col-sm-6 {
+    width: 50%;
+  }
+  .grid .col-sm-5 {
+    width: 41.66666667%;
+  }
+  .grid .col-sm-4 {
+    width: 33.33333333%;
+  }
+  .grid .col-sm-3 {
+    width: 25%;
+  }
+  .grid .col-sm-2 {
+    width: 16.66666667%;
+  }
+  .grid .col-sm-1 {
+    width: 8.33333333%;
+  }
+}
+@media (min-width: 992px) {
+  .grid .col-md-12 {
+    width: 100%;
+  }
+  .grid .col-md-11 {
+    width: 91.66666667%;
+  }
+  .grid .col-md-10 {
+    width: 83.33333333%;
+  }
+  .grid .col-md-9 {
+    width: 75%;
+  }
+  .grid .col-md-8 {
+    width: 66.66666667%;
+  }
+  .grid .col-md-7 {
+    width: 58.33333333%;
+  }
+  .grid .col-md-6 {
+    width: 50%;
+  }
+  .grid .col-md-5 {
+    width: 41.66666667%;
+  }
+  .grid .col-md-4 {
+    width: 33.33333333%;
+  }
+  .grid .col-md-3 {
+    width: 25%;
+  }
+  .grid .col-md-2 {
+    width: 16.66666667%;
+  }
+  .grid .col-md-1 {
+    width: 8.33333333%;
+  }
+}
+@media (min-width: 1200px) {
+  .grid .col-lg-12 {
+    width: 100%;
+  }
+  .grid .col-lg-11 {
+    width: 91.66666667%;
+  }
+  .grid .col-lg-10 {
+    width: 83.33333333%;
+  }
+  .grid .col-lg-9 {
+    width: 75%;
+  }
+  .grid .col-lg-8 {
+    width: 66.66666667%;
+  }
+  .grid .col-lg-7 {
+    width: 58.33333333%;
+  }
+  .grid .col-lg-6 {
+    width: 50%;
+  }
+  .grid .col-lg-5 {
+    width: 41.66666667%;
+  }
+  .grid .col-lg-4 {
+    width: 33.33333333%;
+  }
+  .grid .col-lg-3 {
+    width: 25%;
+  }
+  .grid .col-lg-2 {
+    width: 16.66666667%;
+  }
+  .grid .col-lg-1 {
+    width: 8.33333333%;
+  }
 }
 .body_global >.rightBlock .caseListsBlock.taskBoard .case .markers {
   padding-left: 0;
