@@ -9,7 +9,7 @@
             <div class="department">Messaging</div>
             <div ui:field="name" class="name" />
             <div class="buttons"><span class="icon-menu"></span></div>
-            <div class="favorite"/>
+            <div class="favorite_button"/>
             <div class="checkbox"/>
         </div>
 

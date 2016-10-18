@@ -4,30 +4,28 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="OrganizationList">
-            <div class="controlButtons">
-                <div class="buttons_group">
-                    <div class="regulator">
-                        <sortField:SortFieldSelector ui:field="sortFields" header="{lang.sortBy}"/>
+    <g:HTMLPanel styleName="productListsBlock reportBlock">
+        <div class="controlButtons">
+            <div class="buttons_group">
+                <div class="regulator">
+                    <sortField:SortFieldSelector ui:field="sortFields" header="{lang.sortBy}"/>
 
-                        <div class="button empty whiteC switcher">
-                            <g:ToggleButton ui:field="sortDir" styleName="sorting_button" />
-                        </div>
+                    <div class="button empty whiteC switcher">
+                        <g:ToggleButton ui:field="sortDir" styleName="sorting_button" />
+                    </div>
 
-                    </div>
-                    <div class="regulator">
-                        <g:CheckBox ui:field="showDeprecated" styleName="checkbox" text="{lang.showDeprecated}"/>
-                    </div>
                 </div>
-                <div class="rightSide">
-                    <g:TextBox ui:field="search" styleName="inputField"/>
+                <div class="regulator">
+                    <g:CheckBox ui:field="showDeprecated" styleName="checkbox" text="{lang.showDeprecated}"/>
                 </div>
             </div>
-
-        <div class="productListsBlock reportBlock">
-            <div class="block low">
-                <g:HTMLPanel ui:field="productContainer" styleName="productList" />
+            <div class="rightSide">
+                <g:TextBox ui:field="search" styleName="inputField"/>
             </div>
+        </div>
+
+        <div class="block low">
+            <g:HTMLPanel ui:field="productContainer" styleName="productList" />
         </div>
 
     </g:HTMLPanel>

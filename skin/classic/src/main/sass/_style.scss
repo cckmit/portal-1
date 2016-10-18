@@ -6,7 +6,6 @@
   font-style: normal;
 }
 
-
 [class*="icon-"],
 [class*="_button"]:before,
 [class*="_button"]:after,
@@ -1108,6 +1107,7 @@ body {
 .header_global >.rightBlock .icons .helper_button,
 .header_global >.rightBlock .icons .settings_button,
 .header_global >.rightBlock .icons .exit_button,
+.header_global >.rightBlock .icons .user_button,
 .header_global >.rightBlock .icons .notifications_button {
   display: inline-block;
   vertical-align: middle;
@@ -1117,6 +1117,7 @@ body {
 .header_global >.rightBlock .icons .helper_button:hover,
 .header_global >.rightBlock .icons .settings_button:hover,
 .header_global >.rightBlock .icons .exit_button:hover,
+.header_global >.rightBlock .icons .user_button:hover,
 .header_global >.rightBlock .icons .notifications_button:hover {
   color: #fff;
 }
@@ -1143,6 +1144,16 @@ body {
 .header_global >.rightBlock .icons .exit_button:before {
   content: "\e967";
   vertical-align: -2px;
+}
+.header_global >.rightBlock .icons .user_button {
+  margin-left: 8px;
+  font-size: 22px;
+  margin-right: 8px;
+}
+.header_global >.rightBlock .icons .user_button:before {
+  content: "\e90e";
+  vertical-align: -2px;
+  padding-right: 5px;
 }
 .header_global >.rightBlock .icons .notifications_button {
   font-size: 22px;
@@ -2397,7 +2408,8 @@ body {
 .body_global >.rightBlock .CaseList table.cases tr.case .favorite_button,
 .body_global .OrganizationList .organizations .organization >.wrapper .favorite_button,
 .body_global .UserList.list_showing .users .user >.wrapper .favorite_button,
-.body_global .Profile .UserPassport >.head .userInfo .favorite_button {
+.body_global .Profile .UserPassport >.head .userInfo .favorite_button,
+.body_global >.rightBlock .productListsBlock.reportBlock >.block .productList .product >.wrapper .favorite_button {
   font-size: 19px;
   color: #c8cfd3;
   cursor: pointer;
@@ -2406,6 +2418,7 @@ body {
 .body_global .OrganizationList .organizations .organization >.wrapper .favorite_button:before,
 .body_global .UserList.list_showing .users .user >.wrapper .favorite_button:before,
 .body_global .Profile .UserPassport >.head .userInfo .favorite_button:before,
+.body_global >.rightBlock .productListsBlock.reportBlock >.block .productList .product >.wrapper .favorite_button:before,
 .body_global .Profile .UserPassport >.head .userInfo .icon-favorite:before {
   content: "\e800";
   vertical-align: -1px;
@@ -2414,10 +2427,12 @@ body {
 .body_global .OrganizationList .organizations .organization >.wrapper .favorite_button.active,
 .body_global .UserList.list_showing .users .user >.wrapper .favorite_button.active,
 .body_global .Profile .UserPassport >.head .userInfo .favorite_button.active,
+.body_global >.rightBlock .productListsBlock.reportBlock >.block .productList .product >.wrapper .favorite_button.active,
 .body_global >.rightBlock .CaseList table.cases tr.case .favorite_button:hover,
 .body_global .OrganizationList .organizations .organization >.wrapper .favorite_button:hover,
 .body_global .UserList.list_showing .users .user >.wrapper .favorite_button:hover,
-.body_global .Profile .UserPassport >.head .userInfo .favorite_button:hover {
+.body_global .Profile .UserPassport >.head .userInfo .favorite_button:hover,
+.body_global >.rightBlock .productListsBlock.reportBlock >.block .productList .product >.wrapper .favorite_button:hover {
   color: #d0ac19;
 }
 .body_global >.rightBlock .CaseList .timingDiagram >.left_button,
@@ -5744,206 +5759,6 @@ body {
   border-radius: 10px;
   box-sizing: border-box;
 }
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user120,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user120 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=120") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user121,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user121 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=121") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user122,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user122 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=122") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user123,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user123 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=123") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user124,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user124 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=124") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user125,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user125 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=125") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user126,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user126 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=126") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user127,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user127 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=127") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user128,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user128 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=128") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user129,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user129 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=129") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user130,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user130 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=130") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user131,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user131 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=131") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user132,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user132 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=132") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user133,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user133 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=133") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user134,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user134 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=134") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user135,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user135 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=135") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user136,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user136 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=136") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user137,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user137 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=137") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user138,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user138 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=138") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user139,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user139 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=139") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user140,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user140 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=140") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user141,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user141 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=141") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user142,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user142 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=142") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user143,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user143 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=143") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user144,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user144 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=144") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user145,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user145 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=145") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user146,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user146 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=146") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user147,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user147 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=147") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user148,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user148 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=148") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user149,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user149 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=149") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user150,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user150 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=150") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user151,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user151 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=151") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user152,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user152 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=152") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user153,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user153 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=153") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user154,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user154 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=154") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user155,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user155 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=155") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user156,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user156 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=156") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user157,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user157 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=157") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user158,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user158 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=158") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user159,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user159 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=159") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user160,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user160 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=160") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user161,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user161 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=161") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user162,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user162 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=162") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user163,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user163 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=163") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user164,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user164 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=164") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user165,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user165 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=165") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user166,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user166 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=166") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user167,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user167 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=167") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user168,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user168 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=168") no-repeat scroll 0px -1px/80px;
-}
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .ava.user169,
-.body_global >.rightBlock .userListsBlock.diagram_showing.diagram_showing >.t_wrapper .tc1_wrapper > .block table.userList tr.user .executor-1 .ava.user169 {
-  background: transparent url("http://portal/ok/utils/get_image.jsp?person_id=169") no-repeat scroll 0px -1px/80px;
-}
 .body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper >.wrapper {
   padding-left: 14px;
 }
@@ -6040,9 +5855,7 @@ body {
 .body_global >.rightBlock .componentListsBlock.reportBlock >.block .componentList .component >.wrapper .checkbox.active {
   opacity: 1;
 }
-.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .favorite,
-.body_global >.rightBlock .productListsBlock.reportBlock >.block .productList .product >.wrapper .favorite,
-.body_global >.rightBlock .componentListsBlock.reportBlock >.block .componentList .component >.wrapper .favorite {
+.body_global >.rightBlock .userListsBlock.list_showing .userList .user >.wrapper .favorite {
   top: 5px;
   right: 5px;
   border-width: 20px;
@@ -7219,7 +7032,8 @@ body {
 }
 .body_global .OrganizationList .organizations .organization >.wrapper .favorite_button,
 .body_global .UserList.list_showing .users .user >.wrapper .favorite_button,
-.body_global .Profile .UserPassport >.head .userInfo .favorite_button {
+.body_global .Profile .UserPassport >.head .userInfo .favorite_button,
+.body_global >.rightBlock .productListsBlock.reportBlock >.block .productList .product >.wrapper .favorite_button {
   font-size: 20px;
   position: absolute;
   top: 3px;
@@ -17574,17 +17388,17 @@ body {
     color: rgba(255,255,255,0.5);
   }
 }
-.list_root {
-  margin: 7px 7px 0 -7px;
+.list-group {
+  margin: -7px -7px 0 -7px;
 }
-.list_root >.item {
+.list-group-item {
   padding: 7px;
   display: inline-block;
   box-sizing: border-box;
   vertical-align: top;
   width: 100%;
 }
-.list_root >.item >.wrapper {
+.list-group-item >.wrapper {
   position: relative;
   background-color: #f6f7f8;
   border: 1px solid #fff;
@@ -17594,8 +17408,9 @@ body {
   z-index: 1;
   transition-duration: 0.5s;
   transition-property: padding;
+  padding: 14px;
 }
-.list_root >.item >.wrapper:after {
+.list-group-item >.wrapper:after {
   position: absolute;
   top: 0;
   bottom: 0;
@@ -17604,170 +17419,170 @@ body {
   right: 0;
   background-image: linear-gradient(to right, transparent, #f6f7f8 25px);
 }
-.list_root >.item >.wrapper:hover {
+.list-group-item >.wrapper:hover {
   background-color: #fff;
   cursor: pointer;
 }
-.list_root >.item >.wrapper:hover:after {
+.list-group-item >.wrapper:hover:after {
   background-image: linear-gradient(to right, transparent, #fff 25px);
 }
-/*.grid:after {
+.grid:after {
   content: "";
-  display: table;
+  display: block;
   clear: both;
-}*/
+}
 .grid [class*='col-'] {
   float: left;
   position: relative;
   min-height: 1px;
 }
-.col-xs-12 {
+.grid .col-xs-12 {
   width: 100%;
 }
-.col-xs-11 {
+.grid .col-xs-11 {
   width: 91.66666667%;
 }
-.col-xs-10 {
+.grid .col-xs-10 {
   width: 83.33333333%;
 }
-.col-xs-9 {
+.grid .col-xs-9 {
   width: 75%;
 }
-.col-xs-8 {
+.grid .col-xs-8 {
   width: 66.66666667%;
 }
-.col-xs-7 {
+.grid .col-xs-7 {
   width: 58.33333333%;
 }
-.col-xs-6 {
+.grid .col-xs-6 {
   width: 50%;
 }
-.col-xs-5 {
+.grid .col-xs-5 {
   width: 41.66666667%;
 }
-.col-xs-4 {
+.grid .col-xs-4 {
   width: 33.33333333%;
 }
-.col-xs-3 {
+.grid .col-xs-3 {
   width: 25%;
 }
-.col-xs-2 {
+.grid .col-xs-2 {
   width: 16.66666667%;
 }
-.col-xs-1 {
+.grid .col-xs-1 {
   width: 8.33333333%;
 }
 @media (min-width: 768px) {
-  .col-sm-12 {
+  .grid .col-sm-12 {
     width: 100%;
   }
-  .col-sm-11 {
+  .grid .col-sm-11 {
     width: 91.66666667%;
   }
-  .col-sm-10 {
+  .grid .col-sm-10 {
     width: 83.33333333%;
   }
-  .col-sm-9 {
+  .grid .col-sm-9 {
     width: 75%;
   }
-  .col-sm-8 {
+  .grid .col-sm-8 {
     width: 66.66666667%;
   }
-  .col-sm-7 {
+  .grid .col-sm-7 {
     width: 58.33333333%;
   }
-  .col-sm-6 {
+  .grid .col-sm-6 {
     width: 50%;
   }
-  .col-sm-5 {
+  .grid .col-sm-5 {
     width: 41.66666667%;
   }
-  .col-sm-4 {
+  .grid .col-sm-4 {
     width: 33.33333333%;
   }
-  .col-sm-3 {
+  .grid .col-sm-3 {
     width: 25%;
   }
-  .col-sm-2 {
+  .grid .col-sm-2 {
     width: 16.66666667%;
   }
-  .col-sm-1 {
+  .grid .col-sm-1 {
     width: 8.33333333%;
   }
 }
 @media (min-width: 992px) {
-  .col-md-12 {
+  .grid .col-md-12 {
     width: 100%;
   }
-  .col-md-11 {
+  .grid .col-md-11 {
     width: 91.66666667%;
   }
-  .col-md-10 {
+  .grid .col-md-10 {
     width: 83.33333333%;
   }
-  .col-md-9 {
+  .grid .col-md-9 {
     width: 75%;
   }
-  .col-md-8 {
+  .grid .col-md-8 {
     width: 66.66666667%;
   }
-  .col-md-7 {
+  .grid .col-md-7 {
     width: 58.33333333%;
   }
-  .col-md-6 {
+  .grid .col-md-6 {
     width: 50%;
   }
-  .col-md-5 {
+  .grid .col-md-5 {
     width: 41.66666667%;
   }
-  .col-md-4 {
+  .grid .col-md-4 {
     width: 33.33333333%;
   }
-  .col-md-3 {
+  .grid .col-md-3 {
     width: 25%;
   }
-  .col-md-2 {
+  .grid .col-md-2 {
     width: 16.66666667%;
   }
-  .col-md-1 {
+  .grid .col-md-1 {
     width: 8.33333333%;
   }
 }
 @media (min-width: 1200px) {
-  .col-lg-12 {
+  .grid .col-lg-12 {
     width: 100%;
   }
-  .col-lg-11 {
+  .grid .col-lg-11 {
     width: 91.66666667%;
   }
-  .col-lg-10 {
+  .grid .col-lg-10 {
     width: 83.33333333%;
   }
-  .col-lg-9 {
+  .grid .col-lg-9 {
     width: 75%;
   }
-  .col-lg-8 {
+  .grid .col-lg-8 {
     width: 66.66666667%;
   }
-  .col-lg-7 {
+  .grid .col-lg-7 {
     width: 58.33333333%;
   }
-  .col-lg-6 {
+  .grid .col-lg-6 {
     width: 50%;
   }
-  .col-lg-5 {
+  .grid .col-lg-5 {
     width: 41.66666667%;
   }
-  .col-lg-4 {
+  .grid .col-lg-4 {
     width: 33.33333333%;
   }
-  .col-lg-3 {
+  .grid .col-lg-3 {
     width: 25%;
   }
-  .col-lg-2 {
+  .grid .col-lg-2 {
     width: 16.66666667%;
   }
-  .col-lg-1 {
+  .grid .col-lg-1 {
     width: 8.33333333%;
   }
 }
