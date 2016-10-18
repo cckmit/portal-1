@@ -28,6 +28,7 @@ public abstract class ProductListActivity implements AbstractProductListActivity
     @PostConstruct
     public void onInit() {
         view.setActivity(this);
+
     }
 
     @Event
@@ -51,12 +52,10 @@ public abstract class ProductListActivity implements AbstractProductListActivity
         this.init = event;
     }
 
-
     @Override
     public void onShowDeprecatedClick() {
         requestProducts();
     }
-
 
     @Override
     public void onFilterChanged() {
@@ -73,26 +72,26 @@ public abstract class ProductListActivity implements AbstractProductListActivity
                 view.getSortField().getValue(),
                 view.getSortDir().getValue(),
                 new RequestCallback<List<DevUnit>>() {
-            @Override
-            public void onError(Throwable throwable) {
-                fireEvent ( new NotifyEvents.Show(lang.errorGetList(), NotifyEvents.NotifyType.ERROR ) );
-            }
+                    @Override
+                    public void onError(Throwable throwable) {
+                        fireEvent ( new NotifyEvents.Show(lang.errorGetList(), NotifyEvents.NotifyType.ERROR ) );
+                    }
 
-            @Override
-            public void onSuccess(List<DevUnit> result) {
-                fillView(result);
-            }
-        });
+                    @Override
+                    public void onSuccess(List<DevUnit> result) {
+                        fillView(result);
+                    }
+                });
     }
 
     private void fillView (List<DevUnit> products)
     {
-        for (DevUnit product : products) {
+        products.forEach( (product)->{
             AbstractProductItemView itemView = makeItemView (product);
 
             view.getItemsContainer().add(itemView.asWidget());
             modelToView.put(product, itemView);
-        }
+        } );
     }
 
     private AbstractProductItemView makeItemView (DevUnit product)

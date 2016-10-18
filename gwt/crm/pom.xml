@@ -61,6 +61,14 @@
             <version>${project.spring.version}</version>
         </dependency>
 
+
+        <!-- gwt dev dependency -->
+        <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-dev</artifactId>
+            <scope>provided</scope>
+            <version>${project.gwt.version}</version>
+        </dependency>
     </dependencies>
 
 
@@ -106,8 +114,13 @@
                         </goals>
                     </execution>
                 </executions>
-
+                <configuration>
+                    <sourceLevel>1.8</sourceLevel>
+                    <runTarget>index.html</runTarget>
+                    <hostedWebapp>${webappDirectory}</hostedWebapp>
+                </configuration>
             </plugin>
+
 
             <!-- Copy static web files before executing gwt:run -->
             <plugin>
