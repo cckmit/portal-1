@@ -40,7 +40,7 @@
                 <module>gwt/product</module>
                 <module>gwt/crm</module>
 
-                <module>app/crm</module>
+                <!--<module>app/crm</module>-->
             </modules>
         </profile>
     </profiles>
@@ -51,9 +51,9 @@
             <id>protei-central</id>
             <name>protei-central</name>
             <url>http://192.168.110.20:8081/artifactory/repo</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
+            <!--<snapshots>-->
+                <!--<enabled>true</enabled>-->
+            <!--</snapshots>-->
         </repository>
 
         <repository>

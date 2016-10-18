@@ -60,53 +60,15 @@
             <artifactId>spring-web</artifactId>
             <version>${project.spring.version}</version>
         </dependency>
-        <!--hack deps-->
-        <!--<dependency>-->
-            <!--<groupId>colt</groupId>-->
-            <!--<artifactId>colt</artifactId>-->
-            <!--<version>1.2.0</version>-->
-        <!--</dependency>-->
 
-        <!--<dependency>-->
-            <!--<groupId>org.eclipse.jetty</groupId>-->
-            <!--<artifactId>jetty-util</artifactId>-->
-            <!--<version>LATEST</version>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>org.eclipse.jetty</groupId>-->
-            <!--<artifactId>jetty-server</artifactId>-->
-            <!--<version>9.3.6.v20151106</version>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>org.eclipse.jetty</groupId>-->
-            <!--<artifactId>jetty-webapp</artifactId>-->
-            <!--<version>9.3.6.v20151106</version>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>org.eclipse.jetty</groupId>-->
-            <!--<artifactId>jetty-servlet</artifactId>-->
-            <!--<version>9.3.6.v20151106</version>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>org.eclipse.jetty</groupId>-->
-            <!--<artifactId>jetty-servlets</artifactId>-->
-            <!--<version>9.2.14.v20151106</version>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>org.eclipse.jetty</groupId>-->
-            <!--<artifactId>jetty-plus</artifactId>-->
-            <!--<version>9.2.14.v20151106</version>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>org.eclipse.jetty</groupId>-->
-            <!--<artifactId>jetty-annotations</artifactId>-->
-            <!--<version>9.2.14.v20151106</version>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>org.apache.ant</groupId>-->
-            <!--<artifactId>ant</artifactId>-->
-            <!--<version>1.9.4</version>-->
-        <!--</dependency>-->
+
+        <!-- gwt dev dependency -->
+        <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-dev</artifactId>
+            <scope>provided</scope>
+            <version>${project.gwt.version}</version>
+        </dependency>
     </dependencies>
 
 
