@@ -33,7 +33,6 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
         initWidget( ourUiBinder.createAndBindUi( this ) );
         initHandlers();
         sortField.fillOptions( ModuleType.COMPANY );
-        search.getElement().setPropertyString( "placeholder", lang.search() );
     }
 
     public void setActivity( AbstractCompanyListActivity activity ) {
@@ -70,6 +69,11 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
         return directionButton.getValue();
     }
 
+    @Override
+    public void setSearchPlaceHolder( String placeHolder ) {
+        search.getElement().setPropertyString( "placeholder", placeHolder );
+    }
+
     @UiHandler( "sortField" )
     public void onSortFieldSelected( ValueChangeEvent< En_SortField > event ) {
         if ( activity != null ) {
@@ -77,7 +81,7 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
         }
     }
 
-    @UiHandler("group")
+    @UiHandler( "group" )
     public void onCompanyGroupSelected( ValueChangeEvent< CompanyGroup > event ) {
         if ( activity != null ) {
             activity.onFilterChanged();
@@ -143,9 +147,6 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
     @Inject
     @UiField( provided = true )
     CategoryBtnGroup categories;
-
-    @Inject
-    Lang lang;
 
     Timer timer = new Timer() {
         @Override

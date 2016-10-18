@@ -22,4 +22,5 @@ public interface AbstractCompanyListView extends IsWidget {
     HasValue< En_SortField > getSortField();
     Boolean getDirSort();
     void resetFilter();
+    void setSearchPlaceHolder( String placeHolder );
 }
