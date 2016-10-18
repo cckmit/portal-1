@@ -13,6 +13,7 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.CompanyCategory;
 import ru.protei.portal.core.model.ent.CompanyGroup;
+import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.company.client.activity.list.AbstractCompanyListActivity;
 import ru.protei.portal.ui.company.client.activity.list.AbstractCompanyListView;
 import ru.protei.portal.ui.company.client.widget.category.btngroup.CategoryBtnGroup;
@@ -32,6 +33,7 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
         initWidget( ourUiBinder.createAndBindUi( this ) );
         initHandlers();
         sortField.fillOptions( ModuleType.COMPANY );
+        search.getElement().setPropertyString( "placeholder", lang.search() );
     }
 
     public void setActivity( AbstractCompanyListActivity activity ) {
@@ -141,6 +143,9 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
     @Inject
     @UiField( provided = true )
     CategoryBtnGroup categories;
+
+    @Inject
+    Lang lang;
 
     Timer timer = new Timer() {
         @Override

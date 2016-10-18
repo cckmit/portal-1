@@ -229,3 +229,31 @@
 .dropdown-menu ul > li:not(:first-child ) {
   border-top: 1px solid #e9edee;
 }
+
+/** LOCAL SEARCH **/
+.local-search {
+  position: relative;
+  color: #a5acb5;
+}
+
+.local-search input { padding-right: 25px; }
+
+.local-search .local-search-icon {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+}
+
+.icon {
+  display: inline-block;
+  font-family: 'icomoon';
+  font-style: normal;
+  font-weight: 600;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.local-search-icon:before {
+  content: "\e904";
+}
