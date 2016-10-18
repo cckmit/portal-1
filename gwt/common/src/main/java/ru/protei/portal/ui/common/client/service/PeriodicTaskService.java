@@ -3,6 +3,7 @@ package ru.protei.portal.ui.common.client.service;
 import com.google.gwt.user.client.Timer;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Сервис блочного заполнения списков
@@ -12,12 +13,8 @@ public class PeriodicTaskService {
         void cancel();
     }
 
-    public interface TaskConsumer<T> {
-        void consume( T value );
-    }
-
     public <T> PeriodicTaskHandler startPeriodicTask(
-            final List<T> items, final TaskConsumer<T> consumer, final int interval, final int blockSize ) {
+            final List<T> items, final Consumer<T> consumer, final int interval, final int blockSize ) {
         return new PeriodicTaskHandler() {
 
             @Override
@@ -31,7 +28,7 @@ public class PeriodicTaskService {
 
     private class TimerTask<T> extends Timer {
 
-        public TimerTask( List<T> items, TaskConsumer<T> consumer, int interval, int blockSize ) {
+        public TimerTask( List<T> items, Consumer<T> consumer, int interval, int blockSize ) {
             this.items = items;
             this.consumer = consumer;
             this.blockSize = blockSize;
@@ -43,7 +40,7 @@ public class PeriodicTaskService {
         public void run() {
             int count = 0;
             while ( !items.isEmpty() ) {
-                consumer.consume( items.get( 0 ) );
+                consumer.accept( items.get( 0 ) );
                 items.remove( 0 );
                 if ( count++ > blockSize ) {
                     break;
@@ -56,7 +53,7 @@ public class PeriodicTaskService {
         }
 
         List<T> items;
-        TaskConsumer<T> consumer;
+        Consumer<T> consumer;
         int blockSize;
     }
 }

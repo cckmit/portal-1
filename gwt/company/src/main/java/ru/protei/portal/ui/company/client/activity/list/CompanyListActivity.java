@@ -20,6 +20,7 @@ import ru.protei.portal.ui.company.client.service.CompanyServiceAsync;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * Активность списка компаний
@@ -88,9 +89,9 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
         });
     }
 
-    PeriodicTaskService.TaskConsumer< Company > fillViewer = new PeriodicTaskService.TaskConsumer< Company >() {
+    Consumer< Company > fillViewer = new Consumer< Company >() {
         @Override
-        public void consume( Company company ) {
+        public void accept( Company company ) {
             AbstractCompanyItemView itemView = makeView( company );
 
             map.put( itemView, company );
