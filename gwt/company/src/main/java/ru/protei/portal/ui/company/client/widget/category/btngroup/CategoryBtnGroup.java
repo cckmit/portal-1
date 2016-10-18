@@ -22,7 +22,7 @@ public class CategoryBtnGroup extends ToggleBtnGroup< CompanyCategory > implemen
         clear();
 
         for ( CompanyCategory category : categories ) {
-            addBtn(category.getName(), category);
+            addBtn( category.getName(), category );
         }
     }
 }
