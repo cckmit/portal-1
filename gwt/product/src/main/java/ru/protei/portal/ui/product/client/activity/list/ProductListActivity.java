@@ -72,12 +72,12 @@ public abstract class ProductListActivity implements AbstractProductListActivity
 
     private void fillView (List<ProductView> products)
     {
-        for (ProductView product : products) {
+        products.forEach( (product)->{
             AbstractProductItemView itemView = makeItemView (product);
 
             view.getItemsContainer().add(itemView.asWidget());
             map.put(product, itemView);
-        }
+        } );
     }
 
     private AbstractProductItemView makeItemView (ProductView product)
