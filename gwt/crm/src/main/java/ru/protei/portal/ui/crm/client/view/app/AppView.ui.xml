@@ -30,7 +30,7 @@
                 <div class="rightSide searchBlock">
                     <div ui:field="searchPanel" class="sb-search">
                         <g:TextBox ui:field="search" styleName="sb-search-input"/>
-                        <g:Button ui:field="searchButton" styleName="sb-search-submit"/>
+                        <g:Button ui:field="searchButton" styleName="sb-search-submit sb-icon-search"/>
                     </div>
                     <!--div class="globalSearch">
                     <g:TextBox ui:field="search" styleName="searchInput close"/>
