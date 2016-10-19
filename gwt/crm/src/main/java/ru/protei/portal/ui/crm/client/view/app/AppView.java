@@ -7,6 +7,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.ui.crm.client.activity.app.AbstractAppActivity;
 import ru.protei.portal.ui.crm.client.activity.app.AbstractAppView;
@@ -43,6 +44,16 @@ public class AppView extends Composite implements AbstractAppView, KeyUpHandler,
     @Override
     public HasWidgets getNotifyContainer() {
         return notifyContainer;
+    }
+
+    @UiHandler("searchButton")
+    public void onSearchClicked(ClickEvent event) {
+        if (searchPanel.hasClassName("sb-search-open"))
+            searchPanel.removeClassName("sb-search-open");
+        else
+            searchPanel.addClassName("sb-search-open");
+        event.preventDefault();
+        Window.alert("Search button clicked!");
     }
 
     @UiHandler("user")
@@ -147,6 +158,10 @@ public class AppView extends Composite implements AbstractAppView, KeyUpHandler,
     Anchor products;
     @UiField
     HTMLPanel notifyContainer;
+    @UiField
+    Button searchButton;
+    @UiField
+    DivElement searchPanel;
 
 
 //    @UiField

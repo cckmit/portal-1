@@ -28,16 +28,16 @@
                     </div>
                 </div>
                 <div class="rightSide searchBlock">
-                    <div class="globalSearch">
-                        <!--g:Label text="{lang.objectSearch}"/-->
-                    <g:TextBox ui:field="search" styleName="searchInput"/>
-
+                    <div ui:field="searchPanel" class="sb-search">
+                        <g:TextBox ui:field="search" styleName="sb-search-input"/>
+                        <g:Button ui:field="searchButton" styleName="sb-search-submit"/>
+                    </div>
+                    <!--div class="globalSearch">
+                    <g:TextBox ui:field="search" styleName="searchInput close"/>
                     <div class="buttonsBlock">
-                        <label class="search_button">
-                            <input type="submit" value="Поиск"/>
-                        </label>
+                        <g:Anchor ui:field="searchButton" styleName="search_button"/>
                     </div>
-                    </div>
+                    </div-->
                 </div>
             </g:HTMLPanel>
         </div>
