@@ -262,13 +262,13 @@
 .gl-search {
   position: relative;
   width: 434px;
-  margin: 0px !important;
+  margin: 0 !important;
   height: 42px;
 }
 .gl-search-input {
   height: 34px;
   width: 0;
-  padding: 0 40px 0 15px;
+  padding: 0 44px 0 15px;
   border: none;
   border-bottom: 2px solid transparent;
   outline: none;
@@ -316,7 +316,7 @@
 .gl-close-button:before {
   content: "\e80e";
   font-family: 'icomoon';
-  font-size: 22px;
+  font-size: 16px;
   color: #82a9e1;
   font-weight: bold;
 }

@@ -33,6 +33,7 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
         initWidget( ourUiBinder.createAndBindUi( this ) );
         initHandlers();
         sortField.fillOptions( ModuleType.COMPANY );
+        search.getElement().setPropertyString( "placeholder", lang.search() );
     }
 
     public void setActivity( AbstractCompanyListActivity activity ) {
@@ -67,11 +68,6 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
     @Override
     public Boolean getDirSort() {
         return directionButton.getValue();
-    }
-
-    @Override
-    public void setSearchPlaceHolder( String placeHolder ) {
-        search.getElement().setPropertyString( "placeholder", placeHolder );
     }
 
     @UiHandler( "sortField" )
@@ -147,6 +143,10 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
     @Inject
     @UiField( provided = true )
     CategoryBtnGroup categories;
+
+    @Inject
+    @UiField
+    Lang lang;
 
     Timer timer = new Timer() {
         @Override

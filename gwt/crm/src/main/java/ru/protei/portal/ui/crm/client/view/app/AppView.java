@@ -52,6 +52,7 @@ public class AppView extends Composite implements AbstractAppView, KeyUpHandler,
         if (search.getStyleName().contains("gl-search-input-open")) {
             search.removeStyleName("gl-search-input-open");
             search.setFocus(false);
+            search.setText("");
             searchButton.removeStyleName("gl-close-button");
             searchButton.addStyleName("gl-search-button");
         } else {

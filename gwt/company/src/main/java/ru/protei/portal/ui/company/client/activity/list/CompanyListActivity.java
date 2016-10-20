@@ -29,9 +29,7 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
 
     @PostConstruct
     public void onInit() {
-
         view.setActivity( this );
-        view.setSearchPlaceHolder( lang.search() );
     }
 
     @Event

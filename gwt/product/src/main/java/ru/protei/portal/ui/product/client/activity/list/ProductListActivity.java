@@ -28,7 +28,6 @@ public abstract class ProductListActivity implements AbstractProductListActivity
     @PostConstruct
     public void onInit() {
         view.setActivity(this);
-        view.setSearchPlaceHolder(lang.search());
     }
 
     @Event
