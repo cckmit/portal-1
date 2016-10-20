@@ -193,14 +193,13 @@
   min-width: 160px;
   text-align: left;
   list-style: none;
-  background-color: #fff;
-  -webkit-background-clip: padding-box;
-  background-clip: padding-box;
-  border: 1px solid #ccc;
-  border: 1px solid rgba(0, 0, 0, 0.15);
-  border-radius: 0 0 3px 3px;
-  -webkit-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.175);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.175);
+  border-radius: 0 0 4px 4px;
+  box-sizing: border-box;
+  background: #fff;
+  box-shadow:  1px 1px 3px -1px rgba(136,153,178,0.68);
+  -webkit-box-shadow: 1px 1px 3px -1px rgba(136,153,178,0.68);
+  border: 1px solid #ced2d7;
+  border-top: 0;
 }
 
 .dropdown-menu ul > li > a {

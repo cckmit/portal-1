@@ -3,7 +3,7 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="product">
+    <g:HTMLPanel styleName="product list-group-item col-md-6 col-lg-3">
 
         <div class="wrapper">
             <div class="department">Messaging</div>

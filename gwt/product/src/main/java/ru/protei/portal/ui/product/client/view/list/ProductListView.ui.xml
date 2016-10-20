@@ -25,7 +25,7 @@
         </div>
 
         <div class="block low">
-            <g:HTMLPanel ui:field="productContainer" styleName="productList" />
+            <g:HTMLPanel ui:field="productContainer" styleName="productList list-group grid" />
         </div>
 
     </g:HTMLPanel>
