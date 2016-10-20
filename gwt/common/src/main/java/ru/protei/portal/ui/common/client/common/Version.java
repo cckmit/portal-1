@@ -5,6 +5,6 @@ package ru.protei.portal.ui.common.client.common;
  */
 public class Version {
     public static String getVersion() {
-        return "4.0.0.4";
+        return "4.0.0.5";
     }
 }
