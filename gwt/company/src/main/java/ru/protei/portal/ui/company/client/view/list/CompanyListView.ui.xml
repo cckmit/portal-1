@@ -19,7 +19,8 @@
                     </div>
                 </div>
             </div>
-            <div class="rightSide">
+            <div class="rightSide local-search">
+                <span class="icon local-search-icon"></span>
                 <g:TextBox ui:field="search" styleName="inputField"/>
             </div>
         </div>

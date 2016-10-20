@@ -229,3 +229,92 @@
 .dropdown-menu ul > li:not(:first-child ) {
   border-top: 1px solid #e9edee;
 }
+
+/** LOCAL SEARCH **/
+.local-search {
+  position: relative;
+  color: #a5acb5;
+}
+
+.local-search input { padding-right: 25px; }
+
+.local-search .local-search-icon {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+}
+
+.icon {
+  display: inline-block;
+  font-family: 'icomoon';
+  font-style: normal;
+  font-weight: 600;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.local-search-icon:before {
+  content: "\e904";
+}
+
+/** GLOBAL SEARCH **/
+.gl-search {
+  position: relative;
+  width: 434px;
+  margin: 0 !important;
+  height: 42px;
+}
+.gl-search-input {
+  height: 34px;
+  width: 0;
+  padding: 0 44px 0 15px;
+  border: none;
+  border-bottom: 2px solid transparent;
+  outline: none;
+  background: transparent;
+  transition: 0.7s cubic-bezier(0, 0.8, 0, 1);
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 12px 0;
+  color: white;
+  font-size: 18px;
+}
+
+.gl-search-input-open {
+  width: 400px;
+  z-index: 1;
+  border-bottom: 2px solid #82a9e1;
+}
+
+.gl-search-button,
+.gl-close-button {
+  background: #5481c1;
+  border: none;
+  height: 34px;
+  width: 34px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  cursor: pointer;
+  z-index: 2;
+  font-family: 'icomoon';
+  font-size: 22px;
+  color: #82a9e1;
+}
+
+.gl-search-button:hover,
+.gl-close-button:hover {
+  color: #ffffff;
+}
+
+.gl-search-button:before {
+  content: "\e904";
+}
+
+.gl-close-button:before {
+  content: "\e80e";
+  font-size: 16px;
+  font-weight: bold;
+}

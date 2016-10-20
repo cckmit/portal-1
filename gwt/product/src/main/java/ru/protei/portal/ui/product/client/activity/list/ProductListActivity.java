@@ -95,7 +95,7 @@ public abstract class ProductListActivity implements AbstractProductListActivity
         }
     };
 
-     private AbstractProductItemView makeItemView (DevUnit product)
+    private AbstractProductItemView makeItemView (DevUnit product)
     {
         AbstractProductItemView itemView = provider.get();
         itemView.setName(product.getName());

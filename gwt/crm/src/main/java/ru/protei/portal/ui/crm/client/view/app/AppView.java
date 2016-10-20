@@ -45,6 +45,23 @@ public class AppView extends Composite implements AbstractAppView, KeyUpHandler,
         return notifyContainer;
     }
 
+    @UiHandler("searchButton")
+    public void onSearchClicked(ClickEvent event) {
+        event.preventDefault();
+        if (search.getStyleName().contains("gl-search-input-open")) {
+            search.removeStyleName("gl-search-input-open");
+            search.setFocus(false);
+            search.setText("");
+            searchButton.removeStyleName("gl-close-button");
+            searchButton.addStyleName("gl-search-button");
+        } else {
+            search.addStyleName("gl-search-input-open");
+            search.setFocus(true);
+            searchButton.removeStyleName("gl-search-button");
+            searchButton.addStyleName("gl-close-button");
+        }
+     }
+
     @UiHandler("user")
     public void onUserClicked( ClickEvent event ) {
         event.preventDefault();
@@ -147,10 +164,8 @@ public class AppView extends Composite implements AbstractAppView, KeyUpHandler,
     Anchor products;
     @UiField
     HTMLPanel notifyContainer;
-
-
-//    @UiField
-//    HTMLPanel footer;
+    @UiField
+    Anchor searchButton;
 
     AbstractAppActivity activity;
 

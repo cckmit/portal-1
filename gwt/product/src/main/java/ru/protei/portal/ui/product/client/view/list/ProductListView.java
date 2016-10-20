@@ -11,6 +11,7 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.product.client.activity.list.AbstractProductListActivity;
 import ru.protei.portal.ui.product.client.activity.list.AbstractProductListView;
 import ru.protei.portal.ui.product.client.widgets.sortfieldselector.SortFieldSelector;
@@ -23,6 +24,7 @@ public class ProductListView extends Composite implements AbstractProductListVie
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        search.getElement().setPropertyString( "placeholder", lang.search() );
     }
 
     public void setActivity(AbstractProductListActivity activity) { this.activity = activity;  }
@@ -120,6 +122,9 @@ public class ProductListView extends Composite implements AbstractProductListVie
     SortFieldSelector sortFields;
     @UiField
     ToggleButton sortDir;
+    @Inject
+    @UiField
+    Lang lang;
 
     AbstractProductListActivity activity;
 

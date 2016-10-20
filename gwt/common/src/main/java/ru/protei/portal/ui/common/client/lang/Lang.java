@@ -26,16 +26,6 @@ public interface Lang extends Messages {
 
     String showDeprecated();
 
-    String customers();
-
-    String partners();
-
-    String customer();
-
-    String partner();
-
-    String date();
-
     String buttonSave();
 
     String buttonCancel();
@@ -51,4 +41,6 @@ public interface Lang extends Messages {
     String unknownField();
 
     String companyGroup();
+
+    String search();
 }

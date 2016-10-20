@@ -106,7 +106,7 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
         AbstractCompanyItemView itemView = factory.get();
         itemView.setActivity( this );
         itemView.setName( company.getCname () );
-        itemView.setType( lang.customer () );
+        itemView.setType( "Заказчик" );
         return itemView;
     }
 
