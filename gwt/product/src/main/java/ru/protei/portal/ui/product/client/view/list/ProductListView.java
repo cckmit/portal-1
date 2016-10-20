@@ -54,6 +54,11 @@ public class ProductListView extends Composite implements AbstractProductListVie
         sortDir.setValue(true);
     }
 
+    @Override
+    public void setSearchPlaceHolder( String placeHolder ) {
+        search.getElement().setPropertyString( "placeholder", placeHolder );
+    }
+
     @UiHandler("showDeprecated")
     public void onShowDeprecatedClick(ClickEvent event)
     {
@@ -111,8 +116,6 @@ public class ProductListView extends Composite implements AbstractProductListVie
 
     @UiField
     TextBox search;
-//    @UiField
-//    Button searchButton;
     @UiField
     HTMLPanel productContainer;
     @UiField

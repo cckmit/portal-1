@@ -27,11 +27,14 @@
                         <g:Anchor ui:field="logout" title="{lang.appLogout} (you can use Ctrl+F4)" styleName="exit_button" href="#"/>
                     </div>
                 </div>
-                <div class="rightSide searchBlock">
-                    <div ui:field="searchPanel" class="sb-search">
+                <div class="rightSide gl-search">
+                    <g:TextBox ui:field="search" styleName="gl-search-input"/>
+                    <g:Anchor ui:field="searchButton" styleName="gl-search-button" href="#"/>
+                    <!--div ui:field="searchPanel" class="sb-search">
                         <g:TextBox ui:field="search" styleName="sb-search-input"/>
-                        <g:Button ui:field="searchButton" styleName="sb-search-submit sb-icon-search"/>
-                    </div>
+                        <g:Anchor ui:field="searchButton" styleName="sb-search-submit sb-icon-search" href="#"/>
+                    </div-->
+
                     <!--div class="globalSearch">
                     <g:TextBox ui:field="search" styleName="searchInput close"/>
                     <div class="buttonsBlock">

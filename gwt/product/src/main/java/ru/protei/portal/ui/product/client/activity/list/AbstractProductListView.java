@@ -21,4 +21,6 @@ public interface AbstractProductListView extends IsWidget {
     HasValue<Boolean> getSortDir();
 
     void reset();
+
+    void setSearchPlaceHolder( String placeHolder );
 }
