@@ -5979,6 +5979,7 @@ body {
   font-weight: bold;
   text-shadow: 1px 1px 1px #fff;
   padding-top: 2px;
+  overflow: hidden;
 }
 .body_global >.rightBlock .productListsBlock.reportBlock >.block .productPassport {
   background: #fff;
@@ -7022,6 +7023,7 @@ body {
   font-weight: bold;
   text-shadow: 1px 1px 1px #fff;
   padding-top: 2px;
+  overflow: hidden;
 }
 .body_global .OrganizationList .organizations .organization >.wrapper .menu_button,
 .body_global .UserList.list_showing .users .user >.wrapper .menu_button {
@@ -17409,6 +17411,7 @@ body {
   transition-duration: 0.5s;
   transition-property: padding;
   padding: 14px;
+  overflow: hidden;
 }
 .list-group-item >.wrapper:after {
   position: absolute;
