@@ -15,4 +15,6 @@ public interface ProductServiceAsync {
     void getProductList(String param, Boolean state, En_SortField sortField, Boolean sortDir, AsyncCallback<List<DevUnit>> async);
 
     void getProductById(Long productId, AsyncCallback<DevUnit> async);
+
+    void saveProduct (Long productId, String name, String info, Boolean state, AsyncCallback<DevUnit> async);
 }

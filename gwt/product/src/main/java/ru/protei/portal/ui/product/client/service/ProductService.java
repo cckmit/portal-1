@@ -18,4 +18,6 @@ public interface ProductService extends RemoteService {
 
     DevUnit getProductById (Long productId) throws RequestFailedException;
 
+    DevUnit saveProduct (Long productId, String name, String info, Boolean state) throws RequestFailedException;
+
 }

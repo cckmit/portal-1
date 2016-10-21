@@ -12,4 +12,14 @@ public class ProductEvents {
 
         public Show () {}
     }
+
+    @Url( value = "product" )
+    public static class Edit {
+
+        public Edit (Long id) {
+            this.productId = id;
+        }
+
+        public Long productId;
+    }
 }

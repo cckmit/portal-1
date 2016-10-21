@@ -42,9 +42,22 @@ public class ProductServiceImpl extends RemoteServiceServlet implements ProductS
     @Override
     public DevUnit getProductById(Long productId) throws RequestFailedException {
 
-        log.info (" getProductById : id = " + productId);
+        log.info(" getProductById : id = " + productId);
 
-        return null;
+        //HttpListResult<DevUnit> result = productService.list(productQuery);
+        //return result;
+        return new DevUnit();
+    }
+
+    @Override
+    public DevUnit saveProduct (Long productId, String name, String info, Boolean state) throws RequestFailedException {
+
+        log.info(" saveProduct");
+
+        //HttpListResult<DevUnit> result = productService.list(productQuery);
+        //return result;
+
+        return new DevUnit();
     }
 
 
