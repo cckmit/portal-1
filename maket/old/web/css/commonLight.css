@@ -1,0 +1,1234 @@
+body {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font: 0.8em Arial, Helvetica, sans-serif;
+  background-color: #f2f2f2; }
+
+.mc {
+  max-width: 1288px;
+  min-width: 1012px;
+  margin: 6px auto 0; }
+  .mc .bottomLine {
+    position: fixed;
+    height: 9px;
+    bottom: 0;
+    background-color: #f2f2f2;
+    width: 100%;
+    left: 0;
+    z-index: 9; }
+  .mc .positioning {
+    border-collapse: collapse;
+    width: 100%;
+    border-top: 20px solid #F2F2F2;
+    height: 100%; }
+    .mc .positioning td {
+      margin: 0;
+      padding: 0;
+      border: 0;
+      vertical-align: top;
+      font: 9pt Arial, Helvetica, sans-serif; }
+    .mc .positioning .mb {
+      width: 78%;
+      height: 100%; }
+    .mc .positioning .cb {
+      width: 22%;
+      min-width: 260px;
+      padding: 0 7px 2px 0;
+      height: 100%; }
+      .mc .positioning .cb .controlBar {
+        background: transparent -moz-linear-gradient(center top, #efefef 0%, #c6c6c8 80%) repeat scroll 0px 0px;
+        border: 1px solid #A1A1A1;
+        float: right;
+        width: 100%;
+        box-shadow: 4px 0 38px -16px #5E6266;
+        height: 100%;
+        top: 0;
+        z-index: 7;
+        position: relative; }
+        .mc .positioning .cb .controlBar .button, .mc .positioning .cb .controlBar .leadership {
+          margin: 0 9px;
+          border: 1px solid;
+          border-color: #fcfdff #959fae #b1b1b1;
+          padding: 8px 10px;
+          color: #808389;
+          background: transparent -moz-linear-gradient(center top, #e7e8ea 0%, #d4d4d4 100%) repeat scroll 0% 0%;
+          text-shadow: 2px 2px 10px #FFF;
+          box-shadow: 0 6px 7px -2px #878787;
+          cursor: pointer; }
+          .mc .positioning .cb .controlBar .button:hover, .mc .positioning .cb .controlBar .leadership:hover {
+            background: transparent -moz-linear-gradient(center top, #eaeaea 0%, #dddfe1 100%) repeat scroll 0% 0%; }
+          .mc .positioning .cb .controlBar .button:active, .mc .positioning .cb .controlBar .leadership:active {
+            background: transparent -moz-linear-gradient(center top, #d2d2d2 0%, #ced0d4 100%) repeat scroll 0% 0%;
+            border-color: #CCC #B4B4B4 #B4B4B4;
+            text-shadow: none;
+            box-shadow: 0px 10px 11px -6px #E0E0E0; }
+          .mc .positioning .cb .controlBar .button .editBut, .mc .positioning .cb .controlBar .leadership .editBut {
+            float: right;
+            margin-top: -3px; }
+            .mc .positioning .cb .controlBar .button .editBut img, .mc .positioning .cb .controlBar .leadership .editBut img {
+              height: 14pt;
+              opacity: 0.5;
+              cursor: pointer; }
+              .mc .positioning .cb .controlBar .button .editBut img:hover, .mc .positioning .cb .controlBar .leadership .editBut img:hover {
+                opacity: 1; }
+        .mc .positioning .cb .controlBar .button:last-child, .mc .positioning .cb .controlBar .leadership:last-child {
+          border-bottom: 1px solid #4b4b4b; }
+        .mc .positioning .cb .controlBar .leadership {
+          color: #FFF;
+          border: 1px solid;
+          border-color: #3A3C60 #3B4E6C #2B3347;
+          background: transparent -moz-linear-gradient(center top, #506486 0%, #293b5a 100%) repeat scroll 0% 0%;
+          text-shadow: none;
+          margin-top: 9px;
+          margin-bottom: 7px;
+          cursor: pointer; }
+          .mc .positioning .cb .controlBar .leadership:hover {
+            background: transparent -moz-linear-gradient(center top, #5471a4 0%, #30456b 100%) repeat scroll 0% 0%; }
+          .mc .positioning .cb .controlBar .leadership + .button:active, .mc .positioning .cb .controlBar .leadership + .leadership:active {
+            border-top-color: #A8A8A8; }
+          .mc .positioning .cb .controlBar .leadership:active {
+            border-color: white; }
+          .mc .positioning .cb .controlBar .leadership img {
+            float: right;
+            height: 13pt; }
+        .mc .positioning .cb .controlBar .filters {
+          position: relative;
+          padding: 10px;
+          line-height: 15pt;
+          background-color: #4E719C;
+          border: 1px solid #E9E9E9;
+          margin: 14px 9px;
+          box-shadow: 0 3px 12px -1px #4A4A4B inset;
+          color: #FFF; }
+          .mc .positioning .cb .controlBar .filters .title {
+            position: absolute;
+            top: -10px;
+            right: 10px;
+            line-height: 12pt;
+            background-color: #E3E3E3;
+            padding: 1px 10px 3px;
+            border: 1px solid;
+            box-shadow: 4px 6px 11px -6px #000;
+            color: #5D5F63;
+            border-color: #FFF #9E9E9E #6B717D;
+            text-shadow: none; }
+          .mc .positioning .cb .controlBar .filters div:hover {
+            cursor: pointer;
+            background-color: #3C608C; }
+        .mc .positioning .cb .controlBar .selection {
+          margin: 24px 9px;
+          padding: 0;
+          border-top: 0;
+          background-color: #878b90;
+          box-shadow: 0 0 6px -2px #0f0f0f inset;
+          text-align: right;
+          color: #EDEDED;
+          text-shadow: 0 0 3px #4D4D4D; }
+          .mc .positioning .cb .controlBar .selection .title {
+            right: auto;
+            left: 10px; }
+          .mc .positioning .cb .controlBar .selection .itemsContainer {
+            overflow: hidden;
+            display: block; }
+            .mc .positioning .cb .controlBar .selection .itemsContainer .items {
+              display: block;
+              padding: 10px;
+              transition-duration: 0.3s;
+              margin-top: -120px; }
+              .mc .positioning .cb .controlBar .selection .itemsContainer .items div:hover {
+                background-color: #7A7E83; }
+  .mc select {
+    text-overflow: "";
+    text-indent: 0.01px;
+    -moz-appearance: none; }
+  .mc .topMenu .level0 {
+    height: 31px; }
+    .mc .topMenu .level0 .logo {
+      height: 31px; }
+    .mc .topMenu .level0 .profileBar {
+      float: right;
+      height: 100%; }
+      .mc .topMenu .level0 .profileBar .moon {
+        display: inline-block;
+        background: transparent url("../images/icons/moon.png") no-repeat center center/20px 20px;
+        height: 100%;
+        width: 20px;
+        cursor: pointer;
+        opacity: 0.3; }
+        .mc .topMenu .level0 .profileBar .moon:hover {
+          opacity: 0.5; }
+  .mc .topMenu .level1Line {
+    padding: 0;
+    border: 0;
+    border-bottom: 1px solid #dddddd;
+    margin: 10px 0;
+    position: relative;
+    z-index: 4; }
+  .mc .filterMenu {
+    background-color: #F2F2F2;
+    border-bottom: 1px solid #C0C0C0;
+    position: relative;
+    z-index: 3; }
+    .mc .filterMenu .searchLine {
+      width: 100%;
+      margin: 0; }
+      .mc .filterMenu .searchLine .navBar {
+        height: 24px;
+        line-height: 24px;
+        text-align: center;
+        margin: 5px 0;
+        float: right; }
+        .mc .filterMenu .searchLine .navBar .active, .mc .filterMenu .searchLine .navBar .inactive, .mc .filterMenu .searchLine .navBar .checked {
+          display: inline-block;
+          width: 18px;
+          height: 100%;
+          text-align: center;
+          cursor: pointer;
+          color: #fff;
+          vertical-align: middle; }
+        .mc .filterMenu .searchLine .navBar .active {
+          background-color: #AFB3B9; }
+          .mc .filterMenu .searchLine .navBar .active:hover {
+            background-color: #858E99; }
+        .mc .filterMenu .searchLine .navBar .checked {
+          background-color: #658DCB; }
+        .mc .filterMenu .searchLine .navBar .inactive {
+          color: #AAA;
+          cursor: auto; }
+        .mc .filterMenu .searchLine .navBar .left {
+          vertical-align: middle;
+          display: inline-block;
+          cursor: pointer;
+          background: transparent url("../images/icons/black/navBar/leftAct.png") no-repeat center center/18px 18px;
+          height: 100%;
+          width: 18px;
+          opacity: 0.6; }
+          .mc .filterMenu .searchLine .navBar .left:hover {
+            opacity: 1; }
+        .mc .filterMenu .searchLine .navBar .leftEnd {
+          vertical-align: middle;
+          display: inline-block;
+          cursor: pointer;
+          background: transparent url("../images/icons/black/navBar/leftEndAct.png") no-repeat center center/18px 18px;
+          height: 100%;
+          width: 18px;
+          opacity: 0.6;
+          margin-right: -2px; }
+          .mc .filterMenu .searchLine .navBar .leftEnd:hover {
+            opacity: 1; }
+        .mc .filterMenu .searchLine .navBar .leftEndInact {
+          background-image: url("../images/icons/black/navBar/leftEndInact.png");
+          cursor: auto;
+          opacity: 0.4; }
+          .mc .filterMenu .searchLine .navBar .leftEndInact + .left {
+            background-image: url("../images/icons/black/navBar/leftInact.png");
+            cursor: auto;
+            opacity: 0.4; }
+        .mc .filterMenu .searchLine .navBar .right {
+          vertical-align: middle;
+          display: inline-block;
+          cursor: pointer;
+          background: transparent url("../images/icons/black/navBar/rightAct.png") no-repeat center center/18px 18px;
+          height: 100%;
+          width: 18px;
+          opacity: 0.6; }
+        .mc .filterMenu .searchLine .navBar .rightEnd {
+          margin-left: -2px;
+          vertical-align: middle;
+          display: inline-block;
+          cursor: pointer;
+          background: transparent url("../images/icons/black/navBar/rightEndAct.png") no-repeat center center/18px 18px;
+          height: 100%;
+          width: 18px;
+          opacity: 0.6; }
+          .mc .filterMenu .searchLine .navBar .rightEnd:hover {
+            opacity: 1; }
+        .mc .filterMenu .searchLine .navBar .rightInact {
+          background-image: url("../images/icons/black/navBar/rightInact.png");
+          cursor: auto;
+          opacity: 0.4; }
+          .mc .filterMenu .searchLine .navBar .rightInact + .rightEnd {
+            background-image: url("../images/icons/black/navBar/rightEndInact.png");
+            cursor: auto;
+            opacity: 0.4; }
+        .mc .filterMenu .searchLine .navBar select {
+          background: #f2f2f2 url("../images/icons/downSelect.png") no-repeat scroll 34px center/21px 20px;
+          height: 26px;
+          width: 56px;
+          border: 1px solid #B7B8BA;
+          color: #a5a6ab; }
+      .mc .filterMenu .searchLine .cbx {
+        background: transparent -moz-linear-gradient(center top, #385377 0%, #213550 100%) repeat scroll 0px 0px;
+        border: 1px solid #1E1E1E;
+        display: block;
+        float: right;
+        margin-left: 13px; }
+        .mc .filterMenu .searchLine .cbx button {
+          display: inline-block;
+          width: 14px;
+          background-color: #D2D2D2;
+          border: 1px solid #000;
+          margin: 10px 12px;
+          height: 14px;
+          cursor: pointer; }
+          .mc .filterMenu .searchLine .cbx button:active {
+            box-shadow: 0 0 8px 2px #4684c9;
+            background-color: #7eb1ff;
+            border: 1px solid #4B71B3; }
+      .mc .filterMenu .searchLine .searchInput {
+        margin: 0;
+        padding: 8.5px;
+        font-size: 10pt;
+        width: 55.6%;
+        border: 1px solid #D1D1D1;
+        box-shadow: 2px 2px 11px -7px #808080;
+        color: #7D7D7D;
+        background: transparent linear-gradient(to left, #ededed 6%, white 29%, #ececec 106%) repeat scroll 0px 0px; }
+      .mc .filterMenu .searchLine .searchButton, .mc .filterMenu .searchLine .resetButton, .mc .filterMenu .searchLine .extButton, .mc .filterMenu .searchLine .extButton {
+        display: inline-block;
+        vertical-align: middle;
+        margin-left: -5px;
+        margin-top: -2px;
+        border: 1px solid #3A6C97;
+        background: transparent -moz-linear-gradient(center top, #7197da 0%, #396b95 100%) repeat scroll 0% 0%;
+        cursor: pointer; }
+        .mc .filterMenu .searchLine .searchButton img, .mc .filterMenu .searchLine .resetButton img, .mc .filterMenu .searchLine .extButton img, .mc .filterMenu .searchLine .extButton img {
+          margin: 7px 9px;
+          height: 14pt;
+          display: block; }
+        .mc .filterMenu .searchLine .searchButton input, .mc .filterMenu .searchLine .resetButton input, .mc .filterMenu .searchLine .extButton input, .mc .filterMenu .searchLine .extButton input {
+          display: none; }
+        .mc .filterMenu .searchLine .searchButton:hover, .mc .filterMenu .searchLine .resetButton:hover, .mc .filterMenu .searchLine .extButton:hover, .mc .filterMenu .searchLine .extButton:hover {
+          background: transparent -moz-linear-gradient(center top, #89aff2 0%, #3873a4 100%) repeat scroll 0% 0%; }
+        .mc .filterMenu .searchLine .searchButton:active, .mc .filterMenu .searchLine .resetButton:active, .mc .filterMenu .searchLine .extButton:active, .mc .filterMenu .searchLine .extButton:active {
+          background: #4A77AA none repeat scroll 0% 0%; }
+      .mc .filterMenu .searchLine .searchButton {
+        box-shadow: 0 0 5px 0 #A5A5A5; }
+      .mc .filterMenu .searchLine .resetButton, .mc .filterMenu .searchLine .extButton {
+        margin-left: -4px;
+        box-shadow: -4px 0 6px -4px #212020; }
+      .mc .filterMenu .searchLine .extButton {
+        background: transparent -moz-linear-gradient(center top, #b3bdd1 0%, #85919b 100%) repeat scroll 0% 0%;
+        border-color: #898C8D; }
+        .mc .filterMenu .searchLine .extButton img {
+          margin: 7px 3.5px; }
+        .mc .filterMenu .searchLine .extButton:hover {
+          background: transparent -moz-linear-gradient(center top, #d4d7dd 0%, #85919b 100%) repeat scroll 0% 0%; }
+        .mc .filterMenu .searchLine .extButton:active {
+          background: #85919B none repeat scroll 0% 0%; }
+      .mc .filterMenu .searchLine .searchEx {
+        cursor: pointer;
+        border-bottom: 1px dotted gray;
+        margin-left: 10px;
+        line-height: 24px;
+        color: #6B6C6C; }
+        .mc .filterMenu .searchLine .searchEx:hover {
+          color: #121212; }
+      .mc .filterMenu .searchLine .sortMiniLine {
+        color: #A4A5A5;
+        margin: 8px 0 10px;
+        font-size: 9pt; }
+        .mc .filterMenu .searchLine .sortMiniLine .sortingBy {
+          margin: 0 25px 0 2px; }
+          .mc .filterMenu .searchLine .sortMiniLine .sortingBy select {
+            background: #efefef url("../images/icons/downSelect.png") no-repeat scroll right center/21px 20px;
+            padding-right: 15px;
+            font-size: 8pt;
+            height: 18px;
+            color: #A2A2A2;
+            border: 1px solid #B7BCC2;
+            width: 105px; }
+          .mc .filterMenu .searchLine .sortMiniLine .sortingBy .up, .mc .filterMenu .searchLine .sortMiniLine .sortingBy .down {
+            display: inline-block;
+            vertical-align: middle;
+            height: 10px;
+            width: 10px;
+            margin: 0 4px;
+            opacity: 0.4;
+            cursor: pointer; }
+          .mc .filterMenu .searchLine .sortMiniLine .sortingBy .up {
+            background: transparent url("../images/icons/black/up.png") no-repeat center center/10px 10px; }
+          .mc .filterMenu .searchLine .sortMiniLine .sortingBy .down {
+            background: transparent url("../images/icons/black/down.png") no-repeat center center/10px 10px;
+            margin: 0 -2px; }
+          .mc .filterMenu .searchLine .sortMiniLine .sortingBy .activePoint {
+            opacity: 0.8; }
+        .mc .filterMenu .searchLine .sortMiniLine .founded {
+          float: right;
+          margin: 2.5px 0; }
+        .mc .filterMenu .searchLine .sortMiniLine .but {
+          font-size: 8pt;
+          border: 1px solid #B7BCC2;
+          padding: 1px 4px;
+          cursor: pointer; }
+        .mc .filterMenu .searchLine .sortMiniLine .activeBut {
+          background-color: #C2C7CB;
+          color: white; }
+    .mc .filterMenu .searchExtLine {
+      border: 1px solid;
+      color: #878787;
+      background: transparent -moz-linear-gradient(center top, #f2f2f2 0%, #d5d5d5 80%) repeat scroll 0px 0px;
+      border-color: #F2F2F2 #C8C8C8 #C6C5C5;
+      overflow: hidden;
+      margin: -1px 0;
+      box-shadow: 15px -24px 0 23.5px #F2F2F2, 0 16px 35px -13px #000; }
+      .mc .filterMenu .searchExtLine .scrollBlock {
+        padding: 20px;
+        transition-duration: 0.3s;
+        margin-top: -205px; }
+      .mc .filterMenu .searchExtLine hr {
+        margin-top: 15px;
+        border: 0; }
+      .mc .filterMenu .searchExtLine .chkdPoint {
+        vertical-align: middle;
+        padding: 4px;
+        height: 14px;
+        opacity: 0.7;
+        background-color: #B1B5BA;
+        cursor: pointer; }
+        .mc .filterMenu .searchExtLine .chkdPoint:hover {
+          opacity: 1; }
+      .mc .filterMenu .searchExtLine .activePoint {
+        opacity: 1;
+        background-color: #4a86c3; }
+      .mc .filterMenu .searchExtLine .inputTextField {
+        vertical-align: middle; }
+        .mc .filterMenu .searchExtLine .inputTextField input {
+          font: 9pt Arial,Helvetica,sans-serif;
+          width: 51px;
+          color: #FFF;
+          background-color: #d4d6d8;
+          box-shadow: -1px 2px 8px -4px #7e7f83 inset;
+          border: 1px solid #ececec;
+          padding: 3.5px;
+          height: 13px;
+          text-align: center; }
+        .mc .filterMenu .searchExtLine .inputTextField .timeField {
+          margin-left: 3px;
+          color: #FFF;
+          width: 33px;
+          margin-right: 1px; }
+      .mc .filterMenu .searchExtLine .whiteSpace {
+        margin-right: 20px; }
+      .mc .filterMenu .searchExtLine .level1 .searchInputs {
+        position: relative;
+        display: inline-block; }
+        .mc .filterMenu .searchExtLine .level1 .searchInputs .inputSearchField input {
+          margin: 0;
+          border: 1px solid #ebeff2;
+          padding: 6px;
+          font: 9pt Arial, Helvetica, sans-serif;
+          width: 186px;
+          background-color: #dedede;
+          box-shadow: -2px 2px 8px -4px #8f8f8f inset;
+          color: #787878; }
+        .mc .filterMenu .searchExtLine .level1 .searchInputs .inputSearchField span {
+          vertical-align: middle;
+          background: transparent -moz-linear-gradient(center top, #7197da 0%, #396b95 100%) repeat scroll 0% 0%;
+          display: inline-block;
+          margin-top: -2px;
+          margin-left: -1px;
+          border: 1px solid;
+          border-color: #e0e0e0 #dadada;
+          box-shadow: -7px 0 15px -4px #9ea7b3;
+          cursor: pointer; }
+          .mc .filterMenu .searchExtLine .level1 .searchInputs .inputSearchField span img {
+            vertical-align: middle;
+            height: 18px;
+            margin: 4px 3px; }
+          .mc .filterMenu .searchExtLine .level1 .searchInputs .inputSearchField span:hover {
+            background: transparent -moz-linear-gradient(center top, #89b4ff 0%, #396b95 100%) repeat scroll 0% 0%; }
+          .mc .filterMenu .searchExtLine .level1 .searchInputs .inputSearchField span:active {
+            background: #4A77AA none repeat scroll 0% 0%; }
+        .mc .filterMenu .searchExtLine .level1 .searchInputs .whiteSpace {
+          display: inline-block; }
+        .mc .filterMenu .searchExtLine .level1 .searchInputs .resultBlock_background {
+          position: absolute;
+          height: 134px;
+          background: transparent -moz-linear-gradient(center top, #e9e9e9 0%, #f0f0f0 100%) repeat scroll 0% 0%;
+          border: 1px solid;
+          border-color: #FFF #B1B1B1 #B1B1B1;
+          box-shadow: 0 0 10px -6px #26292D;
+          top: 27px;
+          overflow-y: auto;
+          width: 540px;
+          color: #939393;
+          display: none;
+          right: 1px;
+          z-index: 2; }
+          .mc .filterMenu .searchExtLine .level1 .searchInputs .resultBlock_background .resultBlock_data {
+            position: absolute;
+            padding: 6px 8px; }
+            .mc .filterMenu .searchExtLine .level1 .searchInputs .resultBlock_background .resultBlock_data span {
+              display: block;
+              cursor: pointer; }
+              .mc .filterMenu .searchExtLine .level1 .searchInputs .resultBlock_background .resultBlock_data span:hover {
+                color: #242424; }
+            .mc .filterMenu .searchExtLine .level1 .searchInputs .resultBlock_background .resultBlock_data > div div {
+              padding-left: 20px; }
+            .mc .filterMenu .searchExtLine .level1 .searchInputs .resultBlock_background .resultBlock_data i {
+              color: #E15959; }
+      .mc .filterMenu .searchExtLine .level2 {
+        border-top: 1px solid #c5c5c5;
+        padding-top: 20px;
+        margin-top: 20px; }
+        .mc .filterMenu .searchExtLine .level2 .inputTextField input {
+          border-color: #dedede;
+          background-color: #C4C6C9; }
+        .mc .filterMenu .searchExtLine .level2 .inputTextField .timeField {
+          background: #c4c6c9 url("../images/icons/black/right.png") no-repeat scroll center center/12px auto; }
+          .mc .filterMenu .searchExtLine .level2 .inputTextField .timeField:last-child {
+            background-image: url("../images/icons/black/left.png"); }
+        .mc .filterMenu .searchExtLine .level2 .clarification {
+          opacity: 0.3; }
+          .mc .filterMenu .searchExtLine .level2 .clarification span, .mc .filterMenu .searchExtLine .level2 .clarification i {
+            vertical-align: middle;
+            opacity: 0.7; }
+          .mc .filterMenu .searchExtLine .level2 .clarification span {
+            padding: 3.5px;
+            background-color: #B1B5BA;
+            color: #EFEFEF; }
+          .mc .filterMenu .searchExtLine .level2 .clarification i {
+            background: #b1b5ba url("../images/icons/x.png") no-repeat scroll 7px center/8px auto;
+            padding: 3.5px 0 3.5px 0;
+            transition-delay: 0.2s;
+            transition-duration: 0.5s;
+            cursor: pointer; }
+            .mc .filterMenu .searchExtLine .level2 .clarification i:hover {
+              opacity: 1; }
+          .mc .filterMenu .searchExtLine .level2 .clarification .cause + i {
+            padding-right: 22px; }
+        .mc .filterMenu .searchExtLine .level2 .active {
+          opacity: 1; }
+          .mc .filterMenu .searchExtLine .level2 .active span {
+            cursor: pointer; }
+            .mc .filterMenu .searchExtLine .level2 .active span:hover {
+              opacity: 1; }
+      .mc .filterMenu .searchExtLine .level3 {
+        margin: 30px 0; }
+        .mc .filterMenu .searchExtLine .level3 hr {
+          margin-top: 20px; }
+    .mc .filterMenu .activeExtSearch .scrollBlock {
+      margin-top: 0; }
+  .mc .userBlock {
+    margin-top: 73px; }
+    .mc .userBlock .emptyPersonList {
+      text-align: center;
+      padding: 20px 0;
+      color: #9C9B9B; }
+    .mc .userBlock #userList {
+      clear: both; }
+    .mc .userBlock .userPassport {
+      clear: both;
+      margin-bottom: 30px; }
+      .mc .userBlock .userPassport .userProfile {
+        box-shadow: 8px 7px 30px -3px #B8B9BC; }
+        .mc .userBlock .userPassport .userProfile .ava {
+          float: left;
+          width: 183px;
+          position: relative;
+          padding: 0 0 0 17px;
+          background: transparent -moz-linear-gradient(center top, #e6e6e6 0%, #e4e4e4 80%) repeat scroll 0px 0px;
+          margin: 17px 0 17px 1px;
+          box-shadow: 35px -2px 35px -23px #969696; }
+          .mc .userBlock .userPassport .userProfile .ava .avaImg {
+            height: 244px;
+            width: 183px;
+            border: 1px solid #BDBDBD;
+            display: block; }
+          .mc .userBlock .userPassport .userProfile .ava .star {
+            position: absolute;
+            top: 0;
+            z-index: 1;
+            overflow: hidden; }
+          .mc .userBlock .userPassport .userProfile .ava .star {
+            left: 17px; }
+            .mc .userBlock .userPassport .userProfile .ava .star img {
+              height: 17px;
+              background-color: #F2F2F2;
+              padding: 8px;
+              border: 8px solid #E3E3E3;
+              position: relative;
+              top: -7px;
+              left: -7px;
+              border-radius: 50%;
+              box-shadow: 0 1px 3px 1px #a4a2a2; }
+          .mc .userBlock .userPassport .userProfile .ava .missing {
+            position: absolute;
+            left: 0;
+            height: 36px;
+            bottom: 0;
+            width: 182px;
+            margin-left: 17px;
+            color: #FFF;
+            font-size: 13pt;
+            text-align: center;
+            line-height: 36px;
+            font-weight: 800;
+            padding: 0;
+            border: 1px solid #96594F;
+            box-shadow: 0px -10px 33px -3px #E6E1DE;
+            background: transparent -moz-linear-gradient(center top, #e97657 0%, #b95035 100%) repeat scroll 0px 0px; }
+            .mc .userBlock .userPassport .userProfile .ava .missing img {
+              height: 14pt;
+              padding-left: 6px;
+              vertical-align: middle;
+              cursor: pointer; }
+              .mc .userBlock .userPassport .userProfile .ava .missing img:hover {
+                opacity: 0.6; }
+        .mc .userBlock .userPassport .userProfile .miss .avaImg {
+          opacity: 0.3; }
+          .mc .userBlock .userPassport .userProfile .miss .avaImg:hover {
+            opacity: 1; }
+        .mc .userBlock .userPassport .userProfile .name {
+          height: 38px;
+          line-height: 38px;
+          background: transparent -moz-linear-gradient(center top, #5b7eab 0%, #466893 100%) repeat scroll 0px 0px;
+          border: 1px solid;
+          border-color: #3C5065 #414D6E;
+          color: #FFF;
+          font-size: 11pt;
+          font-weight: 800;
+          padding: 0 0 0 12px; }
+          .mc .userBlock .userPassport .userProfile .name .sex {
+            height: 10pt;
+            margin-left: 6px; }
+          .mc .userBlock .userPassport .userProfile .name .idField {
+            background: transparent -moz-linear-gradient(center top, #385377 0%, #213550 100%) repeat scroll 0px 0px;
+            border-left: 1px solid #8397AE;
+            border-right: 1px solid #4C5E77;
+            padding: 0px 10px;
+            float: right;
+            height: 100%;
+            text-align: right; }
+          .mc .userBlock .userPassport .userProfile .name .cbx {
+            float: right;
+            height: 100%;
+            background: transparent -moz-linear-gradient(center top, #385377 0%, #213550 100%) repeat scroll 0px 0px;
+            border-left: 1px solid #000; }
+            .mc .userBlock .userPassport .userProfile .name .cbx button {
+              display: inline-block;
+              height: 14px;
+              width: 14px;
+              margin: 12px;
+              background-color: #D2D2D2;
+              border: 1px solid #000;
+              cursor: pointer;
+              position: relative;
+              transition-duration: 0.3s;
+              vertical-align: top; }
+          .mc .userBlock .userPassport .userProfile .name .active {
+            box-shadow: 0 0 8px 2px #4684c9;
+            background-color: #7EB1FF !important;
+            border-color: #4B71B3 !important; }
+        .mc .userBlock .userPassport .userProfile .mainData {
+          border: 1px solid;
+          border-color: #FFF #A7ADB9 #9B9B9B;
+          text-shadow: 2px 2px 4px #DBDBDB;
+          background: transparent -moz-linear-gradient(center top, #e6e8ea 0%, #bfbfbf 100%) repeat scroll 0px 0px;
+          color: #3B3D42;
+          font-size: 9pt;
+          vertical-align: top;
+          height: 141px;
+          padding: 18px 8px 8px 214px; }
+          .mc .userBlock .userPassport .userProfile .mainData .post, .mc .userBlock .userPassport .userProfile .mainData .subdivision, .mc .userBlock .userPassport .userProfile .mainData .hb {
+            padding: 6px 0 6px 34px; }
+          .mc .userBlock .userPassport .userProfile .mainData .post {
+            background: transparent url("../images/icons/black/worker.png") no-repeat scroll 6px center/21px 21px;
+            position: relative;
+            cursor: default; }
+          .mc .userBlock .userPassport .userProfile .mainData .subdivision {
+            background: transparent url("../images/icons/black/workGroup.png") no-repeat scroll 6px center/21px 21px;
+            position: relative;
+            cursor: default; }
+          .mc .userBlock .userPassport .userProfile .mainData .hb {
+            background: transparent url("../images/icons/black/hb.png") no-repeat scroll 6px center/21px 22px; }
+            .mc .userBlock .userPassport .userProfile .mainData .hb span {
+              background-color: #E6A391;
+              outline: 4px solid #E6A391;
+              color: #FFF;
+              text-shadow: none; }
+            .mc .userBlock .userPassport .userProfile .mainData .hb .active {
+              background-color: #DD6D4F;
+              outline-color: #DD6D4F; }
+          .mc .userBlock .userPassport .userProfile .mainData .buttons {
+            height: 16pt;
+            display: inline-block;
+            line-height: 16pt;
+            padding: 4px 0;
+            margin-top: 26px;
+            margin-left: 0; }
+            .mc .userBlock .userPassport .userProfile .mainData .buttons .calendar, .mc .userBlock .userPassport .userProfile .mainData .buttons .clock {
+              padding: 6px 6px 6px 31px; }
+            .mc .userBlock .userPassport .userProfile .mainData .buttons .calendar {
+              background: transparent url("../images/icons/black/calendar.png") no-repeat scroll 3px center/21px 21px; }
+            .mc .userBlock .userPassport .userProfile .mainData .buttons .clock {
+              background: transparent url("../images/icons/black/clock.png") no-repeat scroll 3px center/21px 21px; }
+            .mc .userBlock .userPassport .userProfile .mainData .buttons .button, .mc .userBlock .userPassport .userProfile .mainData .buttons .positioning .cb .controlBar .leadership, .mc .positioning .cb .controlBar .userBlock .userPassport .userProfile .mainData .buttons .leadership {
+              border: 1px solid #ADADAD;
+              padding: 3px 6px;
+              text-shadow: none;
+              vertical-align: middle;
+              cursor: pointer;
+              position: relative;
+              transition-duration: 0.3s;
+              z-index: 2; }
+              .mc .userBlock .userPassport .userProfile .mainData .buttons .button .count, .mc .userBlock .userPassport .userProfile .mainData .buttons .positioning .cb .controlBar .leadership .count, .mc .positioning .cb .controlBar .userBlock .userPassport .userProfile .mainData .buttons .leadership .count {
+                padding-left: 5px; }
+              .mc .userBlock .userPassport .userProfile .mainData .buttons .button .ok, .mc .userBlock .userPassport .userProfile .mainData .buttons .positioning .cb .controlBar .leadership .ok, .mc .positioning .cb .controlBar .userBlock .userPassport .userProfile .mainData .buttons .leadership .ok, .mc .userBlock .userPassport .userProfile .mainData .buttons .button .x, .mc .userBlock .userPassport .userProfile .mainData .buttons .positioning .cb .controlBar .leadership .x, .mc .positioning .cb .controlBar .userBlock .userPassport .userProfile .mainData .buttons .leadership .x {
+                display: inline-block;
+                width: 10pt;
+                height: 10pt;
+                vertical-align: middle;
+                margin-left: 4px; }
+              .mc .userBlock .userPassport .userProfile .mainData .buttons .button .ok, .mc .userBlock .userPassport .userProfile .mainData .buttons .positioning .cb .controlBar .leadership .ok, .mc .positioning .cb .controlBar .userBlock .userPassport .userProfile .mainData .buttons .leadership .ok {
+                background: transparent url("../images/icons/black/ok.png") no-repeat scroll 0px center/10pt 10pt; }
+              .mc .userBlock .userPassport .userProfile .mainData .buttons .button .x, .mc .userBlock .userPassport .userProfile .mainData .buttons .positioning .cb .controlBar .leadership .x, .mc .positioning .cb .controlBar .userBlock .userPassport .userProfile .mainData .buttons .leadership .x {
+                background: transparent url("../images/icons/black/x.png") no-repeat scroll 2px center/7pt 11pt; }
+              .mc .userBlock .userPassport .userProfile .mainData .buttons .button:hover, .mc .userBlock .userPassport .userProfile .mainData .buttons .positioning .cb .controlBar .leadership:hover, .mc .positioning .cb .controlBar .userBlock .userPassport .userProfile .mainData .buttons .leadership:hover {
+                background-color: #5679A5;
+                color: white;
+                border-color: #496B97; }
+                .mc .userBlock .userPassport .userProfile .mainData .buttons .button:hover .ok, .mc .userBlock .userPassport .userProfile .mainData .buttons .positioning .cb .controlBar .leadership:hover .ok, .mc .positioning .cb .controlBar .userBlock .userPassport .userProfile .mainData .buttons .leadership:hover .ok {
+                  background-image: url("../images/icons/black/light/ok.png"); }
+                .mc .userBlock .userPassport .userProfile .mainData .buttons .button:hover .x, .mc .userBlock .userPassport .userProfile .mainData .buttons .positioning .cb .controlBar .leadership:hover .x, .mc .positioning .cb .controlBar .userBlock .userPassport .userProfile .mainData .buttons .leadership:hover .x {
+                  background-image: url("../images/icons/black/light/x.png"); }
+            .mc .userBlock .userPassport .userProfile .mainData .buttons .active {
+              background-color: #E1E1E2; }
+        .mc .userBlock .userPassport .userProfile .contacts {
+          min-height: 79px;
+          padding: 14px 8px 17px 214px;
+          border: 1px solid;
+          border-color: #FFF #B2B5BA #C5C5C5;
+          vertical-align: top;
+          background: transparent -moz-linear-gradient(center top, #d5d7d8 0%, #e7e7e7 100%) repeat scroll 0px 0px;
+          text-shadow: 2px 1px 5px #E1E1E1; }
+          .mc .userBlock .userPassport .userProfile .contacts .contactsTable {
+            border-collapse: collapse; }
+            .mc .userBlock .userPassport .userProfile .contacts .contactsTable td {
+              color: #3b3d42;
+              font-size: 9pt;
+              border-top: 6px solid transparent;
+              border-right: 10px solid transparent;
+              padding: 3px 0 3px 34px;
+              vertical-align: middle; }
+              .mc .userBlock .userPassport .userProfile .contacts .contactsTable td a {
+                position: relative;
+                color: #3b3d42; }
+              .mc .userBlock .userPassport .userProfile .contacts .contactsTable td.ip {
+                background: transparent url("../images/icons/black/ip.png") no-repeat scroll 3px center/21px 21px; }
+              .mc .userBlock .userPassport .userProfile .contacts .contactsTable td.email {
+                background: transparent url("../images/icons/black/email.png") no-repeat scroll 3px center/21px 21px; }
+              .mc .userBlock .userPassport .userProfile .contacts .contactsTable td.icq {
+                background: transparent url("../images/icons/black/icq.png") no-repeat scroll 3px center/21px 21px; }
+              .mc .userBlock .userPassport .userProfile .contacts .contactsTable td.jabber {
+                background: transparent url("../images/icons/black/jabber.png") no-repeat scroll 3px center/21px 21px; }
+              .mc .userBlock .userPassport .userProfile .contacts .contactsTable td.skype {
+                background: transparent url("../images/icons/black/skype.png") no-repeat scroll 3px center/21px 21px; }
+              .mc .userBlock .userPassport .userProfile .contacts .contactsTable td.mobile {
+                background: transparent url("../images/icons/black/mobile.png") no-repeat scroll 3px center/21px 22px; }
+              .mc .userBlock .userPassport .userProfile .contacts .contactsTable td.workPhone {
+                background: transparent url("../images/icons/black/workPhone.png") no-repeat scroll 3px center/21px 22px; }
+          .mc .userBlock .userPassport .userProfile .contacts.after {
+            border-bottom-color: #E8EDF3; }
+      .mc .userBlock .userPassport .additionalArea {
+        padding-left: 202px;
+        transition-duration: 0.6s;
+        overflow: visible; }
+        .mc .userBlock .userPassport .additionalArea .extraBlocks {
+          transition-duration: 0.3s;
+          display: none;
+          opacity: 0; }
+          .mc .userBlock .userPassport .additionalArea .extraBlocks .changeMode, .mc .userBlock .userPassport .additionalArea .extraBlocks .displayMode {
+            transition-duration: 0.3s; }
+          .mc .userBlock .userPassport .additionalArea .extraBlocks .changeMode {
+            overflow: hidden; }
+            .mc .userBlock .userPassport .additionalArea .extraBlocks .changeMode .schedulesTable td:first-child .parity {
+              margin-left: -27px; }
+          .mc .userBlock .userPassport .additionalArea .extraBlocks .displayMode {
+            opacity: 1;
+            overflow: hidden; }
+            .mc .userBlock .userPassport .additionalArea .extraBlocks .displayMode .emptyBlock {
+              text-align: center;
+              padding: 4px 0;
+              color: #7E7F8F;
+              margin: 8px 0; }
+          .mc .userBlock .userPassport .additionalArea .extraBlocks .titleSection {
+            font-size: 9pt;
+            background: transparent -moz-linear-gradient(center top, #8c98a7 0%, #737b87 100%) repeat scroll 0px 0px;
+            border-bottom: 1px solid #5d5d5d;
+            border-top: 2px solid #7c7e80;
+            color: white;
+            text-shadow: 1px 1px 4px #656565;
+            font-weight: 800;
+            position: relative;
+            transition-duration: 0.3s;
+            overflow: hidden; }
+            .mc .userBlock .userPassport .additionalArea .extraBlocks .titleSection .title {
+              padding: 8px;
+              display: inline-block; }
+            .mc .userBlock .userPassport .additionalArea .extraBlocks .titleSection .rightCB {
+              float: right;
+              text-align: right;
+              font-weight: 400;
+              margin-bottom: -30px;
+              transition-duration: 0.3s;
+              margin-top: -30px; }
+              .mc .userBlock .userPassport .additionalArea .extraBlocks .titleSection .rightCB .editButton, .mc .userBlock .userPassport .additionalArea .extraBlocks .titleSection .rightCB .closeButton, .mc .userBlock .userPassport .additionalArea .extraBlocks .titleSection .rightCB .saveButton {
+                cursor: pointer;
+                line-height: 30px;
+                margin-right: 8px; }
+                .mc .userBlock .userPassport .additionalArea .extraBlocks .titleSection .rightCB .editButton:hover, .mc .userBlock .userPassport .additionalArea .extraBlocks .titleSection .rightCB .closeButton:hover, .mc .userBlock .userPassport .additionalArea .extraBlocks .titleSection .rightCB .saveButton:hover {
+                  opacity: 0.5; }
+              .mc .userBlock .userPassport .additionalArea .extraBlocks .titleSection .rightCB .editButton {
+                background: transparent url("../images/icons/edit.png") no-repeat scroll 0 center/13px;
+                padding-left: 13px; }
+              .mc .userBlock .userPassport .additionalArea .extraBlocks .titleSection .rightCB .closeButton {
+                background: transparent url("../images/icons/x.png") no-repeat scroll 0 center/13px;
+                padding-left: 13px; }
+              .mc .userBlock .userPassport .additionalArea .extraBlocks .titleSection .rightCB .saveButton {
+                background: transparent url("../images/icons/ok.png") no-repeat scroll 0 center/16px;
+                padding-left: 16px; }
+          .mc .userBlock .userPassport .additionalArea .extraBlocks .prevMP {
+            text-align: center;
+            padding: 5px 0;
+            cursor: pointer;
+            position: relative;
+            border-bottom: 1px solid #C5C5C5;
+            background: #d5d5d5 url("../images/icons/butSwitch.png") no-repeat scroll center center/auto 4px; }
+            .mc .userBlock .userPassport .additionalArea .extraBlocks .prevMP:hover {
+              background-color: #F2F2F2; }
+          .mc .userBlock .userPassport .additionalArea .extraBlocks .oldBlocks {
+            overflow: hidden;
+            height: 0;
+            transition-duration: 0.3s;
+            position: relative; }
+            .mc .userBlock .userPassport .additionalArea .extraBlocks .oldBlocks .scrollBlock {
+              position: absolute;
+              width: 100%;
+              bottom: 0; }
+          .mc .userBlock .userPassport .additionalArea .extraBlocks .schedulesBlock .commentBlock, .mc .userBlock .userPassport .additionalArea .extraBlocks .schedulesBlock .commentChangeBlock, .mc .userBlock .userPassport .additionalArea .extraBlocks .lackBlock .commentBlock, .mc .userBlock .userPassport .additionalArea .extraBlocks .lackBlock .commentChangeBlock {
+            margin: 4px 0 0;
+            padding: 6px 5px 6px 30px;
+            border: 1px solid #BFBFBF;
+            color: #8F8F8F;
+            background: #dddddd url("../images/icons/black/editProp.png") no-repeat scroll 5px center/18px 18px; }
+          .mc .userBlock .userPassport .additionalArea .extraBlocks .schedulesBlock .deleteBut, .mc .userBlock .userPassport .additionalArea .extraBlocks .lackBlock .deleteBut {
+            text-align: center;
+            width: 24px;
+            display: inline-block;
+            border: 1px solid #94969E;
+            cursor: pointer;
+            position: relative;
+            background: #959ba4 url("../images/icons/bin.png") no-repeat scroll center center/16px;
+            height: 24px;
+            vertical-align: middle; }
+            .mc .userBlock .userPassport .additionalArea .extraBlocks .schedulesBlock .deleteBut:hover, .mc .userBlock .userPassport .additionalArea .extraBlocks .lackBlock .deleteBut:hover {
+              background-color: #7C8490;
+              border-color: #6E7078; }
+          .mc .userBlock .userPassport .additionalArea .extraBlocks .schedulesBlock .dateRange input, .mc .userBlock .userPassport .additionalArea .extraBlocks .lackBlock .dateRange input {
+            padding: 1px;
+            background-color: #54709E;
+            font: 9pt Arial, Helvetica, sans-serif;
+            color: #FFF;
+            width: 52px;
+            box-shadow: 0 3px 6px -2px #111 inset;
+            border: 1px solid #778EB9;
+            text-align: center;
+            vertical-align: middle; }
+          .mc .userBlock .userPassport .additionalArea .extraBlocks .lackBlock .dateRange .timeInput, .mc .userBlock .userPassport .additionalArea .extraBlocks .schedulesBlock .dtItem .hours input {
+            background: #536c96 url("../images/icons/black/right.png") no-repeat scroll center/12px; }
+          .mc .userBlock .userPassport .additionalArea .extraBlocks .schedulesBlock .dtItem .hours input:last-child, .mc .userBlock .userPassport .additionalArea .extraBlocks .lackBlock .dateRange .time:last-child .timeInput {
+            background-image: url("../images/icons/black/left.png"); }
+          .mc .userBlock .userPassport .additionalArea .extraBlocks .schedulesBlock .hours i.from, .mc .userBlock .userPassport .additionalArea .extraBlocks .schedulesBlock .hours i.till {
+            background: transparent url("../images/icons/black/dark/right.png") no-repeat scroll center center/10px auto;
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            vertical-align: -1px;
+            opacity: 0.6; }
+          .mc .userBlock .userPassport .additionalArea .extraBlocks .lackBlock .dateRange .timeInput {
+            width: 36px;
+            border: 1px solid #778EB9; }
+          .mc .userBlock .userPassport .additionalArea .extraBlocks .schedulesBlock .hours i.till {
+            background-image: url("../images/icons/black/dark/left.png"); }
+          .mc .userBlock .userPassport .additionalArea .extraBlocks .schedulesBlock .dtItem .hours input {
+            background-color: #D5D5D5; }
+          .mc .userBlock .userPassport .additionalArea .extraBlocks .schedulesBlock .commentChangeBlock, .mc .userBlock .userPassport .additionalArea .extraBlocks .lackBlock .commentChangeBlock {
+            padding: 0 7px 0 25px;
+            text-align: right; }
+            .mc .userBlock .userPassport .additionalArea .extraBlocks .schedulesBlock .commentChangeBlock input, .mc .userBlock .userPassport .additionalArea .extraBlocks .lackBlock .commentChangeBlock input {
+              font: 9pt Arial, Helvetica, sans-serif;
+              width: 99.2%;
+              margin: 3px;
+              padding: 2px;
+              border: 1px solid #EAEAEA;
+              background-color: #d2d2d2;
+              box-shadow: -2px 5px 9px -3px #A1A1A1 inset;
+              color: #6B6E71; }
+          .mc .userBlock .userPassport .additionalArea .extraBlocks .schedulesBlock .addAnother, .mc .userBlock .userPassport .additionalArea .extraBlocks .lackBlock .addAnother {
+            padding: 6px;
+            margin: 0 8px 8px;
+            color: black;
+            background: transparent linear-gradient(to left, #dadada 0%, #c8c8c8 100%) repeat scroll 0px 0px;
+            border: 1px solid #b3b3b3;
+            text-align: right;
+            cursor: pointer;
+            position: relative; }
+            .mc .userBlock .userPassport .additionalArea .extraBlocks .schedulesBlock .addAnother span, .mc .userBlock .userPassport .additionalArea .extraBlocks .lackBlock .addAnother span {
+              background: transparent url("../images/icons/plus.png") no-repeat scroll 0px center/16px 16px;
+              padding: 3px 3px 3px 24px;
+              opacity: 0.3; }
+            .mc .userBlock .userPassport .additionalArea .extraBlocks .schedulesBlock .addAnother:hover, .mc .userBlock .userPassport .additionalArea .extraBlocks .lackBlock .addAnother:hover {
+              background: transparent linear-gradient(to left, #e1e2e3 0%, #c8c8c8 100%) repeat scroll 0px 0px; }
+            .mc .userBlock .userPassport .additionalArea .extraBlocks .schedulesBlock .addAnother:active, .mc .userBlock .userPassport .additionalArea .extraBlocks .lackBlock .addAnother:active {
+              background: #c8c8c8; }
+          .mc .userBlock .userPassport .additionalArea .extraBlocks .schedulesBlock, .mc .userBlock .userPassport .additionalArea .extraBlocks .lackBlock {
+            box-shadow: 0 8px 41px -8px #727475; }
+          .mc .userBlock .userPassport .additionalArea .extraBlocks .schedulesBlock .mainInform .activeDR, .mc .userBlock .userPassport .additionalArea .extraBlocks .schedulesBlock .schedulesTable .active, .mc .userBlock .userPassport .additionalArea .extraBlocks .lackBlock .missPoint .activeDR {
+            background: #EA7C5F !important;
+            border: 1px solid #9C4933 !important; }
+          .mc .userBlock .userPassport .additionalArea .extraBlocks .schedulesBlock .mainInform .resetArea, .mc .userBlock .userPassport .additionalArea .extraBlocks .lackBlock .missPoint .resetArea {
+            position: absolute;
+            height: 100%;
+            width: 100%;
+            z-index: 2;
+            top: 0; }
+            .mc .userBlock .userPassport .additionalArea .extraBlocks .schedulesBlock .mainInform .resetArea div, .mc .userBlock .userPassport .additionalArea .extraBlocks .lackBlock .missPoint .resetArea div {
+              background-color: #051530;
+              border-radius: 6px;
+              padding: 10px 0;
+              margin: 25px auto auto;
+              width: 120px;
+              vertical-align: middle;
+              text-align: center;
+              color: white;
+              cursor: pointer;
+              border: 2px solid #F9F9F9;
+              transition-duration: 0.3s;
+              opacity: 0; }
+              .mc .userBlock .userPassport .additionalArea .extraBlocks .schedulesBlock .mainInform .resetArea div:hover, .mc .userBlock .userPassport .additionalArea .extraBlocks .lackBlock .missPoint .resetArea div:hover {
+                background-color: #033EA1; }
+            .mc .userBlock .userPassport .additionalArea .extraBlocks .schedulesBlock .mainInform .resetArea .error, .mc .userBlock .userPassport .additionalArea .extraBlocks .lackBlock .missPoint .resetArea .error {
+              border-radius: 0;
+              width: 80%; }
+          .mc .userBlock .userPassport .additionalArea .extraBlocks .schedulesBlock {
+            background: transparent -moz-linear-gradient(center top, #dedfe1 0%, #c2c2c3 80%) repeat scroll 0% 0%;
+            border: 1px solid;
+            border-color: #D4D4D4 #A5A5A5 #A5A5A5;
+            padding: 0;
+            position: relative;
+            min-height: 0;
+            transition-duration: 0.2s; }
+            .mc .userBlock .userPassport .additionalArea .extraBlocks .schedulesBlock .oldBlocks .scrollBlock .dateRange, .mc .userBlock .userPassport .additionalArea .extraBlocks .schedulesBlock .oldBlocks .scrollBlock .schedulesTable .day {
+              border-color: #848999;
+              background: #959FAA;
+              color: #FFF; }
+            .mc .userBlock .userPassport .additionalArea .extraBlocks .schedulesBlock .mainInform {
+              margin: 8px;
+              font-size: 9pt;
+              position: relative;
+              transition-duration: 0.3s;
+              opacity: 1; }
+              .mc .userBlock .userPassport .additionalArea .extraBlocks .schedulesBlock .mainInform .dateRange {
+                background-color: #6687BC;
+                border: 1px solid #505F93;
+                color: white;
+                display: inline-block;
+                padding: 5px;
+                vertical-align: middle; }
+              .mc .userBlock .userPassport .additionalArea .extraBlocks .schedulesBlock .mainInform .editMode {
+                padding: 3px; }
+              .mc .userBlock .userPassport .additionalArea .extraBlocks .schedulesBlock .mainInform .schedulesModeRed, .mc .userBlock .userPassport .additionalArea .extraBlocks .schedulesBlock .mainInform .schedulesModeGreen {
+                display: inline-block;
+                padding: 5px;
+                border: 1px solid #CC9175;
+                color: #D5855B;
+                background-color: #E7DACD;
+                width: 150px;
+                cursor: pointer;
+                position: relative;
+                vertical-align: middle; }
+              .mc .userBlock .userPassport .additionalArea .extraBlocks .schedulesBlock .mainInform .schedulesModeGreen {
+                border: 1px solid #89B184;
+                color: #739675;
+                background-color: #CDE7CD; }
+              .mc .userBlock .userPassport .additionalArea .extraBlocks .schedulesBlock .mainInform .parityWeek {
+                float: right;
+                color: #83858A; }
+                .mc .userBlock .userPassport .additionalArea .extraBlocks .schedulesBlock .mainInform .parityWeek .cbx {
+                  background-color: #dedede;
+                  border: 1px solid #a2a2a2;
+                  display: inline-block;
+                  margin: 3px 5px;
+                  vertical-align: baseline;
+                  cursor: pointer; }
+                  .mc .userBlock .userPassport .additionalArea .extraBlocks .schedulesBlock .mainInform .parityWeek .cbx span {
+                    height: 11px;
+                    width: 11px;
+                    display: inline-block;
+                    margin: 2px;
+                    vertical-align: middle;
+                    transition-duration: 0.3s; }
+                .mc .userBlock .userPassport .additionalArea .extraBlocks .schedulesBlock .mainInform .parityWeek .active span {
+                  background-color: #6A86A2; }
+            .mc .userBlock .userPassport .additionalArea .extraBlocks .schedulesBlock .scrollBlock {
+              overflow: hidden;
+              transition-duration: 0.3s; }
+            .mc .userBlock .userPassport .additionalArea .extraBlocks .schedulesBlock .step {
+              height: auto !important; }
+              .mc .userBlock .userPassport .additionalArea .extraBlocks .schedulesBlock .step .parity {
+                margin-left: 0 !important; }
+            .mc .userBlock .userPassport .additionalArea .extraBlocks .schedulesBlock .schedulesTable {
+              margin: 8px 0 0;
+              border-collapse: collapse; }
+              .mc .userBlock .userPassport .additionalArea .extraBlocks .schedulesBlock .schedulesTable td {
+                color: #575757;
+                font-size: 9pt; }
+                .mc .userBlock .userPassport .additionalArea .extraBlocks .schedulesBlock .schedulesTable td:first-child {
+                  vertical-align: middle; }
+                  .mc .userBlock .userPassport .additionalArea .extraBlocks .schedulesBlock .schedulesTable td:first-child .parity {
+                    width: 27px;
+                    display: inline-block;
+                    transition-duration: 0.3s; }
+              .mc .userBlock .userPassport .additionalArea .extraBlocks .schedulesBlock .schedulesTable tr + tr {
+                border-top: 4px solid transparent; }
+              .mc .userBlock .userPassport .additionalArea .extraBlocks .schedulesBlock .schedulesTable .dtItem {
+                position: relative;
+                display: inline-block;
+                overflow: hidden;
+                height: 23px; }
+                .mc .userBlock .userPassport .additionalArea .extraBlocks .schedulesBlock .schedulesTable .dtItem .day {
+                  cursor: pointer;
+                  position: relative;
+                  z-index: 1; }
+                  .mc .userBlock .userPassport .additionalArea .extraBlocks .schedulesBlock .schedulesTable .dtItem .day:hover {
+                    background: transparent -moz-linear-gradient(center top, #79abef 0%, #4e6c93 100%) repeat scroll 0% 0%; }
+              .mc .userBlock .userPassport .additionalArea .extraBlocks .schedulesBlock .schedulesTable .day {
+                background: transparent -moz-linear-gradient(center top, #5e8dcc 0%, #4e6c93 100%) repeat scroll 0% 0%;
+                color: #DCE5F0;
+                border: 1px solid #4865a1;
+                display: inline-block;
+                padding: 3px 2px;
+                text-align: center;
+                width: 18px; }
+              .mc .userBlock .userPassport .additionalArea .extraBlocks .schedulesBlock .schedulesTable .active {
+                color: white; }
+              .mc .userBlock .userPassport .additionalArea .extraBlocks .schedulesBlock .schedulesTable .hours {
+                background: transparent -moz-linear-gradient(center top, #f6f6f6 0%, #e4e4e4 100%) repeat scroll 0% 0%;
+                border: 1px solid;
+                border-color: #939393 #939393 #939393 #565656;
+                box-shadow: 0 0 14px -7px #415c95;
+                color: #80838C;
+                display: inline-block;
+                padding: 3px 0;
+                text-align: center;
+                width: 100px;
+                transition-duration: 0.3s;
+                margin-left: -4px; }
+                .mc .userBlock .userPassport .additionalArea .extraBlocks .schedulesBlock .schedulesTable .hours input {
+                  padding: 0;
+                  font: 9pt Arial, Helvetica, sans-serif;
+                  background-color: #C1C3C6;
+                  color: white;
+                  width: 37px;
+                  border: 1px solid #FBF7F7;
+                  box-shadow: -2px 5px 9px -3px #A5A7AE inset;
+                  margin-top: -1px;
+                  margin-bottom: -1px;
+                  text-align: center; }
+                .mc .userBlock .userPassport .additionalArea .extraBlocks .schedulesBlock .schedulesTable .hours img {
+                  height: 8pt;
+                  vertical-align: -1px;
+                  opacity: 0.5; }
+              .mc .userBlock .userPassport .additionalArea .extraBlocks .schedulesBlock .schedulesTable .editMode {
+                margin-left: -105px; }
+                .mc .userBlock .userPassport .additionalArea .extraBlocks .schedulesBlock .schedulesTable .editMode img {
+                  vertical-align: -2px;
+                  margin: 0 11px 1px -25px;
+                  opacity: 0.8; }
+            .mc .userBlock .userPassport .additionalArea .extraBlocks .schedulesBlock .changeBlocks {
+              border-top: 1px dashed #8C8C8C;
+              overflow: hidden;
+              margin: 8px 8px 0;
+              padding-top: 12px;
+              transition-duration: 0.3s;
+              height: 0; }
+              .mc .userBlock .userPassport .additionalArea .extraBlocks .schedulesBlock .changeBlocks .mainInform {
+                margin: 0 0 8px; }
+          .mc .userBlock .userPassport .additionalArea .extraBlocks .lackBlock {
+            background: transparent -moz-linear-gradient(center top, #e0e0e0 0%, #bababa 80%) repeat scroll 0% 0%;
+            border: 1px solid;
+            border-color: #f0f0f0 #a5a5a5 #a5a5a5;
+            padding: 0;
+            font-size: 9pt;
+            min-height: 0;
+            transition-duration: 0.3s; }
+            .mc .userBlock .userPassport .additionalArea .extraBlocks .lackBlock .changeMode .oldBlocks .dateRange input {
+              background-color: #80858F;
+              border: 1px solid #A3A9B0; }
+            .mc .userBlock .userPassport .additionalArea .extraBlocks .lackBlock .changeMode .oldBlocks .dateRange .time {
+              background-color: transparent !important; }
+            .mc .userBlock .userPassport .additionalArea .extraBlocks .lackBlock .missPoint {
+              margin: 8px;
+              position: relative;
+              transition-duration: 0.3s; }
+              .mc .userBlock .userPassport .additionalArea .extraBlocks .lackBlock .missPoint .resetArea div {
+                margin-top: 8px; }
+              .mc .userBlock .userPassport .additionalArea .extraBlocks .lackBlock .missPoint .dateRange {
+                display: inline-block;
+                padding: 4px;
+                color: #EFEFEF;
+                border: 1px solid #5062A2;
+                background: transparent -moz-linear-gradient(center top, #658ed2 0%, #617aa4 100%) repeat scroll 0% 0%; }
+                .mc .userBlock .userPassport .additionalArea .extraBlocks .lackBlock .missPoint .dateRange .time {
+                  color: #FFF;
+                  background-color: #3C5989;
+                  padding: 1px;
+                  width: 40px;
+                  display: inline-block;
+                  text-align: center;
+                  min-height: 14px;
+                  vertical-align: middle;
+                  margin: 0 0 0 4px; }
+                .mc .userBlock .userPassport .additionalArea .extraBlocks .lackBlock .missPoint .dateRange .nothing {
+                  background: #3c5989 url("../images/icons/black/right.png") no-repeat scroll center center/12px; }
+                  .mc .userBlock .userPassport .additionalArea .extraBlocks .lackBlock .missPoint .dateRange .nothing:last-child {
+                    background-image: url("../images/icons/black/left.png"); }
+                .mc .userBlock .userPassport .additionalArea .extraBlocks .lackBlock .missPoint .dateRange span {
+                  margin: 0 4px; }
+              .mc .userBlock .userPassport .additionalArea .extraBlocks .lackBlock .missPoint .activeDR .time {
+                background-color: #A8523C; }
+              .mc .userBlock .userPassport .additionalArea .extraBlocks .lackBlock .missPoint .editMode {
+                padding: 2px 4px 2px 5px; }
+                .mc .userBlock .userPassport .additionalArea .extraBlocks .lackBlock .missPoint .editMode .time {
+                  background-color: transparent; }
+            .mc .userBlock .userPassport .additionalArea .extraBlocks .lackBlock .oldBlocks .scrollBlock .missPoint:last-child {
+              margin-bottom: 0; }
+            .mc .userBlock .userPassport .additionalArea .extraBlocks .lackBlock .oldBlocks .scrollBlock .dateRange {
+              border-color: #848999;
+              background: #959FAA; }
+              .mc .userBlock .userPassport .additionalArea .extraBlocks .lackBlock .oldBlocks .scrollBlock .dateRange .time {
+                background-color: #68727E; }
+            .mc .userBlock .userPassport .additionalArea .extraBlocks .lackBlock .changeBlocks {
+              border-top: 1px dashed #959595;
+              padding-top: 8px;
+              margin: 8px 8px 0;
+              overflow: hidden;
+              transition-duration: 0.3s;
+              height: 0; }
+              .mc .userBlock .userPassport .additionalArea .extraBlocks .lackBlock .changeBlocks .missPoint {
+                margin: 0 0 8px;
+                padding: 0; }
+      .mc .userBlock .userPassport:last-child {
+        margin-bottom: 9px; }
+
+.fixed {
+  position: absolute;
+  padding: 0;
+  width: 100%;
+  height: 99%;
+  margin: 0; }
+  .fixed .hideDef {
+    width: 100%;
+    height: 91px;
+    background-color: #f2f2f2;
+    z-index: 3;
+    position: relative;
+    box-shadow: 45px 0 0 0 #f2f2f2;
+    margin-bottom: -91px; }
+
+.fix {
+  position: fixed;
+  top: 0; }
+
+.mc .userBlock .userPassport .additionalArea .extraBlocks .schedulesBlock .mainInform .activeDR input, .mc .userBlock .userPassport .additionalArea .extraBlocks .lackBlock .missPoint .activeDR input {
+  background-color: #A8523C;
+  border-color: #9C4732; }
+
+.mc .userBlock .userPassport .additionalArea .extraBlocks .lackBlock .displayMode .cause, .mc .userBlock .userPassport .additionalArea .extraBlocks .lackBlock .changeMode .cause, #reasonsBar div {
+  padding: 5px;
+  border: 1px solid #B7B7B7;
+  background-color: #E3E3E3;
+  background-repeat: no-repeat;
+  background-attachment: scroll;
+  background-position: 155px center;
+  background-size: 14px auto;
+  color: #818181;
+  display: inline-block;
+  width: 164px;
+  vertical-align: middle; }
+
+.mc .userBlock .userPassport .additionalArea .extraBlocks .lackBlock .changeMode .cause, #reasonsBar div {
+  cursor: pointer; }
+  .mc .userBlock .userPassport .additionalArea .extraBlocks .lackBlock .changeMode .cause:hover, #reasonsBar div:hover {
+    background-color: #EAEAEA; }
+  .mc .userBlock .userPassport .additionalArea .extraBlocks .lackBlock .changeMode .cause:active, #reasonsBar div:active {
+    background-color: #D5D5D5; }
+
+.mc .userBlock .userPassport .additionalArea .extraBlocks .lackBlock .missPoint .run, #reasonsBar .run {
+  background-image: url("../images/icons/reasons/run.png");
+  background-size: 13px auto;
+  background-position: 155px center; }
+
+.mc .userBlock .userPassport .additionalArea .extraBlocks .lackBlock .missPoint .air, #reasonsBar .air {
+  background-image: url("../images/icons/reasons/air.png");
+  background-position: 155px center;
+  background-size: 12px auto; }
+
+.mc .userBlock .userPassport .additionalArea .extraBlocks .lackBlock .missPoint .clock, #reasonsBar .clock {
+  background-image: url("../images/icons/reasons/clock.png"); }
+
+.mc .userBlock .userPassport .additionalArea .extraBlocks .lackBlock .missPoint .doctor, #reasonsBar .doctor {
+  background-image: url("../images/icons/reasons/doctor.png"); }
+
+.mc .userBlock .userPassport .additionalArea .extraBlocks .lackBlock .missPoint .book, #reasonsBar .book {
+  background-image: url("../images/icons/reasons/book.png"); }
+
+.mc .userBlock .userPassport .additionalArea .extraBlocks .lackBlock .missPoint .pill, #reasonsBar .pill {
+  background-image: url("../images/icons/reasons/pill.png"); }
+
+.mc .userBlock .userPassport .additionalArea .extraBlocks .lackBlock .missPoint .none, #reasonsBar .none {
+  background-image: url("../images/icons/reasons/none.png"); }
+
+.mc .userBlock .userPassport .additionalArea .extraBlocks .lackBlock .missPoint .order, #reasonsBar .order {
+  background-image: url("../images/icons/reasons/order.png"); }
+
+.mc .userBlock .userPassport .additionalArea .extraBlocks .lackBlock .missPoint .palm, #reasonsBar .palm {
+  background-image: url("../images/icons/reasons/palm.png"); }
+
+.mc .userBlock .userPassport .additionalArea .extraBlocks .lackBlock .missPoint .car, #reasonsBar .car {
+  background-image: url("../images/icons/reasons/car.png"); }
+
+#reasonsBar {
+  display: none;
+  position: absolute;
+  background-color: rgba(123, 133, 146, 0.76);
+  box-shadow: 0 5px 15px -5px rgba(0, 0, 0, 0.506);
+  border: 1px solid rgba(255, 255, 255, 0.41);
+  z-index: 2;
+  padding: 4px 5px;
+  min-width: 547px; }
+  #reasonsBar div {
+    margin: 4px 2px;
+    border-color: #FFF;
+    background-color: rgba(215, 217, 221, 0.86); }
+    #reasonsBar div:hover {
+      background-color: #E3E3E3; }
+
+#templates {
+  height: 0;
+  overflow: hidden;
+  margin: 0; }
+
+@media (max-width: 1300px) {
+  .searchInput {
+    width: 42% !important; } }
+@media (max-width: 1012px) {
+  .fixed {
+    position: absolute;
+    margin-top: 16px; }
+
+  .userBlock {
+    margin-top: 88px !important; } }

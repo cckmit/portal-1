@@ -1,0 +1,2 @@
+var Employee1 = {department: "Группа разработки программного обспечения №5", mobilePhone: "8 904 659-12-34", workPhone: "5-102", jid: "bondarenko",
+    ip:["196.168.100.102", "196.168.102.102"], email: "bondarenko@mail.ru", icq: "3943984"};
