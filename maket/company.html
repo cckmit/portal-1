@@ -5,46 +5,6 @@
     <meta charset="UTF-8">
     <link rel="stylesheet" href="pub/theme/style.css">
     <!--script(src='/pub/scripts/jquery-2.1.4.min.js')-->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.js"></script>
-    <script>
-      /** my lib **/
-      function replaceClass(elem, from, to){
-          elem.removeClass(from).addClass(to);
-          return elem;
-      }
-      
-      function log(){
-          console.log(arguments)
-      }
-      
-      function STOP(){
-          debugger;
-      }
-      
-      function singleton(){
-          if (this.singleton)
-              return this.singleton;
-          return this.singleton = new (Function.prototype.bind.apply(this, this.args));
-      }
-      
-      function forEach(array, checkAction){
-          // делает checkoperation для каждого элемента, если checkOperation возвращает не undefined to forEach возвращает true
-          for(var i=0; i<array.length; i++) {
-              if(checkAction(i, array[i], array) !== undefined)
-                  return true;
-          }
-      }
-      
-      
-    </script>
-    <!--+semanticUI-->
-    <script src="pub/scripts/lib/moment.min.js"></script>
-    <script src="pub/scripts/lib/jquery.daterangepicker.js"></script>
-    <script src="pub/scripts/lib/perfect-scrollbar.jquery.min.js"></script>
-    <script src="pub/scripts/jquery-ui.min.js"></script>
-    <script src="pub/scripts/lib/scrollFixBlock.js"></script>
-    <script src="pub/scripts/lib/jquery.cookie.min.js"></script>
-
 
     <link rel="stylesheet" href="pub/theme/lib/daterangepicker.css">
     <link rel="stylesheet" href="pub/theme/lib/perfect-scrollbar.min.css">
@@ -60,85 +20,7 @@
       </div>
     </div>
     <script>
-      function MessageGenerator(){
-          var messagePanels = $('#messagePanels');
-          //if (!(this instanceof MessageGenerator)) {
-          //    if (!MessageGenerator.singleton) {
-          //        return MessageGenerator.singleton = new MessageGenerator();
-          //    }
-          //    else return MessageGenerator.singleton;
-          //}
-      
-          var callQueue = [];
-          var openedMessageCount = 0;
-      
-          function generateMessage(text, type, timer){
-              return '<div class="message '+ type +'" onclick="MessageGenerator.get().close($(this))">' +
-                      '<div class="body">' +
-                      '<span class="icon-mIcon"></span>' +
-                      '<span class="text">'+ text +'</span>' +
-                      '</div>' +
-                      '<div class="rightSide">' +
-                      (timer?'<span class="timer">'+ timer +'</span>':'') +
-                      '</div>' +
-                      '</div>';
-          }
-      
-          this.close = function(elem){
-              elem.removeClass('active')
-              setTimeout(function(){
-                  elem.remove();
-              }, 300);
-              openedMessageCount--;
-      
-              if(callQueue.length != 0){
-                  var message = callQueue.shift();
-                  showMessage(message.text, message.type, message.timer);
-              }
-          }
-      
-          function closeMessageAfter(messageElem, timer){
-              var timerElem = messageElem.find('.timer');
-              var id = setInterval(function(){
-                  if(!messageElem){ // пользователь закрыл явно
-                      clearInterval(id);
-                      return;
-                  }
-                  if(timer == 0){
-                      clearInterval(id);
-                      MessageGenerator.singleton.close(messageElem);
-                      return;
-                  }
-                  timerElem.text(timer--);
-              }, 1000);
-          }
-      
-          this.show = function(text, type, timer, showAfterMilliSeconds){
-              if(openedMessageCount > 100)
-                  return; //слишком большая очередь, вероятно произошла циклическая ошибка
-              else if(openedMessageCount > 7)
-                  callQueue.push({text: text, type: type, timer: timer}); //ставим в очередь
-              else
-                  showMessage(text, type, timer, showAfterMilliSeconds?showAfterMilliSeconds:100);
-              openedMessageCount++;
-          }
-      
-          function showMessage(text, type, timer, showAfterMilliSeconds){
-      
-              var message = $(generateMessage(text, type, timer));
-              messagePanels.prepend(message);
-              setTimeout(function () {
-                  message.addClass('active');
-                  if(timer)
-                      closeMessageAfter(message, timer);
-              }, showAfterMilliSeconds);
-          }
-          this.lateCall = function(text, type, timer, showAfterMilliSeconds){
-              return this.show.bind(this, text, type, timer, showAfterMilliSeconds);
-          }
-      }
-      MessageGenerator.get = singleton.bind(MessageGenerator)
-      
+
     </script>
   </head>
   <body>
@@ -264,92 +146,7 @@
           </script>
         </div>
         <div class="rightBlock">
-          <script>
-            function getTwoDigitNumber(number) {
-                return number < 10 ? '0' + number : number;
-            }
-            var AJAX = new function () {
-                this.getEmployee = function (data, success) {
-                    return $.get('/api/gate/employees/' + data + '.json', null, success, 'json');
-                }
-                this.getMissingEmployees = function (success) {
-                    return $.get('/api/gate/currentMissingEmployees.json', null, success, 'json');
-                }
-                this.getEmployeeAbsences = function (data, success) {
-                    return $.get('/api/gate/employees/' + data.id + '/absences.json?full=' + data.isFull + '&from=' + data.from + '&till=' + data.till, null, success, 'json');
-                }
-                this.getEmployeeAbsence = function (data, success) {
-                    return $.get('/api/gate/employees/' + data.userId + '/absences.json?id=' + data.absenceId, null, success, 'json');
-                }
-                this.saveEmployeeAbsence = function (data, success) {
-                    return $.post('/api/gate/saveAbsence', data, success, 'text');
-                }
-                this.deleteAbsence = function (data, success) {
-                    return $.get('/api/gate/deleteAbsence?id=' + data, null, success, 'text');
-                }
-            };
-            function ActionSequence() { //последовательность действий при ajax запросе
-                var completed;
-                var actions = [];
-                var ajaxData;
-                this.then = function (func) {
-                    if (completed) // если ajax success ф-я закончена, то просто вызываем переданное действие
-                        func(ajaxData);
-                    else actions.push(func) // иначе помещаем в массив
-                    return this;
-                }
-                this.run = function (data) { // доп String textStatus, jqXHR jqXHR
-                    while (actions.length != 0) {
-                        actions.shift()(data); // выполняем следующее действие и удаляем его
-                    }
-                    ajaxData = data;
-                    completed = true;
-                }
-            }
-            Date.prototype.getWeekNumber = function () {
-                var d = new Date(this.getTime());
-                d.setHours(0, 0, 0);
-                d.setDate(d.getDate() + 4 - (d.getDay() || 7));
-                var yearStart = new Date(d.getFullYear(), 0, 1);
-                return Math.ceil(( ( (d - yearStart) / 86400000) + 1) / 7);
-            }
-            Date.prototype.getCorrectedDay = function () {
-                var d = this.getDay() - 1;
-                return d == -1 ? 6 : d;
-            }
-            Date.prototype.getUTCTime = function () {
-                return this.getTime() - this.getTimezoneOffset() * 60000;
-            }
-            Date.daysInMonth = function daysInMonth(year, month) {
-                return new Date(year, month + 1, 0).getDate();
-            }
-            Date.prototype.daysInMonth = function daysInMonth() {
-                return new Date(this.getFullYear(), this.getMonth() + 1, 0).getDate();
-            }
-            String.escapeSymbols = {
-                "&": "&amp;",
-                "<": "&lt;",
-                ">": "&gt;",
-                '"': '&quot;',
-                "'": '&#39;',
-                "/": '&#x2F;'
-            };
-            String.prototype.escapeHTML = function () {
-                return this.replace(/[&<>"'\/]/g, function (s) {
-                    return String.escapeSymbols[s];
-                }).replace(/\s+/gm, " ");
-            }
-            var ABSENCE_REASONS = ["Командировка", "Отпуск", "Болезнь", "Личные дела", "Местная командировка", "Учеба", "Больничный лист", "Гостевой пропуск", "Ночные работы", "Отпуск за свой счёт", "Расписание"];
-            var MONTHS = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
-            var DAYS = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
-            function timeToString(date) {
-                return getTwoDigitNumber(date.getHours()) + ':' + getTwoDigitNumber(date.getMinutes())
-            }
-            function dateToString(date) {
-                return getTwoDigitNumber(date.getDate()) + '.' + getTwoDigitNumber(date.getMonth()) + '.' + (date.getFullYear() - 2000);
-            }
-            
-          </script><script>/**
+          <script>/**
  * require:
  * selectList
  *
@@ -880,75 +677,64 @@ function SelectList(options){
             
             
           </script>
-          <div id="companyConstruct" class="CompanyConstruction">
+
+           <div class="panel">
             <div class="body">
-              <div class="grid">
-                <div class="row">
-                  <div class="col">
-                    <div class="title">Название компании<span class="required">*</span></div>
-                    <div class="field verifiable">
-                      <input type="text" class="inputField">
-                    </div>
-                  </div>
-                  <div class="col">
-                    <div class="title">Группа компаний</div>
-                    <div class="field">
-                      <div class="field selected">
-                        <input type="text" class="inputField button selected whiteC">
-                      </div>
-                      <button class="button greenC">Создать</button>
-                    </div>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col">
-                    <div class="title">Фактический адрес<span class="required">*</span></div>
-                    <div class="field">
-                      <textarea class="text inputField"></textarea>
-                    </div>
-                  </div>
-                  <div class="col">
-                    <div class="title">Юридический адрес<span class="required">*</span></div>
-                    <div class="field">
-                      <textarea class="text inputField"></textarea>
-                    </div>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="title">Web сайт</div>
-                  <div class="field"><span class="label">http://</span>
+              <div class="grid grid-indent">
+                <div class="col-xs-12 col-lg-6">
+                  <label class="required">Название компании</label>
+                  <div class="panelField verifiable">
+                      <i class="icon-verifiable"></i>
                     <input type="text" class="inputField">
                   </div>
                 </div>
-                <div class="row">
-                  <div class="col">
-                    <div class="title">Телефон</div>
-                    <div class="field">
-                      <input type="text" class="inputField val">
-                      <input type="text" placeholder="Комментарий" class="inputField comment">
-                      <button class="button greenC empty add_button"></button>
-                    </div>
-                  </div>
-                  <div class="col">
-                    <div class="title">Email</div>
-                    <div class="field">
-                      <input type="text" class="inputField val email">
-                      <input type="text" placeholder="Комментарий" class="inputField comment">
-                      <button class="button greenC empty add_button"></button>
-                    </div>
+                <div class="col-xs-12 col-lg-6">
+                  <label>Группа компаний</label>
+                  <div class="panelField">
+                    <input type="text" class="inputField rightIndent">
+                    <button class="button greenC">Создать</button>
                   </div>
                 </div>
-                <div class="row">
-                  <div class="title">Комментарий</div>
-                  <div class="field">
-                    <textarea class="text inputField"></textarea>
+                <div class="col-xs-12 col-lg-6">
+                  <label class="required">Фактический адрес</label>
+                  <textarea class="inputField description"></textarea>
+                </div>
+                <div class="col-xs-12 col-lg-6">
+                  <label class="required">Юридический адрес</label>
+                  <textarea class="inputField description"></textarea>
+                </div>
+                <div class="col-xs-12">
+                  <label>Web сайт</label>
+                  <div class="panelField"><span class="label">http://</span>
+                    <input type="text" class="inputField">
                   </div>
                 </div>
-                <div class="row">
-                  <div class="title bordered">Контактные лица</div>
-                  <div class="field">
-                    <!--.button.greenC.max Создать-->
+                <div class="col-xs-12 col-lg-6">
+                  <label>Телефон</label>
+                  <div class="panelField">
+                    <input type="text" class="inputField phone rightIndent">
+                    <input type="text" placeholder="Комментарий" class="inputField comment rightIndent">
+                    <button class="button greenC empty add_button">
+                        <i class="icon-plus"></i>
+                    </button>
                   </div>
+                </div>
+                <div class="col-xs-12 col-lg-6">
+                  <label>Email</label>
+                  <div class="panelField">
+                    <input type="text" class="inputField email rightIndent">
+                    <input type="text" placeholder="Комментарий" class="inputField comment rightIndent">
+                    <button class="button greenC empty">
+                        <i class="icon-plus"></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="col-xs-12">
+                  <label> Комментарий</label>
+                  <textarea class="inputField description"></textarea>
+                </div>
+                <div class="col-xs-12">
+                  <label class="bordered">Контактные лица</label>
                 </div>
               </div>
             </div>
@@ -956,14 +742,9 @@ function SelectList(options){
               <button class="button greenC">Сохранить</button>
               <button class="button whiteC close_button">Отмена</button>
             </div>
-            <!--.controlButtons
-            .rightSide
-                .button.greenC(onclick="new CompanyModalWindow().show()") Добавить компанию
-            
-            
-            
-            -->
           </div>
+
+
         </div>
       </div>
       <script>

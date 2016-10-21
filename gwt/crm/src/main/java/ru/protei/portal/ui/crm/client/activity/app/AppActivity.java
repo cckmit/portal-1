@@ -55,7 +55,8 @@ public abstract class AppActivity
 
     @Override
     public void onCompaniesClicked() {
-        fireEvent( new CompanyEvents.Show ( ));
+//        fireEvent( new CompanyEvents.Show ( ));
+        fireEvent( new CompanyEvents.Edit ( ));
     }
 
     @Override

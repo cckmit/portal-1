@@ -26,6 +26,12 @@ import java.util.Set;
 @Service( "CompanyService" )
 public class CompanyServiceImpl extends RemoteServiceServlet implements CompanyService {
 
+
+    @Override
+    public void setCompany(Company company) throws RequestFailedException {
+
+    }
+
     @Override
     public List< Company > getCompanies( String searchPattern, Set< CompanyCategory > categories, CompanyGroup group, En_SortField sortField, Boolean dirSort ) throws RequestFailedException {
 

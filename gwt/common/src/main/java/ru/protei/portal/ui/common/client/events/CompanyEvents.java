@@ -13,4 +13,10 @@ public class CompanyEvents {
         public Show () {}
 
     }
+
+    @Url( value = "company" )
+    public static class Edit {
+        public Edit () {}
+    }
+
 }
