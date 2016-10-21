@@ -345,6 +345,11 @@ label.required:after {
 
 .inputField {
   width: 100%;
+  box-shadow: rgba(49, 65, 87, 0.4) 0px 0px 1px 0px;
+  line-height: 30px;
+  height: 30px;
+  border: 0;
+  max-height: none;
 }
 
 .inputField.description {
