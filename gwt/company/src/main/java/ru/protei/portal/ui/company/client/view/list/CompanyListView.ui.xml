@@ -2,8 +2,10 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:companycategorybtngroup='urn:import:ru.protei.portal.ui.company.client.widget.category.btngroup'
              xmlns:sortfieldselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.sortfield'
-             xmlns:companygroupselector='urn:import:ru.protei.portal.ui.company.client.widget.group.selector'>
+             xmlns:companygroupselector='urn:import:ru.protei.portal.ui.company.client.widget.group.selector'
+             xmlns:platelist="urn:import:ru.protei.portal.ui.common.client.widget.platelist">
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+
     <g:HTMLPanel styleName="OrganizationList">
         <div class="controlButtons">
             <companycategorybtngroup:CategoryBtnGroup ui:field="categories"/>
@@ -24,6 +26,10 @@
                 <g:TextBox ui:field="search" styleName="inputField"/>
             </div>
         </div>
-        <g:HTMLPanel ui:field="childContainer" styleName="organizations list-group grid"/>
+        <platelist:PlateList ui:field="childContainer"
+                             styleName="organizations list-group grid"
+                             createButtonStyleName="list-group-item col-md-6 col-lg-3 list-group-create"
+                             createButtonCaption="{lang.buttonCreate}"
+        />
     </g:HTMLPanel>
 </ui:UiBinder>

@@ -1,0 +1,10 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+
+    <g:HTMLPanel ui:field="root" styleName="list-group grid">
+        <g:FocusPanel ui:field="createButton" >
+            <g:HTML ui:field="name"></g:HTML>
+        </g:FocusPanel>
+    </g:HTMLPanel>
+
+</ui:UiBinder>

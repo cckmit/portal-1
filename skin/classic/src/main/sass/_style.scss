@@ -1,3 +1,5 @@
+@import "list-group";
+
 @font-face {
   font-family: 'icomoon';
   src: url("../fonts/icomoon.eot?y1drme");
@@ -17390,48 +17392,7 @@ body {
     color: rgba(255,255,255,0.5);
   }
 }
-.list-group {
-  margin: -7px -7px 0 -7px;
-}
-.list-group-item {
-  padding: 7px;
-  display: inline-block;
-  box-sizing: border-box;
-  vertical-align: top;
-  width: 100%;
-}
-.list-group-item >.wrapper {
-  position: relative;
-  background-color: #f6f7f8;
-  border: 1px solid #fff;
-  white-space: nowrap;
-  box-shadow: 0 1px 4px 0px rgba(53,64,79,0.3);
-  border-radius: 3px;
-  z-index: 1;
-  transition-duration: 0.5s;
-  transition-property: padding;
-  padding: 14px;
-  overflow: hidden;
-}
-.list-group-item >.wrapper:after {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 50px;
-  content: "";
-  right: 0;
-  background-image: linear-gradient(to right, transparent, #f6f7f8 25px);
-}
-.list-group-item >.wrapper:hover {
-  background-color: #fff;
-  cursor: pointer;
-}
-.list-group-item >.wrapper:hover:after {
-  background-image: linear-gradient(to right, transparent, #fff 25px);
-}
-.list-group-item >.wrapper.inactive:after {
-  background-image: linear-gradient(to right, transparent, #dee4e5 25px) !important;
-}
+
 .grid:after {
   content: "";
   display: block;
