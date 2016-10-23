@@ -3,7 +3,9 @@
 
     <g:HTMLPanel ui:field="root" styleName="list-group grid">
         <g:FocusPanel ui:field="createButton" >
-            <g:HTML ui:field="name"></g:HTML>
+            <g:HTMLPanel styleName="wrapper">
+                <div ui:field="name" class="name"></div>
+            </g:HTMLPanel>
         </g:FocusPanel>
     </g:HTMLPanel>
 

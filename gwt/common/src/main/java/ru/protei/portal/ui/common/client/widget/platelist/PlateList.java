@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.widget.platelist;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -70,7 +71,7 @@ public class PlateList extends Composite implements HasWidgets, HasAddHandlers {
     }
 
     public void setCreateButtonCaption( String value ) {
-        name.setHTML( value );
+        name.setInnerText( value );
     }
 
     @UiField
@@ -78,7 +79,7 @@ public class PlateList extends Composite implements HasWidgets, HasAddHandlers {
     @UiField
     HTMLPanel root;
     @UiField
-    HTML name;
+    DivElement name;
 
     interface InputSelectorUiBinder extends UiBinder<HTMLPanel, PlateList> { }
     private static InputSelectorUiBinder ourUiBinder = GWT.create(InputSelectorUiBinder.class);

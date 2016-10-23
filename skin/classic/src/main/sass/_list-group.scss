@@ -8,10 +8,7 @@
   vertical-align: top;
   width: 100%;
 }
-.list-group-create {
-  @extend .list-group-item;
-  @extend .wrapper;
-}
+
 .list-group-item >.wrapper {
   position: relative;
   background-color: #f6f7f8;
@@ -43,4 +40,31 @@
 }
 .list-group-item >.wrapper.inactive:after {
   background-image: linear-gradient(to right, transparent, #dee4e5 25px) !important;
+}
+
+.list-group-create {
+  @extend .list-group-item;
+
+  .wrapper {
+    height: 3em;
+    background-color: rgb(84, 129, 193);
+
+    .name {
+      color: white;
+      font-size: 1.5em;
+      margin-top: 0.4em;
+    }
+
+    &:after {
+      background-image: none;
+    }
+
+    &:hover {
+      background: rgb(118, 154, 219) none;
+
+      &:after {
+        background: rgb(118, 154, 219) none;
+      }
+    }
+  }
 }
