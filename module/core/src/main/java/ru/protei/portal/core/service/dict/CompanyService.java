@@ -31,4 +31,10 @@ public interface CompanyService {
 
     CoreResponse<CompanyGroupItem> delCompanyFromGroup (Long groupId,
                                                       Long companyId);
+
+    CoreResponse<Company> createCompany (Company company);
+
+    CoreResponse<Company> updateCompany (Company company);
+
+    CoreResponse<Boolean> isCompanyNameExists ( String name );
 }

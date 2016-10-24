@@ -23,6 +23,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 
 /**
@@ -185,6 +186,35 @@ public class CompanyServiceImpl implements CompanyService {
         return new HttpListResult<>(companyCategoryDAO.getAll(), false);
     }
 
+    @Override
+    public CoreResponse<Company> createCompany(Company company) {
+
+        if (isValidCompany(company) && companyDAO.persist(company) != null) {
+            return new CoreResponse<Company>().success(company);
+        }
+
+        return createUndefinedError();
+    }
+
+    @Override
+    public CoreResponse<Company> updateCompany(Company company) {
+
+        if ( isValidCompany(company) && companyDAO.merge(company)) {
+            return new CoreResponse<Company>().success(company);
+        }
+
+        return createUndefinedError();
+    }
+
+    @Override
+    public CoreResponse<Boolean> isCompanyNameExists(String name) {
+
+        if (name != null && !name.trim().isEmpty() && companyDAO.checkExistsByCondition(" cname like ? ", name))
+            return new CoreResponse<Boolean>().success(new Boolean(true));
+
+        return createUndefinedError();
+    }
+
     /**
      * company-group search
      */
@@ -201,5 +231,10 @@ public class CompanyServiceImpl implements CompanyService {
             return expr == null || group.getName().toLowerCase().contains(expr)
                         || group.getInfo().toLowerCase().contains(expr);
         }
+    }
+
+    private boolean isValidCompany(Company company) {
+        return company != null && !company.getCname().trim().isEmpty()
+                && !company.getAddressDejure().trim().isEmpty() && !company.getAddressFact().trim().isEmpty();
     }
 }

@@ -40,4 +40,10 @@ public interface CompanyService extends RemoteService {
      */
     List<CompanyCategory> getCompanyCategories() throws RequestFailedException;
 
+    /**
+     * Сохранение компании
+     * @return результат сохранения
+     */
+    Boolean saveCompany ( Company company ) throws RequestFailedException;
+
 }

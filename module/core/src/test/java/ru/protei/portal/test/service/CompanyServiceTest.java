@@ -8,6 +8,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.api.struct.HttpListResult;
 import ru.protei.portal.config.MainConfiguration;
+import ru.protei.portal.core.model.dao.CompanyDAO;
 import ru.protei.portal.core.model.dao.CompanyGroupItemDAO;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanyGroup;
@@ -78,6 +79,36 @@ public class CompanyServiceTest {
         }
         finally {
             ctx.getBean(CompanyGroupItemDAO.class).removeByCondition("company_id=?", 1L);
+        }
+    }
+
+    @Test
+    public void testCompanies () {
+        Long id = null;
+
+        try {
+
+            CompanyService service = ctx.getBean(CompanyService.class);
+            CoreResponse<Boolean> resp = service.isCompanyNameExists("Тестовая компания");
+
+            Assert.assertFalse(resp.isOk());
+            Assert.assertNull(resp.getData());
+
+            Company company = new Company();
+            company.setCname("Тестовая компания");
+            company.setAddressDejure("Тестовый адрес");
+            company.setAddressFact("Тестовый адрес");
+
+            CoreResponse<Company> response = service.createCompany(company);
+            Assert.assertTrue(response.isOk());
+            Assert.assertNotNull(response.getData());
+
+            System.out.println(company.getId());
+            id = company.getId();
+        }
+        finally {
+            if (id != null)
+                ctx.getBean(CompanyDAO.class).removeByCondition("id=?", id);
         }
     }
 

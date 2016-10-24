@@ -5,6 +5,7 @@ import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanyCategory;
 import ru.protei.portal.core.model.ent.CompanyGroup;
+import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
 import java.util.List;
 import java.util.Set;
@@ -35,5 +36,11 @@ public interface CompanyServiceAsync {
      * @return список категорий
      */
     void getCompanyCategories( AsyncCallback<List <CompanyCategory> > async  );
+
+    /**
+     * Сохранение компании
+     * @return результат сохранения
+     */
+    void saveCompany ( Company company, AsyncCallback< Boolean > async );
 
 }

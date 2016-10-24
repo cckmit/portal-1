@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.api.struct.HttpListResult;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
@@ -16,6 +17,9 @@ import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.company.client.service.CompanyService;
 
+import java.beans.BeanInfo;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -71,11 +75,29 @@ public class CompanyServiceImpl extends RemoteServiceServlet implements CompanyS
     @Override
     public List<CompanyCategory> getCompanyCategories() throws RequestFailedException {
 
-        log.debug( "getCompanyCategories");
+        log.debug( "getCompanyCategories" );
 
         HttpListResult< CompanyCategory > result = companyService.categoryList();
 
         return result.getItems();
+    }
+
+    @Override
+    public Boolean saveCompany( Company company ) throws RequestFailedException {
+
+        log.debug( "saveCompany" );
+        log.debug( "saveCompany: Id={}", company.getId() );
+        log.debug( "saveCompany: name={}", company.getCname() );
+
+        CoreResponse< Company > response;
+
+        if ( company.getId() == null )
+            response = companyService.createCompany( company );
+        else
+            response = companyService.updateCompany( company );
+
+        if ( response.isOk() ) return true;
+        else return false;
     }
 
     @Autowired
