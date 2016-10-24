@@ -25,11 +25,6 @@ public class PlateList extends Composite implements HasWidgets, HasAddHandlers {
         initWidget(ourUiBinder.createAndBindUi(this));
     }
 
-    @UiHandler( "createButton" )
-    public void createButtonClick( ClickEvent event ) {
-        AddEvent.fire( this );
-    }
-
     @Override
     public void add( Widget widget ) {
         root.add( widget );
@@ -72,6 +67,11 @@ public class PlateList extends Composite implements HasWidgets, HasAddHandlers {
 
     public void setCreateButtonCaption( String value ) {
         name.setInnerText( value );
+    }
+
+    @UiHandler( "createButton" )
+    public void createButtonClick( ClickEvent event ) {
+        AddEvent.fire( this );
     }
 
     @UiField
