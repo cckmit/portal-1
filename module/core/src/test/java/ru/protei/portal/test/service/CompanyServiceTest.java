@@ -105,6 +105,12 @@ public class CompanyServiceTest {
             Assert.assertNotNull(response.getData());
 
             System.out.println(company.getId());
+
+            company.setCname("Моя тестовая компания");
+            response = service.updateCompany(company);
+            Assert.assertTrue(response.isOk());
+            Assert.assertNotNull(response.getData());
+
             id = company.getId();
         }
         finally {
