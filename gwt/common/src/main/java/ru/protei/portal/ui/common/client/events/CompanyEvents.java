@@ -14,10 +14,10 @@ public class CompanyEvents {
 
     }
 
-    @Url( value = "company" )
+    @Url( value = "company", primary = false )
     public static class Edit {
 
-        public Edit(){}
+        public Edit() {}
 
         public Long id;
         public Edit (Long id) {

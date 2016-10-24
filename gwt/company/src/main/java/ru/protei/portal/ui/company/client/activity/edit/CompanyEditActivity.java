@@ -3,6 +3,7 @@ package ru.protei.portal.ui.company.client.activity.edit;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
+import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
@@ -97,7 +98,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
     @Override
     public void onCancelClicked() {
-        fireEvent(new CompanyEvents.Show());
+        fireEvent(new Back());
     }
 
     @Override
