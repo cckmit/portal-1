@@ -41,7 +41,8 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
 
         initProduct(productId);
 
-        this.fireEvent(new AppEvents.InitPanelName(productId == null ? lang.newProduct() : view.getName().getText()));
+        this.fireEvent(new AppEvents.InitPanelName(productId == null ? lang.newProduct() : lang.changeProduct()));
+
     }
 
     private void initProduct(Long productId) {
@@ -158,6 +159,7 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
 
     public void goBack()
     {
+        product = null;
         fireEvent(new ProductEvents.Show());
     }
 

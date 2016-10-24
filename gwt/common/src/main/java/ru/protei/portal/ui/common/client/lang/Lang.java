@@ -65,4 +65,6 @@ public interface Lang extends Messages {
     String buttonFromArchive();
 
     String emptyName();
+
+    String changeProduct();
 }
