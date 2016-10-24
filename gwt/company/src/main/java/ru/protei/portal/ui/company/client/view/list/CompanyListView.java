@@ -1,7 +1,9 @@
 package ru.protei.portal.ui.company.client.view.list;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.*;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -14,12 +16,14 @@ import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.CompanyCategory;
 import ru.protei.portal.core.model.ent.CompanyGroup;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.platelist.PlateList;
+import ru.protei.portal.ui.common.client.widget.platelist.events.AddEvent;
+import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
+import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.company.client.activity.list.AbstractCompanyListActivity;
 import ru.protei.portal.ui.company.client.activity.list.AbstractCompanyListView;
 import ru.protei.portal.ui.company.client.widget.category.btngroup.CategoryBtnGroup;
 import ru.protei.portal.ui.company.client.widget.group.selector.GroupSelector;
-import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
-import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 
 import java.util.Set;
 
@@ -104,6 +108,13 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
         }
     }
 
+    @UiHandler( "childContainer" )
+    public void onAddClicked( AddEvent event ) {
+        if ( activity != null ) {
+            activity.onCreateClicked();
+        }
+    }
+
     @Override
     public void onKeyUp( KeyUpEvent keyUpEvent ) {
         timer.cancel();
@@ -127,7 +138,7 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
     TextBox search;
 
     @UiField
-    HTMLPanel childContainer;
+    PlateList childContainer;
 
     @UiField
     ToggleButton directionButton;

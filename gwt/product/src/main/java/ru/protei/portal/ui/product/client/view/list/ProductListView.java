@@ -12,6 +12,7 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.platelist.PlateList;
 import ru.protei.portal.ui.product.client.activity.list.AbstractProductListActivity;
 import ru.protei.portal.ui.product.client.activity.list.AbstractProductListView;
 import ru.protei.portal.ui.product.client.widgets.sortfieldselector.SortFieldSelector;
@@ -114,7 +115,7 @@ public class ProductListView extends Composite implements AbstractProductListVie
     @UiField
     TextBox search;
     @UiField
-    HTMLPanel productContainer;
+    PlateList productContainer;
     @UiField
     CheckBox showDeprecated;
     @Inject
