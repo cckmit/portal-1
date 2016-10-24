@@ -1,0 +1,1970 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Система управления персоналом</title>
+    <meta charset="UTF-8"/>
+    <link rel="stylesheet" href="style.css"/>
+    <!--link(rel='stylesheet', href='leadership.css')-->
+    <script src="web/scripts/jquery-2.1.4.min.js"></script>
+    <script>
+      /** my lib **/
+      function replaceClass(elem, from, to){
+          elem.removeClass(from).addClass(to);
+          return elem;
+      }
+      
+      function log(e){
+          console.log(e)
+      }
+      
+      
+    </script>
+    <script src="web/scripts/Chart.min.js"></script>
+    <script src="web/scripts/Chart.config.js"></script>
+    <script>
+      (function($) {
+          $.eventReport = function(selector, root) {
+              var s = [];
+              $(selector || '*', root).addBack().each(function() {
+                  // the following line is the only change
+                  var e = $._data(this, 'events');
+                  if(!e) return;
+                  s.push(this.tagName);
+                  if(this.id) s.push('#', this.id);
+                  if(this.className) s.push('.', this.className.replace(/ +/g, '.'));
+                  for(var p in e) {
+                      var r = e[p],
+                              h = r.length - r.delegateCount;
+                      if(h)
+                          s.push('\n', h, ' ', p, ' handler', h > 1 ? 's' : '');
+                      if(r.delegateCount) {
+                          for(var q = 0; q < r.length; q++)
+                              if(r[q].selector) s.push('\n', p, ' for ', r[q].selector);
+                      }
+                  }
+                  s.push('\n\n');
+              });
+              return s.join('');
+          }
+          $.fn.eventReport = function(selector) {
+              return $.eventReport(selector, this);
+          }
+      })(jQuery);
+      
+      
+    </script>
+    <link rel="stylesheet" href="web/css/lib/daterangepicker.css"/>
+    <script src="web/scripts/lib/moment.min.js"></script>
+    <script src="web/scripts/lib/jquery.daterangepicker.js"></script>
+    <script src="web/scripts/highchart/highcharts.js"></script>
+    <script src="web/scripts/highchart/exporting.js"></script>
+    <script src="web/scripts/lib/perfect-scrollbar.jquery.min.js"></script>
+    <link rel="stylesheet" href="web/css/lib/perfect-scrollbar.min.css"/>
+  </head>
+  <body>
+    <div class="global">
+      <div class="header_global">
+        <div class="leftBlock">
+          <div class="company"><span onclick="alert($.eventReport())" class="logo"></span><span class="name">PROTEI</span></div>
+          <div id="hideLeftBlock" class="hideBar_button"></div>
+        </div>
+        <div class="rightBlock">
+          <div class="topicTitle organizations">
+            <div class="title">Организации</div>
+          </div>
+          <div class="currentTask"><span class="case">Freq<span class="id">7823289</span></span>
+            <div class="timer"><span class="time"><span class="hours">01</span><span class="timeDelimiter">:</span><span class="minutes">12</span></span><span id="stopCurrentTask" class="stop_button"></span></div>
+          </div>
+          <div id="runTimeFixer" class="completeWorkSession"><span class="icon-time"></span>Таймфиксер</div>
+          <div class="rightSide">
+            <div class="icons">
+              <!--#userProfile.userProfilespan.icon-user
+              -->
+              <div id="globalNotifications" class="notifications_button active"></div>
+              <div id="globalSettings" class="settings_button"></div>
+              <div id="globalHelper" class="helper_button"></div>
+              <div id="globalExit" class="exit_button"></div>
+            </div>
+          </div>
+          <div class="rightSide searchBlock">
+            <form class="globalSearch">
+              <input id="globalSearch" placeholder="Поиск по объектам" type="text" autocomplete="off" class="searchInput"/>
+              <div id="p4" contenteditable="true" class="searchInput"><span>11</span><span>22<span>33</span></span></div>
+              <div class="buttonsBlock">
+                <label class="search_button">
+                  <input type="submit" value="Поиск"/>
+                </label>
+                <!--label.icon-resetButton
+                input(type="reset" value="Сброс")
+                
+                -->
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="body_global">
+        <div class="leftBlock">
+          <div class="noScrolling">
+            <div class="scrolling">
+              <div class="mainButtons"></div>
+              <div class="menuList">
+                <div class="menu">
+                  <div class="title">Рабочее место</div>
+                  <div class="list">
+                    <div class="item"><span class="icon-plan"></span>Мой план</div>
+                    <div class="item"><span class="icon-created"></span>Инспектор</div>
+                    <div class="item"><span class="icon-activity"></span>Моя активность</div>
+                    <div class="item"><span class="icon-subscription"></span>Мои подписки</div>
+                    <div class="item"><span class="icon-favorites"></span>Мои избранные</div>
+                  </div>
+                </div>
+                <div class="menu">
+                  <div class="title">Компания</div>
+                  <div class="list">
+                    <div class="item"><span class="icon-employees"></span>Сотрудники</div>
+                    <div class="item"><span class="icon-me"></span>Мой паспорт</div>
+                  </div>
+                </div>
+                <div class="menu">
+                  <div class="title">
+                    <!--span.icon-savedQueries-->Объекты системы
+                  </div>
+                  <div style="max-height: 500px" class="list active">
+                    <!--.slideWrapper-->
+                    <div class="item"><span class="icon-component"></span>Компоненты</div>
+                    <div class="item"><span class="icon-product"></span>Продукты</div>
+                    <div class="item"><span class="icon-case"></span>Задачи</div>
+                    <div class="item"><span class="icon-order"></span>Группы задач</div>
+                    <div class="item"><span class="icon-order"></span>Заказы</div>
+                    <div class="item"><span class="icon-project"></span>Проекты</div>
+                    <div class="item"><span class="icon-organization"></span>Организации</div>
+                  </div>
+                </div>
+                <div class="menu">
+                  <div class="title">
+                    <!--span.icon-savedQueries-->Управление и отчёты
+                  </div>
+                  <div class="list">
+                    <!--.slideWrapper-->
+                    <div class="item"><span class="icon-employees"></span>Сотрудники</div>
+                    <div class="item"><span class="icon-component"></span>Компоненты</div>
+                    <div class="item"><span class="icon-product"></span>Продукты</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <script>
+            $('#hideLeftBlock').click(function(){
+                $('.header_global >.leftBlock,.body_global >.leftBlock').addClass('inactive');
+                $('.body_global >.leftBlock').click(function func(){
+                    $('.header_global >.leftBlock,.body_global >.leftBlock').removeClass('inactive');
+                    $('.body_global >.leftBlock').off()
+                })
+            })
+            
+          </script>
+        </div>
+        <div class="rightBlock">
+          <div class="OrganizationList">
+            <div class="controlButtons">
+              <div class="button">Заказчики</div>
+              <div class="button">Партнёры</div>
+              <div class="buttons_group">
+                <input placeholder="Группа компаний" class="inputField">
+                <div class="button selected sticky empty"></div>
+              </div>
+              <div class="buttons_group">
+                <div class="regulator">Сортировать по
+                  <div class="button selected">Название</div>
+                  <div class="button empty switcher"><span class="icon-down"></span></div>
+                </div>
+              </div>
+              <div class="rightSide">
+                <input placeholder="Поиск" class="inputField">
+                <div class="button empty sticky blueC"><span class="icon-search"></span></div>
+              </div>
+            </div>
+            <div class="organizations">
+              <div data-id='1' class="organization">
+                <div class="wrapper">
+                  <div class="type">Заказчик</div>
+                  <div class="name">Organization_A</div><span class="menu_button"></span>
+                  <div class="favorite_button"></div>
+                </div>
+              </div>
+              <div data-id='2' class="organization">
+                <div class="wrapper">
+                  <div class="type">Заказчик</div>
+                  <div class="name">Organization_A</div><span class="menu_button"></span>
+                  <div class="favorite_button"></div>
+                </div>
+              </div>
+              <div data-id='3' class="organization">
+                <div class="wrapper">
+                  <div class="type">Заказчик</div>
+                  <div class="name">Organization_A</div><span class="menu_button"></span>
+                  <div class="favorite_button"></div>
+                </div>
+              </div>
+              <div data-id='4' class="organization">
+                <div class="wrapper">
+                  <div class="type">Заказчик</div>
+                  <div class="name">Organization_A</div><span class="menu_button"></span>
+                  <div class="favorite_button"></div>
+                </div>
+              </div>
+              <div data-id='5' class="organization">
+                <div class="wrapper">
+                  <div class="type">Партнёр</div>
+                  <div class="name">Organization_A</div><span class="menu_button"></span>
+                  <div class="favorite_button"></div>
+                </div>
+              </div>
+              <div data-id='6' class="organization">
+                <div class="wrapper">
+                  <div class="type">Заказчик</div>
+                  <div class="name">Organization_A</div><span class="menu_button"></span>
+                  <div class="favorite_button"></div>
+                </div>
+              </div>
+              <div data-id='7' class="organization">
+                <div class="wrapper">
+                  <div class="type">Партнёр</div>
+                  <div class="name">Organization_A</div><span class="menu_button"></span>
+                  <div class="favorite_button"></div>
+                </div>
+              </div>
+              <div data-id='8' class="organization active55">
+                <div class="wrapper">
+                  <div class="type">Заказчик</div>
+                  <div class="name">Organization_A</div><span class="menu_button"></span>
+                  <div class="favorite_button"></div>
+                </div>
+              </div>
+              <div data-id='9' class="organization">
+                <div class="wrapper">
+                  <div class="type">Заказчик</div>
+                  <div class="name">Organization_A</div><span class="menu_button"></span>
+                  <div class="favorite_button"></div>
+                </div>
+              </div>
+              <div data-id='10' class="organization">
+                <div class="wrapper">
+                  <div class="type">Заказчик</div>
+                  <div class="name">Organization_A</div><span class="menu_button"></span>
+                  <div class="favorite_button"></div>
+                </div>
+              </div>
+              <div data-id='11' class="organization">
+                <div class="wrapper">
+                  <div class="type">Заказчик</div>
+                  <div class="name">Organization_A</div><span class="menu_button"></span>
+                  <div class="favorite_button"></div>
+                </div>
+              </div>
+              <div data-id='12' class="organization">
+                <div class="wrapper">
+                  <div class="type">Заказчик</div>
+                  <div class="name">Organization_A</div><span class="menu_button"></span>
+                  <div class="favorite_button"></div>
+                </div>
+              </div>
+              <div data-id='13' class="organization">
+                <div class="wrapper">
+                  <div class="type">Заказчик</div>
+                  <div class="name">Organization_A</div><span class="menu_button"></span>
+                  <div class="favorite_button"></div>
+                </div>
+              </div>
+              <div data-id='14' class="organization">
+                <div class="wrapper">
+                  <div class="type">Заказчик</div>
+                  <div class="name">Organization_A</div><span class="menu_button"></span>
+                  <div class="favorite_button"></div>
+                </div>
+              </div>
+              <div data-id='15' class="organization">
+                <div class="wrapper">
+                  <div class="type">Заказчик</div>
+                  <div class="name">Organization_A</div><span class="menu_button"></span>
+                  <div class="favorite_button"></div>
+                </div>
+              </div>
+              <div data-id='16' class="organization">
+                <div class="wrapper">
+                  <div class="type">Заказчик</div>
+                  <div class="name">Organization_A</div><span class="menu_button"></span>
+                  <div class="favorite_button"></div>
+                </div>
+              </div>
+              <div data-id='17' class="organization">
+                <div class="wrapper">
+                  <div class="type">Заказчик</div>
+                  <div class="name">Organization_A</div><span class="menu_button"></span>
+                  <div class="favorite_button"></div>
+                </div>
+              </div>
+              <div data-id='18' class="organization">
+                <div class="wrapper">
+                  <div class="type">Заказчик</div>
+                  <div class="name">Organization_A</div><span class="menu_button"></span>
+                  <div class="favorite_button"></div>
+                </div>
+              </div>
+              <div data-id='19' class="organization">
+                <div class="wrapper">
+                  <div class="type">Заказчик</div>
+                  <div class="name">Organization_A</div><span class="menu_button"></span>
+                  <div class="favorite_button"></div>
+                </div>
+              </div>
+              <div data-id='20' class="organization">
+                <div class="wrapper">
+                  <div class="type">Заказчик</div>
+                  <div class="name">Organization_A</div><span class="menu_button"></span>
+                  <div class="favorite_button"></div>
+                </div>
+              </div>
+              <div data-id='21' class="organization">
+                <div class="wrapper">
+                  <div class="type">Заказчик</div>
+                  <div class="name">Organization_A</div><span class="menu_button"></span>
+                  <div class="favorite_button"></div>
+                </div>
+              </div>
+              <div data-id='22' class="organization">
+                <div class="wrapper">
+                  <div class="type">Заказчик</div>
+                  <div class="name">Organization_A</div><span class="menu_button"></span>
+                  <div class="favorite_button"></div>
+                </div>
+              </div>
+              <div data-id='23' class="organization">
+                <div class="wrapper">
+                  <div class="type">Заказчик</div>
+                  <div class="name">Organization_A</div><span class="menu_button"></span>
+                  <div class="favorite_button"></div>
+                </div>
+              </div>
+              <div data-id='24' class="organization">
+                <div class="wrapper">
+                  <div class="type">Заказчик</div>
+                  <div class="name">Organization_A</div><span class="menu_button"></span>
+                  <div class="favorite_button"></div>
+                </div>
+              </div>
+              <div data-id='25' class="organization">
+                <div class="wrapper">
+                  <div class="type">Заказчик</div>
+                  <div class="name">Organization_A</div><span class="menu_button"></span>
+                  <div class="favorite_button"></div>
+                </div>
+              </div>
+              <div data-id='26' class="organization">
+                <div class="wrapper">
+                  <div class="type">Заказчик</div>
+                  <div class="name">Organization_A</div><span class="menu_button"></span>
+                  <div class="favorite_button"></div>
+                </div>
+              </div>
+              <div data-id='27' class="organization">
+                <div class="wrapper">
+                  <div class="type">Заказчик</div>
+                  <div class="name">Organization_A</div><span class="menu_button"></span>
+                  <div class="favorite_button"></div>
+                </div>
+              </div>
+              <div data-id='28' class="organization">
+                <div class="wrapper">
+                  <div class="type">Заказчик</div>
+                  <div class="name">Organization_A</div><span class="menu_button"></span>
+                  <div class="favorite_button"></div>
+                </div>
+              </div>
+              <div data-id='29' class="organization">
+                <div class="wrapper">
+                  <div class="type">Заказчик</div>
+                  <div class="name">Organization_A</div><span class="menu_button"></span>
+                  <div class="favorite_button"></div>
+                </div>
+              </div>
+              <div data-id='30' class="organization">
+                <div class="wrapper">
+                  <div class="type">Заказчик</div>
+                  <div class="name">Organization_A</div><span class="menu_button"></span>
+                  <div class="favorite_button"></div>
+                </div>
+              </div>
+              <div data-id='31' class="organization">
+                <div class="wrapper">
+                  <div class="type">Заказчик</div>
+                  <div class="name">Organization_A</div><span class="menu_button"></span>
+                  <div class="favorite_button"></div>
+                </div>
+              </div>
+              <div data-id='32' class="organization">
+                <div class="wrapper">
+                  <div class="type">Заказчик</div>
+                  <div class="name">Organization_A</div><span class="menu_button"></span>
+                  <div class="favorite_button"></div>
+                </div>
+              </div>
+              <div data-id='33' class="organization">
+                <div class="wrapper">
+                  <div class="type">Заказчик</div>
+                  <div class="name">Organization_A</div><span class="menu_button"></span>
+                  <div class="favorite_button"></div>
+                </div>
+              </div>
+              <div data-id='34' class="organization">
+                <div class="wrapper">
+                  <div class="type">Заказчик</div>
+                  <div class="name">Organization_A</div><span class="menu_button"></span>
+                  <div class="favorite_button"></div>
+                </div>
+              </div>
+              <div data-id='35' class="organization">
+                <div class="wrapper">
+                  <div class="type">Заказчик</div>
+                  <div class="name">Organization_A</div><span class="menu_button"></span>
+                  <div class="favorite_button"></div>
+                </div>
+              </div>
+              <div data-id='36' class="organization">
+                <div class="wrapper">
+                  <div class="type">Заказчик</div>
+                  <div class="name">Organization_A</div><span class="menu_button"></span>
+                  <div class="favorite_button"></div>
+                </div>
+              </div>
+              <div data-id='37' class="organization">
+                <div class="wrapper">
+                  <div class="type">Заказчик</div>
+                  <div class="name">Organization_A</div><span class="menu_button"></span>
+                  <div class="favorite_button"></div>
+                </div>
+              </div>
+              <div data-id='38' class="organization">
+                <div class="wrapper">
+                  <div class="type">Заказчик</div>
+                  <div class="name">Organization_A</div><span class="menu_button"></span>
+                  <div class="favorite_button"></div>
+                </div>
+              </div>
+              <div data-id='39' class="organization">
+                <div class="wrapper">
+                  <div class="type">Заказчик</div>
+                  <div class="name">Organization_A</div><span class="menu_button"></span>
+                  <div class="favorite_button"></div>
+                </div>
+              </div>
+              <div data-id='40' class="organization">
+                <div class="wrapper">
+                  <div class="type">Заказчик</div>
+                  <div class="name">Organization_A</div><span class="menu_button"></span>
+                  <div class="favorite_button"></div>
+                </div>
+              </div>
+              <div data-id='41' class="organization">
+                <div class="wrapper">
+                  <div class="type">Заказчик</div>
+                  <div class="name">Organization_A</div><span class="menu_button"></span>
+                  <div class="favorite_button"></div>
+                </div>
+              </div>
+              <div data-id='42' class="organization">
+                <div class="wrapper">
+                  <div class="type">Заказчик</div>
+                  <div class="name">Organization_A</div><span class="menu_button"></span>
+                  <div class="favorite_button"></div>
+                </div>
+              </div>
+              <div data-id='43' class="organization">
+                <div class="wrapper">
+                  <div class="type">Заказчик</div>
+                  <div class="name">Organization_A</div><span class="menu_button"></span>
+                  <div class="favorite_button"></div>
+                </div>
+              </div>
+              <div data-id='44' class="organization">
+                <div class="wrapper">
+                  <div class="type">Заказчик</div>
+                  <div class="name">Organization_A</div><span class="menu_button"></span>
+                  <div class="favorite_button"></div>
+                </div>
+              </div>
+              <div data-id='45' class="organization">
+                <div class="wrapper">
+                  <div class="type">Заказчик</div>
+                  <div class="name">Organization_A</div><span class="menu_button"></span>
+                  <div class="favorite_button"></div>
+                </div>
+              </div>
+              <div data-id='46' class="organization">
+                <div class="wrapper">
+                  <div class="type">Заказчик</div>
+                  <div class="name">Organization_A</div><span class="menu_button"></span>
+                  <div class="favorite_button"></div>
+                </div>
+              </div>
+              <div data-id='47' class="organization">
+                <div class="wrapper">
+                  <div class="type">Заказчик</div>
+                  <div class="name">Organization_A</div><span class="menu_button"></span>
+                  <div class="favorite_button"></div>
+                </div>
+              </div>
+              <div data-id='48' class="organization">
+                <div class="wrapper">
+                  <div class="type">Заказчик</div>
+                  <div class="name">Organization_A</div><span class="menu_button"></span>
+                  <div class="favorite_button"></div>
+                </div>
+              </div>
+              <div data-id='49' class="organization">
+                <div class="wrapper">
+                  <div class="type">Заказчик</div>
+                  <div class="name">Organization_A</div><span class="menu_button"></span>
+                  <div class="favorite_button"></div>
+                </div>
+              </div>
+              <div data-id='50' class="organization">
+                <div class="wrapper">
+                  <div class="type">Заказчик</div>
+                  <div class="name">Organization_A</div><span class="menu_button"></span>
+                  <div class="favorite_button"></div>
+                </div>
+              </div>
+              <div data-id='51' class="organization">
+                <div class="wrapper">
+                  <div class="type">Заказчик</div>
+                  <div class="name">Organization_A</div><span class="menu_button"></span>
+                  <div class="favorite_button"></div>
+                </div>
+              </div>
+              <div data-id='52' class="organization">
+                <div class="wrapper">
+                  <div class="type">Заказчик</div>
+                  <div class="name">Organization_A</div><span class="menu_button"></span>
+                  <div class="favorite_button"></div>
+                </div>
+              </div>
+              <div data-id='53' class="organization">
+                <div class="wrapper">
+                  <div class="type">Заказчик</div>
+                  <div class="name">Organization_A</div><span class="menu_button"></span>
+                  <div class="favorite_button"></div>
+                </div>
+              </div>
+              <div data-id='54' class="organization">
+                <div class="wrapper">
+                  <div class="type">Заказчик</div>
+                  <div class="name">Organization_A</div><span class="menu_button"></span>
+                  <div class="favorite_button"></div>
+                </div>
+              </div>
+              <div data-id='55' class="organization">
+                <div class="wrapper">
+                  <div class="type">Заказчик</div>
+                  <div class="name">Organization_A</div><span class="menu_button"></span>
+                  <div class="favorite_button"></div>
+                </div>
+              </div>
+              <div data-id='56' class="organization">
+                <div class="wrapper">
+                  <div class="type">Заказчик</div>
+                  <div class="name">Organization_A</div><span class="menu_button"></span>
+                  <div class="favorite_button"></div>
+                </div>
+              </div>
+              <div data-id='57' class="organization">
+                <div class="wrapper">
+                  <div class="type">Заказчик</div>
+                  <div class="name">Organization_A</div><span class="menu_button"></span>
+                  <div class="favorite_button"></div>
+                </div>
+              </div>
+              <div data-id='58' class="organization">
+                <div class="wrapper">
+                  <div class="type">Заказчик</div>
+                  <div class="name">Organization_A</div><span class="menu_button"></span>
+                  <div class="favorite_button"></div>
+                </div>
+              </div>
+              <div class="OrganizationPassport">
+                <div class="head">
+                  <div class="tabs">
+                    <div class="tab active">Информация</div>
+                    <div class="tab">Активность</div>
+                  </div>
+                </div>
+                <div class="mainInfo">
+                  <div class="t_wrapper">
+                    <div class="tc_wrapper">
+                      <div class="section info">
+                        <div class="head"><span class="header">Общая информация</span>
+                          <div class="rightSide">
+                            <div class="edit_button"></div>
+                          </div>
+                        </div>
+                        <div class="body">
+                          <div id="scrollInfo" class="wrapper white-ps-container">
+                            <div class="t_wrapper">
+                              <div class="tr_wrapper companyGroup">
+                                <div class="tc_wrapper header">Группа компаний</div>
+                                <div class="tc_wrapper content">Мегафон</div>
+                              </div>
+                              <div class="tr_wrapper">
+                                <div class="tc_wrapper header">Юридический адрес</div>
+                                <div class="tc_wrapper content">г.Москва, 4 этаж,офис 403, Каменноостровский пр., 40</div>
+                              </div>
+                              <div class="tr_wrapper">
+                                <div class="tc_wrapper header">Фактический адрес</div>
+                                <div class="tc_wrapper content">г.Москва, пр. Луначарского, 54</div>
+                              </div>
+                              <div class="tr_wrapper site">
+                                <div class="tc_wrapper header">Web сайт</div>
+                                <div class="tc_wrapper content"><a href="www.chertichto.ru" class="link">www.chertichto.ru</a></div>
+                              </div>
+                              <div class="tr_wrapper email">
+                                <div class="tc_wrapper header">Email</div>
+                                <div class="tc_wrapper content"><a href="mailto:chertichto@mail.ru" class="link">chertichto@mail.ru</a></div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <!--script.
+                        $(function() {
+                            $('#scrollInfo').perfectScrollbar();
+                        });
+                        -->
+                      </div>
+                    </div>
+                    <div class="tc_wrapper">
+                      <div class="section addressBook">
+                        <div class="head"><span class="header">Контактные лица</span>
+                          <div class="rightSide">
+                            <div class="add_button"></div>
+                          </div>
+                        </div>
+                        <div class="body">
+                          <div class="employee"><span class="delete_button"></span><span class="name">Фамилия И.О.</span></div>
+                          <div class="employee"><span class="delete_button"></span><span class="name">Фамилия И.О.</span></div>
+                          <div class="employee"><span class="delete_button"></span><span class="name">Фамилия И.О.</span></div>
+                          <div class="employee"><span class="delete_button"></span><span class="name">Фамилия И.О.</span></div>
+                          <div class="employee"><span class="delete_button"></span><span class="name">Фамилия И.О.</span></div>
+                          <div class="employee"><span class="delete_button"></span><span class="name">Фамилия И.О.</span></div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="tc_wrapper large">
+                      <div class="section description">
+                        <div class="head"><span class="header">Дополнительная информация</span>
+                          <div class="rightSide">
+                            <div class="save_button"></div>
+                          </div>
+                        </div>
+                        <div class="body">
+                          <textarea class="text">Здесь что то должно быть написано или ничего</textarea>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="detailInfo">
+                  <div class="controlButtons">
+                    <div class="regulator">
+                      <div class="radioButton grayC active"></div>Проекты
+                    </div>
+                    <div class="regulator">
+                      <div class="radioButton grayC"></div>Продукты
+                    </div>
+                    <div class="rightSide">
+                      <div class="button greenC"><span class="icon-add"></span>Новый проект</div>
+                    </div>
+                  </div>
+                  <div class="infoTables">
+                    <table class="projects large">
+                      <thead>
+                        <tr class="headers">
+                          <td class="id">Номер проекта</td>
+                          <td class="dateCreation">Дата создания</td>
+                          <td class="dateUpdate">Дата обновления</td>
+                          <td class="creator">Создатель</td>
+                          <td class="manager">Менеджер</td>
+                          <td class="type">Тип проекта</td>
+                          <td class="name">Название</td>
+                          <td class="status">Статус</td>
+                        </tr>
+                      </thead>
+                      <tr class="project">
+                        <td class="id"><span class="link">34</span></td>
+                        <td class="dateCreation">20.12.2015 12:30</td>
+                        <td class="dateUpdate">20.12.2015 12:30</td>
+                        <td class="creator"><span class="link">Фамилия И.О.</span></td>
+                        <td class="manager"><span class="link">Фамилия И.О.</span></td>
+                        <td class="type">Разработка</td>
+                        <td class="description"><span class="productTag"><span class="productName">Portal Protei</span><span class="productVersion">1</span></span><span class="text">Здесь будет описание описание описание описание описание описание</span>
+                          <div class="more_button"></div>
+                        </td>
+                        <td class="status">active</td>
+                      </tr>
+                      <tr class="project closed">
+                        <td class="id"><span class="link">162</span></td>
+                        <td class="dateCreation">20.12.2015 12:30</td>
+                        <td class="dateUpdate">20.12.2015 12:30</td>
+                        <td class="creator"><span class="link">Фамилия И.О.</span></td>
+                        <td class="manager"><span class="link">Фамилия И.О.</span></td>
+                        <td class="type">Разработка</td>
+                        <td class="description"><span class="productTag"><span class="productName">Portal Protei</span><span class="productBranch">Base22</span><span class="productVersion">1</span></span><span class="productTag"><span class="productName">Product_Name</span><span class="productBranch">SimTel</span><span class="productVersion">14.75</span></span><span class="text">Здесь будет описание описание описание описание описание описание</span>
+                          <div class="more_button"></div>
+                        </td>
+                        <td class="status">closed</td>
+                      </tr>
+                    </table>
+                  </div>
+                </div>
+              </div>
+              <div id="empty1"></div>
+              <div id="empty2"></div>
+              <div id="empty3"></div>
+            </div>
+            <!--.letters(style="")-->
+            <!--    -var letters = "А Б В Г Д Е Ё Ж З И К Л М Н О П Р С Т У Ф Х Ц Ч Ш Щ Э Ю Я A B C D E F G H I J K L M N O P Q R S T U V W X Y Z".split(" ");-->
+            <!--    -for(var id = 0; id < letters.length; id++)-->
+            <!--        if (id==5 || id==10 || id==11 || id==18 || id==25)-->
+            <!--            .button.inactive #{letters[id]}-->
+            <!--        else-->
+            <!--            .button #{letters[id]}-->
+            <!---->
+            <!--script.-->
+            <!--    $(function() {-->
+            <!--        $('.letters').perfectScrollbar();-->
+            <!--    });-->
+            
+            
+            <script>
+              !function(){
+                  var organizations = $('.organization');
+                  var orgPassport = $('.OrganizationPassport');
+                  var group = $('.OrganizationPassport,#empty1,#empty2,#empty3');
+                  var lastActiveElem;
+                  organizations.click(function(event) {
+                      var elem = $(event.currentTarget);
+                      var id = elem.data('id');
+                      var prevOrgId = Math.ceil(id/4)*4-1;
+                      if(prevOrgId>organizations.length-1)
+                          prevOrgId = organizations.length-1
+                      var prevOrg = $(organizations.get(prevOrgId));
+              
+                      if (elem.hasClass('active')) {
+                          elem.removeClass('active')
+                          orgPassport.slideUp();
+                          return;
+                      }
+              
+                      if(lastActiveElem)
+                          lastActiveElem.removeClass('active')
+                      else{
+                          $('#scrollInfo').perfectScrollbar();
+                      }
+                      orgPassport.slideUp()
+                      elem.addClass('active')
+                      prevOrg.after(group);
+                      orgPassport.slideDown()
+                      lastActiveElem = elem;
+                  });
+              }();
+            </script>
+            <div class="footer">
+              <div class="btn">ещё 10</div>
+              <div class="btn">ещё 20</div>
+              <div class="btn">ещё 30</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="notifications">
+        <div class="head">
+          <div class="button grayC active"><span class="icon-settings"></span>Типы уведомлений</div>
+          <div class="rightSide">
+            <div class="regulator">
+              <form>
+                <input type="text" placeholder="Поиск" class="inputField"/><span class="filters_button"></span>
+                <label class="hideSource">
+                  <input type="submit"/>
+                  <div class="button empty sticky blueC"><span class="icon-search"></span></div>
+                </label>
+              </form>
+            </div>
+          </div>
+        </div>
+        <div class="propertiesBlock">
+          <div class="property">
+            <div class="marker status active"></div>Статус
+          </div>
+          <div class="property">
+            <div class="marker comments active"></div>Комментарии
+          </div>
+          <div class="property">
+            <div class="marker"></div>Приоритет
+          </div>
+          <div class="property">
+            <div class="marker fixTime active"></div>Фиксация времени
+          </div>
+          <div class="property">
+            <div class="marker"></div>Документы
+          </div>
+          <div class="property">
+            <div class="marker files active"></div>Вложения
+          </div>
+          <div class="property">
+            <div class="marker"></div>Связи
+          </div>
+          <div class="property">
+            <div class="marker"></div>Сроки и этапы
+          </div>
+          <div class="property">
+            <div class="marker executors active"></div>Исполнители
+          </div>
+        </div>
+        <div class="body">
+          <div class="date">
+            <div class="dateTitle">Сегодня, 15.04.16</div>
+            <div class="notes">
+              <div class="note plan notRead">
+                <div class="head">
+                  <div class="time">12:00</div>
+                </div>
+                <div class="content">
+                  <div class="head"><span class="marker"></span><span class="title"><span class="case mr">Bug<span class="id">13432</span></span>был добавлен в ваш план<span class="by ml"><span class="employee">Фамилия И.О.</span></span></span></div>
+                </div>
+              </div>
+              <div class="note comment notRead">
+                <div class="head">
+                  <div class="time">11:45</div>
+                </div>
+                <div class="content">
+                  <div class="head"><span class="marker"></span><span class="title">Вам ответили на комментарий в<span class="case mlr">Bug<span class="id">13432</span></span><span class="by"><span class="employee">Фамилия И.О.</span></span></span></div>
+                </div>
+              </div>
+              <div class="note comment notRead">
+                <div class="head">
+                  <div class="time">11:42</div>
+                </div>
+                <div class="content">
+                  <div class="head"><span class="marker"></span><span class="title">Вам ответили на комментарий в<span class="case mlr">Bug<span class="id">13432</span></span><span class="by"><span class="employee">Фамилия И.О.</span></span></span></div>
+                </div>
+              </div>
+              <div class="note late">
+                <div class="head">
+                  <div class="time">11:40</div>
+                </div>
+                <div class="content">
+                  <div class="head"><span class="marker"></span><span class="title"><span class="employee mr">Фамилия И.О.</span>будет отсутствовать<span class="date mlr">16.04.16</span>по причине<span class="lateReason ml">Болезнь</span></span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="date">
+            <div class="dateTitle">Вчера, 14.04.16</div>
+            <div class="notes">
+              <div class="note plan">
+                <div class="head">
+                  <div class="time">12:00</div>
+                </div>
+                <div class="content">
+                  <div class="head"><span class="marker"></span><span class="title">У вас новая неподтверждённая задача<span class="case ml">Freq<span class="id">13432</span></span></span></div>
+                </div>
+              </div>
+              <div class="note case">
+                <div class="head">
+                  <div class="time">11:45</div>
+                </div>
+                <div class="content">
+                  <div class="head"><span class="marker"></span><span class="title">В<span class="case mlr">Freq<span class="id">213432</span></span>появился новый этап<span class="by ml"><span class="employee">Фамилия И.О.</span></span></span></div>
+                </div>
+              </div>
+              <div class="note case">
+                <div class="head">
+                  <div class="time">11:42</div>
+                </div>
+                <div class="content">
+                  <div class="head"><span class="marker"></span><span class="title">В<span class="case mlr">Task<span class="id">134324</span></span>сменился статус на<span class="status mlr">paused</span><span class="by"><span class="employee">Фамилия И.О.</span></span></span></div>
+                </div>
+              </div>
+              <div class="note plan">
+                <div class="head">
+                  <div class="time">11:00</div>
+                </div>
+                <div class="content">
+                  <div class="head"><span class="marker"></span><span class="title">У вас новая неподтверждённая задача<span class="case ml">Freq<span class="id">13432</span></span></span></div>
+                </div>
+              </div>
+              <div class="note case">
+                <div class="head">
+                  <div class="time">10:12</div>
+                </div>
+                <div class="content">
+                  <div class="head"><span class="marker"></span><span class="title">В<span class="case mlr">Freq<span class="id">134324</span></span>появился новый этап<span class="by"><span class="employee">Фамилия И.О.</span></span></span></div>
+                </div>
+              </div>
+              <div class="note plan">
+                <div class="head">
+                  <div class="time">10:00</div>
+                </div>
+                <div class="content">
+                  <div class="head"><span class="marker"></span><span class="title">Порядок задач в вашем плане был изменён<span class="by ml"><span class="employee">Фамилия И.О.</span></span></span></div>
+                </div>
+              </div>
+              <div class="note component">
+                <div class="head">
+                  <div class="time">08:15</div>
+                </div>
+                <div class="content">
+                  <div class="head"><span class="marker"></span><span class="title">В компоненте<span class="component mlr">.Component_A</span>появилась новая версия<span class="version mlr">4.32</span><span class="by"><span class="employee">Фамилия И.О.</span></span></span></div>
+                </div>
+              </div>
+              <div class="note plan">
+                <div class="head">
+                  <div class="time">12:00</div>
+                </div>
+                <div class="content">
+                  <div class="head"><span class="marker"></span><span class="title">У вас новая неподтверждённая задача<span class="case ml">Freq<span class="id">13432</span></span></span></div>
+                </div>
+              </div>
+              <div class="note case">
+                <div class="head">
+                  <div class="time">11:45</div>
+                </div>
+                <div class="content">
+                  <div class="head"><span class="marker"></span><span class="title">В<span class="case mlr">Freq<span class="id">213432</span></span>появился новый этап<span class="by ml"><span class="employee">Фамилия И.О.</span></span></span></div>
+                </div>
+              </div>
+              <div class="note case">
+                <div class="head">
+                  <div class="time">11:42</div>
+                </div>
+                <div class="content">
+                  <div class="head"><span class="marker"></span><span class="title">В<span class="case mlr">Task<span class="id">134324</span></span>сменился статус на<span class="status mlr">paused</span><span class="by"><span class="employee">Фамилия И.О.</span></span></span></div>
+                </div>
+              </div>
+              <div class="note plan">
+                <div class="head">
+                  <div class="time">11:00</div>
+                </div>
+                <div class="content">
+                  <div class="head"><span class="marker"></span><span class="title">У вас новая неподтверждённая задача<span class="case ml">Freq<span class="id">13432</span></span></span></div>
+                </div>
+              </div>
+              <div class="note case">
+                <div class="head">
+                  <div class="time">10:12</div>
+                </div>
+                <div class="content">
+                  <div class="head"><span class="marker"></span><span class="title">В<span class="case mlr">Freq<span class="id">134324</span></span>появился новый этап<span class="by"><span class="employee">Фамилия И.О.</span></span></span></div>
+                </div>
+              </div>
+              <div class="note plan">
+                <div class="head">
+                  <div class="time">10:00</div>
+                </div>
+                <div class="content">
+                  <div class="head"><span class="marker"></span><span class="title">Порядок задач в вашем плане был изменён<span class="by ml"><span class="employee">Фамилия И.О.</span></span></span></div>
+                </div>
+              </div>
+              <div class="note component">
+                <div class="head">
+                  <div class="time">08:15</div>
+                </div>
+                <div class="content">
+                  <div class="head"><span class="marker"></span><span class="title">В компоненте<span class="component mlr">.Component_A</span>появилась новая версия<span class="version mlr">4.32</span><span class="by"><span class="employee">Фамилия И.О.</span></span></span></div>
+                </div>
+              </div>
+              <div class="note plan">
+                <div class="head">
+                  <div class="time">12:00</div>
+                </div>
+                <div class="content">
+                  <div class="head"><span class="marker"></span><span class="title">У вас новая неподтверждённая задача<span class="case ml">Freq<span class="id">13432</span></span></span></div>
+                </div>
+              </div>
+              <div class="note case">
+                <div class="head">
+                  <div class="time">11:45</div>
+                </div>
+                <div class="content">
+                  <div class="head"><span class="marker"></span><span class="title">В<span class="case mlr">Freq<span class="id">213432</span></span>появился новый этап<span class="by ml"><span class="employee">Фамилия И.О.</span></span></span></div>
+                </div>
+              </div>
+              <div class="note case">
+                <div class="head">
+                  <div class="time">11:42</div>
+                </div>
+                <div class="content">
+                  <div class="head"><span class="marker"></span><span class="title">В<span class="case mlr">Task<span class="id">134324</span></span>сменился статус на<span class="status mlr">paused</span><span class="by"><span class="employee">Фамилия И.О.</span></span></span></div>
+                </div>
+              </div>
+              <div class="note plan">
+                <div class="head">
+                  <div class="time">11:00</div>
+                </div>
+                <div class="content">
+                  <div class="head"><span class="marker"></span><span class="title">У вас новая неподтверждённая задача<span class="case ml">Freq<span class="id">13432</span></span></span></div>
+                </div>
+              </div>
+              <div class="note case">
+                <div class="head">
+                  <div class="time">10:12</div>
+                </div>
+                <div class="content">
+                  <div class="head"><span class="marker"></span><span class="title">В<span class="case mlr">Freq<span class="id">134324</span></span>появился новый этап<span class="by"><span class="employee">Фамилия И.О.</span></span></span></div>
+                </div>
+              </div>
+              <div class="note plan">
+                <div class="head">
+                  <div class="time">10:00</div>
+                </div>
+                <div class="content">
+                  <div class="head"><span class="marker"></span><span class="title">Порядок задач в вашем плане был изменён<span class="by ml"><span class="employee">Фамилия И.О.</span></span></span></div>
+                </div>
+              </div>
+              <div class="note component">
+                <div class="head">
+                  <div class="time">08:15</div>
+                </div>
+                <div class="content">
+                  <div class="head"><span class="marker"></span><span class="title">В компоненте<span class="component mlr">.Component_A</span>появилась новая версия<span class="version mlr">4.32</span><span class="by"><span class="employee">Фамилия И.О.</span></span></span></div>
+                </div>
+              </div>
+              <div class="note plan">
+                <div class="head">
+                  <div class="time">12:00</div>
+                </div>
+                <div class="content">
+                  <div class="head"><span class="marker"></span><span class="title">У вас новая неподтверждённая задача<span class="case ml">Freq<span class="id">13432</span></span></span></div>
+                </div>
+              </div>
+              <div class="note case">
+                <div class="head">
+                  <div class="time">11:45</div>
+                </div>
+                <div class="content">
+                  <div class="head"><span class="marker"></span><span class="title">В<span class="case mlr">Freq<span class="id">213432</span></span>появился новый этап<span class="by ml"><span class="employee">Фамилия И.О.</span></span></span></div>
+                </div>
+              </div>
+              <div class="note case">
+                <div class="head">
+                  <div class="time">11:42</div>
+                </div>
+                <div class="content">
+                  <div class="head"><span class="marker"></span><span class="title">В<span class="case mlr">Task<span class="id">134324</span></span>сменился статус на<span class="status mlr">paused</span><span class="by"><span class="employee">Фамилия И.О.</span></span></span></div>
+                </div>
+              </div>
+              <div class="note plan">
+                <div class="head">
+                  <div class="time">11:00</div>
+                </div>
+                <div class="content">
+                  <div class="head"><span class="marker"></span><span class="title">У вас новая неподтверждённая задача<span class="case ml">Freq<span class="id">13432</span></span></span></div>
+                </div>
+              </div>
+              <div class="note case">
+                <div class="head">
+                  <div class="time">10:12</div>
+                </div>
+                <div class="content">
+                  <div class="head"><span class="marker"></span><span class="title">В<span class="case mlr">Freq<span class="id">134324</span></span>появился новый этап<span class="by"><span class="employee">Фамилия И.О.</span></span></span></div>
+                </div>
+              </div>
+              <div class="note plan">
+                <div class="head">
+                  <div class="time">10:00</div>
+                </div>
+                <div class="content">
+                  <div class="head"><span class="marker"></span><span class="title">Порядок задач в вашем плане был изменён<span class="by ml"><span class="employee">Фамилия И.О.</span></span></span></div>
+                </div>
+              </div>
+              <div class="note component">
+                <div class="head">
+                  <div class="time">08:15</div>
+                </div>
+                <div class="content">
+                  <div class="head"><span class="marker"></span><span class="title">В компоненте<span class="component mlr">.Component_A</span>появилась новая версия<span class="version mlr">4.32</span><span class="by"><span class="employee">Фамилия И.О.</span></span></span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="footer">
+          <div class="btn">ещё 10</div>
+          <div class="btn">ещё 30</div>
+          <div class="btn">ещё 1 день</div>
+          <div class="btn">ещё 3 дня</div>
+          <div class="btn">ещё неделя</div>
+        </div>
+      </div>
+      <script>
+        function fixPositioning(elem) {
+            if ($(window).scrollTop() > 59) {
+                if(elem.css("top") != 0) {
+                    //elem.addClass("fix");
+                    elem.css('top', 0);
+                }
+            } else {
+                elem.css('top', 59 - $(window).scrollTop());
+                //elem.removeClass("fix");
+            }
+        };
+        
+        
+        
+        !function() {
+            var notificationsIconElem = $('#globalNotifications');
+            var popupBlock = $('.notifications');
+            var fixPopupBlock = fixPositioning.bind(null, popupBlock);
+        
+            notificationsIconElem.click(function () {
+                //if(notificationsIconElem.hasClass('active')) return;
+                notificationsIconElem.addClass('active');
+        
+                $(window).scroll(fixPopupBlock);
+        
+                popupBlock.css('display', 'block');
+                setTimeout(function(){
+                    popupBlock.addClass('active');
+                    //popupBlock.addClass('noAnimation');
+                    fixPopupBlock();
+                    $(document.body).click(
+                            function func(event){
+                                var elem = event.target;
+                                if(popupBlock.has(elem).length<=0){
+                                    popupBlock.removeClass('active')
+                                    setTimeout(function(){popupBlock.css('display', '')}, 200);
+                                    notificationsIconElem.removeClass('active')
+                                    $(document.body).off('click', func);
+                                    $(window).off('scroll', fixPopupBlock);
+                                }
+                            }
+                    );
+                }, 200);
+        
+            });
+        }();
+      </script>
+      <div id="taskTimeFixer" class="popup_backgroundBlock">
+        <div class="wrapper">
+          <div class="popupBlock">
+            <div class="popup caseTimeFix">
+              <div class="head">
+                <div class="caseType"><span class="title">Фиксация времени</span><span class="content">Freq (Запрос на доработку)<span class="caseId">1234566</span></span></div>
+                <div class="status"><span class="title">Статус</span><span class="content">active 13%</span></div>
+              </div>
+              <div class="body">
+                <div class="caseReportElection">
+                  <div class="dateStart">
+                    <div class="header">Время начала</div>
+                    <div class="content">Сегодня, 08:20</div>
+                  </div>
+                  <div class="dateStop">
+                    <div class="header">Время фиксации</div>
+                    <div class="content">Сегодня, 13:20</div>
+                  </div>
+                  <div class="timeSpent">
+                    <div class="header">Время затрачено</div>
+                    <div class="content"><span class="time">05 : 00</span><span class="icon-edit"></span></div>
+                  </div>
+                  <div class="timeLeft">
+                    <div class="header">Время осталось</div>
+                    <div class="content"><span class="time">13 : 00</span><span class="icon-edit"></span></div>
+                  </div>
+                  <div class="timeEstimate">
+                    <div class="header">Оценка</div>
+                    <div class="content"><span class="time">28 : 00</span><span class="icon-edit"></span></div>
+                  </div>
+                </div>
+                <div class="commitComponents">
+                  <div class="title">Укажите над какими компонентами вы работали:
+                    <!--.rightSide-->
+                    <!--    .button Редактировать компоненты-->
+                    <!--    .button.greenColor Показать все-->
+                  </div>
+                  <div class="components">
+                    <table class="wrapper">
+                      <tr>
+                        <td class="component">
+                          <div class="checkbox"></div>
+                          <div class="componentName">LoooongComponentName_A</div>
+                        </td>
+                        <td class="component">
+                          <div class="checkbox"></div>
+                          <div class="componentName">Component_B</div>
+                        </td>
+                        <td class="component">
+                          <div class="checkbox"></div>
+                          <div class="componentName">Component_C</div>
+                        </td>
+                        <td class="component">
+                          <div class="checkbox"></div>
+                          <div class="componentName">Component_D</div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="component">
+                          <div class="checkbox"></div>
+                          <div class="componentName">Component_A</div>
+                        </td>
+                        <td class="component">
+                          <div class="checkbox"></div>
+                          <div class="componentName">Component_B</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                </div>
+                <div class="commentBlock">
+                  <!--.icon-edit-->
+                  <textarea type="text" placeholder="Комментарий" class="inputField"></textarea>
+                </div>
+              </div>
+              <div class="footer">
+                <div class="buttons">
+                  <div class="leftSide">
+                    <div id="replayTimer" class="button grayC">Продолжить</div>
+                  </div>
+                  <div class="button blueC">Сбросить</div>
+                  <div class="button greenC">Зафиксировать</div>
+                  <!--.button.sticky.additional и выбрать другую задачу-->
+                  
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <script>
+        $('#stopCurrentTask').click(function(){
+            var popupBlock = $('#taskTimeFixer');
+            popupBlock.css('display', 'block');
+            setTimeout(function(){
+                popupBlock.addClass('active')
+            }, 200);
+        
+            $('#replayTimer').click(
+                function func(event){
+                    popupBlock.removeClass('active')
+                    setTimeout(function(){popupBlock.css('display', '')}, 200);
+                    $(event.target).off('click', func);
+                }
+            );
+        
+        });
+        
+        
+      </script>
+      <div id="timeFixer" class="popup_backgroundBlock">
+        <div class="wrapper">
+          <div class="popupBlock">
+            <div class="popup timeFixer"><span id="twoRange">
+                <input id="date-range1" type="hidden" value="23.05.16"/>
+                <input id="date-range2" type="hidden" value="23.05.16"/></span>
+              <div class="datePicker">
+                <div id="date-rangeWrap"></div>
+              </div>
+              <div class="body">
+                <div class="section active">
+                  <div class="head"><span class="header">Зафиксированные задачи
+                      <div class="count">4</div></span>
+                    <div class="rightSide">
+                      <div class="button selected">По дате фиксации</div>
+                      <div class="button empty"><span class="icon-sortBy"></span></div>
+                      <div class="buttons_group">
+                        <input placeholder="Поиск" class="inputField"/>
+                        <div class="button empty blueC sticky"><span class="icon-search"></span></div>
+                      </div>
+                    </div>
+                  </div>
+                  <!--#container.diagramContainer(style="width: 1063px; height: 276px")-->
+                  <div class="t_wrapper">
+                    <div class="tc_wrapper large">
+                      <div id="container" class="diagramContainer"></div>
+                    </div>
+                    <div class="tc_wrapper">
+                      <div class="commonFixTime">
+                        <div class="date">23.05.16 - 23.05.16</div>
+                        <div class="wrapper"><span>Затрачено</span>
+                          <div class="time">06 : 29</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!--table(style="width: 100%")-->
+                  <!--    tr-->
+                  <!--        td(style="width: 100%;")-->
+                  <!--            //#container.diagramContainer(style="width: 1063px; height: 176px")-->
+                  <!--        td-->
+                  <script>
+                    function activateTimeFixerDiagram() {
+                        Highcharts.setOptions({
+                            lang: {
+                                resetZoom: "Сбросить масштаб"
+                            }
+                        });
+                        $('#container').highcharts({
+                            chart: {
+                                //type: 'column',
+                                type: 'areaspline',
+                                zoomType: 'x',
+                                panning: true,
+                                panKey: 'shift',
+                                resetZoomButton: {
+                                    position: {
+                                        x: 0,
+                                        y: 0
+                                    },
+                                    theme: {
+                                        fill: 'white',
+                                        stroke: '#bec5ce',
+                                        r: 3,
+                                        style: {
+                                            color: '#314157'
+                                        },
+                                        states: {
+                                            hover: {
+                                                stroke: '#acb7c6',
+                                                fill: '#f5f7f8'
+                                            }
+                                        }
+                                    }
+                                },
+                            },
+                            exporting: false,
+                            title: false,
+                            xAxis: {
+                                type: 'datetime'
+                            },
+                            yAxis: {
+                                title: false,
+                                gridLineColor: '#e8e8e8',
+                            },
+                            legend: {
+                                enabled: false
+                            },
+                            tooltip: {
+                                shared: true,
+                                crosshairs: true,
+                            },
+                            credits: {
+                                enabled: false
+                            },
+                    
+                            plotOptions: {
+                                areaspline: {
+                                    fillColor: {
+                                        linearGradient: [0, 0, 0, 350],
+                                        stops: [
+                                            [0, '#5F9EDC'],
+                                            [1, '#4978ba']
+                                        ]
+                                    },
+                                    marker: {
+                                        radius: 3,
+                                        enabled: true
+                                    },
+                                    lineWidth: 1,
+                                    states: {
+                                        hover: {
+                                            lineWidth: 1
+                                        }
+                                    },
+                                }
+                            },
+                    
+                            series: [{
+                                color: '#5481c1',
+                                data: [
+                                    [Date.UTC(2016, 4, 25), 7.28],
+                                    [Date.UTC(2016, 4, 26), 6.25],
+                                    [Date.UTC(2016, 4, 27), 6],
+                                    {
+                                        x: Date.UTC(2016, 4, 28),
+                                        y: 7.28,
+                                        color: 'red'
+                                    },
+                                    [Date.UTC(2016, 4, 29), 0],
+                                    [Date.UTC(2016, 4, 30), 0],
+                                    [Date.UTC(2016, 4, 31), 8],
+                                ]
+                            }]
+                        });
+                    }
+                    
+                    
+                    
+                    
+                  </script>
+                  <div class="CaseList">
+                    <table class="cases">
+                      <tr class="headers">
+                        <td colspan="2" class="type number">Тип и номер задачи</td>
+                        <td class="name">Название</td>
+                        <td class="timeSpent">Затрачено</td>
+                        <td class="timeEstimate">Оценка</td>
+                        <td class="timeLeft">Осталось</td>
+                        <td class="timeFix">Время</td>
+                        <td class="status">Статутс</td>
+                      </tr>
+                      <tbody>
+                        <tr class="case">
+                          <td class="type">
+                            <div class="relativeBlock">
+                              <div class="timer_button"></div>
+                              <div class="typeName">Bug</div>
+                            </div>
+                          </td>
+                          <td class="number">
+                            <div class="id">32158</div>
+                            <div class="criticality critical"></div>
+                          </td>
+                          <td class="name">
+                            <div class="relativeBlock"><span class="productTag"><span class="productName">Portal Protei</span><span class="productBranch">Base</span><span class="productVersion">1</span></span>
+                              <div class="description">Здесь будет описание описание описание описание описание описание описание описание описание описание описание описание описание описание описание описание описание</div>
+                              <div class="right_block">
+                                <div class="markers">
+                                  <div class="marker type1">Маркер №1</div>
+                                  <div class="marker type2">Мой маркер</div>
+                                </div><span class="menu_button"></span>
+                              </div>
+                            </div>
+                          </td>
+                          <td class="timeSpent">
+                            <div class="time">28 : 00</div>
+                          </td>
+                          <td class="timeEstimate">
+                            <div class="time">49 : 00</div>
+                          </td>
+                          <td class="timeLeft">
+                            <div class="time">21 : 00</div>
+                          </td>
+                          <td class="timeFix">
+                            <div class="time">02 : 35</div>
+                          </td>
+                          <td class="status">
+                            <div class="relativeBlock">
+                              <div class="statusName">status</div>
+                              <div class="favorite_button"></div>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr class="case">
+                          <td class="type">
+                            <div class="relativeBlock">
+                              <div class="timer_button"></div>
+                              <div class="typeName">Task</div>
+                            </div>
+                          </td>
+                          <td class="number">
+                            <div class="id">124532</div>
+                            <div class="criticality"></div>
+                          </td>
+                          <td class="name">
+                            <div class="relativeBlock">
+                              <div class="description">Здесь будет описание описание описание описание описание описание описание описание описание описание описание описание описание описание описание описание описание</div>
+                              <div class="right_block"><span class="menu_button"></span></div>
+                            </div>
+                          </td>
+                          <td class="timeSpent">
+                            <div class="time">28 : 00</div>
+                          </td>
+                          <td class="timeEstimate">
+                            <div class="time">49 : 00</div>
+                          </td>
+                          <td class="timeLeft">
+                            <div class="time">21 : 00</div>
+                          </td>
+                          <td class="timeFix">
+                            <div class="time">02 : 35</div>
+                          </td>
+                          <td class="status">
+                            <div class="relativeBlock">
+                              <div class="statusName"><span class="link">status</span></div>
+                              <div class="favorite_button"></div>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr class="case">
+                          <td class="type">
+                            <div class="relativeBlock">
+                              <div class="timer_button"></div>
+                              <div class="typeName">Task</div>
+                            </div>
+                          </td>
+                          <td class="number">
+                            <div class="id">124532</div>
+                            <div class="criticality"></div>
+                          </td>
+                          <td class="name">
+                            <div class="relativeBlock">
+                              <div class="description">Здесь будет описание описание описание описание описание описание описание описание описание описание описание описание описание описание описание описание описание</div>
+                              <div class="right_block"><span class="menu_button"></span></div>
+                            </div>
+                          </td>
+                          <td class="timeSpent">
+                            <div class="time">28 : 00</div>
+                          </td>
+                          <td class="timeEstimate">
+                            <div class="time">49 : 00</div>
+                          </td>
+                          <td class="timeLeft">
+                            <div class="time">21 : 00</div>
+                          </td>
+                          <td class="timeFix">
+                            <div class="time">02 : 35</div>
+                          </td>
+                          <td class="status">
+                            <div class="relativeBlock">
+                              <div class="statusName">status</div>
+                              <div class="favorite_button"></div>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr class="case">
+                          <td class="type">
+                            <div class="relativeBlock">
+                              <div class="timer_button"></div>
+                              <div class="typeName">Freq</div>
+                            </div>
+                          </td>
+                          <td class="number">
+                            <div class="id">32158</div>
+                            <div class="criticality cosmetic"></div>
+                          </td>
+                          <td class="name">
+                            <div class="relativeBlock">
+                              <div class="description">Здесь будет описание описание описание описание описание описание описание</div>
+                              <div class="right_block"><span class="menu_button"></span></div>
+                            </div>
+                          </td>
+                          <td class="timeSpent">
+                            <div class="time">28 : 00</div>
+                          </td>
+                          <td class="timeEstimate">
+                            <div class="time">49 : 00</div>
+                          </td>
+                          <td class="timeLeft">
+                            <div class="time">21 : 00</div>
+                          </td>
+                          <td class="timeFix">
+                            <div class="time">02 : 35</div>
+                          </td>
+                          <td class="status">
+                            <div class="relativeBlock">
+                              <div class="statusName">status</div>
+                              <div class="favorite_button"></div>
+                            </div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <div class="section active">
+                  <div class="head"><span class="header">Возможные задачи</span>
+                    <div class="rightSide">
+                      <div class="button selected">По дате создания</div>
+                      <div class="button empty"><span class="icon-sortBy"></span></div>
+                      <div class="buttons_group">
+                        <input placeholder="Поиск" class="inputField"/>
+                        <div class="button empty blueC sticky"><span class="icon-search"></span></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="CaseList">
+                    <table class="cases">
+                      <tr class="headers">
+                        <td colspan="2" class="type number">Тип и номер задачи</td>
+                        <td class="name">Название</td>
+                        <td class="timeSpent">Затрачено</td>
+                        <td class="timeEstimate">Оценка</td>
+                        <td class="timeLeft">Осталось</td>
+                        <td class="timeFix">Время</td>
+                        <td class="status">Статутс</td>
+                      </tr>
+                      <tbody>
+                        <tr class="case">
+                          <td class="type">
+                            <div class="relativeBlock">
+                              <div class="timer_button notMine"></div>
+                              <div class="typeName">Bug</div>
+                            </div>
+                          </td>
+                          <td class="number">
+                            <div class="id">32158</div>
+                            <div class="criticality critical"></div>
+                          </td>
+                          <td class="name">
+                            <div class="relativeBlock"><span class="productTag"><span class="productName">Portal Protei</span><span class="productBranch">Base</span><span class="productVersion">1</span></span>
+                              <div class="description">Здесь будет описание описание описание описание описание описание описание описание описание описание описание описание описание описание описание описание описание</div>
+                              <div class="right_block"><span class="menu_button"></span>
+                              </div>
+                            </div>
+                          </td>
+                          <td class="timeSpent">
+                            <div class="time empty"></div>
+                          </td>
+                          <td class="timeEstimate">
+                            <div class="time empty"></div>
+                          </td>
+                          <td class="timeLeft">
+                            <div class="time empty"></div>
+                          </td>
+                          <td class="timeFix">
+                            <div class="timeFix_button"></div>
+                          </td>
+                          <td class="status">
+                            <div class="relativeBlock">
+                              <div class="statusName"><span class="link">status</span></div>
+                              <div class="favorite_button"></div>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr class="case">
+                          <td class="type">
+                            <div class="relativeBlock">
+                              <div class="timer_button"></div>
+                              <div class="typeName">Freq</div>
+                            </div>
+                          </td>
+                          <td class="number">
+                            <div class="id">32158</div>
+                            <div class="criticality important"></div>
+                          </td>
+                          <td class="name">
+                            <div class="relativeBlock"><span class="productTag"><span class="productName">Portal Protei</span><span class="productBranch">Base</span><span class="productVersion">1</span></span>
+                              <div class="description">Здесь будет описание описание описание описание описание описание описание описание описание описание описание описание описание описание описание описание описание</div>
+                              <div class="right_block"><span class="menu_button"></span>
+                              </div>
+                            </div>
+                          </td>
+                          <td class="timeSpent">
+                            <div class="time">28 : 00</div>
+                          </td>
+                          <td class="timeEstimate">
+                            <div class="time">49 : 00</div>
+                          </td>
+                          <td class="timeLeft">
+                            <div class="time">21 : 00</div>
+                          </td>
+                          <td class="timeFix">
+                            <div class="timeFix_button"></div>
+                          </td>
+                          <td class="status">
+                            <div class="relativeBlock">
+                              <div class="statusName"><span class="link">status</span></div>
+                              <div class="favorite_button"></div>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr class="case">
+                          <td class="type">
+                            <div class="relativeBlock">
+                              <div class="timer_button performed"></div>
+                              <div class="typeName">Task</div>
+                            </div>
+                          </td>
+                          <td class="number">
+                            <div class="id">32158</div>
+                            <div class="criticality"></div>
+                          </td>
+                          <td class="name">
+                            <div class="relativeBlock">
+                              <div class="description">Здесь будет описание описание описание описание описание описание описание описание описание описание описание описание описание описание описание описание описание</div>
+                              <div class="right_block"><span class="menu_button"></span>
+                              </div>
+                            </div>
+                          </td>
+                          <td class="timeSpent">
+                            <div class="time">28 : 00</div>
+                          </td>
+                          <td class="timeEstimate">
+                            <div class="time empty"></div>
+                          </td>
+                          <td class="timeLeft">
+                            <div class="time">21 : 00</div>
+                          </td>
+                          <td class="timeFix">
+                            <div class="timeFix_button"></div>
+                          </td>
+                          <td class="status">
+                            <div class="relativeBlock">
+                              <div class="statusName"><span class="link">status</span></div>
+                              <div class="favorite_button"></div>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr class="case">
+                          <td class="type">
+                            <div class="relativeBlock">
+                              <div class="timer_button performed"></div>
+                              <div class="typeName">Task</div>
+                            </div>
+                          </td>
+                          <td class="number">
+                            <div class="id">32158</div>
+                            <div class="criticality"></div>
+                          </td>
+                          <td class="name">
+                            <div class="relativeBlock">
+                              <div class="description">Здесь будет описание описание описание описание описание описание описание описание описание описание описание описание описание описание описание описание описание</div>
+                              <div class="right_block">
+                                <div class="markers">
+                                  <div class="marker type3">Мой личный маркер</div>
+                                </div><span class="menu_button"></span>
+                              </div>
+                            </div>
+                          </td>
+                          <td class="timeSpent">
+                            <div class="time">28 : 00</div>
+                          </td>
+                          <td class="timeEstimate">
+                            <div class="time">49 : 00</div>
+                          </td>
+                          <td class="timeLeft">
+                            <div class="time">21 : 00</div>
+                          </td>
+                          <td class="timeFix">
+                            <div class="timeFix_button"></div>
+                          </td>
+                          <td class="status">
+                            <div class="relativeBlock">
+                              <div class="statusName"><span class="link">status</span></div>
+                              <div class="favorite_button"></div>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr class="case">
+                          <td class="type">
+                            <div class="relativeBlock">
+                              <div class="timer_button notMine"></div>
+                              <div class="typeName">Treq</div>
+                            </div>
+                          </td>
+                          <td class="number">
+                            <div class="id">32158</div>
+                            <div class="criticality cosmetic"></div>
+                          </td>
+                          <td class="name">
+                            <div class="relativeBlock">
+                              <div class="description">Здесь будет описание описание описание описание описание описание описание описание описание описание описание описание описание описание описание описание описание</div>
+                              <div class="right_block"><span class="menu_button"></span>
+                              </div>
+                            </div>
+                          </td>
+                          <td class="timeSpent">
+                            <div class="time empty"></div>
+                          </td>
+                          <td class="timeEstimate">
+                            <div class="time empty"></div>
+                          </td>
+                          <td class="timeLeft">
+                            <div class="time empty"></div>
+                          </td>
+                          <td class="timeFix">
+                            <div class="timeFix_button"></div>
+                          </td>
+                          <td class="status">
+                            <div class="relativeBlock">
+                              <div class="statusName"><span class="link">status</span></div>
+                              <div class="favorite_button"></div>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr class="case closed">
+                          <td class="type">
+                            <div class="relativeBlock">
+                              <div class="timer_button notMine"></div>
+                              <div class="typeName">Freq</div>
+                            </div>
+                          </td>
+                          <td class="number">
+                            <div class="id">32158</div>
+                            <div class="criticality"></div>
+                          </td>
+                          <td class="name">
+                            <div class="relativeBlock"><span class="productTag"><span class="productName">Portal Protei</span><span class="productBranch">Base</span><span class="productVersion">1</span></span>
+                              <div class="description">Здесь будет описание описание описание описание описание описание описание описание описание описание описание описание описание описание описание описание описание</div>
+                              <div class="right_block"><span class="menu_button"></span>
+                              </div>
+                            </div>
+                          </td>
+                          <td class="timeSpent">
+                            <div class="time empty"></div>
+                          </td>
+                          <td class="timeEstimate">
+                            <div class="time empty"></div>
+                          </td>
+                          <td class="timeLeft">
+                            <div class="time empty"></div>
+                          </td>
+                          <td class="timeFix">
+                            <div class="timeFix_button"></div>
+                          </td>
+                          <td class="status">
+                            <div class="relativeBlock">
+                              <div class="statusName"><span class="link">closed</span></div>
+                              <div class="favorite_button"></div>
+                            </div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <div class="footer">
+                    <div class="btn">ещё 5</div>
+                    <div class="btn">ещё 10</div>
+                    <div class="btn">показать всё</div>
+                  </div>
+                </div>
+              </div>
+              <div class="footer">
+                <div class="button greenC">Сохранить</div>
+                <div id="closeTimeFixer" class="button grayC">Отмена</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <script>
+        $(function () {
+            $('#twoRange').dateRangePicker(
+                {
+                    singleMonth: true,
+                    inline: true,
+                    format: 'DD.MM.YY',
+                    showShortcuts: false,
+                    showTopbar: false,
+                    //startDate: "27.10.15",
+                    startOfWeek: "monday",
+                    //                    showTopbar: false,
+                    separator: '  ',
+                    getValue: function () {
+                        //                        if ($('#date-range200').val() && $('#date-range201').val() )
+                        //  				return $('#date-range200').val() + ' to ' + $('#date-range201').val();
+                        //                            return '';
+                        //                        else
+                        return '';
+                    },
+                    setValue: function (s, s1, s2) {
+                        $('#date-range1').val(s1);
+                        $('#date-range2').val(s2);
+                    },
+                    alwaysOpen: true,
+                    container: '#date-rangeWrap'
+                }
+            );
+            $('#twoRange').data('dateRangePicker').setDateRange('23-05-16', '23-05-16');
+        });
+        
+        
+        $('#runTimeFixer').click(function () {
+            var popupBlock = $('#timeFixer');
+            popupBlock.css('display', 'block');
+            setTimeout(function () {
+                popupBlock.addClass('active'),
+                activateTimeFixerDiagram();
+            }, 200);
+            $('#closeTimeFixer').click(
+                function func(event) {
+                    popupBlock.removeClass('active')
+                    setTimeout(function () {
+                        popupBlock.css('display', '')
+                    }, 200);
+                    $(event.target).off('click', func);
+                }
+            );
+        });
+        
+        
+        
+        
+      </script>
+      <div class="popupBlack">
+        <div class="user"><span class="name">Бондаренко Артём Александрович</span>
+          <div class="rightSide"><span class="icon-settings"></span></div>
+        </div>
+        <div class="buttons">
+          <div class="button blueC">Мой пасспорт</div>
+          <div class="button grayC">Мои отсутствия</div>
+          <div class="button empty sticky grayC"><span class="icon-plus"></span></div>
+          <div class="button grayC">Мои подписки</div>
+          <div class="button grayC">Моя активность</div>
+        </div>
+        <div class="work">
+          <div class="case">
+            <div class="animationWrapper">
+              <div class="timerButton active"><span class="icon-right"></span></div>
+              <div class="timeSpent">
+                <div class="hours">02</div>
+                <div class="timeDelimiter">:</div>
+                <div class="minutes">17</div>
+              </div>
+            </div>
+            <div class="caseType">Bug</div>
+            <div class="caseId">32158</div>
+            <div class="caseCriticality critical"></div>
+            <div class="description">Здесь будет описание описание описание описание описание описание описание</div>
+          </div>
+        </div>
+        <div class="bottomButtons">
+          <div class="button">Завершить рабочий период</div>
+        </div>
+      </div>
+      <script>
+        !function() {
+            var userIconElem = $('#userProfile');
+            var popupBlock = $('.popupBlack');
+        
+            userIconElem.click(function () {
+                if(userIconElem.hasClass('active')) return;
+                userIconElem.addClass('active');
+                popupBlock.css('display', 'block');
+                setTimeout(function(){
+                    popupBlock.addClass('active');
+                    $(document.body).click(
+                        function func(event){
+                            var elem = event.target;
+                            if(popupBlock.has(elem).length<=0){
+                                popupBlock.removeClass('active')
+                                setTimeout(function(){popupBlock.css('display', '')}, 200);
+                                userIconElem.removeClass('active')
+                                $(document.body).off('click', func);
+                            }
+                        }
+                    );
+                }, 200);
+        
+            });
+        }();
+        
+        
+      </script>
+      <!--script.-->
+      <!--    $(function() {-->
+      <!--        function fixPositioning() {-->
+      <!--            if ($(window).scrollTop() > 92) {-->
+      <!--                $('.letters').addClass("fix");-->
+      <!--            } else {-->
+      <!--                $('.letters').removeClass("fix");-->
+      <!--            }-->
+      <!--        };-->
+      <!--        fixPositioning();-->
+      <!--        $(window).scroll(function () {-->
+      <!--            fixPositioning();-->
+      <!--        });-->
+      <!--    });-->
+      
+    </div>
+  </body>
+</html>

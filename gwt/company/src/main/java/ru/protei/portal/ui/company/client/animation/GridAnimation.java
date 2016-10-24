@@ -16,10 +16,6 @@ public class GridAnimation {
         preview.asWidget().addStyleName( EXPANDED_DETAILS_STYLE );
     }
 
-    public void hidePreview( AbstractCompanyItemView preview ) {
-        closePreview( preview );
-    }
-
     private void closePreview( AbstractCompanyItemView preview ) {
         preview.asWidget().removeStyleName( EXPANDED_DETAILS_STYLE );
         lastExpanded = null;

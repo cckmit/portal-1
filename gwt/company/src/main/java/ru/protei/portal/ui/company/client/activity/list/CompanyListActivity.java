@@ -77,6 +77,11 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
         Window.alert( "Clicked on favorite of company with id = " + itemViewToModel.get( itemView ).getId() + "!" );
     }
 
+    @Override
+    public void onCreateClicked() {
+        Window.alert( "on create clicked" );
+    }
+
     private void initCompanies() {
 
         if ( fillViewHandler != null ) {

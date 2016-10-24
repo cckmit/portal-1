@@ -30,6 +30,8 @@ public interface Lang extends Messages {
 
     String buttonCancel();
 
+    String buttonCreate();
+
     String searchNoMatchesFound();
 
     String errorGetList();

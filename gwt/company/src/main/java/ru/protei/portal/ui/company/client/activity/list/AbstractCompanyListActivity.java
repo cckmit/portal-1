@@ -6,4 +6,6 @@ package ru.protei.portal.ui.company.client.activity.list;
 public interface AbstractCompanyListActivity {
 
     void onFilterChanged();
+
+    void onCreateClicked();
 }

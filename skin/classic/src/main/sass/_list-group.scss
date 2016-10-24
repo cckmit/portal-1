@@ -1,0 +1,114 @@
+.list-group {
+  margin: -7px -7px 0 -7px;
+  width: 100%;
+  padding: 0;
+
+  .list-group-create {
+    @extend .list-group-item;
+
+    .wrapper {
+      height: 3em;
+      background-color: rgb(84, 129, 193);
+
+      .name {
+        color: white;
+        font-size: 1.5em;
+        margin-top: 0.4em;
+      }
+
+      &:after {
+        background-image: none;
+      }
+
+      &:hover {
+        background: rgb(118, 154, 219) none;
+
+        &:after {
+          background: rgb(118, 154, 219) none;
+        }
+      }
+    }
+  }
+
+  li {
+    padding: 7px;
+    display: inline-block;
+    box-sizing: border-box;
+    vertical-align: top;
+    border: none;
+    outline: none;
+    position: relative;
+    margin: 10px 0 0;
+    width: 33%;
+
+    &.list-group-expanded {
+      transition: height 350ms ease;
+      height: 760px;
+
+      &::after {
+        top: auto;
+        border: solid transparent;
+        content: " ";
+        height: 0;
+        width: 0;
+        position: absolute;
+        pointer-events: none;
+        border-bottom-color: #5481c1;
+        border-width: 15px;
+        left: 50%;
+        margin: -20px 0 0 -15px;
+        z-index: 10001;
+      }
+      .list-group-expander {
+        transition: height 350ms ease;
+        height: 500px;
+      }
+    }
+
+    .list-group-expander {
+      position: absolute;
+      background: #5481c1;
+      top: auto;
+      left: 0;
+      width: 100%;
+      margin-top: 10px;
+      text-align: left;
+      height: 0;
+      overflow: hidden;
+      z-index:10001;
+    }
+
+    >.wrapper {
+      position: relative;
+      background-color: #f6f7f8;
+      border: 1px solid #fff;
+      white-space: nowrap;
+      box-shadow: 0 1px 4px 0px rgba(53,64,79,0.3);
+      border-radius: 3px;
+      z-index: 1;
+      transition-duration: 0.5s;
+      transition-property: padding;
+      padding: 14px;
+      overflow: hidden;
+      &:after {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 50px;
+        content: "";
+        right: 0;
+        background-image: linear-gradient(to right, transparent, #f6f7f8 25px);
+      }
+      &:hover {
+        background-color: #fff;
+        cursor: pointer;
+        &:after {
+          background-image: linear-gradient(to right, transparent, #fff 25px);
+        }
+      }
+      &.inactive:after {
+        background-image: linear-gradient(to right, transparent, #dee4e5 25px) !important;
+      }
+    }
+  }
+}

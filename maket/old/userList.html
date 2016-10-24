@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Система управления персоналом</title>
+    <meta charset="UTF-8"/>
+    <link rel="stylesheet" href="style.css"/>
+    <!--link(rel='stylesheet', href='leadership.css')-->
+    <script src="web/scripts/jquery-2.1.4.min.js"></script>
+    <script>
+      /** my lib **/
+      function replaceClass(elem, from, to){
+          elem.removeClass(from).addClass(to);
+          return elem;
+      }
+      
+      function log(e){
+          console.log(e)
+      }
+      
+      
+    </script>
+    <script>
+      (function($) {
+          $.eventReport = function(selector, root) {
+              var s = [];
+              $(selector || '*', root).addBack().each(function() {
+                  // the following line is the only change
+                  var e = $._data(this, 'events');
+                  if(!e) return;
+                  s.push(this.tagName);
+                  if(this.id) s.push('#', this.id);
+                  if(this.className) s.push('.', this.className.replace(/ +/g, '.'));
+                  for(var p in e) {
+                      var r = e[p],
+                              h = r.length - r.delegateCount;
+                      if(h)
+                          s.push('\n', h, ' ', p, ' handler', h > 1 ? 's' : '');
+                      if(r.delegateCount) {
+                          for(var q = 0; q < r.length; q++)
+                              if(r[q].selector) s.push('\n', p, ' for ', r[q].selector);
+                      }
+                  }
+                  s.push('\n\n');
+              });
+              return s.join('');
+          }
+          $.fn.eventReport = function(selector) {
+              return $.eventReport(selector, this);
+          }
+      })(jQuery);
+      
+      
+    </script>
+  </head>
+  <body>
+    <div class="global">
+      <div class="header_global">
+        <div class="leftBlock">
+          <div class="company"><span onclick="alert($.eventReport())" class="logo"></span><span class="name">PROTEI</span></div>
+          <div id="hideLeftBlock" class="hideBar_button"></div>
+        </div>
+        <div class="rightBlock">
+          <div class="topicTitle employees">
+            <div class="title">Сотрудники</div>
+          </div>
+          <div class="currentTask"><span class="case">Freq<span class="id">7823289</span></span>
+            <div class="timer"><span class="time"><span class="hours">01</span><span class="timeDelimiter">:</span><span class="minutes">12</span></span><span id="stopCurrentTask" class="stop_button"></span></div>
+          </div>
+          <div id="runTimeFixer" class="completeWorkSession"><span class="icon-time"></span>Таймфиксер</div>
+          <div class="rightSide">
+            <div class="icons">
+              <!--#userProfile.userProfilespan.icon-user
+              -->
+              <div id="globalNotifications" class="notifications_button active"></div>
+              <div id="globalSettings" class="settings_button"></div>
+              <div id="globalHelper" class="helper_button"></div>
+              <div id="globalExit" class="exit_button"></div>
+            </div>
+          </div>
+          <div class="rightSide searchBlock">
+            <form class="globalSearch">
+              <input id="globalSearch" placeholder="Поиск по объектам" type="text" autocomplete="off" class="searchInput"/>
+              <div id="p4" contenteditable="true" class="searchInput"><span>11</span><span>22<span>33</span></span></div>
+              <div class="buttonsBlock">
+                <label class="search_button">
+                  <input type="submit" value="Поиск"/>
+                </label>
+                <!--label.icon-resetButton
+                input(type="reset" value="Сброс")
+                
+                -->
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="body_global">
+        <div class="leftBlock">
+          <div class="noScrolling">
+            <div class="scrolling">
+              <div class="mainButtons"></div>
+              <div class="menuList">
+                <div class="menu">
+                  <div class="title">Рабочее место</div>
+                  <div class="list">
+                    <div class="item"><span class="icon-plan"></span>Мой план</div>
+                    <div class="item"><span class="icon-created"></span>Инспектор</div>
+                    <div class="item"><span class="icon-activity"></span>Моя активность</div>
+                    <div class="item"><span class="icon-subscription"></span>Мои подписки</div>
+                    <div class="item"><span class="icon-favorites"></span>Мои избранные</div>
+                  </div>
+                </div>
+                <div class="menu">
+                  <div class="title">Компания</div>
+                  <div class="list">
+                    <div class="item"><span class="icon-employees"></span>Сотрудники</div>
+                    <div class="item"><span class="icon-me"></span>Мой паспорт</div>
+                  </div>
+                </div>
+                <div class="menu">
+                  <div class="title">
+                    <!--span.icon-savedQueries-->Объекты системы
+                  </div>
+                  <div style="max-height: 500px" class="list active">
+                    <!--.slideWrapper-->
+                    <div class="item"><span class="icon-component"></span>Компоненты</div>
+                    <div class="item"><span class="icon-product"></span>Продукты</div>
+                    <div class="item"><span class="icon-case"></span>Задачи</div>
+                    <div class="item"><span class="icon-order"></span>Группы задач</div>
+                    <div class="item"><span class="icon-order"></span>Заказы</div>
+                    <div class="item"><span class="icon-project"></span>Проекты</div>
+                    <div class="item"><span class="icon-organization"></span>Организации</div>
+                  </div>
+                </div>
+                <div class="menu">
+                  <div class="title">
+                    <!--span.icon-savedQueries-->Управление и отчёты
+                  </div>
+                  <div class="list">
+                    <!--.slideWrapper-->
+                    <div class="item"><span class="icon-employees"></span>Сотрудники</div>
+                    <div class="item"><span class="icon-component"></span>Компоненты</div>
+                    <div class="item"><span class="icon-product"></span>Продукты</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <script>
+            $('#hideLeftBlock').click(function(){
+                $('.header_global >.leftBlock,.body_global >.leftBlock').addClass('inactive');
+                $('.body_global >.leftBlock').click(function func(){
+                    $('.header_global >.leftBlock,.body_global >.leftBlock').removeClass('inactive');
+                    $('.body_global >.leftBlock').off()
+                })
+            })
+            
+          </script>
+        </div>
+        <div class="rightBlock">
+          <div class="controlButtons">
+            <div class="buttons_group">
+              <div class="regulator">Сортировать по
+                <div class="button selected">Фамилия</div>
+                <div class="button empty active switcher"><span class="icon-down"></span></div>
+              </div>
+              <div class="regulator">Количество записей
+                <div class="button selected">20</div>
+              </div>
+              <div class="buttons_group">
+                <div class="button empty"><span class="icon-left"></span></div>
+                <div class="button empty"><span class="icon-right"></span></div>
+              </div>
+            </div>
+            <div class="rightSide">
+              <div class="regulator">Представление
+                <div class="button selected">Компактный вид</div>
+              </div>
+            </div>
+          </div>
+          <div class="userListsBlock">
+            <div class="block-1 low">
+              <div class="userList">
+                <div class="user">
+                  <div class="ava"><img src="web/images/icons/white/none/two2.png"></div>
+                  <div class="wrapper">
+                    <div class="name">Акопян Роберт Григорьевич</div>
+                    <div class="birthday">Январь, 15</div>
+                  </div>
+                  <div class="buttons">
+                    <div class="button">Отсутствия</div>
+                  </div>
+                  <div class="favorite"></div>
+                  <div class="checkbox"></div>
+                </div>
+                <div class="user">
+                  <div class="ava"><img src="web/images/icons/white/none/two2.png"></div>
+                  <div class="wrapper">
+                    <div class="name">Акопян Роберт Григорьевич</div>
+                    <div class="birthday">Январь, 15</div>
+                  </div>
+                  <div class="buttons">
+                    <div class="button">Отсутствия</div>
+                  </div>
+                  <div class="favorite"></div>
+                  <div class="checkbox"></div>
+                </div>
+                <div class="user inactive">
+                  <div class="ava"><img src="web/images/icons/white/none/two2.png"></div>
+                  <div class="wrapper">
+                    <div class="name">Акопян Роберт Григорьевич</div>
+                    <div class="birthday today">Январь, 15</div>
+                  </div>
+                  <div class="buttons">
+                    <div class="button">Отсутствия</div>
+                  </div>
+                  <div class="favorite"></div>
+                  <div class="checkbox"></div>
+                </div>
+                <div class="user">
+                  <div class="ava"><img src="web/images/icons/white/none/two2.png"></div>
+                  <div class="wrapper">
+                    <div class="name">Акопян Роберт Григорьевич</div>
+                    <div class="birthday">Январь, 15</div>
+                  </div>
+                  <div class="buttons">
+                    <div class="button">Отсутствия</div>
+                  </div>
+                  <div class="favorite"></div>
+                  <div class="checkbox active"></div>
+                </div>
+                <div class="user">
+                  <div class="ava"><img src="web/images/icons/white/none/two2.png"></div>
+                  <div class="wrapper">
+                    <div class="name">Акопян Роберт Григорьевич</div>
+                    <div class="birthday">Январь, 15</div>
+                  </div>
+                  <div class="buttons">
+                    <div class="button">Отсутствия</div>
+                  </div>
+                  <div class="favorite active"></div>
+                  <div class="checkbox"></div>
+                </div>
+                <div class="user">
+                  <div class="ava"><img src="web/images/icons/white/none/two2.png"></div>
+                  <div class="wrapper">
+                    <div class="leader">Технический директор</div>
+                    <div class="name">Акопян Роберт Григорьевич</div>
+                    <div class="birthday">Январь, 15</div>
+                  </div>
+                  <div class="buttons">
+                    <div class="button">Отсутствия</div>
+                  </div>
+                  <div class="favorite"></div>
+                  <div class="checkbox active"></div>
+                </div>
+              </div>
+              <script>
+                $('.case .number').mousedown(function (event) {
+                    var elem = $(event.currentTarget).parent().parent();
+                    var offset = elem.offset();
+                    var width = elem.width();
+                
+                    function moveCase(event) {
+                        elem.css('left', event.pageX).css('top', event.pageY);
+                    }
+                
+                    elem.css('position', 'absolute').css('width', width).css('left', offset.left).css('top', offset.top);
+                    elem.after('<div style="height: 53px"></div>');
+                    $(document.body).on('mousemove', moveCase).on('mouseup', function func(event) {
+                        $(event.currentTarget).off('mousemove', moveCase).off('mouseup', func);
+                    });
+                    return false;
+                });
+              </script>
+            </div>
+            <div class="block-2 speed">
+              <div class="wrapper">
+                <div class="userPassport">
+                  <div class="header">
+                    <div class="myPassport"></div>
+                    <!--.wrapper-->
+                    <div class="name">Бондаренко Артём Александрович</div>
+                    <div class="buttons">
+                      <div class="button">Мои подписки</div>
+                      <div class="button active">Мои отсутствия</div>
+                    </div>
+                  </div>
+                  <div class="mainInfo">
+                    <div class="sectionTitle">Информация</div>
+                    <table class="userData">
+                      <tr>
+                        <td>Должность</td>
+                        <td>Инженер-программист</td>
+                      </tr>
+                      <tr>
+                        <td>Подразделение</td>
+                        <td>Группа разработки программного обспечения №5</td>
+                      </tr>
+                      <tr>
+                        <td>Телефон мобильный</td>
+                        <td>8 904 659-12-34</td>
+                      </tr>
+                      <tr>
+                        <td>Телефон домашний</td>
+                        <td>5-032</td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="absences">
+                    <div class="sectionTitle">Отсутствия</div>
+                    <div class="buttons">
+                      <div class="button empty"><span class="icon-help"></span></div>
+                      <div class="buttons_group">
+                        <div class="button empty"><span class="icon-home"></span></div>
+                        <div class="button selected">Октябрь, 2015</div>
+                      </div>
+                      <div class="buttons_group">
+                        <div class="button blueColor">Добавить</div>
+                        <div class="button">Редактировать</div>
+                      </div>
+                      <div class="diagramBlock">
+                        <div class="left_button"></div>
+                        <div class="wrapper">
+                          <table class="diagramGantt">
+                            <tr class="header">
+                              <td>50 Пт</td>
+                            </tr>
+                            <tr class="absenceLines">
+                              <td>
+                                <div style="margin-left: 61px; width:120px;" class="absenceLine reason1"></div>
+                              </td>
+                              <td></td>
+                            </tr>
+                          </table>
+                        </div>
+                        <div class="right_button"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <script>
+          var block1 = $('.block-1');
+          var block2 = $('.block-2');
+          function switchClass(elem, what, on) {
+              elem.toggleClass(what)
+              elem.toggleClass(on)
+          }
+          $('.delete_button').click(function () {
+              if (block1.hasClass('shortened')) {
+                  switchClass(block2, 'low', 'speed');
+                  switchClass(block1, 'speed', 'low');
+                  block1.removeClass('shortened');
+              } else {
+                  switchClass(block2, 'speed', 'low');
+                  switchClass(block1, 'low', 'speed');
+                  block1.find('.caseList').css('width', block1.width());
+                  block1.addClass('shortened');
+              }
+          });
+        </script>
+      </div>
+      <div class="bottom_global">
+        <table class="activeCase">
+          <tr class="case">
+            <td class="column-1-1">
+              <div class="animationWrapper">
+                <div class="timerButton active"><span class="icon-right"></span></div>
+                <div class="timeSpent">
+                  <div class="hours"></div>
+                  <div class="timeDelimiter">:</div>
+                  <div class="minutes"></div>
+                </div>
+              </div>
+              <div class="caseType">Bug</div>
+            </td>
+            <td class="column-1-2">
+              <div class="caseId">32158</div>
+              <div class="caseCriticality critical"></div>
+            </td>
+            <td class="column-2"><span class="productTag">Portal Protei</span>
+              <div class="description">Здесь будет описание описание описание описание описание описание описание</div>
+              <div class="menuBlock"><span class="icon-menu"></span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <script>
+        $('.bottom_global').click(function(event){
+            $(event.target).toggleClass('active');
+        });
+        function displayTimer(){
+            var timeSpentElem = $('.timeSpent');
+            var hoursElem = timeSpentElem.children('.hours')
+            var minutesElem = timeSpentElem.children('.minutes')
+            function changeTimeSpent(){
+                var dateObj = new Date();
+                hoursElem.text(dateObj.getHours());
+                minutesElem.text(dateObj.getMinutes());
+            }
+            changeTimeSpent();
+            setInterval(
+                    function(){
+                        changeTimeSpent();
+                    }, 1000 * 60);
+        }
+        displayTimer();
+        
+      </script>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,232 @@
+$activeScroll = #5481c1; //цвет ползунка при передвижении
+$activeScrollBase = #82a9e1; //цвет всей полоски при передвижении ползунка
+
+
+$activeScrollHover = #5481c1; //цвет ползунка при неявном hover
+$activeScrollHoverBase = #82a9e1; //цвет всей полоски при неявном hover
+
+$widthBase = 8px
+$width = 8px
+
+
+.ps-container {
+	-ms-touch-action: none;
+	overflow: hidden !important;
+	&.ps-in-scrolling {
+		pointer-events: none;
+		&.ps-x {
+			& > .ps-scrollbar-x-rail {
+				background-color: $activeScrollBase;
+				opacity: 0.9;
+				& > .ps-scrollbar-x {
+					background-color: $activeScroll;
+				}
+			}
+		}
+		&.ps-y {
+			& > .ps-scrollbar-y-rail {
+				background-color: $activeScrollBase;
+				opacity: 0.9;
+				& > .ps-scrollbar-y {
+					background-color: $activeScroll;
+				}
+			}
+		}
+	}
+	& > .ps-scrollbar-x-rail {
+		display: none;
+		position: absolute;
+		-webkit-border-radius: 4px;
+		-moz-border-radius: 4px;
+		-ms-border-radius: 4px;
+		border-radius: 4px;
+		opacity: 0;
+		-webkit-transition: background-color 0.2s linear,opacity 0.2s linear;
+		-moz-transition: background-color 0.2s linear,opacity 0.2s linear;
+		-o-transition: background-color 0.2s linear,opacity 0.2s linear;
+		transition: background-color 0.2s linear,opacity 0.2s linear;
+		bottom: 0px;
+		height: $widthBase;
+		& > .ps-scrollbar-x {
+			position: absolute;
+			background-color: $activeScrollHover;
+			-webkit-border-radius: 4px;
+			-moz-border-radius: 4px;
+			-ms-border-radius: 4px;
+			border-radius: 4px;
+			-webkit-transition: background-color 0.2s linear;
+			-moz-transition: background-color 0.2s linear;
+			-o-transition: background-color 0.2s linear;
+			transition: background-color 0.2s linear;
+			bottom: 0;
+			height: $width;
+		}
+	}
+	& > .ps-scrollbar-y-rail {
+		display: none;
+		position: absolute;
+		-webkit-border-radius: 4px;
+		-moz-border-radius: 4px;
+		-ms-border-radius: 4px;
+		border-radius: 4px;
+		opacity: 0;
+		-webkit-transition: background-color 0.2s linear,opacity 0.2s linear;
+		-moz-transition: background-color 0.2s linear,opacity 0.2s linear;
+		-o-transition: background-color 0.2s linear,opacity 0.2s linear;
+		transition: background-color 0.2s linear,opacity 0.2s linear;
+		//right: 3px;
+		right: 0px;
+		width: $widthBase;
+		& > .ps-scrollbar-y {
+			position: absolute;
+			background-color: $activeScrollHover;
+			-webkit-border-radius: 4px;
+			-moz-border-radius: 4px;
+			-ms-border-radius: 4px;
+			border-radius: 4px;
+			-webkit-transition: background-color 0.2s linear;
+			-moz-transition: background-color 0.2s linear;
+			-o-transition: background-color 0.2s linear;
+			transition: background-color 0.2s linear;
+			right: 0;
+			width: $width;
+		}
+	}
+	&:hover {
+		&.ps-in-scrolling {
+			pointer-events: none;
+			&.ps-x {
+				& > .ps-scrollbar-x-rail {
+					background-color: $activeScrollBase;
+					opacity: 0.9;
+					& > .ps-scrollbar-x {
+						background-color: $activeScroll;
+					}
+				}
+			}
+			&.ps-y {
+				& > .ps-scrollbar-y-rail {
+					background-color: $activeScrollBase;
+					opacity: 0.9;
+					& > .ps-scrollbar-y {
+						background-color: $activeScroll;
+					}
+				}
+			}
+		}
+		& > .ps-scrollbar-x-rail {
+			&:hover {
+				background-color: $activeScrollBase;
+				opacity: 0.6;
+				& > .ps-scrollbar-x {
+					background-color: $activeScroll;
+				}
+			}
+		}
+		& > .ps-scrollbar-y-rail {
+			&:hover {
+				background-color: $activeScrollBase;
+				opacity: 0.6;
+				& > .ps-scrollbar-y {
+					background-color: $activeScroll;
+				}
+			}
+		}
+	}
+}
+
+.ps-container.ps-active-x>.ps-scrollbar-x-rail,
+.ps-container.ps-active-y>.ps-scrollbar-y-rail {
+	display: block;
+}
+
+.ps-container:hover>.ps-scrollbar-x-rail,
+.ps-container:hover>.ps-scrollbar-y-rail {
+	opacity: 0.6;
+}
+
+.white-ps-container{
+
+	$activeScroll = white; //цвет ползунка при передвижении
+	$activeScrollBase = rgba(255, 255, 255, 0.6); //цвет всей полоски при передвижении ползунка
+
+
+	$activeScrollHover = rgba(255, 255, 255, 0.8); //цвет ползунка при неявном hover
+	$activeScrollHoverBase = rgba(255, 255, 255, 0.6); //цвет всей полоски при неявном hover
+
+
+
+	&.ps-container {
+		&.ps-in-scrolling {
+			&.ps-x {
+				& > .ps-scrollbar-x-rail {
+					background-color: $activeScrollBase;
+					//opacity: 0.9;
+					& > .ps-scrollbar-x {
+						background-color: $activeScroll;
+					}
+				}
+			}
+			&.ps-y {
+				& > .ps-scrollbar-y-rail {
+					background-color: $activeScrollBase;
+					//opacity: 0.9;
+					& > .ps-scrollbar-y {
+						background-color: $activeScroll;
+					}
+				}
+			}
+		}
+		& > .ps-scrollbar-x-rail {
+			& > .ps-scrollbar-x {
+				background-color: $activeScrollHover;
+			}
+		}
+		& > .ps-scrollbar-y-rail {
+			& > .ps-scrollbar-y {
+				background-color: $activeScrollHover;
+			}
+		}
+		&:hover {
+			&.ps-in-scrolling {
+				&.ps-x {
+					& > .ps-scrollbar-x-rail {
+						background-color: $activeScrollBase;
+						//opacity: 0.9;
+						& > .ps-scrollbar-x {
+							background-color: $activeScroll;
+						}
+					}
+				}
+				&.ps-y {
+					& > .ps-scrollbar-y-rail {
+						background-color: $activeScrollBase;
+						//opacity: 0.9;
+						& > .ps-scrollbar-y {
+							background-color: $activeScroll;
+						}
+					}
+				}
+			}
+			& > .ps-scrollbar-x-rail {
+				&:hover {
+					background-color: $activeScrollBase;
+					//opacity: 0.6;
+					& > .ps-scrollbar-x {
+						background-color: $activeScroll;
+					}
+				}
+			}
+			& > .ps-scrollbar-y-rail {
+				&:hover {
+					background-color: $activeScrollBase;
+					//opacity: 0.6;
+					& > .ps-scrollbar-y {
+						background-color: $activeScroll;
+					}
+				}
+			}
+		}
+	}
+}
+

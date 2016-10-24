@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Система управления персоналом</title>
+    <meta charset="UTF-8"/>
+    <link rel="stylesheet" href="style.css"/>
+    <!--link(rel='stylesheet', href='leadership.css')-->
+    <script src="web/scripts/jquery-2.1.4.min.js"></script>
+    <script>
+      /** my lib **/
+      function replaceClass(elem, from, to){
+          elem.removeClass(from).addClass(to);
+          return elem;
+      }
+      
+      function log(e){
+          console.log(e)
+      }
+      
+      
+    </script>
+    <script src="web/scripts/Chart.min.js"></script>
+    <script src="web/scripts/Chart.config.js"></script>
+    <script>
+      (function($) {
+          $.eventReport = function(selector, root) {
+              var s = [];
+              $(selector || '*', root).addBack().each(function() {
+                  // the following line is the only change
+                  var e = $._data(this, 'events');
+                  if(!e) return;
+                  s.push(this.tagName);
+                  if(this.id) s.push('#', this.id);
+                  if(this.className) s.push('.', this.className.replace(/ +/g, '.'));
+                  for(var p in e) {
+                      var r = e[p],
+                              h = r.length - r.delegateCount;
+                      if(h)
+                          s.push('\n', h, ' ', p, ' handler', h > 1 ? 's' : '');
+                      if(r.delegateCount) {
+                          for(var q = 0; q < r.length; q++)
+                              if(r[q].selector) s.push('\n', p, ' for ', r[q].selector);
+                      }
+                  }
+                  s.push('\n\n');
+              });
+              return s.join('');
+          }
+          $.fn.eventReport = function(selector) {
+              return $.eventReport(selector, this);
+          }
+      })(jQuery);
+      
+      
+    </script>
+  </head>
+  <body>
+    <div class="global">
+      <div class="header_global">
+        <div class="leftBlock">
+          <div class="company"><span onclick="alert($.eventReport())" class="logo"></span><span class="name">PROTEI</span></div>
+          <div id="hideLeftBlock" class="hideBar_button"></div>
+        </div>
+        <div class="rightBlock">
+          <div class="topicTitle componentReport">
+            <div class="title">Управление по компонентам</div>
+          </div>
+          <div class="currentTask"><span class="case">Freq<span class="id">7823289</span></span>
+            <div class="timer"><span class="time"><span class="hours">01</span><span class="timeDelimiter">:</span><span class="minutes">12</span></span><span id="stopCurrentTask" class="stop_button"></span></div>
+          </div>
+          <div id="runTimeFixer" class="completeWorkSession"><span class="icon-time"></span>Таймфиксер</div>
+          <div class="rightSide">
+            <div class="icons">
+              <!--#userProfile.userProfilespan.icon-user
+              -->
+              <div id="globalNotifications" class="notifications_button active"></div>
+              <div id="globalSettings" class="settings_button"></div>
+              <div id="globalHelper" class="helper_button"></div>
+              <div id="globalExit" class="exit_button"></div>
+            </div>
+          </div>
+          <div class="rightSide searchBlock">
+            <form class="globalSearch">
+              <input id="globalSearch" placeholder="Поиск по объектам" type="text" autocomplete="off" class="searchInput"/>
+              <div id="p4" contenteditable="true" class="searchInput"><span>11</span><span>22<span>33</span></span></div>
+              <div class="buttonsBlock">
+                <label class="search_button">
+                  <input type="submit" value="Поиск"/>
+                </label>
+                <!--label.icon-resetButton
+                input(type="reset" value="Сброс")
+                
+                -->
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="body_global">
+        <div class="leftBlock">
+          <div class="noScrolling">
+            <div class="scrolling">
+              <div class="mainButtons"></div>
+              <div class="menuList">
+                <div class="menu">
+                  <div class="title">Рабочее место</div>
+                  <div class="list">
+                    <div class="item"><span class="icon-plan"></span>Мой план</div>
+                    <div class="item"><span class="icon-created"></span>Инспектор</div>
+                    <div class="item"><span class="icon-activity"></span>Моя активность</div>
+                    <div class="item"><span class="icon-subscription"></span>Мои подписки</div>
+                    <div class="item"><span class="icon-favorites"></span>Мои избранные</div>
+                  </div>
+                </div>
+                <div class="menu">
+                  <div class="title">Компания</div>
+                  <div class="list">
+                    <div class="item"><span class="icon-employees"></span>Сотрудники</div>
+                    <div class="item"><span class="icon-me"></span>Мой паспорт</div>
+                  </div>
+                </div>
+                <div class="menu">
+                  <div class="title">
+                    <!--span.icon-savedQueries-->Объекты системы
+                  </div>
+                  <div style="max-height: 500px" class="list active">
+                    <!--.slideWrapper-->
+                    <div class="item"><span class="icon-component"></span>Компоненты</div>
+                    <div class="item"><span class="icon-product"></span>Продукты</div>
+                    <div class="item"><span class="icon-case"></span>Задачи</div>
+                    <div class="item"><span class="icon-order"></span>Группы задач</div>
+                    <div class="item"><span class="icon-order"></span>Заказы</div>
+                    <div class="item"><span class="icon-project"></span>Проекты</div>
+                    <div class="item"><span class="icon-organization"></span>Организации</div>
+                  </div>
+                </div>
+                <div class="menu">
+                  <div class="title">
+                    <!--span.icon-savedQueries-->Управление и отчёты
+                  </div>
+                  <div class="list">
+                    <!--.slideWrapper-->
+                    <div class="item"><span class="icon-employees"></span>Сотрудники</div>
+                    <div class="item"><span class="icon-component"></span>Компоненты</div>
+                    <div class="item"><span class="icon-product"></span>Продукты</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <script>
+            $('#hideLeftBlock').click(function(){
+                $('.header_global >.leftBlock,.body_global >.leftBlock').addClass('inactive');
+                $('.body_global >.leftBlock').click(function func(){
+                    $('.header_global >.leftBlock,.body_global >.leftBlock').removeClass('inactive');
+                    $('.body_global >.leftBlock').off()
+                })
+            })
+            
+          </script>
+        </div>
+        <div class="rightBlock">
+          <div class="controlButtons">
+            <div class="buttons_group">
+              <div class="regulator">Сортировать по
+                <div class="button selected">Название</div>
+                <div class="button empty active switcher"><span class="icon-down"></span></div>
+              </div>
+              <div class="regulator">
+                <div class="checkbox active"></div>Показывать deprecated
+              </div>
+            </div>
+          </div>
+          <div class="componentListsBlock reportBlock">
+            <div class="letters">
+              <div class="button">A</div>
+              <div class="button">B</div>
+              <div class="button">C</div>
+              <div class="button">D</div>
+              <div class="button">E</div>
+              <div class="button inactive">F</div>
+              <div class="button">G</div>
+              <div class="button">H</div>
+              <div class="button">I</div>
+              <div class="button">J</div>
+              <div class="button inactive">K</div>
+              <div class="button inactive">L</div>
+              <div class="button">M</div>
+              <div class="button">N</div>
+              <div class="button">O</div>
+              <div class="button">P</div>
+              <div class="button">Q</div>
+              <div class="button">R</div>
+              <div class="button inactive">S</div>
+              <div class="button">T</div>
+              <div class="button">U</div>
+              <div class="button">V</div>
+              <div class="button">W</div>
+              <div class="button">X</div>
+              <div class="button">Y</div>
+              <div class="button inactive">Z</div>
+            </div>
+            <div class="block low">
+              <div class="componentList">
+                <div class="component">
+                  <div class="wrapper">
+                    <div class="department">DataBase</div>
+                    <div class="name">.component_A</div>
+                    <div class="buttons"><span class="icon-menu"></span></div>
+                    <div class="favorite"></div>
+                    <div class="checkbox"></div>
+                  </div>
+                </div>
+                <div class="component">
+                  <div class="wrapper">
+                    <div class="department">Interface</div>
+                    <div class="name">.component_B</div>
+                    <div class="buttons"><span class="icon-menu"></span></div>
+                    <div class="favorite"></div>
+                    <div class="checkbox"></div>
+                  </div>
+                </div>
+                <div class="component">
+                  <div class="wrapper inactive">
+                    <div class="department">Interface</div>
+                    <div class="name">.component_C</div>
+                    <div class="buttons"><span class="icon-menu"></span></div>
+                    <div class="favorite"></div>
+                    <div class="checkbox"></div>
+                  </div>
+                </div>
+                <div class="component">
+                  <div class="wrapper">
+                    <div class="department">Library</div>
+                    <div class="name">.component_D</div>
+                    <div class="buttons"><span class="icon-menu"></span></div>
+                    <div class="favorite"></div>
+                    <div class="checkbox"></div>
+                  </div>
+                </div>
+                <div class="component">
+                  <div class="wrapper active">
+                    <div class="department">Library</div>
+                    <div class="name">.component_E</div>
+                    <div class="buttons"><span class="icon-menu"></span></div>
+                    <div class="favorite"></div>
+                    <div class="checkbox active"></div>
+                  </div>
+                </div>
+                <div class="component">
+                  <div class="wrapper">
+                    <div class="department">Library</div>
+                    <div class="name">.component_R</div>
+                    <div class="buttons"><span class="icon-menu"></span></div>
+                    <div class="favorite"></div>
+                    <div class="checkbox"></div>
+                  </div>
+                </div>
+                <div class="component">
+                  <div class="wrapper">
+                    <div class="department">Library</div>
+                    <div class="name">.component_Y</div>
+                    <div class="buttons"><span class="icon-menu"></span></div>
+                    <div class="favorite"></div>
+                    <div class="checkbox"></div>
+                  </div>
+                </div>
+                <div class="component">
+                  <div class="wrapper">
+                    <div class="department">Library</div>
+                    <div class="name">.component_B</div>
+                    <div class="buttons"><span class="icon-menu"></span></div>
+                    <div class="favorite"></div>
+                    <div class="checkbox"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="componentPassport">
+                <div class="header">
+                  <div class="button blueC">Паспорт</div>
+                  <div class="tabs">
+                    <div class="tab active">Задачи</div>
+                    <div class="tab">Активность</div>
+                    <div class="tab">Статистика</div>
+                  </div>
+                </div>
+                <div class="cases">
+                  <div class="buttons">
+                    <div class="buttons_group">
+                      <!--.buttons_group(style="vertical-align: baseline")
+                      #switchTwoBlocks.button.empty
+                          span.icon-twoBlocks
+                      -->
+                      <div class="button grayC active">Активные<span class="number">14</span></div>
+                      <div class="button grayC inactive">Неактивные<span class="number">0</span></div>
+                      <div class="button grayC">Закрытые</div>
+                      <div class="button grayC">Неподтверждённые<span class="number">5</span></div>
+                    </div>
+                    <div class="rightSide">
+                      <div class="button selected grayC">Все версии</div>
+                      <div class="buttons_group">
+                        <input type="text" class="inputField"><span class="filters_button"></span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="caseListsBlock">
+                    <table class="caseList">
+                      <tr class="headers">
+                        <td class="column-10">Версия</td>
+                        <td colspan="2" class="column-1">Тип и номер задачи</td>
+                        <td class="column-2">Название</td>
+                        <td class="column-3">Исполнитель</td>
+                        <td class="column-4">Затрачено</td>
+                        <td class="column-9">Осталось</td>
+                        <td class="column-5">Ближайший срок</td>
+                        <td class="column-6">Дата создания</td>
+                        <td class="column-7">Заказ</td>
+                        <td class="column-8">Статутс</td>
+                      </tr>
+                      <tr class="case">
+                        <td class="column-10">
+                          <div class="version">1.2</div>
+                        </td>
+                        <td class="column-1-1">
+                          <div class="caseType">Bug</div>
+                        </td>
+                        <td class="column-1-2">
+                          <div class="caseId">32158</div>
+                          <div class="caseCriticality important"></div>
+                        </td>
+                        <td class="column-2">
+                          <div class="productTag">Portal Protei</div>
+                          <!--span.icon-include-->
+                          <!--.componentVersion v1.3-->
+                          <div class="description">Здесь будет описание описание описание описание описание описание описание</div>
+                          <div class="right_block">
+                            <div class="menuBlock"><span class="icon-menu"></span></div>
+                          </div>
+                        </td>
+                        <td class="column-3">
+                          <div class="employee">Фамилия И.О.</div>
+                        </td>
+                        <td class="column-4">
+                          <div class="timeSpent">14 : 00<span class="componentOnly"><span class="icon-component"></span>01 : 12</span></div>
+                        </td>
+                        <td class="column-9">
+                          <div class="timeLeft">10 : 00</div>
+                        </td>
+                        <td class="column-5">
+                          <div class="deadline last">29.01.18</div>
+                        </td>
+                        <td class="column-6">
+                          <div class="timeCreation">12.09.12 12:30</div>
+                        </td>
+                        <td class="column-7">
+                          <div class="orderInfo">#1234567 (4)</div>
+                        </td>
+                        <td class="column-8">
+                          <div class="status">status</div>
+                          <div class="favorite"></div>
+                        </td>
+                      </tr>
+                      <tr class="case">
+                        <td class="column-10">
+                          <div class="version">1.2</div>
+                        </td>
+                        <td class="column-1-1">
+                          <div class="caseType">Freq</div>
+                        </td>
+                        <td class="column-1-2">
+                          <div class="caseId">32158</div>
+                          <div class="caseCriticality"></div>
+                        </td>
+                        <td class="column-2">
+                          <div class="productTag">Portal Protei</div>
+                          <!--span.icon-include-->
+                          <!--.componentVersion v1.3-->
+                          <div class="description">Здесь будет описание описание описание описание описание описание описание</div>
+                          <div class="right_block">
+                            <div class="menuBlock"><span class="icon-menu"></span></div>
+                          </div>
+                        </td>
+                        <td class="column-3">
+                          <div class="executorsNumber several">2</div>
+                        </td>
+                        <td class="column-4">
+                          <div class="timeSpent">14 : 00<span class="componentOnly"><span class="icon-component"></span>01 : 12</span></div>
+                        </td>
+                        <td class="column-9">
+                          <div class="timeLeft">10 : 00</div>
+                        </td>
+                        <td class="column-5">
+                          <div class="deadline last">29.01.18</div>
+                        </td>
+                        <td class="column-6">
+                          <div class="timeCreation">12.09.12 12:30</div>
+                        </td>
+                        <td class="column-7">
+                          <div class="orderInfo">#1234567 (4)</div>
+                        </td>
+                        <td class="column-8">
+                          <div class="status">status</div>
+                          <div class="favorite"></div>
+                        </td>
+                      </tr>
+                      <tr class="case">
+                        <td class="column-10">
+                          <div class="version">1.2</div>
+                        </td>
+                        <td class="column-1-1">
+                          <div class="caseType">Task</div>
+                        </td>
+                        <td class="column-1-2">
+                          <div class="caseId">32158</div>
+                          <div class="caseCriticality"></div>
+                        </td>
+                        <td class="column-2">
+                          <div class="productTag">Portal Protei</div>
+                          <!--span.icon-include-->
+                          <!--.componentVersion v1.3-->
+                          <div class="description">Здесь будет описание описание описание описание описание описание описание</div>
+                          <div class="right_block">
+                            <div class="menuBlock"><span class="icon-menu"></span></div>
+                          </div>
+                        </td>
+                        <td class="column-3">
+                          <div class="employee">Фамилия И.О.</div>
+                        </td>
+                        <td class="column-4">
+                          <div class="timeSpent">14 : 00<span class="componentOnly"><span class="icon-component"></span>01 : 12</span></div>
+                        </td>
+                        <td class="column-9">
+                          <div class="timeLeft">10 : 00</div>
+                        </td>
+                        <td class="column-5">
+                          <div class="deadline last">29.01.18</div>
+                        </td>
+                        <td class="column-6">
+                          <div class="timeCreation">12.09.12 12:30</div>
+                        </td>
+                        <td class="column-7">
+                          <div class="orderInfo">#1234567 (4)</div>
+                        </td>
+                        <td class="column-8">
+                          <div class="status">status</div>
+                          <div class="favorite"></div>
+                        </td>
+                      </tr>
+                      <tr class="case">
+                        <td class="column-10">
+                          <div class="version">1.2</div>
+                        </td>
+                        <td class="column-1-1">
+                          <div class="caseType">Task</div>
+                        </td>
+                        <td class="column-1-2">
+                          <div class="caseId">32158</div>
+                          <div class="caseCriticality cosmetic"></div>
+                        </td>
+                        <td class="column-2">
+                          <div class="productTag">Portal Protei</div>
+                          <!--span.icon-include-->
+                          <!--.componentVersion v1.3-->
+                          <div class="description">Здесь будет описание описание описание описание описание описание описание</div>
+                          <div class="right_block">
+                            <div class="menuBlock"><span class="icon-menu"></span></div>
+                          </div>
+                        </td>
+                        <td class="column-3">
+                          <div class="executorsNumber several">2</div>
+                        </td>
+                        <td class="column-4">
+                          <div class="timeSpent">14 : 00<span class="componentOnly"><span class="icon-component"></span>01 : 12</span></div>
+                        </td>
+                        <td class="column-9">
+                          <div class="timeLeft">10 : 00</div>
+                        </td>
+                        <td class="column-5">
+                          <div class="deadline">29.01.18</div>
+                        </td>
+                        <td class="column-6">
+                          <div class="timeCreation">12.09.12 12:30</div>
+                        </td>
+                        <td class="column-7">
+                          <div class="orderInfo">#1234567 (4)</div>
+                        </td>
+                        <td class="column-8">
+                          <div class="status">status</div>
+                          <div class="favorite"></div>
+                        </td>
+                      </tr>
+                      <tr class="case">
+                        <td class="column-10">
+                          <div class="version">1.2</div>
+                        </td>
+                        <td class="column-1-1">
+                          <div class="caseType">Treq</div>
+                        </td>
+                        <td class="column-1-2">
+                          <div class="caseId">32158</div>
+                          <div class="caseCriticality critical"></div>
+                        </td>
+                        <td class="column-2">
+                          <div class="productTag">Portal Protei</div>
+                          <!--span.icon-include-->
+                          <!--.componentVersion v1.3-->
+                          <div class="description">Здесь будет описание описание описание описание описание описание описание</div>
+                          <div class="right_block">
+                            <div class="menuBlock"><span class="icon-menu"></span></div>
+                          </div>
+                        </td>
+                        <td class="column-3">
+                          <div class="executorsNumber several">3</div>
+                        </td>
+                        <td class="column-4">
+                          <div class="timeSpent">14 : 00<span class="componentOnly"><span class="icon-component"></span>01 : 12</span></div>
+                        </td>
+                        <td class="column-9">
+                          <div class="timeLeft">10 : 00</div>
+                        </td>
+                        <td class="column-5">
+                          <div class="deadline last">29.01.18</div>
+                        </td>
+                        <td class="column-6">
+                          <div class="timeCreation">12.09.12 12:30</div>
+                        </td>
+                        <td class="column-7">
+                          <div class="orderInfo">#1234567 (4)</div>
+                        </td>
+                        <td class="column-8">
+                          <div class="status">status</div>
+                          <div class="favorite"></div>
+                        </td>
+                      </tr>
+                      <tr class="case">
+                        <td class="column-10">
+                          <div class="version">1.2</div>
+                        </td>
+                        <td class="column-1-1">
+                          <div class="caseType">Freq</div>
+                        </td>
+                        <td class="column-1-2">
+                          <div class="caseId">32158</div>
+                          <div class="caseCriticality critical"></div>
+                        </td>
+                        <td class="column-2">
+                          <div class="productTag">Portal Protei</div>
+                          <!--span.icon-include-->
+                          <!--.componentVersion v1.3-->
+                          <div class="description">Здесь будет описание описание описание описание описание описание описание</div>
+                          <div class="right_block">
+                            <div class="menuBlock"><span class="icon-menu"></span></div>
+                          </div>
+                        </td>
+                        <td class="column-3">
+                          <div class="employee">Фамилия И.О.</div>
+                        </td>
+                        <td class="column-4">
+                          <div class="timeSpent">14 : 00<span class="componentOnly"><span class="icon-component"></span>01 : 12</span></div>
+                        </td>
+                        <td class="column-9">
+                          <div class="timeLeft">10 : 00</div>
+                        </td>
+                        <td class="column-5">
+                          <div class="deadline last">29.01.18</div>
+                        </td>
+                        <td class="column-6">
+                          <div class="timeCreation">12.09.12 12:30</div>
+                        </td>
+                        <td class="column-7">
+                          <div class="orderInfo">#1234567 (4)</div>
+                        </td>
+                        <td class="column-8">
+                          <div class="status">status</div>
+                          <div class="favorite"></div>
+                        </td>
+                      </tr>
+                      <!--tr.between
+                      td(colspan="9") ...
+                      
+                      -->
+                      <!--tr.case
+                      td.column-1-1
+                          .caseType Bug
+                      td.column-1-2
+                          .caseId 32158
+                          .caseCriticality.critical
+                      td.column-2
+                          .description Здесь будет описание описание описание описание описание описание описание
+                          .menuBlock
+                              span.icon-menu
+                      td.column-3
+                          .executorsNumber 1
+                      td.column-4
+                          .timeSpent 14 : 00
+                      td.column-5
+                          .deadline 29.01.18
+                      td.column-6
+                          .timeCreation 12.09.12 12:30
+                      td.column-7
+                          .orderInfo #1234567 (4)
+                      td.column-8
+                          .status status
+                          .favorite
+                      
+                      -->
+                    </table>
+                    <div class="footer">
+                      <div class="btn">Показать ещё 10</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="componentList">
+                <div class="component">
+                  <div class="wrapper">
+                    <div class="department">Messaging</div>
+                    <div class="name">Cell_Broadcast_Center</div>
+                    <div class="buttons"><span class="icon-menu"></span></div>
+                    <div class="favorite"></div>
+                    <div class="checkbox"></div>
+                  </div>
+                </div>
+              </div>
+              <!--script.
+              $('.case .number').mousedown(function (event) {
+                  var elem = $(event.currentTarget).parent().parent();
+                  var offset = elem.offset();
+                  var width = elem.width();
+              
+                  function moveCase(event) {
+                      elem.css('left', event.pageX).css('top', event.pageY);
+                  }
+              
+                  elem.css('position', 'absolute').css('width', width).css('left', offset.left).css('top', offset.top);
+                  elem.after('<div style="height: 53px"></div>');
+                  $(document.body).on('mousemove', moveCase).on('mouseup', function func(event) {
+                      $(event.currentTarget).off('mousemove', moveCase).off('mouseup', func);
+                  });
+                  return false;
+              });
+              
+              
+              -->
+            </div>
+          </div>
+        </div>
+        <!--script.
+        var block1 = $('.block-1');
+        var block2 = $('.block-2');
+        function switchClass(elem, what, on) {
+            elem.toggleClass(what)
+            elem.toggleClass(on)
+        }
+        $('.delete_button').click(function () {
+            if (block1.hasClass('shortened')) {
+                switchClass(block2, 'low', 'speed');
+                switchClass(block1, 'speed', 'low');
+                block1.removeClass('shortened');
+            } else {
+                switchClass(block2, 'speed', 'low');
+                switchClass(block1, 'low', 'speed');
+                block1.find('.caseList').css('width', block1.width());
+                block1.addClass('shortened');
+            }
+        });
+        -->
+      </div>
+      <div class="bottom_global">
+        <table class="activeCase">
+          <tr class="case">
+            <td class="column-1-1">
+              <div class="animationWrapper">
+                <div class="timerButton active"><span class="icon-right"></span></div>
+                <div class="timeSpent">
+                  <div class="hours"></div>
+                  <div class="timeDelimiter">:</div>
+                  <div class="minutes"></div>
+                </div>
+              </div>
+              <div class="caseType">Bug</div>
+            </td>
+            <td class="column-1-2">
+              <div class="caseId">32158</div>
+              <div class="caseCriticality critical"></div>
+            </td>
+            <td class="column-2"><span class="productTag">Portal Protei</span>
+              <div class="description">Здесь будет описание описание описание описание описание описание описание</div>
+              <div class="menuBlock"><span class="icon-menu"></span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <script>
+        $('.bottom_global').click(function(event){
+            $(event.target).toggleClass('active');
+        });
+        function displayTimer(){
+            var timeSpentElem = $('.timeSpent');
+            var hoursElem = timeSpentElem.children('.hours')
+            var minutesElem = timeSpentElem.children('.minutes')
+            function changeTimeSpent(){
+                var dateObj = new Date();
+                hoursElem.text(dateObj.getHours());
+                minutesElem.text(dateObj.getMinutes());
+            }
+            changeTimeSpent();
+            setInterval(
+                    function(){
+                        changeTimeSpent();
+                    }, 1000 * 60);
+        }
+        displayTimer();
+        
+      </script>
+      <div id="taskTimeFixer" class="popup_backgroundBlock">
+        <div class="wrapper">
+          <div class="popupBlock">
+            <div class="popup caseTimeFix">
+              <div class="head">
+                <div class="caseType"><span class="title">Фиксация времени</span><span class="content">Freq (Запрос на доработку)<span class="caseId">1234566</span></span></div>
+                <div class="status"><span class="title">Статус</span><span class="content">active 13%</span></div>
+              </div>
+              <div class="body">
+                <div class="caseReportElection">
+                  <div class="dateStart">
+                    <div class="header">Время начала</div>
+                    <div class="content">Сегодня, 08:20</div>
+                  </div>
+                  <div class="dateStop">
+                    <div class="header">Время фиксации</div>
+                    <div class="content">Сегодня, 13:20</div>
+                  </div>
+                  <div class="timeSpent">
+                    <div class="header">Время затрачено</div>
+                    <div class="content"><span class="time">05 : 00</span><span class="icon-edit"></span></div>
+                  </div>
+                  <div class="timeLeft">
+                    <div class="header">Время осталось</div>
+                    <div class="content"><span class="time">13 : 00</span><span class="icon-edit"></span></div>
+                  </div>
+                  <div class="timeEstimate">
+                    <div class="header">Оценка</div>
+                    <div class="content"><span class="time">28 : 00</span><span class="icon-edit"></span></div>
+                  </div>
+                </div>
+                <div class="commitComponents">
+                  <div class="title">Укажите над какими компонентами вы работали:
+                    <!--.rightSide-->
+                    <!--    .button Редактировать компоненты-->
+                    <!--    .button.greenColor Показать все-->
+                  </div>
+                  <div class="components">
+                    <table class="wrapper">
+                      <tr>
+                        <td class="component">
+                          <div class="checkbox"></div>
+                          <div class="componentName">LoooongComponentName_A</div>
+                        </td>
+                        <td class="component">
+                          <div class="checkbox"></div>
+                          <div class="componentName">Component_B</div>
+                        </td>
+                        <td class="component">
+                          <div class="checkbox"></div>
+                          <div class="componentName">Component_C</div>
+                        </td>
+                        <td class="component">
+                          <div class="checkbox"></div>
+                          <div class="componentName">Component_D</div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="component">
+                          <div class="checkbox"></div>
+                          <div class="componentName">Component_A</div>
+                        </td>
+                        <td class="component">
+                          <div class="checkbox"></div>
+                          <div class="componentName">Component_B</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                </div>
+                <div class="commentBlock">
+                  <!--.icon-edit-->
+                  <textarea type="text" placeholder="Комментарий" class="inputField"></textarea>
+                </div>
+              </div>
+              <div class="footer">
+                <div class="buttons">
+                  <div class="leftSide">
+                    <div id="replayTimer" class="button grayC">Продолжить</div>
+                  </div>
+                  <div class="button blueC">Сбросить</div>
+                  <div class="button greenC">Зафиксировать</div>
+                  <!--.button.sticky.additional и выбрать другую задачу-->
+                  
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <script>
+        $('#stopCurrentTask').click(function(){
+            var popupBlock = $('#taskTimeFixer');
+            popupBlock.css('display', 'block');
+            setTimeout(function(){
+                popupBlock.addClass('active')
+            }, 200);
+        
+            $('#replayTimer').click(
+                function func(event){
+                    popupBlock.removeClass('active')
+                    setTimeout(function(){popupBlock.css('display', '')}, 200);
+                    $(event.target).off('click', func);
+                }
+            );
+        
+        });
+        
+        
+      </script>
+    </div>
+  </body>
+</html>

@@ -17390,49 +17390,7 @@ body {
     color: rgba(255,255,255,0.5);
   }
 }
-.list-group {
-  margin: -7px -7px 0 -7px;
-  padding: 0;
-}
-.list-group-item {
-  padding: 7px;
-  display: inline-block;
-  box-sizing: border-box;
-  vertical-align: top;
-  width: 100%;
-}
-.list-group-item >.wrapper {
-  position: relative;
-  background-color: #f6f7f8;
-  border: 1px solid #fff;
-  white-space: nowrap;
-  box-shadow: 0 1px 4px 0px rgba(53,64,79,0.3);
-  border-radius: 3px;
-  z-index: 1;
-  transition-duration: 0.5s;
-  transition-property: padding;
-  padding: 14px;
-  overflow: hidden;
-}
-.list-group-item >.wrapper:after {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 50px;
-  content: "";
-  right: 0;
-  background-image: linear-gradient(to right, transparent, #f6f7f8 25px);
-}
-.list-group-item >.wrapper:hover {
-  background-color: #fff;
-  cursor: pointer;
-}
-.list-group-item >.wrapper:hover:after {
-  background-image: linear-gradient(to right, transparent, #fff 25px);
-}
-.list-group-item >.wrapper.inactive:after {
-  background-image: linear-gradient(to right, transparent, #dee4e5 25px) !important;
-}
+
 .grid:after {
   content: "";
   display: block;
@@ -17646,63 +17604,4 @@ body {
   to {
     background-position: 60px 30px;
   }
-}
-
-
-
-
-
-
-
-/* list-expanded */
-.list-group li {
-  border: none;
-  outline: none;
-  position: relative;
-  display: inline-block;
-  margin: 10px 0 0;
-  vertical-align: top;
-  width: 33%;
-}
-
-.list-group li.list-group-expanded::after {
-  top: auto;
-  border: solid transparent;
-  content: " ";
-  height: 0;
-  width: 0;
-  position: absolute;
-  pointer-events: none;
-  border-bottom-color: #5481c1;
-  border-width: 15px;
-  left: 50%;
-  margin: -20px 0 0 -15px;
-  z-index: 10001;
-}
-
-.list-group li .list-group-expander {
-  position: absolute;
-  background: #5481c1;
-  top: auto;
-  left: 0;
-  width: 100%;
-  margin-top: 10px;
-  text-align: left;
-  height: 0;
-  overflow: hidden;
-  z-index:10001;
-}
-
-.list-group li.list-group-expanded .list-group-expander {
-  transition: height 350ms ease;
-  height: 500px;
-}
-
-.list-group li.list-group-expanded {
-  transition: height 350ms ease;
-  height: 760px;
-}
-
-.list-group {
-  width: 100%;
 }
