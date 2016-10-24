@@ -42,4 +42,6 @@ public interface CompanyService extends RemoteService {
 
    void saveCompany(Company company) throws RequestFailedException;
 
+   Boolean isCompanyNameExists(String name);
+
 }

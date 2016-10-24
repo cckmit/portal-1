@@ -55,14 +55,18 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
             return;
         }
 
-        companyExists(view.companyName().getText(), new AsyncCallback<Void>() {
+        companyService.isCompanyNameExists(view.companyName().getText(), new AsyncCallback<Boolean>() {
             @Override
             public void onFailure(Throwable throwable) {
                 fireEvent(new NotifyEvents.Show(lang.companyNotSaved(), NotifyEvents.NotifyType.ERROR));
             }
 
             @Override
-            public void onSuccess(Void aVoid) {
+            public void onSuccess(Boolean isExists) {
+                if(isExists){
+                    fireEvent(new NotifyEvents.Show(lang.companyNotSaved(), NotifyEvents.NotifyType.ERROR));
+                    return;
+                }
 
                 Company company = new Company();
                 company.setCname(view.companyName().getText());
@@ -98,43 +102,31 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
     @Override
     public void onChangeCompanyName() {
-        companyExists(
-            view.companyName().getText(),
-            new AsyncCallback<List<Company>>() {
-
-                @Override
-                public void onFailure(Throwable throwable) {
-                    fireEvent(new NotifyEvents.Show(lang.errorGetList(), NotifyEvents.NotifyType.ERROR));
-                }
-
-                @Override
-                public void onSuccess(List<Company> companies) {
-                    if (companies.size() == 0) {
-                        view.setCompanyNameStatus(NameStatus.SUCCESS);
-                    } else {
-                        view.setCompanyNameStatus(NameStatus.ERROR);
-                    }
-                }
-            }
-        );
-
-    }
-
-    private void companyExists(String companyName, AsyncCallback async){
-        if(companyName.trim().isEmpty()){
+        if(view.companyName().getText().trim().isEmpty()){
             view.setCompanyNameStatus(NameStatus.UNDEFINED);
             return;
         }
 
-        companyService.getCompanies(
-                companyName,
-                null,
-                null,
-                En_SortField.comp_name,
-                false,
-                async);
-    }
+        companyService.isCompanyNameExists(
+                view.companyName().getText(),
+                new AsyncCallback<Boolean>() {
+                    @Override
+                    public void onFailure(Throwable throwable) {
+                        fireEvent(new NotifyEvents.Show(lang.errorGetList(), NotifyEvents.NotifyType.ERROR));
+                    }
 
+                    @Override
+                    public void onSuccess(Boolean isExists) {
+                        if (isExists) {
+                            view.setCompanyNameStatus(NameStatus.ERROR);
+                        } else {
+                            view.setCompanyNameStatus(NameStatus.SUCCESS);
+                        }
+                    }
+                }
+        );
+
+    }
 
 
     private void resetFields(){

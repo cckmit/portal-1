@@ -33,6 +33,11 @@ public class CompanyServiceImpl extends RemoteServiceServlet implements CompanyS
     }
 
     @Override
+    public Boolean isCompanyNameExists(String name) {
+        return false;
+    }
+
+    @Override
     public List< Company > getCompanies( String searchPattern, Set< CompanyCategory > categories, CompanyGroup group, En_SortField sortField, Boolean dirSort ) throws RequestFailedException {
 
         List< Long > categoryIds = new ArrayList< Long >();

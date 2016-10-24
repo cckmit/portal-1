@@ -38,4 +38,6 @@ public interface CompanyServiceAsync {
     void getCompanyCategories( AsyncCallback<List <CompanyCategory> > async  );
 
     void saveCompany(Company company, AsyncCallback<Void> async);
+
+    void isCompanyNameExists(String name, AsyncCallback<Boolean> async);
 }
