@@ -24,6 +24,6 @@
                 <g:TextBox ui:field="search" styleName="inputField"/>
             </div>
         </div>
-        <g:HTMLPanel ui:field="childContainer" styleName="organizations list-group grid"/>
+        <g:HTMLPanel tag="ul" ui:field="childContainer" styleName="organizations list-group grid"/>
     </g:HTMLPanel>
 </ui:UiBinder>

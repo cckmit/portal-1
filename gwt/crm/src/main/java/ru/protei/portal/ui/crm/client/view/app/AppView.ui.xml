@@ -42,43 +42,49 @@
                     <div class="scrolling">
                         <div class="mainButtons"></div>
                         <div class="menuList">
-                            <div class="menu">
-                                <div class="title">Рабочее место</div>
-                                <div class="list">
-                                    <div class="item"><span class="icon-plan"></span>Мой план</div>
-                                    <div class="item"><span class="icon-created"></span>Инспектор</div>
-                                    <div class="item"><span class="icon-activity"></span>Моя активность</div>
-                                    <div class="item"><span class="icon-subscription"></span>Мои подписки</div>
-                                    <div class="item"><span class="icon-favorites"></span>Мои избранные</div>
-                                </div>
-                            </div>
-                            <div class="menu">
-                                <div class="title">Компания</div>
-                                <div class="list">
-                                    <div class="item"><span class="icon-employees"></span>Сотрудники</div>
-                                    <div class="item"><span class="icon-me"></span>Мой паспорт</div>
-                                </div>
-                            </div>
+                            <!--<div class="menu">-->
+                                <!--<div class="title">Рабочее место</div>-->
+                                <!--<div class="list">-->
+                                    <!--<div class="item"><span class="icon-plan"></span>Мой план</div>-->
+                                    <!--<div class="item"><span class="icon-created"></span>Инспектор</div>-->
+                                    <!--<div class="item"><span class="icon-activity"></span>Моя активность</div>-->
+                                    <!--<div class="item"><span class="icon-subscription"></span>Мои подписки</div>-->
+                                    <!--<div class="item"><span class="icon-favorites"></span>Мои избранные</div>-->
+                                <!--</div>-->
+                            <!--</div>-->
+                            <!--<div class="menu">-->
+                                <!--<div class="title">Компания</div>-->
+                                <!--<div class="list">-->
+                                    <!--<div class="item"><span class="icon-employees"></span>Сотрудники</div>-->
+                                    <!--<div class="item"><span class="icon-me"></span>Мой паспорт</div>-->
+                                <!--</div>-->
+                            <!--</div>-->
                             <div class="menu">
                                 <div class="title">Объекты системы</div>
                                 <div style="max-height: 500px" class="list active">
-                                    <div class="item"><span class="icon-component"></span>Компоненты</div>
-                                    <div class="item"><span class="icon-product"></span><g:Anchor ui:field="products" href="#" text="{lang.products}" /></div>
-                                    <div class="item"><span class="icon-case"></span>Задачи</div>
-                                    <div class="item"><span class="icon-order"></span>Группы задач</div>
-                                    <div class="item"><span class="icon-order"></span>Заказы</div>
-                                    <div class="item"><span class="icon-project"></span>Проекты</div>
-                                    <div class="item"><span class="icon-organization"></span><g:Anchor ui:field="companies" href="#" text="{lang.companies}" /></div>
+                                    <!--<div class="item"><span class="icon-component"></span>Компоненты</div>-->
+                                    <div class="item">
+                                        <span class="icon-product"></span>
+                                        <g:Anchor ui:field="products" href="#" text="{lang.products}"/>
+                                    </div>
+                                    <!--<div class="item"><span class="icon-case"></span>Задачи</div>-->
+                                    <!--<div class="item"><span class="icon-order"></span>Группы задач</div>-->
+                                    <!--<div class="item"><span class="icon-order"></span>Заказы</div>-->
+                                    <!--<div class="item"><span class="icon-project"></span>Проекты</div>-->
+                                    <div class="item">
+                                        <span class="icon-organization"></span>
+                                        <g:Anchor ui:field="companies" href="#" text="{lang.companies}"/>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="menu">
-                                <div class="title">Управление и отчёты</div>
-                                <div class="list">
-                                    <div class="item"><span class="icon-employees"></span>Сотрудники</div>
-                                    <div class="item"><span class="icon-component"></span>Компоненты</div>
-                                    <div class="item"><span class="icon-product"></span>Продукты</div>
-                                </div>
-                            </div>
+                            <!--<div class="menu">-->
+                                <!--<div class="title">Управление и отчёты</div>-->
+                                <!--<div class="list">-->
+                                    <!--<div class="item"><span class="icon-employees"></span>Сотрудники</div>-->
+                                    <!--<div class="item"><span class="icon-component"></span>Компоненты</div>-->
+                                    <!--<div class="item"><span class="icon-product"></span>Продукты</div>-->
+                                <!--</div>-->
+                            <!--</div>-->
                         </div>
                     </div>
                 </g:HTMLPanel>
