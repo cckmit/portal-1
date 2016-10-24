@@ -6,11 +6,11 @@
     <g:HTMLPanel styleName="product list-group-item col-md-6 col-lg-3">
 
         <div class="wrapper">
-            <div class="department">Messaging</div>
+            <!--div class="department">Messaging</div-->
             <div ui:field="name" class="name" />
             <div class="buttons"><span class="icon-menu"></span></div>
             <div class="favorite_button"/>
-            <div class="checkbox"/>
+            <div class="checkbox"><g:CheckBox ui:field="update" styleName="checkbox" /></div>
         </div>
 
     </g:HTMLPanel>

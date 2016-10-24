@@ -7,5 +7,7 @@ public interface AbstractProductEditActivity {
 
     void onSaveClicked ();
 
-    void onCancelClicked();
+    void onCancelClicked ();
+
+    void checkName();
 }

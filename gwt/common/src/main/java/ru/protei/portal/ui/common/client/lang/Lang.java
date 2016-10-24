@@ -32,6 +32,8 @@ public interface Lang extends Messages {
 
     String buttonCancel();
 
+    String buttonCreate();
+
     String searchNoMatchesFound();
 
     String errorGetList();
@@ -59,4 +61,8 @@ public interface Lang extends Messages {
     String objectSaved();
 
     String notUniqName();
+
+    String buttonFromArchive();
+
+    String emptyName();
 }

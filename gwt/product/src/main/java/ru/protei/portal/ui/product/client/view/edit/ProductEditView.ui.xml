@@ -8,7 +8,7 @@
             <div class="grid">
                 <div class="col-xs-12">
                     <label class="required"><ui:text from="{lang.productName}"/></label>
-                    <g:TextBox ui:field="name" styleName="inputField"/>
+                    <g:TextBox ui:field="name" styleName="inputField verifi"/>
                 </div>
                 <div class="col-xs-12">
                     <label><ui:text from="{lang.description}"/></label>
@@ -17,7 +17,7 @@
             </div>
         </div>
         <div class="footer">
-            <!--g:Button styleName="button redC" text="{lang.buttonArchive}"></g:Button-->
+            <g:ToggleButton ui:field="state" styleName="button redC" text="{lang.buttonArchive}"></g:ToggleButton>
             <g:Button ui:field="saveBtn" styleName="button greenC" text="{lang.buttonSave}"></g:Button>
             <g:Button ui:field="cancelBtn" styleName="button whiteC" text="{lang.buttonCancel}"></g:Button>
         </div>

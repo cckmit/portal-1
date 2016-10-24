@@ -82,6 +82,20 @@ public class ProductServiceImpl extends RemoteServiceServlet implements ProductS
         }
     }
 
+    @Override
+    public boolean isNameExist(String name, Long productId) throws RequestFailedException {
+
+        log.info(" isNameExist : name = " + name);
+
+        CoreResponse<Boolean> result = productService.isNameExist(name, productId);
+
+        if (result.isOk()) {
+            return result.getData();
+        }
+        else
+            throw new RequestFailedException( result.getErrCode() );
+    }
+
 
     @Autowired
     ru.protei.portal.core.service.dict.ProductService productService;

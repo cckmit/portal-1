@@ -2,11 +2,14 @@ package ru.protei.portal.ui.product.client.view.edit;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.product.client.activity.edit.AbstractProductEditActivity;
 import ru.protei.portal.ui.product.client.activity.edit.AbstractProductEditView;
 
@@ -43,9 +46,9 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
 
         name.setText("");
         info.setText("");
-        state.setValue(true);
-
+        setState(true);
         name.setFocus(true);
+
     }
 
     @Override
@@ -70,14 +73,51 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
 
     @Override
     public void setState(boolean state) {
-
+        this.state.setValue(state);
+        this.state.setText(state ? lang.buttonArchive() : lang.buttonFromArchive());
     }
 
     @Override
     public HasValue<Boolean> getState() {
-        return null;
+        return state;
     }
 
+    @Override
+    public void setNameChecked (boolean exist)
+    {
+//        if (exist)
+//        {
+//            if (!name.getStyleName().contains("after"))
+//                name.addStyleName("after");
+//        }
+//        else
+//            name.removeStyleName("after");
+    }
+
+
+    @UiHandler( "name" )
+    public void onSearchFieldKeyUp (KeyUpEvent event)
+    {
+        changeTimer.cancel();
+        changeTimer.schedule(300);
+    }
+
+    Timer changeTimer = new Timer() {
+        @Override
+        public void run() {
+            changeTimer.cancel();
+            if ( activity != null ) {
+                activity.checkName();
+            }
+        }
+    };
+
+    @UiHandler( "state" )
+    public void onArchiveClicked (ClickEvent event)
+    {
+        if (activity != null)
+            activity.onSaveClicked();
+    }
 
     @UiField
     TextBox name;
@@ -87,8 +127,13 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     Button saveBtn;
     @UiField
     Button cancelBtn;
-
+    @UiField
     ToggleButton state;
+
+    @Inject
+    @UiField
+    Lang lang;
+
 
     AbstractProductEditActivity activity;
 

@@ -5,6 +5,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.api.struct.HttpListResult;
 import ru.protei.portal.config.MainConfiguration;
 import ru.protei.portal.core.model.dao.DevUnitDAO;
@@ -60,6 +61,21 @@ public class ProductServiceTest {
         System.out.println(result.getItems().get(0).getName());
 
         Assert.assertNotNull(ctx.getBean(DevUnitDAO.class).remove(product));
+    }
+
+    @Test
+    public void testIsExistProduct () {
+
+        String name = "CallCenter";
+
+        CoreResponse<Boolean> result = ctx.getBean(ProductService.class).isNameExist(name, null);
+
+        Assert.assertFalse(result.isError());
+        Assert.assertTrue(result.isOk());
+        Assert.assertNotNull(result.getData());
+
+        System.out.println(" product name is uniq = " + result.getData());
+
     }
 
 }

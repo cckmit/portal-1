@@ -21,4 +21,5 @@ public interface ProductService extends RemoteService {
 
     Boolean saveProduct(DevUnit product) throws RequestFailedException;
 
+    boolean isNameExist(String name, Long productId) throws RequestFailedException;
 }

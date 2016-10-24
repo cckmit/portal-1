@@ -18,4 +18,6 @@ public interface ProductServiceAsync {
     void getProductById(Long productId, AsyncCallback<DevUnit> async);
 
     void saveProduct(DevUnit product, AsyncCallback<Boolean> async);
+
+    void isNameExist(String name, Long id, AsyncCallback<Boolean> async);
 }

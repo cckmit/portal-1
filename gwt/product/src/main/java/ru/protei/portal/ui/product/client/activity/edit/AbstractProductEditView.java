@@ -22,4 +22,6 @@ public interface AbstractProductEditView extends IsWidget {
     void setState( boolean state );
     HasValue<Boolean> getState ();
 
+    void setNameChecked ( boolean exist );
+
 }

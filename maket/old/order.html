@@ -1,0 +1,2090 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Система управления персоналом</title>
+    <meta charset="UTF-8"/>
+    <link rel="stylesheet" href="style.css"/>
+    <!--link(rel='stylesheet', href='leadership.css')-->
+    <script src="web/scripts/jquery-2.1.4.min.js"></script>
+    <script>
+      /** my lib **/
+      function replaceClass(elem, from, to){
+          elem.removeClass(from).addClass(to);
+          return elem;
+      }
+      
+      function log(e){
+          console.log(e)
+      }
+      
+      
+    </script>
+    <script>
+      (function($) {
+          $.eventReport = function(selector, root) {
+              var s = [];
+              $(selector || '*', root).addBack().each(function() {
+                  // the following line is the only change
+                  var e = $._data(this, 'events');
+                  if(!e) return;
+                  s.push(this.tagName);
+                  if(this.id) s.push('#', this.id);
+                  if(this.className) s.push('.', this.className.replace(/ +/g, '.'));
+                  for(var p in e) {
+                      var r = e[p],
+                              h = r.length - r.delegateCount;
+                      if(h)
+                          s.push('\n', h, ' ', p, ' handler', h > 1 ? 's' : '');
+                      if(r.delegateCount) {
+                          for(var q = 0; q < r.length; q++)
+                              if(r[q].selector) s.push('\n', p, ' for ', r[q].selector);
+                      }
+                  }
+                  s.push('\n\n');
+              });
+              return s.join('');
+          }
+          $.fn.eventReport = function(selector) {
+              return $.eventReport(selector, this);
+          }
+      })(jQuery);
+      
+      
+    </script>
+    <!--script.
+    $(function() {
+        function fixPositioning() {
+            if ($(window).scrollTop() > 58) {
+                $('#controlPanel').addClass("fix");
+            } else {
+                $('#controlPanel').removeClass("fix");
+            }
+        };
+        fixPositioning();
+        $(window).scroll(function () {
+            fixPositioning();
+        });
+    });
+    
+    
+    
+    
+    
+    -->
+  </head>
+  <body>
+    <div class="global">
+      <div class="header_global">
+        <div class="leftBlock">
+          <div class="company"><span onclick="alert($.eventReport())" class="logo"></span><span class="name">PROTEI</span></div>
+          <div id="hideLeftBlock" class="hideBar_button"></div>
+        </div>
+        <div class="rightBlock">
+          <div class="topicTitle order">
+            <div class="title">Order #1234567</div>
+          </div>
+          <div class="currentTask"><span class="case">Freq<span class="id">7823289</span></span>
+            <div class="timer"><span class="time"><span class="hours">01</span><span class="timeDelimiter">:</span><span class="minutes">12</span></span><span id="stopCurrentTask" class="stop_button"></span></div>
+          </div>
+          <div id="runTimeFixer" class="completeWorkSession"><span class="icon-time"></span>Таймфиксер</div>
+          <div class="rightSide">
+            <div class="icons">
+              <!--#userProfile.userProfilespan.icon-user
+              -->
+              <div id="globalNotifications" class="notifications_button active"></div>
+              <div id="globalSettings" class="settings_button"></div>
+              <div id="globalHelper" class="helper_button"></div>
+              <div id="globalExit" class="exit_button"></div>
+            </div>
+          </div>
+          <div class="rightSide searchBlock">
+            <form class="globalSearch">
+              <input id="globalSearch" placeholder="Поиск по объектам" type="text" autocomplete="off" class="searchInput"/>
+              <div id="p4" contenteditable="true" class="searchInput"><span>11</span><span>22<span>33</span></span></div>
+              <div class="buttonsBlock">
+                <label class="search_button">
+                  <input type="submit" value="Поиск"/>
+                </label>
+                <!--label.icon-resetButton
+                input(type="reset" value="Сброс")
+                
+                -->
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="body_global">
+        <div class="leftBlock">
+          <div class="noScrolling">
+            <div class="scrolling">
+              <div class="mainButtons"></div>
+              <div class="menuList">
+                <div class="menu">
+                  <div class="title">Рабочее место</div>
+                  <div class="list">
+                    <div class="item"><span class="icon-plan"></span>Мой план</div>
+                    <div class="item"><span class="icon-created"></span>Инспектор</div>
+                    <div class="item"><span class="icon-activity"></span>Моя активность</div>
+                    <div class="item"><span class="icon-subscription"></span>Мои подписки</div>
+                    <div class="item"><span class="icon-favorites"></span>Мои избранные</div>
+                  </div>
+                </div>
+                <div class="menu">
+                  <div class="title">Компания</div>
+                  <div class="list">
+                    <div class="item"><span class="icon-employees"></span>Сотрудники</div>
+                    <div class="item"><span class="icon-me"></span>Мой паспорт</div>
+                  </div>
+                </div>
+                <div class="menu">
+                  <div class="title">
+                    <!--span.icon-savedQueries-->Объекты системы
+                  </div>
+                  <div style="max-height: 500px" class="list active">
+                    <!--.slideWrapper-->
+                    <div class="item"><span class="icon-component"></span>Компоненты</div>
+                    <div class="item"><span class="icon-product"></span>Продукты</div>
+                    <div class="item"><span class="icon-case"></span>Задачи</div>
+                    <div class="item"><span class="icon-order"></span>Группы задач</div>
+                    <div class="item"><span class="icon-order"></span>Заказы</div>
+                    <div class="item"><span class="icon-project"></span>Проекты</div>
+                    <div class="item"><span class="icon-organization"></span>Организации</div>
+                  </div>
+                </div>
+                <div class="menu">
+                  <div class="title">
+                    <!--span.icon-savedQueries-->Управление и отчёты
+                  </div>
+                  <div class="list">
+                    <!--.slideWrapper-->
+                    <div class="item"><span class="icon-employees"></span>Сотрудники</div>
+                    <div class="item"><span class="icon-component"></span>Компоненты</div>
+                    <div class="item"><span class="icon-product"></span>Продукты</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <script>
+            $('#hideLeftBlock').click(function(){
+                $('.header_global >.leftBlock,.body_global >.leftBlock').addClass('inactive');
+                $('.body_global >.leftBlock').click(function func(){
+                    $('.header_global >.leftBlock,.body_global >.leftBlock').removeClass('inactive');
+                    $('.body_global >.leftBlock').off()
+                })
+            })
+            
+          </script>
+        </div>
+        <div class="rightBlock">
+          <div class="case Order">
+            <div class="body">
+              <div class="column-1">
+                <div class="mainInfo">
+                  <div class="button empty"><span class="icon-favorite"></span></div>
+                  <div class="title"><span class="orderType">Order (Заказ)</span><span class="orderId">1234567</span></div>
+                  <div class="rightSide">
+                    <div class="buttons_group">
+                      <div class="button blueC">Редактировать</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="descriptionBlock">
+                  <div class="title">Съешь же ещё этих мягких французских булок, да выпей чаю.</div>
+                </div>
+                <div class="wrapper">
+                  <div class="tabs">
+                    <div class="tab active">План</div>
+                    <div class="tab">Лента активности</div>
+                  </div>
+                  <div class="buttons">
+                    <div class="buttons_group">
+                      <div id="switchTwoBlocks" class="button empty"><span class="icon-twoBlocks"></span></div>
+                    </div>
+                    <div class="button active">Активные<span class="number">7</span></div>
+                    <div class="button">Неактивные</div>
+                    <div class="button">Закрытые</div>
+                    <div class="buttons_group">
+                      <input type="text" class="inputField"><span class="filters_button"></span>
+                    </div>
+                    <div class="rightSide">
+                      <div class="regulator">
+                        <div class="radioButton active"></div>Список
+                      </div>
+                      <div class="regulator">
+                        <div class="radioButton"></div>Диаграмма сроков
+                      </div>
+                    </div>
+                  </div>
+                  <div class="caseListsBlock">
+                    <div class="stage closed"><span class="stageTitle">Этап<span class="id">1</span></span><span class="contribution">25% из 100%</span><span class="name">Название первого этапа</span>
+                      <div class="rightSide">
+                        <!--span.startDate
+                        .marker
+                        span.date 20.01.16
+                        --><span class="count">0 / 2</span>
+                      </div>
+                    </div>
+                    <div class="block">
+                      <div class="stage current fined"><span class="stageTitle">Этап<span class="id">2</span></span><span class="contribution">25% из 100%</span><span class="name">Название второго этапа</span>
+                        <div class="rightSide">
+                          <!--span.startDate
+                          .marker
+                          span.date 15.03.16
+                          --><span class="count">6 / 8</span>
+                        </div>
+                      </div>
+                      <table class="caseList">
+                        <tr class="headers">
+                          <td colspan="2" class="column-1">Тип и номер задачи</td>
+                          <td class="column-2">Название</td>
+                          <td class="column-3">Исполнитель</td>
+                          <td class="column-4">Затрачено</td>
+                          <td class="column-9">Осталось</td>
+                          <td class="column-5">Ближайший срок</td>
+                          <td class="column-6">Дата создания</td>
+                          <td class="column-8">Статус</td>
+                        </tr>
+                        <tr class="case">
+                          <td class="column-1-1">
+                            <div class="number">1</div>
+                            <div class="caseType">Bug</div>
+                          </td>
+                          <td class="column-1-2">
+                            <div class="caseId">32158</div>
+                            <div class="caseCriticality important"></div>
+                          </td>
+                          <td class="column-2"><span class="productTag"><span class="productName">Portal Protei</span><span class="productBranch">Base</span><span class="productVersion">1</span></span>
+                            <div class="description">Здесь будет описание описание описание описание описание описание описание</div>
+                            <div class="right_block">
+                              <div class="menuBlock"><span class="icon-menu"></span></div>
+                            </div>
+                          </td>
+                          <td class="column-3">
+                            <div class="employee">Фамилия И.О.</div>
+                          </td>
+                          <td class="column-4">
+                            <div class="timeSpent">14 : 00</div>
+                          </td>
+                          <td class="column-9">
+                            <div class="timeLeft">10 : 00</div>
+                          </td>
+                          <td class="column-5">
+                            <div class="deadline last">29.01.18</div>
+                          </td>
+                          <td class="column-6">
+                            <div class="timeCreation">12.09.12 12:30</div>
+                          </td>
+                          <td class="column-8">
+                            <div class="status">status</div>
+                            <div class="favorite"></div>
+                          </td>
+                        </tr>
+                        <tr class="case">
+                          <td class="column-1-1">
+                            <div class="number">2</div>
+                            <div class="caseType">Freq</div>
+                          </td>
+                          <td class="column-1-2">
+                            <div class="caseId">32158</div>
+                            <div class="caseCriticality"></div>
+                          </td>
+                          <td class="column-2"><span class="productTag"><span class="productName">Portal Protei</span><span class="productBranch">Base</span><span class="productVersion">1</span></span>
+                            <div class="description">Здесь будет описание описание описание описание описание описание описание</div>
+                            <div class="right_block">
+                              <div class="menuBlock"><span class="icon-menu"></span></div>
+                            </div>
+                          </td>
+                          <td class="column-3">
+                            <div class="executorsNumber several">2</div>
+                          </td>
+                          <td class="column-4">
+                            <div class="timeSpent">14 : 00</div>
+                          </td>
+                          <td class="column-9">
+                            <div class="timeLeft">10 : 00</div>
+                          </td>
+                          <td class="column-5">
+                            <div class="deadline last">29.01.18</div>
+                          </td>
+                          <td class="column-6">
+                            <div class="timeCreation">12.09.12 12:30</div>
+                          </td>
+                          <td class="column-8">
+                            <div class="status">status</div>
+                            <div class="favorite"></div>
+                          </td>
+                        </tr>
+                        <tr class="case">
+                          <td class="column-1-1">
+                            <div class="number">3</div>
+                            <div class="caseType">Task</div>
+                          </td>
+                          <td class="column-1-2">
+                            <div class="caseId">32158</div>
+                            <div class="caseCriticality"></div>
+                          </td>
+                          <td class="column-2"><span class="productTag"><span class="productName">Portal Protei</span><span class="productBranch">Base</span><span class="productVersion">1</span></span>
+                            <div class="description">Здесь будет описание описание описание описание описание описание описание</div>
+                            <div class="right_block">
+                              <div class="menuBlock"><span class="icon-menu"></span></div>
+                            </div>
+                          </td>
+                          <td class="column-3">
+                            <div class="employee">Фамилия И.О.</div>
+                          </td>
+                          <td class="column-4">
+                            <div class="timeSpent">14 : 00</div>
+                          </td>
+                          <td class="column-9">
+                            <div class="timeLeft">10 : 00</div>
+                          </td>
+                          <td class="column-5">
+                            <div class="deadline last">29.01.18</div>
+                          </td>
+                          <td class="column-6">
+                            <div class="timeCreation">12.09.12 12:30</div>
+                          </td>
+                          <td class="column-8">
+                            <div class="status">status</div>
+                            <div class="favorite"></div>
+                          </td>
+                        </tr>
+                        <tr class="case">
+                          <td class="column-1-1">
+                            <div class="number">4</div>
+                            <div class="caseType">Task</div>
+                          </td>
+                          <td class="column-1-2">
+                            <div class="caseId">32158</div>
+                            <div class="caseCriticality cosmetic"></div>
+                          </td>
+                          <td class="column-2"><span class="productTag"><span class="productName">Portal Protei</span><span class="productBranch">Base</span><span class="productVersion">1</span></span>
+                            <div class="description">Здесь будет описание описание описание описание описание описание описание</div>
+                            <div class="right_block">
+                              <div class="menuBlock"><span class="icon-menu"></span></div>
+                            </div>
+                          </td>
+                          <td class="column-3">
+                            <div class="executorsNumber several">2</div>
+                          </td>
+                          <td class="column-4">
+                            <div class="timeSpent">14 : 00</div>
+                          </td>
+                          <td class="column-9">
+                            <div class="timeLeft">10 : 00</div>
+                          </td>
+                          <td class="column-5">
+                            <div class="deadline">29.01.18</div>
+                          </td>
+                          <td class="column-6">
+                            <div class="timeCreation">12.09.12 12:30</div>
+                          </td>
+                          <td class="column-8">
+                            <div class="status">status</div>
+                            <div class="favorite"></div>
+                          </td>
+                        </tr>
+                        <tr class="case">
+                          <td class="column-1-1">
+                            <div class="number">5</div>
+                            <div class="caseType">Treq</div>
+                          </td>
+                          <td class="column-1-2">
+                            <div class="caseId">32158</div>
+                            <div class="caseCriticality critical"></div>
+                          </td>
+                          <td class="column-2"><span class="productTag"><span class="productName">Portal Protei</span><span class="productBranch">Base</span><span class="productVersion">1</span></span>
+                            <div class="description">Здесь будет описание описание описание описание описание описание описание</div>
+                            <div class="right_block">
+                              <div class="menuBlock"><span class="icon-menu"></span></div>
+                            </div>
+                          </td>
+                          <td class="column-3">
+                            <div class="executorsNumber several">3</div>
+                          </td>
+                          <td class="column-4">
+                            <div class="timeSpent">14 : 00</div>
+                          </td>
+                          <td class="column-9">
+                            <div class="timeLeft">10 : 00</div>
+                          </td>
+                          <td class="column-5">
+                            <div class="deadline last">29.01.18</div>
+                          </td>
+                          <td class="column-6">
+                            <div class="timeCreation">12.09.12 12:30</div>
+                          </td>
+                          <td class="column-8">
+                            <div class="status">status</div>
+                            <div class="favorite"></div>
+                          </td>
+                        </tr>
+                        <tr class="case">
+                          <td class="column-1-1">
+                            <div class="number">6</div>
+                            <div class="caseType">Freq</div>
+                          </td>
+                          <td class="column-1-2">
+                            <div class="caseId">32158</div>
+                            <div class="caseCriticality critical"></div>
+                          </td>
+                          <td class="column-2"><span class="productTag"><span class="productName">Portal Protei</span><span class="productBranch">Base</span><span class="productVersion">1</span></span>
+                            <div class="description">Здесь будет описание описание описание описание описание описание описание</div>
+                            <div class="right_block">
+                              <div class="menuBlock"><span class="icon-menu"></span></div>
+                            </div>
+                          </td>
+                          <td class="column-3">
+                            <div class="employee">Фамилия И.О.</div>
+                          </td>
+                          <td class="column-4">
+                            <div class="timeSpent">14 : 00</div>
+                          </td>
+                          <td class="column-9">
+                            <div class="timeLeft">10 : 00</div>
+                          </td>
+                          <td class="column-5">
+                            <div class="deadline last">29.01.18</div>
+                          </td>
+                          <td class="column-6">
+                            <div class="timeCreation">12.09.12 12:30</div>
+                          </td>
+                          <td class="column-8">
+                            <div class="status">status</div>
+                            <div class="favorite"></div>
+                          </td>
+                        </tr>
+                      </table>
+                      <div class="footer">
+                        <div class="btn">Показать ещё 10</div>
+                      </div>
+                    </div>
+                    <div class="stage active"><span class="stageTitle">Этап<span class="id">3</span></span><span class="contribution">25% из 100%</span><span class="name">Название третьего этапа</span>
+                      <div class="rightSide">
+                        <!--span.startDate
+                        .marker
+                        span.date подряд
+                        --><span class="count">1 / 3</span>
+                      </div>
+                    </div>
+                    <div class="stage"><span class="stageTitle">Этап<span class="id">4</span></span><span class="contribution">25% из 100%</span><span class="name">Название четвёртого этапа</span>
+                      <div class="rightSide">
+                        <!-- span.startDate
+                        .marker
+                        span.date unknown
+                        --><span class="count">0 / 2</span>
+                      </div>
+                    </div>
+                  </div>
+                  <!--.logsBlock
+                  .header.active Лента активности
+                      //.regulator
+                          .checkbox.active
+                          |Комментарии
+                      //.regulator
+                          .checkbox.active
+                          | Логи
+                      //.regulator
+                          .checkbox.active
+                          | Процесс
+                      .rightSide
+                          .buttons_group
+                              .button.empty.active
+                                  span.icon-comments
+                              #comments_btn_more.button.empty.sticky.selected.installed.newMessages
+                  
+                              .button.empty.active
+                                  span.icon-log
+                              .button.empty.sticky.selected
+                  
+                              script.
+                                  $('#comments_btn_more').click(function(event){
+                                      var elem = $(event.target);
+                                      elem.removeClass('newMessages')
+                  
+                                      var offsets = elem.offset();
+                  
+                                      $('#popup').css('display', 'block').css('top', offsets.top+ 46).css('left', offsets.left-196).css('right', 'initial').addClass('active')
+                  
+                                  });
+                  
+                          .regulator
+                              form
+                                  input.inputField(type="text" placeholder="Поиск")
+                                  label.hideSource
+                                      input(type="submit")
+                                      .button.empty.sticky.blueC
+                                          span.icon-search
+                  .content
+                      .head
+                  
+                      .activityFeed
+                          .comment
+                              .head
+                                  span.employee Фамилия И.О.
+                                  span.repliedTo
+                                      span.employee Фамилия И.О
+                                  .rightSide
+                                      span.dateCreation 5ч назад
+                                      span.reply_button
+                              .message Съешь же ещё этих мягких французских булок, да выпей чаю. Съешь же ещё этих мягких французских булок, да выпей чаю.
+                  
+                          .logEntry.executorAdding
+                              .head
+                                  span.title Новый исполнитель
+                                  .rightSide
+                                      span.dateCreation Сегодня, 12:30
+                  
+                          .logEntry.workOnFiles
+                              .head
+                                  span.title Новое вложение
+                                  .rightSide
+                                      span.dateCreation Сегодня, 12:22
+                  
+                  
+                          .comment
+                              .head
+                                  span.employee Фамилия И.О.
+                                  .rightSide
+                                      span.dateCreation 2д 10ч назад
+                                      span.reply_button.active
+                              .message Съешь же ещё этих мягких французских булок, да выпей чаю.
+                              .footer
+                                  .dateUpdate обновлено 5м назад
+                  
+                  
+                          .logEntry.fixTime
+                              .head
+                                  span.title Фиксация времени
+                                  .rightSide
+                                      span.dateCreation Сегодня, 10:20
+                              .text
+                                  span.employee Фамилия И.О.
+                                  |потратил на работу
+                                  span.timeSpent 01 : 10
+                  
+                          .logEntry.fixTime
+                              .head
+                                  span.title Фиксация времени
+                                  .rightSide
+                                      span.dateCreation Сегодня, 09:20
+                              .text
+                                  span.employee Фамилия И.О.
+                                  |потратил на работу
+                                  span.timeSpent 01 : 10
+                          +loop(1)
+                              .comment
+                                  .head
+                                      span.employee Фамилия И.О.
+                                      span.repliedTo
+                                          span.employee Фамилия И.О
+                                      .rightSide
+                                          span.dateCreation 5ч назад
+                                          span.reply_button
+                                  .message Съешь же ещё этих мягких французских булок, да выпей чаю. Съешь же ещё этих мягких французских булок, да выпей чаю.
+                  
+                  
+                      #newMessageBlock.newMessageBlock
+                          .head
+                              .repliedTo
+                                  span.employee Фамилия И.О.
+                  
+                              .rightSide
+                                  .button.empty
+                                      span.icon-bold
+                                  .button.empty.sticky
+                                      span.icon-italic
+                                  .button.empty.sticky
+                                      span.icon-underline
+                                  .button.empty.sticky
+                                      span.icon-lineThrough
+                                  .button.empty.sticky
+                                      span.icon-cutLine
+                                  .button.sticky.selected
+                                      span.icon-list
+                                  .button.empty.sticky
+                                      span.icon-code
+                                  .button.sticky.selected
+                                      span.icon-link
+                  
+                          .textMessage(contenteditable="true")
+                  
+                  
+                      .footer
+                  
+                  
+                          .add_button Загрузить ещё
+                          .buttons_group
+                              #newMessage.button.blueC Новое сообщение
+                  
+                          script.
+                              !function(){
+                                  $('#newMessage').click(function(event){
+                                      var elem = $(event.target)
+                  
+                                      elem.removeClass('blueC').addClass('greenC').text('Отправить');
+                                      $('#newMessageBlock').addClass('active').children('.textMessage').focus();
+                  
+                                  })
+                  
+                  
+                              }();
+                  
+                  
+                  -->
+                  <script>
+                    $('#executors').click(function(event){
+                        var elem = $(event.target);
+                        var content = elem.next();
+                    
+                        if(elem.hasClass('active')) {
+                            elem.removeClass('active')
+                            content.slideUp();
+                            return;
+                        }
+                    
+                        elem.addClass('active')
+                        content.slideDown();
+                    
+                        //var wholeHeight = content.css('position', 'absolute').prop('scrollHeight').css('position', '');
+                        //parentElem.css('max-height', wholeHeight);
+                    
+                    
+                        //$('#resizeBtn').click(function(){
+                        //    var parentElem = $(event.target).parent();
+                    
+                        //    if(parentElem.hasClass('minimize')){
+                        //        clearTimeout(timeoutFlag)
+                        //        parentElem.css('max-height', '')
+                        //        parentElem.removeClass('minimize');
+                        //        return;
+                        //    }
+                    
+                        //    parentElem.addClass('minimize');
+                        //    var wholeHeight = parentElem.prop('scrollHeight');
+                        //    parentElem.css('max-height', wholeHeight);
+                    
+                        //    timeoutFlag = setTimeout(function(){
+                        //        parentElem.css('max-height', wholeHeight + 1000);
+                        //    }, 500)
+                        //});
+                    
+                    });
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                  </script>
+                </div>
+              </div>
+              <div class="column-2">
+                <div class="section main">
+                  <div class="progress">
+                    <div class="readiness">
+                      <div class="wrapper">
+                        <div class="status">active</div>
+                        <div class="percent">14%</div>
+                      </div>
+                    </div>
+                    <div class="column">
+                      <div class="timeSpent">
+                        <div class="title">Затрачено всего</div>
+                        <div class="time">10 : 23</div>
+                      </div>
+                      <div class="timeLeft">
+                        <div class="title">Осталось всего</div>
+                        <div class="time">134 : 00</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="creationInfo">
+                    <div class="creator">
+                      <div class="header">Создатель</div>
+                      <div class="content">Фамилия И.О.</div>
+                    </div>
+                    <div class="dateCreation">
+                      <div class="header">Дата создания</div>
+                      <div class="content">20.02.15 20:09</div>
+                    </div>
+                    <div class="dateUpdate">
+                      <div class="header">Дата обновления</div>
+                      <div class="content">1д назад</div>
+                    </div>
+                  </div>
+                  <div class="orderInfo">
+                    <div class="manager">
+                      <div class="header">Менеджер</div>
+                      <div class="content">Фамилия И.О.</div>
+                    </div>
+                    <!--.project
+                    .header Поставка
+                    .content
+                        span.id 128824
+                        span.organization SimTelecom
+                        span.icon-addressBook
+                    
+                    -->
+                  </div>
+                </div>
+                <div class="section">
+                  <div class="header">Этапы и сроки<span class="count">7</span></div>
+                  <div class="timeLimits">
+                    <div class="timeLimit start fined">
+                      <div class="date">
+                        <div class="marker"></div>20.02.16
+                      </div>
+                      <div class="comment">Начало разработки</div>
+                    </div>
+                    <div class="stage timeLimit">
+                      <div class="date">
+                        <div class="marker">1</div>
+                        <div class="stageNumber">Этап #1</div>
+                      </div>
+                      <div class="comment">Описание этапа</div>
+                      <div class="stageTimeLimits">
+                        <div class="timeLimit start">
+                          <div class="date">
+                            <div class="marker"></div>20.02.16
+                          </div>
+                          <div class="comment">Начало разработки</div>
+                        </div>
+                        <div class="timeLimit">
+                          <div class="date">
+                            <div class="marker"></div>15.03.16
+                          </div>
+                        </div>
+                        <div class="timeLimit common">
+                          <div class="date">
+                            <div class="marker"></div>15.03.16
+                          </div>
+                          <div class="comment">Общий срок</div>
+                        </div>
+                        <div class="timeLimit deadline">
+                          <div class="date">
+                            <div class="marker"></div>21.03.16
+                          </div>
+                          <div class="comment">Deadline</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="stage timeLimit">
+                      <div class="date">
+                        <div class="marker">2</div>
+                        <div class="stageNumber">Этап #2</div>
+                      </div>
+                      <div class="comment">Описание этапа #2</div>
+                    </div>
+                    <div class="timeLimit">
+                      <div class="date">
+                        <div class="marker"></div>01.04.16
+                      </div>
+                      <div class="comment"> спроектировать структуру БД и ещё что-нибудь</div>
+                    </div>
+                    <div class="stage timeLimit">
+                      <div class="date">
+                        <div class="marker">3</div>
+                        <div class="stageNumber">Этап #3</div>
+                      </div>
+                      <div class="comment">Описание этапа #2</div>
+                    </div>
+                    <div class="stage timeLimit">
+                      <div class="date">
+                        <div class="marker">4</div>
+                        <div class="stageNumber">Этап #4</div>
+                      </div>
+                    </div>
+                    <div class="timeLimit deadline">
+                      <div class="date">
+                        <div class="marker"></div>01.05.16
+                      </div>
+                      <div class="comment">Deadline</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="section">
+                  <div class="header">Связи<span class="count">2</span></div>
+                  <div class="relations">
+                    <div class="productBlock">
+                      <div class="product"><span class="icon-product"></span><span class="productName">ProductName</span></div>
+                      <div class="more_button"><span class="icon-toggle"></span></div>
+                    </div>
+                    <div class="productViewer inactive">
+                      <div class="component"><span class="icon-component"></span><span class="componentName">component_A</span><span class="componentVersion">1.7</span></div>
+                      <div class="component"><span class="icon-component"></span><span class="componentName">componentName_B</span><span class="componentVersion">1.1.1</span></div>
+                      <div class="component"><span class="icon-component"></span><span class="componentName">component_C</span><span class="componentVersion">1</span></div>
+                    </div>
+                    <div class="projectBlock">
+                      <div class="project"><span class="icon-case"></span>Project<span class="id">124248</span><span class="organization">SimTelecom</span></div>
+                      <div class="addressBook_button"><span class="icon-addressBook"></span><span class="count">1</span></div>
+                    </div>
+                    <!--.order-->
+                    <!--    span.icon-collection-->
+                    <!--    span.orderName-->
+                    <!--        |Order-->
+                    <!--        span.id 123244-->
+                    <!---->
+                    <!--.case-->
+                    <!--    span.icon-case-->
+                    <!--    span.caseName-->
+                    <!--        |Bug-->
+                    <!--        span.id 123244-->
+                  </div>
+                </div>
+                <!--.section-->
+                <!--    .header Рабочая группа-->
+                <!--        span.count 5-->
+                <!---->
+                <!---->
+                <!--    .workGroup-->
+                <!--        .employee Фамилия И.О.-->
+                <!--        .employee.me-->
+                <!--            span.delete_button-->
+                <!--            | Бондаренко А.А.-->
+                <!--        .employee Фамилииия А.А.-->
+                <!--        .employee Фамилииия А.А.-->
+                <!--        .employee Фамилииия А.А.-->
+                <div class="section">
+                  <div class="header">Вложения<span class="count">3</span></div>
+                  <div class="files">
+                    <div class="fileBlock"><span class="file"><span class="icon-image"></span><span class="fileName">plan.jpg</span></span><span class="comment">comment</span></div>
+                    <div class="fileBlock"><span class="file"><span class="icon-image"></span><span class="fileName">file-picture.jpg</span></span><span class="comment">Съешь же ещё этих мягких французских булок, да выпей чаю.</span></div>
+                    <div class="fileBlock"><span class="file"><span class="icon-archive"></span><span class="fileName">old_project112.zip</span></span></div>
+                  </div>
+                </div>
+                <!--.section.report
+                .header Отчёт
+                
+                .diagram
+                    div диаграмма
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="popup" style="padding: 14px; min-width: 200px" class="popupBlack">
+        <div>
+          <div class="regulator">
+            <div class="radioButton"></div>Все комнаты
+          </div>
+        </div>
+        <div>
+          <div class="regulator">
+            <div class="radioButton active"></div>Выборочно
+          </div>
+        </div>
+        <div style="padding-left: 14px">
+          <div class="regulator">
+            <div class="checkbox active"></div>Общая комната
+          </div>
+        </div>
+        <style>
+          .count2{
+              background-color: #E65151;
+              font-size: 11px;
+              color: #fff;
+              font-weight: bold;
+              padding: 2px 6px;
+              margin-left: 8px;
+              border-radius: 4px;
+              line-height: normal;
+              vertical-align: 0px;
+              float: right;
+              margin-top: 6px;
+          }
+        </style>
+        <div style="padding-left: 14px">
+          <div style="display: block" class="regulator">
+            <div class="checkbox"></div>Тестирование<span class="count2">+32</span>
+          </div>
+        </div>
+      </div>
+      <div class="bottom_global">
+        <table class="activeCase">
+          <tr class="case">
+            <td class="column-1-1">
+              <div class="animationWrapper">
+                <div class="timerButton active"><span class="icon-right"></span></div>
+                <div class="timeSpent">
+                  <div class="hours"></div>
+                  <div class="timeDelimiter">:</div>
+                  <div class="minutes"></div>
+                </div>
+              </div>
+              <div class="caseType">Bug</div>
+            </td>
+            <td class="column-1-2">
+              <div class="caseId">32158</div>
+              <div class="caseCriticality critical"></div>
+            </td>
+            <td class="column-2"><span class="productTag">Portal Protei</span>
+              <div class="description">Здесь будет описание описание описание описание описание описание описание</div>
+              <div class="menuBlock"><span class="icon-menu"></span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <script>
+        $('.bottom_global').click(function(event){
+            $(event.target).toggleClass('active');
+        });
+        function displayTimer(){
+            var timeSpentElem = $('.timeSpent');
+            var hoursElem = timeSpentElem.children('.hours')
+            var minutesElem = timeSpentElem.children('.minutes')
+            function changeTimeSpent(){
+                var dateObj = new Date();
+                hoursElem.text(dateObj.getHours());
+                minutesElem.text(dateObj.getMinutes());
+            }
+            changeTimeSpent();
+            setInterval(
+                    function(){
+                        changeTimeSpent();
+                    }, 1000 * 60);
+        }
+        displayTimer();
+        
+      </script>
+      <div class="globalSearch_popup">
+        <div class="t_wrapper">
+          <div class="tc_wrapper systemObject active">
+            <div class="relativeBlock">
+              <div class="title">Объекты системы</div>
+              <div class="items">
+                <div data-show="1" class="item more">Компонента</div>
+                <div data-show="1" class="item more">Продукт</div>
+                <div data-show="1" class="item more">Задача</div>
+                <div data-show="1" class="item more">План</div>
+                <div data-show="1" class="item more">Группа задач</div>
+                <div data-show="1" class="item more">Заказ</div>
+                <div data-show="1" class="item more">Проект</div>
+                <div data-show="1" class="item more">Организация</div>
+                <div data-show="1" class="item more hover">Сотрудник</div>
+              </div>
+            </div>
+          </div>
+          <div class="tc_wrapper objectProperties">
+            <div class="relativeBlock">
+              <div class="title">Параметры объекта</div>
+              <div class="items">
+                <div data-title="another" data-show="0" class="item more">,
+                  <div class="description">другое_значение</div>
+                </div>
+                <div data-title="exception" data-show="0" class="item more">-
+                  <div class="description">исключение</div>
+                </div>
+                <div data-title="range" data-show="0" class="item">..
+                  <div class="description">диапазон</div>
+                </div>
+                <div data-additional="another,exception" data-show="1" class="item">Имя</div>
+                <div data-additional="another,exception,range" data-show="1" class="item">Отсутсвие</div>
+                <div data-additional="another" data-show="1" class="item">Пол</div>
+                <div data-show="1" class="item more">Фильтр</div>
+                <div data-additional="another,exception" data-show="1" class="item more">Фамилия</div>
+                <div data-additional="another,exception" data-show="1" class="item more">Отчетство</div>
+                <div data-additional="another,exception" data-show="1" class="item more">ФИО</div>
+                <div data-additional="another,exception" data-show="1" class="item more">Должность</div>
+                <div data-additional="another,exception" data-show="1" class="item more">Подразделение</div>
+                <div data-additional="another,exception,range" data-show="1" class="item">День_рождения</div>
+                <div data-additional="another,exception" data-show="1" class="item">Телефон_рабочий</div>
+                <div data-additional="another,exception" data-show="1" class="item">Телефон_домашний</div>
+                <div data-additional="another,exception" data-show="1" class="item">Телефон_мобильный</div>
+                <div data-additional="another,exception" data-show="1" class="item">Email</div>
+                <div data-additional="another,exception" data-show="1" class="item">IP</div>
+                <div data-additional="another,exception" data-show="1" class="item">JID</div>
+              </div>
+            </div>
+          </div>
+          <div class="tc_wrapper propertyValues">
+            <div class="title">Варианты значений</div>
+            <div class="items">
+              <div data-show="1" class="item">{Все должности}</div>
+              <div data-show="1" class="item">1Инженер-программист</div>
+              <div data-show="1" class="item">2Инженер-программист</div>
+              <div data-show="1" class="item">3Инженер-программист</div>
+              <div data-show="1" class="item">4Инженер-программист</div>
+              <div data-show="1" class="item">5Инженер-программист</div>
+              <div data-show="1" class="item">6Инженер-программист</div>
+              <div data-show="1" class="item">7Инженер-программист</div>
+              <div data-show="1" class="item">8Инженер-программист</div>
+              <div data-show="1" class="item">9Инженер-программист</div>
+              <div data-show="1" class="item">10Инженер-программист</div>
+              <div data-show="1" class="item">11Инженер-программист</div>
+              <div data-show="1" class="item">12Инженер-программист</div>
+              <div data-show="1" class="item">13Инженер-программист</div>
+              <div data-show="1" class="item">14Инженер-программист</div>
+            </div>
+          </div>
+          <!--.tc_wrapper.savedFilters
+          .relativeBlock
+              .title Сохранённые фильтры
+              .items
+                  .item с моим отделом
+                  .item только женщины
+                  .item только мужчины
+          
+          
+          
+          
+          
+          
+          -->
+        </div>
+      </div>
+      <script>
+        !function() {
+            var globalSearch = $('#globalSearch');
+            //var popupBlock = $('.globalSearchFilters');
+            var popupBlock = $('.globalSearch_popup');
+        
+            var searchInputOffset = globalSearch.offset();
+            var sections = [popupBlock.find('.tc_wrapper.active')];
+            var activeSection = 0;
+            var permittedItems = sections[activeSection].find('.item[data-show="1"]');
+            //activeItemIndecxpermittedItems.filter('.hover').position();
+        
+            var activeItem = sections[activeSection].find('.item.hover');
+        
+        
+        
+            var additional = 0;
+        
+        
+            var one = []; //будет записываться при tab или :
+        
+        
+        
+        
+            function resetAdditionalItems() {
+                permittedItems = $([]);
+                var hoverExists = false;
+        
+                sections[activeSection].find('.item').each(function (i, elem) {
+                    elem = $(elem);
+        
+                    if (elem.attr('data-title') == false || elem.attr('data-title') === undefined) {
+                        elem.attr('data-show', '1');
+                        permittedItems = permittedItems.add(elem);
+                        if (elem.hasClass('hover'))
+                            hoverExists = true;
+        
+                    }
+                    else {
+                        elem.attr('data-show', '0')
+                    }
+                });
+        
+                if (!hoverExists) {
+                    activeItem = permittedItems.first();
+                    activeItem.addClass('hover');
+                }
+            }
+        
+        
+        
+        
+        
+            globalSearch.focus(function () {
+                popupBlock.css('display', 'block').css('left', searchInputOffset.left);
+        
+        
+                setTimeout(function(){
+        
+                    popupBlock.addClass('active');
+        
+                    var shiftPress;
+        
+        
+                    $('#p4').keypress(function(event){log(this.id);});
+        
+                    globalSearch.on('input', function (event) {
+        
+        
+                        var parts = globalSearch.val().trim().split(' ');
+        
+                        log(parts.length)
+                        log(one.length)
+                        //if(parts.length > one.length){
+                        //log('новый параметр')
+        
+        
+                        for(var i=0; i<one.length; i++){
+                            if(one[i]!=parts[i]){
+                                log(one[i] + 'изменён{' +
+                                        ' с ' + one[i] +
+                                        ' п ' + parts[i] +
+                                        '}')
+                            }
+                        }
+        
+                        //log()
+        
+                        log(!activeItem.hasClass('more'))
+                        log(activeSection)
+        
+                        if(activeItem.hasClass('active') && !activeItem.hasClass('more')){
+                            return
+                        }
+        
+                        //if(!activeItem.hasClass('more') && (activeSection==1 || activeSection==0)){
+                        //    return;
+                        //}
+                        if(additional){
+                            var searchText = globalSearch.val().substring(globalSearch.val().lastIndexOf('"') + 1);
+        
+                            if(searchText==" "){
+                                log('пробел!!!')
+                                resetAdditionalItems()
+                                searchText = ""
+                                additional=0;
+                            }
+        
+                        }else {
+                            searchText = globalSearch.val().substring(globalSearch.val().lastIndexOf(' ') + 1);
+                            var firstQuotePos = searchText.indexOf('"');
+                            if (firstQuotePos > 0) {
+                                searchText = searchText.substring(firstQuotePos + 1);
+                            }
+                        }
+                        log(searchText)
+        
+                        //}else{
+                        //    log('изменён старый параметр')
+        
+                        //}
+        
+        
+                        //if(activeSection>0)
+                        //    var searchText0 = one.join(' ').length;
+                        //else searchText0 = 0
+        
+        
+                        //var l = globalSearch.val().length;
+        
+                        //log(l)
+                        //log(searchText0)
+        
+                        //if(l<searchText0){
+                        //    if(l<one[0].length){
+                        //        one = [];
+                        //        sections[activeSection].hide();
+                        //        if(activeSection==2)
+                        //            sections[1].hide();
+                        //        sections[0].addClass('active');
+                        //
+                        //        activeSection = 0;
+                        //
+                        //        activeItem = sections[0].find('.item.active');
+                        //        activeItem.removeClass('active').addClass('hover');
+                        //        popupBlock.css('left', searchInputOffset.left - 179 * activeSection);
+                        //        searchText0 = 0
+                        //
+                        //    }
+                        //    else{
+                        //
+                        //    }
+                        //}
+        
+                        //var searchText = globalSearch.val().substr(searchText0).toLowerCase();
+                        log(one)
+                        //log(searchText0)
+                        //log(searchText)
+        
+                        var firstItem;
+        
+                        //sections[activeSection].find('.item[data-show="1"]').each(function(index, elem){
+        
+        
+        
+                        //if(!permittedItems){
+                        //    permittedItems = sections[activeSection].find('.item[data-show="1"]');
+                        //}
+        
+        
+                        log(permittedItems)
+        
+                        permittedItems.each(function(index, elem){
+                            elem = $(elem);
+                            //log(elem.text().toLowerCase())
+                            if(elem.text().toLowerCase().indexOf(searchText) == 0){
+        
+                                elem.attr('data-show', '1');
+                                if(!firstItem){
+                                    activeItem.removeClass('hover');
+                                    elem.addClass('hover');
+                                    activeItem = elem;
+                                    firstItem = true;
+                                }
+                            }else{
+                                elem.attr('data-show', '0');
+                            }
+                        });
+        
+        
+        
+                    });
+        
+        
+                    $(document).keydown(function (event) {
+                        switch (event.which) {
+                            case 16: // shift
+                                shiftPress = true;
+                                break;
+                            case 38: // up
+        
+                                var prevItem = activeItem.prev()
+        
+                                if(prevItem.length){
+                                    activeItem.removeClass('hover');
+                                    activeItem = prevItem;
+                                    activeItem.addClass('hover')
+                                }
+        
+        
+                                //if(item.index()!=0){
+                                //    activeItem.removeClass('hover');
+                                //    activeItem = activeItem.prev();
+                                //    activeItem.addClass('hover')
+                                //}
+                                break;
+                            case 9: // tab
+        
+                                if(shiftPress){
+                                    log(2);
+        
+                                }else {
+        
+                                    //только если нажималась клавиша и только если печаталось что то новое, т.е не изменялось старое
+        
+        
+                                    //if(permittedItems)
+                                    permittedItems.each(function(index, elem){
+                                        elem = $(elem);
+                                        elem.attr('data-show', '1');
+                                    });
+        
+        
+        
+        
+                                    var nextActiveItem = activeItem.hasClass('more');
+                                    if(nextActiveItem) {
+                                        log('data-more')
+                                        activeItem.removeClass('hover').addClass('active');
+        
+        
+                                        if(activeSection==0) {
+                                            globalSearch.val(activeItem.text() + ' ');
+                                            one[0] = activeItem.text() + '';
+                                        }
+                                        else {
+                                            globalSearch.val(one.join(' ') + ' ' + activeItem.text() + '"');
+                                            one.push(activeItem.text() + '"');
+                                        }
+        
+                                        sections[activeSection].removeClass('active');
+                                        if (sections[activeSection + 1])
+                                            activeSection += 1;
+                                        else {
+                                            var nextSection = sections[activeSection].next();
+                                            if (nextSection.length) {
+                                                activeSection += 1;
+                                                sections[activeSection] = nextSection;
+                                            }
+                                            else {
+                                                // конец ввода значений
+                                            }
+                                        }
+                                        popupBlock.css('left', searchInputOffset.left - 179 * activeSection);
+                                        sections[activeSection].css('display', 'table-cell').addClass('active');
+                                        permittedItems = sections[activeSection].find('.item[data-show="1"]');
+                                        //activeItem = permittedItems.filter('.hover');
+                                        activeItem = permittedItems.first()
+                                        activeItem.addClass('hover');
+                                    }else{
+                                        if(activeItem.hasClass('active')){
+                                            log('NOdata-more, active')
+                                            // конец ввода значений
+        
+        
+                                            if(activeSection == 2){
+                                                log('section 2')
+                                                globalSearch.val(one.join(' ') + activeItem.text() + '"');
+                                                one[one.length-1] += activeItem.text() + '"';
+        
+        
+                                                sections[activeSection].removeClass('active').hide();
+                                                activeSection--;
+                                                permittedItems = sections[activeSection].find('.item[data-show="1"]');
+                                                popupBlock.css('left', searchInputOffset.left - 179 * activeSection);
+                                                sections[activeSection].css('display', 'table-cell').addClass('active');
+                                                activeItem = permittedItems.filter('.active').removeClass('active').addClass('hover');
+        
+                                            }else {
+                                                log('NOsection 2')
+        
+                                                var searchText = globalSearch.val().substring(globalSearch.val().lastIndexOf('"') + 1);
+        
+        
+                                                globalSearch.val(one.join(' ') + searchText + '"');
+                                                one[one.length - 1] += searchText + '"';
+        
+                                                activeItem.removeClass('active').addClass('hover');
+                                            }
+        
+        
+        
+        
+                                        }else{
+                                            log('NOdata-more')
+                                            //activeItem.removeClass('hover').addClass('active');
+        
+        
+                                            if(additional){
+                                                log('additional')
+        
+                                                hoverItem = sections[activeSection].find('.item.hover');
+                                                globalSearch.val(one.join(' ') + '' + hoverItem.text() + '"');
+                                                one[one.length-1] += hoverItem.text() + '"';
+        
+                                                activeSection+=1;
+                                                popupBlock.css('left', searchInputOffset.left - 179 * activeSection);
+                                                sections[activeSection].css('display', 'table-cell').addClass('active');
+                                                permittedItems = sections[activeSection].find('.item[data-show="1"]');
+                                                activeItem.removeClass('hover').addClass('active')
+                                                activeItem = permittedItems.filter('.hover');
+                                                if(!activeItem.length){
+                                                    activeItem = permittedItems.first();
+                                                    activeItem.addClass('hover')
+                                                }
+        
+        
+                                                additional=0;
+        
+        
+                                                log(activeItem)
+        
+                                            }else {
+                                                log('NOadditional')
+        
+                                                var hoverItem = sections[activeSection].find('.item.hover');
+                                                globalSearch.val(one.join(' ') + '' + hoverItem.text() + '"');
+                                                one[one.length - 1] += hoverItem.text() + '"';
+                                                //one.push(activeItem.text() + '"');
+                                                hoverItem.removeClass('hover');
+        
+                                                sections[activeSection].removeClass('active').hide();
+                                                activeSection--;
+                                                //permittedItems = sections[activeSection].find('.item[data-show="1"]');
+                                                //var oldPermittedItems = permittedItems;
+                                                //var old
+                                                permittedItems = sections[activeSection].find('.item');
+                                                popupBlock.css('left', searchInputOffset.left - 179 * activeSection);
+                                                activeItem = permittedItems.filter('.active');
+        
+                                                var dataAttr = activeItem.attr('data-additional');
+                                                if (dataAttr) {
+                                                    log('attr')
+                                                    additional = 1;
+        
+                                                    var dataAttrs = dataAttr.split(',')
+                                                    permittedItems = $([]);
+        
+                                                    var dataAttrsLength = dataAttrs.length;
+                                                    sections[activeSection].find('.item').each(function (i, elem) {
+        
+                                                        elem = $(elem);
+        
+                                                        //if(elem.attr('data-title') == false || elem.attr('data-title')===undefined)
+                                                        //    elem.attr('data-show', '0')
+        
+                                                        for (var i = 0; i < dataAttrsLength; i++) {
+                                                            if (elem.attr('data-title') == dataAttrs[i]) {
+                                                                elem.attr('data-show', '1')
+                                                                permittedItems = permittedItems.add(elem);
+                                                                //break;
+                                                                //log(permittedItems)
+                                                                //log(elem)
+                                                                return;
+                                                            }
+                                                            //else{
+                                                            //}
+                                                            //var item = sections[activeSection].find('.item[data-title='+dataAttrs[i]+']');
+                                                            //item.attr('data-show', '1');
+                                                            //permittedItems.add(item)
+                                                        }
+                                                        elem.attr('data-show', '0')
+        
+        
+                                                    });
+        
+                                                    //for (var i = 0; i < dataAttrs.length; i++) {
+                                                    //    var item = sections[activeSection].find('.item[data-title=' + dataAttrs[i] + ']');
+                                                    //    item.attr('data-show', '1');
+                                                    //    permittedItems.add(item)
+                                                    //}
+        
+                                                    activeItem.removeClass('active');
+                                                    activeItem = permittedItems.first();
+                                                    activeItem.addClass('hover');
+        
+                                                    //sections[activeSection].find('.main').hide();
+                                                    //sections[activeSection].find('.additional').show();
+                                                }
+                                                else{
+                                                    log('NOattr')
+        
+                                                    log(activeItem.text())
+                                                    if(activeItem.attr('data-title')){
+                                                        additional = 1
+                                                        //log('oldPermittedItems');
+                                                        //log(oldPermittedItems)
+                                                        activeItem.removeClass('active');
+                                                        permittedItems = sections[activeSection].find('.item[data-show="1"]');
+                                                        activeItem = permittedItems.first();
+                                                        activeItem.addClass('hover');
+                                                    }else{
+                                                        log('resetAdditionalItems')
+                                                        activeItem.removeClass('hover').addClass('active');
+                                                        //resetAdditionalItems();
+                                                    }
+        
+                                                }
+        
+        
+                                                activeItem.removeClass('active').addClass('hover');
+        
+        
+                                                //sections[activeSection].removeClass('active').hide();
+                                                //activeSection--;
+                                                //popupBlock.css('left', searchInputOffset.left - 179 * activeSection);
+                                                //sections[activeSection].css('display', 'table-cell').addClass('active');
+                                                //activeItem = sections[activeSection].find('.item.active').removeClass('active').addClass('hover');
+                                            }
+        
+                                        }
+                                    }
+        
+                                }
+        
+        
+                                break;
+                            case 40: // down
+                                //log(activeItem)
+        
+                                var nextItem = activeItem.next();
+                                //var nextItem = permittedItems.filter('.hover');
+        
+        
+                                if(nextItem.length){
+                                    activeItem.removeClass('hover');
+                                    activeItem = nextItem;
+                                    activeItem.addClass('hover')
+                                }
+        
+                                break;
+                            default:
+                                return; // exit this handler for other keys
+                        }
+                        event.preventDefault();
+                    });
+        
+        
+                    $(document).keyup(function (event) {
+                        //log(event.which)
+                        //log(shiftPress)
+                        //if(shiftPress && event.which==9) {
+                        //
+                        //    log(2);
+                        //    //$('#globalNotifications').toggleClass('active')
+                        //
+                        //    //shiftPress = false;
+                        //    event.preventDefault();
+                        //}else if(event.which == 16){
+                        //    shiftPress = false;
+                        //    event.preventDefault();
+                        //}
+        
+                        if(event.which == 16){
+                            shiftPress = false;
+                            event.preventDefault();
+                        }
+        
+                    });
+        
+        
+                    $(document.body).click(
+                        function func(event){
+                            var elem = event.target;
+                            if(popupBlock.has(elem).length<=0){
+                                popupBlock.removeClass('active')
+                                setTimeout(function(){popupBlock.css('display', '')}, 200);
+                                globalSearch.removeClass('active')
+                                $(document.body).off('click', func);
+                            }
+                        }
+                    );
+                }, 200);
+        
+            });
+        }();
+        
+        
+      </script>
+      <div class="notifications">
+        <div class="head">
+          <div class="button grayC active"><span class="icon-settings"></span>Типы уведомлений</div>
+          <div class="rightSide">
+            <div class="regulator">
+              <form>
+                <input type="text" placeholder="Поиск" class="inputField"/><span class="filters_button"></span>
+                <label class="hideSource">
+                  <input type="submit"/>
+                  <div class="button empty sticky blueC"><span class="icon-search"></span></div>
+                </label>
+              </form>
+            </div>
+          </div>
+        </div>
+        <div class="propertiesBlock">
+          <div class="property">
+            <div class="marker status active"></div>Статус
+          </div>
+          <div class="property">
+            <div class="marker comments active"></div>Комментарии
+          </div>
+          <div class="property">
+            <div class="marker"></div>Приоритет
+          </div>
+          <div class="property">
+            <div class="marker fixTime active"></div>Фиксация времени
+          </div>
+          <div class="property">
+            <div class="marker"></div>Документы
+          </div>
+          <div class="property">
+            <div class="marker files active"></div>Вложения
+          </div>
+          <div class="property">
+            <div class="marker"></div>Связи
+          </div>
+          <div class="property">
+            <div class="marker"></div>Сроки и этапы
+          </div>
+          <div class="property">
+            <div class="marker executors active"></div>Исполнители
+          </div>
+        </div>
+        <div class="body">
+          <div class="date">
+            <div class="dateTitle">Сегодня, 15.04.16</div>
+            <div class="notes">
+              <div class="note plan notRead">
+                <div class="head">
+                  <div class="time">12:00</div>
+                </div>
+                <div class="content">
+                  <div class="head"><span class="marker"></span><span class="title"><span class="case mr">Bug<span class="id">13432</span></span>был добавлен в ваш план<span class="by ml"><span class="employee">Фамилия И.О.</span></span></span></div>
+                </div>
+              </div>
+              <div class="note comment notRead">
+                <div class="head">
+                  <div class="time">11:45</div>
+                </div>
+                <div class="content">
+                  <div class="head"><span class="marker"></span><span class="title">Вам ответили на комментарий в<span class="case mlr">Bug<span class="id">13432</span></span><span class="by"><span class="employee">Фамилия И.О.</span></span></span></div>
+                </div>
+              </div>
+              <div class="note comment notRead">
+                <div class="head">
+                  <div class="time">11:42</div>
+                </div>
+                <div class="content">
+                  <div class="head"><span class="marker"></span><span class="title">Вам ответили на комментарий в<span class="case mlr">Bug<span class="id">13432</span></span><span class="by"><span class="employee">Фамилия И.О.</span></span></span></div>
+                </div>
+              </div>
+              <div class="note late">
+                <div class="head">
+                  <div class="time">11:40</div>
+                </div>
+                <div class="content">
+                  <div class="head"><span class="marker"></span><span class="title"><span class="employee mr">Фамилия И.О.</span>будет отсутствовать<span class="date mlr">16.04.16</span>по причине<span class="lateReason ml">Болезнь</span></span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="date">
+            <div class="dateTitle">Вчера, 14.04.16</div>
+            <div class="notes">
+              <div class="note plan">
+                <div class="head">
+                  <div class="time">12:00</div>
+                </div>
+                <div class="content">
+                  <div class="head"><span class="marker"></span><span class="title">У вас новая неподтверждённая задача<span class="case ml">Freq<span class="id">13432</span></span></span></div>
+                </div>
+              </div>
+              <div class="note case">
+                <div class="head">
+                  <div class="time">11:45</div>
+                </div>
+                <div class="content">
+                  <div class="head"><span class="marker"></span><span class="title">В<span class="case mlr">Freq<span class="id">213432</span></span>появился новый этап<span class="by ml"><span class="employee">Фамилия И.О.</span></span></span></div>
+                </div>
+              </div>
+              <div class="note case">
+                <div class="head">
+                  <div class="time">11:42</div>
+                </div>
+                <div class="content">
+                  <div class="head"><span class="marker"></span><span class="title">В<span class="case mlr">Task<span class="id">134324</span></span>сменился статус на<span class="status mlr">paused</span><span class="by"><span class="employee">Фамилия И.О.</span></span></span></div>
+                </div>
+              </div>
+              <div class="note plan">
+                <div class="head">
+                  <div class="time">11:00</div>
+                </div>
+                <div class="content">
+                  <div class="head"><span class="marker"></span><span class="title">У вас новая неподтверждённая задача<span class="case ml">Freq<span class="id">13432</span></span></span></div>
+                </div>
+              </div>
+              <div class="note case">
+                <div class="head">
+                  <div class="time">10:12</div>
+                </div>
+                <div class="content">
+                  <div class="head"><span class="marker"></span><span class="title">В<span class="case mlr">Freq<span class="id">134324</span></span>появился новый этап<span class="by"><span class="employee">Фамилия И.О.</span></span></span></div>
+                </div>
+              </div>
+              <div class="note plan">
+                <div class="head">
+                  <div class="time">10:00</div>
+                </div>
+                <div class="content">
+                  <div class="head"><span class="marker"></span><span class="title">Порядок задач в вашем плане был изменён<span class="by ml"><span class="employee">Фамилия И.О.</span></span></span></div>
+                </div>
+              </div>
+              <div class="note component">
+                <div class="head">
+                  <div class="time">08:15</div>
+                </div>
+                <div class="content">
+                  <div class="head"><span class="marker"></span><span class="title">В компоненте<span class="component mlr">.Component_A</span>появилась новая версия<span class="version mlr">4.32</span><span class="by"><span class="employee">Фамилия И.О.</span></span></span></div>
+                </div>
+              </div>
+              <div class="note plan">
+                <div class="head">
+                  <div class="time">12:00</div>
+                </div>
+                <div class="content">
+                  <div class="head"><span class="marker"></span><span class="title">У вас новая неподтверждённая задача<span class="case ml">Freq<span class="id">13432</span></span></span></div>
+                </div>
+              </div>
+              <div class="note case">
+                <div class="head">
+                  <div class="time">11:45</div>
+                </div>
+                <div class="content">
+                  <div class="head"><span class="marker"></span><span class="title">В<span class="case mlr">Freq<span class="id">213432</span></span>появился новый этап<span class="by ml"><span class="employee">Фамилия И.О.</span></span></span></div>
+                </div>
+              </div>
+              <div class="note case">
+                <div class="head">
+                  <div class="time">11:42</div>
+                </div>
+                <div class="content">
+                  <div class="head"><span class="marker"></span><span class="title">В<span class="case mlr">Task<span class="id">134324</span></span>сменился статус на<span class="status mlr">paused</span><span class="by"><span class="employee">Фамилия И.О.</span></span></span></div>
+                </div>
+              </div>
+              <div class="note plan">
+                <div class="head">
+                  <div class="time">11:00</div>
+                </div>
+                <div class="content">
+                  <div class="head"><span class="marker"></span><span class="title">У вас новая неподтверждённая задача<span class="case ml">Freq<span class="id">13432</span></span></span></div>
+                </div>
+              </div>
+              <div class="note case">
+                <div class="head">
+                  <div class="time">10:12</div>
+                </div>
+                <div class="content">
+                  <div class="head"><span class="marker"></span><span class="title">В<span class="case mlr">Freq<span class="id">134324</span></span>появился новый этап<span class="by"><span class="employee">Фамилия И.О.</span></span></span></div>
+                </div>
+              </div>
+              <div class="note plan">
+                <div class="head">
+                  <div class="time">10:00</div>
+                </div>
+                <div class="content">
+                  <div class="head"><span class="marker"></span><span class="title">Порядок задач в вашем плане был изменён<span class="by ml"><span class="employee">Фамилия И.О.</span></span></span></div>
+                </div>
+              </div>
+              <div class="note component">
+                <div class="head">
+                  <div class="time">08:15</div>
+                </div>
+                <div class="content">
+                  <div class="head"><span class="marker"></span><span class="title">В компоненте<span class="component mlr">.Component_A</span>появилась новая версия<span class="version mlr">4.32</span><span class="by"><span class="employee">Фамилия И.О.</span></span></span></div>
+                </div>
+              </div>
+              <div class="note plan">
+                <div class="head">
+                  <div class="time">12:00</div>
+                </div>
+                <div class="content">
+                  <div class="head"><span class="marker"></span><span class="title">У вас новая неподтверждённая задача<span class="case ml">Freq<span class="id">13432</span></span></span></div>
+                </div>
+              </div>
+              <div class="note case">
+                <div class="head">
+                  <div class="time">11:45</div>
+                </div>
+                <div class="content">
+                  <div class="head"><span class="marker"></span><span class="title">В<span class="case mlr">Freq<span class="id">213432</span></span>появился новый этап<span class="by ml"><span class="employee">Фамилия И.О.</span></span></span></div>
+                </div>
+              </div>
+              <div class="note case">
+                <div class="head">
+                  <div class="time">11:42</div>
+                </div>
+                <div class="content">
+                  <div class="head"><span class="marker"></span><span class="title">В<span class="case mlr">Task<span class="id">134324</span></span>сменился статус на<span class="status mlr">paused</span><span class="by"><span class="employee">Фамилия И.О.</span></span></span></div>
+                </div>
+              </div>
+              <div class="note plan">
+                <div class="head">
+                  <div class="time">11:00</div>
+                </div>
+                <div class="content">
+                  <div class="head"><span class="marker"></span><span class="title">У вас новая неподтверждённая задача<span class="case ml">Freq<span class="id">13432</span></span></span></div>
+                </div>
+              </div>
+              <div class="note case">
+                <div class="head">
+                  <div class="time">10:12</div>
+                </div>
+                <div class="content">
+                  <div class="head"><span class="marker"></span><span class="title">В<span class="case mlr">Freq<span class="id">134324</span></span>появился новый этап<span class="by"><span class="employee">Фамилия И.О.</span></span></span></div>
+                </div>
+              </div>
+              <div class="note plan">
+                <div class="head">
+                  <div class="time">10:00</div>
+                </div>
+                <div class="content">
+                  <div class="head"><span class="marker"></span><span class="title">Порядок задач в вашем плане был изменён<span class="by ml"><span class="employee">Фамилия И.О.</span></span></span></div>
+                </div>
+              </div>
+              <div class="note component">
+                <div class="head">
+                  <div class="time">08:15</div>
+                </div>
+                <div class="content">
+                  <div class="head"><span class="marker"></span><span class="title">В компоненте<span class="component mlr">.Component_A</span>появилась новая версия<span class="version mlr">4.32</span><span class="by"><span class="employee">Фамилия И.О.</span></span></span></div>
+                </div>
+              </div>
+              <div class="note plan">
+                <div class="head">
+                  <div class="time">12:00</div>
+                </div>
+                <div class="content">
+                  <div class="head"><span class="marker"></span><span class="title">У вас новая неподтверждённая задача<span class="case ml">Freq<span class="id">13432</span></span></span></div>
+                </div>
+              </div>
+              <div class="note case">
+                <div class="head">
+                  <div class="time">11:45</div>
+                </div>
+                <div class="content">
+                  <div class="head"><span class="marker"></span><span class="title">В<span class="case mlr">Freq<span class="id">213432</span></span>появился новый этап<span class="by ml"><span class="employee">Фамилия И.О.</span></span></span></div>
+                </div>
+              </div>
+              <div class="note case">
+                <div class="head">
+                  <div class="time">11:42</div>
+                </div>
+                <div class="content">
+                  <div class="head"><span class="marker"></span><span class="title">В<span class="case mlr">Task<span class="id">134324</span></span>сменился статус на<span class="status mlr">paused</span><span class="by"><span class="employee">Фамилия И.О.</span></span></span></div>
+                </div>
+              </div>
+              <div class="note plan">
+                <div class="head">
+                  <div class="time">11:00</div>
+                </div>
+                <div class="content">
+                  <div class="head"><span class="marker"></span><span class="title">У вас новая неподтверждённая задача<span class="case ml">Freq<span class="id">13432</span></span></span></div>
+                </div>
+              </div>
+              <div class="note case">
+                <div class="head">
+                  <div class="time">10:12</div>
+                </div>
+                <div class="content">
+                  <div class="head"><span class="marker"></span><span class="title">В<span class="case mlr">Freq<span class="id">134324</span></span>появился новый этап<span class="by"><span class="employee">Фамилия И.О.</span></span></span></div>
+                </div>
+              </div>
+              <div class="note plan">
+                <div class="head">
+                  <div class="time">10:00</div>
+                </div>
+                <div class="content">
+                  <div class="head"><span class="marker"></span><span class="title">Порядок задач в вашем плане был изменён<span class="by ml"><span class="employee">Фамилия И.О.</span></span></span></div>
+                </div>
+              </div>
+              <div class="note component">
+                <div class="head">
+                  <div class="time">08:15</div>
+                </div>
+                <div class="content">
+                  <div class="head"><span class="marker"></span><span class="title">В компоненте<span class="component mlr">.Component_A</span>появилась новая версия<span class="version mlr">4.32</span><span class="by"><span class="employee">Фамилия И.О.</span></span></span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="footer">
+          <div class="btn">ещё 10</div>
+          <div class="btn">ещё 30</div>
+          <div class="btn">ещё 1 день</div>
+          <div class="btn">ещё 3 дня</div>
+          <div class="btn">ещё неделя</div>
+        </div>
+      </div>
+      <script>
+        function fixPositioning(elem) {
+            if ($(window).scrollTop() > 59) {
+                if(elem.css("top") != 0) {
+                    //elem.addClass("fix");
+                    elem.css('top', 0);
+                }
+            } else {
+                elem.css('top', 59 - $(window).scrollTop());
+                //elem.removeClass("fix");
+            }
+        };
+        
+        
+        
+        !function() {
+            var notificationsIconElem = $('#globalNotifications');
+            var popupBlock = $('.notifications');
+            var fixPopupBlock = fixPositioning.bind(null, popupBlock);
+        
+            notificationsIconElem.click(function () {
+                //if(notificationsIconElem.hasClass('active')) return;
+                notificationsIconElem.addClass('active');
+        
+                $(window).scroll(fixPopupBlock);
+        
+                popupBlock.css('display', 'block');
+                setTimeout(function(){
+                    popupBlock.addClass('active');
+                    //popupBlock.addClass('noAnimation');
+                    fixPopupBlock();
+                    $(document.body).click(
+                            function func(event){
+                                var elem = event.target;
+                                if(popupBlock.has(elem).length<=0){
+                                    popupBlock.removeClass('active')
+                                    setTimeout(function(){popupBlock.css('display', '')}, 200);
+                                    notificationsIconElem.removeClass('active')
+                                    $(document.body).off('click', func);
+                                    $(window).off('scroll', fixPopupBlock);
+                                }
+                            }
+                    );
+                }, 200);
+        
+            });
+        }();
+      </script>
+      <div id="taskTimeFixer" class="popup_backgroundBlock">
+        <div class="wrapper">
+          <div class="popupBlock">
+            <div class="popup caseTimeFix">
+              <div class="head">
+                <div class="caseType"><span class="title">Фиксация времени</span><span class="content">Freq (Запрос на доработку)<span class="caseId">1234566</span></span></div>
+                <div class="status"><span class="title">Статус</span><span class="content">active 13%</span></div>
+              </div>
+              <div class="body">
+                <div class="caseReportElection">
+                  <div class="dateStart">
+                    <div class="header">Время начала</div>
+                    <div class="content">Сегодня, 08:20</div>
+                  </div>
+                  <div class="dateStop">
+                    <div class="header">Время фиксации</div>
+                    <div class="content">Сегодня, 13:20</div>
+                  </div>
+                  <div class="timeSpent">
+                    <div class="header">Время затрачено</div>
+                    <div class="content"><span class="time">05 : 00</span><span class="icon-edit"></span></div>
+                  </div>
+                  <div class="timeLeft">
+                    <div class="header">Время осталось</div>
+                    <div class="content"><span class="time">13 : 00</span><span class="icon-edit"></span></div>
+                  </div>
+                  <div class="timeEstimate">
+                    <div class="header">Оценка</div>
+                    <div class="content"><span class="time">28 : 00</span><span class="icon-edit"></span></div>
+                  </div>
+                </div>
+                <div class="commitComponents">
+                  <div class="title">Укажите над какими компонентами вы работали:
+                    <!--.rightSide-->
+                    <!--    .button Редактировать компоненты-->
+                    <!--    .button.greenColor Показать все-->
+                  </div>
+                  <div class="components">
+                    <table class="wrapper">
+                      <tr>
+                        <td class="component">
+                          <div class="checkbox"></div>
+                          <div class="componentName">LoooongComponentName_A</div>
+                        </td>
+                        <td class="component">
+                          <div class="checkbox"></div>
+                          <div class="componentName">Component_B</div>
+                        </td>
+                        <td class="component">
+                          <div class="checkbox"></div>
+                          <div class="componentName">Component_C</div>
+                        </td>
+                        <td class="component">
+                          <div class="checkbox"></div>
+                          <div class="componentName">Component_D</div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="component">
+                          <div class="checkbox"></div>
+                          <div class="componentName">Component_A</div>
+                        </td>
+                        <td class="component">
+                          <div class="checkbox"></div>
+                          <div class="componentName">Component_B</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                </div>
+                <div class="commentBlock">
+                  <!--.icon-edit-->
+                  <textarea type="text" placeholder="Комментарий" class="inputField"></textarea>
+                </div>
+              </div>
+              <div class="footer">
+                <div class="buttons">
+                  <div class="leftSide">
+                    <div id="replayTimer" class="button grayC">Продолжить</div>
+                  </div>
+                  <div class="button blueC">Сбросить</div>
+                  <div class="button greenC">Зафиксировать</div>
+                  <!--.button.sticky.additional и выбрать другую задачу-->
+                  
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <script>
+        $('#stopCurrentTask').click(function(){
+            var popupBlock = $('#taskTimeFixer');
+            popupBlock.css('display', 'block');
+            setTimeout(function(){
+                popupBlock.addClass('active')
+            }, 200);
+        
+            $('#replayTimer').click(
+                function func(event){
+                    popupBlock.removeClass('active')
+                    setTimeout(function(){popupBlock.css('display', '')}, 200);
+                    $(event.target).off('click', func);
+                }
+            );
+        
+        });
+        
+        
+      </script>
+      <div class="popupBlack">
+        <div class="user"><span class="name">Бондаренко Артём Александрович</span>
+          <div class="rightSide"><span class="icon-settings"></span></div>
+        </div>
+        <div class="buttons">
+          <div class="button blueC">Мой пасспорт</div>
+          <div class="button grayC">Мои отсутствия</div>
+          <div class="button empty sticky grayC"><span class="icon-plus"></span></div>
+          <div class="button grayC">Мои подписки</div>
+          <div class="button grayC">Моя активность</div>
+        </div>
+        <div class="work">
+          <div class="case">
+            <div class="animationWrapper">
+              <div class="timerButton active"><span class="icon-right"></span></div>
+              <div class="timeSpent">
+                <div class="hours">02</div>
+                <div class="timeDelimiter">:</div>
+                <div class="minutes">17</div>
+              </div>
+            </div>
+            <div class="caseType">Bug</div>
+            <div class="caseId">32158</div>
+            <div class="caseCriticality critical"></div>
+            <div class="description">Здесь будет описание описание описание описание описание описание описание</div>
+          </div>
+        </div>
+        <div class="bottomButtons">
+          <div class="button">Завершить рабочий период</div>
+        </div>
+      </div>
+      <script>
+        !function() {
+            var userIconElem = $('#userProfile');
+            var popupBlock = $('.popupBlack');
+        
+            userIconElem.click(function () {
+                if(userIconElem.hasClass('active')) return;
+                userIconElem.addClass('active');
+                popupBlock.css('display', 'block');
+                setTimeout(function(){
+                    popupBlock.addClass('active');
+                    $(document.body).click(
+                        function func(event){
+                            var elem = event.target;
+                            if(popupBlock.has(elem).length<=0){
+                                popupBlock.removeClass('active')
+                                setTimeout(function(){popupBlock.css('display', '')}, 200);
+                                userIconElem.removeClass('active')
+                                $(document.body).off('click', func);
+                            }
+                        }
+                    );
+                }, 200);
+        
+            });
+        }();
+        
+        
+      </script>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Система управления персоналом</title>
+    <meta charset="UTF-8"/>
+    <link rel="stylesheet" href="style.css"/>
+    <!--link(rel='stylesheet', href='leadership.css')-->
+    <script src="web/scripts/jquery-2.1.4.min.js"></script>
+    <script>
+      /** my lib **/
+      function replaceClass(elem, from, to){
+          elem.removeClass(from).addClass(to);
+          return elem;
+      }
+      
+      function log(e){
+          console.log(e)
+      }
+      
+      
+    </script>
+    <script>
+      (function($) {
+          $.eventReport = function(selector, root) {
+              var s = [];
+              $(selector || '*', root).addBack().each(function() {
+                  // the following line is the only change
+                  var e = $._data(this, 'events');
+                  if(!e) return;
+                  s.push(this.tagName);
+                  if(this.id) s.push('#', this.id);
+                  if(this.className) s.push('.', this.className.replace(/ +/g, '.'));
+                  for(var p in e) {
+                      var r = e[p],
+                              h = r.length - r.delegateCount;
+                      if(h)
+                          s.push('\n', h, ' ', p, ' handler', h > 1 ? 's' : '');
+                      if(r.delegateCount) {
+                          for(var q = 0; q < r.length; q++)
+                              if(r[q].selector) s.push('\n', p, ' for ', r[q].selector);
+                      }
+                  }
+                  s.push('\n\n');
+              });
+              return s.join('');
+          }
+          $.fn.eventReport = function(selector) {
+              return $.eventReport(selector, this);
+          }
+      })(jQuery);
+      
+      
+    </script>
+    <!--script.
+    $(function() {
+        function fixPositioning() {
+            if ($(window).scrollTop() > 58) {
+                $('#controlPanel').addClass("fix");
+            } else {
+                $('#controlPanel').removeClass("fix");
+            }
+        };
+        fixPositioning();
+        $(window).scroll(function () {
+            fixPositioning();
+        });
+    });
+    
+    
+    
+    
+    
+    -->
+  </head>
+  <body style="padding: 14px">
+    <style>
+      a{
+          display: block;
+      }
+      
+    </style><a href="login.html">Sign In</a>
+    <hr><a href="index2-2.html?">План сотрудника</a>
+    <!--a(href="http://192.168.100.105:8080/pm/leftBar/100_2/index3.html?") План (Диаграмма сроков)-->
+    <!--a(href="http://192.168.100.105:8080/pm/leftBar/100_2/index4.html?") План (Доска задач)-->
+    <hr><a href="inspector.html">Инспектор</a>
+    <hr><a href="favorites.html">Избранные</a>
+    <hr><a href="userList2.html">Сотрудники (Список)</a><a href="http://192.168.100.105:8080/pm/leftBar/100_2/userList3.html">Сотрудники (Диаграмма отсутствий)</a><a href="http://192.168.100.105:8080/pm/leftBar/100_2/profile.html">Отдельный профиль</a>
+    <hr><a href="case.html?">Case (c журналом)</a><a href="http://192.168.100.105:8080/pm/leftBar/100_2/case2.html?">Case (c комментариями)</a><a href="http://192.168.100.105:8080/pm/leftBar/100_2/case3.html?">Case (c подзадачами и типами связей)</a><a href="http://192.168.100.105:8080/pm/leftBar/100_2/case4.html?">Case (Диаграмма сроков у подзадач)</a>
+    <hr><a href="componentDictionary.html?">Паспорт компоненты</a><a href="http://192.168.100.105:8080/pm/leftBar/100_2/componentDictionary2.html?">Задачи с компонентой</a><a href="http://192.168.100.105:8080/pm/leftBar/100_2/componentDictionary3.html?">Активность компоненты</a><a href="http://192.168.100.105:8080/pm/leftBar/100_2/componentDictionary4.html?">Статистика по компоненте</a>
+    <hr><a href="productDictionary.html?">Паспорт продукта</a><a href="http://192.168.100.105:8080/pm/leftBar/100_2/productDictionary2.html?">Задачи с продуктом</a><a href="http://192.168.100.105:8080/pm/leftBar/100_2/productDictionary3.html?">Активность продукта</a><a href="http://192.168.100.105:8080/pm/leftBar/100_2/productDictionary4.html?">Статистика по продукту</a>
+    <hr><a href="orderList.html">Заказы</a><a href="http://192.168.100.105:8080/pm/leftBar/100_2/order.html?">Заказ (списком)</a><a href="http://192.168.100.105:8080/pm/leftBar/100_2/order2.html?">Заказ (диаграмма сроков)</a><a href="http://192.168.100.105:8080/pm/leftBar/100_2/order3.html?">Заказ (Лента активности)</a>
+    <hr><a href="userReport4.html?">Отдел (План сотрудника)</a><a href="http://192.168.100.105:8080/pm/leftBar/100_2/userReport5.html?">Отдел (Активность сотрудника)</a><a href="http://192.168.100.105:8080/pm/leftBar/100_2/userReport6.html?">Отдел (Профиль сотрудника)</a><a href="http://192.168.100.105:8080/pm/leftBar/100_2/userReport7.html?">Отдел (Подписки сотрудника)</a>
+    <hr><a href="project.html?">Проект</a>
+    <hr><a href="organizationDictionary.html?">Организации</a>
+  </body>
+</html>

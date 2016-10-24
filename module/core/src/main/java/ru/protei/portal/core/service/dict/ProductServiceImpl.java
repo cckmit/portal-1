@@ -45,8 +45,6 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public CoreResponse<Long> createProduct(DevUnit product) {
 
-        Long result;
-
         if (product != null && product.getId() == null) {
 
             String name = product.getName();
@@ -54,11 +52,11 @@ public class ProductServiceImpl implements ProductService {
             if (name != null && !name.trim().isEmpty())
             {
                 product.setName(name.trim());
-                result = devUnitDAO.persist(product);
 
-                if (result != null) {
-                    return new CoreResponse<Long>().success(result);
-                }
+                Long productId = devUnitDAO.persist(product);
+
+                if (productId != null)
+                    return new CoreResponse<Long>().success(productId);
             }
         }
 
@@ -70,12 +68,17 @@ public class ProductServiceImpl implements ProductService {
 
         if (product != null && product.getId() != null) {
 
-            if (devUnitDAO.merge(product)) {
-                return new CoreResponse().success(product);
-            }
+            Boolean result = devUnitDAO.merge(product);
+            return new CoreResponse().success(result);
         }
 
         return createUndefinedError();
+    }
+
+    @Override
+    public CoreResponse<Boolean> isNameExist(String name, Long id) {
+
+        return new CoreResponse().success(new Boolean(devUnitDAO.checkExistProductByName(name, id)));
     }
 
     private <T> CoreResponse<T> createUndefinedError() {

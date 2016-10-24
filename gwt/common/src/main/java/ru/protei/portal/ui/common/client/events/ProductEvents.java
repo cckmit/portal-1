@@ -16,7 +16,9 @@ public class ProductEvents {
     @Url( value = "product" )
     public static class Edit {
 
-        public Edit () { }
+        public Edit () {
+            productId = null;
+        }
 
         public Edit (Long id) {
             this.productId = id;

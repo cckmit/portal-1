@@ -55,9 +55,19 @@ public abstract class ProductListActivity implements AbstractProductListActivity
     }
 
     @Override
+    public void onCreateClicked( ) { fireEvent(new ProductEvents.Edit()); }
+
+    @Override
+    public void onUpdateClicked( AbstractProductItemView itemView ) {
+
+        fireEvent( new ProductEvents.Edit( modelToView.get( itemView ).getId()  ) );
+    }
+
+    @Override
     public void onFilterChanged() {
         requestProducts();
     }
+
 
     private void requestProducts() {
 
@@ -69,7 +79,7 @@ public abstract class ProductListActivity implements AbstractProductListActivity
         modelToView.clear();
 
         productService.getProductList(view.getSearchPattern().getText(),
-                view.isShowDeprecated().getValue() ? En_DevUnitState.DEPRECATED : null,
+                view.isShowDeprecated().getValue() ? null : En_DevUnitState.ACTIVE,
                 view.getSortField().getValue(),
                 view.getSortDir().getValue(),
                 new RequestCallback<List<DevUnit>>() {
@@ -91,7 +101,7 @@ public abstract class ProductListActivity implements AbstractProductListActivity
         public void accept( DevUnit product ) {
             AbstractProductItemView itemView = makeItemView(product);
 
-            modelToView.put( product, itemView );
+            modelToView.put( itemView, product );
             view.getItemsContainer().add( itemView.asWidget() );
         }
     };
@@ -122,7 +132,7 @@ public abstract class ProductListActivity implements AbstractProductListActivity
     PeriodicTaskService taskService;
     PeriodicTaskService.PeriodicTaskHandler fillViewHandler;
 
-    private Map<DevUnit, AbstractProductItemView> modelToView = new HashMap<DevUnit, AbstractProductItemView>();
+    private Map<AbstractProductItemView, DevUnit > modelToView = new HashMap<AbstractProductItemView, DevUnit>();
     private AppEvents.InitDetails init;
 
 }
