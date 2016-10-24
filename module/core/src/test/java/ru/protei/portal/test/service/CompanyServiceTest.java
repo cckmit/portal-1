@@ -91,8 +91,9 @@ public class CompanyServiceTest {
             CompanyService service = ctx.getBean(CompanyService.class);
             CoreResponse<Boolean> resp = service.isCompanyNameExists("Тестовая компания");
 
-            Assert.assertFalse(resp.isOk());
-            Assert.assertNull(resp.getData());
+            Assert.assertTrue(resp.isOk());
+            Assert.assertNotNull(resp.getData());
+            Assert.assertFalse(resp.getData());
 
             Company company = new Company();
             company.setCname("Тестовая компания");
