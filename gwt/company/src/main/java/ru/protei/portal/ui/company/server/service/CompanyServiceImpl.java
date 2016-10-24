@@ -28,7 +28,7 @@ public class CompanyServiceImpl extends RemoteServiceServlet implements CompanyS
 
 
     @Override
-    public void setCompany(Company company) throws RequestFailedException {
+    public void saveCompany(Company company) throws RequestFailedException {
 
     }
 

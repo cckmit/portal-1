@@ -40,6 +40,6 @@ public interface CompanyService extends RemoteService {
      */
     List<CompanyCategory> getCompanyCategories() throws RequestFailedException;
 
-   void setCompany(Company company) throws RequestFailedException;
+   void saveCompany(Company company) throws RequestFailedException;
 
 }

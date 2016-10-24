@@ -37,5 +37,5 @@ public interface CompanyServiceAsync {
      */
     void getCompanyCategories( AsyncCallback<List <CompanyCategory> > async  );
 
-    void setCompany(Company company, AsyncCallback<Void> async);
+    void saveCompany(Company company, AsyncCallback<Void> async);
 }

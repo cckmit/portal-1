@@ -16,7 +16,17 @@ public class CompanyEvents {
 
     @Url( value = "company" )
     public static class Edit {
-        public Edit () {}
+
+        public Edit(){}
+
+        public Long id;
+        public Edit (Long id) {
+            this.id = id;
+        }
+        public Long getCompanyId(){
+            return id;
+        }
+
     }
 
 }

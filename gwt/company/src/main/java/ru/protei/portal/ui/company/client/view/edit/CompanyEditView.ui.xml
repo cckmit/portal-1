@@ -27,20 +27,20 @@
                         <label class="required">
                             <ui:text from="{lang.actualAddress}"/>
                         </label>
-                        <textarea ui:field="actualAddress" class="inputField description"></textarea>
+                        <g:TextArea ui:field="actualAddress" styleName="inputField description"></g:TextArea>
                     </div>
                     <div class="col-xs-12 col-lg-6">
                         <label class="required">
                             <ui:text from="{lang.legalAddress}"/>
                         </label>
-                        <textarea ui:field="legalAddress" class="inputField description"></textarea>
+                        <g:TextArea ui:field="legalAddress" styleName="inputField description"></g:TextArea>
                     </div>
                     <div class="col-xs-12">
                         <label>
                             <ui:text from="{lang.webSite}"/>
                         </label>
                         <div class="panelField"><span class="label">http://</span>
-                            <input ui:field="webSite" type="text" class="inputField"/>
+                            <g:TextBox ui:field="webSite" styleName="inputField"/>
                         </div>
                     </div>
                     <div class="col-xs-12 col-lg-6">
@@ -69,7 +69,7 @@
                         <label>
                             <ui:text from="{lang.comment}"/>
                         </label>
-                        <textarea ui:field="comment" class="inputField description"></textarea>
+                        <g:TextArea ui:field="comment" styleName="inputField description"></g:TextArea>
                     </div>
                     <div class="col-xs-12">
                         <label class="bordered">
@@ -79,12 +79,8 @@
                 </div>
             </div>
             <div class="footer">
-                <g:Button ui:field="saveButton" styleName="button greenC">
-                    <ui:text from="{lang.save}"/>
-                </g:Button>
-                <g:Button ui:field="cancelButton" styleName="button whiteC close_button">
-                    <ui:text from="{lang.cancel}"/>
-                </g:Button>
+                <g:Button ui:field="saveButton" styleName="button greenC" text="{lang.save}"/>
+                <g:Button ui:field="cancelButton" styleName="button whiteC close_button" text="{lang.cancel}"/>
             </div>
     </g:HTMLPanel>
 </ui:UiBinder>
