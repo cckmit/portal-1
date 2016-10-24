@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.api.struct.HttpListResult;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_SortDir;
@@ -23,13 +24,13 @@ import java.util.List;
 public class ProductServiceImpl extends RemoteServiceServlet implements ProductService {
 
     @Override
-    public List<DevUnit> getProductList(String param, Boolean state, En_SortField sortField, Boolean sortDir) throws RequestFailedException {
+    public List<DevUnit> getProductList(String param, En_DevUnitState state, En_SortField sortField, Boolean sortDir) throws RequestFailedException {
 
         log.info (" getProductList : param = " + param + " showDeprecated = " + state + " sortField = " + sortField.getFieldName() + " order " + sortDir.toString());
 
         productQuery = new ProductQuery();
         productQuery.setSearchString(param);
-        productQuery.setState(state ? null : En_DevUnitState.ACTIVE);
+        productQuery.setState(state);
         productQuery.setSortField(sortField);
         productQuery.setSortDir(sortDir ? En_SortDir.ASC : En_SortDir.DESC);
 
@@ -44,20 +45,41 @@ public class ProductServiceImpl extends RemoteServiceServlet implements ProductS
 
         log.info(" getProductById : id = " + productId);
 
-        //HttpListResult<DevUnit> result = productService.list(productQuery);
-        //return result;
-        return new DevUnit();
+        CoreResponse<DevUnit> result = productService.getProductById(productId);
+
+        if (result.isOk()) {
+            return result.getData();
+        }
+        else
+            throw new RequestFailedException( result.getErrCode() );
     }
 
     @Override
-    public DevUnit saveProduct (Long productId, String name, String info, Boolean state) throws RequestFailedException {
+    public Boolean saveProduct (DevUnit product) throws RequestFailedException {
 
         log.info(" saveProduct");
 
-        //HttpListResult<DevUnit> result = productService.list(productQuery);
-        //return result;
+        if (product.getId() == null) {
+            CoreResponse<Long> result = productService.createProduct(product);
 
-        return new DevUnit();
+            if (result.isOk()) {
+                log.info( "createProduct: Status={}", result.isOk() );
+                return result.getData() != null;
+            }
+            else
+                throw new RequestFailedException( result.getErrCode() );
+        }
+        else
+        {
+            CoreResponse<Boolean> result = productService.updateProduct(product);
+
+            if (result.isOk()) {
+                log.info( "updateProduct: Status={}", result.isOk() );
+                return result.getData() != null;
+            }
+            else
+                throw new RequestFailedException( result.getErrCode() );
+        }
     }
 
 

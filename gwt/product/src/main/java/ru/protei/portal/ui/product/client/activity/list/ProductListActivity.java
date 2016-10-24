@@ -5,6 +5,7 @@ import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
@@ -68,7 +69,7 @@ public abstract class ProductListActivity implements AbstractProductListActivity
         modelToView.clear();
 
         productService.getProductList(view.getSearchPattern().getText(),
-                view.isShowDeprecated().getValue(),
+                view.isShowDeprecated().getValue() ? En_DevUnitState.DEPRECATED : null,
                 view.getSortField().getValue(),
                 view.getSortDir().getValue(),
                 new RequestCallback<List<DevUnit>>() {

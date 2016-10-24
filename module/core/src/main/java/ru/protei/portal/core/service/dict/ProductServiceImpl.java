@@ -1,6 +1,7 @@
 package ru.protei.portal.core.service.dict;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.api.struct.HttpListResult;
 import ru.protei.portal.core.model.dao.DevUnitDAO;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
@@ -24,7 +25,60 @@ public class ProductServiceImpl implements ProductService {
 
         JdbcSort sort = TypeConverters.createSort(query);
 
-        return new HttpListResult<DevUnit>(devUnitDAO.getUnitsByCondition(En_DevUnitType.PRODUCT, query.getState(), condition, sort), false);
+        return new HttpListResult<DevUnit>(devUnitDAO.getUnitsByCondition(En_DevUnitType.PRODUCT, query.getState(), condition.trim(), sort), false);
     }
 
+    @Override
+    public CoreResponse<DevUnit> getProductById(Long id) {
+
+        if (id != null) {
+            DevUnit product = devUnitDAO.get(id);
+
+            if (product != null)
+                return new CoreResponse<DevUnit>().success(product);
+        }
+
+        return createUndefinedError();
+    }
+
+
+    @Override
+    public CoreResponse<Long> createProduct(DevUnit product) {
+
+        Long result;
+
+        if (product != null && product.getId() == null) {
+
+            String name = product.getName();
+
+            if (name != null && !name.trim().isEmpty())
+            {
+                product.setName(name.trim());
+                result = devUnitDAO.persist(product);
+
+                if (result != null) {
+                    return new CoreResponse<Long>().success(result);
+                }
+            }
+        }
+
+        return createUndefinedError();
+    }
+
+    @Override
+    public CoreResponse<Boolean> updateProduct(DevUnit product) {
+
+        if (product != null && product.getId() != null) {
+
+            if (devUnitDAO.merge(product)) {
+                return new CoreResponse().success(product);
+            }
+        }
+
+        return createUndefinedError();
+    }
+
+    private <T> CoreResponse<T> createUndefinedError() {
+        return new CoreResponse<T>().error("undefined error", "internal_error");
+    }
 }

@@ -57,4 +57,6 @@ public interface Lang extends Messages {
     String productName();
 
     String objectSaved();
+
+    String notUniqName();
 }
