@@ -30,7 +30,7 @@
             <platelist:PlateList ui:field="productContainer"
                                  styleName="productList list-group grid"
                                  createButtonCaption="{lang.buttonCreate}"
-                                 createButtonStyleName="product list-group-create col-md-6 col-lg-3"
+                                 createButtonStyleName="list-group-item list-group-create col-md-6 col-lg-3"
             />
         </div>
 
