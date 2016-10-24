@@ -17392,6 +17392,7 @@ body {
 }
 .list-group {
   margin: -7px -7px 0 -7px;
+  padding: 0;
 }
 .list-group-item {
   padding: 7px;
@@ -17645,4 +17646,63 @@ body {
   to {
     background-position: 60px 30px;
   }
+}
+
+
+
+
+
+
+
+/* list-expanded */
+.list-group li {
+  border: none;
+  outline: none;
+  position: relative;
+  display: inline-block;
+  margin: 10px 0 0;
+  vertical-align: top;
+  width: 33%;
+}
+
+.list-group li.list-group-expanded::after {
+  top: auto;
+  border: solid transparent;
+  content: " ";
+  height: 0;
+  width: 0;
+  position: absolute;
+  pointer-events: none;
+  border-bottom-color: #5481c1;
+  border-width: 15px;
+  left: 50%;
+  margin: -20px 0 0 -15px;
+  z-index: 10001;
+}
+
+.list-group li .list-group-expander {
+  position: absolute;
+  background: #5481c1;
+  top: auto;
+  left: 0;
+  width: 100%;
+  margin-top: 10px;
+  text-align: left;
+  height: 0;
+  overflow: hidden;
+  z-index:10001;
+}
+
+.list-group li.list-group-expanded .list-group-expander {
+  transition: height 350ms ease;
+  height: 500px;
+}
+
+.list-group li.list-group-expanded {
+  transition: height 350ms ease;
+  height: 760px;
+}
+
+.list-group {
+  width: 100%;
 }
