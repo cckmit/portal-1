@@ -45,4 +45,33 @@ public interface Lang extends Messages {
     String companyGroup();
 
     String search();
+
+    String companyName();
+
+    String companiesGroup();
+
+    String actualAddress();
+
+    String legalAddress();
+
+    String webSite();
+
+    String phone();
+
+    String comment();
+
+    String contacts();
+
+    String save();
+
+    String cancel();
+
+    String newCompany();
+
+    String asteriskRequired();
+
+    String companySaved();
+
+    String companyNotSaved();
+
 }

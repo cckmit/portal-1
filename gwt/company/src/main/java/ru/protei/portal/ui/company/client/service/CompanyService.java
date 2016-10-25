@@ -44,7 +44,7 @@ public interface CompanyService extends RemoteService {
      * Сохранение компании ( создание + изменение )
      * @return результат сохранения
      */
-    Boolean saveCompany ( Company company ) throws RequestFailedException;
+    Boolean saveCompany ( Company company, CompanyGroup group ) throws RequestFailedException;
 
     /**
      * Проверка уникальности названия компании

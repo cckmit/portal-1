@@ -83,7 +83,8 @@ public class CompanyServiceImpl extends RemoteServiceServlet implements CompanyS
     }
 
     @Override
-    public Boolean saveCompany( Company company ) throws RequestFailedException {
+    public Boolean saveCompany( Company company, CompanyGroup group ) throws RequestFailedException {
+
 
         log.debug( "saveCompany" );
         log.debug( "saveCompany: Id={}", company.getId() );
