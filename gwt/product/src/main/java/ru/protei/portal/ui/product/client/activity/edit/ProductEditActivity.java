@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.product.client.activity.edit;
 
 import com.google.inject.Inject;
+import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
@@ -69,98 +70,65 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
     @Override
     public void checkName() {
 
-        String name = view.getName().getText();
+        productService.isNameExist(view.getName().getText().trim(), productId,
+                new RequestCallback<Boolean>() {
+                    @Override
+                    public void onError(Throwable throwable) {
+                        fireEvent(new NotifyEvents.Show(lang.error(), NotifyEvents.NotifyType.ERROR));
+                    }
 
-        if (name != null && !name.isEmpty())
-        {
-            productService.isNameExist(name.trim(), productId,
-                    new RequestCallback<Boolean>() {
-                        @Override
-                        public void onError(Throwable throwable) {
-                            fireEvent(new NotifyEvents.Show("unknown error", NotifyEvents.NotifyType.ERROR));
-                        }
-
-                        @Override
-                        public void onSuccess(Boolean result) {
-                            view.setNameChecked(result.booleanValue());
-                        }
-                    });
-        }
+                    @Override
+                    public void onSuccess(Boolean result) {
+                        view.setNameChecked(result.booleanValue());
+                    }
+                });
     }
 
     @Override
     public void onSaveClicked() {
 
-        String name = view.getName().getText();
-
-        if (name == null || name.isEmpty())
-            fireEvent(new NotifyEvents.Show(lang.emptyName(), NotifyEvents.NotifyType.ERROR));
-
-        if (name != null && !name.isEmpty())
+        if (product == null)
         {
-            productService.isNameExist(name.trim(), productId,
-                    new RequestCallback<Boolean>() {
-                        @Override
-                        public void onError(Throwable throwable) {
-                            fireEvent(new NotifyEvents.Show("unknown error", NotifyEvents.NotifyType.ERROR));
-                        }
-
-                        @Override
-                        public void onSuccess(Boolean result) {
-
-                            if (result)
-                            {
-                                //view.setNameChecked(result.booleanValue());
-                                fireEvent(new NotifyEvents.Show(lang.notUniqName(), NotifyEvents.NotifyType.ERROR));
-                            }
-                            else
-                            {
-                                if (product == null)
-                                {
-                                    product = new DevUnit();
-                                    product.setId(productId);
-                                    product.setTypeId(En_DevUnitType.PRODUCT.getId());
-                                    product.setCreated(new Date());
-                                    product.setLastUpdate(null);
-                                }
-                                else
-                                    product.setLastUpdate(new Date());
-
-                                product.setName(name.trim());
-                                product.setInfo(view.getInfo().getText().trim());
-                                product.setStateId(view.getState().getValue() ? En_DevUnitState.ACTIVE.getId() : En_DevUnitState.DEPRECATED.getId());
-
-                                productService.saveProduct(product, new RequestCallback<Boolean>() {
-                                    @Override
-                                    public void onError(Throwable throwable) {
-                                        fireEvent(new NotifyEvents.Show(lang.objectNotSaved(), NotifyEvents.NotifyType.ERROR));
-                                    }
-
-                                    @Override
-                                    public void onSuccess(Boolean result) {
-                                        fireEvent(new NotifyEvents.Show(lang.objectSaved(), NotifyEvents.NotifyType.SUCCESS));
-                                        goBack();
-                                    }
-
-                                });
-                            }
-                        }
-                    });
+            product = new DevUnit();
+            product.setId(productId);
+            product.setTypeId(En_DevUnitType.PRODUCT.getId());
+            product.setCreated(new Date());
+            //product.setLastUpdate(null);
         }
+//        else
+//            product.setLastUpdate(new Date());
+
+        product.setName(view.getName().getText().trim());
+        product.setInfo(view.getInfo().getText().trim());
+        product.setStateId(view.getState().getValue() ? En_DevUnitState.ACTIVE.getId() : En_DevUnitState.DEPRECATED.getId());
+
+        productService.saveProduct(product, new RequestCallback<Boolean>() {
+            @Override
+            public void onError(Throwable throwable) {
+                fireEvent(new NotifyEvents.Show(lang.errorSave(), NotifyEvents.NotifyType.ERROR));
+            }
+
+            @Override
+            public void onSuccess(Boolean result) {
+                fireEvent(new NotifyEvents.Show(lang.objectSaved(), NotifyEvents.NotifyType.SUCCESS));
+                goBack();
+            }
+
+        });
 
     }
 
 
     @Override
     public void onCancelClicked() {
-
         goBack();
     }
 
     public void goBack()
     {
+        productId = null;
         product = null;
-        fireEvent(new ProductEvents.Show());
+        fireEvent(new Back());
     }
 
 

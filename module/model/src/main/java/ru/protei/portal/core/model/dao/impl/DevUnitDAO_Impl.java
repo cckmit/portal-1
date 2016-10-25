@@ -34,13 +34,11 @@ public class DevUnitDAO_Impl extends PortalBaseJdbcDAO<DevUnit> implements DevUn
     @Override
     public boolean checkExistProductByName (String name, Long id) {
 
-        if ( name != null && !name.trim().isEmpty() )
-        {
-            return id == null ? checkExistsByCondition("UNIT_NAME like ?", name) :
-                    checkExistsByCondition(" id != ? and UNIT_NAME like ? ", id, name);
-        }
-        else
-            return false;
+        if ( name == null || name.trim().isEmpty() )
+            throw new RuntimeException( );
+
+        return id == null ? checkExistsByCondition("UNIT_NAME like ?", name) :
+                checkExistsByCondition(" id != ? and UNIT_NAME like ? ", id, name);
     }
 
 }

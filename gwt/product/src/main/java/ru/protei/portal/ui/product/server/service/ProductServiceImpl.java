@@ -26,7 +26,7 @@ public class ProductServiceImpl extends RemoteServiceServlet implements ProductS
     @Override
     public List<DevUnit> getProductList(String param, En_DevUnitState state, En_SortField sortField, Boolean sortDir) throws RequestFailedException {
 
-        log.info (" getProductList : param = " + param + " showDeprecated = " + state + " sortField = " + sortField.getFieldName() + " order " + sortDir.toString());
+        log.info (" getProductList: param = " + param + " showDeprecated = " + state + " sortField = " + sortField.getFieldName() + " order " + sortDir.toString());
 
         productQuery = new ProductQuery();
         productQuery.setSearchString(param);
@@ -43,75 +43,56 @@ public class ProductServiceImpl extends RemoteServiceServlet implements ProductS
     @Override
     public DevUnit getProductById(Long productId) throws RequestFailedException {
 
-        log.info(" getProductById : id = " + productId);
+        log.info(" getProductById: id={}", productId);
 
         CoreResponse<DevUnit> result = productService.getProductById(productId);
 
-        if (result.isOk()) {
-            return result.getData();
-        }
-        else
+        if (result.isError())
             throw new RequestFailedException( result.getErrCode() );
+
+        return result.getData();
     }
 
     @Override
     public Boolean saveProduct (DevUnit product) throws RequestFailedException {
 
-        log.info(" saveProduct");
+        log.info(" saveProduct: product={}", product);
 
-        if (product.getId() == null) {
-            CoreResponse<Long> result = productService.createProduct(product);
+        if (isNameExist(product.getName(), product.getId()))
+            throw new RequestFailedException ();
 
-            if (result.isOk()) {
-                log.info( "createProduct: Status={}", result.isOk() );
-                return result.getData() != null;
-            }
-            else
-                throw new RequestFailedException( result.getErrCode() );
-        }
-        else
-        {
-            CoreResponse<Boolean> result = productService.updateProduct(product);
+        CoreResponse response = product.getId() == null ?
+                productService.createProduct( product ) : productService.updateProduct( product );
 
-            if (result.isOk()) {
-                log.info( "updateProduct: Status={}", result.isOk() );
-                return result.getData() != null;
-            }
-            else
-                throw new RequestFailedException( result.getErrCode() );
-        }
-    }
-
-    public Boolean saveProduct_shagaleev( DevUnit product ) throws RequestFailedException {
-        log.info(" saveProduct: product={}", product );
-
-        CoreResponse response = null;
-        if ( product.getId() == null ) {
-            response = productService.createProduct( product );
-        } else {
-            response = productService.updateProduct( product );
-        }
         log.info(" saveProduct: response={}", response );
 
-        if ( response.isError() ) {
+        if ( response.isError() )
             throw new RequestFailedException( response.getErrCode() );
-        }
+
+        log.info(" saveProduct: response.getData()={}", response.getData() );
 
         return response.getData() != null;
     }
 
+
     @Override
     public boolean isNameExist(String name, Long productId) throws RequestFailedException {
 
-        log.info(" isNameExist : name = " + name);
+        log.info(" isNameExist: name={}", name);
 
-        CoreResponse<Boolean> result = productService.isNameExist(name, productId);
+        if (name == null || name.isEmpty())
+            throw new RequestFailedException ();
 
-        if (result.isOk()) {
-            return result.getData();
-        }
-        else
-            throw new RequestFailedException( result.getErrCode() );
+        CoreResponse<Boolean> response = productService.isNameExist(name, productId);
+
+        log.info(" isNameExist: response={}", response );
+
+        if (response.isError())
+            throw new RequestFailedException( response.getErrCode() );
+
+        log.info(" isNameExist: response={}", response.getData());
+
+        return response.getData();
     }
 
 

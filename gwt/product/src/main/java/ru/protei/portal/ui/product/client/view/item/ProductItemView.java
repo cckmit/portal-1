@@ -6,9 +6,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.CheckBox;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.ui.product.client.activity.item.AbstractProductItemActivity;
 import ru.protei.portal.ui.product.client.activity.item.AbstractProductItemView;
 
@@ -26,7 +24,7 @@ public class ProductItemView extends Composite implements AbstractProductItemVie
     }
 
 
-    @UiHandler( "update" )
+    @UiHandler( "favoriteButton" )
     public void onUpdateClicked ( ClickEvent event )
     {
         if (activity != null) {
@@ -49,7 +47,7 @@ public class ProductItemView extends Composite implements AbstractProductItemVie
     @UiField
     DivElement name;
     @UiField
-    CheckBox update;
+    PushButton favoriteButton;
 
     AbstractProductItemActivity activity;
 

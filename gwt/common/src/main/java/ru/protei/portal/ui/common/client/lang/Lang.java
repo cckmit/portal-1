@@ -67,4 +67,8 @@ public interface Lang extends Messages {
     String emptyName();
 
     String changeProduct();
+
+    String errorSave();
+
+    String error();
 }

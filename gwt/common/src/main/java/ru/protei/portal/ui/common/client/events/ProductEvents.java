@@ -13,7 +13,7 @@ public class ProductEvents {
         public Show () {}
     }
 
-    @Url( value = "product" )
+    @Url( value = "product", primary = false )
     public static class Edit {
 
         public Edit () {
