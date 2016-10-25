@@ -191,14 +191,19 @@ public class CompanyServiceImpl implements CompanyService {
     @Override
     public CoreResponse<Company> createCompany(Company company, CompanyGroup group) {
 
-        if (!isValidCompany(company) || !isValidGroup(group) || companyDAO.persist(company) == null) {
+        if (!isValidCompany(company) || companyDAO.persist(company) == null)
             return createUndefinedError();
+
+        if (group != null) {
+
+            if (!isValidGroup(group))
+                return createUndefinedError();
+
+            if (group.getId() == null && companyGroupDAO.persist(group) == null)
+                return createUndefinedError();
+
+            if (linkCompanyToGroup(company.getId(), group.getId()).isError()) return createUndefinedError();
         }
-
-        if (group.getId() == null && companyGroupDAO.persist(group) == null)
-            return createUndefinedError();
-
-        if (linkCompanyToGroup(company.getId(), group.getId()).isError()) return createUndefinedError();
 
         return new CoreResponse<Company>().success(company);
     }
@@ -214,13 +219,16 @@ public class CompanyServiceImpl implements CompanyService {
             companyGroupItemCache.remove(link);
         });
 
-        if (!isValidGroup(group))
-            return createUndefinedError();
+        if (group != null) {
 
-        if (group.getId() == null && companyGroupDAO.persist(group) == null)
-            return createUndefinedError();
+            if (!isValidGroup(group))
+                return createUndefinedError();
 
-        if (linkCompanyToGroup(company.getId(), group.getId()).isError()) return createUndefinedError();
+            if (group.getId() == null && companyGroupDAO.persist(group) == null)
+                return createUndefinedError();
+
+            if (linkCompanyToGroup(company.getId(), group.getId()).isError()) return createUndefinedError();
+        }
 
         return new CoreResponse<Company>().success(company);
     }
@@ -260,7 +268,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     private boolean isValidGroup(CompanyGroup group) {
-        return group != null && !group.getName().trim().isEmpty() &&
+        return !group.getName().trim().isEmpty() &&
                 !companyGroupDAO.checkExistsGroupByName(group.getName(), group.getId());
     }
 
