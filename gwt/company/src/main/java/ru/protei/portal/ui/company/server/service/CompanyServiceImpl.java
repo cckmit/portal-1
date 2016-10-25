@@ -19,6 +19,8 @@ import ru.protei.portal.ui.company.client.service.CompanyService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 /**
  * Реализация сервиса по работе с компаниями
@@ -40,17 +42,16 @@ public class CompanyServiceImpl extends RemoteServiceServlet implements CompanyS
     @Override
     public List< Company > getCompanies( String searchPattern, Set< CompanyCategory > categories, CompanyGroup group, En_SortField sortField, Boolean dirSort ) throws RequestFailedException {
 
-        List< Long > categoryIds = new ArrayList< Long >();
-        if ( categories != null && !categories.isEmpty() ) {
-            for ( CompanyCategory category : categories ) {
-                if ( category != null )
-                    categoryIds.add( category.getId() );
-            }
+        List< Long > categoryIds = null;
+        if ( categories != null ) {
+            categoryIds = categories.stream()
+                    .map( CompanyCategory::getId )
+                    .collect( Collectors.toList() );
         }
 
         log.debug( "getCompanies: searchPattern={}", searchPattern );
 
-        log.debug( "getCompanies: categories={}", categoryIds.toString() );
+        log.debug( "getCompanies: categories={}", categoryIds );
 
         log.debug( "getCompanies: group={}", group != null ? group.getId() : null );
 
