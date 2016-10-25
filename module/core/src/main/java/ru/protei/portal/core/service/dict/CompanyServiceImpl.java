@@ -1,5 +1,7 @@
 package ru.protei.portal.core.service.dict;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.api.struct.HttpListResult;
@@ -189,16 +191,14 @@ public class CompanyServiceImpl implements CompanyService {
     @Override
     public CoreResponse<Company> createCompany(Company company, CompanyGroup group) {
 
-        if (!isValidCompany(company) || companyDAO.persist(company) == null)
+        if (!isValidCompany(company) || !isValidGroup(group) || companyDAO.persist(company) == null) {
+            return createUndefinedError();
+        }
+
+        if (group.getId() == null && companyGroupDAO.persist(group) == null)
             return createUndefinedError();
 
-        if (isValidGroup(group)) {
-
-            if (group.getId() == null && companyGroupDAO.persist(group) == null)
-                return createUndefinedError();
-
-            if (linkCompanyToGroup(company.getId(), group.getId()).isError()) return createUndefinedError();
-        }
+        if (linkCompanyToGroup(company.getId(), group.getId()).isError()) return createUndefinedError();
 
         return new CoreResponse<Company>().success(company);
     }
@@ -214,13 +214,13 @@ public class CompanyServiceImpl implements CompanyService {
             companyGroupItemCache.remove(link);
         });
 
-        if (isValidGroup(group)) {
+        if (!isValidGroup(group))
+            return createUndefinedError();
 
-            if (group.getId() == null && companyGroupDAO.persist(group) == null)
-                return createUndefinedError();
+        if (group.getId() == null && companyGroupDAO.persist(group) == null)
+            return createUndefinedError();
 
-            if (linkCompanyToGroup(company.getId(), group.getId()).isError()) return createUndefinedError();
-        }
+        if (linkCompanyToGroup(company.getId(), group.getId()).isError()) return createUndefinedError();
 
         return new CoreResponse<Company>().success(company);
     }
@@ -255,11 +255,13 @@ public class CompanyServiceImpl implements CompanyService {
 
     private boolean isValidCompany(Company company) {
         return company != null && !company.getCname().trim().isEmpty()
-                && !company.getAddressDejure().trim().isEmpty() && !company.getAddressFact().trim().isEmpty();
+                && !company.getAddressDejure().trim().isEmpty() && !company.getAddressFact().trim().isEmpty() &&
+                !companyDAO.checkExistsCompanyByName(company.getCname(), company.getId());
     }
 
     private boolean isValidGroup(CompanyGroup group) {
-        return group != null && !group.getName().trim().isEmpty();
+        return group != null && !group.getName().trim().isEmpty() &&
+                !companyGroupDAO.checkExistsGroupByName(group.getName(), group.getId());
     }
 
     private CoreResponse<CompanyGroupItem> linkCompanyToGroup(Long companyId, Long groupId) {

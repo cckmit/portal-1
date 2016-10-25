@@ -101,11 +101,10 @@ public class CompanyServiceTest {
             company.setAddressDejure("Тестовый адрес");
             company.setAddressFact("Тестовый адрес");
 
-            boolean result = ctx.getBean(CompanyDAO.class).checkExistsCompanyByName(company.getCname(), null);
+            boolean result = ctx.getBean(CompanyDAO.class).checkExistsCompanyByName(company.getCname(), company.getId());
             Assert.assertFalse(result);
 
             CompanyGroup group = ctx.getBean(CompanyGroupDAO.class).get(new Long(1));
-
 
             CoreResponse<Company> response = service.createCompany(company, group);
             Assert.assertTrue(response.isOk());
@@ -117,11 +116,11 @@ public class CompanyServiceTest {
             newGroup.setCreated(new Date());
             newGroup.setName("Моя тестовая группа");
 
-            result = ctx.getBean(CompanyGroupDAO.class).checkExistsGroupByName(newGroup.getName(), null);
+            result = ctx.getBean(CompanyGroupDAO.class).checkExistsGroupByName(newGroup.getName(), newGroup.getId());
             Assert.assertFalse(result);
 
             company.setCname("Моя тестовая компания");
-            response =  service.updateCompany(company, null);
+            response =  service.updateCompany(company, newGroup);
             Assert.assertTrue(response.isOk());
             Assert.assertNotNull(response.getData());
 
