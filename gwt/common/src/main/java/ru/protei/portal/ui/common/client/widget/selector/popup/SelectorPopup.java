@@ -83,12 +83,12 @@ public class SelectorPopup
     public void setSearchVisible( boolean searchVisible ) {
         this.searchVisible = searchVisible;
         if ( searchVisible ) {
+            search.getElement().setPropertyString("placeholder", lang.search());
             searchContainer.removeClassName( "hide" );
             return;
         }
 
         searchContainer.addClassName( "hide" );
-        search.getElement().setPropertyString("placeholder", lang.search() + "dfd");
     }
 
 

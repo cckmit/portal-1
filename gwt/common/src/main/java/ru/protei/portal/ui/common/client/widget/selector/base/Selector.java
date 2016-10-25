@@ -167,10 +167,10 @@ public abstract class Selector<T>
 
     protected void showPopup( IsWidget relative ) {
         this.relative = relative;
-        popup.showNear( relative );
-
         popup.setSearchVisible( searchEnabled );
         popup.setSearchAutoFocus( searchAutoFocusEnabled );
+
+        popup.showNear( relative );
         popup.addValueChangeHandler( this );
         popup.clearSearchField();
     }

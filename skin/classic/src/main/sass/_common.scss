@@ -475,3 +475,7 @@ label.bordered:after{
   border-bottom: 1px solid #ced2d7;
   box-shadow: 0 2px 8px -2px #bdbdbd inset;
 }
+
+.inputField.error{
+  border: 1px solid #f54646;
+}
