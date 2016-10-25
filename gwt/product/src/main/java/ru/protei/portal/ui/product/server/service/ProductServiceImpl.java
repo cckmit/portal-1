@@ -82,6 +82,24 @@ public class ProductServiceImpl extends RemoteServiceServlet implements ProductS
         }
     }
 
+    public Boolean saveProduct_shagaleev( DevUnit product ) throws RequestFailedException {
+        log.info(" saveProduct: product={}", product );
+
+        CoreResponse response = null;
+        if ( product.getId() == null ) {
+            response = productService.createProduct( product );
+        } else {
+            response = productService.updateProduct( product );
+        }
+        log.info(" saveProduct: response={}", response );
+
+        if ( response.isError() ) {
+            throw new RequestFailedException( response.getErrCode() );
+        }
+
+        return response.getData() != null;
+    }
+
     @Override
     public boolean isNameExist(String name, Long productId) throws RequestFailedException {
 
