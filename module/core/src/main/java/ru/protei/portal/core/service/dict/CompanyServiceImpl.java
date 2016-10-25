@@ -187,28 +187,52 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public CoreResponse<Company> createCompany(Company company) {
+    public CoreResponse<Company> createCompany(Company company, CompanyGroup group) {
 
-        if (isValidCompany(company) && companyDAO.persist(company) != null) {
-            return new CoreResponse<Company>().success(company);
+        if (!isValidCompany(company) || companyDAO.persist(company) == null)
+            return createUndefinedError();
+
+        if (isValidGroup(group)) {
+
+            if (group.getId() == null && companyGroupDAO.persist(group) == null)
+                return createUndefinedError();
+
+            if (linkCompanyToGroup(company.getId(), group.getId()).isError()) return createUndefinedError();
         }
 
-        return createUndefinedError();
+        return new CoreResponse<Company>().success(company);
     }
 
     @Override
-    public CoreResponse<Company> updateCompany(Company company) {
+    public CoreResponse<Company> updateCompany(Company company, CompanyGroup group) {
 
-        if ( isValidCompany(company) && companyDAO.merge(company)) {
-            return new CoreResponse<Company>().success(company);
+        if (!isValidCompany(company) || !companyDAO.merge(company))
+            return createUndefinedError();
+
+        companyGroupItemDAO.getCompanyToGroupLinks(company.getId(), null).forEach(link -> {
+            companyGroupItemDAO.remove(link);
+            companyGroupItemCache.remove(link);
+        });
+
+        if (isValidGroup(group)) {
+
+            if (group.getId() == null && companyGroupDAO.persist(group) == null)
+                return createUndefinedError();
+
+            if (linkCompanyToGroup(company.getId(), group.getId()).isError()) return createUndefinedError();
         }
 
-        return createUndefinedError();
+        return new CoreResponse<Company>().success(company);
     }
 
     @Override
     public CoreResponse<Boolean> isCompanyNameExists(String name, Long id) {
         return new CoreResponse<Boolean>().success(companyDAO.checkExistsCompanyByName(name, id));
+    }
+
+    @Override
+    public CoreResponse<Boolean> isGroupNameExists(String name, Long id) {
+        return new CoreResponse<Boolean>().success(companyGroupDAO.checkExistsGroupByName(name, id));
     }
 
     /**
@@ -233,4 +257,22 @@ public class CompanyServiceImpl implements CompanyService {
         return company != null && !company.getCname().trim().isEmpty()
                 && !company.getAddressDejure().trim().isEmpty() && !company.getAddressFact().trim().isEmpty();
     }
+
+    private boolean isValidGroup(CompanyGroup group) {
+        return group != null && !group.getName().trim().isEmpty();
+    }
+
+    private CoreResponse<CompanyGroupItem> linkCompanyToGroup(Long companyId, Long groupId) {
+
+        CompanyGroupItem link = new CompanyGroupItem();
+        link.setCompanyId(companyId);
+        link.setGroupId(groupId);
+
+        if (companyGroupItemDAO.persist(link) == null)
+            return createUndefinedError();
+
+        companyGroupItemCache.putIfNotExists(link);
+
+        return new CoreResponse<CompanyGroupItem>().success(link);
+    };
 }

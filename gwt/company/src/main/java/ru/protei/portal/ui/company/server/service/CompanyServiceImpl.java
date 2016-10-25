@@ -85,17 +85,19 @@ public class CompanyServiceImpl extends RemoteServiceServlet implements CompanyS
     @Override
     public Boolean saveCompany( Company company, CompanyGroup group ) throws RequestFailedException {
 
-
         log.debug( "saveCompany" );
         log.debug( "saveCompany: Id={}", company.getId() );
         log.debug( "saveCompany: name={}", company.getCname() );
 
+        if (isCompanyNameExists(company.getCname(), company.getId()))
+            throw new RequestFailedException();
+
         CoreResponse< Company > response;
 
         if ( company.getId() == null )
-            response = companyService.createCompany( company );
+            response = companyService.createCompany( company, group );
         else
-            response = companyService.updateCompany( company );
+            response = companyService.updateCompany( company, group );
 
         log.debug( "saveCompany: response={}", response );
 
@@ -112,6 +114,20 @@ public class CompanyServiceImpl extends RemoteServiceServlet implements CompanyS
         log.debug( "isCompanyNameExists: id={}", id );
 
         CoreResponse<Boolean> response = companyService.isCompanyNameExists(name, id);
+
+        if (response.isError()) throw new RequestFailedException();
+
+        return response.getData();
+    }
+
+    @Override
+    public Boolean isGroupNameExists(String name, Long id) throws RequestFailedException {
+
+        log.debug( "isGroupNameExists" );
+        log.debug( "isGroupNameExists: name={}", name );
+        log.debug( "isGroupNameExists: id={}", id );
+
+        CoreResponse<Boolean> response = companyService.isGroupNameExists(name, id);
 
         if (response.isError()) throw new RequestFailedException();
 

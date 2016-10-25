@@ -52,4 +52,10 @@ public interface CompanyService extends RemoteService {
      */
     Boolean isCompanyNameExists ( String name, Long id ) throws RequestFailedException;
 
+    /**
+     * Проверка уникальности названия группы компаний
+     * @return true/false
+     */
+    Boolean isGroupNameExists ( String name, Long id ) throws RequestFailedException;
+
 }

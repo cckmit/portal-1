@@ -22,6 +22,14 @@ public interface CompanyService {
 
     HttpListResult<CompanyCategory> categoryList ();
 
+    CoreResponse<Company> createCompany (Company company, CompanyGroup group);
+
+    CoreResponse<Company> updateCompany (Company company, CompanyGroup group);
+
+    CoreResponse<Boolean> isCompanyNameExists (String name, Long id);
+
+    CoreResponse<Boolean> isGroupNameExists (String name, Long id);
+
     /**
      * methods below are for testing purpose only
      */
@@ -31,10 +39,4 @@ public interface CompanyService {
 
     CoreResponse<CompanyGroupItem> delCompanyFromGroup (Long groupId,
                                                       Long companyId);
-
-    CoreResponse<Company> createCompany (Company company);
-
-    CoreResponse<Company> updateCompany (Company company);
-
-    CoreResponse<Boolean> isCompanyNameExists (String name, Long id);
 }

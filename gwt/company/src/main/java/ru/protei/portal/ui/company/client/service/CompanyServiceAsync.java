@@ -48,4 +48,10 @@ public interface CompanyServiceAsync {
      */
     void isCompanyNameExists ( String name, Long id, AsyncCallback< Boolean > async );
 
+    /**
+     * Проверка уникальности названия группы компаний
+     * @return true/false
+     */
+    void isGroupNameExists ( String name, Long id, AsyncCallback< Boolean > async );
+
 }
