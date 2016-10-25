@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.company.client.widget.group.selector;
+package ru.protei.portal.ui.company.client.widget.group;
 
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -28,13 +28,13 @@ public abstract class GroupModel implements Activity {
         refreshOptions();
     }
 
-    public void subscribe( GroupSelector selector ) {
+    public void subscribe( ModelSelector<CompanyGroup> selector ) {
         subscribers.add( selector );
         selector.fillOptions( list );
     }
 
     private void notifySubscribers() {
-        for ( ModelSelector selector : subscribers ) {
+        for ( ModelSelector<CompanyGroup> selector : subscribers ) {
             selector.fillOptions( list );
             selector.refreshValue();
         }
@@ -61,5 +61,5 @@ public abstract class GroupModel implements Activity {
 
     private List< CompanyGroup > list = new ArrayList< CompanyGroup >();
 
-    List< ModelSelector > subscribers = new ArrayList< ModelSelector >();
+    List< ModelSelector<CompanyGroup> > subscribers = new ArrayList<>();
 }

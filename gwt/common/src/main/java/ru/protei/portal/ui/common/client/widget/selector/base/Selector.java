@@ -62,6 +62,10 @@ public abstract class Selector<T>
         this.searchEnabled = isEnabled;
     }
 
+    public void setSearchAutoFocus( boolean isEnabled ) {
+        this.searchAutoFocusEnabled = isEnabled;
+    }
+
     public void setHasNullValue( boolean hasNullValue ) {
         this.hasNullValue = hasNullValue;
     }
@@ -118,7 +122,7 @@ public abstract class Selector<T>
 
     @Override
     public void onValueChange( ValueChangeEvent< String > event ) {
-        String searchText = event.getValue();
+        String searchText = event.getValue().toLowerCase();
 
         boolean isEmptyResult = true;
         popup.getChildContainer().clear();
@@ -128,7 +132,7 @@ public abstract class Selector<T>
         }
 
         for ( Map.Entry< T, String > entry : itemToNameModel.entrySet() ) {
-            if ( searchText.isEmpty() || entry.getValue().contains( searchText ) ) {
+            if ( searchText.isEmpty() || entry.getValue().toLowerCase().contains(searchText) ) {
                 SelectorItem itemView = itemToViewModel.get( entry.getKey() );
                 if ( itemView != null ) {
                     popup.getChildContainer().add( itemView );
@@ -166,6 +170,7 @@ public abstract class Selector<T>
         popup.showNear( relative );
 
         popup.setSearchVisible( searchEnabled );
+        popup.setSearchAutoFocus( searchAutoFocusEnabled );
         popup.addValueChangeHandler( this );
         popup.clearSearchField();
     }
@@ -176,7 +181,6 @@ public abstract class Selector<T>
         itemView.addStyleName( "search-no-result" );
         popup.getChildContainer().add( itemView.asWidget() );
     }
-
 
     @Inject
     SelectorPopup popup;
@@ -189,6 +193,7 @@ public abstract class Selector<T>
     protected boolean hasNullValue = true;
 
     private boolean searchEnabled = false;
+    private boolean searchAutoFocusEnabled = false;
     private IsWidget relative;
     private T selectedOption = null;
     private SelectorItem nullItemView;

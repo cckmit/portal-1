@@ -12,6 +12,8 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
+import com.google.inject.Inject;
+import ru.protei.portal.ui.common.client.lang.Lang;
 
 /**
  * Вид попапа
@@ -52,6 +54,9 @@ public class SelectorPopup
         root.getElement().getStyle().setDisplay( Style.Display.BLOCK );
         root.getElement().getStyle().setWidth( nearWidget.asWidget().getOffsetWidth(), Style.Unit.PX );
         setWidth( String.valueOf( nearWidget.asWidget().getOffsetWidth() ) + "px" );
+
+        if(searchVisible && searchAutoFocus)
+            search.setFocus(true);
     }
 
     public void showNearRight( final IsWidget nearWidget ) {
@@ -76,12 +81,14 @@ public class SelectorPopup
     }
 
     public void setSearchVisible( boolean searchVisible ) {
+        this.searchVisible = searchVisible;
         if ( searchVisible ) {
             searchContainer.removeClassName( "hide" );
             return;
         }
 
         searchContainer.addClassName( "hide" );
+        search.getElement().setPropertyString("placeholder", lang.search() + "dfd");
     }
 
 
@@ -112,6 +119,10 @@ public class SelectorPopup
         searchValueChangeTimer.schedule( 200 );
     }
 
+    public void setSearchAutoFocus(boolean val){
+        searchAutoFocus = val;
+    }
+
     Timer searchValueChangeTimer = new Timer() {
         @Override
         public void run() {
@@ -123,6 +134,8 @@ public class SelectorPopup
     IsWidget relative;
     ResizeHandler resizeHandler;
     HandlerRegistration resizeHandlerReg;
+    boolean searchAutoFocus = false;
+    boolean searchVisible = false;
 
     @UiField
     HTMLPanel childContainer;
@@ -132,6 +145,8 @@ public class SelectorPopup
     DivElement searchContainer;
     @UiField
     HTMLPanel root;
+    @Inject
+    Lang lang;
 
     interface SelectorPopupViewUiBinder extends UiBinder<HTMLPanel, SelectorPopup > {}
     private static SelectorPopupViewUiBinder ourUiBinder = GWT.create( SelectorPopupViewUiBinder.class );

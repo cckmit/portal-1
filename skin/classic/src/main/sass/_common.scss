@@ -176,6 +176,7 @@
   width: 250px;
   text-align: left;
   position: relative;
+  margin-right: 24px;
 }
 
 .button .caret {
@@ -384,6 +385,7 @@ label.required:after {
   margin-right: 7px;
 }
 
+
 label.bordered{
   position: relative;
   display: block;
@@ -404,7 +406,7 @@ label.bordered:after{
 }
 
 .panelField .email{
-  width: 60%;
+  width: 120%;
 }
 
 .panelField .icon-verifiable:before ,
@@ -448,4 +450,28 @@ label.bordered:after{
 
 .icon-error:before{
   content: "\e987";
+}
+
+.panelField .button-selector{
+  width: 100%;
+  margin-right: 7px;
+}
+
+.button-selector .button{
+  padding-right: 24px
+}
+
+.panelField .button-selector .button{
+  width: 100%;
+  margin: 0;
+}
+
+.gwt-TextBox{
+  width: 100%;
+  line-height: 20px;
+  box-sizing: border-box;
+  padding: 3px 20px;
+  background: rgb(247, 248, 250);
+  border-bottom: 1px solid #ced2d7;
+  box-shadow: 0 2px 8px -2px #bdbdbd inset;
 }

@@ -76,7 +76,8 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
                 company.setAddressDejure(view.legalAddress().getText());
                 company.setAddressFact(view.actualAddress().getText());
 
-                companyService.saveCompany(company, new AsyncCallback<Void>() {
+                //установить в saveCompany группу
+                companyService.saveCompany(company,  new AsyncCallback<Void>() {
                     @Override
                     public void onFailure(Throwable throwable) {
                         fireEvent(new NotifyEvents.Show(lang.companyNotSaved(), NotifyEvents.NotifyType.ERROR));
@@ -104,7 +105,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
     @Override
     public void onChangeCompanyName() {
         if(view.companyName().getText().trim().isEmpty()){
-            view.setCompanyNameStatus(NameStatus.UNDEFINED);
+            view.setCompanyNameStatus(NameStatus.NONE);
             return;
         }
 
@@ -131,12 +132,13 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
 
     private void resetFields(){
-        view.setCompanyNameStatus(NameStatus.UNDEFINED);
+        view.setCompanyNameStatus(NameStatus.NONE);
         view.companyName().setText("");
         view.actualAddress().setText("");
         view.legalAddress().setText("");
         view.webSite().setText("");
         view.comment().setText("");
+        view.companyGroup().setValue(null);
     }
 
     //    native void consoleLog( String message) /*-{

@@ -1,18 +1,18 @@
-package ru.protei.portal.ui.company.client.widget.group.selector;
+package ru.protei.portal.ui.company.client.widget.group.inputSelector;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.CompanyGroup;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
-import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.input.InputSelector;
 import ru.protei.portal.ui.company.client.widget.group.GroupModel;
 
 import java.util.List;
 
 /**
- * Селектор списка групп компаний
+ * Селектор списка групп компаний c возможностью ввода текста
  */
-public class GroupSelector extends ButtonSelector< CompanyGroup > implements ModelSelector< CompanyGroup > {
+public class GroupInputSelector extends InputSelector<CompanyGroup> implements ModelSelector<CompanyGroup> {
 
     @Inject
     public void init( GroupModel groupModel) {
@@ -38,5 +38,6 @@ public class GroupSelector extends ButtonSelector< CompanyGroup > implements Mod
     Lang lang;
 
     private boolean hasAnyValue = true;
+
 
 }
