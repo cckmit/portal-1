@@ -15,9 +15,6 @@ import ru.protei.portal.core.model.query.BaseQuery;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.utils.EntityCache;
 import ru.protei.portal.core.utils.EntitySelector;
-import ru.protei.portal.core.utils.TypeConverters;
-import ru.protei.winter.jdbc.JdbcQueryParameters;
-import ru.protei.winter.jdbc.JdbcSort;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -185,6 +182,31 @@ public class CompanyServiceImpl implements CompanyService {
         return new HttpListResult<>(companyCategoryDAO.getAll(), false);
     }
 
+    @Override
+    public CoreResponse<Company> createCompany(Company company) {
+
+        if (isValidCompany(company) && companyDAO.persist(company) != null) {
+            return new CoreResponse<Company>().success(company);
+        }
+
+        return createUndefinedError();
+    }
+
+    @Override
+    public CoreResponse<Company> updateCompany(Company company) {
+
+        if ( isValidCompany(company) && companyDAO.merge(company)) {
+            return new CoreResponse<Company>().success(company);
+        }
+
+        return createUndefinedError();
+    }
+
+    @Override
+    public CoreResponse<Boolean> isCompanyNameExists(String name, Long id) {
+        return new CoreResponse<Boolean>().success(companyDAO.checkExistsCompanyByName(name, id));
+    }
+
     /**
      * company-group search
      */
@@ -201,5 +223,10 @@ public class CompanyServiceImpl implements CompanyService {
             return expr == null || group.getName().toLowerCase().contains(expr)
                         || group.getInfo().toLowerCase().contains(expr);
         }
+    }
+
+    private boolean isValidCompany(Company company) {
+        return company != null && !company.getCname().trim().isEmpty()
+                && !company.getAddressDejure().trim().isEmpty() && !company.getAddressFact().trim().isEmpty();
     }
 }

@@ -8,7 +8,10 @@
             <div class="grid">
                 <div class="col-xs-12">
                     <label class="required"><ui:text from="{lang.productName}"/></label>
-                    <g:TextBox ui:field="name" styleName="inputField verifi"/>
+                    <div class="panelField verifiable">
+                        <i ui:field="verifiableIcon"></i>
+                        <g:TextBox ui:field="name" styleName="inputField"/>
+                    </div>
                 </div>
                 <div class="col-xs-12">
                     <label><ui:text from="{lang.description}"/></label>

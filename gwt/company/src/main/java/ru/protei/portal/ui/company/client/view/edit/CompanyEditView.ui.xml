@@ -1,0 +1,86 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+
+    <g:HTMLPanel styleName="panel">
+            <div class="body">
+                <div class="grid grid-indent">
+                    <div class="col-xs-12 col-lg-6">
+                        <label class="required">
+                            <ui:text from="{lang.companyName}"/>
+                        </label>
+                        <div class="panelField verifiable">
+                            <i ui:field="verifiableIcon"></i>
+                            <g:TextBox ui:field="companyName" styleName="inputField"/>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-lg-6">
+                        <label>
+                            <ui:text from="{lang.companiesGroup}"/>
+                        </label>
+                        <div class="panelField">
+                            <input type="text" class="inputField rightIndent"/>
+                            <button class="button greenC">Создать</button>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-lg-6">
+                        <label class="required">
+                            <ui:text from="{lang.actualAddress}"/>
+                        </label>
+                        <g:TextArea ui:field="actualAddress" styleName="inputField description"></g:TextArea>
+                    </div>
+                    <div class="col-xs-12 col-lg-6">
+                        <label class="required">
+                            <ui:text from="{lang.legalAddress}"/>
+                        </label>
+                        <g:TextArea ui:field="legalAddress" styleName="inputField description"></g:TextArea>
+                    </div>
+                    <div class="col-xs-12">
+                        <label>
+                            <ui:text from="{lang.webSite}"/>
+                        </label>
+                        <div class="panelField"><span class="label">http://</span>
+                            <g:TextBox ui:field="webSite" styleName="inputField"/>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-lg-6">
+                        <label>
+                            <ui:text from="{lang.phone}"/>
+                        </label>
+                        <div class="panelField">
+                            <input type="text" class="inputField phone rightIndent"/>
+                            <input type="text" placeholder="{lang.comment}" class="inputField comment rightIndent"/>
+                            <button class="button greenC empty add_button">
+                                <i class="icon-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-lg-6">
+                        <label>Email</label>
+                        <div class="panelField">
+                            <input type="text" class="inputField email rightIndent"/>
+                            <input type="text" placeholder="{lang.comment}" class="inputField comment rightIndent"/>
+                            <button class="button greenC empty">
+                                <i class="icon-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-xs-12">
+                        <label>
+                            <ui:text from="{lang.comment}"/>
+                        </label>
+                        <g:TextArea ui:field="comment" styleName="inputField description"></g:TextArea>
+                    </div>
+                    <div class="col-xs-12">
+                        <label class="bordered">
+                            <ui:text from="{lang.contacts}"/>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="footer">
+                <g:Button ui:field="saveButton" styleName="button greenC" text="{lang.save}"/>
+                <g:Button ui:field="cancelButton" styleName="button whiteC close_button" text="{lang.cancel}"/>
+            </div>
+    </g:HTMLPanel>
+</ui:UiBinder>

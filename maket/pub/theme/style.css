@@ -1,7 +1,7 @@
 @font-face {
   font-family: 'icomoon';
-  src: url("../pub/fonts/icomoon.eot?y1drme");
-  src: url("../pub/fonts/icomoon.eot?y1drme#iefix") format('embedded-opentype'), url("../pub/fonts/icomoon.ttf?y1drme") format('truetype'), url("../pub/fonts/icomoon.woff?y1drme") format('woff'), url("../pub/fonts/icomoon.svg?y1drme#icomoon") format('svg');
+  src: url("../fonts/icomoon.eot?y1drme");
+  src: url("../fonts/icomoon.eot?y1drme#iefix") format('embedded-opentype'), url("../fonts/icomoon.ttf?y1drme") format('truetype'), url("../fonts/icomoon.woff?y1drme") format('woff'), url("pub/fonts/icomoon.svg?y1drme#icomoon") format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -21439,8 +21439,8 @@ label.required:after {
 .inputField {
   width: 100%;
   box-shadow: rgba(49, 65, 87, 0.4) 0px 0px 1px 0px;
-  line-height: 30px;
-  height: 30px;
+  line-height: 28px;
+  height: 28px;
   border: 0;
   max-height: none;
 }
@@ -21450,3 +21450,101 @@ label.required:after {
 }
 
 
+.panelField{
+    display: flex;
+    position: relative;
+}
+
+.grid-indent{
+    margin: 0 -7px;
+}
+
+.grid-indent [class*='col-']{
+    padding: 0 7px;
+    box-sizing: border-box;
+}
+
+.panelField .label{
+    padding: 0 12px;
+    background: #a9b4bb;
+    border-bottom-left-radius: 4px;
+    border-top-left-radius: 4px;
+    color: #fff;
+    font-weight: bold;
+    line-height: 28px;
+}
+
+label.bordered{
+    position: relative;
+    display: block;
+}
+
+label.bordered:after{
+    content: "";
+    height: 1px;
+    position: absolute;
+    background: #c1c9cd;
+    left: 130px;
+    top: 50%;
+    right: 0;
+}
+
+.inputField.rightIndent{
+    margin-right: 7px;
+}
+
+.panelField .phone{
+    width: 40%;
+}
+
+.panelField .email{
+    width: 40%;
+}
+
+
+
+
+
+
+.panelField .icon-verifiable:before ,
+.panelField .icon-success:before ,
+.panelField .icon-error:before {
+    vertical-align: middle;
+    position: absolute;
+    right: 5px;
+    font-size: 18px;
+    top: 50%;
+    line-height: 0;
+    color: #a2acb3;
+    animation: animation-8 1s linear 0s infinite normal forwards running;
+}
+
+.panelField .icon-success:before{
+    color: #6fb55b;
+    animation: none;
+}
+
+.panelField .icon-error:before{
+    color: #d84d4d;
+    animation: none;
+}
+
+.panelField.verifiable .inputField{
+    padding-right: 24px;
+}
+
+.icon-plus:before{
+    content: "\e805";
+}
+
+.icon-verifiable:before{
+    content: "\e995";
+}
+
+.icon-success:before{
+    content: "\e988";
+}
+
+.icon-error:before{
+    content: "\e987";
+}

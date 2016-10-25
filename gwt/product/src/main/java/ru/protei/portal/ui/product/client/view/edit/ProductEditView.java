@@ -1,6 +1,8 @@
 package ru.protei.portal.ui.product.client.view.edit;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -10,6 +12,7 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.NameStatus;
 import ru.protei.portal.ui.product.client.activity.edit.AbstractProductEditActivity;
 import ru.protei.portal.ui.product.client.activity.edit.AbstractProductEditView;
 
@@ -48,7 +51,7 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
         info.setText("");
         setState(true);
         name.setFocus(true);
-
+        verifiableIcon.setClassName(NameStatus.UNDEFINED.getStyle());
     }
 
     @Override
@@ -83,20 +86,27 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     }
 
     @Override
-    public void setNameChecked (boolean exist)
+    public void setNameChecked (NameStatus status)
     {
-//        if (exist)
-//        {
-//            if (!name.getStyleName().contains("after"))
-//                name.addStyleName("after");
-//        }
-//        else
-//            name.removeStyleName("after");
+        verifiableIcon.setClassName(status.getStyle());
     }
 
 
     @UiHandler( "name" )
-    public void onSearchFieldKeyUp (KeyUpEvent event)
+    public void onNameKeyUp (KeyUpEvent event)
+    {
+        verifiableIcon.setClassName(NameStatus.UNDEFINED.getStyle());
+        checkName();
+    }
+
+    @UiHandler( "name"  )
+    public void onBlur (BlurEvent event)
+    {
+        verifiableIcon.setClassName(NameStatus.ERROR.getStyle());
+        checkName();
+    }
+
+    private void checkName ()
     {
         changeTimer.cancel();
         changeTimer.schedule(300);
@@ -107,7 +117,7 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
         public void run() {
             changeTimer.cancel();
             if ( activity != null ) {
-                activity.checkName();
+                activity.onChangeName();
             }
         }
     };
@@ -121,6 +131,8 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
 
     @UiField
     TextBox name;
+    @UiField
+    Element verifiableIcon;
     @UiField
     TextArea info;
     @UiField

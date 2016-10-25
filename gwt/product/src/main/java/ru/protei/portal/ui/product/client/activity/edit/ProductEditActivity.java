@@ -12,13 +12,14 @@ import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.ProductEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.NameStatus;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.product.client.service.ProductServiceAsync;
 
 import java.util.Date;
 
 /**
- * Активность списка продуктов
+ * Активность карточки создания и редактирования продуктов
  */
 public abstract class ProductEditActivity implements AbstractProductEditActivity, Activity {
 
@@ -68,18 +69,18 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
     }
 
     @Override
-    public void checkName() {
+    public void onChangeName() {
 
         productService.isNameExist(view.getName().getText().trim(), productId,
                 new RequestCallback<Boolean>() {
                     @Override
                     public void onError(Throwable throwable) {
-                        fireEvent(new NotifyEvents.Show(lang.error(), NotifyEvents.NotifyType.ERROR));
+                        //fireEvent(new NotifyEvents.Show(lang.errorGetList(), NotifyEvents.NotifyType.ERROR));
                     }
 
                     @Override
                     public void onSuccess(Boolean result) {
-                        view.setNameChecked(result.booleanValue());
+                        view.setNameChecked(result.booleanValue() ? NameStatus.ERROR : NameStatus.SUCCESS);
                     }
                 });
     }

@@ -2,7 +2,6 @@ package ru.protei.portal.ui.company.client.service;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
-import com.google.gwt.user.client.ui.HasValue;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanyCategory;
@@ -39,5 +38,17 @@ public interface CompanyService extends RemoteService {
      * @return список категорий
      */
     List<CompanyCategory> getCompanyCategories() throws RequestFailedException;
+
+    /**
+     * Сохранение компании ( создание + изменение )
+     * @return результат сохранения
+     */
+    Boolean saveCompany ( Company company, CompanyGroup group ) throws RequestFailedException;
+
+    /**
+     * Проверка уникальности названия компании
+     * @return true/false
+     */
+    Boolean isCompanyNameExists ( String name, Long id ) throws RequestFailedException;
 
 }
