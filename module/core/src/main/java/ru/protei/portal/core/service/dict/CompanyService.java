@@ -36,5 +36,5 @@ public interface CompanyService {
 
     CoreResponse<Company> updateCompany (Company company);
 
-    CoreResponse<Boolean> isCompanyNameExists ( String name );
+    CoreResponse<Boolean> isCompanyNameExists (String name, Long id);
 }

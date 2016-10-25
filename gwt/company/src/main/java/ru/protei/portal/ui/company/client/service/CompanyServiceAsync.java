@@ -38,9 +38,15 @@ public interface CompanyServiceAsync {
     void getCompanyCategories( AsyncCallback<List <CompanyCategory> > async  );
 
     /**
-     * Сохранение компании
+     * Сохранение компании ( создание + изменение )
      * @return результат сохранения
      */
     void saveCompany ( Company company, AsyncCallback< Boolean > async );
+
+    /**
+     * Проверка уникальности названия компании
+     * @return true/false
+     */
+    void isCompanyNameExists ( String name, Long id, AsyncCallback< Boolean > async );
 
 }

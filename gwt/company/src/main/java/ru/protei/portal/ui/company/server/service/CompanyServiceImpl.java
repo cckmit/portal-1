@@ -63,11 +63,11 @@ public class CompanyServiceImpl extends RemoteServiceServlet implements CompanyS
     @Override
     public List< CompanyGroup > getCompanyGroups( String searchPattern ) throws RequestFailedException {
 
-        log.debug( "getCompanyGroups: searchPattern={}", searchPattern );
+        log.debug("getCompanyGroups: searchPattern={}", searchPattern);
 
         BaseQuery query = new BaseQuery( searchPattern, En_SortField.group_name, En_SortDir.ASC );
 
-        HttpListResult< CompanyGroup > result = companyService.groupList( query );
+        HttpListResult< CompanyGroup > result = companyService.groupList(query);
 
         return result.getItems();
     }
@@ -96,8 +96,25 @@ public class CompanyServiceImpl extends RemoteServiceServlet implements CompanyS
         else
             response = companyService.updateCompany( company );
 
-        if ( response.isOk() ) return true;
-        else return false;
+        log.debug( "saveCompany: response={}", response );
+
+        if ( response.isError() ) throw new RequestFailedException();
+
+        return response.getData() != null;
+    }
+
+    @Override
+    public Boolean isCompanyNameExists(String name, Long id) throws RequestFailedException {
+
+        log.debug( "isCompanyNameExists" );
+        log.debug( "isCompanyNameExists: name={}", name );
+        log.debug( "isCompanyNameExists: id={}", id );
+
+        CoreResponse<Boolean> response = companyService.isCompanyNameExists(name, id);
+
+        if (response.isError()) throw new RequestFailedException();
+
+        return response.getData();
     }
 
     @Autowired

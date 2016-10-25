@@ -88,18 +88,15 @@ public class CompanyServiceTest {
 
         try {
 
-            CompanyService service = ctx.getBean(CompanyService.class);
-            CoreResponse<Boolean> resp = service.isCompanyNameExists("Тестовая компания");
-
-            Assert.assertTrue(resp.isOk());
-            Assert.assertNotNull(resp.getData());
-            Assert.assertFalse(resp.getData());
+            boolean result = ctx.getBean(CompanyDAO.class).checkExistsCompanyByName("Тестовая компания", null);
+            Assert.assertFalse(result);
 
             Company company = new Company();
             company.setCname("Тестовая компания");
             company.setAddressDejure("Тестовый адрес");
             company.setAddressFact("Тестовый адрес");
 
+            CompanyService service = ctx.getBean(CompanyService.class);
             CoreResponse<Company> response = service.createCompany(company);
             Assert.assertTrue(response.isOk());
             Assert.assertNotNull(response.getData());
@@ -118,5 +115,4 @@ public class CompanyServiceTest {
                 ctx.getBean(CompanyDAO.class).removeByCondition("id=?", id);
         }
     }
-
 }

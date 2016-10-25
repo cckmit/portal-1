@@ -1,5 +1,7 @@
 package ru.protei.portal.core.model.dao.impl;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.protei.portal.core.model.dao.CompanyDAO;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.query.CompanyQuery;
@@ -31,5 +33,21 @@ public class CompanyDAO_Impl extends PortalBaseJdbcDAO<Company> implements Compa
         }
 
         return getListByCondition(condition.toString(), TypeConverters.createSort(query), args);
+    }
+
+    @Override
+    public boolean checkExistsCompanyByName(String name, Long id) {
+
+        if (name == null || name.trim().isEmpty())
+            return false;
+
+        StringBuilder condition = new StringBuilder(" cname like ? ");
+
+        if (id != null) {
+            condition.append(" and id != ? ");
+            return checkExistsByCondition(condition.toString(), name, id);
+        }
+
+        return checkExistsByCondition(condition.toString(), name);
     }
 }

@@ -207,13 +207,8 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public CoreResponse<Boolean> isCompanyNameExists(String name) {
-
-        if (name != null && !name.trim().isEmpty()) {
-            return new CoreResponse<Boolean>().success(companyDAO.checkExistsByCondition(" cname like ? ", name));
-        }
-
-        return createUndefinedError();
+    public CoreResponse<Boolean> isCompanyNameExists(String name, Long id) {
+        return new CoreResponse<Boolean>().success(companyDAO.checkExistsCompanyByName(name, id));
     }
 
     /**
