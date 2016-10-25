@@ -43,10 +43,9 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
         if(event.getCompanyId() == null)
             this.fireEvent( new AppEvents.InitPanelName( lang.newCompany() ) );
-        else{
+        else {
 
         }
-
     }
 
     @Override
@@ -56,7 +55,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
             return;
         }
 
-        companyService.isCompanyNameExists(view.companyName().getText(), new AsyncCallback<Boolean>() {
+        companyService.isCompanyNameExists(view.companyName().getText(), null, new AsyncCallback<Boolean>() {
             @Override
             public void onFailure(Throwable throwable) {
                 fireEvent(new NotifyEvents.Show(lang.companyNotSaved(), NotifyEvents.NotifyType.ERROR));
@@ -76,24 +75,20 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
                 company.setAddressDejure(view.legalAddress().getText());
                 company.setAddressFact(view.actualAddress().getText());
 
-                companyService.saveCompany(company, new AsyncCallback<Void>() {
+                companyService.saveCompany(company, null, new AsyncCallback<Boolean>() {
                     @Override
                     public void onFailure(Throwable throwable) {
                         fireEvent(new NotifyEvents.Show(lang.companyNotSaved(), NotifyEvents.NotifyType.ERROR));
                     }
 
                     @Override
-                    public void onSuccess(Void aVoid) {
+                    public void onSuccess(Boolean aBoolean) {
                         fireEvent(new CompanyEvents.Show());
                         fireEvent(new NotifyEvents.Show(lang.companySaved(), NotifyEvents.NotifyType.SUCCESS));
                     }
                 });
-
-
             }
         });
-
-
     }
 
     @Override
@@ -110,6 +105,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
         companyService.isCompanyNameExists(
                 view.companyName().getText(),
+                null,
                 new AsyncCallback<Boolean>() {
                     @Override
                     public void onFailure(Throwable throwable) {

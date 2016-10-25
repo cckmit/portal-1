@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.api.struct.HttpListResult;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
@@ -16,6 +17,9 @@ import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.company.client.service.CompanyService;
 
+import java.beans.BeanInfo;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -25,17 +29,6 @@ import java.util.Set;
  */
 @Service( "CompanyService" )
 public class CompanyServiceImpl extends RemoteServiceServlet implements CompanyService {
-
-
-    @Override
-    public void saveCompany(Company company) throws RequestFailedException {
-
-    }
-
-    @Override
-    public Boolean isCompanyNameExists(String name) {
-        return false;
-    }
 
     @Override
     public List< Company > getCompanies( String searchPattern, Set< CompanyCategory > categories, CompanyGroup group, En_SortField sortField, Boolean dirSort ) throws RequestFailedException {
@@ -70,11 +63,11 @@ public class CompanyServiceImpl extends RemoteServiceServlet implements CompanyS
     @Override
     public List< CompanyGroup > getCompanyGroups( String searchPattern ) throws RequestFailedException {
 
-        log.debug( "getCompanyGroups: searchPattern={}", searchPattern );
+        log.debug("getCompanyGroups: searchPattern={}", searchPattern);
 
         BaseQuery query = new BaseQuery( searchPattern, En_SortField.group_name, En_SortDir.ASC );
 
-        HttpListResult< CompanyGroup > result = companyService.groupList( query );
+        HttpListResult< CompanyGroup > result = companyService.groupList(query);
 
         return result.getItems();
     }
@@ -82,11 +75,47 @@ public class CompanyServiceImpl extends RemoteServiceServlet implements CompanyS
     @Override
     public List<CompanyCategory> getCompanyCategories() throws RequestFailedException {
 
-        log.debug( "getCompanyCategories");
+        log.debug( "getCompanyCategories" );
 
         HttpListResult< CompanyCategory > result = companyService.categoryList();
 
         return result.getItems();
+    }
+
+    @Override
+    public Boolean saveCompany( Company company, CompanyGroup group ) throws RequestFailedException {
+
+
+        log.debug( "saveCompany" );
+        log.debug( "saveCompany: Id={}", company.getId() );
+        log.debug( "saveCompany: name={}", company.getCname() );
+
+        CoreResponse< Company > response;
+
+        if ( company.getId() == null )
+            response = companyService.createCompany( company );
+        else
+            response = companyService.updateCompany( company );
+
+        log.debug( "saveCompany: response={}", response );
+
+        if ( response.isError() ) throw new RequestFailedException();
+
+        return response.getData() != null;
+    }
+
+    @Override
+    public Boolean isCompanyNameExists(String name, Long id) throws RequestFailedException {
+
+        log.debug( "isCompanyNameExists" );
+        log.debug( "isCompanyNameExists: name={}", name );
+        log.debug( "isCompanyNameExists: id={}", id );
+
+        CoreResponse<Boolean> response = companyService.isCompanyNameExists(name, id);
+
+        if (response.isError()) throw new RequestFailedException();
+
+        return response.getData();
     }
 
     @Autowired
