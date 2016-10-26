@@ -1,6 +1,7 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:companycategorygroup='urn:import:ru.protei.portal.ui.company.client.widget.group.inputSelector'>
+             xmlns:companycategorygroup='urn:import:ru.protei.portal.ui.company.client.widget.group.inputSelector'
+             xmlns:extraInputFileds='urn:import:ru.protei.portal.ui.common.client.widget.autoaddvaluecomment.list'>
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel styleName="panel">
@@ -50,22 +51,14 @@
                         <label>
                             <ui:text from="{lang.phone}"/>
                         </label>
-                        <div class="panelField">
-                            <input type="text" class="inputField phone rightIndent"/>
-                            <input type="text" placeholder="{lang.comment}" class="inputField comment rightIndent"/>
-                            <button class="button greenC empty add_button">
-                                <i class="icon-plus"></i>
-                            </button>
+                        <div class="panelField phone">
+                            <extraInputFileds:AutoAddVCList ui:field="phones"/>
                         </div>
                     </div>
                     <div class="col-xs-12 col-lg-6">
                         <label>Email</label>
                         <div class="panelField">
-                            <input type="text" class="inputField email rightIndent"/>
-                            <input type="text" placeholder="{lang.comment}" class="inputField comment rightIndent"/>
-                            <button class="button greenC empty">
-                                <i class="icon-plus"></i>
-                            </button>
+                            <extraInputFileds:AutoAddVCList ui:field="emails"/>
                         </div>
                     </div>
                     <div class="col-xs-12">
@@ -83,7 +76,7 @@
             </div>
             <div class="footer">
                 <g:Button ui:field="saveButton" styleName="button greenC" text="{lang.save}"/>
-                <g:Button ui:field="cancelButton" styleName="button whiteC close_button" text="{lang.cancel}"/>
+                <g:Button ui:field="cancelButton" styleName="button whiteC" text="{lang.cancel}"/>
             </div>
     </g:HTMLPanel>
 </ui:UiBinder>

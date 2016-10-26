@@ -5,6 +5,10 @@ import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.ent.CompanyGroup;
 import ru.protei.portal.ui.common.client.service.NameStatus;
+import ru.protei.portal.ui.common.client.widget.autoaddvaluecomment.ValueCommentDataList;
+import ru.protei.portal.ui.common.client.widget.autoaddvaluecomment.ValueCommentPair;
+
+import java.util.List;
 
 /**
  * Created by bondarenko on 21.10.16.
@@ -21,6 +25,9 @@ public interface AbstractCompanyEditView extends IsWidget {
     HasText webSite();
     HasText comment();
     HasValue<CompanyGroup> companyGroup();
+
+    ValueCommentDataList phoneDataList();
+    ValueCommentDataList emailDataList();
 
 
 }

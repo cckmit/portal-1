@@ -12,9 +12,14 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.CompanyGroup;
 import ru.protei.portal.ui.common.client.service.NameStatus;
+import ru.protei.portal.ui.common.client.widget.autoaddvaluecomment.ValueCommentDataList;
+import ru.protei.portal.ui.common.client.widget.autoaddvaluecomment.ValueCommentPair;
+import ru.protei.portal.ui.common.client.widget.autoaddvaluecomment.list.AutoAddVCList;
 import ru.protei.portal.ui.company.client.activity.edit.AbstractCompanyEditActivity;
 import ru.protei.portal.ui.company.client.activity.edit.AbstractCompanyEditView;
 import ru.protei.portal.ui.company.client.widget.group.inputSelector.GroupInputSelector;
+
+import java.util.List;
 
 /**
  * Вид создания и редактирования компании
@@ -41,7 +46,6 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
         verifiableIcon.setClassName(status.getStyle());
     }
 
-
     @Override
     public HasText actualAddress() {
         return actualAddress;
@@ -67,12 +71,23 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
         return companyGroup;
     }
 
+    @Override
+    public ValueCommentDataList phoneDataList() {
+        return phones;
+    }
+
+    @Override
+    public ValueCommentDataList emailDataList() {
+        return emails;
+    }
+
     @UiHandler( "saveButton" )
     public void onSaveClicked( ClickEvent event ) {
         if ( activity != null ) {
             activity.onSaveClicked();
         }
     }
+
     @UiHandler( "cancelButton" )
     public void onCancelClicked( ClickEvent event ) {
         if ( activity != null ) {
@@ -124,6 +139,14 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     @Inject
     @UiField( provided = true )
     GroupInputSelector companyGroup;
+
+    @Inject
+    @UiField( provided = true )
+    AutoAddVCList phones;
+
+    @Inject
+    @UiField( provided = true )
+    AutoAddVCList emails;
 
 
     AbstractCompanyEditActivity activity;

@@ -1,18 +1,32 @@
 package ru.protei.portal.ui.company.client.activity.edit;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gwt.core.client.Callback;
+import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.core.client.JsonUtils;
+import com.google.gwt.json.client.JSONArray;
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONString;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.CompanyEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.NameStatus;
+import ru.protei.portal.ui.common.client.widget.autoaddvaluecomment.ValueCommentPair;
+import ru.protei.portal.ui.common.shared.Debugging;
 import ru.protei.portal.ui.company.client.service.CompanyServiceAsync;
+
+import java.util.List;
 
 
 /**
@@ -46,8 +60,11 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
     @Override
     public void onSaveClicked() {
+        Debugging.consoleLog(view.companyGroup().getValue().getName());
+
+
         if(view.companyName().getText().trim().isEmpty() || view.actualAddress().getText().trim().isEmpty() || view.legalAddress().getText().trim().isEmpty()){
-            fireEvent( new NotifyEvents.Show(lang.asteriskRequired(), NotifyEvents.NotifyType.ERROR));
+            fireEvent(new NotifyEvents.Show(lang.asteriskRequired(), NotifyEvents.NotifyType.ERROR));
             return;
         }
 
@@ -71,8 +88,18 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
                 company.setAddressDejure(view.legalAddress().getText());
                 company.setAddressFact(view.actualAddress().getText());
 
-                //установить в saveCompany группу
-                companyService.saveCompany(company, null, new AsyncCallback<Boolean>() {
+                List<ValueCommentPair>
+                        phoneList = view.phoneDataList().getDataList(),
+                        emailList = view.emailDataList().getDataList();
+
+                if(!phoneList.isEmpty()){
+                    company.setPhone(buildJsonFromVCPairList(phoneList));
+                }
+                if(!emailList.isEmpty()){
+                    company.setEmail(buildJsonFromVCPairList(emailList));
+                }
+
+                companyService.saveCompany(company, view.companyGroup().getValue(), new AsyncCallback<Boolean>() {
                     @Override
                     public void onFailure(Throwable throwable) {
                         fireEvent(new NotifyEvents.Show(lang.companyNotSaved(), NotifyEvents.NotifyType.ERROR));
@@ -122,6 +149,23 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
     }
 
+    private String buildJsonFromVCPairList(List<ValueCommentPair> list){
+        JSONObject items = new JSONObject();
+        int counter = 0;
+        for(ValueCommentPair pair: list){
+            items.put(""+ counter++, buildJsonFromVCPair(pair));
+        }
+        return items.toString();
+    }
+
+    private JSONObject buildJsonFromVCPair(ValueCommentPair pair){
+        JSONObject item = new JSONObject();
+        item.put("v", new JSONString(pair.value().getText()));
+        if(!pair.comment().getText().trim().isEmpty())
+            item.put("c", new JSONString(pair.comment().getText()));
+
+        return item;
+    }
 
     private void resetFields(){
         view.setCompanyNameStatus(NameStatus.NONE);
@@ -131,11 +175,10 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         view.webSite().setText("");
         view.comment().setText("");
         view.companyGroup().setValue(null);
+        view.phoneDataList().setDataList(null);
+        view.emailDataList().setDataList(null);
     }
 
-    //    native void consoleLog( String message) /*-{
-//        console.log( "me:" + message );
-//    }-*/;
 
     @Inject
     AbstractCompanyEditView view;
