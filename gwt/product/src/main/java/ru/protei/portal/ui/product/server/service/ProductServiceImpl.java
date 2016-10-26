@@ -26,7 +26,7 @@ public class ProductServiceImpl extends RemoteServiceServlet implements ProductS
     @Override
     public List<DevUnit> getProductList(String param, En_DevUnitState state, En_SortField sortField, Boolean sortDir) throws RequestFailedException {
 
-        log.info (" getProductList: param = " + param + " showDeprecated = " + state + " sortField = " + sortField.getFieldName() + " order " + sortDir.toString());
+        log.info (" getProductList: param={} | showDeprecated={} | sortField={} | order={}", param, state, sortField.getFieldName(), sortDir.toString());
 
         productQuery = new ProductQuery();
         productQuery.setSearchString(param);
@@ -58,13 +58,13 @@ public class ProductServiceImpl extends RemoteServiceServlet implements ProductS
 
         log.info(" saveProduct: product={}", product);
 
-        if (isNameExist(product.getName(), product.getId()))
+        if (!isNameUnique(product.getName(), product.getId()))
             throw new RequestFailedException ();
 
         CoreResponse response = product.getId() == null ?
                 productService.createProduct( product ) : productService.updateProduct( product );
 
-        log.info(" saveProduct: response={}", response );
+        log.info(" saveProduct: response={}", response.isError() );
 
         if ( response.isError() )
             throw new RequestFailedException( response.getErrCode() );
@@ -76,21 +76,19 @@ public class ProductServiceImpl extends RemoteServiceServlet implements ProductS
 
 
     @Override
-    public boolean isNameExist(String name, Long productId) throws RequestFailedException {
+    public boolean isNameUnique(String name, Long excludeId) throws RequestFailedException {
 
-        log.info(" isNameExist: name={}", name);
+        log.info(" isNameUnique: name={}", name);
 
         if (name == null || name.isEmpty())
             throw new RequestFailedException ();
 
-        CoreResponse<Boolean> response = productService.isNameExist(name, productId);
-
-        log.info(" isNameExist: response={}", response );
+        CoreResponse<Boolean> response = productService.checkUniqueProductByName(name, excludeId);
 
         if (response.isError())
-            throw new RequestFailedException( response.getErrCode() );
+            throw new RequestFailedException(response.getErrCode());
 
-        log.info(" isNameExist: response={}", response.getData());
+        log.info(" isNameUnique: response={}", response.getData());
 
         return response.getData();
     }

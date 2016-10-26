@@ -18,5 +18,5 @@ public interface ProductService {
 
     CoreResponse<Boolean> updateProduct(DevUnit product);
 
-    CoreResponse<Boolean> isNameExist(String name, Long id);
+    CoreResponse<Boolean> checkUniqueProductByName(String name, Long id);
 }

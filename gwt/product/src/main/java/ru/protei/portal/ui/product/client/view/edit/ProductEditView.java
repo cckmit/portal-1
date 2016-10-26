@@ -45,65 +45,45 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     }
 
     @Override
-    public void reset() {
-
-        name.setText("");
-        info.setText("");
-        setState(true);
-        name.setFocus(true);
-        verifiableIcon.setClassName(NameStatus.UNDEFINED.getStyle());
-    }
+    public HasValue<String> name() { return name; }
 
     @Override
-    public void setName(String name) {
-        this.name.setText(name);
-    }
+    public HasValue<String> info() { return info; }
 
     @Override
-    public HasText getName() {
-        return name;
-    }
+    public HasVisibility state() { return stateBtn; }
 
     @Override
-    public void setInfo(String info) {
-        this.info.setText( info );
-    }
+    public HasEnabled save() { return saveBtn; }
 
     @Override
-    public HasText getInfo() {
-        return info;
-    }
-
-    @Override
-    public void setState(boolean state) {
-        this.state.setValue(state);
-        this.state.setText(state ? lang.buttonArchive() : lang.buttonFromArchive());
-    }
-
-    @Override
-    public HasValue<Boolean> getState() {
-        return state;
-    }
-
-    @Override
-    public void setNameChecked (NameStatus status)
+    public void setNameStatus (NameStatus status)
     {
         verifiableIcon.setClassName(status.getStyle());
     }
 
+    @Override
+    public void setStateBtnText(String caption) {
+        stateBtn.setText(caption);
+    }
 
     @UiHandler( "name" )
-    public void onNameKeyUp (KeyUpEvent event)
-    {
-        verifiableIcon.setClassName(NameStatus.UNDEFINED.getStyle());
+    public void onNameKeyUp (KeyUpEvent event) {
         checkName();
     }
 
     @UiHandler( "name"  )
-    public void onBlur (BlurEvent event)
-    {
-        verifiableIcon.setClassName(NameStatus.ERROR.getStyle());
+    public void onBlur (BlurEvent event) {
         checkName();
+    }
+
+    @UiHandler( "stateBtn" )
+    public void onStateClicked (ClickEvent event)
+    {
+        if (activity != null) {
+            activity.onStateChanged();
+            activity.onSaveClicked();
+        }
     }
 
     private void checkName ()
@@ -117,17 +97,11 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
         public void run() {
             changeTimer.cancel();
             if ( activity != null ) {
-                activity.onChangeName();
+                activity.onNameChanged();
             }
         }
     };
 
-    @UiHandler( "state" )
-    public void onArchiveClicked (ClickEvent event)
-    {
-        if (activity != null)
-            activity.onSaveClicked();
-    }
 
     @UiField
     TextBox name;
@@ -140,7 +114,7 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     @UiField
     Button cancelBtn;
     @UiField
-    ToggleButton state;
+    Button stateBtn;
 
     @Inject
     @UiField

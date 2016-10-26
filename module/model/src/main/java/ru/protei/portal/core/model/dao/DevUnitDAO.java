@@ -18,6 +18,6 @@ public interface DevUnitDAO extends PortalBaseDAO<DevUnit> {
 
     public List<DevUnit> getUnitsByCondition(En_DevUnitType type, En_DevUnitState state,  String searchExpression, JdbcSort sort);
 
-    public boolean checkExistProductByName(String name, Long id);
+    public DevUnit checkExistsProductByName(String name);
 
 }

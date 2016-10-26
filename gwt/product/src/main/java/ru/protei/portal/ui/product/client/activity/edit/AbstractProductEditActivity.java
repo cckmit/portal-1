@@ -9,5 +9,7 @@ public interface AbstractProductEditActivity {
 
     void onCancelClicked ();
 
-    void onChangeName();
+    void onNameChanged ();
+
+    void onStateChanged ();
 }

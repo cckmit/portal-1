@@ -19,5 +19,5 @@ public interface ProductServiceAsync {
 
     void saveProduct(DevUnit product, AsyncCallback<Boolean> async);
 
-    void isNameExist(String name, Long id, AsyncCallback<Boolean> async);
+    void isNameUnique(String name, Long exceptId, AsyncCallback<Boolean> async);
 }

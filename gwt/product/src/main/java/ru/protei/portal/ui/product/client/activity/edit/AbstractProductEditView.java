@@ -1,7 +1,8 @@
 package ru.protei.portal.ui.product.client.activity.edit;
 
-import com.google.gwt.user.client.ui.HasText;
+import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
+import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.ui.common.client.service.NameStatus;
 
@@ -12,17 +13,16 @@ public interface AbstractProductEditView extends IsWidget {
 
     void setActivity( AbstractProductEditActivity activity );
 
-    void reset();
+    HasValue<String> name();
 
-    void setName( String name );
-    HasText getName();
+    HasValue<String> info();
 
-    void setInfo( String info );
-    HasText getInfo();
+    void setNameStatus ( NameStatus status );
 
-    void setState( boolean state );
-    HasValue<Boolean> getState ();
+    void setStateBtnText(String caption);
 
-    void setNameChecked ( NameStatus status );
+    HasVisibility state(  );
+
+    HasEnabled save();
 
 }

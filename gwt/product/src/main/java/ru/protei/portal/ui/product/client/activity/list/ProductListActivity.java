@@ -6,6 +6,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
+import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
@@ -29,9 +30,11 @@ import java.util.function.Consumer;
 public abstract class ProductListActivity implements AbstractProductListActivity, AbstractProductItemActivity, Activity {
 
     @PostConstruct
-    public void onInit() {
-        view.setActivity(this);
+    public void onInit() { view.setActivity(this); }
 
+    @Event
+    public void onAuthorize (AuthEvents.Success event) {
+        resetFilter();
     }
 
     @Event
@@ -42,11 +45,6 @@ public abstract class ProductListActivity implements AbstractProductListActivity
         init.parent.add(view.asWidget());
 
         requestProducts();
-    }
-
-    @Event
-    public void onAuthorize (AuthEvents.Success event) {
-        view.reset();
     }
 
     @Event
@@ -78,10 +76,10 @@ public abstract class ProductListActivity implements AbstractProductListActivity
         view.getItemsContainer().clear();
         modelToView.clear();
 
-        productService.getProductList(view.getSearchPattern().getText(),
-                view.isShowDeprecated().getValue() ? null : En_DevUnitState.ACTIVE,
-                view.getSortField().getValue(),
-                view.getSortDir().getValue(),
+        productService.getProductList(view.searchPattern().getValue(),
+                view.showDeprecated().getValue() ? null : En_DevUnitState.ACTIVE,
+                view.sortField().getValue(),
+                view.sortDir().getValue(),
                 new RequestCallback<List<DevUnit>>() {
                     @Override
                     public void onError(Throwable throwable) {
@@ -116,6 +114,12 @@ public abstract class ProductListActivity implements AbstractProductListActivity
         return itemView;
     }
 
+    public void resetFilter() {
+        view.searchPattern().setValue("");
+        view.showDeprecated().setValue(false);
+        view.sortField().setValue(En_SortField.prod_name);
+        view.sortDir().setValue(true);
+    }
 
 
     @Inject

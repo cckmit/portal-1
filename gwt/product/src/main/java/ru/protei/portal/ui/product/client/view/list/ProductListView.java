@@ -37,26 +37,18 @@ public class ProductListView extends Composite implements AbstractProductListVie
     }
 
     @Override
-    public HasText getSearchPattern() { return search; }
+    public HasValue<String> searchPattern() { return search; }
 
     @Override
-    public HasValue<Boolean> isShowDeprecated() {
+    public HasValue<Boolean> showDeprecated() {
         return showDeprecated;
     }
 
     @Override
-    public HasValue<En_SortField> getSortField() { return sortFields; }
+    public HasValue<En_SortField> sortField() { return sortFields; }
 
     @Override
-    public HasValue<Boolean> getSortDir() { return sortDir; }
-
-    @Override
-    public void reset() {
-        search.setText("");
-        showDeprecated.setValue(false);
-        sortFields.setValue(En_SortField.prod_name);
-        sortDir.setValue(true);
-    }
+    public HasValue<Boolean> sortDir() { return sortDir; }
 
     @UiHandler("showDeprecated")
     public void onShowDeprecatedClick(ClickEvent event)

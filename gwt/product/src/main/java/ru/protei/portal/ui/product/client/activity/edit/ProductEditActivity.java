@@ -6,7 +6,6 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
-import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
@@ -15,8 +14,6 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.NameStatus;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.product.client.service.ProductServiceAsync;
-
-import java.util.Date;
 
 /**
  * Активность карточки создания и редактирования продуктов
@@ -41,67 +38,55 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
 
         productId = event.productId;
 
-        initProduct(productId);
+        if( productId == null ) {
+            resetView();
 
-        this.fireEvent(new AppEvents.InitPanelName(productId == null ? lang.newProduct() : lang.changeProduct()));
-
-    }
-
-    private void initProduct(Long productId) {
-
-        view.reset();
-
-        if (productId != null)
-        {
-            productService.getProductById(productId, new RequestCallback<DevUnit>() {
-                @Override
-                public void onError(Throwable throwable) {
-                    fireEvent(new NotifyEvents.Show(lang.objectNotFound(), NotifyEvents.NotifyType.ERROR));
-                }
-
-                @Override
-                public void onSuccess(DevUnit devUnit) {
-                    product = devUnit;
-                    fillView(devUnit);
-                }
-            });
+            fireEvent(new AppEvents.InitPanelName(lang.newProduct()));
+            return;
         }
+
+        requestProduct(productId);
     }
 
     @Override
-    public void onChangeName() {
+    public void onNameChanged() {
+        view.setNameStatus(NameStatus.UNDEFINED);
 
-        productService.isNameExist(view.getName().getText().trim(), productId,
+        if (view.name().getValue() == null || view.name().getValue().trim().isEmpty()) {
+            view.setNameStatus(NameStatus.ERROR);
+            return;
+        }
+
+        productService.isNameUnique(view.name().getValue().trim(), productId,
                 new RequestCallback<Boolean>() {
                     @Override
                     public void onError(Throwable throwable) {
-                        //fireEvent(new NotifyEvents.Show(lang.errorGetList(), NotifyEvents.NotifyType.ERROR));
+                        view.setNameStatus(NameStatus.ERROR);
+                        view.save().setEnabled(false);
                     }
 
                     @Override
                     public void onSuccess(Boolean result) {
-                        view.setNameChecked(result.booleanValue() ? NameStatus.ERROR : NameStatus.SUCCESS);
+                        view.setNameStatus(result ? NameStatus.SUCCESS : NameStatus.ERROR);
+                        view.save().setEnabled(result);
                     }
                 });
     }
 
     @Override
+    public void onStateChanged() {
+        product.setStateId(product.isActiveUnit() ? En_DevUnitState.DEPRECATED.getId() : En_DevUnitState.ACTIVE.getId());
+    }
+
+    @Override
     public void onSaveClicked() {
 
-        if (product == null)
-        {
+        if (productId == null) {
             product = new DevUnit();
-            product.setId(productId);
-            product.setTypeId(En_DevUnitType.PRODUCT.getId());
-            product.setCreated(new Date());
-            //product.setLastUpdate(null);
         }
-//        else
-//            product.setLastUpdate(new Date());
 
-        product.setName(view.getName().getText().trim());
-        product.setInfo(view.getInfo().getText().trim());
-        product.setStateId(view.getState().getValue() ? En_DevUnitState.ACTIVE.getId() : En_DevUnitState.DEPRECATED.getId());
+        product.setName(view.name().getValue().trim());
+        product.setInfo(view.info().getValue().trim());
 
         productService.saveProduct(product, new RequestCallback<Boolean>() {
             @Override
@@ -114,30 +99,51 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
                 fireEvent(new NotifyEvents.Show(lang.objectSaved(), NotifyEvents.NotifyType.SUCCESS));
                 goBack();
             }
-
         });
-
     }
-
 
     @Override
     public void onCancelClicked() {
         goBack();
     }
 
-    public void goBack()
-    {
-        productId = null;
-        product = null;
+    private void goBack() {
         fireEvent(new Back());
     }
 
+    private void requestProduct(Long productId) {
+
+        productService.getProductById(productId, new RequestCallback<DevUnit>() {
+            @Override
+            public void onError(Throwable throwable) {
+                fireEvent(new NotifyEvents.Show(lang.objectNotFound(), NotifyEvents.NotifyType.ERROR));
+                goBack();
+            }
+
+            @Override
+            public void onSuccess(DevUnit devUnit) {
+                product = devUnit;
+                fillView(devUnit);
+                fireEvent(new AppEvents.InitPanelName(product.getName()));
+            }
+        });
+    }
+
+    private void resetView () {
+        view.name().setValue("");
+        view.info().setValue("");
+        view.save().setEnabled(false);
+        view.setNameStatus(NameStatus.UNDEFINED);
+    }
 
     private void fillView(DevUnit devUnit) {
+        view.name().setValue(devUnit.getName());
+        view.setNameStatus(NameStatus.SUCCESS);
+        view.info().setValue(devUnit.getInfo());
+        view.state().setVisible(true);
+        view.save().setEnabled(true);
 
-        view.setName(devUnit.getName());
-        view.setInfo(devUnit.getInfo());
-        view.setState(En_DevUnitState.forId(devUnit.getStateId()).equals(En_DevUnitState.ACTIVE));
+        view.setStateBtnText(devUnit.isActiveUnit() ? lang.buttonArchive() : lang.buttonFromArchive());
     }
 
     @Inject
