@@ -31,4 +31,9 @@ public class DevUnitDAO_Impl extends PortalBaseJdbcDAO<DevUnit> implements DevUn
                 getListByCondition("UTYPE_ID=? and UNIT_NAME like ? and UNIT_STATE=?", sort, type.getId(), searchString,state.getId());
     }
 
+    @Override
+    public DevUnit checkExistsProductByName(String name) {
+
+        return getByCondition("UTYPE_ID=? and UNIT_NAME=?", En_DevUnitType.PRODUCT.getId(), name);
+    }
 }

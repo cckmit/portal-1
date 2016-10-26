@@ -21,6 +21,7 @@
   transition-property: padding;
   padding: 14px;
   overflow: hidden;
+  height: 3em;
 }
 .list-group-item >.wrapper:after {
   position: absolute;
@@ -46,7 +47,7 @@
   @extend .list-group-item;
 
   .wrapper {
-    height: 3em;
+    //height: 3em;
     background-color: rgb(84, 129, 193);
 
     .name {

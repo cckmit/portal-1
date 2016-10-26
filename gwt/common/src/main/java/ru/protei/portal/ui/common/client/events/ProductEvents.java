@@ -3,7 +3,7 @@ package ru.protei.portal.ui.common.client.events;
 import ru.brainworm.factory.context.client.annotation.Url;
 
 /**
- * Created by turik on 27.09.16.
+ * События по продуктам
  */
 public class ProductEvents {
 
@@ -11,5 +11,19 @@ public class ProductEvents {
     public static class Show {
 
         public Show () {}
+    }
+
+    @Url( value = "product", primary = false )
+    public static class Edit {
+
+        public Edit () {
+            productId = null;
+        }
+
+        public Edit (Long id) {
+            this.productId = id;
+        }
+
+        public Long productId;
     }
 }

@@ -15,15 +15,11 @@ import ru.protei.portal.core.model.query.BaseQuery;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.utils.EntityCache;
 import ru.protei.portal.core.utils.EntitySelector;
-import ru.protei.portal.core.utils.TypeConverters;
-import ru.protei.winter.jdbc.JdbcQueryParameters;
-import ru.protei.winter.jdbc.JdbcSort;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 
 
 /**

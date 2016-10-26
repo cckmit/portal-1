@@ -6,4 +6,7 @@ package ru.protei.portal.ui.product.client.activity.list;
 public interface AbstractProductListActivity {
 
     void onFilterChanged();
+
+    void onCreateClicked();
+
 }

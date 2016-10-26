@@ -593,7 +593,7 @@ body {
 
 .button.empty {
   padding: 0;
-  min-width: 30px;
+  width: 30px;
   text-align: center;
   color: #84909e;
 }

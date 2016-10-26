@@ -7,7 +7,7 @@ public enum NameStatus {
 
     SUCCESS ("icon-success"),
     ERROR ("icon-error"),
-    UNDEFINED ("");
+    UNDEFINED ("icon-verifiable");
 
     private final String style;
     NameStatus (String type) { this.style = type; }
