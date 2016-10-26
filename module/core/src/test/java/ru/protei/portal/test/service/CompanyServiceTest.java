@@ -41,7 +41,7 @@ public class CompanyServiceTest {
 
         Assert.assertNotNull(service);
 
-        HttpListResult<Company> result = service.list(new CompanyQuery());
+        HttpListResult<Company> result = service.companyList(new CompanyQuery());
 
         Assert.assertNotNull(result);
         Assert.assertNotNull(result.getItems());
@@ -101,8 +101,8 @@ public class CompanyServiceTest {
             company.setAddressDejure("Тестовый адрес");
             company.setAddressFact("Тестовый адрес");
 
-            boolean result = ctx.getBean(CompanyDAO.class).checkExistsCompanyByName(company.getCname(), company.getId());
-            Assert.assertFalse(result);
+            Company dupCompany = ctx.getBean(CompanyDAO.class).getCompanyByName(company.getCname());
+            Assert.assertNull(dupCompany);
 
             CompanyGroup group = ctx.getBean(CompanyGroupDAO.class).get(new Long(1));
 
@@ -116,8 +116,12 @@ public class CompanyServiceTest {
             newGroup.setCreated(new Date());
             newGroup.setName("Моя тестовая группа");
 
-            result = ctx.getBean(CompanyGroupDAO.class).checkExistsGroupByName(newGroup.getName(), newGroup.getId());
-            Assert.assertFalse(result);
+            dupCompany = ctx.getBean(CompanyDAO.class).getCompanyByName(company.getCname());
+            if (company.getId() == null) {
+                Assert.assertNull(dupCompany);
+            } else {
+                Assert.assertEquals(dupCompany.getId(), company.getId());
+            }
 
             company.setCname("Моя тестовая компания");
             response =  service.updateCompany(company, newGroup);

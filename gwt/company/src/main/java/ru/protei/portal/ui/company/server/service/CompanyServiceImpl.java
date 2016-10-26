@@ -17,9 +17,6 @@ import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.company.client.service.CompanyService;
 
-import java.beans.BeanInfo;
-import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -41,21 +38,15 @@ public class CompanyServiceImpl extends RemoteServiceServlet implements CompanyS
             }
         }
 
-        log.debug( "getCompanies: searchPattern={}", searchPattern );
-
-        log.debug( "getCompanies: categories={}", categoryIds.toString() );
-
-        log.debug( "getCompanies: group={}", group != null ? group.getId() : null );
-
-        log.debug( "getCompanies: sortField={}", sortField );
-
-        log.debug( "getCompanies: dirSort={}", dirSort ? En_SortDir.ASC : En_SortDir.DESC );
+        log.debug( "getCompanies(): searchPattern={} | categories={} | group={} | sortField={} | dirSort={}",
+                searchPattern, categoryIds.toString(), (group != null ? group.getId() : null),
+                sortField, (dirSort ? En_SortDir.ASC : En_SortDir.DESC) );
 
         CompanyQuery query = new CompanyQuery( searchPattern, sortField, dirSort ? En_SortDir.ASC : En_SortDir.DESC );
         query.setGroupId( group != null ? group.getId() : null );
         query.setCategoryIds( categoryIds );
 
-        HttpListResult< Company> result = companyService.list( query );
+        HttpListResult< Company> result = companyService.companyList(query);
 
         return result.getItems();
     }
@@ -85,9 +76,7 @@ public class CompanyServiceImpl extends RemoteServiceServlet implements CompanyS
     @Override
     public Boolean saveCompany( Company company, CompanyGroup group ) throws RequestFailedException {
 
-        log.debug( "saveCompany" );
-        log.debug( "saveCompany: Id={}", company.getId() );
-        log.debug( "saveCompany: name={}", company.getCname() );
+        log.debug( "saveCompany(): company={} | group={}", company, group );
 
         if (isCompanyNameExists(company.getCname(), company.getId()))
             throw new RequestFailedException();
@@ -99,35 +88,37 @@ public class CompanyServiceImpl extends RemoteServiceServlet implements CompanyS
         else
             response = companyService.updateCompany( company, group );
 
+        log.debug( "saveCompany(): response.isOk()={}", response.isOk() );
+
         if ( response.isError() ) throw new RequestFailedException();
 
         return response.getData() != null;
     }
 
     @Override
-    public Boolean isCompanyNameExists(String name, Long id) throws RequestFailedException {
+    public Boolean isCompanyNameExists( String name, Long excludeId ) throws RequestFailedException {
 
-        log.debug( "isCompanyNameExists" );
-        log.debug( "isCompanyNameExists: name={}", name );
-        log.debug( "isCompanyNameExists: id={}", id );
+        log.debug( "isCompanyNameExists(): name={} | excludeId={}", name, excludeId );
 
-        CoreResponse<Boolean> response = companyService.isCompanyNameExists(name, id);
+        CoreResponse<Boolean> response = companyService.isCompanyNameExists( name, excludeId );
 
-        if (response.isError()) throw new RequestFailedException();
+        log.debug( "isCompanyNameExists(): response.isOk()={} | response.getData()", response.isOk(), response.getData() );
+
+        if ( response.isError() ) throw new RequestFailedException();
 
         return response.getData();
     }
 
     @Override
-    public Boolean isGroupNameExists(String name, Long id) throws RequestFailedException {
+    public Boolean isGroupNameExists(String name, Long excludeId) throws RequestFailedException {
 
-        log.debug( "isGroupNameExists" );
-        log.debug( "isGroupNameExists: name={}", name );
-        log.debug( "isGroupNameExists: id={}", id );
+        log.debug( "isGroupNameExists(): name={} | excludeId={}", name, excludeId );
 
-        CoreResponse<Boolean> response = companyService.isGroupNameExists(name, id);
+        CoreResponse<Boolean> response = companyService.isGroupNameExists(name, excludeId);
 
-        if (response.isError()) throw new RequestFailedException();
+        log.debug( "isGroupNameExists(): response.isOk()={} | response.getData()", response.isOk(), response.getData() );
+
+        if ( response.isError() ) throw new RequestFailedException();
 
         return response.getData();
     }

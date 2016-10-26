@@ -14,7 +14,7 @@ import ru.protei.portal.core.model.query.CompanyQuery;
  */
 public interface CompanyService {
 
-    HttpListResult<Company> list(CompanyQuery query);
+    HttpListResult<Company> companyList(CompanyQuery query);
 
     Company getProfile(Long id);
 
@@ -26,9 +26,9 @@ public interface CompanyService {
 
     CoreResponse<Company> updateCompany (Company company, CompanyGroup group);
 
-    CoreResponse<Boolean> isCompanyNameExists (String name, Long id);
+    CoreResponse<Boolean> isCompanyNameExists (String name, Long excludeId);
 
-    CoreResponse<Boolean> isGroupNameExists (String name, Long id);
+    CoreResponse<Boolean> isGroupNameExists (String name, Long excludeId);
 
     /**
      * methods below are for testing purpose only

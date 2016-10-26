@@ -168,4 +168,23 @@ public class Company implements Serializable {
     public List<CompanyGroup> getGroups() {
         return groups;
     }
+
+    @Override
+    public String toString() {
+        return "Company{" +
+                "id=" + id +
+                ", categoryId=" + categoryId +
+                ", parentCompanyId=" + parentCompanyId +
+                ", addressDejure='" + addressDejure + '\'' +
+                ", addressFact='" + addressFact + '\'' +
+                ", cname='" + cname + '\'' +
+                ", email='" + email + '\'' +
+                ", fax='" + fax + '\'' +
+                ", info='" + info + '\'' +
+                ", phone='" + phone + '\'' +
+                ", created=" + created +
+                ", website='" + website + '\'' +
+                ", groups=" + groups +
+                '}';
+    }
 }

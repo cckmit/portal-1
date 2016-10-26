@@ -7,5 +7,5 @@ import ru.protei.portal.core.model.ent.CompanyGroup;
  */
 public interface CompanyGroupDAO extends PortalBaseDAO<CompanyGroup> {
 
-    boolean checkExistsGroupByName (String name, Long id);
+    CompanyGroup getGroupByName( String name );
 }
