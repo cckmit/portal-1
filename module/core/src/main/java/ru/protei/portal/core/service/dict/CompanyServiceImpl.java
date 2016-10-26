@@ -183,6 +183,22 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
+    public CoreResponse<Company> getCompanyById(Long id) {
+
+        if (id == null) {
+            return createUndefinedError();
+        }
+
+        Company company = companyDAO.get(id);
+
+        if (company == null) {
+            return createUndefinedError();
+        }
+
+        return new CoreResponse<Company>().success(company);
+    }
+
+    @Override
     public CoreResponse<Company> createCompany(Company company, CompanyGroup group) {
 
         try {

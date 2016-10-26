@@ -22,6 +22,8 @@ public interface CompanyService {
 
     HttpListResult<CompanyCategory> categoryList ();
 
+    CoreResponse<Company> getCompanyById(Long id);
+
     CoreResponse<Company> createCompany (Company company, CompanyGroup group);
 
     CoreResponse<Company> updateCompany (Company company, CompanyGroup group);

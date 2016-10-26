@@ -123,6 +123,9 @@ public class CompanyServiceTest {
                 Assert.assertEquals(dupCompany.getId(), company.getId());
             }
 
+            response = service.getCompanyById(company.getId());
+            Assert.assertNotNull(response.getData());
+
             company.setCname("Моя тестовая компания");
             response =  service.updateCompany(company, newGroup);
             Assert.assertTrue(response.isOk());
