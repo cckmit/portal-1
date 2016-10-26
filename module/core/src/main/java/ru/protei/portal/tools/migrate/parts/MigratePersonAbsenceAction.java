@@ -49,7 +49,6 @@ public class MigratePersonAbsenceAction implements MigrateAction {
     @Override
     public void migrate(Connection src) throws SQLException {
 
-
         BatchProcess<PersonAbsence> batchProcess = new BaseBatchProcess<PersonAbsence>() {
             @Override
             protected void processUpdate(JdbcDAO<Long, PersonAbsence> dao, List<PersonAbsence> entries) {
@@ -59,14 +58,13 @@ public class MigratePersonAbsenceAction implements MigrateAction {
             }
         };
 
-
         new BatchProcessTaskExt(migrateDAO, TM_PERSON_ABS_ITEM_CODE)
                 .forTable("\"AbsentLog\".Tm_AbsentViewer", "nID", "dtLastUpdate")
                 .process(src, dao, batchProcess, row -> {
                     PersonAbsence x = new PersonAbsence();
                     x.setOldId(((Number) row.get("nID")).longValue());
                     x.setCreated((Date) row.get("dtCreation"));
-                    x.setUpdated(x.getCreated());
+                    //x.setUpdated(x.getCreated());
                     x.setCreatorId(((Number) row.get("nSubmitterID")).longValue());
                     x.setPersonId(((Number) row.get("nPersonID")).longValue());
                     x.setUserComment((String) row.get("strComment"));
@@ -96,7 +94,7 @@ public class MigratePersonAbsenceAction implements MigrateAction {
                     PersonAbsence x = new PersonAbsence();
                     x.setOldId(((Number) row.get("nID")).longValue());
                     x.setCreated((Date) row.get("dtCreation"));
-                    x.setUpdated(x.getCreated());
+                    //x.setUpdated(x.getCreated());
                     x.setCreatorId(((Number) row.get("nSubmitterID")).longValue());
                     x.setPersonId(((Number) row.get("nPersonID")).longValue());
                     x.setUserComment((String) row.get("strComment"));

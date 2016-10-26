@@ -17,20 +17,16 @@ import java.util.List;
 /**
  * Created by michael on 20.05.16.
  */
-public class BatchProcessTaskExt {
+public class BatchInsertTask {
 
 //    String query;
 
-    private static Logger logger = Logger.getLogger(BatchProcessTaskExt.class);
+    private static Logger logger = Logger.getLogger(BatchInsertTask.class);
 
     int fetchSize = 1000;
     int batchSize = 1000;
 
     String idFieldName;
-    String lastUpdateFieldName;
-
-//    Long lastIdValue;
-
     String stateEntryId;
 
     long records_handled = 0L;
@@ -40,55 +36,48 @@ public class BatchProcessTaskExt {
     private MigrationEntryDAO migrationDAO;
 
 
-    public BatchProcessTaskExt (MigrationEntryDAO migrationDAO, String entryId) {
+    public BatchInsertTask(MigrationEntryDAO migrationDAO, String entryId) {
         this.queryCmd = new Tm_BaseQueryCmd();
         this.migrationDAO = migrationDAO;
         this.withStateEntry(entryId);
     }
 
-    public BatchProcessTaskExt withStateEntry (String id) {
+    public BatchInsertTask withStateEntry (String id) {
         this.stateEntryId = id;
         return this;
     }
 
-    public BatchProcessTaskExt forTable (String tableName) {
-        return forTable (tableName, "nID", "dtLastUpdate");
+    public BatchInsertTask forTable (String tableName) {
+        return forTable (tableName, "nID");
     }
 
-    public BatchProcessTaskExt forTable (String tableName, String idFieldName, String lastUpdateFieldName) {
-        queryCmd.setCommad("select * from " + tableName + " where " + lastUpdateFieldName + " > ? order by " + lastUpdateFieldName);
+    public BatchInsertTask forTable (String tableName, String idFieldName) {
+        queryCmd.setCommad("select * from " + tableName + " where " + idFieldName + " > ? order by " + idFieldName);
         this.idFieldName = idFieldName;
-        this.lastUpdateFieldName = lastUpdateFieldName;
         return this;
     }
 
-    public BatchProcessTaskExt forQuery (String query, String idFieldName, String lastUpdateFieldName) {
-        //this.queryCmd.setCommad(query + " where " + lastUpdateFieldName + " > ? order by " + idFieldName);
-
+    public BatchInsertTask forQuery (String query, String idFieldName) {
         // assume it's well-formed query
         this.queryCmd.setCommad(query);
         this.idFieldName = idFieldName;
-        this.lastUpdateFieldName = lastUpdateFieldName;
         return this;
     }
 
 
-    public <T> BatchProcessTaskExt process (Connection conn, JdbcDAO<Long, T> dao, BatchProcess<T> batchProcess, MigrateAdapter<T> adapter) throws SQLException {
+    public <T> BatchInsertTask process (Connection conn, JdbcDAO<Long, T> dao, BatchProcess<T> batchProcess, MigrateAdapter<T> adapter) throws SQLException {
         ResultSet rs = null;
 
         logger.debug("running query : " + queryCmd.getCommand());
 
         List<T> insertBatchSet = new ArrayList<>(batchSize);
-        List<T> updateBatchSet = new ArrayList<>(batchSize);
 
-        long handledWithInserting = 0;
-        long handledWithUpdating = 0;
         records_handled = 0;
 
         MigrationEntry migrationEntry = migrationDAO.getOrCreateEntry(this.stateEntryId);
 //        long maxId = migrationEntry.getLastId();
 
-        queryCmd.addParam(migrationEntry.getLastUpdate());
+        queryCmd.addParam(migrationEntry.getLastId());
 
         try (PreparedStatement st = conn.prepareStatement(queryCmd.getCommand(), ResultSet.TYPE_FORWARD_ONLY,ResultSet.CONCUR_READ_ONLY)) {
 
@@ -103,19 +92,11 @@ public class BatchProcessTaskExt {
             while (rs.next()) {
                 records_handled++;
 
-                if (rs.getLong(this.idFieldName) > migrationEntry.getLastId()) {
-                    long maxId = Math.max(lastId, rs.getLong(this.idFieldName));
-                    if(lastId != maxId)
-                        migrationEntry.setLastId(lastId = maxId);
+                long maxId = Math.max(lastId, rs.getLong(this.idFieldName));
+                if(lastId != maxId)
+                    migrationEntry.setLastId(lastId = maxId);
 
-                    //insert
-                    handledWithInserting++;
-                    insertBatchSet.add(adapter.createEntity(Tm_SqlHelper.fetchRowAsMap(rs)));
-                }else{
-                    //update
-                    handledWithUpdating++;
-                    updateBatchSet.add(adapter.createEntity(Tm_SqlHelper.fetchRowAsMap(rs)));
-                }
+                insertBatchSet.add(adapter.createEntity(Tm_SqlHelper.fetchRowAsMap(rs)));
 
                 Timestamp ts = rs.getTimestamp(lastUpdateFieldName);
                 if (ts != null) {

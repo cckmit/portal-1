@@ -2,8 +2,10 @@ package ru.protei.portal.tools.migrate.parts;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.core.model.dao.CompanyDAO;
+import ru.protei.portal.core.model.dao.CompanyGroupHomeDAO;
 import ru.protei.portal.core.model.dao.MigrationEntryDAO;
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.ent.CompanyHomeGroupItem;
 import ru.protei.portal.tools.migrate.tools.MigrateAction;
 
 import java.sql.Connection;
@@ -16,12 +18,16 @@ import java.util.Date;
 public class MigrateCompaniesAction implements MigrateAction {
 
     public static final String TM_COMPANY_ITEM_CODE = "Tm_Company";
+
     @Autowired
     CompanyDAO dao;
 
+    @Autowired
+    private CompanyGroupHomeDAO companyGroupHomeDAO;
 
     @Autowired
     private MigrationEntryDAO migrateDAO;
+
 
     @Override
     public int orderOfExec() {
@@ -56,5 +62,13 @@ public class MigrateCompaniesAction implements MigrateAction {
                     return x;
                 })
                 .dumpStats();
+
+        if (!companyGroupHomeDAO.checkIfHome(1L)) {
+            CompanyHomeGroupItem protei_entry = new CompanyHomeGroupItem();
+            protei_entry.setCompanyId(1L);
+            protei_entry.setExternalCode("protei");
+            companyGroupHomeDAO.persist(protei_entry);
+        }
+        //company_group_home
     }
 }

@@ -6,7 +6,6 @@ import org.apache.log4j.Logger;
 import protei.sql.Tm_SqlHelper;
 import ru.protei.portal.tools.migrate.struct.Mail2Login;
 
-import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -21,7 +20,7 @@ import java.util.Map;
  */
 public class MigrateUtils {
 
-    public static final String MIGRATE_ACCOUNTS_FIX_JSON = "/migrate_accounts_fix.json";
+    public static final String MIGRATE_ACCOUNTS_FIX_JSON = "migrate_accounts_fix.json";
     public static Long MICHAEL_Z_ID = 18L;
 
     public static Long DEFAULT_CREATOR_ID = MICHAEL_Z_ID;
@@ -57,10 +56,7 @@ public class MigrateUtils {
             _mail2loginRules = new HashMap<>();
 
             try {
-                URL url = MigrateUtils.class.getResource(MIGRATE_ACCOUNTS_FIX_JSON);
-                logger.debug("account migration url: " + url);
-
-                for (Mail2Login entry : jsonMapper.readValue(url, Mail2Login[].class)) {
+                for (Mail2Login entry : jsonMapper.readValue(MigrateUtils.class.getResource(MIGRATE_ACCOUNTS_FIX_JSON), Mail2Login[].class)) {
                     _mail2loginRules.put(entry.mail, entry.uid);
                 }
             }
