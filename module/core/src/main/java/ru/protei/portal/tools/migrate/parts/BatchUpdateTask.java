@@ -17,11 +17,11 @@ import java.util.List;
 /**
  * Created by michael on 20.05.16.
  */
-public class BatchProcessTaskExt {
+public class BatchUpdateTask {
 
 //    String query;
 
-    private static Logger logger = Logger.getLogger(BatchProcessTaskExt.class);
+    private static Logger logger = Logger.getLogger(BatchUpdateTask.class);
 
     int fetchSize = 1000;
     int batchSize = 1000;
@@ -40,32 +40,33 @@ public class BatchProcessTaskExt {
     private MigrationEntryDAO migrationDAO;
 
 
-    public BatchProcessTaskExt (MigrationEntryDAO migrationDAO, String entryId) {
+    public BatchUpdateTask(MigrationEntryDAO migrationDAO, String entryId) {
         this.queryCmd = new Tm_BaseQueryCmd();
         this.migrationDAO = migrationDAO;
         this.withStateEntry(entryId);
     }
 
-    public BatchProcessTaskExt withStateEntry (String id) {
+    public BatchUpdateTask withStateEntry (String id) {
         this.stateEntryId = id;
         return this;
     }
 
-    public BatchProcessTaskExt forTable (String tableName) {
+    public BatchUpdateTask forTable (String tableName) {
         return forTable (tableName, "nID", "dtLastUpdate");
     }
 
-    public BatchProcessTaskExt forTable (String tableName, String idFieldName, String lastUpdateFieldName) {
-        queryCmd.setCommad("select * from " + tableName + " where " + lastUpdateFieldName + " > ? order by " + lastUpdateFieldName);
+    public BatchUpdateTask forTable (String tableName, String idFieldName, String lastUpdateFieldName) {
+        queryCmd.setCommad(
+                "select * from " + tableName
+                + " where " + idFieldName + " <= ? and " + lastUpdateFieldName + " > ? order by " + lastUpdateFieldName
+        );
         this.idFieldName = idFieldName;
         this.lastUpdateFieldName = lastUpdateFieldName;
         return this;
     }
 
-    public BatchProcessTaskExt forQuery (String query, String idFieldName, String lastUpdateFieldName) {
-        //this.queryCmd.setCommad(query + " where " + lastUpdateFieldName + " > ? order by " + idFieldName);
-
-        // assume it's well-formed query
+    public BatchUpdateTask forQuery (String query, String idFieldName, String lastUpdateFieldName) {
+        // assume it's well-formed query, that takes 2 arguments for last_id and last_update values
         this.queryCmd.setCommad(query);
         this.idFieldName = idFieldName;
         this.lastUpdateFieldName = lastUpdateFieldName;
@@ -73,21 +74,18 @@ public class BatchProcessTaskExt {
     }
 
 
-    public <T> BatchProcessTaskExt process (Connection conn, JdbcDAO<Long, T> dao, BatchProcess<T> batchProcess, MigrateAdapter<T> adapter) throws SQLException {
+    public <T> BatchUpdateTask process (Connection conn, JdbcDAO<Long, T> dao, BatchProcess<T> batchProcess, MigrateAdapter<T> adapter) throws SQLException {
         ResultSet rs = null;
 
-        logger.debug("running query : " + queryCmd.getCommand());
+        logger.debug("Update task for + " + stateEntryId + ", running query : " + queryCmd.getCommand());
 
-        List<T> insertBatchSet = new ArrayList<>(batchSize);
         List<T> updateBatchSet = new ArrayList<>(batchSize);
 
-        long handledWithInserting = 0;
-        long handledWithUpdating = 0;
         records_handled = 0;
 
         MigrationEntry migrationEntry = migrationDAO.getOrCreateEntry(this.stateEntryId);
-//        long maxId = migrationEntry.getLastId();
 
+        queryCmd.addParam(migrationEntry.getLastId());
         queryCmd.addParam(migrationEntry.getLastUpdate());
 
         try (PreparedStatement st = conn.prepareStatement(queryCmd.getCommand(), ResultSet.TYPE_FORWARD_ONLY,ResultSet.CONCUR_READ_ONLY)) {
@@ -98,55 +96,30 @@ public class BatchProcessTaskExt {
 
             logger.debug("loop over result-set::begin");
 
-            Long lastId = 0l;
-
             while (rs.next()) {
                 records_handled++;
-
-                if (rs.getLong(this.idFieldName) > migrationEntry.getLastId()) {
-                    long maxId = Math.max(lastId, rs.getLong(this.idFieldName));
-                    if(lastId != maxId)
-                        migrationEntry.setLastId(lastId = maxId);
-
-                    //insert
-                    handledWithInserting++;
-                    insertBatchSet.add(adapter.createEntity(Tm_SqlHelper.fetchRowAsMap(rs)));
-                }else{
-                    //update
-                    handledWithUpdating++;
-                    updateBatchSet.add(adapter.createEntity(Tm_SqlHelper.fetchRowAsMap(rs)));
-                }
+                updateBatchSet.add(adapter.createEntity(Tm_SqlHelper.fetchRowAsMap(rs)));
 
                 Timestamp ts = rs.getTimestamp(lastUpdateFieldName);
                 if (ts != null) {
-                    migrationEntry.setLastUpdate(Tm_SqlHelper.timestampToDate(ts));
+                    java.util.Date lastUpdate = Tm_SqlHelper.timestampToDate(ts);
+                    /** update only when it is younger **/
+                    if (lastUpdate.getTime() > migrationEntry.getLastUpdate().getTime())
+                        migrationEntry.setLastUpdate(lastUpdate);
                 }
 
-                if (insertBatchSet.size() >= batchSize) {
-                    //processBatch(dao, insertBatchSet, true);
-                    batchProcess.doInsert(dao, insertBatchSet);
-                    migrationDAO.merge(migrationEntry);
-                    logger.debug("Handled insert rows : " + handledWithInserting);
-                }
                 if (updateBatchSet.size() >= batchSize) {
                     batchProcess.doUpdate(dao, updateBatchSet);
                     migrationDAO.merge(migrationEntry);
-                    logger.debug("Handled update rows : " + handledWithUpdating);
+                    logger.debug("Handled update rows : " + records_handled);
                 }
-
             }
 
             // остатки
-            if (!insertBatchSet.isEmpty()) {
-                batchProcess.doInsert(dao, insertBatchSet);
-                logger.debug("Handled inset rows : " + handledWithInserting);
-            }
             if (!updateBatchSet.isEmpty()) {
                 batchProcess.doUpdate(dao, updateBatchSet);
-                logger.debug("Handled update rows : " + handledWithUpdating);
+                logger.debug("Handled update rows : " + records_handled);
             }
-
-
 
             migrationDAO.merge(migrationEntry);
 

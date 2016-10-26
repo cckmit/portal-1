@@ -7,6 +7,7 @@ import ru.protei.portal.core.model.dao.PersonAbsenceDAO;
 import ru.protei.portal.core.model.ent.PersonAbsence;
 import ru.protei.portal.tools.migrate.tools.BatchProcess;
 import ru.protei.portal.tools.migrate.tools.MigrateAction;
+import ru.protei.portal.tools.migrate.tools.MigrateUtils;
 import ru.protei.winter.jdbc.JdbcDAO;
 
 import java.sql.Connection;
@@ -36,18 +37,9 @@ public class MigratePersonAbsenceAction implements MigrateAction {
         return 5;
     }
 
-//    static { // ДЛЯ ПРОВЕРКИ
-//        try {
-//            System.setProperty("java.util.logging.config.file", "/home/bondarenko/portal/module/web-ui/src/main/java/ru/protei/portal/webui/controller/dict/logging.properties");
-//            LogManager.getLogManager().readConfiguration();
-//        }catch (Throwable e){
-//            System.out.println(e);
-//        }
-//    }
-
 
     @Override
-    public void migrate(Connection src) throws SQLException {
+    public void migrate(Connection sourceConnection) throws SQLException {
 
         BatchProcess<PersonAbsence> batchProcess = new BaseBatchProcess<PersonAbsence>() {
             @Override
@@ -58,9 +50,9 @@ public class MigratePersonAbsenceAction implements MigrateAction {
             }
         };
 
-        new BatchProcessTaskExt(migrateDAO, TM_PERSON_ABS_ITEM_CODE)
-                .forTable("\"AbsentLog\".Tm_AbsentViewer", "nID", "dtLastUpdate")
-                .process(src, dao, batchProcess, row -> {
+        // regular absence
+        MigrateUtils.runDefaultMigration(sourceConnection, TM_PERSON_ABS_ITEM_CODE, "\"AbsentLog\".Tm_AbsentViewer",
+                migrateDAO, dao, batchProcess, row -> {
                     PersonAbsence x = new PersonAbsence();
                     x.setOldId(((Number) row.get("nID")).longValue());
                     x.setCreated((Date) row.get("dtCreation"));
@@ -84,13 +76,12 @@ public class MigratePersonAbsenceAction implements MigrateAction {
                     x.setTillTime(dateTill);
 
                     return x;
-                })
-                .dumpStats();
+        });
 
-
-        new BatchProcessTaskExt(migrateDAO, TM_PERSON_LEAVE_ITEM_CODE)
-                .forTable("\"AbsentLog\".Tm_Leave", "nID", "dtLastUpdate")
-                .process(src, dao, batchProcess, row -> {
+        // vacation
+        MigrateUtils.runDefaultMigration(sourceConnection, TM_PERSON_LEAVE_ITEM_CODE, "\"AbsentLog\".Tm_Leave",
+                migrateDAO, dao, batchProcess,
+                row -> {
                     PersonAbsence x = new PersonAbsence();
                     x.setOldId(((Number) row.get("nID")).longValue());
                     x.setCreated((Date) row.get("dtCreation"));
@@ -115,9 +106,7 @@ public class MigratePersonAbsenceAction implements MigrateAction {
                     x.setTillTime(dateTill);
 
                     return x;
-                })
-                .dumpStats();
-
+                });
     }
 
     private String getHMS(Date date){

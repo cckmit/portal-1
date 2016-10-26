@@ -4,6 +4,11 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.log4j.Logger;
 import protei.sql.Tm_SqlHelper;
+import ru.protei.portal.core.model.dao.MigrationEntryDAO;
+import ru.protei.portal.core.model.dao.PortalBaseDAO;
+import ru.protei.portal.tools.migrate.parts.BaseBatchProcess;
+import ru.protei.portal.tools.migrate.parts.BatchInsertTask;
+import ru.protei.portal.tools.migrate.parts.BatchUpdateTask;
 import ru.protei.portal.tools.migrate.struct.Mail2Login;
 
 import java.sql.Connection;
@@ -104,5 +109,36 @@ public class MigrateUtils {
         finally {
             Tm_SqlHelper.safeCloseResultSet(rs);
         }
+    }
+
+    public static <T> void runDefaultMigration (Connection sourceConnection,
+                                                String entryId,
+                                                String tableName,
+                                                MigrationEntryDAO migrationEntryDAO,
+                                                PortalBaseDAO<T> dao,
+                                                MigrateAdapter<T> adapter) throws SQLException {
+
+        runDefaultMigration(sourceConnection, entryId, tableName, migrationEntryDAO, dao, new BaseBatchProcess<>(), adapter);
+
+    }
+
+    public static <T> void runDefaultMigration (Connection sourceConnection,
+                                                String entryId,
+                                                String tableName,
+                                                MigrationEntryDAO migrationEntryDAO,
+                                                PortalBaseDAO<T> dao,
+                                                BatchProcess<T> batchProcess,
+                                                MigrateAdapter<T> adapter) throws SQLException {
+
+        new BatchInsertTask(migrationEntryDAO, entryId)
+                .forTable(tableName, "nID", "dtLastUpdate")
+                .process(sourceConnection, dao, batchProcess, adapter)
+                .dumpStats();
+
+        new BatchUpdateTask(migrationEntryDAO, entryId)
+                .forTable(tableName, "nID", "dtLastUpdate")
+                .process(sourceConnection, dao, batchProcess, adapter)
+                .dumpStats();
+
     }
 }

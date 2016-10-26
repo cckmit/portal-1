@@ -76,7 +76,17 @@ public class MigratePersonAction implements MigrateAction {
         return x != null ? x : d;
     }
 
-    private String makeSql(String idRangeCondition) {
+    private String makeNewItemsQuery(String idExpression) {
+        return getBaseSelectQuery() +
+                " where  p.nID > ? and " + idExpression + " order by p.nID";
+    }
+
+    private String makeUpdatedItemsQuery() {
+        return getBaseSelectQuery() +
+                " where p.nID <= ? and p.dtLastUpdate > ? order by p.dtLastUpdate";
+    }
+
+    private String getBaseSelectQuery() {
         return " select p.*, p.strClient||'@'||p.strClientIP strCreatorID, \"resource\".func_getfullfio (p.strLastName,p.strFirstName,p.strPatronymic) fullFio, prop.properties, cat.nCategoryID, cd.strValue category," +
                 " pext.strIP_Address,pext.strE_Mail, pext.strOther_E_mail, pext.strHomeTel, pext.strWorkTel, pext.strMobileTel, pext.strFaxTel, pext.strOficialAddress, pext.strActualAddress, pext.strICQ, pext.nJID, pext.lRetired, dep.strDescription" +
                 " from \"resource\".tm_person p" +
@@ -86,8 +96,7 @@ public class MigratePersonAction implements MigrateAction {
                 " left outer join \"resource\".tm_person2category cat on (cat.nPersonID=p.nID)" +
                 " left outer join \"resource\".tm_category cd on (cd.nID=cat.nCategoryID)" +
                 " left outer join \"resource\".Tm_PersonPROTEI_Extension pext on (pext.nID=p.nID)" +
-                " left outer join \"OK\".Tm_Department dep on (dep.nID=pext.nDepartmentID)" +
-                " where p.dtLastUpdate > ? "+ (idRangeCondition != null ? "and "+ idRangeCondition : "") +" order by p.dtLastUpdate";
+                " left outer join \"OK\".Tm_Department dep on (dep.nID=pext.nDepartmentID)";
     }
 
 
@@ -104,7 +113,7 @@ public class MigratePersonAction implements MigrateAction {
     }
 
     @Override
-    public void migrate(Connection src) throws SQLException {
+    public void migrate(Connection sourceConnection) throws SQLException {
 
         BatchProcess<Person> workersBatchProcess = new BaseBatchProcess<Person>() {
             public void afterInsert(List<Person> insertedEntries) {
@@ -237,16 +246,28 @@ x.setWorkRoleID(role.getId());
         };
 
 
-        new BatchProcessTaskExt(migrateDAO, TM_PERSON_ITEM_CODE)
-                .forQuery(makeSql("p.nID > 1000"), "nID", "dtLastUpdate")
-                .process(src, dao, new BaseBatchProcess<Person> (), migrateAdapter)
+        /** migrate workers **/
+        new BatchInsertTask(migrateDAO, TM_PERSON_PROTEI_ITEM_CODE)
+                .forQuery(makeNewItemsQuery("p.nID <= 1000"), "nID", "dtLastUpdate")
+                .process(sourceConnection, dao, workersBatchProcess, migrateAdapter)
                 .dumpStats();
 
-        new BatchProcessTaskExt(migrateDAO, TM_PERSON_PROTEI_ITEM_CODE)
-                .forQuery(makeSql("p.nID <= 1000"), "nID", "dtLastUpdate")
-                .process(src, dao, workersBatchProcess, migrateAdapter)
+        new BatchUpdateTask(migrateDAO, TM_PERSON_PROTEI_ITEM_CODE)
+                .forQuery(makeUpdatedItemsQuery(), "nID", "dtLastUpdate")
+                .process(sourceConnection, dao, workersBatchProcess, migrateAdapter)
                 .dumpStats();
 
+
+        /** migrate crm-contacts */
+        new BatchInsertTask(migrateDAO, TM_PERSON_ITEM_CODE)
+                .forQuery(makeNewItemsQuery("p.nID > 1000"), "nID", "dtLastUpdate")
+                .process(sourceConnection, dao, new BaseBatchProcess<> (), migrateAdapter)
+                .dumpStats();
+
+        new BatchUpdateTask(migrateDAO, TM_PERSON_ITEM_CODE)
+                .forQuery(makeUpdatedItemsQuery(), "nID", "dtLastUpdate")
+                .process(sourceConnection, dao, new BaseBatchProcess<> (), migrateAdapter)
+                .dumpStats();
     }
 
 
