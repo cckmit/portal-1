@@ -11,9 +11,6 @@ public class CompanyGroupDAO_Impl extends PortalBaseJdbcDAO<CompanyGroup> implem
     @Override
     public boolean checkExistsGroupByName(String name, Long id) {
 
-        if (name == null || name.trim().isEmpty())
-            return true;
-
         StringBuilder condition = new StringBuilder(" group_name like ? ");
 
         if (id != null) {

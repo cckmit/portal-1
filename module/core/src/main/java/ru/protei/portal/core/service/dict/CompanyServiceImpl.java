@@ -194,16 +194,10 @@ public class CompanyServiceImpl implements CompanyService {
         if (!isValidCompany(company) || companyDAO.persist(company) == null)
             return createUndefinedError();
 
-        if (group != null) {
-
-            if (!isValidGroup(group))
+        if (group != null)
+            if (!isValidGroup(group) || (group.getId() == null && companyGroupDAO.persist(group) == null)
+                    || linkCompanyToGroup(company.getId(), group.getId()).isError())
                 return createUndefinedError();
-
-            if (group.getId() == null && companyGroupDAO.persist(group) == null)
-                return createUndefinedError();
-
-            if (linkCompanyToGroup(company.getId(), group.getId()).isError()) return createUndefinedError();
-        }
 
         return new CoreResponse<Company>().success(company);
     }
@@ -219,27 +213,29 @@ public class CompanyServiceImpl implements CompanyService {
             companyGroupItemCache.remove(link);
         });
 
-        if (group != null) {
-
-            if (!isValidGroup(group))
+        if (group != null)
+            if (!isValidGroup(group) || (group.getId() == null && companyGroupDAO.persist(group) == null)
+                    || linkCompanyToGroup(company.getId(), group.getId()).isError())
                 return createUndefinedError();
-
-            if (group.getId() == null && companyGroupDAO.persist(group) == null)
-                return createUndefinedError();
-
-            if (linkCompanyToGroup(company.getId(), group.getId()).isError()) return createUndefinedError();
-        }
 
         return new CoreResponse<Company>().success(company);
     }
 
     @Override
     public CoreResponse<Boolean> isCompanyNameExists(String name, Long id) {
+
+        if (name == null || name.trim().isEmpty())
+            return createUndefinedError();
+
         return new CoreResponse<Boolean>().success(companyDAO.checkExistsCompanyByName(name, id));
     }
 
     @Override
     public CoreResponse<Boolean> isGroupNameExists(String name, Long id) {
+
+        if (name == null || name.trim().isEmpty())
+            return createUndefinedError();
+
         return new CoreResponse<Boolean>().success(companyGroupDAO.checkExistsGroupByName(name, id));
     }
 

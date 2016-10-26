@@ -38,9 +38,6 @@ public class CompanyDAO_Impl extends PortalBaseJdbcDAO<Company> implements Compa
     @Override
     public boolean checkExistsCompanyByName(String name, Long id) {
 
-        if (name == null || name.trim().isEmpty())
-            return true;
-
         StringBuilder condition = new StringBuilder(" cname like ? ");
 
         if (id != null) {

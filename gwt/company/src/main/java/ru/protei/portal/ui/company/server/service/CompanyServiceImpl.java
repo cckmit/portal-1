@@ -99,8 +99,6 @@ public class CompanyServiceImpl extends RemoteServiceServlet implements CompanyS
         else
             response = companyService.updateCompany( company, group );
 
-        log.debug( "saveCompany: response={}", response );
-
         if ( response.isError() ) throw new RequestFailedException();
 
         return response.getData() != null;
