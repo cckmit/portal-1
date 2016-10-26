@@ -283,20 +283,21 @@ public class CompanyServiceImpl implements CompanyService {
 
     private void linkGroup(Company company, CompanyGroup group) throws Exception {
 
-        if (group != null) {
-
-            if (!isValidGroup(group)) {
-                throw new Exception();
-            }
-
-            if (group.getId() == null && companyGroupDAO.persist(group) == null) {
-                throw new Exception();
-            }
-
-            companyGroupCache.putIfNotExists(group);
-
-            linkCompanyToGroup(company.getId(), group.getId());
+        if (group == null) {
+            return;
         }
+
+        if (!isValidGroup(group)) {
+            throw new Exception();
+        }
+
+        if (group.getId() == null && companyGroupDAO.persist(group) == null) {
+            throw new Exception();
+        }
+
+        companyGroupCache.putIfNotExists(group);
+
+        linkCompanyToGroup(company.getId(), group.getId());
     }
 
     private void linkCompanyToGroup(Long companyId, Long groupId) throws Exception {
