@@ -17,9 +17,14 @@ import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.company.client.service.CompanyService;
 
+import java.beans.BeanInfo;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 /**
  * Реализация сервиса по работе с компаниями
@@ -30,16 +35,15 @@ public class CompanyServiceImpl extends RemoteServiceServlet implements CompanyS
     @Override
     public List< Company > getCompanies( String searchPattern, Set< CompanyCategory > categories, CompanyGroup group, En_SortField sortField, Boolean dirSort ) throws RequestFailedException {
 
-        List< Long > categoryIds = new ArrayList< Long >();
-        if ( categories != null && !categories.isEmpty() ) {
-            for ( CompanyCategory category : categories ) {
-                if ( category != null )
-                    categoryIds.add( category.getId() );
-            }
+        List< Long > categoryIds = null;
+        if ( categories != null ) {
+            categoryIds = categories.stream()
+                    .map( CompanyCategory::getId )
+                    .collect( Collectors.toList() );
         }
 
         log.debug( "getCompanies(): searchPattern={} | categories={} | group={} | sortField={} | dirSort={}",
-                searchPattern, categoryIds.toString(), (group != null ? group.getId() : null),
+                searchPattern, categoryIds, (group != null ? group.getId() : null),
                 sortField, (dirSort ? En_SortDir.ASC : En_SortDir.DESC) );
 
         CompanyQuery query = new CompanyQuery( searchPattern, sortField, dirSort ? En_SortDir.ASC : En_SortDir.DESC );
@@ -77,10 +81,9 @@ public class CompanyServiceImpl extends RemoteServiceServlet implements CompanyS
     public Boolean saveCompany( Company company, CompanyGroup group ) throws RequestFailedException {
 
         log.debug( "saveCompany(): company={} | group={}", company, group );
-
         if (isCompanyNameExists(company.getCname(), company.getId()))
             throw new RequestFailedException();
-
+        
         CoreResponse< Company > response;
 
         if ( company.getId() == null )
