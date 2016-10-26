@@ -9,7 +9,6 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.TextBox;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 
 /**
@@ -26,14 +25,15 @@ public class ButtonSelector<T> extends Selector<T> {
         text.setInnerText(selectedValue == null ? "" : selectedValue);
     }
 
-    public void setHeader( String header ) {
-        this.label.setInnerText( header );
-    }
 
     @UiHandler( "button" )
     public void onBtnClick (ClickEvent event)
     {
         showPopup(button);
+    }
+
+    public void setHeader( String header ) {
+        this.label.setInnerText( header );
     }
 
     @UiField

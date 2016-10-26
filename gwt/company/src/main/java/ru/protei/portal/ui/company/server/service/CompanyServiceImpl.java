@@ -23,6 +23,8 @@ import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 /**
  * Реализация сервиса по работе с компаниями
@@ -33,29 +35,22 @@ public class CompanyServiceImpl extends RemoteServiceServlet implements CompanyS
     @Override
     public List< Company > getCompanies( String searchPattern, Set< CompanyCategory > categories, CompanyGroup group, En_SortField sortField, Boolean dirSort ) throws RequestFailedException {
 
-        List< Long > categoryIds = new ArrayList< Long >();
-        if ( categories != null && !categories.isEmpty() ) {
-            for ( CompanyCategory category : categories ) {
-                if ( category != null )
-                    categoryIds.add( category.getId() );
-            }
+        List< Long > categoryIds = null;
+        if ( categories != null ) {
+            categoryIds = categories.stream()
+                    .map( CompanyCategory::getId )
+                    .collect( Collectors.toList() );
         }
 
-        log.debug( "getCompanies: searchPattern={}", searchPattern );
-
-        log.debug( "getCompanies: categories={}", categoryIds.toString() );
-
-        log.debug( "getCompanies: group={}", group != null ? group.getId() : null );
-
-        log.debug( "getCompanies: sortField={}", sortField );
-
-        log.debug( "getCompanies: dirSort={}", dirSort ? En_SortDir.ASC : En_SortDir.DESC );
+        log.debug( "getCompanies(): searchPattern={} | categories={} | group={} | sortField={} | dirSort={}",
+                searchPattern, categoryIds, (group != null ? group.getId() : null),
+                sortField, (dirSort ? En_SortDir.ASC : En_SortDir.DESC) );
 
         CompanyQuery query = new CompanyQuery( searchPattern, sortField, dirSort ? En_SortDir.ASC : En_SortDir.DESC );
         query.setGroupId( group != null ? group.getId() : null );
         query.setCategoryIds( categoryIds );
 
-        HttpListResult< Company> result = companyService.list( query );
+        HttpListResult< Company> result = companyService.companyList(query);
 
         return result.getItems();
     }
@@ -85,19 +80,18 @@ public class CompanyServiceImpl extends RemoteServiceServlet implements CompanyS
     @Override
     public Boolean saveCompany( Company company, CompanyGroup group ) throws RequestFailedException {
 
-
-        log.debug( "saveCompany" );
-        log.debug( "saveCompany: Id={}", company.getId() );
-        log.debug( "saveCompany: name={}", company.getCname() );
-
+        log.debug( "saveCompany(): company={} | group={}", company, group );
+        if (isCompanyNameExists(company.getCname(), company.getId()))
+            throw new RequestFailedException();
+        
         CoreResponse< Company > response;
 
         if ( company.getId() == null )
-            response = companyService.createCompany( company );
+            response = companyService.createCompany( company, group );
         else
-            response = companyService.updateCompany( company );
+            response = companyService.updateCompany( company, group );
 
-        log.debug( "saveCompany: response={}", response );
+        log.debug( "saveCompany(): response.isOk()={}", response.isOk() );
 
         if ( response.isError() ) throw new RequestFailedException();
 
@@ -105,15 +99,29 @@ public class CompanyServiceImpl extends RemoteServiceServlet implements CompanyS
     }
 
     @Override
-    public Boolean isCompanyNameExists(String name, Long id) throws RequestFailedException {
+    public Boolean isCompanyNameExists( String name, Long excludeId ) throws RequestFailedException {
 
-        log.debug( "isCompanyNameExists" );
-        log.debug( "isCompanyNameExists: name={}", name );
-        log.debug( "isCompanyNameExists: id={}", id );
+        log.debug( "isCompanyNameExists(): name={} | excludeId={}", name, excludeId );
 
-        CoreResponse<Boolean> response = companyService.isCompanyNameExists(name, id);
+        CoreResponse<Boolean> response = companyService.isCompanyNameExists( name, excludeId );
 
-        if (response.isError()) throw new RequestFailedException();
+        log.debug( "isCompanyNameExists(): response.isOk()={} | response.getData()", response.isOk(), response.getData() );
+
+        if ( response.isError() ) throw new RequestFailedException();
+
+        return response.getData();
+    }
+
+    @Override
+    public Boolean isGroupNameExists(String name, Long excludeId) throws RequestFailedException {
+
+        log.debug( "isGroupNameExists(): name={} | excludeId={}", name, excludeId );
+
+        CoreResponse<Boolean> response = companyService.isGroupNameExists(name, excludeId);
+
+        log.debug( "isGroupNameExists(): response.isOk()={} | response.getData()", response.isOk(), response.getData() );
+
+        if ( response.isError() ) throw new RequestFailedException();
 
         return response.getData();
     }

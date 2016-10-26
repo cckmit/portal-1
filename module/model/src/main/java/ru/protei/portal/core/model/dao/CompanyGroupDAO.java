@@ -6,4 +6,6 @@ import ru.protei.portal.core.model.ent.CompanyGroup;
  * Created by michael on 01.04.16.
  */
 public interface CompanyGroupDAO extends PortalBaseDAO<CompanyGroup> {
+
+    CompanyGroup getGroupByName( String name );
 }

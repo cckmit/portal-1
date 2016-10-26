@@ -41,14 +41,26 @@ public interface CompanyService extends RemoteService {
 
     /**
      * Сохранение компании ( создание + изменение )
+     * @param company компания
+     * @param group группа
      * @return результат сохранения
      */
     Boolean saveCompany ( Company company, CompanyGroup group ) throws RequestFailedException;
 
     /**
      * Проверка уникальности названия компании
+     * @param name название компании
+     * @param excludeId идентификатор компании, которую необходимо исключить из проверки
      * @return true/false
      */
-    Boolean isCompanyNameExists ( String name, Long id ) throws RequestFailedException;
+    Boolean isCompanyNameExists ( String name, Long excludeId ) throws RequestFailedException;
+
+    /**
+     * Проверка уникальности названия группы компаний
+     * @param name название компании
+     * @param excludeId идентификатор группы, которую необходимо исключить из проверки
+     * @return true/false
+     */
+    Boolean isGroupNameExists ( String name, Long excludeId ) throws RequestFailedException;
 
 }

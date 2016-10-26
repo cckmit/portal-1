@@ -38,14 +38,26 @@ public interface CompanyServiceAsync {
 
     /**
      * Сохранение компании ( создание + изменение )
+     * @param company компания
+     * @param group группа
      * @return результат сохранения
      */
     void saveCompany ( Company company, CompanyGroup group, AsyncCallback< Boolean > async );
 
     /**
      * Проверка уникальности названия компании
+     * @param name название компании
+     * @param excludeId идентификатор компании, которую необходимо исключить из проверки
      * @return true/false
      */
-    void isCompanyNameExists ( String name, Long id, AsyncCallback< Boolean > async );
+    void isCompanyNameExists ( String name, Long excludeId, AsyncCallback< Boolean > async );
+
+    /**
+     * Проверка уникальности названия группы компаний
+     * @param name название компании
+     * @param excludeId идентификатор группы, которую необходимо исключить из проверки
+     * @return true/false
+     */
+    void isGroupNameExists ( String name, Long excludeId, AsyncCallback< Boolean > async );
 
 }

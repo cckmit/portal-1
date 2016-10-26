@@ -10,9 +10,11 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.ent.CompanyGroup;
 import ru.protei.portal.ui.common.client.service.NameStatus;
 import ru.protei.portal.ui.company.client.activity.edit.AbstractCompanyEditActivity;
 import ru.protei.portal.ui.company.client.activity.edit.AbstractCompanyEditView;
+import ru.protei.portal.ui.company.client.widget.group.inputSelector.GroupInputSelector;
 
 /**
  * Вид создания и редактирования компании
@@ -58,6 +60,11 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     @Override
     public HasText comment() {
         return comment;
+    }
+
+    @Override
+    public HasValue<CompanyGroup> companyGroup() {
+        return companyGroup;
     }
 
     @UiHandler( "saveButton" )
@@ -113,6 +120,10 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
 
     @UiField
     TextBox webSite;
+
+    @Inject
+    @UiField( provided = true )
+    GroupInputSelector companyGroup;
 
 
     AbstractCompanyEditActivity activity;

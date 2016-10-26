@@ -61,4 +61,13 @@ public class CompanyGroup implements Serializable {
     public void setInfo(String info) {
         this.info = info;
     }
+
+    public String toString() {
+        return "Group{" +
+                "id=" + id +
+                ", created=" + created +
+                ", name=" + name +
+                ", info=" + info +
+                '}';
+    }
 }
