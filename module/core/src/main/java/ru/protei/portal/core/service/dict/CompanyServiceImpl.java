@@ -152,13 +152,6 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public Company getProfile(Long id) {
-
-        return complete(companyDAO.get(id));
-
-    }
-
-    @Override
     public HttpListResult<Company> companyList(CompanyQuery query) {
 
         return new HttpListResult<> (
@@ -256,7 +249,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Transactional
-    private Company createCompanyImpl( Company company, CompanyGroup group ) throws Exception {
+    private Company createCompanyImpl(Company company, CompanyGroup group) throws Exception {
 
         if (!isValidCompany(company) || companyDAO.persist(company) == null) {
             throw new Exception();
@@ -353,5 +346,4 @@ public class CompanyServiceImpl implements CompanyService {
 
         return true;
     }
-
 }

@@ -16,8 +16,6 @@ public interface CompanyService {
 
     HttpListResult<Company> companyList(CompanyQuery query);
 
-    Company getProfile(Long id);
-
     HttpListResult<CompanyGroup> groupList (BaseQuery query);
 
     HttpListResult<CompanyCategory> categoryList ();
