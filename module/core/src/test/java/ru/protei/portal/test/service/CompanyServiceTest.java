@@ -9,6 +9,7 @@ import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.api.struct.HttpListResult;
 import ru.protei.portal.config.MainConfiguration;
 import ru.protei.portal.core.model.dao.CompanyDAO;
+import ru.protei.portal.core.model.dao.CompanyGroupDAO;
 import ru.protei.portal.core.model.dao.CompanyGroupItemDAO;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanyGroup;
@@ -17,6 +18,8 @@ import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.service.dict.CompanyService;
 import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
+
+import java.util.Date;
 
 /**
  * Created by michael on 11.10.16.
@@ -38,7 +41,7 @@ public class CompanyServiceTest {
 
         Assert.assertNotNull(service);
 
-        HttpListResult<Company> result = service.list(new CompanyQuery());
+        HttpListResult<Company> result = service.companyList(new CompanyQuery());
 
         Assert.assertNotNull(result);
         Assert.assertNotNull(result.getItems());
@@ -84,35 +87,64 @@ public class CompanyServiceTest {
 
     @Test
     public void testCompanies () {
-        Long id = null;
+
+        Long companyId = null;
+        Long groupId = null;
 
         try {
 
-            boolean result = ctx.getBean(CompanyDAO.class).checkExistsCompanyByName("Тестовая компания", null);
-            Assert.assertFalse(result);
+            CompanyService service = ctx.getBean(CompanyService.class);
 
             Company company = new Company();
+            company.setCreated(new Date());
             company.setCname("Тестовая компания");
             company.setAddressDejure("Тестовый адрес");
             company.setAddressFact("Тестовый адрес");
 
-            CompanyService service = ctx.getBean(CompanyService.class);
-            CoreResponse<Company> response = service.createCompany(company);
+            Company dupCompany = ctx.getBean(CompanyDAO.class).getCompanyByName(company.getCname());
+            Assert.assertNull(dupCompany);
+
+            CompanyGroup group = ctx.getBean(CompanyGroupDAO.class).get(new Long(1));
+
+            CoreResponse<Company> response = service.createCompany(company, group);
             Assert.assertTrue(response.isOk());
             Assert.assertNotNull(response.getData());
 
             System.out.println(company.getId());
 
+            CompanyGroup newGroup = new CompanyGroup();
+            newGroup.setCreated(new Date());
+            newGroup.setName("Моя тестовая группа");
+
+            dupCompany = ctx.getBean(CompanyDAO.class).getCompanyByName(company.getCname());
+            if (company.getId() == null) {
+                Assert.assertNull(dupCompany);
+            } else {
+                Assert.assertEquals(dupCompany.getId(), company.getId());
+            }
+
+            response = service.getCompanyById(company.getId());
+            Assert.assertNotNull(response.getData());
+
             company.setCname("Моя тестовая компания");
-            response = service.updateCompany(company);
+            response =  service.updateCompany(company, newGroup);
             Assert.assertTrue(response.isOk());
             Assert.assertNotNull(response.getData());
 
-            id = company.getId();
-        }
-        finally {
-            if (id != null)
-                ctx.getBean(CompanyDAO.class).removeByCondition("id=?", id);
+            companyId = company.getId();
+            groupId = newGroup.getId();
+
+        } finally {
+            if (companyId != null && groupId != null) {
+                ctx.getBean(CompanyGroupItemDAO.class).getCompanyToGroupLinks(companyId, null).forEach(item -> {
+                    ctx.getBean(CompanyGroupItemDAO.class).remove(item);
+                });
+            }
+            if (companyId != null)
+                ctx.getBean(CompanyDAO.class).removeByCondition("id=?", companyId);
+            if (groupId != null)
+                ctx.getBean(CompanyGroupDAO.class).removeByCondition("id=?", groupId);
+
         }
     }
 }

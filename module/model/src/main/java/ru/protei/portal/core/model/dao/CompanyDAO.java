@@ -12,5 +12,5 @@ public interface CompanyDAO extends PortalBaseDAO<Company> {
 
     List<Company> getListByQuery (CompanyQuery query);
 
-    boolean checkExistsCompanyByName (String name, Long id);
+    Company getCompanyByName( String name );
 }

@@ -48,7 +48,6 @@ public class Company implements Serializable {
     @JdbcColumn(name = "website")
     private String website;
 
-
     @SuppressWarnings("GwtInconsistentSerializableClass")
     private List<CompanyGroup> groups;
 
@@ -166,5 +165,24 @@ public class Company implements Serializable {
 
     public List<CompanyGroup> getGroups() {
         return groups;
+    }
+
+    @Override
+    public String toString() {
+        return "Company{" +
+                "id=" + id +
+                ", categoryId=" + category.getId() +
+                ", parentCompanyId=" + parentCompanyId +
+                ", addressDejure='" + addressDejure + '\'' +
+                ", addressFact='" + addressFact + '\'' +
+                ", cname='" + cname + '\'' +
+                ", email='" + email + '\'' +
+                ", fax='" + fax + '\'' +
+                ", info='" + info + '\'' +
+                ", phone='" + phone + '\'' +
+                ", created=" + created +
+                ", website='" + website + '\'' +
+                ", groups=" + groups +
+                '}';
     }
 }
