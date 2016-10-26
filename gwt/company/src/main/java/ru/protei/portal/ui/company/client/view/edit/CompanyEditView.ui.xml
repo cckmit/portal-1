@@ -1,5 +1,6 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
-             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:companycategorygroup='urn:import:ru.protei.portal.ui.company.client.widget.group.inputSelector'>
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel styleName="panel">
@@ -19,8 +20,10 @@
                             <ui:text from="{lang.companiesGroup}"/>
                         </label>
                         <div class="panelField">
-                            <input type="text" class="inputField rightIndent"/>
-                            <button class="button greenC">Создать</button>
+                            <companycategorygroup:GroupInputSelector ui:field="companyGroup"/>
+                            <button class="button greenC">
+                                <ui:text from="{lang.create}"/>
+                            </button>
                         </div>
                     </div>
                     <div class="col-xs-12 col-lg-6">

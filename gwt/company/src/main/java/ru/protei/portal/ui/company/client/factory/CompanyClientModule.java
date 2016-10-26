@@ -10,7 +10,7 @@ import ru.protei.portal.ui.company.client.activity.item.AbstractCompanyItemView;
 import ru.protei.portal.ui.company.client.view.edit.CompanyEditView;
 import ru.protei.portal.ui.company.client.view.list.CompanyListView;
 import ru.protei.portal.ui.company.client.view.item.CompanyItemView;
-import ru.protei.portal.ui.company.client.widget.group.selector.GroupModel;
+import ru.protei.portal.ui.company.client.widget.group.GroupModel;
 
 /**
  * Описание классов фабрики

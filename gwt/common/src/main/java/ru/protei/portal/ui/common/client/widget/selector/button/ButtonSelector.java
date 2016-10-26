@@ -26,14 +26,15 @@ public class ButtonSelector<T> extends Selector<T> {
         text.setInnerText(selectedValue == null ? "" : selectedValue);
     }
 
-    public void setHeader( String header ) {
-        this.label.setInnerText( header );
-    }
 
     @UiHandler( "button" )
     public void onBtnClick (ClickEvent event)
     {
         showPopup(button);
+    }
+
+    public void setHeader( String header ) {
+        this.label.setInnerText( header );
     }
 
     @UiField

@@ -75,7 +75,7 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
 
     @Override
     public void onCreateClicked() {
-        Window.alert( "on create clicked" );
+        fireEvent( new CompanyEvents.Edit ( null ));
     }
 
     private void initCompanies() {

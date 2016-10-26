@@ -32,4 +32,20 @@ public class CompanyDAO_Impl extends PortalBaseJdbcDAO<Company> implements Compa
 
         return getListByCondition(condition.toString(), TypeConverters.createSort(query), args);
     }
+
+    @Override
+    public boolean checkExistsCompanyByName(String name, Long id) {
+
+        if (name == null || name.trim().isEmpty())
+            return false;
+
+        StringBuilder condition = new StringBuilder(" cname like ? ");
+
+        if (id != null) {
+            condition.append(" and id != ? ");
+            return checkExistsByCondition(condition.toString(), name, id);
+        }
+
+        return checkExistsByCondition(condition.toString(), name);
+    }
 }
