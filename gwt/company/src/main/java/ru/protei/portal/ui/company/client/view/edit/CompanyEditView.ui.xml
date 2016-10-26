@@ -22,9 +22,9 @@
                         </label>
                         <div class="panelField">
                             <companycategorygroup:GroupInputSelector ui:field="companyGroup"/>
-                            <button class="button greenC">
+                            <g:Button ui:field="createCompanyButton" styleName="button greenC inactive">
                                 <ui:text from="{lang.create}"/>
-                            </button>
+                            </g:Button>
                         </div>
                     </div>
                     <div class="col-xs-12 col-lg-6">

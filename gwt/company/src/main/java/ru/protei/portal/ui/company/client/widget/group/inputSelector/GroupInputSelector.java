@@ -1,9 +1,13 @@
 package ru.protei.portal.ui.company.client.widget.group.inputSelector;
 
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.CompanyGroup;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
+import ru.protei.portal.ui.common.client.widget.selector.event.HasSelectorChangeValHandlers;
+import ru.protei.portal.ui.common.client.widget.selector.event.SelectorChangeValEvent;
+import ru.protei.portal.ui.common.client.widget.selector.event.SelectorChangeValHandler;
 import ru.protei.portal.ui.common.client.widget.selector.input.InputSelector;
 import ru.protei.portal.ui.company.client.widget.group.GroupModel;
 
@@ -30,8 +34,18 @@ public class GroupInputSelector extends InputSelector<CompanyGroup> implements M
         }
     }
 
+    public void close(){
+        closePopup();
+    }
+
     public void setHasAnyValue( boolean hasAnyValue ) {
         this.hasAnyValue = hasAnyValue;
+    }
+
+    public void setValue(CompanyGroup newCompanyGroup){
+        if(newCompanyGroup != null)
+            addOption(newCompanyGroup.getName(), newCompanyGroup);
+        super.setValue(newCompanyGroup);
     }
 
     @Inject

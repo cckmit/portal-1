@@ -13,13 +13,11 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.CompanyGroup;
 import ru.protei.portal.ui.common.client.service.NameStatus;
 import ru.protei.portal.ui.common.client.widget.autoaddvaluecomment.ValueCommentDataList;
-import ru.protei.portal.ui.common.client.widget.autoaddvaluecomment.ValueCommentPair;
 import ru.protei.portal.ui.common.client.widget.autoaddvaluecomment.list.AutoAddVCList;
+import ru.protei.portal.ui.common.client.widget.selector.event.SelectorChangeValEvent;
 import ru.protei.portal.ui.company.client.activity.edit.AbstractCompanyEditActivity;
 import ru.protei.portal.ui.company.client.activity.edit.AbstractCompanyEditView;
 import ru.protei.portal.ui.company.client.widget.group.inputSelector.GroupInputSelector;
-
-import java.util.List;
 
 /**
  * Вид создания и редактирования компании
@@ -102,6 +100,25 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
         timer.schedule( 300 );
     }
 
+    @UiHandler( "companyGroup" )
+    public void onChangeCompanyGroup(SelectorChangeValEvent event){
+        if(event.getValue() != null && !event.getValue().trim().isEmpty()){
+            createCompanyButton.getElement().removeClassName("inactive");
+            tempNewCompanyGroup.setName(event.getValue());
+        }
+        else
+            createCompanyButton.getElement().addClassName("inactive");
+    }
+
+    @UiHandler( "createCompanyButton" )
+    public void onCreateCompanyClicked( ClickEvent event ) {
+        if ( tempNewCompanyGroup.getName() != null ) {
+            companyGroup.setValue(tempNewCompanyGroup);
+            companyGroup.close();
+        }
+    }
+
+
     Timer timer = new Timer() {
         @Override
         public void run() {
@@ -136,6 +153,9 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     @UiField
     TextBox webSite;
 
+    @UiField
+    Button createCompanyButton;
+
     @Inject
     @UiField( provided = true )
     GroupInputSelector companyGroup;
@@ -150,6 +170,7 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
 
 
     AbstractCompanyEditActivity activity;
+    CompanyGroup tempNewCompanyGroup = new CompanyGroup();
 
     private static CompanyViewUiBinder2 ourUiBinder = GWT.create(CompanyViewUiBinder2.class);
     interface CompanyViewUiBinder2 extends UiBinder<HTMLPanel, CompanyEditView> {}
