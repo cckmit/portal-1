@@ -4,7 +4,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import ru.protei.portal.tools.migrate.parts.MigrateCompaniesAction;
 import ru.protei.portal.tools.migrate.parts.MigrateDevUnits;
-import ru.protei.portal.tools.migrate.parts.MigratePersonAbsenceAction;
 import ru.protei.portal.tools.migrate.parts.MigratePersonAction;
 import ru.protei.portal.tools.migrate.tools.MigrateAction;
 
@@ -19,10 +18,10 @@ public class MigrateConfiguration {
       return new MigrateCompaniesAction();
    }
 
-//   @Bean
-//   MigrateAction getPersonMigrateAction() {
-//      return new MigratePersonAction();
-//   }
+   @Bean
+   MigrateAction getPersonMigrateAction() {
+      return new MigratePersonAction();
+   }
 
 //   @Bean
 //   MigrateAction getPersonAbsenceAction() {
@@ -39,10 +38,10 @@ public class MigrateConfiguration {
 //        return new MigrateTasks();
 //    }
 
-//    @Bean
-//    public MigrateAction getDevUnitMigrateAction () {
-//        return new MigrateDevUnits();
-//    }
+    @Bean
+    public MigrateAction getDevUnitMigrateAction () {
+        return new MigrateDevUnits();
+    }
 
 //    @Bean
 //    public MigrateAction getFreqMigrateAction () {

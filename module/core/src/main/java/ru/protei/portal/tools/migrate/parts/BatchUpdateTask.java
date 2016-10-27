@@ -133,7 +133,7 @@ public class BatchUpdateTask {
     }
 
     public void dumpStats () {
-        logger.debug(String.format(this.stateEntryId + ", imported: %d", records_handled));
+        logger.debug(String.format(this.stateEntryId + ", updated: %d", records_handled));
     }
 
     public String getQuery() {
