@@ -101,4 +101,10 @@ public interface Lang extends Messages {
     String companyNotSaved();
 
     String create();
+
+    String companyInfoHeader();
+
+    String companyCommonHeader();
+
+    String companyEmail();
 }

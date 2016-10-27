@@ -176,7 +176,6 @@
   width: 250px;
   text-align: left;
   position: relative;
-  margin-right: 24px;
 }
 
 .button .caret {
@@ -318,6 +317,24 @@
   font-size: 16px;
   font-weight: bold;
 }
+
+
+
+.main-content {
+  margin: 15px;
+}
+
+/* OVERRIDED STYLES! */
+.header_global > .rightBlock .topicTitle {
+  background: #F3F1F4 none !important;
+}
+
+body {
+  background-color: #F3F1F4 !important;
+  color: #686868;
+}
+
+
 
 
 /**
@@ -478,4 +495,28 @@ label.bordered:after{
 
 .inputField.error{
   border: 1px solid #f54646;
+}
+
+.badge {
+  display: inline-block;
+  min-width: 10px;
+  padding: 0.5em;
+  font-weight: 700;
+  line-height: 1;
+  color: #fff;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  background-color: #5481c1;
+  border-radius: 50%;
+  font-size: 1.5em;
+
+  > i {
+    min-width: 1em;
+  }
+}
+
+
+.form-group {
+  margin-bottom: 10px;
 }
