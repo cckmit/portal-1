@@ -109,19 +109,17 @@ public class BatchInsertTask {
                 }
 
                 if (insertBatchSet.size() >= batchSize) {
-                    batchProcess.doInsert(dao, insertBatchSet);
-                    migrationDAO.merge(migrationEntry);
-                    logger.debug("Handled insert rows : " + records_handled);
+                    executeBatch(dao, batchProcess, insertBatchSet, migrationEntry);
+                    logger.debug("Rows inserted: " + records_handled);
                 }
             }
 
             // остатки
             if (!insertBatchSet.isEmpty()) {
-                batchProcess.doInsert(dao, insertBatchSet);
-                logger.debug("Handled inset rows : " + records_handled);
+                executeBatch(dao, batchProcess, insertBatchSet, migrationEntry);
+                logger.debug("Rows inserted : " + records_handled);
             }
 
-            migrationDAO.merge(migrationEntry);
 
             logger.debug("loop over result-set::end");
         }
@@ -130,6 +128,12 @@ public class BatchInsertTask {
         }
 
         return this;
+    }
+
+    private <T> void executeBatch(JdbcDAO<Long, T> dao, BatchProcess<T> batchProcess, List<T> insertBatchSet, MigrationEntry migrationEntry) {
+        batchProcess.doInsert(dao, insertBatchSet);
+        migrationDAO.merge(migrationEntry);
+        insertBatchSet.clear();
     }
 
     public void dumpStats () {

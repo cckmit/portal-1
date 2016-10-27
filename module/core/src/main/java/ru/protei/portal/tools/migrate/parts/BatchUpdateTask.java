@@ -109,19 +109,17 @@ public class BatchUpdateTask {
                 }
 
                 if (updateBatchSet.size() >= batchSize) {
-                    batchProcess.doUpdate(dao, updateBatchSet);
-                    migrationDAO.merge(migrationEntry);
+                    executeBatch(dao, batchProcess, updateBatchSet, migrationEntry);
                     logger.debug("Handled update rows : " + records_handled);
                 }
             }
 
             // остатки
             if (!updateBatchSet.isEmpty()) {
-                batchProcess.doUpdate(dao, updateBatchSet);
+                executeBatch(dao, batchProcess, updateBatchSet, migrationEntry);
                 logger.debug("Handled update rows : " + records_handled);
             }
 
-            migrationDAO.merge(migrationEntry);
 
             logger.debug("loop over result-set::end");
         }
@@ -130,6 +128,12 @@ public class BatchUpdateTask {
         }
 
         return this;
+    }
+
+    private <T> void executeBatch(JdbcDAO<Long, T> dao, BatchProcess<T> batchProcess, List<T> updateBatchSet, MigrationEntry migrationEntry) {
+        batchProcess.doUpdate(dao, updateBatchSet);
+        migrationDAO.merge(migrationEntry);
+        updateBatchSet.clear();
     }
 
     public void dumpStats () {
