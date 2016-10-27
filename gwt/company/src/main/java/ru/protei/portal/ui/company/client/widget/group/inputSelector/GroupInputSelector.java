@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.company.client.widget.group.inputSelector;
 
+import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.CompanyGroup;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -19,25 +20,19 @@ public class GroupInputSelector extends InputSelector<CompanyGroup> implements M
         groupModel.subscribe( this );
     }
 
+    @Override
     public void fillOptions( List< CompanyGroup > groups ) {
         clearOptions();
 
-        if ( hasAnyValue ) {
-            addOption( lang.companyGroup(), null );
-        }
         for ( CompanyGroup group : groups ) {
             addOption( group.getName(), group );
         }
     }
 
-    public void setHasAnyValue( boolean hasAnyValue ) {
-        this.hasAnyValue = hasAnyValue;
+    public void addAndSetOption(CompanyGroup newCompanyGroup){
+        addOption(newCompanyGroup.getName(), newCompanyGroup);
+        setValue(newCompanyGroup);
     }
-
-    @Inject
-    Lang lang;
-
-    private boolean hasAnyValue = true;
 
 
 }
