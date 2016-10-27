@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.api.struct.HttpListResult;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_SortDir;
@@ -23,13 +24,13 @@ import java.util.List;
 public class ProductServiceImpl extends RemoteServiceServlet implements ProductService {
 
     @Override
-    public List<DevUnit> getProductList(String param, Boolean state, En_SortField sortField, Boolean sortDir) throws RequestFailedException {
+    public List<DevUnit> getProductList(String param, En_DevUnitState state, En_SortField sortField, Boolean sortDir) throws RequestFailedException {
 
-        log.info (" getProductList : param = " + param + " showDeprecated = " + state + " sortField = " + sortField.getFieldName() + " order " + sortDir.toString());
+        log.info (" getProductList: param={} | showDeprecated={} | sortField={} | order={}", param, state, sortField.getFieldName(), sortDir.toString());
 
         productQuery = new ProductQuery();
         productQuery.setSearchString(param);
-        productQuery.setState(state ? null : En_DevUnitState.ACTIVE);
+        productQuery.setState(state);
         productQuery.setSortField(sortField);
         productQuery.setSortDir(sortDir ? En_SortDir.ASC : En_SortDir.DESC);
 
@@ -42,9 +43,54 @@ public class ProductServiceImpl extends RemoteServiceServlet implements ProductS
     @Override
     public DevUnit getProductById(Long productId) throws RequestFailedException {
 
-        log.info (" getProductById : id = " + productId);
+        log.info(" getProductById: id={}", productId);
 
-        return null;
+        CoreResponse<DevUnit> result = productService.getProductById(productId);
+
+        if (result.isError())
+            throw new RequestFailedException( result.getErrCode() );
+
+        return result.getData();
+    }
+
+    @Override
+    public Boolean saveProduct (DevUnit product) throws RequestFailedException {
+
+        log.info(" saveProduct: product={}", product);
+
+        if (!isNameUnique(product.getName(), product.getId()))
+            throw new RequestFailedException ();
+
+        CoreResponse response = product.getId() == null ?
+                productService.createProduct( product ) : productService.updateProduct( product );
+
+        log.info(" saveProduct: response={}", response.isError() );
+
+        if ( response.isError() )
+            throw new RequestFailedException( response.getErrCode() );
+
+        log.info(" saveProduct: response.getData()={}", response.getData() );
+
+        return response.getData() != null;
+    }
+
+
+    @Override
+    public boolean isNameUnique(String name, Long excludeId) throws RequestFailedException {
+
+        log.info(" isNameUnique: name={}", name);
+
+        if (name == null || name.isEmpty())
+            throw new RequestFailedException ();
+
+        CoreResponse<Boolean> response = productService.checkUniqueProductByName(name, excludeId);
+
+        if (response.isError())
+            throw new RequestFailedException(response.getErrCode());
+
+        log.info(" isNameUnique: response={}", response.getData());
+
+        return response.getData();
     }
 
 

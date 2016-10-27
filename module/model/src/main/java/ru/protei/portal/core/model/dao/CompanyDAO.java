@@ -10,5 +10,7 @@ import java.util.List;
  */
 public interface CompanyDAO extends PortalBaseDAO<Company> {
 
-    public List<Company> getListByQuery (CompanyQuery query);
+    List<Company> getListByQuery (CompanyQuery query);
+
+    Company getCompanyByName( String name );
 }

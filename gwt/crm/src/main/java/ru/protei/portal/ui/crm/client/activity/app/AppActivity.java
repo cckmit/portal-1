@@ -35,9 +35,6 @@ public abstract class AppActivity
     public void onShowApp( AppEvents.Show event ) {
         init.parent.clear();
         init.parent.add(view.asWidget());
-
-        //fireEvent(new CompanyEvents.Show());
-        //fireEvent(new ProductEvents.Show());
     }
 
     @Event

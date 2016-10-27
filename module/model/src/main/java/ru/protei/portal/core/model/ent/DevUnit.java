@@ -136,4 +136,10 @@ public class DevUnit implements Serializable {
     public En_DevUnitType getType () {
         return En_DevUnitType.forId(this.typeId);
     }
+
+    @Override
+    public String toString() {
+
+        return super.toString();
+    }
 }

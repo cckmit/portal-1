@@ -334,3 +334,165 @@ body {
   color: #686868;
 }
 
+
+
+
+/**
+   PANEL for create/edit pages
+*/
+
+.panel .body {
+  padding: 14px;
+}
+
+.panel .footer {
+  text-align: right;
+  padding: 0 14px 14px 14px;
+}
+
+label {
+  vertical-align : top;
+  line-height : 25px;
+}
+
+label.required:after {
+  content: "*";
+  color : red;
+  padding-left: 4px;
+}
+
+.inputField {
+  width: 100%;
+  box-shadow: rgba(49, 65, 87, 0.4) 0px 0px 1px 0px;
+  line-height: 28px;
+  height: 28px;
+  border: 0;
+  max-height: none;
+}
+
+.inputField.description {
+  min-height: 200px;
+}
+
+.panelField{
+  display: flex;
+  position: relative
+}
+
+.grid-indent{
+  margin: 0 -7px;
+}
+
+.grid-indent [class*='col-']{
+  padding: 0 7px;
+  box-sizing: border-box;
+}
+
+.panelField .label{
+  padding: 0 12px;
+  background: #a9b4bb;
+  border-bottom-left-radius: 4px;
+  border-top-left-radius: 4px;
+  color: #fff;
+  font-weight: bold;
+  line-height: 28px;
+}
+
+.inputField.rightIndent{
+  margin-right: 7px;
+}
+
+
+label.bordered{
+  position: relative;
+  display: block;
+}
+
+label.bordered:after{
+  content: "";
+  height: 1px;
+  position: absolute;
+  background: #c1c9cd;
+  left: 130px;
+  top: 50%;
+  right: 0;
+}
+
+.panelField .phone{
+  width: 40%;
+}
+
+.panelField .email{
+  width: 120%;
+}
+
+.panelField .icon-verifiable:before ,
+.panelField .icon-success:before ,
+.panelField .icon-error:before {
+  vertical-align: middle;
+  position: absolute;
+  right: 5px;
+  font-size: 18px;
+  top: 50%;
+  line-height: 0;
+  color: #a2acb3;
+  animation: animation-8 1s linear 0s infinite normal forwards running;
+}
+
+.panelField .icon-success:before{
+  color: #6fb55b;
+  animation: none;
+}
+
+.panelField .icon-error:before{
+  color: #d84d4d;
+  animation: none;
+}
+
+.panelField.verifiable .inputField{
+  padding-right: 24px;
+}
+
+.icon-plus:before{
+  content: "\e805";
+}
+
+.icon-verifiable:before{
+  content: "\e995";
+}
+
+.icon-success:before{
+  content: "\e988";
+}
+
+.icon-error:before{
+  content: "\e987";
+}
+
+.panelField .button-selector{
+  width: 100%;
+  margin-right: 7px;
+}
+
+.button-selector .button{
+  padding-right: 24px
+}
+
+.panelField .button-selector .button{
+  width: 100%;
+  margin: 0;
+}
+
+.gwt-TextBox{
+  width: 100%;
+  line-height: 20px;
+  box-sizing: border-box;
+  padding: 3px 20px;
+  background: rgb(247, 248, 250);
+  border-bottom: 1px solid #ced2d7;
+  box-shadow: 0 2px 8px -2px #bdbdbd inset;
+}
+
+.inputField.error{
+  border: 1px solid #f54646;
+}

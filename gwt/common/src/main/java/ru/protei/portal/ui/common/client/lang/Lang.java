@@ -24,6 +24,8 @@ public interface Lang extends Messages {
 
     String products();
 
+    String newProduct();
+
     String showDeprecated();
 
     String buttonSave();
@@ -45,4 +47,58 @@ public interface Lang extends Messages {
     String companyGroup();
 
     String search();
+
+    String description();
+
+    String objectNotFound();
+
+    String buttonArchive();
+
+    String objectNotSaved();
+
+    String productName();
+
+    String objectSaved();
+
+    String notUniqName();
+
+    String buttonFromArchive();
+
+    String emptyName();
+
+    String changeProduct();
+
+    String errorSave();
+
+    String error();
+
+    String companyName();
+
+    String companiesGroup();
+
+    String actualAddress();
+
+    String legalAddress();
+
+    String webSite();
+
+    String phone();
+
+    String comment();
+
+    String contacts();
+
+    String save();
+
+    String cancel();
+
+    String newCompany();
+
+    String asteriskRequired();
+
+    String companySaved();
+
+    String companyNotSaved();
+
+    String create();
 }

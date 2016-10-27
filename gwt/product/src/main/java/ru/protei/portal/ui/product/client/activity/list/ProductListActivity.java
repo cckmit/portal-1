@@ -5,6 +5,8 @@ import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_DevUnitState;
+import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
@@ -28,9 +30,11 @@ import java.util.function.Consumer;
 public abstract class ProductListActivity implements AbstractProductListActivity, AbstractProductItemActivity, Activity {
 
     @PostConstruct
-    public void onInit() {
-        view.setActivity(this);
+    public void onInit() { view.setActivity(this); }
 
+    @Event
+    public void onAuthorize (AuthEvents.Success event) {
+        resetFilter();
     }
 
     @Event
@@ -44,19 +48,24 @@ public abstract class ProductListActivity implements AbstractProductListActivity
     }
 
     @Event
-    public void onAuthorize (AuthEvents.Success event) {
-        view.reset();
-    }
-
-    @Event
     public void onInitDetails(AppEvents.InitDetails event) {
         this.init = event;
+    }
+
+    @Override
+    public void onCreateClicked( ) { fireEvent(new ProductEvents.Edit()); }
+
+    @Override
+    public void onUpdateClicked( AbstractProductItemView itemView ) {
+
+        fireEvent( new ProductEvents.Edit( modelToView.get( itemView ).getId()  ) );
     }
 
     @Override
     public void onFilterChanged() {
         requestProducts();
     }
+
 
     private void requestProducts() {
 
@@ -67,10 +76,10 @@ public abstract class ProductListActivity implements AbstractProductListActivity
         view.getItemsContainer().clear();
         modelToView.clear();
 
-        productService.getProductList(view.getSearchPattern().getText(),
-                view.isShowDeprecated().getValue(),
-                view.getSortField().getValue(),
-                view.getSortDir().getValue(),
+        productService.getProductList(view.searchPattern().getValue(),
+                view.showDeprecated().getValue() ? null : En_DevUnitState.ACTIVE,
+                view.sortField().getValue(),
+                view.sortDir().getValue(),
                 new RequestCallback<List<DevUnit>>() {
                     @Override
                     public void onError(Throwable throwable) {
@@ -90,7 +99,7 @@ public abstract class ProductListActivity implements AbstractProductListActivity
         public void accept( DevUnit product ) {
             AbstractProductItemView itemView = makeItemView(product);
 
-            modelToView.put( product, itemView );
+            modelToView.put( itemView, product );
             view.getItemsContainer().add( itemView.asWidget() );
         }
     };
@@ -105,6 +114,12 @@ public abstract class ProductListActivity implements AbstractProductListActivity
         return itemView;
     }
 
+    public void resetFilter() {
+        view.searchPattern().setValue("");
+        view.showDeprecated().setValue(false);
+        view.sortField().setValue(En_SortField.prod_name);
+        view.sortDir().setValue(true);
+    }
 
 
     @Inject
@@ -121,7 +136,7 @@ public abstract class ProductListActivity implements AbstractProductListActivity
     PeriodicTaskService taskService;
     PeriodicTaskService.PeriodicTaskHandler fillViewHandler;
 
-    private Map<DevUnit, AbstractProductItemView> modelToView = new HashMap<DevUnit, AbstractProductItemView>();
+    private Map<AbstractProductItemView, DevUnit > modelToView = new HashMap<AbstractProductItemView, DevUnit>();
     private AppEvents.InitDetails init;
 
 }

@@ -3,14 +3,12 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="product plate-list-item col-md-6 col-lg-3">
+    <g:HTMLPanel styleName="product list-group-item col-md-6 col-lg-3">
 
         <div class="wrapper">
-            <div class="department">Messaging</div>
-            <div ui:field="name" class="name" />
-            <div class="buttons"><span class="icon-menu"></span></div>
-            <div class="favorite_button"/>
-            <div class="checkbox"/>
+            <div ui:field="name" class="name"/>
+            <!--<g:PushButton ui:field="menuButton" styleName="menu_button"/>-->
+            <g:PushButton ui:field="favoriteButton" styleName="favorite_button"/>
         </div>
 
     </g:HTMLPanel>

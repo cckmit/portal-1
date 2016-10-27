@@ -5,6 +5,7 @@ import ru.protei.portal.core.model.ent.CompanyGroup;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
+import ru.protei.portal.ui.company.client.widget.group.GroupModel;
 
 import java.util.List;
 

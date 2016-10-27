@@ -1,15 +1,10 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.winter.jdbc.annotations.IdInsertMode;
-import ru.protei.winter.jdbc.annotations.JdbcColumn;
-import ru.protei.winter.jdbc.annotations.JdbcEntity;
-import ru.protei.winter.jdbc.annotations.JdbcId;
+import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author michael
@@ -20,8 +15,8 @@ public class Company implements Serializable {
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
 
-    @JdbcColumn(name = "category_id")
-    private Long categoryId;
+    @JdbcJoinedObject( localColumn = "category_id", table = "company_category" )
+    private CompanyCategory category;
 
     @JdbcColumn(name = "parent_company")
     private Long parentCompanyId;
@@ -52,7 +47,6 @@ public class Company implements Serializable {
 
     @JdbcColumn(name = "website")
     private String website;
-
 
     @SuppressWarnings("GwtInconsistentSerializableClass")
     private List<CompanyGroup> groups;
@@ -120,14 +114,18 @@ public class Company implements Serializable {
     }
 
     public Long getCategoryId() {
-        return categoryId;
+        return category == null ? null : category.getId();
     }
 
-    public void setCategoryId(Long categoryId) {
-        this.categoryId = categoryId;
+    public CompanyCategory getCategory() {
+        return category;
     }
 
-    public void setCname(String cname) {
+    public void setCategory( CompanyCategory category ) {
+        this.category = category;
+    }
+
+    public void setCname( String cname) {
         this.cname = cname;
     }
 
@@ -167,5 +165,24 @@ public class Company implements Serializable {
 
     public List<CompanyGroup> getGroups() {
         return groups;
+    }
+
+    @Override
+    public String toString() {
+        return "Company{" +
+                "id=" + id +
+                ", categoryId=" + category.getId() +
+                ", parentCompanyId=" + parentCompanyId +
+                ", addressDejure='" + addressDejure + '\'' +
+                ", addressFact='" + addressFact + '\'' +
+                ", cname='" + cname + '\'' +
+                ", email='" + email + '\'' +
+                ", fax='" + fax + '\'' +
+                ", info='" + info + '\'' +
+                ", phone='" + phone + '\'' +
+                ", created=" + created +
+                ", website='" + website + '\'' +
+                ", groups=" + groups +
+                '}';
     }
 }

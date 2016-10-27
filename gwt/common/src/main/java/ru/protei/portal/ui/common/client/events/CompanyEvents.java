@@ -14,6 +14,7 @@ public class CompanyEvents {
      */
     @Url( value = "companies", primary = true )
     public static class Show {
+
         public Show () {}
 
     }
@@ -31,4 +32,20 @@ public class CompanyEvents {
         public HasWidgets parent;
         public Company company;
     }
+
+    @Url( value = "company", primary = false )
+    public static class Edit {
+
+        public Edit() {}
+
+        public Long id;
+        public Edit (Long id) {
+            this.id = id;
+        }
+        public Long getCompanyId(){
+            return id;
+        }
+
+    }
+
 }

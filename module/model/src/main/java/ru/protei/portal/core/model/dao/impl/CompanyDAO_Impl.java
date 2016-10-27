@@ -32,4 +32,9 @@ public class CompanyDAO_Impl extends PortalBaseJdbcDAO<Company> implements Compa
 
         return getListByCondition(condition.toString(), TypeConverters.createSort(query), args);
     }
+
+    @Override
+    public Company getCompanyByName( String name ) {
+        return getByCondition(" cname=? ", name);
+    }
 }

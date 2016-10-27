@@ -505,7 +505,7 @@ body {
 }
 .button.empty {
   padding: 0;
-  width: 30px;
+  min-width: 30px;
   text-align: center;
   color: #84909e;
 }

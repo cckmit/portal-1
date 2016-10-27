@@ -7,6 +7,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.ent.CompanyCategory;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.CompanyEvents;
@@ -77,7 +78,7 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
 
     @Override
     public void onCreateClicked() {
-        Window.alert( "on create clicked" );
+        fireEvent( new CompanyEvents.Edit ( null ));
     }
 
     private void initCompanies() {
@@ -114,7 +115,11 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
         AbstractCompanyItemView itemView = factory.get();
         itemView.setActivity( this );
         itemView.setName( company.getCname () );
-        itemView.setType( "Заказчик" );
+
+        CompanyCategory category = company.getCategory();
+        if ( category != null ) {
+            itemView.setType( category.getName() );
+        }
         return itemView;
     }
 
