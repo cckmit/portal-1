@@ -50,7 +50,7 @@
         <repository>
             <id>protei-central</id>
             <name>protei-central</name>
-            <url>http://127.0.0.1:8081/artifactory/repo</url>
+            <url>http://192.168.110.20:8081/artifactory/repo</url>
             <!--<snapshots>-->
                 <!--<enabled>true</enabled>-->
             <!--</snapshots>-->
