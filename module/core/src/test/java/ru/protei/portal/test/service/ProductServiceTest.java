@@ -5,6 +5,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.api.struct.HttpListResult;
 import ru.protei.portal.config.MainConfiguration;
 import ru.protei.portal.core.model.dao.DevUnitDAO;
@@ -62,38 +63,39 @@ public class ProductServiceTest {
         Assert.assertNotNull(ctx.getBean(DevUnitDAO.class).remove(product));
     }
 
-//    @Test
-//    public void testUniqueProductByName () {
-//
-//        String name = "Billing";
-//
-//        DevUnit product = ctx.getBean(DevUnitDAO.class).checkExistsProductByName(name);
-//        Assert.assertNotNull(product);
-//
-//        System.out.println(" product with " + name + " is not exist | id=" + product.getId() + ", name=" + product.getName());
-//
-//        CoreResponse<Boolean> result = ctx.getBean(ProductService.class).checkUniqueProductByName(name, new Long(1));
-//
-//        Assert.assertFalse(result.isError());
-//        Assert.assertTrue(result.isOk());
-//
-//        System.out.println(" product name " + name + " is uniq = " + result.getData());
-//
-//
-//        name = "OMS3456";
-//
-//        product = ctx.getBean(DevUnitDAO.class).checkExistsProductByName(name);
-//        Assert.assertNull(product);
-//
-//        System.out.println(" product with " + name + " is not exist");
-//
-//        result = ctx.getBean(ProductService.class).checkUniqueProductByName(name, null);
-//
-//        Assert.assertFalse(result.isError());
-//        Assert.assertTrue(result.isOk());
-//
-//        System.out.println(" product name " + name + " is uniq = " + result.getData());
-//
-//    }
+    @Test
+    public void testUniqueProductByName () {
+
+        String name = "Billing";
+
+
+        DevUnit product = ctx.getBean(DevUnitDAO.class).checkExistsProductByName(name);
+        Assert.assertNull(product);
+
+        System.out.println(" product with " + name + " is not exist | product " + product);
+
+        CoreResponse<Boolean> result = ctx.getBean(ProductService.class).checkUniqueProductByName(name, new Long(1));
+
+        Assert.assertFalse(result.isError());
+        Assert.assertTrue(result.isOk());
+
+        System.out.println(" product name " + name + " is uniq = " + result.getData());
+
+
+        name = "OMS3456";
+
+        product = ctx.getBean(DevUnitDAO.class).checkExistsProductByName(name);
+        Assert.assertNull(product);
+
+        System.out.println(" product with " + name + " is not exist");
+
+        result = ctx.getBean(ProductService.class).checkUniqueProductByName(name, null);
+
+        Assert.assertFalse(result.isError());
+        Assert.assertTrue(result.isOk());
+
+        System.out.println(" product name " + name + " is uniq = " + result.getData());
+
+    }
 
 }

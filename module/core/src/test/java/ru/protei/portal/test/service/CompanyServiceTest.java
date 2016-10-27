@@ -64,7 +64,7 @@ public class CompanyServiceTest {
             Assert.assertNotNull(resp.getData());
 
             CompanyGroup testGroup = resp.getData();
-            Company proteiCompany = service.getCompanyById(1L);
+            Company proteiCompany = service.getCompanyById(1L).getData();
 
             Assert.assertNotNull(proteiCompany);
 
@@ -73,7 +73,7 @@ public class CompanyServiceTest {
             Assert.assertTrue(linkResult.isOk());
             Assert.assertNotNull(linkResult.getData());
 
-            proteiCompany = service.getCompanyById(1L);
+            proteiCompany = service.getCompanyById(1L).getData();
 
             Assert.assertNotNull(proteiCompany.getGroups());
             Assert.assertTrue(proteiCompany.getGroups().size() > 0);

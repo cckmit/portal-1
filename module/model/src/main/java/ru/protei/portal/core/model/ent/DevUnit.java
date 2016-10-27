@@ -139,7 +139,16 @@ public class DevUnit implements Serializable {
 
     @Override
     public String toString() {
-
-        return super.toString();
+        return "DevUnit{" +
+                "id=" + id +
+                ", typeId=" + typeId +
+                ", created=" + created +
+                ", name='" + name + '\"' +
+                ", info='" + info + '\"' +
+                ", lastUpdate=" + lastUpdate +
+                ", creatorId=" + creatorId +
+                ", stateId=" + stateId +
+                ", oldId=" + oldId +
+                '}';
     }
 }
