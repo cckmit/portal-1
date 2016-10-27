@@ -29,21 +29,6 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
         this.activity = activity;
     }
 
-    @UiHandler("saveBtn")
-    public void onSaveClicked(ClickEvent event)
-    {
-        if ( activity != null )
-            activity.onSaveClicked();
-    }
-
-
-    @UiHandler("cancelBtn")
-    public void onCancelClicked(ClickEvent event)
-    {
-        if ( activity != null )
-            activity.onCancelClicked();
-    }
-
     @Override
     public HasValue<String> name() { return name; }
 
@@ -67,16 +52,6 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
         stateBtn.setText(caption);
     }
 
-    @UiHandler( "name" )
-    public void onNameKeyUp (KeyUpEvent event) {
-        checkName();
-    }
-
-    @UiHandler( "name"  )
-    public void onBlur (BlurEvent event) {
-        checkName();
-    }
-
     @UiHandler( "stateBtn" )
     public void onStateClicked (ClickEvent event)
     {
@@ -86,8 +61,34 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
         }
     }
 
+    @UiHandler("saveBtn")
+    public void onSaveClicked(ClickEvent event)
+    {
+        if ( activity != null )
+            activity.onSaveClicked();
+    }
+
+    @UiHandler("cancelBtn")
+    public void onCancelClicked(ClickEvent event)
+    {
+        if ( activity != null )
+            activity.onCancelClicked();
+    }
+
+    @UiHandler( "name" )
+    public void onNameKeyUp (KeyUpEvent event) {
+        checkName();
+    }
+
+    @UiHandler( "name" )
+    public void onBlur (BlurEvent event) {
+        checkName();
+    }
+
     private void checkName ()
     {
+        setNameStatus(NameStatus.UNDEFINED);
+
         changeTimer.cancel();
         changeTimer.schedule(300);
     }

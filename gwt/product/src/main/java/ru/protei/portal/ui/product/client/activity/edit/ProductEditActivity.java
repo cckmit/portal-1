@@ -50,10 +50,9 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
 
     @Override
     public void onNameChanged() {
-        view.setNameStatus(NameStatus.UNDEFINED);
 
         if (view.name().getValue() == null || view.name().getValue().trim().isEmpty()) {
-            view.setNameStatus(NameStatus.ERROR);
+            view.setNameStatus(NameStatus.NONE);
             return;
         }
 
@@ -66,9 +65,9 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
                     }
 
                     @Override
-                    public void onSuccess(Boolean result) {
-                        view.setNameStatus(result ? NameStatus.SUCCESS : NameStatus.ERROR);
-                        view.save().setEnabled(result);
+                    public void onSuccess(Boolean isUnique) {
+                        view.setNameStatus(isUnique ? NameStatus.SUCCESS : NameStatus.ERROR);
+                        view.save().setEnabled(isUnique);
                     }
                 });
     }
@@ -132,8 +131,9 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
     private void resetView () {
         view.name().setValue("");
         view.info().setValue("");
+        view.state().setVisible(false);
         view.save().setEnabled(false);
-        view.setNameStatus(NameStatus.UNDEFINED);
+        view.setNameStatus(NameStatus.NONE);
     }
 
     private void fillView(DevUnit devUnit) {
