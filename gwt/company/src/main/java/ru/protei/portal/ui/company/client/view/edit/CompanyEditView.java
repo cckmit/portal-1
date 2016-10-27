@@ -15,9 +15,12 @@ import ru.protei.portal.ui.common.client.service.NameStatus;
 import ru.protei.portal.ui.common.client.widget.autoaddvaluecomment.ValueCommentDataList;
 import ru.protei.portal.ui.common.client.widget.autoaddvaluecomment.list.AutoAddVCList;
 import ru.protei.portal.ui.common.client.widget.selector.event.SelectorChangeValEvent;
+import ru.protei.portal.ui.common.shared.Debugging;
 import ru.protei.portal.ui.company.client.activity.edit.AbstractCompanyEditActivity;
 import ru.protei.portal.ui.company.client.activity.edit.AbstractCompanyEditView;
 import ru.protei.portal.ui.company.client.widget.group.inputSelector.GroupInputSelector;
+
+import java.util.logging.Logger;
 
 /**
  * Вид создания и редактирования компании
@@ -102,12 +105,18 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
 
     @UiHandler( "companyGroup" )
     public void onChangeCompanyGroup(SelectorChangeValEvent event){
-        if(event.getValue() != null && !event.getValue().trim().isEmpty()){
-            createCompanyButton.getElement().removeClassName("inactive");
-            tempNewCompanyGroup.setName(event.getValue());
+        log.info("onChangeCompanyGroup(): newCompanyGroup="+ tempNewCompanyGroup.getName() );
+
+        if(event.getValue() == null){
+            tempNewCompanyGroup.setName(null);
+        }else{
+            createCompanyButton.addStyleName("inactive");
+            if(!event.getValue().trim().isEmpty()) {
+                createCompanyButton.removeStyleName("inactive");
+                tempNewCompanyGroup.setName(event.getValue());
+            }
         }
-        else
-            createCompanyButton.getElement().addClassName("inactive");
+
     }
 
     @UiHandler( "createCompanyButton" )
@@ -171,6 +180,8 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
 
     AbstractCompanyEditActivity activity;
     CompanyGroup tempNewCompanyGroup = new CompanyGroup();
+
+    private final static Logger log = Logger.getLogger( "ui" );
 
     private static CompanyViewUiBinder2 ourUiBinder = GWT.create(CompanyViewUiBinder2.class);
     interface CompanyViewUiBinder2 extends UiBinder<HTMLPanel, CompanyEditView> {}

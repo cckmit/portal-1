@@ -5,10 +5,6 @@ package ru.protei.portal.ui.common.shared;
  */
 public class Debugging {
 
-    native public static void consoleLog( String message) /*-{
-        console.log( "console: " + message );
-    }-*/;
-
     native public static void debugger() /*-{
         debugger;
     }-*/;
