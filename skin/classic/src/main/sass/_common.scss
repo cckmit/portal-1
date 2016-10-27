@@ -496,3 +496,27 @@ label.bordered:after{
 .inputField.error{
   border: 1px solid #f54646;
 }
+
+.badge {
+  display: inline-block;
+  min-width: 10px;
+  padding: 0.5em;
+  font-weight: 700;
+  line-height: 1;
+  color: #fff;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  background-color: #5481c1;
+  border-radius: 50%;
+  font-size: 1.5em;
+
+  > i {
+    min-width: 1em;
+  }
+}
+
+
+.form-group {
+  margin-bottom: 10px;
+}

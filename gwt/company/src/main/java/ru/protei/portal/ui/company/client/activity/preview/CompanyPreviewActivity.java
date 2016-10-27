@@ -34,7 +34,6 @@ public abstract class CompanyPreviewActivity
         view.setEmail( value.getEmail() );
         view.setAddressDejure( value.getAddressDejure() );
         view.setAddressFact( value.getAddressFact() );
-        view.setGroupCompany( "Группа компаний" );
         view.setInfo( value.getInfo() );
     }
 

@@ -28,9 +28,9 @@
 
         <div class="block low">
             <platelist:PlateList ui:field="productContainer"
-                                 styleName="productList plate-list grid"
+                                 styleName="productList plate-list"
                                  createButtonCaption="{lang.buttonCreate}"
-                                 createButtonStyleName="plate-list-item plate-list-create col-md-6 col-lg-3"
+                                 createButtonStyleName="plate-list-create"
             />
         </div>
 
