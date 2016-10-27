@@ -96,8 +96,8 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
 
             @Override
             public void onSuccess(Boolean result) {
-                fireEvent(new NotifyEvents.Show(lang.objectSaved(), NotifyEvents.NotifyType.SUCCESS));
                 goBack();
+                fireEvent(new NotifyEvents.Show(lang.objectSaved(), NotifyEvents.NotifyType.SUCCESS));
             }
         });
     }
@@ -116,8 +116,8 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         productService.getProductById(productId, new RequestCallback<DevUnit>() {
             @Override
             public void onError(Throwable throwable) {
-                fireEvent(new NotifyEvents.Show(lang.objectNotFound(), NotifyEvents.NotifyType.ERROR));
                 goBack();
+                fireEvent(new NotifyEvents.Show(lang.objectNotFound(), NotifyEvents.NotifyType.ERROR));
             }
 
             @Override

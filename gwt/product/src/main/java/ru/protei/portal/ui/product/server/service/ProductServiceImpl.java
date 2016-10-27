@@ -45,12 +45,14 @@ public class ProductServiceImpl extends RemoteServiceServlet implements ProductS
 
         log.info(" getProductById: id={}", productId);
 
-        CoreResponse<DevUnit> result = productService.getProductById(productId);
+        CoreResponse<DevUnit> response = productService.getProductById(productId);
 
-        if (result.isError())
-            throw new RequestFailedException( result.getErrCode() );
+        if (response.isError())
+            throw new RequestFailedException( response.getErrCode() );
 
-        return result.getData();
+        log.info(" getProductById: id={}", response.getData());
+
+        return response.getData();
     }
 
     @Override
@@ -63,8 +65,6 @@ public class ProductServiceImpl extends RemoteServiceServlet implements ProductS
 
         CoreResponse response = product.getId() == null ?
                 productService.createProduct( product ) : productService.updateProduct( product );
-
-        log.info(" saveProduct: response={}", response.isError() );
 
         if ( response.isError() )
             throw new RequestFailedException( response.getErrCode() );
