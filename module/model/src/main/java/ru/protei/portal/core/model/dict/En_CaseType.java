@@ -8,7 +8,7 @@ public enum En_CaseType {
     TASK(2, "task"),
     FREQ(3, "freq"),
     CRM_SUPPORT(4, "crm.sr"),
-    SRM_MARKET(5, "crm.mr"),
+    CRM_MARKET(5, "crm.mr"),
     SYSADM(6, "sysadm"),
     PLAN(7, "plan"),
     ORDER(8, "order"),
