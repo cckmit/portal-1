@@ -7,7 +7,6 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.ui.common.client.events.CompanyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.company.client.animation.GridAnimation;
 
 /**
  * Активность превью компании
@@ -30,7 +29,13 @@ public abstract class CompanyPreviewActivity
     }
 
     private void fillView( Company value ) {
-
+        view.setPhone( value.getPhone() );
+        view.setSite( value.getWebsite() );
+        view.setEmail( value.getEmail() );
+        view.setAddressDejure( value.getAddressDejure() );
+        view.setAddressFact( value.getAddressFact() );
+        view.setGroupCompany( "Группа компаний" );
+        view.setInfo( value.getInfo() );
     }
 
     @Inject

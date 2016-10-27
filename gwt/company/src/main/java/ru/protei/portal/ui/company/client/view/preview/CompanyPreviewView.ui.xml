@@ -1,6 +1,13 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+
     <g:HTMLPanel>
-        Превью компании
+        <label ui:field="phone"></label>
+        <label ui:field="site"></label>
+        <label ui:field="email"></label>
+        <label ui:field="groupCompany"></label>
+        <label ui:field="addressDejure"></label>
+        <label ui:field="addressFact"></label>
+        <label ui:field="info"></label>
     </g:HTMLPanel>
 </ui:UiBinder>

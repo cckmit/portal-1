@@ -1,12 +1,30 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'>
-    <g:HTMLPanel tag="li" styleName="organization list-group-item">
+    <g:HTMLPanel tag="li">
+        <!--<figcaption>-->
+            <!--<h2 ui:field="name"/>-->
+            <!--<p>-->
+                <!--<g:Anchor ui:field="menuButton" href="#" styleName="fa fa-fw fa-bars"/>-->
+                <!--<g:Anchor ui:field="favoriteButton" href="#" styleName="fa fa-fw fa-heart"/>-->
+            <!--</p>-->
+        <!--</figcaption>-->
+        <!--<div>-->
+            <!--<label ui:field="type"/>-->
+            <!--<div>-->
+                <!--<i class="fa fa-phone"></i>-->
+                <!--<label ui:field="phone"/>-->
+            <!--</div>-->
+            <!--<div>-->
+                <!--<i class="fa fa-phone"></i>-->
+                <!--<label ui:field="site"/>-->
+            <!--</div>-->
+        <!--</div>-->
         <div class="wrapper">
             <div ui:field="type" class="type"/>
             <div ui:field="name" class="name"/>
             <g:PushButton ui:field="menuButton" styleName="menu_button"/>
             <g:PushButton ui:field="favoriteButton" styleName="favorite_button"/>
         </div>
-        <g:HTMLPanel ui:field="previewContainer" styleName="list-group-expander"/>
+        <g:HTMLPanel ui:field="previewContainer" styleName="plate-list-expander"/>
     </g:HTMLPanel>
 </ui:UiBinder>

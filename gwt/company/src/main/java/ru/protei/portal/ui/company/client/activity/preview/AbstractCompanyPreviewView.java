@@ -8,4 +8,18 @@ import com.google.gwt.user.client.ui.IsWidget;
 public interface AbstractCompanyPreviewView extends IsWidget {
 
     void setActivity( AbstractCompanyPreviewActivity activity );
+
+    void setPhone( String value );
+
+    void setSite( String value );
+
+    void setEmail( String value );
+
+    void setAddressDejure( String value );
+
+    void setAddressFact( String value );
+
+    void setGroupCompany( String value );
+
+    void setInfo( String value );
 }

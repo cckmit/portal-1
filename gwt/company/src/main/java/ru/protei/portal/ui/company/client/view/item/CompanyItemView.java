@@ -2,6 +2,8 @@ package ru.protei.portal.ui.company.client.view.item;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.dom.client.HeadingElement;
+import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -43,15 +45,18 @@ public class CompanyItemView extends Composite implements AbstractCompanyItemVie
 
     @UiHandler( "menuButton" )
     public void onMenuClicked( ClickEvent event ) {
-
-        if ( activity != null )
+        event.preventDefault();
+        if ( activity != null ) {
             activity.onMenuClicked( this );
+        }
     }
 
     @UiHandler( "favoriteButton" )
     public void onFavoriteClicked( ClickEvent event ) {
-        if ( activity != null )
+        event.preventDefault();
+        if ( activity != null ) {
             activity.onFavoriteClicked( this );
+        }
     }
 
     @UiField

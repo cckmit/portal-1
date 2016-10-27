@@ -317,3 +317,20 @@
   font-size: 16px;
   font-weight: bold;
 }
+
+
+
+.main-content {
+  margin: 15px;
+}
+
+/* OVERRIDED STYLES! */
+.header_global > .rightBlock .topicTitle {
+  background: #F3F1F4 none !important;
+}
+
+body {
+  background-color: #F3F1F4 !important;
+  color: #686868;
+}
+
