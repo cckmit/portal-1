@@ -42,14 +42,14 @@ public class MigrateFreq implements MigrateAction {
     }
 
     @Override
-    public void migrate(Connection src) throws SQLException {
+    public void migrate(Connection sourceConnection) throws SQLException {
 
         final Map<Long, Long> oldToNewStateMap = stateMatrixDAO.getOldToNewStateMap(En_CaseType.FREQ);
 
 
-        new BatchProcessTaskExt(migrationEntryDAO, "FREQ.Requirement")
-                .forTable("\"FREQ\".Tm_Requirement")
-                .process(src, caseDAO, new BaseBatchProcess<>(), row -> {
+        MigrateUtils.runDefaultMigration(sourceConnection, "FREQ.Requirement", "\"FREQ\".Tm_Requirement",
+                migrationEntryDAO, caseDAO,
+                row -> {
                     CaseObject obj = new CaseObject();
                     obj.setId(null);
                     obj.setTypeId(En_CaseType.FREQ.getId());
@@ -81,7 +81,7 @@ public class MigrateFreq implements MigrateAction {
                     }
 
                     return obj;
-                }).dumpStats();
+                });
 
 /* temporary commented
         Map<Long, Long> caseNumberToIdMapper = caseDAO.getNumberToIdMap(En_CaseType.FREQ);

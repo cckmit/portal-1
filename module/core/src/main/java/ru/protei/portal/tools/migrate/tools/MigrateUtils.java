@@ -4,9 +4,13 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.log4j.Logger;
 import protei.sql.Tm_SqlHelper;
+import ru.protei.portal.core.model.dao.MigrationEntryDAO;
+import ru.protei.portal.core.model.dao.PortalBaseDAO;
+import ru.protei.portal.tools.migrate.parts.BaseBatchProcess;
+import ru.protei.portal.tools.migrate.parts.BatchInsertTask;
+import ru.protei.portal.tools.migrate.parts.BatchUpdateTask;
 import ru.protei.portal.tools.migrate.struct.Mail2Login;
 
-import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -21,7 +25,7 @@ import java.util.Map;
  */
 public class MigrateUtils {
 
-    public static final String MIGRATE_ACCOUNTS_FIX_JSON = "/migrate_accounts_fix.json";
+    public static final String MIGRATE_ACCOUNTS_FIX_JSON = "migrate_accounts_fix.json";
     public static Long MICHAEL_Z_ID = 18L;
 
     public static Long DEFAULT_CREATOR_ID = MICHAEL_Z_ID;
@@ -57,10 +61,7 @@ public class MigrateUtils {
             _mail2loginRules = new HashMap<>();
 
             try {
-                URL url = MigrateUtils.class.getResource(MIGRATE_ACCOUNTS_FIX_JSON);
-                logger.debug("account migration url: " + url);
-
-                for (Mail2Login entry : jsonMapper.readValue(url, Mail2Login[].class)) {
+                for (Mail2Login entry : jsonMapper.readValue(MigrateUtils.class.getResource(MIGRATE_ACCOUNTS_FIX_JSON), Mail2Login[].class)) {
                     _mail2loginRules.put(entry.mail, entry.uid);
                 }
             }
@@ -108,5 +109,36 @@ public class MigrateUtils {
         finally {
             Tm_SqlHelper.safeCloseResultSet(rs);
         }
+    }
+
+    public static <T> void runDefaultMigration (Connection sourceConnection,
+                                                String entryId,
+                                                String tableName,
+                                                MigrationEntryDAO migrationEntryDAO,
+                                                PortalBaseDAO<T> dao,
+                                                MigrateAdapter<T> adapter) throws SQLException {
+
+        runDefaultMigration(sourceConnection, entryId, tableName, migrationEntryDAO, dao, new BaseBatchProcess<>(), adapter);
+
+    }
+
+    public static <T> void runDefaultMigration (Connection sourceConnection,
+                                                String entryId,
+                                                String tableName,
+                                                MigrationEntryDAO migrationEntryDAO,
+                                                PortalBaseDAO<T> dao,
+                                                BatchProcess<T> batchProcess,
+                                                MigrateAdapter<T> adapter) throws SQLException {
+
+        new BatchInsertTask(migrationEntryDAO, entryId)
+                .forTable(tableName, "nID", "dtLastUpdate")
+                .process(sourceConnection, dao, batchProcess, adapter)
+                .dumpStats();
+
+        new BatchUpdateTask(migrationEntryDAO, entryId)
+                .forTable(tableName, "nID", "dtLastUpdate")
+                .process(sourceConnection, dao, batchProcess, adapter)
+                .dumpStats();
+
     }
 }

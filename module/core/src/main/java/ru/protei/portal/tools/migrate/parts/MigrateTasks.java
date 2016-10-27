@@ -9,6 +9,7 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.tools.migrate.tools.BatchProcess;
 import ru.protei.portal.tools.migrate.tools.MigrateAction;
+import ru.protei.portal.tools.migrate.tools.MigrateUtils;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -39,24 +40,13 @@ public class MigrateTasks implements MigrateAction {
     }
 
     @Override
-    public void migrate(Connection src) throws SQLException {
+    public void migrate(Connection sourceConnection) throws SQLException {
 
         final Map<Long, Long> oldToNewStateMap = stateMatrixDAO.getOldToNewStateMap(En_CaseType.TASK);
 
-        long lastOldDateUpdate = 0; // получаем
-        //migrateDAO.confirmMigratedLastUpdate(TM_PERSON_ITEM_CODE, new Date().getTime());
-
-
-//        t.setBatchSize(1000);
-
-//        List<CaseTask> tasks = new ArrayList<>();
-
-        BatchProcess<CaseObject> batchProcess = new BaseBatchProcess<CaseObject>() {
-        };
-
-        new BatchProcessTaskExt(migrationEntryDAO, "ToDoList.Task")
-                .forTable("\"ToDoList\".Tm_Task", "nID", "dtLastUpdate")
-                .process(src, caseDAO, new BaseBatchProcess<>(), row -> {
+        MigrateUtils.runDefaultMigration(sourceConnection, "ToDoList.Task", "\"ToDoList\".Tm_Task",
+                migrationEntryDAO, caseDAO, new BaseBatchProcess<>(),
+                row -> {
                     CaseObject obj = new CaseObject();
                     obj.setId(null);
                     obj.setTypeId(En_CaseType.TASK.getId());

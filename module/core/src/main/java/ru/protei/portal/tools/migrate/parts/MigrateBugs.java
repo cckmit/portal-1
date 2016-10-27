@@ -5,6 +5,7 @@ import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.tools.migrate.tools.MigrateAction;
+import ru.protei.portal.tools.migrate.tools.MigrateAdapter;
 import ru.protei.portal.tools.migrate.tools.MigrateUtils;
 
 import java.sql.Connection;
@@ -38,14 +39,12 @@ public class MigrateBugs implements MigrateAction {
     }
 
     @Override
-    public void migrate(Connection src) throws SQLException {
+    public void migrate(Connection sourceConnection) throws SQLException {
 
         final Map<Long, Long> oldToNewStateMap = stateMatrixDAO.getOldToNewStateMap(En_CaseType.BUG);
 
-
-        new BatchProcessTaskExt(migrationEntryDAO, "BugTracking.Bug")
-                .forTable("\"BugTracking\".Tm_Bug", "nID", "dtLastUpdate")
-                .process(src, caseDAO, new BaseBatchProcess<>(), row -> {
+        MigrateUtils.runDefaultMigration(sourceConnection,"BugTracking.Bug","\"BugTracking\".Tm_Bug",
+                migrationEntryDAO,caseDAO, row -> {
                     CaseObject obj = new CaseObject();
                     obj.setId(null);
                     obj.setTypeId(En_CaseType.BUG.getId());
@@ -71,7 +70,8 @@ public class MigrateBugs implements MigrateAction {
                     }
 
                     return obj;
-                });
+        });
+
 
        /*
       Map<Long, Long> caseNumberToIdMapper = caseDAO.getNumberToIdMap(En_CaseType.BUG);

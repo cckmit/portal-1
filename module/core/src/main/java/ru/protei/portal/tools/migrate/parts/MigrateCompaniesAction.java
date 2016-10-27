@@ -2,9 +2,13 @@ package ru.protei.portal.tools.migrate.parts;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.core.model.dao.CompanyDAO;
+import ru.protei.portal.core.model.dao.CompanyGroupHomeDAO;
 import ru.protei.portal.core.model.dao.MigrationEntryDAO;
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.ent.CompanyHomeGroupItem;
 import ru.protei.portal.tools.migrate.tools.MigrateAction;
+import ru.protei.portal.tools.migrate.tools.MigrateAdapter;
+import ru.protei.portal.tools.migrate.tools.MigrateUtils;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -16,12 +20,16 @@ import java.util.Date;
 public class MigrateCompaniesAction implements MigrateAction {
 
     public static final String TM_COMPANY_ITEM_CODE = "Tm_Company";
+
     @Autowired
     CompanyDAO dao;
 
+    @Autowired
+    private CompanyGroupHomeDAO companyGroupHomeDAO;
 
     @Autowired
     private MigrationEntryDAO migrateDAO;
+
 
     @Override
     public int orderOfExec() {
@@ -29,7 +37,7 @@ public class MigrateCompaniesAction implements MigrateAction {
     }
 
     @Override
-    public void migrate(Connection src) throws SQLException {
+    public void migrate(Connection sourceConnection) throws SQLException {
 
         if (dao.get(-1L) == null) {
             Company no_comp_rec = new Company();
@@ -39,9 +47,9 @@ public class MigrateCompaniesAction implements MigrateAction {
             dao.persist(no_comp_rec);
         }
 
-        new BatchProcessTaskExt(migrateDAO, TM_COMPANY_ITEM_CODE)
-                .forTable("\"resource\".tm_company", "nID", "dtLastUpdate")
-                .process(src, dao, new BaseBatchProcess<>(), row -> {
+        MigrateUtils.runDefaultMigration (sourceConnection, TM_COMPANY_ITEM_CODE, "\"resource\".tm_company",
+                migrateDAO, dao,
+                row -> {
                     Company x = new Company();
                     x.setAddressDejure((String) row.get("strDeJureAddress"));
                     x.setAddressFact((String) row.get("strPhysicalAddress"));
@@ -54,7 +62,18 @@ public class MigrateCompaniesAction implements MigrateAction {
                     x.setCreated((Date) row.get("dtCreation"));
                     x.setWebsite((String) row.get("strHTTP_url"));
                     return x;
-                })
-                .dumpStats();
+                });
+
+
+        /**
+         * hardcoded import, I have no idea how to do it better
+         */
+        if (!companyGroupHomeDAO.checkIfHome(1L)) {
+            CompanyHomeGroupItem protei_entry = new CompanyHomeGroupItem();
+            protei_entry.setCompanyId(1L);
+            protei_entry.setExternalCode("protei");
+            companyGroupHomeDAO.persist(protei_entry);
+        }
+        //company_group_home
     }
 }
