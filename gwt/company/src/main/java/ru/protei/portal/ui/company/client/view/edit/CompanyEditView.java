@@ -1,7 +1,6 @@
 package ru.protei.portal.ui.company.client.view.edit;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.ButtonElement;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
@@ -10,7 +9,6 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.CompanyGroup;
@@ -92,7 +90,7 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
 
     @UiHandler( "companyGroup" )
     public void onChangeCompanyGroup( ValueChangeEvent< CompanyGroup > event) {
-        if(event.getValue() == null && !companyGroup.inputText().getText().isEmpty())
+        if(event.getValue() == null && !companyGroup.inputText().getText().trim().isEmpty())
             createCompanyGroupBtn.removeStyleName("inactive"); // позволяем создать
         else
             createCompanyGroupBtn.addStyleName("inactive"); // запрещаем создавать
@@ -101,6 +99,8 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     @UiHandler( "createCompanyGroupBtn" )
     public void onCreateCompanyGroup( ClickEvent event ) {
         if(!createCompanyGroupBtn.getElement().hasClassName("inactive")) {
+            companyGroup.removeOption(tempCompanyGroup.getName()); // delete previous temp company group
+
             String newCompanyName = companyGroup.inputText().getText().trim();
             tempCompanyGroup.setName(newCompanyName);
             companyGroup.addAndSetOption(tempCompanyGroup);
