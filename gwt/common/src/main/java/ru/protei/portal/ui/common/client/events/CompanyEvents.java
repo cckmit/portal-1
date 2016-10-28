@@ -29,4 +29,9 @@ public class CompanyEvents {
 
     }
 
+    /**
+     * Обновление списка компаний
+     */
+    public static class ChangeModel {}
+
 }

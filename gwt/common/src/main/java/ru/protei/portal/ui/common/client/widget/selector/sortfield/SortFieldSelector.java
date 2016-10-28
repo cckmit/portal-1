@@ -15,14 +15,19 @@ public class SortFieldSelector extends ButtonSelector< En_SortField > {
 
         switch ( type ) {
             case COMPANY:
-                addOption(lang.getName(En_SortField.comp_name), En_SortField.comp_name);
+                addOption(lang.getName( En_SortField.comp_name ), En_SortField.comp_name );
+                addOption( lang.getName( En_SortField.creation_date ), En_SortField.creation_date );
                 break;
             case PRODUCT:
-                addOption( lang.getName(En_SortField.prod_name), En_SortField.prod_name );
+                addOption( lang.getName( En_SortField.prod_name ), En_SortField.prod_name );
+                addOption( lang.getName( En_SortField.creation_date ), En_SortField.creation_date );
+                break;
+            case CLIENT:
+                addOption( lang.getName( En_SortField.person_full_name ), En_SortField.person_full_name );
+                addOption( lang.getName( En_SortField.person_position ), En_SortField.person_position );
+                addOption( lang.getName( En_SortField.comp_name ), En_SortField.comp_name );
                 break;
         }
-
-        addOption( lang.getName(En_SortField.creation_date), En_SortField.creation_date );
     }
 
     @Inject

@@ -101,6 +101,14 @@ public class AppView extends Composite implements AbstractAppView, KeyUpHandler,
         }
     }
 
+    @UiHandler("companies")
+    public void onContactsClicked(ClickEvent event) {
+        event.preventDefault();
+        if ( activity != null ) {
+            activity.onContactsClicked();
+        }
+    }
+
     @Override
     public void onKeyUp (KeyUpEvent event) {
 
@@ -162,6 +170,9 @@ public class AppView extends Composite implements AbstractAppView, KeyUpHandler,
     Anchor companies;
     @UiField
     Anchor products;
+    @UiField
+    Anchor contacts;
+
     @UiField
     HTMLPanel notifyContainer;
     @UiField

@@ -17,7 +17,7 @@ import ru.protei.portal.ui.common.client.service.PeriodicTaskService;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.company.client.activity.item.AbstractCompanyItemActivity;
 import ru.protei.portal.ui.company.client.activity.item.AbstractCompanyItemView;
-import ru.protei.portal.ui.company.client.service.CompanyServiceAsync;
+import ru.protei.portal.ui.common.client.service.CompanyServiceAsync;
 
 import java.util.HashMap;
 import java.util.List;
@@ -75,7 +75,7 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
 
     @Override
     public void onCreateClicked() {
-        fireEvent( new CompanyEvents.Edit ( null ));
+        fireEvent(new CompanyEvents.Edit(null));
     }
 
     private void initCompanies() {

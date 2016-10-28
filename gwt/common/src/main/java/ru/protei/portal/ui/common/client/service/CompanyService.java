@@ -1,40 +1,43 @@
-package ru.protei.portal.ui.company.client.service;
+package ru.protei.portal.ui.common.client.service;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.RemoteService;
+import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanyCategory;
 import ru.protei.portal.core.model.ent.CompanyGroup;
+import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
 import java.util.List;
 import java.util.Set;
 
 /**
- * Асинхронный сервис по работе с компаниями
+ * Сервис по работе с компаниями
  */
-public interface CompanyServiceAsync {
+@RemoteServiceRelativePath( "springGwtServices/CompanyService" )
+public interface CompanyService extends RemoteService {
 
     /**
      * Получение списка компаний
      * @param searchPattern шаблон поиска
      * @param group группа компаний
-     * @param  sortField поле для сортировки
+     * @param sortField поле для сортировки
      * @return список компаний
      */
-    void getCompanies( String searchPattern, Set< CompanyCategory > categories, CompanyGroup group, En_SortField sortField, Boolean dirSort, AsyncCallback< List< Company > > async );
+    List<Company> getCompanies( String searchPattern, Set< CompanyCategory > categories, CompanyGroup group, En_SortField sortField, Boolean dirSort ) throws RequestFailedException;
 
     /**
      * Получение списка групп компаний
      * @param searchPattern шаблон поиска
      * @return список групп
      */
-    void getCompanyGroups( String searchPattern, AsyncCallback<List < CompanyGroup > > async );
+    List<CompanyGroup> getCompanyGroups( String searchPattern ) throws RequestFailedException;
 
     /**
      * Получение списка категорий компаний
      * @return список категорий
      */
-    void getCompanyCategories( AsyncCallback<List <CompanyCategory> > async  );
+    List<CompanyCategory> getCompanyCategories() throws RequestFailedException;
 
     /**
      * Сохранение компании ( создание + изменение )
@@ -42,7 +45,7 @@ public interface CompanyServiceAsync {
      * @param group группа
      * @return результат сохранения
      */
-    void saveCompany ( Company company, CompanyGroup group, AsyncCallback< Boolean > async );
+    Boolean saveCompany ( Company company, CompanyGroup group ) throws RequestFailedException;
 
     /**
      * Проверка уникальности названия компании
@@ -50,7 +53,7 @@ public interface CompanyServiceAsync {
      * @param excludeId идентификатор компании, которую необходимо исключить из проверки
      * @return true/false
      */
-    void isCompanyNameExists ( String name, Long excludeId, AsyncCallback< Boolean > async );
+    Boolean isCompanyNameExists ( String name, Long excludeId ) throws RequestFailedException;
 
     /**
      * Проверка уникальности названия группы компаний
@@ -58,6 +61,6 @@ public interface CompanyServiceAsync {
      * @param excludeId идентификатор группы, которую необходимо исключить из проверки
      * @return true/false
      */
-    void isGroupNameExists ( String name, Long excludeId, AsyncCallback< Boolean > async );
+    Boolean isGroupNameExists ( String name, Long excludeId ) throws RequestFailedException;
 
 }

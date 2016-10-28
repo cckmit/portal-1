@@ -15,15 +15,10 @@ import ru.protei.portal.core.model.ent.CompanyGroup;
 import ru.protei.portal.core.model.query.BaseQuery;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
-import ru.protei.portal.ui.company.client.service.CompanyService;
+import ru.protei.portal.ui.common.client.service.CompanyService;
 
-import java.beans.BeanInfo;
-import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 /**

@@ -1,16 +1,12 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:companycategorybtngroup='urn:import:ru.protei.portal.ui.company.client.widget.category.btngroup'
-             xmlns:sortfieldselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.sortfield'
-             xmlns:companygroupselector='urn:import:ru.protei.portal.ui.company.client.widget.group.buttonselector'
-             xmlns:platelist="urn:import:ru.protei.portal.ui.common.client.widget.platelist">
+             xmlns:companyselector='urn:import:ru.protei.portal.ui.contact.client.widget.company.buttonselector'
+             xmlns:sortfieldselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.sortfield'>
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
-
     <g:HTMLPanel styleName="OrganizationList">
         <div class="controlButtons">
-            <companycategorybtngroup:CategoryBtnGroup ui:field="categories"/>
             <div class="buttons_group">
-                <companygroupselector:GroupButtonSelector ui:field="group"/>
+                <companyselector:CompanyButtonSelector ui:field="company"/>
             </div>
             <div class="buttons_group">
                 <div class="regulator">
@@ -20,16 +16,13 @@
                         <g:ToggleButton ui:field="dirButton" styleName="sorting_button"/>
                     </div>
                 </div>
+                <div class="regulator">
+                    <g:CheckBox ui:field="showFired" styleName="checkbox" text="{lang.showFired}"/>
+                </div>
             </div>
             <div class="rightSide local-search">
                 <span class="icon local-search-icon"></span>
                 <g:TextBox ui:field="search" styleName="inputField"/>
             </div>
         </div>
-        <platelist:PlateList ui:field="childContainer"
-                             styleName="organizations list-group grid"
-                             createButtonStyleName="list-group-item col-md-6 col-lg-3 list-group-create"
-                             createButtonCaption="{lang.buttonCreate}"
-        />
-    </g:HTMLPanel>
-</ui:UiBinder>
+    </g:HTMLPanel></ui:UiBinder>

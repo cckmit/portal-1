@@ -12,7 +12,7 @@ import ru.protei.portal.ui.common.client.events.CompanyEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.NameStatus;
-import ru.protei.portal.ui.company.client.service.CompanyServiceAsync;
+import ru.protei.portal.ui.common.client.service.CompanyServiceAsync;
 
 
 /**

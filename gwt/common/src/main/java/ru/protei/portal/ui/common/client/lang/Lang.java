@@ -101,4 +101,8 @@ public interface Lang extends Messages {
     String companyNotSaved();
 
     String create();
+
+    String company();
+
+    String showFired();
 }

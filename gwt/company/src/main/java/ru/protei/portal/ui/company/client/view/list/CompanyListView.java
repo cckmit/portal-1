@@ -23,7 +23,7 @@ import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSele
 import ru.protei.portal.ui.company.client.activity.list.AbstractCompanyListActivity;
 import ru.protei.portal.ui.company.client.activity.list.AbstractCompanyListView;
 import ru.protei.portal.ui.company.client.widget.category.btngroup.CategoryBtnGroup;
-import ru.protei.portal.ui.company.client.widget.group.selector.GroupSelector;
+import ru.protei.portal.ui.company.client.widget.group.buttonselector.GroupButtonSelector;
 
 import java.util.Set;
 
@@ -71,7 +71,7 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
 
     @Override
     public Boolean getDirSort() {
-        return directionButton.getValue();
+        return dirButton.getValue();
     }
 
     @Override
@@ -85,7 +85,7 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
         categories.setValue(null);
         group.setValue(null);
         sortField.setValue( En_SortField.comp_name );
-        directionButton.setValue( true );
+        dirButton.setValue(true);
         search.setText( "" );
     }
 
@@ -110,13 +110,13 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
         }
     }
 
-    @UiHandler( "directionButton" )
+    @UiHandler("dirButton")
     public void onDirectionClicked( ClickEvent event ) {
 
-        if (directionButton.getValue())
-            directionButton.removeStyleName( "active" );
+        if (dirButton.getValue())
+            dirButton.removeStyleName( "active" );
         else
-            directionButton.addStyleName( "active" );
+            dirButton.addStyleName( "active" );
 
         if ( activity != null ) {
             activity.onFilterChanged();
@@ -142,7 +142,7 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
     PlateList childContainer;
 
     @UiField
-    ToggleButton directionButton;
+    ToggleButton dirButton;
 
     @Inject
     @UiField( provided = true )
@@ -150,7 +150,7 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
 
     @Inject
     @UiField( provided = true )
-    GroupSelector group;
+    GroupButtonSelector group;
 
     @Inject
     @UiField( provided = true )
