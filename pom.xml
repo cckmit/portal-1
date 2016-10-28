@@ -39,6 +39,7 @@
                 <module>gwt/company</module>
                 <module>gwt/product</module>
                 <module>gwt/crm</module>
+                <module>gwt/client</module>
 
                 <!--<module>app/crm</module>-->
             </modules>
