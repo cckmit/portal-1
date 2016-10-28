@@ -15,7 +15,7 @@ import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.ValueCommentEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.NameStatus;
-import ru.protei.portal.ui.common.client.widget.autoaddvaluecomment.ValueCommentPair;
+import ru.protei.portal.ui.common.client.view.valuecomment.ValueComment;
 import ru.protei.portal.ui.company.client.service.CompanyServiceAsync;
 
 import java.util.ArrayList;
@@ -46,9 +46,9 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
         if(event.getCompanyId() == null) {
             this.fireEvent(new AppEvents.InitPanelName(lang.newCompany()));
-            fireEvent(new ValueCommentEvents.ShowList(view.phonesContainer(), new ArrayList<ru.protei.portal.ui.common.client.view.valuecomment.ValueCommentPair>()));
-        }
-        else {
+            fireEvent(new ValueCommentEvents.ShowList(view.phonesContainer(), new ArrayList<>()));
+        }else {
+
         }
     }
 
@@ -60,6 +60,8 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
             return;
         }
 
+
+        // оставить только saveCompany
         companyService.isCompanyNameExists(view.companyName().getText(), null, new AsyncCallback<Boolean>() {
             @Override
             public void onFailure(Throwable throwable) {
@@ -141,16 +143,16 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
     }
 
-    private String buildJsonFromVCPairList(List<ValueCommentPair> list){
+    private String buildJsonFromVCPairList(List<ValueComment> list){
         JSONObject items = new JSONObject();
         int counter = 0;
-        for(ValueCommentPair pair: list){
+        for(ValueComment pair: list){
             items.put(""+ counter++, buildJsonFromVCPair(pair));
         }
         return items.toString();
     }
 
-    private JSONObject buildJsonFromVCPair(ValueCommentPair pair){
+    private JSONObject buildJsonFromVCPair(ValueComment pair){
         JSONObject item = new JSONObject();
         item.put("v", new JSONString(pair.value().getText()));
         if(!pair.comment().getText().trim().isEmpty())
@@ -167,6 +169,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         view.webSite().setText("");
         view.comment().setText("");
         view.companyGroup().setValue(null);
+        fireEvent(new ValueCommentEvents.ShowList(view.phonesContainer(), new ArrayList<>()));
 //        view.phonesContainer().setDataList(null);
 //        view.emailDataList().setDataList(null);
     }

@@ -8,6 +8,6 @@ import ru.protei.portal.ui.common.client.widget.autoaddvaluecomment.ValueComment
  */
 public interface AbstractValueCommentListView extends IsWidget{
 
-    public void setActivity(AbstractValueCommentListActivity activity);
+    void setActivity(AbstractValueCommentListActivity activity);
 
 }

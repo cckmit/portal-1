@@ -13,7 +13,6 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.CompanyGroup;
 import ru.protei.portal.ui.common.client.activity.valuecomment.AbstractValueCommentListView;
 import ru.protei.portal.ui.common.client.service.NameStatus;
-import ru.protei.portal.ui.common.client.widget.autoaddvaluecomment.ValueCommentDataList;
 import ru.protei.portal.ui.common.client.widget.selector.event.SelectorChangeValEvent;
 import ru.protei.portal.ui.company.client.activity.edit.AbstractCompanyEditActivity;
 import ru.protei.portal.ui.company.client.activity.edit.AbstractCompanyEditView;
@@ -166,6 +165,7 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     @Inject
     @UiField( provided = true )
     AbstractValueCommentListView emails;
+
     @UiField
     HTMLPanel phonesContainer;
 

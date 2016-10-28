@@ -43,8 +43,7 @@ public class ValueCommentListView extends Composite implements AbstractValueComm
 
     @UiField
     HTMLPanel root;
-    @Inject
-    Provider<ValueCommentItemView> itemFactory;
+
 
     AbstractValueCommentListActivity activity;
 
