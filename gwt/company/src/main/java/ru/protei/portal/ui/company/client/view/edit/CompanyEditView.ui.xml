@@ -1,7 +1,7 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:companycategorygroup='urn:import:ru.protei.portal.ui.company.client.widget.group.inputSelector'
-             xmlns:extraInputFileds='urn:import:ru.protei.portal.ui.common.client.widget.autoaddvaluecomment.list'>
+             xmlns:valuecommentpair='urn:import:ru.protei.portal.ui.common.client.activity.valuecomment'>
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel styleName="panel">
@@ -51,14 +51,12 @@
                         <label>
                             <ui:text from="{lang.phone}"/>
                         </label>
-                        <div class="panelField phone">
-                            <extraInputFileds:AutoAddVCList ui:field="phones"/>
-                        </div>
+                        <g:HTMLPanel ui:field="phonesContainer" styleName="panelField phone"/>
                     </div>
                     <div class="col-xs-12 col-lg-6">
                         <label>Email</label>
                         <div class="panelField">
-                            <extraInputFileds:AutoAddVCList ui:field="emails"/>
+                            <valuecommentpair:AbstractValueCommentListView ui:field="emails"/>
                         </div>
                     </div>
                     <div class="col-xs-12">

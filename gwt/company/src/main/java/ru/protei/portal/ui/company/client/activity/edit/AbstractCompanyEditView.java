@@ -2,6 +2,7 @@ package ru.protei.portal.ui.company.client.activity.edit;
 
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.HasValue;
+import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.ent.CompanyGroup;
 import ru.protei.portal.ui.common.client.service.NameStatus;
@@ -26,8 +27,5 @@ public interface AbstractCompanyEditView extends IsWidget {
     HasText comment();
     HasValue<CompanyGroup> companyGroup();
 
-    ValueCommentDataList phoneDataList();
-    ValueCommentDataList emailDataList();
-
-
+    HasWidgets phonesContainer();
 }
