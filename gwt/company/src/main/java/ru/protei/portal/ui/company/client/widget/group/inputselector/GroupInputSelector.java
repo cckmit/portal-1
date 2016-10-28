@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.company.client.widget.group.inputSelector;
+package ru.protei.portal.ui.company.client.widget.group.inputselector;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.CompanyGroup;

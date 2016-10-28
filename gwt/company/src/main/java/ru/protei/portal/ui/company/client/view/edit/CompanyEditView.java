@@ -15,7 +15,7 @@ import ru.protei.portal.core.model.ent.CompanyGroup;
 import ru.protei.portal.ui.common.client.service.NameStatus;
 import ru.protei.portal.ui.company.client.activity.edit.AbstractCompanyEditActivity;
 import ru.protei.portal.ui.company.client.activity.edit.AbstractCompanyEditView;
-import ru.protei.portal.ui.company.client.widget.group.inputSelector.GroupInputSelector;
+import ru.protei.portal.ui.company.client.widget.group.inputselector.GroupInputSelector;
 
 /**
  * Вид создания и редактирования компании

@@ -1,6 +1,6 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:companygroup='urn:import:ru.protei.portal.ui.company.client.widget.group.inputSelector'>
+             xmlns:companygroup='urn:import:ru.protei.portal.ui.company.client.widget.group.inputselector'>
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel styleName="panel">
