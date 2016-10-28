@@ -6,11 +6,9 @@ import com.google.gwt.i18n.client.Messages;
  * Интерфейс со строковыми константами
  */
 public interface Lang extends Messages {
-    String appLogout();
+    String buttonLogout();
 
-    String authLogin();
-
-    String objectSearch();
+    String buttonLogin();
 
     String companies();
 
@@ -26,7 +24,7 @@ public interface Lang extends Messages {
 
     String newProduct();
 
-    String showDeprecated();
+    String productShowDeprecated();
 
     String buttonSave();
 
@@ -34,13 +32,11 @@ public interface Lang extends Messages {
 
     String buttonCreate();
 
-    String searchNoMatchesFound();
+    String errNoMatchesFound();
 
-    String errorGetList();
+    String errGetList();
 
-    String authentification();
-
-    String hello();
+    String msgHello();
 
     String unknownField();
 
@@ -50,37 +46,33 @@ public interface Lang extends Messages {
 
     String description();
 
-    String objectNotFound();
+    String errObjectNotFound();
 
     String buttonArchive();
 
-    String objectNotSaved();
+    String errObjectNotSaved();
 
     String productName();
 
-    String objectSaved();
+    String msgObjectSaved();
 
-    String notUniqName();
+    String errNotUniqName();
 
     String buttonFromArchive();
 
-    String emptyName();
+    String errEmptyName();
 
-    String changeProduct();
-
-    String errorSave();
+    String errSave();
 
     String error();
 
     String companyName();
 
-    String companiesGroup();
+    String companyActualAddress();
 
-    String actualAddress();
+    String companyLegalAddress();
 
-    String legalAddress();
-
-    String webSite();
+    String companyWebSite();
 
     String phone();
 
@@ -88,17 +80,13 @@ public interface Lang extends Messages {
 
     String contacts();
 
-    String save();
-
-    String cancel();
-
     String newCompany();
 
-    String asteriskRequired();
+    String errAsteriskRequired();
 
-    String companySaved();
+    String msgCompanySaved();
 
-    String companyNotSaved();
+    String errCompanyNotSaved();
 
-    String create();
+    String email();
 }

@@ -47,20 +47,20 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
     @Override
     public void onSaveClicked() {
         if(view.companyName().getText().trim().isEmpty() || view.actualAddress().getText().trim().isEmpty() || view.legalAddress().getText().trim().isEmpty()){
-            fireEvent( new NotifyEvents.Show(lang.asteriskRequired(), NotifyEvents.NotifyType.ERROR));
+            fireEvent( new NotifyEvents.Show(lang.errAsteriskRequired(), NotifyEvents.NotifyType.ERROR));
             return;
         }
 
         companyService.isCompanyNameExists(view.companyName().getText(), null, new AsyncCallback<Boolean>() {
             @Override
             public void onFailure(Throwable throwable) {
-                fireEvent(new NotifyEvents.Show(lang.companyNotSaved(), NotifyEvents.NotifyType.ERROR));
+                fireEvent(new NotifyEvents.Show(lang.errCompanyNotSaved(), NotifyEvents.NotifyType.ERROR));
             }
 
             @Override
             public void onSuccess(Boolean isExists) {
                 if(isExists){
-                    fireEvent(new NotifyEvents.Show(lang.companyNotSaved(), NotifyEvents.NotifyType.ERROR));
+                    fireEvent(new NotifyEvents.Show(lang.errCompanyNotSaved(), NotifyEvents.NotifyType.ERROR));
                     return;
                 }
 
@@ -75,13 +75,13 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
                 companyService.saveCompany(company, null, new AsyncCallback<Boolean>() {
                     @Override
                     public void onFailure(Throwable throwable) {
-                        fireEvent(new NotifyEvents.Show(lang.companyNotSaved(), NotifyEvents.NotifyType.ERROR));
+                        fireEvent(new NotifyEvents.Show(lang.errCompanyNotSaved(), NotifyEvents.NotifyType.ERROR));
                     }
 
                     @Override
                     public void onSuccess(Boolean aBoolean) {
                         fireEvent(new CompanyEvents.Show());
-                        fireEvent(new NotifyEvents.Show(lang.companySaved(), NotifyEvents.NotifyType.SUCCESS));
+                        fireEvent(new NotifyEvents.Show(lang.msgCompanySaved(), NotifyEvents.NotifyType.SUCCESS));
                     }
                 });
             }
@@ -106,7 +106,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
                 new AsyncCallback<Boolean>() {
                     @Override
                     public void onFailure(Throwable throwable) {
-                        fireEvent(new NotifyEvents.Show(lang.errorGetList(), NotifyEvents.NotifyType.ERROR));
+                        fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
                     }
 
                     @Override

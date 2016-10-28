@@ -17,7 +17,7 @@
 
                 </div>
                 <div class="regulator">
-                    <g:CheckBox ui:field="showDeprecated" styleName="checkbox" text="{lang.showDeprecated}"/>
+                    <g:CheckBox ui:field="showDeprecated" styleName="checkbox" text="{lang.productShowDeprecated}"/>
                 </div>
             </div>
             <div class="rightSide local-search">
