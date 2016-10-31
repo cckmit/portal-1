@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.company.client.activity.edit;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -12,6 +11,7 @@ import ru.protei.portal.ui.common.client.events.CompanyEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.NameStatus;
+import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.company.client.service.CompanyServiceAsync;
 
 
@@ -38,7 +38,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         initDetails.parent.add(view.asWidget());
 
         if(event.getCompanyId() == null)
-            this.fireEvent( new AppEvents.InitPanelName( lang.newCompany() ) );
+            this.fireEvent( new AppEvents.InitPanelName( lang.companyNew() ) );
         else {
 
         }
@@ -47,20 +47,20 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
     @Override
     public void onSaveClicked() {
         if(view.companyName().getText().trim().isEmpty() || view.actualAddress().getText().trim().isEmpty() || view.legalAddress().getText().trim().isEmpty()){
-            fireEvent( new NotifyEvents.Show(lang.asteriskRequired(), NotifyEvents.NotifyType.ERROR));
+            fireEvent( new NotifyEvents.Show(lang.errAsteriskRequired(), NotifyEvents.NotifyType.ERROR));
             return;
         }
 
-        companyService.isCompanyNameExists(view.companyName().getText(), null, new AsyncCallback<Boolean>() {
+        companyService.isCompanyNameExists(view.companyName().getText(), null, new RequestCallback<Boolean>() {
             @Override
-            public void onFailure(Throwable throwable) {
-                fireEvent(new NotifyEvents.Show(lang.companyNotSaved(), NotifyEvents.NotifyType.ERROR));
+            public void onError(Throwable throwable) {
+                //fireEvent(new NotifyEvents.Show(lang.errNotSaved(), NotifyEvents.NotifyType.ERROR));
             }
 
             @Override
             public void onSuccess(Boolean isExists) {
                 if(isExists){
-                    fireEvent(new NotifyEvents.Show(lang.companyNotSaved(), NotifyEvents.NotifyType.ERROR));
+                    fireEvent(new NotifyEvents.Show(lang.errNotSaved(), NotifyEvents.NotifyType.ERROR));
                     return;
                 }
 
@@ -72,16 +72,16 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
                 company.setAddressFact(view.actualAddress().getText());
 
                 //установить в saveCompany группу
-                companyService.saveCompany(company, null, new AsyncCallback<Boolean>() {
+                companyService.saveCompany(company, null, new RequestCallback<Boolean>() {
                     @Override
-                    public void onFailure(Throwable throwable) {
-                        fireEvent(new NotifyEvents.Show(lang.companyNotSaved(), NotifyEvents.NotifyType.ERROR));
+                    public void onError(Throwable throwable) {
+                        //fireEvent(new NotifyEvents.Show(lang.errNotSaved(), NotifyEvents.NotifyType.ERROR));
                     }
 
                     @Override
                     public void onSuccess(Boolean aBoolean) {
                         fireEvent(new CompanyEvents.Show());
-                        fireEvent(new NotifyEvents.Show(lang.companySaved(), NotifyEvents.NotifyType.SUCCESS));
+                        fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                     }
                 });
             }
@@ -103,10 +103,10 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         companyService.isCompanyNameExists(
                 view.companyName().getText(),
                 null,
-                new AsyncCallback<Boolean>() {
+                new RequestCallback<Boolean>() {
                     @Override
-                    public void onFailure(Throwable throwable) {
-                        fireEvent(new NotifyEvents.Show(lang.errorGetList(), NotifyEvents.NotifyType.ERROR));
+                    public void onError(Throwable throwable) {
+                        fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
                     }
 
                     @Override

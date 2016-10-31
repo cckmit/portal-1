@@ -2,7 +2,6 @@ package ru.protei.portal.ui.company.client.activity.item;
 
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
-import ru.protei.portal.ui.company.client.activity.list.AbstractCompanyListActivity;
 
 /**
  * Абстракция элемента списка компаний

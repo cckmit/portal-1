@@ -16,16 +16,16 @@
                                  data-ps-id="f1d17374-ad8a-c76e-3b0f-4c17c324df6b">
                                 <div class="t_wrapper">
                                     <div class="tr_wrapper companyGroup">
-                                        <div class="tc_wrapper header"><ui:text from="{lang.companiesGroup}"/></div>
+                                        <div class="tc_wrapper header"><ui:text from="{lang.companyGroup}"/></div>
                                         <label class="tc_wrapper content" ui:field="groupCompany"></label>
                                     </div>
                                     <div class="tr_wrapper">
-                                        <div class="tc_wrapper header"><ui:text from="{lang.legalAddress}"/></div>
+                                        <div class="tc_wrapper header"><ui:text from="{lang.companyLegalAddress}"/></div>
                                         <label class="tc_wrapper content" ui:field="addressDejure"></label>
 
                                     </div>
                                     <div class="tr_wrapper">
-                                        <div class="tc_wrapper header"><ui:text from="{lang.actualAddress}"/></div>
+                                        <div class="tc_wrapper header"><ui:text from="{lang.companyActualAddress}"/></div>
                                         <label class="tc_wrapper content" ui:field="addressFact"></label>
                                     </div>
 
@@ -36,11 +36,11 @@
 
 
                                     <div class="tr_wrapper site">
-                                        <div class="tc_wrapper header"><ui:text from="{lang.webSite}"/></div>
+                                        <div class="tc_wrapper header"><ui:text from="{lang.companyWebSite}"/></div>
                                         <label class="tc_wrapper content" ui:field="site"></label>
                                     </div>
                                     <div class="tr_wrapper email">
-                                        <div class="tc_wrapper header"><ui:text from="{lang.companyEmail}"/></div>
+                                        <div class="tc_wrapper header"><ui:text from="{lang.email}"/></div>
                                         <label class="tc_wrapper content" ui:field="email"></label>
                                     </div>
                                 </div>

@@ -1,4 +1,4 @@
-package ru.protei.portal.core.service.dict;
+package ru.protei.portal.core.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -8,6 +8,7 @@ import ru.protei.portal.core.model.dao.CompanyCategoryDAO;
 import ru.protei.portal.core.model.dao.CompanyDAO;
 import ru.protei.portal.core.model.dao.CompanyGroupDAO;
 import ru.protei.portal.core.model.dao.CompanyGroupItemDAO;
+import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanyCategory;
 import ru.protei.portal.core.model.ent.CompanyGroup;
@@ -27,6 +28,12 @@ import java.util.concurrent.TimeUnit;
  * Created by michael on 27.09.16.
  */
 public class CompanyServiceImpl implements CompanyService {
+
+    /**
+     *  @TODO
+     *  - вынести обработку ответов БД в отдельный Interceptor
+     *  - возвращать HttpListResult внутри CoreResponse
+     */
 
     @Autowired
     CompanyDAO companyDAO;
@@ -105,7 +112,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     private <T> CoreResponse<T> createUndefinedError() {
-        return new CoreResponse<T>().error("undefined error", "internal_error");
+        return new CoreResponse<T>().error(En_ResultStatus.INTERNAL_ERROR);
     }
 
     @Override
@@ -179,13 +186,13 @@ public class CompanyServiceImpl implements CompanyService {
     public CoreResponse<Company> getCompanyById(Long id) {
 
         if (id == null) {
-            return createUndefinedError();
+            return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
         Company company = companyDAO.get(id);
 
         if (company == null) {
-            return createUndefinedError();
+            return new CoreResponse().error(En_ResultStatus.NOT_FOUND);
         }
 
         return new CoreResponse<Company>().success(company);
@@ -198,7 +205,7 @@ public class CompanyServiceImpl implements CompanyService {
             return new CoreResponse<Company>().success(createCompanyImpl(company, group));
         }
         catch (Exception e) {
-            return createUndefinedError();
+            return new CoreResponse().error(En_ResultStatus.NOT_CREATED);
         }
     }
 
@@ -208,7 +215,7 @@ public class CompanyServiceImpl implements CompanyService {
         try {
             return new CoreResponse<Company>().success(updateCompanyImpl(company, group));
         } catch (Exception e) {
-            return createUndefinedError();
+            return new CoreResponse().error(En_ResultStatus.NOT_UPDATED);
         }
     }
 
@@ -216,7 +223,7 @@ public class CompanyServiceImpl implements CompanyService {
     public CoreResponse<Boolean> isCompanyNameExists(String name, Long excludeId) {
 
         if (name == null || name.trim().isEmpty())
-            return createUndefinedError();
+            return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
 
         return new CoreResponse<Boolean>().success(checkCompanyExists(name, excludeId));
     }
@@ -225,7 +232,7 @@ public class CompanyServiceImpl implements CompanyService {
     public CoreResponse<Boolean> isGroupNameExists(String name, Long excludeId) {
 
         if (name == null || name.trim().isEmpty())
-            return createUndefinedError();
+            return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
 
         return new CoreResponse<Boolean>().success(checkGroupExists(name, excludeId));
     }

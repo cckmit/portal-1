@@ -1,4 +1,4 @@
-package ru.protei.portal.core.service.dict;
+package ru.protei.portal.core.service;
 
 import ru.protei.portal.api.struct.HttpListResult;
 import ru.protei.portal.core.model.view.EmployeeDetailView;

@@ -4,14 +4,10 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel styleName="product" tag="li">
-
         <div class="wrapper">
             <div ui:field="name" class="name"/>
             <!--<g:PushButton ui:field="menuButton" styleName="menu_button"/>-->
             <g:PushButton ui:field="favoriteButton" styleName="favorite_button"/>
         </div>
-
     </g:HTMLPanel>
 </ui:UiBinder>
-
-

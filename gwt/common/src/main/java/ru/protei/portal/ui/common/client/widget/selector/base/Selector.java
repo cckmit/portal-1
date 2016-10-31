@@ -144,7 +144,7 @@ public abstract class Selector<T>
         }
 
         if ( isEmptyResult ) {
-            addEmptyListGhostOption( lang.searchNoMatchesFound() );
+            addEmptyListGhostOption( lang.errNoMatchesFound() );
         }
     }
 

@@ -17,13 +17,8 @@ import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.company.client.service.CompanyService;
 
-import java.beans.BeanInfo;
-import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 /**
@@ -127,7 +122,7 @@ public class CompanyServiceImpl extends RemoteServiceServlet implements CompanyS
     }
 
     @Autowired
-    private ru.protei.portal.core.service.dict.CompanyService companyService;
+    private ru.protei.portal.core.service.CompanyService companyService;
 
     private static final Logger log = LoggerFactory.getLogger( "web" );
 

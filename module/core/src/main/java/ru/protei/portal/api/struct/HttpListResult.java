@@ -17,9 +17,6 @@ public class HttpListResult<T> {
     @JsonProperty("more")
     private boolean hasMore;
 
-//    @JsonProperty("err-code")
-//    private String errorCode;
-
     @JsonProperty("items")
     public List<T> items;
 
@@ -28,14 +25,12 @@ public class HttpListResult<T> {
         this.items = null;
         this.totalSize = 0;
         this.hasMore = false;
-//        this.errorCode = null;
     }
 
     public HttpListResult (List<T> items, boolean more) {
         this.items = items;
         this.totalSize = items.size();
         this.hasMore = more;
-//        this.errorCode = null;
     }
 
     public List<T> getItems () {

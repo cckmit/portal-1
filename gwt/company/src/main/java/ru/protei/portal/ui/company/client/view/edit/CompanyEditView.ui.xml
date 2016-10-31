@@ -17,30 +17,30 @@
                     </div>
                     <div class="col-xs-12 col-lg-6">
                         <label>
-                            <ui:text from="{lang.companiesGroup}"/>
+                            <ui:text from="{lang.companyGroup}"/>
                         </label>
                         <div class="panelField">
                             <companygroup:GroupInputSelector ui:field="companyGroup"/>
                             <g:Button styleName="button greenC inactive" ui:field="createCompanyGroupBtn">
-                                <ui:text from="{lang.create}"/>
+                                <ui:text from="{lang.buttonCreate}"/>
                             </g:Button>
                         </div>
                     </div>
                     <div class="col-xs-12 col-lg-6">
                         <label class="required">
-                            <ui:text from="{lang.actualAddress}"/>
+                            <ui:text from="{lang.companyActualAddress}"/>
                         </label>
                         <g:TextArea ui:field="actualAddress" styleName="inputField description"></g:TextArea>
                     </div>
                     <div class="col-xs-12 col-lg-6">
                         <label class="required">
-                            <ui:text from="{lang.legalAddress}"/>
+                            <ui:text from="{lang.companyLegalAddress}"/>
                         </label>
                         <g:TextArea ui:field="legalAddress" styleName="inputField description"></g:TextArea>
                     </div>
                     <div class="col-xs-12">
                         <label>
-                            <ui:text from="{lang.webSite}"/>
+                            <ui:text from="{lang.companyWebSite}"/>
                         </label>
                         <div class="panelField"><span class="label">http://</span>
                             <g:TextBox ui:field="webSite" styleName="inputField"/>
@@ -59,7 +59,9 @@
                         </div>
                     </div>
                     <div class="col-xs-12 col-lg-6">
-                        <label>Email</label>
+                        <label>
+                            <ui:text from="{lang.email}"/>
+                        </label>
                         <div class="panelField">
                             <input type="text" class="inputField email rightIndent"/>
                             <input type="text" placeholder="{lang.comment}" class="inputField comment rightIndent"/>
@@ -82,8 +84,8 @@
                 </div>
             </div>
             <div class="footer">
-                <g:Button ui:field="saveButton" styleName="button greenC" text="{lang.save}"/>
-                <g:Button ui:field="cancelButton" styleName="button whiteC close_button" text="{lang.cancel}"/>
+                <g:Button ui:field="saveButton" styleName="button greenC" text="{lang.buttonSave}"/>
+                <g:Button ui:field="cancelButton" styleName="button whiteC close_button" text="{lang.buttonCancel}"/>
             </div>
     </g:HTMLPanel>
 </ui:UiBinder>

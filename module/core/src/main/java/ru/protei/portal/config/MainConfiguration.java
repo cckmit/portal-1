@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import ru.protei.portal.core.controller.auth.AuthInterceptor;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
-import ru.protei.portal.core.service.dict.*;
+import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.user.AuthService;
 import ru.protei.portal.core.service.user.AuthServiceImpl;
 import ru.protei.portal.core.service.user.LDAPAuthProvider;

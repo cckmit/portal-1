@@ -91,7 +91,7 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
 
             @Override
             public void onError( Throwable throwable ) {
-                fireEvent(new NotifyEvents.Show(lang.errorGetList(), NotifyEvents.NotifyType.ERROR));
+                fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
             }
 
             @Override

@@ -41,7 +41,7 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         if( productId == null ) {
             resetView();
 
-            fireEvent(new AppEvents.InitPanelName(lang.newProduct()));
+            fireEvent(new AppEvents.InitPanelName(lang.productNew()));
             return;
         }
 
@@ -89,14 +89,12 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
 
         productService.saveProduct(product, new RequestCallback<Boolean>() {
             @Override
-            public void onError(Throwable throwable) {
-                fireEvent(new NotifyEvents.Show(lang.errorSave(), NotifyEvents.NotifyType.ERROR));
-            }
+            public void onError(Throwable throwable) {}
 
             @Override
             public void onSuccess(Boolean result) {
                 goBack();
-                fireEvent(new NotifyEvents.Show(lang.objectSaved(), NotifyEvents.NotifyType.SUCCESS));
+                fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
             }
         });
     }
@@ -114,10 +112,7 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
 
         productService.getProductById(productId, new RequestCallback<DevUnit>() {
             @Override
-            public void onError(Throwable throwable) {
-                goBack();
-                fireEvent(new NotifyEvents.Show(lang.objectNotFound(), NotifyEvents.NotifyType.ERROR));
-            }
+            public void onError(Throwable throwable) {}
 
             @Override
             public void onSuccess(DevUnit devUnit) {
@@ -143,7 +138,7 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         view.state().setVisible(true);
         view.save().setEnabled(true);
 
-        view.setStateBtnText(devUnit.isActiveUnit() ? lang.buttonArchive() : lang.buttonFromArchive());
+        view.setStateBtnText(devUnit.isActiveUnit() ? lang.productToArchive() : lang.productFromArchive());
     }
 
     @Inject
