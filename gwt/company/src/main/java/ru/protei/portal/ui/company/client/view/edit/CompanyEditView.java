@@ -68,6 +68,15 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
         return companyGroup;
     }
 
+    @Override
+    public void markAsCorrect(HasText field, boolean isCorrect) {
+        if(isCorrect)
+            ((Widget)field).removeStyleName("error");
+        else
+            ((Widget)field).addStyleName("error");
+
+    }
+
     @UiHandler( "saveButton" )
     public void onSaveClicked( ClickEvent event ) {
         if ( activity != null ) {

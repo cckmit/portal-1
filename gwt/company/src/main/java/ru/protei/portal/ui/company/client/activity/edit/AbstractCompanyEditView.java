@@ -22,5 +22,5 @@ public interface AbstractCompanyEditView extends IsWidget {
     HasText comment();
     HasValue<CompanyGroup> companyGroup();
 
-
+    void markAsCorrect(HasText field, boolean isCorrect);
 }

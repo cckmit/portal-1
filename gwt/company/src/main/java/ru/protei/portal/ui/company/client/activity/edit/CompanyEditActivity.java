@@ -46,10 +46,8 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
     @Override
     public void onSaveClicked() {
-        if(view.companyName().getText().trim().isEmpty() || view.actualAddress().getText().trim().isEmpty() || view.legalAddress().getText().trim().isEmpty()){
-            fireEvent( new NotifyEvents.Show(lang.errAsteriskRequired(), NotifyEvents.NotifyType.ERROR));
+        if(!checkRequiredFields())
             return;
-        }
 
         companyService.isCompanyNameExists(view.companyName().getText(), null, new RequestCallback<Boolean>() {
             @Override
@@ -122,6 +120,17 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
     }
 
+    private boolean checkRequiredFields(){
+        boolean isCorrect = true;
+
+        view.markAsCorrect(view.companyName(), !view.companyName().getText().trim().isEmpty() || (isCorrect = false));
+
+        view.markAsCorrect(view.actualAddress(), !view.actualAddress().getText().trim().isEmpty() || (isCorrect = false));
+
+        view.markAsCorrect(view.legalAddress(), !view.legalAddress().getText().trim().isEmpty() || (isCorrect = false));
+
+        return isCorrect;
+    }
 
     private void resetFields(){
         view.setCompanyNameStatus(NameStatus.NONE);
@@ -131,6 +140,11 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         view.webSite().setText("");
         view.comment().setText("");
         view.companyGroup().setValue(null);
+
+        view.markAsCorrect(view.companyName(), true);
+        view.markAsCorrect(view.actualAddress(), true);
+        view.markAsCorrect(view.legalAddress(), true);
+
     }
 
 
