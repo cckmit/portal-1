@@ -23,6 +23,8 @@ public class GroupInputSelector extends InputSelector<CompanyGroup> implements M
         clearOptions();
 
         addHiddenOption("", new CompanyGroup()); // add empty option
+        setNullOption("");
+
         for ( CompanyGroup group : groups ) {
             addOption( group.getName(), group );
         }

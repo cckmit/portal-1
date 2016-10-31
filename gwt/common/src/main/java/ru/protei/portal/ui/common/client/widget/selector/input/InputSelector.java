@@ -34,69 +34,18 @@ public class InputSelector<T> extends Selector<T> {
 
     @Override
     public void fillSelectorView(String selectedValue) {
-        searchField.setValue(selectedValue == null ? "" : selectedValue);
-        isOptionExistsLastTime = true;
+        selectedValue = selectedValue == null ? nullOptionText : selectedValue;
+        searchField.setValue(selectedValue);
+        prevCaughtOption = initialOptions.get(selectedValue);
         setButtonState(false);
-    }
-
-    @UiHandler("searchField")
-    public void onChange(KeyUpEvent event){
-        String searchText = searchField.getValue().trim().toLowerCase();
-        if(prevInputText.equalsIgnoreCase(searchText) )
-            return;
-        prevInputText = searchText;
-
-        fillOptions(searchText);
-
-        tryFireEvent(getOptionIfExists(searchText));
-
-        showPopup(root);
-        setButtonState(true);
-    }
-
-    @UiHandler("button")
-    public void onButtonClick(ClickEvent event) {
-        showPopup(root);
-        setButtonState(true);
-    }
-
-    private void tryFireEvent(T caughtOption){
-        if(isOptionExistsLastTime == null){
-            isOptionExistsLastTime = caughtOption == null; // first time
-        }
-
-        if(caughtOption != null && !isOptionExistsLastTime){
-            ValueChangeEvent.fire(this, caughtOption);
-            isOptionExistsLastTime = true;
-        }else if(caughtOption == null && isOptionExistsLastTime){
-            ValueChangeEvent.fire(this, null);
-            isOptionExistsLastTime = false;
-        }
-    }
-
-    private void fillOptions(String searchText){
-        super.clearOptions();
-        initialOptions.entrySet().stream().forEach(entry -> {
-            String optionName = entry.getKey().toLowerCase();
-            if((searchText.isEmpty() ||  optionName.contains(searchText)) && !optionName.isEmpty())
-                super.addOption(entry.getKey(), entry.getValue());
-        });
-    }
-
-    private T getOptionIfExists(String searchText){
-        Optional<Map.Entry<String, T>> result = initialOptions
-                .entrySet()
-                .stream()
-                .filter(entry -> entry.getKey().toLowerCase().equals(searchText))
-                .findFirst();
-
-        if(result.isPresent())
-            return result.get().getValue();
-        return null;
     }
 
     public void addHiddenOption(String name, T value){
         initialOptions.put(name, value);
+    }
+
+    public void setNullOption(String key){
+        nullOptionText = key;
     }
 
     public void addOption( String name, T value ) {
@@ -113,13 +62,6 @@ public class InputSelector<T> extends Selector<T> {
         initialOptions.remove(name);
     }
 
-    private void setButtonState(boolean isActive){
-        if(isActive)
-            button.addStyleName("active");
-        else
-            button.removeStyleName("active");
-    }
-
     public void closePopup(){
         super.closePopup();
         setButtonState(false);
@@ -128,6 +70,63 @@ public class InputSelector<T> extends Selector<T> {
     public HasText inputText(){
         return searchField;
     }
+
+
+    @UiHandler("searchField")
+    public void onChange(KeyUpEvent event){
+        String searchText = searchField.getValue().trim().toLowerCase();
+        if(prevInputText.equalsIgnoreCase(searchText) )
+            return;
+        prevInputText = searchText;
+
+        fillOptions(searchText);
+
+        tryFireEvent(findOption(searchText));
+
+        showPopup(root);
+        setButtonState(true);
+    }
+
+    @UiHandler("button")
+    public void onButtonClick(ClickEvent event) {
+        showPopup(root);
+        setButtonState(true);
+    }
+
+    private void tryFireEvent(T caughtOption){
+        ValueChangeEvent.fireIfNotEqual(this, prevCaughtOption, caughtOption);
+        prevCaughtOption = caughtOption;
+    }
+
+    private void fillOptions(String searchText){
+        super.clearOptions();
+        initialOptions.forEach((k, v) -> {
+            String optionName = k.toLowerCase();
+            if ((searchText.isEmpty() || optionName.contains(searchText)) && !optionName.isEmpty())
+                super.addOption(k, v);
+        });
+    }
+
+    private T findOption(String searchText){
+        Optional<Map.Entry<String, T>> result = initialOptions
+                .entrySet()
+                .stream()
+                .filter(entry -> entry.getKey().toLowerCase().equals(searchText))
+                .findFirst();
+
+        if(result.isPresent())
+            return result.get().getValue();
+        return null;
+    }
+
+
+    private void setButtonState(boolean isActive){
+        if(isActive)
+            button.addStyleName("active");
+        else
+            button.removeStyleName("active");
+    }
+
 
     @UiField
     HTMLPanel root;
@@ -139,8 +138,9 @@ public class InputSelector<T> extends Selector<T> {
     Button button;
 
     protected Map<String, T> initialOptions = new HashMap< >();
-    Boolean isOptionExistsLastTime = null;
+    T prevCaughtOption = null;
     String prevInputText = "";
+    String nullOptionText = "";
 
     private static inputSelectorUiBinder ourUiBinder = GWT.create(inputSelectorUiBinder.class);
     interface inputSelectorUiBinder extends UiBinder<HTMLPanel, InputSelector> {}
