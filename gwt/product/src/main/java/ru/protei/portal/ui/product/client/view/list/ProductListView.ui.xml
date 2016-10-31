@@ -8,17 +8,9 @@
     <g:HTMLPanel styleName="productListsBlock reportBlock">
         <div class="controlButtons">
             <div class="buttons_group">
-                <div class="regulator">
-                    <sortField:SortFieldSelector ui:field="sortFields" header="{lang.sortBy}"/>
-
-                    <div class="button empty whiteC switcher">
-                        <g:ToggleButton ui:field="sortDir" styleName="sorting_button" />
-                    </div>
-
-                </div>
-                <div class="regulator">
-                    <g:CheckBox ui:field="showDeprecated" styleName="checkbox" text="{lang.productShowDeprecated}"/>
-                </div>
+                <sortField:SortFieldSelector ui:field="sortFields" header="{lang.sortBy}"/>
+                <div class="button empty whiteC switcher"><g:ToggleButton ui:field="sortDir" styleName="sorting_button" /></div>
+                <g:CheckBox ui:field="showDeprecated" styleName="checkbox" text="{lang.productShowDeprecated}"/>
             </div>
             <div class="rightSide local-search">
                 <span class="icon local-search-icon"></span>
