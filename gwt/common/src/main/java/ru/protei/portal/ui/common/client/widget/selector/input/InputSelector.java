@@ -75,7 +75,7 @@ public class InputSelector<T> extends Selector<T> {
     @UiHandler("searchField")
     public void onChange(KeyUpEvent event){
         String searchText = searchField.getValue().trim().toLowerCase();
-        if(prevInputText.equalsIgnoreCase(searchText) )
+        if(prevInputText.equals(searchText) )
             return;
         prevInputText = searchText;
 
