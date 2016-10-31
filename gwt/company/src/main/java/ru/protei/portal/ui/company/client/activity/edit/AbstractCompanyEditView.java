@@ -28,4 +28,5 @@ public interface AbstractCompanyEditView extends IsWidget {
     HasValue<CompanyGroup> companyGroup();
 
     HasWidgets phonesContainer();
+    HasWidgets emailsContainer();
 }

@@ -7,6 +7,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
+import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.activity.valuecomment.AbstractValueCommentItemActivity;
 import ru.protei.portal.ui.common.client.activity.valuecomment.AbstractValueCommentItemView;
 import ru.protei.portal.ui.common.client.activity.valuecomment.ValueCommentStatus;
@@ -35,30 +36,35 @@ public class ValueCommentItemView extends Composite implements AbstractValueComm
         return comment;
     }
 
-    @UiHandler( "button" )
-    public void onMenuClicked( ClickEvent event ) {
-        if(status == ValueCommentStatus.NEW)
-            activity.onCreateClicked();
-        else
-            activity.onDeleteClicked(this);
-    }
-
+    @Override
     public void focused(){
         value.setFocus(true);
     }
 
-    public void updateStatus(ValueCommentStatus status){
-        this.status = status;
-        ValueCommentStatus anotherStatus;
-        if(status == ValueCommentStatus.NEW)
-            anotherStatus = ValueCommentStatus.FILLED;
-        else
-            anotherStatus = ValueCommentStatus.NEW;
-
-        button.getElement().removeClassName(anotherStatus.getButtonColor());
-        button.getElement().addClassName(status.getButtonColor());
-        icon.setClassName(status.getButtonIcon());
+    @Override
+    public void setNew() {
+        button.removeStyleName(ValueCommentStatus.FILLED.getButtonColor());
+        button.addStyleName(ValueCommentStatus.NEW.getButtonColor());
+        icon.setClassName(ValueCommentStatus.NEW.getButtonIcon());
+        status = ValueCommentStatus.NEW;
     }
+
+    @Override
+    public void setFilled() {
+        button.removeStyleName(ValueCommentStatus.NEW.getButtonColor());
+        button.addStyleName(ValueCommentStatus.FILLED.getButtonColor());
+        icon.setClassName(ValueCommentStatus.FILLED.getButtonIcon());
+        status = ValueCommentStatus.FILLED;
+    }
+
+    @UiHandler( "button" )
+    public void onMenuClicked( ClickEvent event ) {
+        if(status == ValueCommentStatus.NEW)
+            activity.onCreateClicked(this);
+        else
+            activity.onDeleteClicked(this);
+    }
+
 
     @UiField
     TextBox value;

@@ -75,6 +75,11 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
         return phonesContainer;
     }
 
+    @Override
+    public HasWidgets emailsContainer() {
+        return emailsContainer;
+    }
+
     @UiHandler( "saveButton" )
     public void onSaveClicked( ClickEvent event ) {
         if ( activity != null ) {
@@ -162,12 +167,11 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     @UiField( provided = true )
     GroupInputSelector companyGroup;
 
-    @Inject
-    @UiField( provided = true )
-    AbstractValueCommentListView emails;
-
     @UiField
     HTMLPanel phonesContainer;
+
+    @UiField
+    HTMLPanel emailsContainer;
 
 
     AbstractCompanyEditActivity activity;

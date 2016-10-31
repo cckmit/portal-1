@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.common.client.activity.valuecomment;
 
+import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.ui.common.client.widget.autoaddvaluecomment.ValueCommentDataList;
 
@@ -10,6 +11,6 @@ public interface AbstractValueCommentListView extends IsWidget{
 
     void setActivity(AbstractValueCommentListActivity activity);
 
-    void addItem(AbstractValueCommentItemView item);
+    HasWidgets getItemsContainer();
 
 }

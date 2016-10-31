@@ -46,7 +46,8 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
         if(event.getCompanyId() == null) {
             this.fireEvent(new AppEvents.InitPanelName(lang.newCompany()));
-            fireEvent(new ValueCommentEvents.ShowList(view.phonesContainer(), new ArrayList<>()));
+            fireEvent(new ValueCommentEvents.ShowList(view.phonesContainer(), companyPhones = new ArrayList<>()));
+            fireEvent(new ValueCommentEvents.ShowList(view.emailsContainer(), companyEmails = new ArrayList<>()));
         }else {
 
         }
@@ -154,9 +155,9 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
     private JSONObject buildJsonFromVCPair(ValueComment pair){
         JSONObject item = new JSONObject();
-        item.put("v", new JSONString(pair.value().getText()));
-        if(!pair.comment().getText().trim().isEmpty())
-            item.put("c", new JSONString(pair.comment().getText()));
+        item.put("v", new JSONString(pair.value));
+        if(!pair.comment.trim().isEmpty())
+            item.put("c", new JSONString(pair.comment));
 
         return item;
     }
@@ -169,7 +170,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         view.webSite().setText("");
         view.comment().setText("");
         view.companyGroup().setValue(null);
-        fireEvent(new ValueCommentEvents.ShowList(view.phonesContainer(), new ArrayList<>()));
+        //fireEvent(new ValueCommentEvents.ShowList(view.phonesContainer(), new ArrayList<>()));
 //        view.phonesContainer().setDataList(null);
 //        view.emailDataList().setDataList(null);
     }
@@ -185,4 +186,6 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
 
     private AppEvents.InitDetails initDetails;
+    private List<ValueComment> companyPhones;
+    private List<ValueComment> companyEmails;
 }

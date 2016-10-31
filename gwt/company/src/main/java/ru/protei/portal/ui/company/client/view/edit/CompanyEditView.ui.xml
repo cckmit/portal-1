@@ -55,9 +55,7 @@
                     </div>
                     <div class="col-xs-12 col-lg-6">
                         <label>Email</label>
-                        <div class="panelField">
-                            <valuecommentpair:AbstractValueCommentListView ui:field="emails"/>
-                        </div>
+                        <g:HTMLPanel ui:field="emailsContainer" styleName="panelField"/>
                     </div>
                     <div class="col-xs-12">
                         <label>
