@@ -1,4 +1,4 @@
-package ru.protei.portal.core.service.dict;
+package ru.protei.portal.core.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.HttpListResult;

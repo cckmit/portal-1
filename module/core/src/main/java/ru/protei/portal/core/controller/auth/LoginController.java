@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthResult;
 import ru.protei.portal.core.service.user.AuthService;
 
@@ -34,7 +35,7 @@ public class LoginController {
         if (result.isOk())
             return new CoreResponse<String>().success("ok").redirect(SecurityDefs.MAIN_WORKSPACE_URI);
 
-        return new CoreResponse<String>("Invalid login or password");
+        return new CoreResponse().error( En_ResultStatus.INVALID_LOGIN_OR_PWD );
     }
 
 

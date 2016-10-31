@@ -20,7 +20,7 @@
             </div>
         </div>
         <div class="footer">
-            <g:Button ui:field="stateBtn" styleName="button redC" text="{lang.buttonArchive}"></g:Button>
+            <g:Button ui:field="stateBtn" styleName="button redC" text="{lang.productToArchive}"></g:Button>
             <g:Button ui:field="saveBtn" styleName="button greenC" text="{lang.buttonSave}"></g:Button>
             <g:Button ui:field="cancelBtn" styleName="button whiteC" text="{lang.buttonCancel}"></g:Button>
         </div>

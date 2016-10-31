@@ -48,7 +48,7 @@ public class ProductServiceImpl extends RemoteServiceServlet implements ProductS
         CoreResponse<DevUnit> response = productService.getProductById(productId);
 
         if (response.isError())
-            throw new RequestFailedException( response.getErrCode() );
+            throw new RequestFailedException( response.getStatus() );
 
         log.info(" getProductById: id={}", response.getData());
 
@@ -67,7 +67,7 @@ public class ProductServiceImpl extends RemoteServiceServlet implements ProductS
                 productService.createProduct( product ) : productService.updateProduct( product );
 
         if ( response.isError() )
-            throw new RequestFailedException( response.getErrCode() );
+            throw new RequestFailedException( response.getStatus() );
 
         log.info(" saveProduct: response.getData()={}", response.getData() );
 
@@ -86,7 +86,7 @@ public class ProductServiceImpl extends RemoteServiceServlet implements ProductS
         CoreResponse<Boolean> response = productService.checkUniqueProductByName(name, excludeId);
 
         if (response.isError())
-            throw new RequestFailedException(response.getErrCode());
+            throw new RequestFailedException(response.getStatus());
 
         log.info(" isNameUnique: response={}", response.getData());
 
@@ -95,7 +95,7 @@ public class ProductServiceImpl extends RemoteServiceServlet implements ProductS
 
 
     @Autowired
-    ru.protei.portal.core.service.dict.ProductService productService;
+    ru.protei.portal.core.service.ProductService productService;
 
     private ProductQuery productQuery;
 

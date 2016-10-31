@@ -35,7 +35,7 @@ public class AuthServiceImpl extends RemoteServiceServlet implements AuthService
 
         AuthResult result = authService.login( httpRequest.getSession().getId(), login, password, httpRequest.getRemoteAddr(), httpRequest.getHeader( SystemConstants.USER_AGENT_HEADER ) );
         if ( !result.isOk() ) {
-            throw new RequestFailedException( result.getResult().name() );
+            throw new RequestFailedException( result.getResult() );
         }
 
         //sessionService.setUserSessionDescriptor( httpRequest, result.getDescriptor() );

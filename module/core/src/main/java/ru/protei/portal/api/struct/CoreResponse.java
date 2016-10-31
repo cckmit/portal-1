@@ -2,6 +2,7 @@ package ru.protei.portal.api.struct;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import ru.protei.portal.core.model.dict.En_ResultStatus;
 
 /**
  * Created by michael on 27.06.16.
@@ -13,10 +14,7 @@ public class CoreResponse<T> {
     private boolean ok;
 
     @JsonProperty
-    private String message;
-
-    @JsonProperty
-    private String errCode;
+    private En_ResultStatus status;
 
     @JsonProperty
     private T data;
@@ -29,11 +27,6 @@ public class CoreResponse<T> {
         this.ok = true;
     }
 
-    public CoreResponse (String errMsg) {
-        this.error(errMsg, null);
-    }
-
-
     public boolean isOk () {
         return ok;
     }
@@ -42,21 +35,17 @@ public class CoreResponse<T> {
         return !ok;
     }
 
-    public String getMessage() {
-        return message;
-    }
 
-    public String getErrCode () {
-        return errCode;
+    public En_ResultStatus getStatus () {
+        return status;
     }
 
     public T getData () {
         return data;
     }
 
-    public CoreResponse<T> error (String msg, String code) {
-        this.message = msg;
-        this.errCode = code;
+    public CoreResponse<T> error (En_ResultStatus status) {
+        this.status = status;
         this.ok = false;
         return this;
     }

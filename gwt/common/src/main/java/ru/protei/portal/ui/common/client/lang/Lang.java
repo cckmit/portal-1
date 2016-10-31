@@ -22,7 +22,7 @@ public interface Lang extends Messages {
 
     String products();
 
-    String newProduct();
+    String productNew();
 
     String productShowDeprecated();
 
@@ -46,23 +46,15 @@ public interface Lang extends Messages {
 
     String description();
 
-    String errObjectNotFound();
-
-    String buttonArchive();
-
-    String errObjectNotSaved();
+    String productToArchive();
 
     String productName();
 
     String msgObjectSaved();
 
-    String errNotUniqName();
-
-    String buttonFromArchive();
+    String productFromArchive();
 
     String errEmptyName();
-
-    String errSave();
 
     String error();
 
@@ -80,13 +72,39 @@ public interface Lang extends Messages {
 
     String contacts();
 
-    String newCompany();
+    String companyNew();
 
     String errAsteriskRequired();
 
-    String msgCompanySaved();
-
-    String errCompanyNotSaved();
-
     String email();
+
+    String errLoginOrPwd();
+
+    String msgOK();
+
+    String errConnectionError();
+
+    String errInvalidSessionID();
+
+    String errGetDataError();
+
+    String errNotFound();
+
+    String errNotCreated();
+
+    String errNotUpdated();
+
+    String errNotSaved();
+
+    String errUndefinedObject();
+
+    String errAlreadyExist();
+
+    String errValidationError();
+
+    String errIncorrectParams();
+
+    String errInternalError();
+
+    String errUnknownResult();
 }

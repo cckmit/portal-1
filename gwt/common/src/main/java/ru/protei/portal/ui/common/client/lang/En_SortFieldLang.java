@@ -1,8 +1,8 @@
 package ru.protei.portal.ui.common.client.lang;
 
+import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_SortField;
 
-import javax.inject.Inject;
 
 /**
  * Поля сортировки

@@ -46,7 +46,7 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
         authService.authentificate( view.getUserName(), view.getPassword(), new RequestCallback< Profile >() {
             @Override
             public void onError( Throwable caught ) {
-                view.showError("Ошибка! Неправильный логин или пароль");
+                view.showError( lang.errLoginOrPwd());
             }
 
             @Override

@@ -1,4 +1,4 @@
-package ru.protei.portal.core.service.dict;
+package ru.protei.portal.core.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.CoreResponse;
@@ -6,6 +6,7 @@ import ru.protei.portal.api.struct.HttpListResult;
 import ru.protei.portal.core.model.dao.DevUnitDAO;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
+import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.core.utils.HelperFunc;
@@ -24,6 +25,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public HttpListResult<DevUnit> list(ProductQuery query) {
+
         String condition = HelperFunc.makeLikeArg(query.getSearchString(), true);
 
         JdbcSort sort = TypeConverters.createSort(query);
@@ -35,12 +37,12 @@ public class ProductServiceImpl implements ProductService {
     public CoreResponse<DevUnit> getProductById(Long id) {
 
         if (id == null)
-            return new CoreResponse().error("getByIdError", "undefined id");
+            return new CoreResponse().error(En_ResultStatus.UNDEFINED_OBJECT);
 
         DevUnit product = devUnitDAO.get(id);
 
         if (product == null)
-            new CoreResponse().error("getByIdError", "object not found");
+            new CoreResponse().error(En_ResultStatus.NOT_FOUND);
 
         return new CoreResponse<DevUnit>().success(product);
     }
@@ -50,10 +52,10 @@ public class ProductServiceImpl implements ProductService {
     public CoreResponse<Long> createProduct(DevUnit product) {
 
         if (product == null)
-            return new CoreResponse().error("createError", "undefined object");
+            return new CoreResponse().error(En_ResultStatus.UNDEFINED_OBJECT);
 
         if (!checkUniqueProduct(product.getName(), product.getId()))
-            return new CoreResponse().error("createError", "not unique object");
+            return new CoreResponse().error(En_ResultStatus.ALREADY_EXIST);
 
         product.setCreated(new Date());
         product.setTypeId(En_DevUnitType.PRODUCT.getId());
@@ -62,7 +64,7 @@ public class ProductServiceImpl implements ProductService {
         Long productId = devUnitDAO.persist(product);
 
         if (productId == null)
-            new CoreResponse().error("createError", null);
+            new CoreResponse().error(En_ResultStatus.NOT_CREATED);
 
         return new CoreResponse<Long>().success(productId);
 
@@ -72,14 +74,14 @@ public class ProductServiceImpl implements ProductService {
     public CoreResponse<Boolean> updateProduct(DevUnit product) {
 
         if( product == null || product.getId() == null )
-            return new CoreResponse().error("updateError", "undefined object");
+            return new CoreResponse().error(En_ResultStatus.UNDEFINED_OBJECT);
 
         if (!checkUniqueProduct(product.getName(), product.getId()))
-            return new CoreResponse().error("updateError", "not unique object");
+            return new CoreResponse().error(En_ResultStatus.ALREADY_EXIST);
 
         Boolean result = devUnitDAO.merge(product);
         if ( !result )
-            new CoreResponse().error("updateError", null);
+            new CoreResponse().error(En_ResultStatus.NOT_UPDATED);
 
         return new CoreResponse<Boolean>().success(result);
     }
@@ -88,7 +90,7 @@ public class ProductServiceImpl implements ProductService {
     public CoreResponse<Boolean> checkUniqueProductByName(String name, Long excludeId) {
 
         if( name == null || name.isEmpty() )
-            return new CoreResponse().error("checkExistError", "undefined parameter");
+            return new CoreResponse().error(En_ResultStatus.UNDEFINED_OBJECT);
 
         return new CoreResponse<Boolean>().success(checkUniqueProduct(name, excludeId));
     }
@@ -100,7 +102,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     private <T> CoreResponse<T> createUndefinedError() {
-        return new CoreResponse<T>().error("undefined error", "internal_error");
+        return new CoreResponse<T>().error(En_ResultStatus.INTERNAL_ERROR);
     }
 
 }

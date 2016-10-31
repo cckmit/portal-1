@@ -41,7 +41,7 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         if( productId == null ) {
             resetView();
 
-            fireEvent(new AppEvents.InitPanelName(lang.newProduct()));
+            fireEvent(new AppEvents.InitPanelName(lang.productNew()));
             return;
         }
 
@@ -89,9 +89,7 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
 
         productService.saveProduct(product, new RequestCallback<Boolean>() {
             @Override
-            public void onError(Throwable throwable) {
-                fireEvent(new NotifyEvents.Show(lang.errSave(), NotifyEvents.NotifyType.ERROR));
-            }
+            public void onError(Throwable throwable) {}
 
             @Override
             public void onSuccess(Boolean result) {
@@ -114,10 +112,7 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
 
         productService.getProductById(productId, new RequestCallback<DevUnit>() {
             @Override
-            public void onError(Throwable throwable) {
-                goBack();
-                fireEvent(new NotifyEvents.Show(lang.errObjectNotFound(), NotifyEvents.NotifyType.ERROR));
-            }
+            public void onError(Throwable throwable) {}
 
             @Override
             public void onSuccess(DevUnit devUnit) {
@@ -143,7 +138,7 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         view.state().setVisible(true);
         view.save().setEnabled(true);
 
-        view.setStateBtnText(devUnit.isActiveUnit() ? lang.buttonArchive() : lang.buttonFromArchive());
+        view.setStateBtnText(devUnit.isActiveUnit() ? lang.productToArchive() : lang.productFromArchive());
     }
 
     @Inject
