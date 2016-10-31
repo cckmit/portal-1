@@ -1,13 +1,12 @@
 package ru.protei.portal.ui.common.client.activity.valuecomment;
 
-import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.ui.common.client.events.ValueCommentEvents;
 import ru.protei.portal.ui.common.client.view.valuecomment.ValueComment;
-import ru.protei.portal.ui.common.client.view.valuecomment.item.ValueCommentItemView;
 
 import java.util.HashMap;
 import java.util.List;
@@ -23,20 +22,19 @@ public abstract class ValueCommentActivity implements Activity, AbstractValueCom
         if(event.data == null)
             return;
 
-        event.parent.clear();
-
         AbstractValueCommentListView listView = listFactory.get();
-
+        event.parent.clear();
         event.parent.add(listView.asWidget());
-        //listView.getItemsContainer().clear();
 
-        model = event.data;
-        viewToModel.clear();
+        List<ValueComment> model = event.data;
+        HasWidgets parent = listView.getItemsContainer();
+
+        parentToModelList.put(parent, model);
 
         if(model.isEmpty())
-            addNewEmptyItem();
+            addNewEmptyItem(parent);
         else
-            model.forEach(this::addNewItem);
+            model.forEach(vc -> addNewItem(parent, vc));
     }
 
     @Override
@@ -46,35 +44,35 @@ public abstract class ValueCommentActivity implements Activity, AbstractValueCom
         vc.comment = prevItem.comment().getText();
         vc.value = prevItem.value().getText();
 
-        addNewEmptyItem();
+        HasWidgets parent = modelToParent.get(viewToModel.get(prevItem));
+        addNewEmptyItem(parent);
     }
 
     @Override
     public void onDeleteClicked(AbstractValueCommentItemView item) {
         item.asWidget().removeFromParent();
+
         ValueComment vc = viewToModel.remove(item);
-        model.remove(vc);
+        HasWidgets parent = modelToParent.remove(vc);
+        parentToModelList.get(parent).remove(vc);
     }
 
-    private void addNewEmptyItem(){
+    private void addNewEmptyItem(HasWidgets listView){
         ValueComment vc = new ValueComment("", "");
-        model.add(vc);
-        addNewItem(vc);
+        modelToParent.put(vc, listView);
+        parentToModelList.get(listView).add(vc);
+
+        addNewItem(listView, vc);
     }
 
-    private void addNewItem(ValueComment vc){
+    private void addNewItem(HasWidgets listView, ValueComment vc){
         AbstractValueCommentItemView itemView = itemFactory.get();
         itemView.value().setText(vc.value);
         itemView.comment().setText(vc.comment);
         itemView.setActivity( this );
         itemView.setNew();
-        //itemView.asWidget().getElement().insertAfter(itemView.asWidget().getElement(), itemView.asWidget().getElement());
-        //listView.getItemsContainer().add(itemView.asWidget());
-        itemView.asWidget().getElement().getParentElement().appendChild(itemView.asWidget().getElement());
-
-
+        listView.add(itemView.asWidget());
         itemView.focused();
-
         viewToModel.put(itemView, vc);
     }
 
@@ -85,6 +83,7 @@ public abstract class ValueCommentActivity implements Activity, AbstractValueCom
     Provider<AbstractValueCommentItemView> itemFactory;
 
 
-    List<ValueComment> model;
     Map<AbstractValueCommentItemView, ValueComment> viewToModel = new HashMap<>();
+    Map<ValueComment, HasWidgets> modelToParent = new HashMap<>();
+    Map<HasWidgets, List<ValueComment>> parentToModelList = new HashMap<>();
 }
