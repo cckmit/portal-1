@@ -20,7 +20,7 @@ public class En_ResultStatusLang {
             return lang.errUnknownResult();
 
         /**
-         *  TODO
+         *  @TODO
          *  - после реализации обработки ответов от БД заменить грубые определения на конкретные статусы
          *   (должны уйти NOT_CREATED, NOT_UPDATED)
          */

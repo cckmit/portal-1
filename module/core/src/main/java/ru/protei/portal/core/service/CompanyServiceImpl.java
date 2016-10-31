@@ -30,7 +30,7 @@ import java.util.concurrent.TimeUnit;
 public class CompanyServiceImpl implements CompanyService {
 
     /**
-     *  TODO
+     *  @TODO
      *  - вынести обработку ответов БД в отдельный Interceptor
      *  - возвращать HttpListResult внутри CoreResponse
      */

@@ -21,7 +21,7 @@ import java.util.Date;
 public class ProductServiceImpl implements ProductService {
 
     /**
-     *  TODO
+     *  @TODO
      *  - вынести обработку ответов БД в отдельный Interceptor
      *  - возвращать HttpListResult внутри CoreResponse
      */
