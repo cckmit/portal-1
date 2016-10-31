@@ -1,7 +1,9 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'>
 
-    <g:HTMLPanel styleName="product list-group-item col-md-6 col-lg-3">
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+
+    <g:HTMLPanel styleName="product" tag="li">
         <div class="wrapper">
             <div ui:field="name" class="name"/>
             <!--<g:PushButton ui:field="menuButton" styleName="menu_button"/>-->

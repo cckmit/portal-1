@@ -4,6 +4,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -14,7 +15,7 @@ import ru.protei.portal.core.model.ent.CompanyGroup;
 import ru.protei.portal.ui.common.client.service.NameStatus;
 import ru.protei.portal.ui.company.client.activity.edit.AbstractCompanyEditActivity;
 import ru.protei.portal.ui.company.client.activity.edit.AbstractCompanyEditView;
-import ru.protei.portal.ui.company.client.widget.group.inputSelector.GroupInputSelector;
+import ru.protei.portal.ui.company.client.widget.group.inputselector.GroupInputSelector;
 
 /**
  * Вид создания и редактирования компании
@@ -87,6 +88,27 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
         timer.schedule( 300 );
     }
 
+    @UiHandler( "companyGroup" )
+    public void onChangeCompanyGroup( ValueChangeEvent< CompanyGroup > event) {
+        if(event.getValue() == null && !companyGroup.inputText().getText().trim().isEmpty())
+            createCompanyGroupBtn.removeStyleName("inactive"); // позволяем создать
+        else
+            createCompanyGroupBtn.addStyleName("inactive"); // запрещаем создавать
+    }
+
+    @UiHandler( "createCompanyGroupBtn" )
+    public void onCreateCompanyGroup( ClickEvent event ) {
+        if(!createCompanyGroupBtn.getElement().hasClassName("inactive")) {
+            companyGroup.removeOption(tempCompanyGroup.getName()); // delete previous temp company group
+
+            String newCompanyName = companyGroup.inputText().getText().trim();
+            tempCompanyGroup.setName(newCompanyName);
+            companyGroup.addAndSetOption(tempCompanyGroup);
+
+            createCompanyGroupBtn.addStyleName("inactive");
+        }
+    }
+
     Timer timer = new Timer() {
         @Override
         public void run() {
@@ -121,11 +143,15 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     @UiField
     TextBox webSite;
 
+    @UiField
+    Button createCompanyGroupBtn;
+
     @Inject
     @UiField( provided = true )
     GroupInputSelector companyGroup;
 
 
+    CompanyGroup tempCompanyGroup = new CompanyGroup();
     AbstractCompanyEditActivity activity;
 
     private static CompanyViewUiBinder2 ourUiBinder = GWT.create(CompanyViewUiBinder2.class);

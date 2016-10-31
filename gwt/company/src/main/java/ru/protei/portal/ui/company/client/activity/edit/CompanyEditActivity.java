@@ -133,9 +133,6 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         view.companyGroup().setValue(null);
     }
 
-    //    native void consoleLog( String message) /*-{
-//        console.log( "me:" + message );
-//    }-*/;
 
     @Inject
     AbstractCompanyEditView view;

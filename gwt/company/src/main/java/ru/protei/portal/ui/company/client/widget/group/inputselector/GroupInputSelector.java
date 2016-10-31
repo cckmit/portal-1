@@ -1,8 +1,7 @@
-package ru.protei.portal.ui.company.client.widget.group.inputSelector;
+package ru.protei.portal.ui.company.client.widget.group.inputselector;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.CompanyGroup;
-import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
 import ru.protei.portal.ui.common.client.widget.selector.input.InputSelector;
 import ru.protei.portal.ui.company.client.widget.group.GroupModel;
@@ -19,25 +18,22 @@ public class GroupInputSelector extends InputSelector<CompanyGroup> implements M
         groupModel.subscribe( this );
     }
 
+    @Override
     public void fillOptions( List< CompanyGroup > groups ) {
         clearOptions();
 
-        if ( hasAnyValue ) {
-            addOption( lang.companyGroup(), null );
-        }
+        addHiddenOption("", new CompanyGroup()); // add empty option
+        setNullOption("");
+
         for ( CompanyGroup group : groups ) {
             addOption( group.getName(), group );
         }
     }
 
-    public void setHasAnyValue( boolean hasAnyValue ) {
-        this.hasAnyValue = hasAnyValue;
+    public void addAndSetOption(CompanyGroup newCompanyGroup){
+        addOption(newCompanyGroup.getName(), newCompanyGroup);
+        setValue(newCompanyGroup);
     }
-
-    @Inject
-    Lang lang;
-
-    private boolean hasAnyValue = true;
 
 
 }

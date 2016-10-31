@@ -5,8 +5,7 @@
              xmlns:companygroupselector='urn:import:ru.protei.portal.ui.company.client.widget.group.selector'
              xmlns:platelist="urn:import:ru.protei.portal.ui.common.client.widget.platelist">
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
-
-    <g:HTMLPanel styleName="OrganizationList">
+    <g:HTMLPanel styleName="OrganizationList main-content">
         <div class="controlButtons">
             <companycategorybtngroup:CategoryBtnGroup ui:field="categories"/>
             <div class="buttons_group">
@@ -27,8 +26,8 @@
             </div>
         </div>
         <platelist:PlateList ui:field="childContainer"
-                             styleName="organizations list-group grid"
-                             createButtonStyleName="list-group-item col-md-6 col-lg-3 list-group-create"
+                             styleName="organizations plate-list"
+                             createButtonStyleName="plate-list-create"
                              createButtonCaption="{lang.buttonCreate}"
         />
     </g:HTMLPanel>

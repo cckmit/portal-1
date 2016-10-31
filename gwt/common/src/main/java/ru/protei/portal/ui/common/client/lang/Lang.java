@@ -107,4 +107,9 @@ public interface Lang extends Messages {
     String errInternalError();
 
     String errUnknownResult();
+
+    String companyInfoHeader();
+
+    String companyCommonHeader();
+
 }
