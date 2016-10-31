@@ -1,0 +1,150 @@
+.plate-list {
+  //margin: -7px -7px 0 -7px;
+  width: 100%;
+  padding: 0;
+
+  .plate-list-create {
+    .wrapper {
+      height: 3em;
+      background-color: rgb(84, 129, 193) !important;
+
+      .name {
+        color: white;
+        font-size: 1.5em;
+        margin-top: 0.4em;
+      }
+
+      &:after {
+        display: none !important;
+        background-image: none;
+      }
+
+      &:hover {
+        background: rgb(118, 154, 219) none;
+
+        &:after {
+          background: rgb(118, 154, 219) none;
+        }
+      }
+    }
+  }
+
+  li, .plate-list-create {
+    padding: 7px;
+    display: inline-block;
+    box-sizing: border-box;
+    vertical-align: top;
+    border: none;
+    outline: none;
+    //margin: 1px;
+    //background: white;
+    //height: 150px;
+
+    &.plate-list-expanded {
+      transition: height 350ms ease;
+      height: 395px;
+
+      >.wrapper {
+        background-color: white;
+        &::after {
+          border: solid transparent;
+          content: " ";
+          height: 100%;
+          width: 0;
+          position: absolute;
+          pointer-events: none;
+          border-bottom-color: #ffffff;
+          border-width: 15px;
+          left: 50%;
+          margin: -20px 0 0 -15px;
+          z-index: 10013;
+          top: 3px;
+        }
+      }
+      .plate-list-expander {
+        transition: height 350ms ease;
+        height: 245px;
+        /* background-color: #fff; */
+        box-shadow: 0 1px 4px 0px rgba(53, 64, 79, 0.3);
+        /* overflow: hidden; */
+      }
+}
+
+.plate-list-expander {
+  position: absolute;
+  top: auto;
+  left: 0;
+  width: calc(100% - 240px);
+  margin-top: 10px;
+  text-align: left;
+  height: 0;
+  overflow: hidden;
+  z-index:10001;
+  margin-left: 240px;
+}
+
+>.wrapper {
+  position: relative;
+  background-color: #f6f7f8;
+  border: 1px solid #fff;
+  white-space: nowrap;
+  box-shadow: 0 1px 4px 0px rgba(53,64,79,0.3);
+  border-radius: 3px;
+  z-index: 1;
+  transition-duration: 0.5s;
+  transition-property: padding;
+  padding: 14px;
+  //overflow: hidden;
+  height: 100px;
+
+  &:after {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 50px;
+    content: "";
+    right: 0;
+    background-image: linear-gradient(to right, transparent, #f6f7f8 25px);
+  }
+  &:hover {
+    background-color: #fff;
+    cursor: pointer;
+    &:after {
+      background-image: linear-gradient(to right, transparent, #fff 25px);
+    }
+  }
+  &.inactive:after {
+    background-image: linear-gradient(to right, transparent, #dee4e5 25px) !important;
+  }
+}
+}
+}
+
+@media (min-width: 768px) {
+.plate-list {
+li, .plate-list-create {
+  width: 100%;
+}
+}
+}
+
+@media (min-width: 992px) {
+.plate-list {
+li, .plate-list-create {
+  width: 50%;
+}
+}
+}
+
+@media (min-width: 1400px) {
+.plate-list {
+li, .plate-list-create {
+  width: 33%;
+}
+}
+}
+
+.OrganizationPassport {
+  display: block !important;
+  padding: 20px 14px !important;
+}
