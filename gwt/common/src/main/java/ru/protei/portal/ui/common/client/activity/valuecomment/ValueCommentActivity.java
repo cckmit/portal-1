@@ -24,8 +24,11 @@ public abstract class ValueCommentActivity implements Activity, AbstractValueCom
             return;
 
         event.parent.clear();
+
+        AbstractValueCommentListView listView = listFactory.get();
+
         event.parent.add(listView.asWidget());
-        listView.getItemsContainer().clear();
+        //listView.getItemsContainer().clear();
 
         model = event.data;
         viewToModel.clear();
@@ -65,14 +68,18 @@ public abstract class ValueCommentActivity implements Activity, AbstractValueCom
         itemView.comment().setText(vc.comment);
         itemView.setActivity( this );
         itemView.setNew();
-        listView.getItemsContainer().add(itemView.asWidget());
+        //itemView.asWidget().getElement().insertAfter(itemView.asWidget().getElement(), itemView.asWidget().getElement());
+        //listView.getItemsContainer().add(itemView.asWidget());
+        itemView.asWidget().getElement().getParentElement().appendChild(itemView.asWidget().getElement());
+
+
         itemView.focused();
 
         viewToModel.put(itemView, vc);
     }
 
     @Inject
-    AbstractValueCommentListView listView;
+    Provider<AbstractValueCommentListView> listFactory;
 
     @Inject
     Provider<AbstractValueCommentItemView> itemFactory;
