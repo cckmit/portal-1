@@ -19,6 +19,12 @@ public class En_ResultStatusLang {
         if (value == null)
             return lang.errUnknownResult();
 
+        /**
+         *  TODO
+         *  - после реализации обработки ответов от БД заменить грубые определения на конкретные статусы
+         *   (должны уйти NOT_CREATED, NOT_UPDATED)
+         */
+
         switch (value)
         {
             case OK : return lang.msgOK();
