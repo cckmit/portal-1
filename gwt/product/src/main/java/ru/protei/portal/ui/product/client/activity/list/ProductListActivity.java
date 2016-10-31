@@ -8,6 +8,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.DevUnit;
+import ru.protei.portal.ui.common.client.animation.PlateListAnimation;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
@@ -58,7 +59,18 @@ public abstract class ProductListActivity implements AbstractProductListActivity
     @Override
     public void onUpdateClicked( AbstractProductItemView itemView ) {
 
-        fireEvent( new ProductEvents.Edit( modelToView.get( itemView ).getId()  ) );
+        fireEvent( new ProductEvents.Edit( modelToView.get( itemView ).getId() ) );
+    }
+
+    @Override
+    public void onMenuClicked( AbstractProductItemView itemView ) {
+        DevUnit value = modelToView.get( itemView );
+        if ( value == null ) {
+            return;
+        }
+
+        fireEvent( new ProductEvents.ShowPreview( itemView.getPreviewContainer(), value ) );
+        animation.showPreview(itemView);
     }
 
     @Override
@@ -121,7 +133,6 @@ public abstract class ProductListActivity implements AbstractProductListActivity
         view.sortDir().setValue(true);
     }
 
-
     @Inject
     AbstractProductListView view;
     @Inject
@@ -131,7 +142,8 @@ public abstract class ProductListActivity implements AbstractProductListActivity
     Provider<AbstractProductItemView> provider;
     @Inject
     ProductServiceAsync productService;
-
+    @Inject
+    PlateListAnimation animation;
     @Inject
     PeriodicTaskService taskService;
     PeriodicTaskService.PeriodicTaskHandler fillViewHandler;

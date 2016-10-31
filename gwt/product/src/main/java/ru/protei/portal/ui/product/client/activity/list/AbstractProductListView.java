@@ -5,6 +5,9 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_SortField;
 
+/**
+ * Абстракция вида списка продуктов
+ */
 public interface AbstractProductListView extends IsWidget {
 
     void setActivity( AbstractProductListActivity activity );
