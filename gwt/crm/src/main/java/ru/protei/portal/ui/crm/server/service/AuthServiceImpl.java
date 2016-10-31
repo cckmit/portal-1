@@ -5,7 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.protei.portal.core.model.ent.AuthResult;
+import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.common.shared.model.Profile;
@@ -33,13 +33,13 @@ public class AuthServiceImpl extends RemoteServiceServlet implements AuthService
 
         log.debug( "authentificate: login={}", login );
 
-        AuthResult result = authService.login( httpRequest.getSession().getId(), login, password, httpRequest.getRemoteAddr(), httpRequest.getHeader( SystemConstants.USER_AGENT_HEADER ) );
-        if ( !result.isOk() ) {
-            throw new RequestFailedException( result.getResult() );
+        CoreResponse<UserSessionDescriptor> result = authService.login( httpRequest.getSession().getId(), login, password, httpRequest.getRemoteAddr(), httpRequest.getHeader( SystemConstants.USER_AGENT_HEADER ) );
+        if ( result.isError() ) {
+            throw new RequestFailedException( result.getStatus() );
         }
 
         //sessionService.setUserSessionDescriptor( httpRequest, result.getDescriptor() );
-        return makeProfileByDescriptor( result.getDescriptor() );
+        return makeProfileByDescriptor( result.getData() );
     }
 
     @Override

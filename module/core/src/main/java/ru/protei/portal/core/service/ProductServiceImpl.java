@@ -37,7 +37,7 @@ public class ProductServiceImpl implements ProductService {
     public CoreResponse<DevUnit> getProductById(Long id) {
 
         if (id == null)
-            return new CoreResponse().error(En_ResultStatus.UNDEFINED_OBJECT);
+            return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
 
         DevUnit product = devUnitDAO.get(id);
 
@@ -52,7 +52,7 @@ public class ProductServiceImpl implements ProductService {
     public CoreResponse<Long> createProduct(DevUnit product) {
 
         if (product == null)
-            return new CoreResponse().error(En_ResultStatus.UNDEFINED_OBJECT);
+            return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
 
         if (!checkUniqueProduct(product.getName(), product.getId()))
             return new CoreResponse().error(En_ResultStatus.ALREADY_EXIST);
@@ -74,7 +74,7 @@ public class ProductServiceImpl implements ProductService {
     public CoreResponse<Boolean> updateProduct(DevUnit product) {
 
         if( product == null || product.getId() == null )
-            return new CoreResponse().error(En_ResultStatus.UNDEFINED_OBJECT);
+            return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
 
         if (!checkUniqueProduct(product.getName(), product.getId()))
             return new CoreResponse().error(En_ResultStatus.ALREADY_EXIST);
@@ -90,7 +90,7 @@ public class ProductServiceImpl implements ProductService {
     public CoreResponse<Boolean> checkUniqueProductByName(String name, Long excludeId) {
 
         if( name == null || name.isEmpty() )
-            return new CoreResponse().error(En_ResultStatus.UNDEFINED_OBJECT);
+            return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
 
         return new CoreResponse<Boolean>().success(checkUniqueProduct(name, excludeId));
     }

@@ -4,6 +4,7 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.DigestUtils;
+import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
@@ -111,26 +112,26 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public AuthResult login(String appSessionId, String ulogin, String pwd, String ip, String userAgent) {
+    public CoreResponse<UserSessionDescriptor> login(String appSessionId, String ulogin, String pwd, String ip, String userAgent) {
 
         UserLogin login = userLoginDAO.findByLogin(ulogin);
         if (login == null) {
             logger.debug("login [" + ulogin + "] not found, auth-failed");
-            return new AuthResult( En_ResultStatus.INVALID_LOGIN_OR_PWD);
+            return new CoreResponse().error(En_ResultStatus.INVALID_LOGIN_OR_PWD);
         }
 
         if (login.isLDAP_Auth()) {
             // check by LDAP
             En_ResultStatus status = ldapAuthProvider.checkAuth(ulogin, pwd);
             if (status != En_ResultStatus.OK)
-                return new AuthResult(status);
+                return new CoreResponse().error(status);
 
         } else {
             // check MD5
             String md5Hash = DigestUtils.md5DigestAsHex(pwd.getBytes());
             if (login.getUpass() == null || !login.getUpass().equalsIgnoreCase(md5Hash)) {
                 logger.debug("login " + ulogin + " - invalid password, auth-failed");
-                return new AuthResult(En_ResultStatus.INVALID_LOGIN_OR_PWD);
+                return new CoreResponse().error(En_ResultStatus.INVALID_LOGIN_OR_PWD);
             }
         }
 
@@ -140,12 +141,12 @@ public class AuthServiceImpl implements AuthService {
                 logger.warn("Security exception, client " + login.getUlogin() + " from host " + ip
                         + " is trying to access session " + descriptor.getSessionId()
                         + " created for " + descriptor.getLogin().getUlogin() + "@" + descriptor.getSession().getClientIp());
-                return new AuthResult(En_ResultStatus.INVALID_SESSION_ID);
+                return new CoreResponse().error(En_ResultStatus.INVALID_SESSION_ID);
             }
 
             if (!descriptor.getSession().getClientIp().equals(ip)) {
                 logger.warn("Security exception, host " + ip + " is trying to access session " + descriptor.getSessionId() + " created for " + descriptor.getSession().getClientIp());
-                return new AuthResult(En_ResultStatus.INVALID_SESSION_ID);
+                return new CoreResponse().error(En_ResultStatus.INVALID_SESSION_ID);
             }
         } else {
             descriptor = new UserSessionDescriptor();
@@ -177,7 +178,7 @@ public class AuthServiceImpl implements AuthService {
         sessionDAO.persist(descriptor.getSession());
 
         sessionCache.put(descriptor.getSessionId(), descriptor);
-        return new AuthResult(En_ResultStatus.OK, descriptor);
+        return new CoreResponse().success(descriptor);
     }
 
     @Override

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.AuthResult;
+import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.service.user.AuthService;
 
 @RestController
@@ -30,13 +30,14 @@ public class LoginController {
 
         logger.debug("invoke login process: " + ulogin + "@" + userIp + "/" + userAgent);
 
-        AuthResult result = authService.login(appSessionId, ulogin, upass, userIp, userAgent);
+        CoreResponse<UserSessionDescriptor> result = authService.login(appSessionId, ulogin, upass, userIp, userAgent);
 
-        if (result.isOk())
-            return new CoreResponse<String>().success("ok").redirect(SecurityDefs.MAIN_WORKSPACE_URI);
+        if (result.isError())
+            return new CoreResponse().error(En_ResultStatus.INVALID_LOGIN_OR_PWD);
 
-        return new CoreResponse().error( En_ResultStatus.INVALID_LOGIN_OR_PWD );
-    }
+
+        return new CoreResponse<String>().success("ok").redirect(SecurityDefs.MAIN_WORKSPACE_URI);
+      }
 
 
     @RequestMapping(value = "/api/do.logout")

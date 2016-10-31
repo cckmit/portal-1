@@ -11,30 +11,18 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 public class CoreResponse<T> {
 
     @JsonProperty
-    private boolean ok;
-
-    @JsonProperty
     private En_ResultStatus status;
 
     @JsonProperty
     private T data;
 
-    @JsonProperty
-    private String redirect;
-
-
-    public CoreResponse () {
-        this.ok = true;
-    }
-
     public boolean isOk () {
-        return ok;
+        return status == En_ResultStatus.OK;
     }
 
     public boolean isError () {
-        return !ok;
+        return status != En_ResultStatus.OK;
     }
-
 
     public En_ResultStatus getStatus () {
         return status;
@@ -46,18 +34,16 @@ public class CoreResponse<T> {
 
     public CoreResponse<T> error (En_ResultStatus status) {
         this.status = status;
-        this.ok = false;
         return this;
     }
 
     public CoreResponse<T> redirect (String to) {
-        this.redirect = to;
         return this;
     }
 
     public CoreResponse<T> success (T data) {
         this.data = data;
-        this.ok = true;
+        this.status = En_ResultStatus.OK;
         return this;
     }
 }

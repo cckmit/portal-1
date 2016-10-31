@@ -180,7 +180,7 @@ public class CompanyServiceImpl implements CompanyService {
     public CoreResponse<Company> getCompanyById(Long id) {
 
         if (id == null) {
-            return new CoreResponse().error(En_ResultStatus.UNDEFINED_OBJECT);
+            return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
         Company company = companyDAO.get(id);
@@ -217,7 +217,7 @@ public class CompanyServiceImpl implements CompanyService {
     public CoreResponse<Boolean> isCompanyNameExists(String name, Long excludeId) {
 
         if (name == null || name.trim().isEmpty())
-            return new CoreResponse().error(En_ResultStatus.UNDEFINED_OBJECT);
+            return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
 
         return new CoreResponse<Boolean>().success(checkCompanyExists(name, excludeId));
     }
@@ -226,7 +226,7 @@ public class CompanyServiceImpl implements CompanyService {
     public CoreResponse<Boolean> isGroupNameExists(String name, Long excludeId) {
 
         if (name == null || name.trim().isEmpty())
-            return new CoreResponse().error(En_ResultStatus.UNDEFINED_OBJECT);
+            return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
 
         return new CoreResponse<Boolean>().success(checkGroupExists(name, excludeId));
     }
