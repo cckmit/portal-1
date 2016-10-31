@@ -6,6 +6,6 @@ import ru.protei.portal.ui.common.client.view.valuecomment.ValueComment;
 /**
  * Created by bondarenko on 28.10.16.
  */
-public interface AbstractValueCommentItemView extends ValueComment {
+public interface AbstractValueCommentItemView extends ValueComment, IsWidget {
     void setActivity(AbstractValueCommentItemActivity activity);
 }

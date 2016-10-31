@@ -10,4 +10,6 @@ public interface AbstractValueCommentListView extends IsWidget{
 
     void setActivity(AbstractValueCommentListActivity activity);
 
+    void addItem(AbstractValueCommentItemView item);
+
 }

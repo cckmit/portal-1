@@ -42,11 +42,12 @@ public abstract class ValueCommentListActivity implements Activity, AbstractValu
 
         root.add(item);
         item.focused();
+
     }
 
     @Override
     public void onDeleteClicked(AbstractValueCommentItemView item) {
-
+        item.asWidget().removeFromParent();
     }
 
     @Inject
