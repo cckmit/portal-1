@@ -19,7 +19,10 @@ public class En_SortFieldLang {
                 return lang.name();
             case last_update:
                 return lang.updated();
-
+            case person_full_name:
+                return lang.contactFullName();
+            case person_position:
+                return lang.contactPosition();
             default:
                 return lang.unknownField();
         }

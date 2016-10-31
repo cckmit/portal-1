@@ -105,4 +105,10 @@ public interface Lang extends Messages {
     String company();
 
     String showFired();
+
+    String contactFullName();
+
+    String contactPosition();
+
+    String email();
 }

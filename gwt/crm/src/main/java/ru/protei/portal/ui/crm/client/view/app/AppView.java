@@ -101,7 +101,7 @@ public class AppView extends Composite implements AbstractAppView, KeyUpHandler,
         }
     }
 
-    @UiHandler("companies")
+    @UiHandler("contacts")
     public void onContactsClicked(ClickEvent event) {
         event.preventDefault();
         if ( activity != null ) {

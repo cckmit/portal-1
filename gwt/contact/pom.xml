@@ -9,11 +9,11 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>portal4.ui.client</artifactId>
+    <artifactId>portal4.ui.contact</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>Portal UI :: Client module</name>
+    <name>Portal UI :: Contact module</name>
     <url>http://www.protei.ru</url>
 
     <dependencies>

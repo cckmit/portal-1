@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 public class CompanyServiceImpl extends RemoteServiceServlet implements CompanyService {
 
     @Override
-    public List< Company > getCompanies( String searchPattern, Set< CompanyCategory > categories, CompanyGroup group, En_SortField sortField, Boolean dirSort ) throws RequestFailedException {
+    public List< Company > getCompanies( String searchPattern, Set< CompanyCategory > categories, CompanyGroup group, En_SortField sortField, Boolean sortDir) throws RequestFailedException {
 
         List< Long > categoryIds = null;
         if ( categories != null ) {
@@ -37,11 +37,11 @@ public class CompanyServiceImpl extends RemoteServiceServlet implements CompanyS
                     .collect( Collectors.toList() );
         }
 
-        log.debug( "getCompanies(): searchPattern={} | categories={} | group={} | sortField={} | dirSort={}",
+        log.debug( "getCompanies(): searchPattern={} | categories={} | group={} | sortField={} | sortDir={}",
                 searchPattern, categoryIds, (group != null ? group.getId() : null),
-                sortField, (dirSort ? En_SortDir.ASC : En_SortDir.DESC) );
+                sortField, (sortDir ? En_SortDir.ASC : En_SortDir.DESC) );
 
-        CompanyQuery query = new CompanyQuery( searchPattern, sortField, dirSort ? En_SortDir.ASC : En_SortDir.DESC );
+        CompanyQuery query = new CompanyQuery( searchPattern, sortField, sortDir ? En_SortDir.ASC : En_SortDir.DESC );
         query.setGroupId( group != null ? group.getId() : null );
         query.setCategoryIds( categoryIds );
 

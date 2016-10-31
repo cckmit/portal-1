@@ -15,9 +15,9 @@
             <div class="buttons_group">
                 <div class="regulator">
                     <ui:text from="{lang.sortBy}"/>
-                    <sortfieldselector:SortFieldSelector ui:field="sortField"/>
+                    <sortfieldselector:SortFieldSelector ui:field="sortField" type="COMPANY"/>
                     <div class="button empty whiteC switcher">
-                        <g:ToggleButton ui:field="dirButton" styleName="sorting_button"/>
+                        <g:ToggleButton ui:field="sortDir" styleName="sorting_button"/>
                     </div>
                 </div>
             </div>

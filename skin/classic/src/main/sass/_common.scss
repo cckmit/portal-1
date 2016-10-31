@@ -74,6 +74,7 @@
 .checkbox {
   padding-left: 20px;
   display: inline-block;
+  vertical-align: middle;
 }
 
 .checkbox label {
@@ -176,13 +177,17 @@
   width: 250px;
   text-align: left;
   position: relative;
-  margin-right: 24px;
 }
 
 .button .caret {
   position: absolute;
   top: 11px;
   right: 8px;
+}
+
+.button-selector span {
+  display: block;
+  overflow: hidden;
 }
 
 .dropdown-menu {
@@ -209,7 +214,7 @@
   clear: both;
   line-height: 20px;
   color: #333;
-  white-space: nowrap;
+  white-space: normal;
 }
 
 .dropdown-menu ul {
@@ -478,4 +483,34 @@ label.bordered:after{
 
 .inputField.error{
   border: 1px solid #f54646;
+}
+
+
+.table {
+  width: 100%;
+  max-width: 100%;
+  margin-bottom: 20px;
+  background-color: #f6f7f8;
+}
+
+.table > thead > tr > th,
+.table > tbody > tr > th,
+.table > tfoot > tr > th,
+.table > thead > tr > td,
+.table > tbody > tr > td,
+.table > tfoot > tr > td {
+  padding: 8px;
+  line-height: 1.42857143;
+  vertical-align: top;
+  border-top: 1px solid #ddd;
+}
+
+.table > thead > tr > th {
+  vertical-align: bottom;
+  border-bottom: 2px solid #ddd;
+  text-align: left;
+}
+
+.table-hover > tbody > tr:hover {
+  background-color: white;
 }

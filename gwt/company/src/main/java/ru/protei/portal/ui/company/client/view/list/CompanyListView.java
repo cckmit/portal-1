@@ -36,7 +36,6 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
         initHandlers();
-        sortField.fillOptions( ModuleType.COMPANY );
         search.getElement().setPropertyString( "placeholder", lang.search() );
     }
 
@@ -50,8 +49,8 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
     }
 
     @Override
-    public String getSearchPattern() {
-        return search.getText();
+    public HasValue< String > getSearchPattern() {
+        return search;
     }
 
     @Override
@@ -70,8 +69,8 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
     }
 
     @Override
-    public Boolean getDirSort() {
-        return dirButton.getValue();
+    public HasValue< Boolean > getSortDir() {
+        return sortDir;
     }
 
     @Override
@@ -85,7 +84,7 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
         categories.setValue(null);
         group.setValue(null);
         sortField.setValue( En_SortField.comp_name );
-        dirButton.setValue(true);
+        sortDir.setValue(true);
         search.setText( "" );
     }
 
@@ -110,13 +109,13 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
         }
     }
 
-    @UiHandler("dirButton")
+    @UiHandler("sortDir")
     public void onDirectionClicked( ClickEvent event ) {
 
-        if (dirButton.getValue())
-            dirButton.removeStyleName( "active" );
+        if (sortDir.getValue())
+            sortDir.removeStyleName( "active" );
         else
-            dirButton.addStyleName( "active" );
+            sortDir.addStyleName( "active" );
 
         if ( activity != null ) {
             activity.onFilterChanged();
@@ -142,7 +141,7 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
     PlateList childContainer;
 
     @UiField
-    ToggleButton dirButton;
+    ToggleButton sortDir;
 
     @Inject
     @UiField( provided = true )

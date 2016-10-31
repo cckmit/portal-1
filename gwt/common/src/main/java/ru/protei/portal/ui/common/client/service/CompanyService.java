@@ -22,9 +22,10 @@ public interface CompanyService extends RemoteService {
      * @param searchPattern шаблон поиска
      * @param group группа компаний
      * @param sortField поле для сортировки
+     * @param sortDir направление сортировки
      * @return список компаний
      */
-    List<Company> getCompanies( String searchPattern, Set< CompanyCategory > categories, CompanyGroup group, En_SortField sortField, Boolean dirSort ) throws RequestFailedException;
+    List<Company> getCompanies( String searchPattern, Set< CompanyCategory > categories, CompanyGroup group, En_SortField sortField, Boolean sortDir ) throws RequestFailedException;
 
     /**
      * Получение списка групп компаний
