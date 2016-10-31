@@ -12,13 +12,9 @@ import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
  */
 public class SortFieldSelector extends ButtonSelector< En_SortField > {
 
-    @Inject
-    public void Init() {
-        fillOptions();
-    }
-
     public void setType( ModuleType type ) {
         this.type = type;
+        fillOptions();
     }
 
     public void fillOptions() {
@@ -41,7 +37,7 @@ public class SortFieldSelector extends ButtonSelector< En_SortField > {
         }
     }
 
-    private ModuleType type = ModuleType.CONTACT;
+    private ModuleType type;// = ModuleType.CONTACT;
 
     @Inject
     private Lang lang;
