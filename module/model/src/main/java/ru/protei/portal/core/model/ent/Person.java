@@ -1,17 +1,15 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.winter.jdbc.annotations.IdInsertMode;
-import ru.protei.winter.jdbc.annotations.JdbcColumn;
-import ru.protei.winter.jdbc.annotations.JdbcEntity;
-import ru.protei.winter.jdbc.annotations.JdbcId;
+import ru.protei.winter.jdbc.annotations.*;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Created by michael on 30.03.16.
  */
 @JdbcEntity(table = "Person")
-public class Person {
+public class Person implements Serializable {
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
     @JdbcColumn(name = "created")
@@ -20,6 +18,9 @@ public class Person {
     private String creator;
     @JdbcColumn(name="company_id")
     private Long companyId;
+
+    @JdbcJoinedObject(localColumn = "company_id", table = "company")
+    private Company company;
 
     @JdbcColumn(name = "displayPosition")
     private String position;
@@ -133,6 +134,14 @@ public class Person {
 
     public void setCompanyId(Long companyId) {
         this.companyId = companyId;
+    }
+
+    public Company getCompany() {
+        return company;
+    }
+
+    public void setCompany(Company company) {
+        this.company = company;
     }
 
     public String getPosition() {

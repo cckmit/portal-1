@@ -16,10 +16,10 @@ public interface AbstractCompanyListView extends IsWidget {
 
     void setActivity( AbstractCompanyListActivity activity );
     HasWidgets getChildContainer();
-    String getSearchPattern();
+    HasValue< String > getSearchPattern();
     HasValue< CompanyGroup > getGroup();
     HasValue< Set< CompanyCategory > > getCategories();
     HasValue< En_SortField > getSortField();
-    Boolean getDirSort();
+    HasValue< Boolean > getSortDir();
     void resetFilter();
 }

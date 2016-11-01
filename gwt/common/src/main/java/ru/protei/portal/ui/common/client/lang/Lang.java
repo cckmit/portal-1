@@ -112,4 +112,29 @@ public interface Lang extends Messages {
 
     String companyCommonHeader();
 
+    String company();
+
+    String contactShowFired();
+
+    String contactFullName();
+
+    String contactPosition();
+
+    String linkToObject();
+
+    String contactLastName();
+
+    String contactFirstName();
+
+    String contactSecondName();
+
+    String contactSex();
+
+    String contactBirhday();
+
+    String contactDepartment();
+
+    String fax();
+
+    String address();
 }

@@ -23,7 +23,7 @@ import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSele
 import ru.protei.portal.ui.company.client.activity.list.AbstractCompanyListActivity;
 import ru.protei.portal.ui.company.client.activity.list.AbstractCompanyListView;
 import ru.protei.portal.ui.company.client.widget.category.btngroup.CategoryBtnGroup;
-import ru.protei.portal.ui.company.client.widget.group.selector.GroupSelector;
+import ru.protei.portal.ui.company.client.widget.group.buttonselector.GroupButtonSelector;
 
 import java.util.Set;
 
@@ -50,8 +50,8 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
     }
 
     @Override
-    public String getSearchPattern() {
-        return search.getText();
+    public HasValue< String > getSearchPattern() {
+        return search;
     }
 
     @Override
@@ -70,8 +70,8 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
     }
 
     @Override
-    public Boolean getDirSort() {
-        return directionButton.getValue();
+    public HasValue< Boolean > getSortDir() {
+        return sortDir;
     }
 
     @Override
@@ -85,7 +85,7 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
         categories.setValue(null);
         group.setValue(null);
         sortField.setValue( En_SortField.comp_name );
-        directionButton.setValue( true );
+        sortDir.setValue(true);
         search.setText( "" );
     }
 
@@ -110,13 +110,13 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
         }
     }
 
-    @UiHandler( "directionButton" )
+    @UiHandler("sortDir")
     public void onDirectionClicked( ClickEvent event ) {
 
-        if (directionButton.getValue())
-            directionButton.removeStyleName( "active" );
+        if (sortDir.getValue())
+            sortDir.removeStyleName( "active" );
         else
-            directionButton.addStyleName( "active" );
+            sortDir.addStyleName( "active" );
 
         if ( activity != null ) {
             activity.onFilterChanged();
@@ -142,7 +142,7 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
     PlateList childContainer;
 
     @UiField
-    ToggleButton directionButton;
+    ToggleButton sortDir;
 
     @Inject
     @UiField( provided = true )
@@ -150,7 +150,7 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
 
     @Inject
     @UiField( provided = true )
-    GroupSelector group;
+    GroupButtonSelector group;
 
     @Inject
     @UiField( provided = true )

@@ -10,9 +10,9 @@ import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.CompanyEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.CompanyServiceAsync;
 import ru.protei.portal.ui.common.client.service.NameStatus;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
-import ru.protei.portal.ui.company.client.service.CompanyServiceAsync;
 
 
 /**
@@ -82,6 +82,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
                     public void onSuccess(Boolean aBoolean) {
                         fireEvent(new CompanyEvents.Show());
                         fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+                        fireEvent(new CompanyEvents.ChangeModel());
                     }
                 });
             }

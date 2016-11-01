@@ -157,6 +157,9 @@ public abstract class Selector<T>
 
     public abstract void fillSelectorView( String selectedValue );
 
+    public void setLimitView( Integer limit ) {
+        limitView = limit;
+    }
     @Override
     protected void onLoad() {
         scrollRegistration = Window.addWindowScrollHandler( this );
@@ -208,6 +211,8 @@ public abstract class Selector<T>
     private T selectedOption = null;
     private SelectorItem nullItemView;
     private HandlerRegistration scrollRegistration;
+
+    private Integer limitView = null;
 
     private Map<SelectorItem, T> itemViewToModel = new HashMap< SelectorItem, T >();
     private Map<T, SelectorItem> itemToViewModel = new HashMap< T, SelectorItem >();

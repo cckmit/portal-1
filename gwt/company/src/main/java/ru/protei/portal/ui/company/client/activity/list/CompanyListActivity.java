@@ -8,17 +8,17 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanyCategory;
+import ru.protei.portal.ui.common.client.animation.PlateListAnimation;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.CompanyEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.CompanyServiceAsync;
 import ru.protei.portal.ui.common.client.service.PeriodicTaskService;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.company.client.activity.item.AbstractCompanyItemActivity;
 import ru.protei.portal.ui.company.client.activity.item.AbstractCompanyItemView;
-import ru.protei.portal.ui.common.client.animation.PlateListAnimation;
-import ru.protei.portal.ui.company.client.service.CompanyServiceAsync;
 
 import java.util.HashMap;
 import java.util.List;
@@ -86,8 +86,8 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
         if ( fillViewHandler != null ) {
             fillViewHandler.cancel();
         }
-        companyService.getCompanies( view.getSearchPattern(), view.getCategories().getValue(), view.getGroup().getValue(),
-                view.getSortField().getValue(), view.getDirSort(), new RequestCallback< List < Company > >() {
+        companyService.getCompanies( view.getSearchPattern().getValue(), view.getCategories().getValue(), view.getGroup().getValue(),
+                view.getSortField().getValue(), view.getSortDir().getValue(), new RequestCallback< List < Company > >() {
 
             @Override
             public void onError( Throwable throwable ) {
