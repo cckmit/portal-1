@@ -27,7 +27,7 @@ import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSele
 import java.util.List;
 
 /**
- * Created by turik on 28.10.16.
+ * Вид формы таблицы контактов
  */
 public class ContactTableView extends Composite implements AbstractContactTableView {
     @Inject

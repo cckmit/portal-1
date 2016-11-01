@@ -17,7 +17,7 @@ import ru.protei.portal.ui.contact.client.service.ContactServiceAsync;
 import java.util.List;
 
 /**
- * Created by turik on 28.10.16.
+ * Активность таблицы контактов
  */
 public abstract class ContactTableActivity implements AbstractContactTableActivity, Activity {
 
