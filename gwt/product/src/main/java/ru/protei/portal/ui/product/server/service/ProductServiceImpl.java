@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.product.server.service;
 
-import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +20,7 @@ import java.util.List;
  * Реализация сервиса управления продуктами
  */
 @Service( "ProductService" )
-public class ProductServiceImpl extends RemoteServiceServlet implements ProductService {
+public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<DevUnit> getProductList(String param, En_DevUnitState state, En_SortField sortField, Boolean sortDir) throws RequestFailedException {

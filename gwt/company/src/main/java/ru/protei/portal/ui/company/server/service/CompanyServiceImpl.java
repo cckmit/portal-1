@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.company.server.service;
 
-import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +24,7 @@ import java.util.stream.Collectors;
  * Реализация сервиса по работе с компаниями
  */
 @Service( "CompanyService" )
-public class CompanyServiceImpl extends RemoteServiceServlet implements CompanyService {
+public class CompanyServiceImpl implements CompanyService {
 
     @Override
     public List< Company > getCompanies( String searchPattern, Set< CompanyCategory > categories, CompanyGroup group, En_SortField sortField, Boolean dirSort ) throws RequestFailedException {
