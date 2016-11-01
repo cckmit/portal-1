@@ -7,12 +7,10 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.ui.common.client.events.ValueCommentEvents;
 import ru.protei.portal.ui.common.client.view.valuecomment.ValueComment;
-import ru.protei.portal.ui.common.client.view.valuecomment.list.ValueCommentListView;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * Активити элемента и списка
@@ -24,16 +22,14 @@ public abstract class ValueCommentActivity implements Activity, AbstractValueCom
         if(event.data == null)
             return;
 
-        AbstractValueCommentListView listView = new ValueCommentListView();
+//        AbstractValueCommentListView listView = new ValueCommentListView();
+        AbstractValueCommentListView listView = listFactory.get();
         event.parent.clear();
         event.parent.add(listView.asWidget());
 
         List<ValueComment> dataList = event.data;
 
-        if(dataList.isEmpty())
-            addNewEmptyItem(listView.getItemsContainer(), dataList);
-        else
-            addNewItems(listView.getItemsContainer(), dataList);
+        addNewItems(listView.getItemsContainer(), dataList);
     }
 
     @Override
@@ -55,7 +51,10 @@ public abstract class ValueCommentActivity implements Activity, AbstractValueCom
     }
 
     private void addNewItems(HasWidgets parent, List<ValueComment> dataList){
-        dataList.forEach(vc -> addNewItem(vc, parent, dataList));
+        if(dataList.isEmpty())
+            addNewEmptyItem(parent, dataList);
+        else
+            dataList.forEach(vc -> addNewItem(vc, parent, dataList));
     }
 
     private void addNewEmptyItem(HasWidgets parent, List<ValueComment> dataList){
@@ -64,8 +63,8 @@ public abstract class ValueCommentActivity implements Activity, AbstractValueCom
 
     private void removeItem(AbstractValueCommentItemView item){
         item.asWidget().removeFromParent();
-        ValueComment vc = viewToModel.get(item).valueComment;
-        viewToModel.get(item).data.remove(vc);
+        ValueCommentModel model = viewToModel.get(item);
+        model.data.remove(model.valueComment);
         viewToModel.remove(item);
     }
 
@@ -81,10 +80,10 @@ public abstract class ValueCommentActivity implements Activity, AbstractValueCom
         if(newValue.equals(prevValue) && newComment.equals(prevComment))
             return;
 
-        if((prevComment + prevValue).isEmpty())
+        if(prevComment.isEmpty() && prevValue.isEmpty())
             addNewEmptyItem(model.parent, model.data);
 
-        else if((newValue + newComment).isEmpty() && model.data.size()!=1){
+        else if(newValue.isEmpty() && newComment.isEmpty() && model.data.size()!=1){
             AbstractValueCommentItemView emptyItem = findEmptyItem(model.data);
             if(emptyItem != null) {
                 removeItem(item); // delete current, leave empty
@@ -98,21 +97,14 @@ public abstract class ValueCommentActivity implements Activity, AbstractValueCom
     }
 
     private AbstractValueCommentItemView findEmptyItem(List<ValueComment> dataList){
-        Optional<Map.Entry<AbstractValueCommentItemView, ValueCommentModel>> result = viewToModel
-                .entrySet()
-                .stream()
-                .filter(e -> {
-                    ValueCommentModel model = e.getValue();
-                    return model.data == dataList && (model.valueComment.value + model.valueComment.comment).isEmpty();
-                })
-                .findFirst();
 
-        if(result.isPresent())
-            return result.get().getKey();
-        else
-            return null;
+        for(Map.Entry<AbstractValueCommentItemView, ValueCommentModel> entry: viewToModel.entrySet()){
+            ValueCommentModel model = entry.getValue();
+            if(model.data == dataList && model.valueComment.value.isEmpty() && model.valueComment.comment.isEmpty())
+                return entry.getKey();
+        }
 
-//        return dataList.stream().anyMatch(vc -> (vc.comment + vc.value).isEmpty());
+        return null;
     }
 
     private AbstractValueCommentItemView createItemView(ValueComment vc){
@@ -123,8 +115,8 @@ public abstract class ValueCommentActivity implements Activity, AbstractValueCom
         return itemView;
     }
 
-//    @Inject
-//    Provider<AbstractValueCommentListView> listFactory;
+    @Inject
+    Provider<AbstractValueCommentListView> listFactory;
 
     @Inject
     Provider<AbstractValueCommentItemView> itemFactory;

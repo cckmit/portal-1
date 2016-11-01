@@ -3,7 +3,6 @@ package ru.protei.portal.ui.common.client.activity.valuecomment;
 import com.google.gwt.user.client.ui.HasWidgets;
 import ru.protei.portal.ui.common.client.view.valuecomment.ValueComment;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
