@@ -13,6 +13,9 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.CompanyGroup;
 import ru.protei.portal.ui.common.client.service.NameStatus;
+import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
+import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextArea;
+import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.company.client.activity.edit.AbstractCompanyEditActivity;
 import ru.protei.portal.ui.company.client.activity.edit.AbstractCompanyEditView;
 import ru.protei.portal.ui.company.client.widget.group.inputselector.GroupInputSelector;
@@ -38,10 +41,14 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     }
 
     @Override
+    public HasValidable companyNameValidator() {
+        return companyName;
+    }
+
+    @Override
     public void setCompanyNameStatus(NameStatus status) {
         verifiableIcon.setClassName(status.getStyle());
     }
-
 
     @Override
     public HasText actualAddress() {
@@ -49,7 +56,17 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     }
 
     @Override
+    public HasValidable actualAddressValidator() {
+        return actualAddress;
+    }
+
+    @Override
     public HasText legalAddress() {
+        return legalAddress;
+    }
+
+    @Override
+    public HasValidable legalAddressValidator() {
         return legalAddress;
     }
 
@@ -126,16 +143,16 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     Button cancelButton;
 
     @UiField
-    TextBox companyName;
+    ValidableTextBox companyName;
 
     @UiField
     Element verifiableIcon;
 
     @UiField
-    TextArea actualAddress;
+    ValidableTextArea actualAddress;
 
     @UiField
-    TextArea legalAddress;
+    ValidableTextArea legalAddress;
 
     @UiField
     TextArea comment;
