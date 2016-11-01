@@ -3,12 +3,10 @@ package ru.protei.portal.ui.company.client.view.list;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
@@ -18,7 +16,6 @@ import ru.protei.portal.core.model.ent.CompanyGroup;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.platelist.PlateList;
 import ru.protei.portal.ui.common.client.widget.platelist.events.AddEvent;
-import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.company.client.activity.list.AbstractCompanyListActivity;
 import ru.protei.portal.ui.company.client.activity.list.AbstractCompanyListView;
@@ -30,12 +27,11 @@ import java.util.Set;
 /**
  * Вид формы списка компаний
  */
-public class CompanyListView extends Composite implements AbstractCompanyListView, KeyUpHandler {
+public class CompanyListView extends Composite implements AbstractCompanyListView {
 
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
-        initHandlers();
         search.getElement().setPropertyString( "placeholder", lang.search() );
     }
 
@@ -49,34 +45,28 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
     }
 
     @Override
-    public HasValue< String > getSearchPattern() {
+    public HasValue< String > searchPattern() {
         return search;
     }
 
     @Override
-    public HasValue< En_SortField > getSortField() {
+    public HasValue< En_SortField > sortField() {
         return sortField;
     }
 
     @Override
-    public HasValue< CompanyGroup > getGroup() {
+    public HasValue< CompanyGroup > group() {
         return group;
     }
 
     @Override
-    public HasValue< Set < CompanyCategory > > getCategories() {
+    public HasValue< Set < CompanyCategory > > categories() {
         return categories;
     }
 
     @Override
-    public HasValue< Boolean > getSortDir() {
+    public HasValue< Boolean > sortDir() {
         return sortDir;
-    }
-
-    @Override
-    public void onKeyUp( KeyUpEvent keyUpEvent ) {
-        timer.cancel();
-        timer.schedule( 300 );
     }
 
     @Override
@@ -88,8 +78,8 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
         search.setText( "" );
     }
 
-    @UiHandler( "sortField" )
-    public void onSortFieldSelected( ValueChangeEvent< En_SortField > event ) {
+    @UiHandler( "categories" )
+    public void onCompanyCategorySelected( ValueChangeEvent< Set< CompanyCategory> > event ) {
         if ( activity != null ) {
             activity.onFilterChanged();
         }
@@ -102,8 +92,8 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
         }
     }
 
-    @UiHandler( "categories" )
-    public void onCompanyCategorySelected( ValueChangeEvent< Set< CompanyCategory> > event ) {
+    @UiHandler( "sortField" )
+    public void onSortFieldSelected( ValueChangeEvent< En_SortField > event ) {
         if ( activity != null ) {
             activity.onFilterChanged();
         }
@@ -122,16 +112,17 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
         }
     }
 
+    @UiHandler( "search" )
+    public void onKeyUpSearch( KeyUpEvent event ) {
+        timer.cancel();
+        timer.schedule( 300 );
+    }
+
     @UiHandler( "childContainer" )
     public void onAddClicked( AddEvent event ) {
         if ( activity != null ) {
             activity.onCreateClicked();
         }
-    }
-
-    private void initHandlers() {
-        search.sinkEvents( Event.ONKEYUP );
-        search.addHandler( this, KeyUpEvent.getType() );
     }
 
     @UiField

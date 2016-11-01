@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.contact.client.activity.table;
 
+import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -43,6 +44,16 @@ public abstract class ContactTableActivity implements AbstractContactTableActivi
     @Event
     public void onInitDetails( AppEvents.InitDetails initDetails ) {
         this.initDetails = initDetails;
+    }
+
+    @Override
+    public void onItemClicked( Person value ) {
+        Window.alert( "Clicked on contact!" );
+    }
+
+    @Override
+    public void onActionClicked( Person value ) {
+        Window.alert( "Clicked on edit icon!" );
     }
 
     @Override

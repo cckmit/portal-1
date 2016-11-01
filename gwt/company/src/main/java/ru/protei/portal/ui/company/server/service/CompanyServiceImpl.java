@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
  * Реализация сервиса по работе с компаниями
  */
 @Service( "CompanyService" )
-public class CompanyServiceImpl extends RemoteServiceServlet implements CompanyService {
+public class CompanyServiceImpl implements CompanyService {
 
     @Override
     public List< Company > getCompanies( String searchPattern, Set< CompanyCategory > categories, CompanyGroup group, En_SortField sortField, Boolean sortDir) throws RequestFailedException {

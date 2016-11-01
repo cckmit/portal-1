@@ -27,11 +27,8 @@ public class CompanyButtonSelector extends ButtonSelector< Company > implements 
         if ( hasAnyValue ) {
             addOption( lang.company(), null );
         }
-        int recNum = 0;
         for ( Company company : companies ) {
             addOption( company.getCname(), company );
-            if ( ++ recNum > 20 )
-                break;
         }
     }
 

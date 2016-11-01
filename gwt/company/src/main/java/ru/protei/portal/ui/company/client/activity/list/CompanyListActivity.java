@@ -83,8 +83,8 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
         if ( fillViewHandler != null ) {
             fillViewHandler.cancel();
         }
-        companyService.getCompanies( view.getSearchPattern().getValue(), view.getCategories().getValue(), view.getGroup().getValue(),
-                view.getSortField().getValue(), view.getSortDir().getValue(), new RequestCallback< List < Company > >() {
+        companyService.getCompanies( view.searchPattern().getValue(), view.categories().getValue(), view.group().getValue(),
+                view.sortField().getValue(), view.sortDir().getValue(), new RequestCallback< List < Company > >() {
 
             @Override
             public void onError( Throwable throwable ) {

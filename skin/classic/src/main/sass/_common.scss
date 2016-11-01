@@ -206,6 +206,8 @@
   -webkit-box-shadow: 1px 1px 3px -1px rgba(136,153,178,0.68);
   border: 1px solid #ced2d7;
   border-top: 0;
+  max-height: 200px;
+  overflow-y: auto;
 }
 
 .dropdown-menu ul > li > a {
@@ -243,24 +245,33 @@
 
 .local-search input { padding-right: 25px; }
 
-.local-search .local-search-icon {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-}
-
 .icon {
   display: inline-block;
   font-family: 'icomoon';
   font-style: normal;
-  font-weight: 600;
+  font-weight: normal;
   line-height: 1;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+.local-search .local-search-icon {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-weight: 600;
+}
+
 .local-search-icon:before {
   content: "\e904";
+}
+
+.edit-icon {
+  font-size: 14px;
+}
+
+.edit-icon:before {
+  content: "\e915";
 }
 
 /** GLOBAL SEARCH **/
@@ -491,6 +502,8 @@ label.bordered:after{
   max-width: 100%;
   margin-bottom: 20px;
   background-color: #f6f7f8;
+  //border: 1px solid;
+  //border-color: #ced2d7 #c5cad0 #ced2d7;
 }
 
 .table > thead > tr > th,
@@ -511,6 +524,10 @@ label.bordered:after{
   text-align: left;
 }
 
-.table-hover > tbody > tr:hover {
+.table-hover .table > tbody > tr:hover {
   background-color: white;
+}
+
+.table > tbody > tr .selected {
+  background-color: #ddd;
 }

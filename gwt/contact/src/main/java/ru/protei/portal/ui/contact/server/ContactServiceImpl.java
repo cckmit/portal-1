@@ -17,7 +17,7 @@ import java.util.List;
  * Реализация сервиса по работе с контактами
  */
 @Service( "ContactService" )
-public class ContactServiceImpl extends RemoteServiceServlet implements ContactService {
+public class ContactServiceImpl implements ContactService {
 
     @Override
     public List<Person> getContacts(String searchPattern, Company company, int isFired, En_SortField sortField, Boolean sortDir) throws RequestFailedException {

@@ -25,5 +25,5 @@
                 <g:TextBox ui:field="search" styleName="inputField"/>
             </div>
         </div>
-        <table:TableWidget ui:field="table" styleName="table table-hover"/>
+        <table:TableWidget ui:field="table" styleName="table-hover"/>
     </g:HTMLPanel></ui:UiBinder>
