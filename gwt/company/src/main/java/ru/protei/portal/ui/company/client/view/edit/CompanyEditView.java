@@ -13,6 +13,9 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.CompanyGroup;
 import ru.protei.portal.ui.common.client.service.NameStatus;
+import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
+import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextArea;
+import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.company.client.activity.edit.AbstractCompanyEditActivity;
 import ru.protei.portal.ui.company.client.activity.edit.AbstractCompanyEditView;
 import ru.protei.portal.ui.company.client.widget.group.inputselector.GroupInputSelector;
@@ -33,7 +36,7 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     }
 
     @Override
-    public HasText companyName() {
+    public HasValidable companyName() {
         return companyName;
     }
 
@@ -42,14 +45,13 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
         verifiableIcon.setClassName(status.getStyle());
     }
 
-
     @Override
-    public HasText actualAddress() {
+    public HasValidable actualAddress() {
         return actualAddress;
     }
 
     @Override
-    public HasText legalAddress() {
+    public HasValidable legalAddress() {
         return legalAddress;
     }
 
@@ -66,15 +68,6 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     @Override
     public HasValue<CompanyGroup> companyGroup() {
         return companyGroup;
-    }
-
-    @Override
-    public void markAsCorrect(HasText field, boolean isCorrect) {
-        if(isCorrect)
-            ((Widget)field).removeStyleName("error");
-        else
-            ((Widget)field).addStyleName("error");
-
     }
 
     @UiHandler( "saveButton" )
@@ -135,16 +128,16 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     Button cancelButton;
 
     @UiField
-    TextBox companyName;
+    ValidableTextBox companyName;
 
     @UiField
     Element verifiableIcon;
 
     @UiField
-    TextArea actualAddress;
+    ValidableTextArea actualAddress;
 
     @UiField
-    TextArea legalAddress;
+    ValidableTextArea legalAddress;
 
     @UiField
     TextArea comment;

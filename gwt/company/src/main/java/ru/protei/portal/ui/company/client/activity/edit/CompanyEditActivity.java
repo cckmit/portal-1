@@ -11,6 +11,7 @@ import ru.protei.portal.ui.common.client.events.CompanyEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.NameStatus;
+import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.company.client.service.CompanyServiceAsync;
 
@@ -46,7 +47,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
     @Override
     public void onSaveClicked() {
-        if(!checkRequiredFields())
+        if(!validateFieldsAndGetResult())
             return;
 
         companyService.isCompanyNameExists(view.companyName().getText(), null, new RequestCallback<Boolean>() {
@@ -120,14 +121,24 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
     }
 
-    private boolean checkRequiredFields(){
-        boolean isCorrect = true;
+    private boolean validateFieldAndGetResult(HasValidable field){
+        if(field.getText().trim().isEmpty()){
+            field.makeAsIncorrect();
+            return false;
+        }
+        else
+            field.makeAsCorrect();
+        return true;
+    }
 
-        view.markAsCorrect(view.companyName(), !view.companyName().getText().trim().isEmpty() || (isCorrect = false));
+    private boolean validateFieldsAndGetResult(){
+        boolean isCorrect;
 
-        view.markAsCorrect(view.actualAddress(), !view.actualAddress().getText().trim().isEmpty() || (isCorrect = false));
+        isCorrect = validateFieldAndGetResult(view.companyName());
 
-        view.markAsCorrect(view.legalAddress(), !view.legalAddress().getText().trim().isEmpty() || (isCorrect = false));
+        isCorrect = validateFieldAndGetResult(view.actualAddress()) && isCorrect;
+
+        isCorrect = validateFieldAndGetResult(view.legalAddress()) && isCorrect;
 
         return isCorrect;
     }
@@ -141,10 +152,10 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         view.comment().setText("");
         view.companyGroup().setValue(null);
 
-        view.markAsCorrect(view.companyName(), true);
-        view.markAsCorrect(view.actualAddress(), true);
-        view.markAsCorrect(view.legalAddress(), true);
 
+        view.companyName().makeAsCorrect();
+        view.actualAddress().makeAsCorrect();
+        view.legalAddress().makeAsCorrect();
     }
 
 
