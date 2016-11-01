@@ -7,24 +7,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by bondarenko on 31.10.16.
+ * Модель элемента
  */
 public class ValueCommentModel {
 
-    public ValueCommentModel(HasWidgets parent, List<AbstractValueCommentItemView> data){
+    public ValueCommentModel(HasWidgets parent, List<ValueComment> data, ValueComment vc){
         this.parent = parent;
         this.data = data;
+        this.valueComment = vc;
     }
 
     public HasWidgets parent;
-    public List<AbstractValueCommentItemView> data;
-
-    public List<ValueComment> getData(){
-        List<ValueComment> dataList = new ArrayList<>();
-        data.forEach(item -> dataList.add(new ValueComment(item.value().getText(), item.comment().getText())));
-        return dataList;
-    }
-
+    public ValueComment valueComment;
+    public List<ValueComment> data;
 
 
 }

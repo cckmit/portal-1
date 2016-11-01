@@ -10,16 +10,11 @@ import ru.protei.portal.ui.common.client.activity.valuecomment.AbstractValueComm
 import ru.protei.portal.ui.common.client.activity.valuecomment.AbstractValueCommentListView;
 
 /**
- * Created by bondarenko on 28.10.16.
+ * Представление списка
  */
 public class ValueCommentListView extends Composite implements AbstractValueCommentListView{
     public ValueCommentListView() {
         initWidget(ourUiBinder.createAndBindUi(this));
-    }
-
-    @Override
-    public void setActivity(AbstractValueCommentListActivity activity) {
-        this.activity = activity;
     }
 
     @Override
@@ -29,10 +24,6 @@ public class ValueCommentListView extends Composite implements AbstractValueComm
 
     @UiField
     HTMLPanel root;
-
-
-    AbstractValueCommentListActivity activity;
-
 
     private static ValueCommentListViewUiBinder ourUiBinder = GWT.create(ValueCommentListViewUiBinder.class);
     interface ValueCommentListViewUiBinder extends UiBinder<HTMLPanel, ValueCommentListView> {}

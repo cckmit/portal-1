@@ -1,9 +1,9 @@
 package ru.protei.portal.ui.common.client.activity.valuecomment;
 
 /**
- * Created by bondarenko on 28.10.16.
+ * Абстракция активити элемента списка
  */
 public interface AbstractValueCommentItemActivity {
-    void onCreateClicked( AbstractValueCommentItemView item );
-    void onDeleteClicked( AbstractValueCommentItemView item );
+    void onChangeComment( AbstractValueCommentItemView item );
+    void onChangeValue( AbstractValueCommentItemView item );
 }

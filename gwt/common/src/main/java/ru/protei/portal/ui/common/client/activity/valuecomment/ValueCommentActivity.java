@@ -7,13 +7,15 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.ui.common.client.events.ValueCommentEvents;
 import ru.protei.portal.ui.common.client.view.valuecomment.ValueComment;
+import ru.protei.portal.ui.common.client.view.valuecomment.list.ValueCommentListView;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
- * Created by bondarenko on 28.10.16.
+ * Активити элемента и списка
  */
 public abstract class ValueCommentActivity implements Activity, AbstractValueCommentListActivity, AbstractValueCommentItemActivity {
 
@@ -22,68 +24,111 @@ public abstract class ValueCommentActivity implements Activity, AbstractValueCom
         if(event.data == null)
             return;
 
-        AbstractValueCommentListView listView = listFactory.get();
+        AbstractValueCommentListView listView = new ValueCommentListView();
         event.parent.clear();
         event.parent.add(listView.asWidget());
 
-        List<ValueComment> model = event.data;
-        HasWidgets parent = listView.getItemsContainer();
+        List<ValueComment> dataList = event.data;
 
-        parentToModelList.put(parent, model);
-
-        if(model.isEmpty())
-            addNewEmptyItem(parent);
+        if(dataList.isEmpty())
+            addNewEmptyItem(listView.getItemsContainer(), dataList);
         else
-            model.forEach(vc -> addNewItem(parent, vc));
+            addNewItems(listView.getItemsContainer(), dataList);
     }
 
     @Override
-    public void onCreateClicked(AbstractValueCommentItemView prevItem) {
-        prevItem.setFilled();
-        ValueComment vc = viewToModel.get(prevItem);
-        vc.comment = prevItem.comment().getText();
-        vc.value = prevItem.value().getText();
-
-        HasWidgets parent = modelToParent.get(viewToModel.get(prevItem));
-        addNewEmptyItem(parent);
+    public void onChangeComment(AbstractValueCommentItemView item) {
+        onChangeValueComment(item);
     }
 
     @Override
-    public void onDeleteClicked(AbstractValueCommentItemView item) {
+    public void onChangeValue(AbstractValueCommentItemView item) {
+        onChangeValueComment(item);
+    }
+
+
+    private void addNewItem(ValueComment vc, HasWidgets parent, List<ValueComment> dataList){
+        AbstractValueCommentItemView item = createItemView(vc);
+        dataList.add(vc);
+        parent.add(item.asWidget());
+        viewToModel.put(item, new ValueCommentModel(parent, dataList, vc));
+    }
+
+    private void addNewItems(HasWidgets parent, List<ValueComment> dataList){
+        dataList.forEach(vc -> addNewItem(vc, parent, dataList));
+    }
+
+    private void addNewEmptyItem(HasWidgets parent, List<ValueComment> dataList){
+        addNewItem(new ValueComment("",""), parent, dataList);
+    }
+
+    private void removeItem(AbstractValueCommentItemView item){
         item.asWidget().removeFromParent();
-
-        ValueComment vc = viewToModel.remove(item);
-        HasWidgets parent = modelToParent.remove(vc);
-        parentToModelList.get(parent).remove(vc);
+        ValueComment vc = viewToModel.get(item).valueComment;
+        viewToModel.get(item).data.remove(vc);
+        viewToModel.remove(item);
     }
 
-    private void addNewEmptyItem(HasWidgets listView){
-        ValueComment vc = new ValueComment("", "");
-        modelToParent.put(vc, listView);
-        parentToModelList.get(listView).add(vc);
+    private void onChangeValueComment(AbstractValueCommentItemView item){
+        ValueCommentModel model = viewToModel.get(item);
 
-        addNewItem(listView, vc);
+        String prevValue = model.valueComment.value;
+        String prevComment = model.valueComment.comment;
+        String newValue = item.value().getText().trim();
+        String newComment = item.comment().getText().trim();
+
+
+        if(newValue.equals(prevValue) && newComment.equals(prevComment))
+            return;
+
+        if((prevComment + prevValue).isEmpty())
+            addNewEmptyItem(model.parent, model.data);
+
+        else if((newValue + newComment).isEmpty() && model.data.size()!=1){
+            AbstractValueCommentItemView emptyItem = findEmptyItem(model.data);
+            if(emptyItem != null) {
+                removeItem(item); // delete current, leave empty
+                emptyItem.focused();
+                return;
+            }
+        }
+
+        model.valueComment.value = newValue;
+        model.valueComment.comment = newComment;
     }
 
-    private void addNewItem(HasWidgets listView, ValueComment vc){
+    private AbstractValueCommentItemView findEmptyItem(List<ValueComment> dataList){
+        Optional<Map.Entry<AbstractValueCommentItemView, ValueCommentModel>> result = viewToModel
+                .entrySet()
+                .stream()
+                .filter(e -> {
+                    ValueCommentModel model = e.getValue();
+                    return model.data == dataList && (model.valueComment.value + model.valueComment.comment).isEmpty();
+                })
+                .findFirst();
+
+        if(result.isPresent())
+            return result.get().getKey();
+        else
+            return null;
+
+//        return dataList.stream().anyMatch(vc -> (vc.comment + vc.value).isEmpty());
+    }
+
+    private AbstractValueCommentItemView createItemView(ValueComment vc){
         AbstractValueCommentItemView itemView = itemFactory.get();
+        itemView.setActivity( this );
         itemView.value().setText(vc.value);
         itemView.comment().setText(vc.comment);
-        itemView.setActivity( this );
-        itemView.setNew();
-        listView.add(itemView.asWidget());
-        itemView.focused();
-        viewToModel.put(itemView, vc);
+        return itemView;
     }
 
-    @Inject
-    Provider<AbstractValueCommentListView> listFactory;
+//    @Inject
+//    Provider<AbstractValueCommentListView> listFactory;
 
     @Inject
     Provider<AbstractValueCommentItemView> itemFactory;
 
+    Map<AbstractValueCommentItemView, ValueCommentModel> viewToModel = new HashMap<>();
 
-    Map<AbstractValueCommentItemView, ValueComment> viewToModel = new HashMap<>();
-    Map<ValueComment, HasWidgets> modelToParent = new HashMap<>();
-    Map<HasWidgets, List<ValueComment>> parentToModelList = new HashMap<>();
 }

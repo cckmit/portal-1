@@ -24,9 +24,9 @@ public class CommonClientModule extends AbstractGinModule {
         bind( NotifyActivity.class ).asEagerSingleton();
         bind( AbstractNotifyView.class ).to( NotifyView.class );
 
+        bind( ValueCommentActivity.class ).asEagerSingleton();
         bind( AbstractValueCommentListView.class ).to( ValueCommentListView.class );
         bind( AbstractValueCommentItemView.class ).to( ValueCommentItemView.class );
-        bind( ValueCommentActivity.class ).asEagerSingleton();
     }
 }
 

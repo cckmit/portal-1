@@ -501,12 +501,14 @@ label.bordered:after{
   margin-top: 7px;
 }
 
-.autoadd-vc-item .inputField{
-  margin-right: 7px;
-}
+//.autoadd-vc-item .inputField{
+//  margin-right: 7px;
+//}
 
 // value input field style
-.autoadd-vc-item-v{}
+.autoadd-vc-item-v{
+  margin-right: 7px;
+}
 
 // comment input field style
 .autoadd-vc-item-c{

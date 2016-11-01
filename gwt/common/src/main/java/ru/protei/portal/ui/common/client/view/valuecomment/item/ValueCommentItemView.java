@@ -1,8 +1,7 @@
 package ru.protei.portal.ui.common.client.view.valuecomment.item;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Element;
-import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -10,15 +9,15 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.activity.valuecomment.AbstractValueCommentItemActivity;
 import ru.protei.portal.ui.common.client.activity.valuecomment.AbstractValueCommentItemView;
-import ru.protei.portal.ui.common.client.activity.valuecomment.ValueCommentStatus;
-import ru.protei.portal.ui.common.client.view.valuecomment.ValueComment;
+import ru.protei.portal.ui.common.client.lang.Lang;
 
 /**
- * Created by bondarenko on 28.10.16.
+ * Представление элемента
  */
 public class ValueCommentItemView extends Composite implements AbstractValueCommentItemView {
     public ValueCommentItemView() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        comment.getElement().setPropertyString( "placeholder", lang.comment() );
     }
 
     @Override
@@ -41,28 +40,14 @@ public class ValueCommentItemView extends Composite implements AbstractValueComm
         value.setFocus(true);
     }
 
-    @Override
-    public void setNew() {
-        button.removeStyleName(ValueCommentStatus.FILLED.getButtonColor());
-        button.addStyleName(ValueCommentStatus.NEW.getButtonColor());
-        icon.setClassName(ValueCommentStatus.NEW.getButtonIcon());
-        status = ValueCommentStatus.NEW;
+    @UiHandler( "comment" )
+    public void onChangeCommentField( KeyUpEvent event ) {
+        activity.onChangeComment(this);
     }
 
-    @Override
-    public void setFilled() {
-        button.removeStyleName(ValueCommentStatus.NEW.getButtonColor());
-        button.addStyleName(ValueCommentStatus.FILLED.getButtonColor());
-        icon.setClassName(ValueCommentStatus.FILLED.getButtonIcon());
-        status = ValueCommentStatus.FILLED;
-    }
-
-    @UiHandler( "button" )
-    public void onMenuClicked( ClickEvent event ) {
-        if(status == ValueCommentStatus.NEW)
-            activity.onCreateClicked(this);
-        else
-            activity.onDeleteClicked(this);
+    @UiHandler( "value" )
+    public void onChangeInputField( KeyUpEvent event ) {
+        activity.onChangeValue(this);
     }
 
 
@@ -70,13 +55,12 @@ public class ValueCommentItemView extends Composite implements AbstractValueComm
     TextBox value;
     @UiField
     TextBox comment;
+
+    @Inject
     @UiField
-    Button button;
-    @UiField
-    Element icon;
+    Lang lang;
 
     AbstractValueCommentItemActivity activity;
-    ValueCommentStatus status;
 
     private static ValueCommentItemViewUiBinder ourUiBinder = GWT.create(ValueCommentItemViewUiBinder.class);
     interface ValueCommentItemViewUiBinder extends UiBinder<HTMLPanel, ValueCommentItemView> {}

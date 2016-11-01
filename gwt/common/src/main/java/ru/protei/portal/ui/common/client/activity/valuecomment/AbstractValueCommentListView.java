@@ -5,11 +5,9 @@ import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.ui.common.client.widget.autoaddvaluecomment.ValueCommentDataList;
 
 /**
- * Created by bondarenko on 28.10.16.
+ * Абстракция представления списка
  */
 public interface AbstractValueCommentListView extends IsWidget{
-
-    void setActivity(AbstractValueCommentListActivity activity);
 
     HasWidgets getItemsContainer();
 

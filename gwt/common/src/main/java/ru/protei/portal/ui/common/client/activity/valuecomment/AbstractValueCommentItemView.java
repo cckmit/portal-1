@@ -5,7 +5,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.ui.common.client.view.valuecomment.ValueComment;
 
 /**
- * Created by bondarenko on 28.10.16.
+ * Абстракция представления элемента списка
  */
 public interface AbstractValueCommentItemView extends IsWidget {
     void setActivity(AbstractValueCommentItemActivity activity);
@@ -14,6 +14,4 @@ public interface AbstractValueCommentItemView extends IsWidget {
     HasText comment();
 
     void focused();
-    void setNew();
-    void setFilled();
 }

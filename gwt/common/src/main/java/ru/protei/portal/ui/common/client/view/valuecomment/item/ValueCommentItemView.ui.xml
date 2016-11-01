@@ -5,8 +5,5 @@
     <g:HTMLPanel styleName="autoadd-vc-item">
         <g:TextBox ui:field="value" styleName="inputField autoadd-vc-item-v"/>
         <g:TextBox ui:field="comment" styleName="inputField autoadd-vc-item-c"/>
-        <g:Button ui:field="button" styleName="button empty">
-            <i ui:field="icon"/>
-        </g:Button>
     </g:HTMLPanel>
 </ui:UiBinder>
