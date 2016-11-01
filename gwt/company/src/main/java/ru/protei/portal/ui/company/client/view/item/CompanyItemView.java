@@ -2,14 +2,12 @@ package ru.protei.portal.ui.company.client.view.item;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.dom.client.HeadingElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.HasWidgets;
-import com.google.gwt.user.client.ui.PushButton;
+import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.ui.company.client.activity.item.AbstractCompanyItemActivity;
 import ru.protei.portal.ui.company.client.activity.item.AbstractCompanyItemView;
 
@@ -60,15 +58,17 @@ public class CompanyItemView extends Composite implements AbstractCompanyItemVie
     }
 
     @UiField
-    DivElement name;
+    HeadingElement name;
     @UiField
     DivElement type;
     @UiField
-    PushButton menuButton;
+    Anchor menuButton;
     @UiField
-    PushButton favoriteButton;
+    Anchor favoriteButton;
     @UiField
     HTMLPanel previewContainer;
+    @UiField
+    HTMLPanel root;
 
     AbstractCompanyItemActivity activity;
 

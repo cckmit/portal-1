@@ -56,8 +56,7 @@ public abstract class ProductListActivity implements AbstractProductListActivity
     public void onCreateClicked( ) { fireEvent(new ProductEvents.Edit()); }
 
     @Override
-    public void onUpdateClicked( AbstractProductItemView itemView ) {
-
+    public void onEditClicked( AbstractProductItemView itemView ) {
         fireEvent( new ProductEvents.Edit( modelToView.get( itemView ).getId()  ) );
     }
 

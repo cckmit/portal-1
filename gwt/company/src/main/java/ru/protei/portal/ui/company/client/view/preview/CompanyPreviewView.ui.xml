@@ -3,7 +3,7 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="OrganizationPassport">
+    <g:HTMLPanel styleName="">
         <div class="mainInfo">
             <div class="t_wrapper">
                 <div class="tc_wrapper">

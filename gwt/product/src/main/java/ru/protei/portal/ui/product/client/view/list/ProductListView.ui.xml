@@ -5,7 +5,7 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="productListsBlock reportBlock">
+    <g:HTMLPanel styleName="main-content">
         <div class="controlButtons">
             <div class="buttons_group">
                 <sortField:SortFieldSelector ui:field="sortFields" header="{lang.sortBy}"/>
@@ -22,7 +22,7 @@
 
         <div class="block low">
             <platelist:PlateList ui:field="productContainer"
-                                 styleName="productList plate-list"
+                                 styleName="plate-list"
                                  createButtonCaption="{lang.buttonCreate}"
                                  createButtonStyleName="plate-list-create"
             />

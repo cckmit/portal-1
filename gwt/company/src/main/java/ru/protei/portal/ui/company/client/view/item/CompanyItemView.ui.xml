@@ -1,12 +1,31 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'>
-    <g:HTMLPanel tag="li" styleName="organization">
-        <div class="wrapper">
-            <div ui:field="type" class="type"/>
-            <div ui:field="name" class="name"/>
-            <g:PushButton ui:field="menuButton" styleName="menu_button"/>
-            <g:PushButton ui:field="favoriteButton" styleName="favorite_button"/>
+
+    <g:HTMLPanel ui:field="root" tag="li">
+        <div class="header-block">
+            <h2 ui:field="name"></h2>
+            <p>
+                <g:Anchor ui:field="menuButton" styleName="fa fa-fw fa-pencil" href="#"/>
+                <g:Anchor ui:field="favoriteButton" styleName="fa fa-fw fa-heart" href="#"/>
+            </p>
+
+            <div class="contacts">
+                <i class="fa fa-phone"></i>
+                <span>8-(812)-123-45-67</span>
+            </div>
+            <div class="contacts">
+                <i class="fa fa-envelope"></i>
+                <a href="#">big-company@company.ru</a>
+            </div>
+            <div class="contacts">
+                <i class="fa fa-globe"></i>
+                <a href="#">http://website.com</a>
+            </div>
         </div>
+
+        <div ui:field="type" class="type" style="display:none"/>
+
+
         <g:HTMLPanel ui:field="previewContainer" styleName="plate-list-expander"/>
     </g:HTMLPanel>
 </ui:UiBinder>
