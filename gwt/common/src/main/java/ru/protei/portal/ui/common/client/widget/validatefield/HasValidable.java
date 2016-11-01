@@ -1,13 +1,10 @@
 package ru.protei.portal.ui.common.client.widget.validatefield;
 
-import com.google.gwt.user.client.ui.HasText;
-
 /**
- * Интерфес установления/снятия ошибки
+ * Интерфес установки ошибки
  */
-public interface HasValidable extends HasText{
+public interface HasValidable{
 
-    void makeAsCorrect();
-    void makeAsIncorrect();
+    void setValid(boolean isValid);
 
 }

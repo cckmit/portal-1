@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.company.client.activity.edit;
 
+import com.google.gwt.user.client.ui.HasText;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -121,24 +122,20 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
     }
 
-    private boolean validateFieldAndGetResult(HasValidable field){
-        if(field.getText().trim().isEmpty()){
-            field.makeAsIncorrect();
-            return false;
-        }
-        else
-            field.makeAsCorrect();
-        return true;
+    private boolean validateFieldAndGetResult(HasValidable validator, HasText field){
+        boolean result = !field.getText().trim().isEmpty();
+        validator.setValid(result);
+        return result;
     }
 
     private boolean validateFieldsAndGetResult(){
         boolean isCorrect;
 
-        isCorrect = validateFieldAndGetResult(view.companyName());
+        isCorrect = validateFieldAndGetResult(view.companyNameValidator(), view.companyName());
 
-        isCorrect = validateFieldAndGetResult(view.actualAddress()) && isCorrect;
+        isCorrect = validateFieldAndGetResult(view.actualAddressValidator(), view.actualAddress()) && isCorrect;
 
-        isCorrect = validateFieldAndGetResult(view.legalAddress()) && isCorrect;
+        isCorrect = validateFieldAndGetResult(view.legalAddressValidator(), view.legalAddress()) && isCorrect;
 
         return isCorrect;
     }
@@ -153,9 +150,10 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         view.companyGroup().setValue(null);
 
 
-        view.companyName().makeAsCorrect();
-        view.actualAddress().makeAsCorrect();
-        view.legalAddress().makeAsCorrect();
+        // reset validation
+        view.companyNameValidator().setValid(true);
+        view.actualAddressValidator().setValid(true);
+        view.legalAddressValidator().setValid(true);
     }
 
 

@@ -36,7 +36,12 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     }
 
     @Override
-    public HasValidable companyName() {
+    public HasText companyName() {
+        return companyName;
+    }
+
+    @Override
+    public HasValidable companyNameValidator() {
         return companyName;
     }
 
@@ -46,12 +51,22 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     }
 
     @Override
-    public HasValidable actualAddress() {
+    public HasText actualAddress() {
         return actualAddress;
     }
 
     @Override
-    public HasValidable legalAddress() {
+    public HasValidable actualAddressValidator() {
+        return actualAddress;
+    }
+
+    @Override
+    public HasText legalAddress() {
+        return legalAddress;
+    }
+
+    @Override
+    public HasValidable legalAddressValidator() {
         return legalAddress;
     }
 

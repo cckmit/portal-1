@@ -1,16 +1,15 @@
 package ru.protei.portal.ui.common.client.widget.validatefield;
 
 /**
- * TextBox c возможностью установления состояния ошибки
+ * TextBox c возможностью валидации
  */
 public class ValidableTextBox extends com.google.gwt.user.client.ui.TextBox implements HasValidable{
-    @Override
-    public void makeAsCorrect() {
-        removeStyleName("error");
-    }
 
     @Override
-    public void makeAsIncorrect() {
-        addStyleName("error");
+    public void setValid(boolean isValid) {
+        if(isValid)
+            removeStyleName("error");
+        else
+            addStyleName("error");
     }
 }

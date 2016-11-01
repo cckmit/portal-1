@@ -1,17 +1,19 @@
 package ru.protei.portal.ui.common.client.widget.validatefield;
 
 
+import com.google.gwt.user.client.ui.TextArea;
+
 /**
- * Created by bondarenko on 01.11.16.
+ * TextArea c возможностью валидации
  */
-public class ValidableTextArea extends com.google.gwt.user.client.ui.TextArea implements HasValidable{
-    @Override
-    public void makeAsCorrect() {
-        removeStyleName("error");
-    }
+public class ValidableTextArea extends TextArea implements HasValidable{
 
     @Override
-    public void makeAsIncorrect() {
-        addStyleName("error");
+    public void setValid(boolean isValid) {
+        if(isValid)
+            removeStyleName("error");
+        else
+            addStyleName("error");
     }
+
 }
