@@ -113,6 +113,11 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
             }
         }
 
+        if (query.getFired() != null) {
+            filter.append(" and isfired=?");
+            args.add(query.getFired() ? 1 : 0);
+        }
+
         filter.append(" and displayName like ?");
         args.add(HelperFunc.makeLikeArg(query.getSearchString(), true));
 

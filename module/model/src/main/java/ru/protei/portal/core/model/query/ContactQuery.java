@@ -9,12 +9,15 @@ import ru.protei.portal.core.model.dict.En_SortField;
 public class ContactQuery extends BaseQuery {
 
     private Long companyId;
+    private Boolean fired;
 
     public ContactQuery() {
+        fired = false;
     }
 
-    public ContactQuery(String searchString, En_SortField sortField, En_SortDir sortDir) {
+    public ContactQuery(Long companyId, String searchString, En_SortField sortField, En_SortDir sortDir) {
         super(searchString, sortField, sortDir);
+        this.companyId = companyId;
     }
 
     public Long getCompanyId() {
@@ -23,5 +26,13 @@ public class ContactQuery extends BaseQuery {
 
     public void setCompanyId(Long companyId) {
         this.companyId = companyId;
+    }
+
+    public Boolean getFired() {
+        return fired;
+    }
+
+    public void setFired(Boolean fired) {
+        this.fired = fired;
     }
 }

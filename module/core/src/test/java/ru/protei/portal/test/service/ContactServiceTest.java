@@ -48,10 +48,18 @@ public class ContactServiceTest {
 
         Assert.assertNotNull(service);
 
-        HttpListResult<Person> result = service.contactList(new ContactQuery("Михаил", En_SortField.person_full_name, En_SortDir.ASC));
+        CoreResponse<List<Person>> result = service.contactList(new ContactQuery(null, "Михаил", En_SortField.person_full_name, En_SortDir.ASC));
 
         Assert.assertNotNull(result);
-        Assert.assertNotNull(result.getItems());
-        Assert.assertTrue(result.getTotalSize() > 0);
+        Assert.assertTrue(result.isOk());
+        Assert.assertNotNull(result.getData());
+        Assert.assertTrue(result.getData().size() > 0);
+
+        for (Person person : result.getData()) {
+            CoreResponse<Person> x = service.getContact(person.getId());
+            Assert.assertTrue(x.isOk());
+            Assert.assertEquals(person.getId(), x.getData().getId());
+            Assert.assertEquals(person.getDisplayName(), x.getData().getDisplayName());
+        }
     }
 }
