@@ -70,8 +70,9 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         view.firstName().setText(person.getFirstName());
         view.lastName().setText(person.getLastName());
         view.secondName().setText(person.getSecondName());
-
         view.displayName().setText(person.getId() == null ? "Enter name to display" : person.getDisplayName());
+        view.shortName().setText(person.getDisplayShortName());
+        view.birthDay().setValue(person.getBirthday());
 
         initDetails.parent.add(view.asWidget());
     }
