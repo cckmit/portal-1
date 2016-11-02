@@ -7,7 +7,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.ui.common.client.service.NameStatus;
 
 /**
- * Вид карточки создания/редактирования продукта
+ * Абстракция вида карточки создания/редактирования продукта
  */
 public interface AbstractProductEditView extends IsWidget {
 

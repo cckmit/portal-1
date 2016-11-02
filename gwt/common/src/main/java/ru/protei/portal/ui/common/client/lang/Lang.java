@@ -112,4 +112,5 @@ public interface Lang extends Messages {
 
     String companyCommonHeader();
 
+    String productDescription();
 }

@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.company.client.activity.list;
 
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -8,6 +9,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanyCategory;
+import ru.protei.portal.ui.common.client.animation.PlateListAnimation;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.CompanyEvents;
@@ -17,7 +19,6 @@ import ru.protei.portal.ui.common.client.service.PeriodicTaskService;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.company.client.activity.item.AbstractCompanyItemActivity;
 import ru.protei.portal.ui.company.client.activity.item.AbstractCompanyItemView;
-import ru.protei.portal.ui.common.client.animation.PlateListAnimation;
 import ru.protei.portal.ui.company.client.service.CompanyServiceAsync;
 
 import java.util.HashMap;
@@ -67,8 +68,8 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
             return;
         }
 
-        fireEvent( new CompanyEvents.ShowPreview( itemView.getPreviewContainer(), value ) );
-        animation.showPreview( itemView );
+        fireEvent(new CompanyEvents.ShowPreview(itemView.getPreviewContainer(), value));
+        animation.showPreview( itemView, (IsWidget) itemView.getPreviewContainer() );
     }
 
     @Override
