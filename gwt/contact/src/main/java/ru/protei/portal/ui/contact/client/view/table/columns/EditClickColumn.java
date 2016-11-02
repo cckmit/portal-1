@@ -4,20 +4,21 @@ import com.google.gwt.dom.client.AnchorElement;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.EventListener;
 import ru.brainworm.factory.widget.table.client.ColumnHeader;
 import ru.brainworm.factory.widget.table.client.ColumnValue;
 import ru.brainworm.factory.widget.table.client.helper.AbstractColumnHandler;
 
 /**
- * Колонка действий над контактом.
+ * Колонка редактирования контакта.
  */
-public abstract class ActionColumn< T > {
+public abstract class EditClickColumn< T > {
 
     public interface ActionHandler< T > extends AbstractColumnHandler< T > {
         void onActionClicked( T value );
     }
 
-    public ActionColumn() {}
+    public EditClickColumn() {}
 
     // пустой заголовок
     public ColumnHeader header = new ColumnHeader() {
@@ -52,6 +53,20 @@ public abstract class ActionColumn< T > {
             edit.setHref( "#" );
             edit.addClassName( "icon edit-icon" );
             cell.appendChild( edit );
+
+            DOM.sinkEvents( edit,Event.ONCLICK );
+            DOM.setEventListener(edit, new EventListener() {
+                @Override
+                public void onBrowserEvent(Event event) {
+                    if ( event.getTypeInt() != Event.ONCLICK ) {
+                        return;
+                    }
+
+                    if ( handler != null ) {
+                        handler.onActionClicked( value );
+                    }
+                }
+            });
         }
     };
 

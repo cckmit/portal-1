@@ -46,8 +46,7 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
         initDetails.parent.clear();
         initDetails.parent.add( view.asWidget() );
 
-        view.getChildContainer().clear();
-        initCompanies();
+        requestCompanies();
     }
 
     @Event
@@ -57,8 +56,7 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
 
     public void onFilterChanged() {
 
-        view.getChildContainer().clear();
-        initCompanies();
+        requestCompanies();
     }
 
     @Override
@@ -78,11 +76,15 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
         fireEvent(new CompanyEvents.Edit(null));
     }
 
-    private void initCompanies() {
+    private void requestCompanies() {
 
         if ( fillViewHandler != null ) {
             fillViewHandler.cancel();
         }
+
+        view.getChildContainer().clear();
+        map.clear();
+
         companyService.getCompanies( view.searchPattern().getValue(), view.categories().getValue(), view.group().getValue(),
                 view.sortField().getValue(), view.sortDir().getValue(), new RequestCallback< List < Company > >() {
 

@@ -22,31 +22,19 @@ import java.util.List;
 public class ContactServiceImpl implements ContactService {
 
     @Override
-    public List<Person> getContacts(String searchPattern, Company company, int isFired, En_SortField sortField, Boolean sortDir) throws RequestFailedException {
+    public List<Person> getContacts(String searchPattern, Company company, Boolean fired, En_SortField sortField, Boolean sortDir) throws RequestFailedException {
+        
+        log.debug( "getContacts(): searchPattern={} | company={} | isFired={} | sortField={} | sortDir={}",
+                searchPattern, company, fired, sortField, (sortDir ? En_SortDir.ASC : En_SortDir.DESC) );
+        
         ContactQuery query = new ContactQuery(company, searchPattern, sortField, sortDir ? En_SortDir.ASC : En_SortDir.DESC);
-
-        log.debug("before get contact list");
-
+        query.setFired(fired);
+        
         CoreResponse<List<Person>> response = contactService.contactList(query);
-
-        log.debug("after get contact list");
 
         if (response.isError()) {
             throw new RequestFailedException();
         }
-//        List< Person > list = new ArrayList<>();
-//        Person person = new Person();
-//        person.setCreated( new Date() );
-//        person.setFired( false );
-//        person.setFirstName( "Василий" );
-//        person.setLastName( "Пупкин" );
-//        person.setSecondName( "Васильевич" );
-//        person.setCompanyId( 2L);
-//        person.setDisplayName( "Пупкин Василий Васильевич");
-//        person.setDisplayShortName( "Пупкин В.В." );
-//        person.setPosition( "инженер" );
-//        person.setMobilePhone( "89996665544" );
-//        list.add(person);
         return response.getData();
     }
 

@@ -25,7 +25,7 @@ import ru.protei.portal.ui.company.client.widget.group.buttonselector.GroupButto
 import java.util.Set;
 
 /**
- * Вид формы списка компаний
+ * Представление списка компаний
  */
 public class CompanyListView extends Composite implements AbstractCompanyListView {
 

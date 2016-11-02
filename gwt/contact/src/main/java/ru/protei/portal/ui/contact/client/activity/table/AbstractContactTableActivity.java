@@ -2,12 +2,12 @@ package ru.protei.portal.ui.contact.client.activity.table;
 
 import ru.brainworm.factory.widget.table.client.helper.ClickColumn;
 import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.ui.contact.client.view.table.columns.ActionColumn;
+import ru.protei.portal.ui.contact.client.view.table.columns.EditClickColumn;
 
 /**
- * Created by turik on 28.10.16.
+ * Активность таблицы контактов
  */
-public interface AbstractContactTableActivity extends ClickColumn.Handler< Person >, ActionColumn.ActionHandler< Person > {
+public interface AbstractContactTableActivity extends ClickColumn.Handler< Person >, EditClickColumn.ActionHandler< Person > {
 
     void onFilterChanged();
 

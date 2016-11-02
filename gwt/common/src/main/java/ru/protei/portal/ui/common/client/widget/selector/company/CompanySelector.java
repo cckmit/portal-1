@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.contact.client.widget.company.buttonselector;
+package ru.protei.portal.ui.common.client.widget.selector.company;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.Company;
@@ -10,9 +10,9 @@ import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 import java.util.List;
 
 /**
- * Created by turik on 28.10.16.
+ * Селектор списка компаний
  */
-public class CompanyButtonSelector extends ButtonSelector< Company > implements ModelSelector < Company > {
+public class CompanySelector extends ButtonSelector< Company > implements ModelSelector < Company > {
 
     @Inject
     public void init( CompanyModel companyModel ) {
