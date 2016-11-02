@@ -19,10 +19,8 @@ public class ContactEvents {
     /**
      * Показать превью контакта
      */
-    @Url( value = "preview_contact", primary = false )
+//    @Url( value = "previewcontact", primary = false )
     public class ShowPreview {
-
-        public ShowPreview() {}
 
         public ShowPreview ( HasWidgets parent, Person contact )
         {

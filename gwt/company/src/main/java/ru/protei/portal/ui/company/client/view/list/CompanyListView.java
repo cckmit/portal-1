@@ -18,7 +18,6 @@ import ru.protei.portal.core.model.ent.CompanyGroup;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.platelist.PlateList;
 import ru.protei.portal.ui.common.client.widget.platelist.events.AddEvent;
-import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.company.client.activity.list.AbstractCompanyListActivity;
 import ru.protei.portal.ui.company.client.activity.list.AbstractCompanyListView;
@@ -36,7 +35,6 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
         initHandlers();
-        sortField.fillOptions( ModuleType.COMPANY );
         search.getElement().setPropertyString( "placeholder", lang.search() );
     }
 

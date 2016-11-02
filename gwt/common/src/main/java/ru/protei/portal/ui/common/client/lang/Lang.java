@@ -128,13 +128,15 @@ public interface Lang extends Messages {
 
     String contactSecondName();
 
-    String contactSex();
-
-    String contactBirhday();
+    String birthday();
 
     String contactDepartment();
 
     String fax();
 
     String address();
+    
+    String productDescription();
+
+    String sex();
 }

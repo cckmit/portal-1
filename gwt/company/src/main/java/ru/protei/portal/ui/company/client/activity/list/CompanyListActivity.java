@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.company.client.activity.list;
 
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -67,8 +68,8 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
             return;
         }
 
-        fireEvent( new CompanyEvents.ShowPreview( itemView.getPreviewContainer(), value ) );
-        animation.showPreview( itemView );
+        fireEvent(new CompanyEvents.ShowPreview(itemView.getPreviewContainer(), value));
+        animation.showPreview( itemView, (IsWidget) itemView.getPreviewContainer() );
     }
 
     @Override
