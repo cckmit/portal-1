@@ -14,7 +14,7 @@ import ru.brainworm.factory.widget.table.client.helper.AbstractColumnHandler;
 public abstract class ActionColumn< T > {
 
     public interface ActionHandler< T > extends AbstractColumnHandler< T > {
-        void onActionClicked( T value );
+        void onEditClick(T value );
     }
 
     public ActionColumn() {}
@@ -42,7 +42,7 @@ public abstract class ActionColumn< T > {
 
             event.preventDefault();
             if ( handler != null ) {
-                handler.onActionClicked( value );
+                handler.onEditClick( value );
             }
         }
 

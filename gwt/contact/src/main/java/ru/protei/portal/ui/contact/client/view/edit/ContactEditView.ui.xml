@@ -1,0 +1,89 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:single="urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.single"
+>
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+
+    <g:HTMLPanel styleName="panel">
+            <div class="body">
+                <div class="grid grid-indent">
+                    <div class="col-xs-3">
+                        <div>
+                            <label class="required">
+                                <ui:text from="{lang.lastName}"/>
+                            </label>
+                            <div class="panelField">
+                                <g:TextBox ui:field="lastName" styleName="inputField"/>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="required">
+                                <ui:text from="{lang.firstName}"/>
+                            </label>
+                            <div class="panelField">
+                                <g:TextBox ui:field="firstName" styleName="inputField"/>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="required">
+                                <ui:text from="{lang.secondName}"/>
+                            </label>
+                            <div class="panelField">
+                                <g:TextBox ui:field="secondName" styleName="inputField"/>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="required">
+                                <ui:text from="{lang.displayName}"/>
+                            </label>
+                            <div class="panelField">
+                                <g:TextBox ui:field="displayName" styleName="inputField"/>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="required">
+                                <ui:text from="{lang.displayShortName}"/>
+                            </label>
+                            <div class="panelField">
+                                <g:TextBox ui:field="shortName" styleName="inputField"/>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="required">
+                                <ui:text from="{lang.birthday}"/>
+                            </label>
+                            <div class="panelField">
+                                <single:SinglePicker ui:field="birthDay" />
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="required">
+                                <ui:text from="{lang.gender}"/>
+                            </label>
+                            <div class="panelField">
+
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="col-xs-6">
+                        <div>
+                            <h5>contact fields, phone, email, etc</h5>
+                        </div>
+                    </div>
+                    <div class="col-xs-3">
+                        <div>
+                            <h5>Personal data</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer">
+                <g:Button ui:field="saveButton" styleName="button greenC" text="{lang.save}"/>
+                <g:Button ui:field="cancelButton" styleName="button whiteC close_button" text="{lang.cancel}"/>
+            </div>
+    </g:HTMLPanel>
+</ui:UiBinder>

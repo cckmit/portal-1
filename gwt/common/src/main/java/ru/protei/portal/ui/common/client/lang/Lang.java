@@ -111,4 +111,20 @@ public interface Lang extends Messages {
     String contactPosition();
 
     String email();
+
+    String newContact ();
+
+    String firstName ();
+
+    String lastName ();
+
+    String secondName ();
+
+    String displayName ();
+
+    String displayShortName ();
+
+    String birthday ();
+
+    String gender ();
 }

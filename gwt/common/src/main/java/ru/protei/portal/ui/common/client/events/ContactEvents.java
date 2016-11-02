@@ -14,4 +14,16 @@ public class ContactEvents {
 
     }
 
+
+    @Url( value = "contact", primary = false )
+    public static class Edit {
+
+        public Long id;
+
+        public Edit() { this.id = null; }
+        public Edit (Long id) {
+            this.id = id;
+        }
+    }
 }
+

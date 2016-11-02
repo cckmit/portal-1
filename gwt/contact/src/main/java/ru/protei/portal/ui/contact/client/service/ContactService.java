@@ -26,4 +26,5 @@ public interface ContactService extends RemoteService {
      */
     List< Person > getContacts (String searchPattern, Company company, int isFired, En_SortField sortField, Boolean sortDir ) throws RequestFailedException;
 
+    Person getContact (long id) throws RequestFailedException;
 }

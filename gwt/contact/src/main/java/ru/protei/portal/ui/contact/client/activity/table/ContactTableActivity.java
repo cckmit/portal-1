@@ -1,15 +1,13 @@
 package ru.protei.portal.ui.contact.client.activity.table;
 
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.AuthEvents;
-import ru.protei.portal.ui.common.client.events.ContactEvents;
-import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.contact.client.service.ContactServiceAsync;
@@ -52,8 +50,15 @@ public abstract class ContactTableActivity implements AbstractContactTableActivi
     }
 
     @Override
-    public void onActionClicked( Person value ) {
-        Window.alert( "Clicked on edit icon!" );
+    public void onEditClick(Person value ) {
+        //Window.alert( "Clicked on edit icon!" );
+        fireEvent(new ContactEvents.Edit(value.getId()));
+    }
+
+
+    @Override
+    public void onCreateClick() {
+        fireEvent(new ContactEvents.Edit());
     }
 
     @Override

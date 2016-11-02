@@ -25,11 +25,11 @@ public class ContactServiceImpl implements ContactService {
     public List<Person> getContacts(String searchPattern, Company company, int isFired, En_SortField sortField, Boolean sortDir) throws RequestFailedException {
         ContactQuery query = new ContactQuery(company, searchPattern, sortField, sortDir ? En_SortDir.ASC : En_SortDir.DESC);
 
-        log.debug("before get contact list");
+//        log.debug("before get contact list");
 
         CoreResponse<List<Person>> response = contactService.contactList(query);
 
-        log.debug("after get contact list");
+//        log.debug("after get contact list");
 
         if (response.isError()) {
             throw new RequestFailedException();
@@ -47,6 +47,18 @@ public class ContactServiceImpl implements ContactService {
 //        person.setPosition( "инженер" );
 //        person.setMobilePhone( "89996665544" );
 //        list.add(person);
+        return response.getData();
+    }
+
+
+    @Override
+    public Person getContact(long id) throws RequestFailedException {
+        log.debug("get contact, id: " + id);
+
+        CoreResponse<Person> response = contactService.getContact(id);
+
+        log.debug("get contact, id: " + id + " -> " + (response.isError() ? "error" : ("ok, " + response.getData().getDisplayName())));
+
         return response.getData();
     }
 
