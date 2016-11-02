@@ -23,7 +23,7 @@ public class ContactServiceImpl implements ContactService {
 
     @Override
     public List<Person> getContacts(String searchPattern, Company company, int isFired, En_SortField sortField, Boolean sortDir) throws RequestFailedException {
-        ContactQuery query = new ContactQuery(company.getId(), searchPattern, sortField, sortDir ? En_SortDir.ASC : En_SortDir.DESC);
+        ContactQuery query = new ContactQuery(company, searchPattern, sortField, sortDir ? En_SortDir.ASC : En_SortDir.DESC);
 
         log.debug("before get contact list");
 
