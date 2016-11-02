@@ -46,7 +46,7 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
         authService.authentificate( view.getUserName(), view.getPassword(), new RequestCallback< Profile >() {
             @Override
             public void onError( Throwable caught ) {
-                view.showError("Ошибка! Неправильный логин или пароль");
+                view.showError( lang.errLoginOrPwd());
             }
 
             @Override
@@ -54,7 +54,7 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
                 view.hideError();
                 fireEvent(new AuthEvents.Success(profile ) );
                 fireEvent( new AppEvents.Show() );
-                fireEvent(new NotifyEvents.Show(lang.hello(), NotifyEvents.NotifyType.SUCCESS));
+                fireEvent(new NotifyEvents.Show(lang.msgHello(), NotifyEvents.NotifyType.SUCCESS));
             }
         } );
     }

@@ -8,6 +8,7 @@ import ru.protei.portal.ui.common.client.view.notify.NotifyView;
 import com.google.inject.Singleton;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
 import ru.protei.portal.ui.common.client.view.dialogdetails.DialogDetailsView;
+import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 /**
  * Описание классов фабрики
@@ -19,8 +20,11 @@ public class CommonClientModule extends AbstractGinModule {
 
         bind( NotifyActivity.class ).asEagerSingleton();
         bind( AbstractNotifyView.class ).to( NotifyView.class );
-
+        
         bind( CompanyModel.class ).asEagerSingleton();
+        
+        requestStaticInjection( RequestCallback.class );
+        
     }
 }
 

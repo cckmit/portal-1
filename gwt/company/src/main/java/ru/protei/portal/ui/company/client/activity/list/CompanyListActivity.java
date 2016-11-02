@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.company.client.activity.list;
 
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -8,16 +9,17 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanyCategory;
+import ru.protei.portal.ui.common.client.animation.PlateListAnimation;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.CompanyEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.CompanyServiceAsync;
 import ru.protei.portal.ui.common.client.service.PeriodicTaskService;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.company.client.activity.item.AbstractCompanyItemActivity;
 import ru.protei.portal.ui.company.client.activity.item.AbstractCompanyItemView;
-import ru.protei.portal.ui.common.client.service.CompanyServiceAsync;
 
 import java.util.HashMap;
 import java.util.List;
@@ -41,8 +43,7 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
 
     @Event
     public void onShow( CompanyEvents.Show event ) {
-
-        this.fireEvent( new AppEvents.InitPanelName( lang.companies() ) );
+        fireEvent(new AppEvents.InitPanelName(lang.companies()));
         initDetails.parent.clear();
         initDetails.parent.add( view.asWidget() );
 
@@ -55,25 +56,28 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
     }
 
     public void onFilterChanged() {
-
         requestCompanies();
     }
 
     @Override
     public void onMenuClicked( AbstractCompanyItemView itemView ) {
+        Company value = itemViewToModel.get( itemView );
+        if ( value == null ) {
+            return;
+        }
 
-        Window.alert( "Clicked on menu of company with id = " + map.get( itemView ).getId() + "!" );
+        fireEvent(new CompanyEvents.ShowPreview(itemView.getPreviewContainer(), value));
+        animation.showPreview(itemView, (IsWidget) itemView.getPreviewContainer());
     }
 
     @Override
-    public void onFavoriteClicked( AbstractCompanyItemView itemView ) {
-
-        Window.alert( "Clicked on favorite of company with id = " + map.get( itemView ).getId() + "!" );
+    public void onFavoriteClicked(AbstractCompanyItemView itemView) {
+        Window.alert( "Clicked on favorite of company with id = " + itemViewToModel.get( itemView ).getId() + "!" );
     }
 
     @Override
     public void onCreateClicked() {
-        fireEvent(new CompanyEvents.Edit(null));
+        fireEvent( new CompanyEvents.Edit ( null ));
     }
 
     private void requestCompanies() {
@@ -83,14 +87,14 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
         }
 
         view.getChildContainer().clear();
-        map.clear();
+        itemViewToModel.clear();
 
         companyService.getCompanies( view.searchPattern().getValue(), view.categories().getValue(), view.group().getValue(),
                 view.sortField().getValue(), view.sortDir().getValue(), new RequestCallback< List < Company > >() {
 
             @Override
             public void onError( Throwable throwable ) {
-                fireEvent(new NotifyEvents.Show(lang.errorGetList(), NotifyEvents.NotifyType.ERROR));
+                fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
             }
 
             @Override
@@ -105,7 +109,7 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
         public void accept( Company company ) {
             AbstractCompanyItemView itemView = makeView( company );
 
-            map.put( itemView, company );
+            itemViewToModel.put( itemView, company );
             view.getChildContainer().add( itemView.asWidget() );
         }
     };
@@ -137,9 +141,12 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
     @Inject
     PeriodicTaskService taskService;
 
+    @Inject
+    PlateListAnimation animation;
+
     PeriodicTaskService.PeriodicTaskHandler fillViewHandler;
 
-    private Map< AbstractCompanyItemView, Company > map = new HashMap< AbstractCompanyItemView, Company >();
+    private Map< AbstractCompanyItemView, Company > itemViewToModel = new HashMap< AbstractCompanyItemView, Company >();
 
     private AppEvents.InitDetails initDetails;
 }

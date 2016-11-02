@@ -1,7 +1,7 @@
 package ru.protei.portal.core.service.user;
 
 import org.apache.log4j.Logger;
-import ru.protei.portal.core.model.dict.En_AuthResult;
+import ru.protei.portal.core.model.dict.En_ResultStatus;
 
 import javax.naming.AuthenticationException;
 import javax.naming.Context;
@@ -23,7 +23,7 @@ public class LDAPAuthProvider {
 
     Logger logger = Logger.getLogger("logger-security");
 
-    public En_AuthResult checkAuth (String username, String pwd) {
+    public En_ResultStatus checkAuth (String username, String pwd) {
         Hashtable<Object,Object> env = new Hashtable<>();
 
         env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
@@ -49,21 +49,21 @@ public class LDAPAuthProvider {
                 if (uidAttr != null
                         && uidAttr.get() instanceof String
                         && ((String)uidAttr.get()).equals(username))
-                    return En_AuthResult.OK;
+                    return En_ResultStatus.OK;
             }
         }
         catch (AuthenticationException e) {
             logger.debug("invalid login or password for " + username +"/"+ e.getMessage());
-            return En_AuthResult.INVALID_LOGIN_OR_PWD;
+            return En_ResultStatus.INVALID_LOGIN_OR_PWD;
         }
         catch (NamingException e) {
             logger.error("LDAP auth error", e);
-            return En_AuthResult.INTERNAL_ERROR;
+            return En_ResultStatus.INTERNAL_ERROR;
         }
         finally {
             try { rootCtx.close(); } catch (Throwable e) {}
         }
 
-        return En_AuthResult.INVALID_LOGIN_OR_PWD;
+        return En_ResultStatus.INVALID_LOGIN_OR_PWD;
     }
 }

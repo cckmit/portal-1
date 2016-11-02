@@ -2,6 +2,7 @@ package ru.protei.portal.ui.common.client.widget.selector.base;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -9,6 +10,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -74,8 +76,8 @@ public abstract class Selector<T>
         SelectorItem itemView = itemFactory.get();
         itemView.setName( name );
         itemView.addClickHandler( this );
-        itemViewToModel.put( itemView, value );
-        itemToViewModel.put( value, itemView );
+        itemViewToModel.put(itemView, value);
+        itemToViewModel.put(value, itemView);
         if ( value == null ) {
             nullItemName = name;
             nullItemView = itemView;
@@ -84,7 +86,7 @@ public abstract class Selector<T>
             itemToNameModel.put( value, name );
         }
 
-        popup.getChildContainer().add( itemView.asWidget() );
+        popup.getChildContainer().add(itemView.asWidget());
     }
 
     public void clearOptions() {
@@ -100,7 +102,7 @@ public abstract class Selector<T>
 
     @Override
     public void onClick( ClickEvent event ) {
-        T value = itemViewToModel.get( event.getSource() );
+        T value = itemViewToModel.get(event.getSource());
         if ( value == null && !itemViewToModel.containsKey( event.getSource() ) ) {
             return;
         }
@@ -142,7 +144,7 @@ public abstract class Selector<T>
         }
 
         if ( isEmptyResult ) {
-            addEmptyListGhostOption( lang.searchNoMatchesFound() );
+            addEmptyListGhostOption( lang.errNoMatchesFound() );
         }
     }
 
@@ -183,6 +185,14 @@ public abstract class Selector<T>
         itemView.setName( name );
         itemView.addStyleName( "search-no-result" );
         popup.getChildContainer().add( itemView.asWidget() );
+    }
+
+    public void closePopup(){
+        popup.hide();
+    }
+
+    public void addCloseHandler(CloseHandler<PopupPanel> handler){
+        popup.addCloseHandler(handler);
     }
 
     @Inject

@@ -18,7 +18,7 @@
                 </div>
             </div>
             <div class="buttons_group">
-                <g:Button ui:field="create" styleName="button blueC" text="{lang.create}"/>
+                <g:Button ui:field="create" styleName="button blueC" text="{lang.buttonCreate}"/>
             </div>
             <div class="rightSide local-search">
                 <span class="icon local-search-icon"></span>

@@ -1,11 +1,10 @@
 package ru.protei.portal.ui.crm.server.service;
 
-import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.protei.portal.core.model.ent.AuthResult;
+import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.common.shared.model.Profile;
@@ -18,7 +17,7 @@ import javax.servlet.http.HttpServletRequest;
  * Сервис авторизации
  */
 @Service( "AuthService" )
-public class AuthServiceImpl extends RemoteServiceServlet implements AuthService {
+public class AuthServiceImpl implements AuthService {
 
     @Override
     public Profile authentificate( String login, String password ) throws RequestFailedException {
@@ -33,13 +32,13 @@ public class AuthServiceImpl extends RemoteServiceServlet implements AuthService
 
         log.debug( "authentificate: login={}", login );
 
-        AuthResult result = authService.login( httpRequest.getSession().getId(), login, password, httpRequest.getRemoteAddr(), httpRequest.getHeader( SystemConstants.USER_AGENT_HEADER ) );
-        if ( !result.isOk() ) {
-            throw new RequestFailedException( result.getResult().name() );
+        CoreResponse<UserSessionDescriptor> result = authService.login( httpRequest.getSession().getId(), login, password, httpRequest.getRemoteAddr(), httpRequest.getHeader( SystemConstants.USER_AGENT_HEADER ) );
+        if ( result.isError() ) {
+            throw new RequestFailedException( result.getStatus() );
         }
 
         //sessionService.setUserSessionDescriptor( httpRequest, result.getDescriptor() );
-        return makeProfileByDescriptor( result.getDescriptor() );
+        return makeProfileByDescriptor( result.getData() );
     }
 
     @Override

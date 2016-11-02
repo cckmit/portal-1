@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.company.server.service;
 
-import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -122,7 +121,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Autowired
-    private ru.protei.portal.core.service.dict.CompanyService companyService;
+    private ru.protei.portal.core.service.CompanyService companyService;
 
     private static final Logger log = LoggerFactory.getLogger( "web" );
 

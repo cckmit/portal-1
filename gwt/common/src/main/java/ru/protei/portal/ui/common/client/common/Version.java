@@ -10,10 +10,13 @@ package ru.protei.portal.ui.common.client.common;
  *           freq-16229 CRM: backend по карточке создания продукта
  *           freq-16234 CRM: frontend по карточке редактирования продукта
  *           freq-16233 CRM: backend по карточке редактирования продукта
- *
+ * 4.0.4.8 - freq-16235 карточка просмотра компании
+ * 4.0.4.9 - task-59162 исправление inputSelector
+ * 4.0.5.9 - error-border добавление рамки при валидации
+ * 4.0.6.9 - freq-16341 превью карточки продукта
  */
 public class Version {
     public static String getVersion() {
-        return "4.0.3.8";
+        return "4.0.6.9";
     }
 }

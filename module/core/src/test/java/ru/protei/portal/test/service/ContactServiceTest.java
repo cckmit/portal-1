@@ -6,26 +6,15 @@ import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import ru.protei.portal.api.struct.CoreResponse;
-import ru.protei.portal.api.struct.HttpListResult;
 import ru.protei.portal.config.MainConfiguration;
-import ru.protei.portal.core.model.dao.CompanyDAO;
-import ru.protei.portal.core.model.dao.CompanyGroupDAO;
-import ru.protei.portal.core.model.dao.CompanyGroupItemDAO;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
-import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.core.model.ent.CompanyGroup;
-import ru.protei.portal.core.model.ent.CompanyGroupItem;
 import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.model.query.BaseQuery;
-import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.query.ContactQuery;
-import ru.protei.portal.core.service.dict.CompanyService;
-import ru.protei.portal.core.service.dict.ContactService;
+import ru.protei.portal.core.service.ContactService;
 import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
-import java.util.Date;
 import java.util.List;
 
 /**

@@ -1,8 +1,9 @@
-package ru.protei.portal.core.service.dict;
+package ru.protei.portal.core.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.PersonDAO;
+import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.query.ContactQuery;
 
@@ -26,6 +27,6 @@ public class ContactServiceImpl implements ContactService {
         Person person = personDAO.getContact(id);
 
         return person != null ? new CoreResponse<Person>().success(person)
-                : new CoreResponse<Person>().error("contact not found", "NE");
+                : new CoreResponse<Person>().error(En_ResultStatus.NOT_FOUND);
     }
 }

@@ -39,7 +39,7 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Autowired
-    ru.protei.portal.core.service.dict.ContactService contactService;
+    ru.protei.portal.core.service.ContactService contactService;
 
     private static final Logger log = LoggerFactory.getLogger( "web" );
 

@@ -76,7 +76,7 @@ public abstract class ContactTableActivity implements AbstractContactTableActivi
                 view.sortField().getValue(), view.sortDir().getValue(), new RequestCallback< List< Person > >() {
                     @Override
                     public void onError(Throwable throwable) {
-                        fireEvent(new NotifyEvents.Show(lang.errorGetList(), NotifyEvents.NotifyType.ERROR));
+                        fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
                     }
 
                     @Override

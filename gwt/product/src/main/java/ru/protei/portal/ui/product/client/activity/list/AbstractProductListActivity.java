@@ -1,7 +1,7 @@
 package ru.protei.portal.ui.product.client.activity.list;
 
 /**
- * Активность списка продуктов
+ * Абстракция активности списка продуктов
  */
 public interface AbstractProductListActivity {
 
