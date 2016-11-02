@@ -128,7 +128,8 @@ public class ContactTableView extends Composite implements AbstractContactTableV
     private void initTable () {
 
         EditClickColumn< Person > editClickColumn = new EditClickColumn< Person >() {};
-        editClickColumn.setHandler(activity);
+        editClickColumn.setHandler( activity );
+        editClickColumn.setEditHandler( activity );
 
         ClickColumn< Person > displayName = new ClickColumn< Person >() {
             @Override

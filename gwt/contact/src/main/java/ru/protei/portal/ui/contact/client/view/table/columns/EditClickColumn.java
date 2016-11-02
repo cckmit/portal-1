@@ -8,71 +8,49 @@ import com.google.gwt.user.client.EventListener;
 import ru.brainworm.factory.widget.table.client.ColumnHeader;
 import ru.brainworm.factory.widget.table.client.ColumnValue;
 import ru.brainworm.factory.widget.table.client.helper.AbstractColumnHandler;
+import ru.brainworm.factory.widget.table.client.helper.ClickColumn;
 
 /**
  * Колонка редактирования контакта.
  */
-public abstract class EditClickColumn< T > {
+public abstract class EditClickColumn< T > extends ClickColumn < T > {
 
-    public interface ActionHandler< T > extends AbstractColumnHandler< T > {
-        void onActionClicked( T value );
+    public interface EditHandler< T > extends AbstractColumnHandler< T > {
+        void onEditClicked(T value);
     }
 
-    public EditClickColumn() {}
+    @Override
+    protected void fillColumnHeader(Element element) {
 
-    // пустой заголовок
-    public ColumnHeader header = new ColumnHeader() {
-        @Override
-        public void handleEvent( Event event ) {
-        }
+    }
 
-        @Override
-        public void fillHeader( Element columnHeader ) {
-        }
-    };
+    @Override
+    public void fillColumnValue( Element cell, T value ) {
+        AnchorElement a = DOM.createAnchor().cast();
+        a.setHref( "#" );
+        a.addClassName( "icon edit-icon" );
+        cell.appendChild( a );
 
-    // значение ячейки
-    public ColumnValue< T > values = new ColumnValue< T >() {
+        DOM.sinkEvents( a, Event.ONCLICK );
+        DOM.setEventListener( a, new EventListener() {
+            @Override
+            public void onBrowserEvent( Event event ) {
 
-        @Override
-        public void handleEvent( Event event, T value ) {
-
-            if ( !"click".equalsIgnoreCase( event.getType() ) ) {
-                return;
-            }
-
-            event.preventDefault();
-            if ( handler != null ) {
-                handler.onActionClicked( value );
-            }
-        }
-
-        @Override
-        public void fillValue( Element cell, T value ) {
-            AnchorElement edit = DOM.createAnchor().cast();
-            edit.setHref( "#" );
-            edit.addClassName( "icon edit-icon" );
-            cell.appendChild( edit );
-
-            DOM.sinkEvents( edit,Event.ONCLICK );
-            DOM.setEventListener(edit, new EventListener() {
-                @Override
-                public void onBrowserEvent(Event event) {
-                    if ( event.getTypeInt() != Event.ONCLICK ) {
-                        return;
-                    }
-
-                    if ( handler != null ) {
-                        handler.onActionClicked( value );
-                    }
+                if ( event.getTypeInt() != Event.ONCLICK ) {
+                    return;
                 }
-            });
-        }
-    };
 
-    public void setHandler( ActionHandler< T > handler ) {
-        this.handler = handler;
+                event.preventDefault();
+                if ( editHandler != null ) {
+                    editHandler.onEditClicked( value );
+                }
+            }
+        });
     }
 
-    ActionHandler< T > handler;
+    public void setEditHandler( EditHandler< T > editHandler ) {
+        this.editHandler = editHandler;
+    }
+
+    EditHandler< T > editHandler;
 }
