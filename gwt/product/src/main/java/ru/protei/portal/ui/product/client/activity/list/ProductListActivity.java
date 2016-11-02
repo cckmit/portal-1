@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.product.client.activity.list;
 
+import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -70,7 +71,7 @@ public abstract class ProductListActivity implements AbstractProductListActivity
         }
 
         fireEvent( new ProductEvents.ShowPreview( itemView.getPreviewContainer(), value ) );
-        animation.showPreview(itemView);
+        animation.showPreview(itemView, (IsWidget) itemView.getPreviewContainer());
     }
 
     @Override
@@ -105,17 +106,6 @@ public abstract class ProductListActivity implements AbstractProductListActivity
                 });
     }
 
-    Consumer<DevUnit> fillViewer = new Consumer<DevUnit> () {
-
-        @Override
-        public void accept( DevUnit product ) {
-            AbstractProductItemView itemView = makeItemView(product);
-
-            modelToView.put( itemView, product );
-            view.getItemsContainer().add( itemView.asWidget() );
-        }
-    };
-
     private AbstractProductItemView makeItemView (DevUnit product)
     {
         AbstractProductItemView itemView = provider.get();
@@ -126,12 +116,23 @@ public abstract class ProductListActivity implements AbstractProductListActivity
         return itemView;
     }
 
-    public void resetFilter() {
+    private void resetFilter() {
         view.searchPattern().setValue("");
         view.showDeprecated().setValue(false);
         view.sortField().setValue(En_SortField.prod_name);
         view.sortDir().setValue(true);
     }
+
+    Consumer<DevUnit> fillViewer = new Consumer<DevUnit> () {
+
+        @Override
+        public void accept( DevUnit product ) {
+            AbstractProductItemView itemView = makeItemView(product);
+
+            modelToView.put( itemView, product );
+            view.getItemsContainer().add( itemView.asWidget() );
+        }
+    };
 
     @Inject
     AbstractProductListView view;
@@ -150,5 +151,4 @@ public abstract class ProductListActivity implements AbstractProductListActivity
 
     private Map<AbstractProductItemView, DevUnit > modelToView = new HashMap<AbstractProductItemView, DevUnit>();
     private AppEvents.InitDetails init;
-
 }

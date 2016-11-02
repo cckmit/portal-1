@@ -8,7 +8,7 @@
             <div class="t_wrapper">
                 <div class="tc_wrapper large">
                     <div class="section description">
-                        <div class="head header">
+                        <div class="head">
                             <span class="header"><ui:text from="{lang.productDescription}"/></span>
                         </div>
                         <div class="body">

@@ -7,7 +7,7 @@ import com.google.gwt.user.client.ui.IsWidget;
  */
 public class PlateListAnimation {
 
-    public void showPreview( IsWidget preview ) {
+    public void showPreview( IsWidget preview, IsWidget  previewContainer ) {
         if ( lastExpanded != null ) {
             closePreview( lastExpanded );
         }
@@ -18,11 +18,11 @@ public class PlateListAnimation {
         }
 
         lastExpanded = preview;
-        preview.asWidget().addStyleName( EXPANDED_DETAILS_STYLE );
+        preview.asWidget().addStyleName(EXPANDED_DETAILS_STYLE);
     }
 
     private void closePreview( IsWidget preview ) {
-        preview.asWidget().removeStyleName( EXPANDED_DETAILS_STYLE );
+        preview.asWidget().removeStyleName(EXPANDED_DETAILS_STYLE);
     }
 
     private IsWidget lastExpanded = null;
