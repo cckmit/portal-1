@@ -14,7 +14,7 @@ import ru.protei.portal.ui.company.client.activity.item.AbstractCompanyItemActiv
 import ru.protei.portal.ui.company.client.activity.item.AbstractCompanyItemView;
 
 /**
- * Вид формы компания
+ * Представление компании
  */
 public class CompanyItemView extends Composite implements AbstractCompanyItemView {
 

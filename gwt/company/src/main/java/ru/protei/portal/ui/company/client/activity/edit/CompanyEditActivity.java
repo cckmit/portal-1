@@ -14,7 +14,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.NameStatus;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
-import ru.protei.portal.ui.company.client.service.CompanyServiceAsync;
+import ru.protei.portal.ui.common.client.service.CompanyServiceAsync;
 
 
 /**
@@ -48,8 +48,9 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
     @Override
     public void onSaveClicked() {
-        if(!validateFieldsAndGetResult())
+        if(!validateFieldsAndGetResult()) {
             return;
+        }
 
         companyService.isCompanyNameExists(view.companyName().getText(), null, new RequestCallback<Boolean>() {
             @Override
@@ -82,6 +83,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
                     public void onSuccess(Boolean aBoolean) {
                         fireEvent(new CompanyEvents.Show());
                         fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+                        fireEvent(new CompanyEvents.ChangeModel());
                     }
                 });
             }

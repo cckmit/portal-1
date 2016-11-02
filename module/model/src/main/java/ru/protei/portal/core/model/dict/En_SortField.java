@@ -16,12 +16,12 @@ public enum En_SortField {
     prod_name("unit_name"),
 
     /**
-     * Group name (Company-group name for example)
+     * group name (company-group name for example)
      */
     group_name ("group_name"),
 
     /**
-     * Category name (Company-category name for example)
+     * category name (company-category name for example)
      */
     category_name ("category_name"),
 
@@ -33,7 +33,17 @@ public enum En_SortField {
     /**
      * date of the last modification
      */
-    last_update ("last_update")
+    last_update ("last_update"),
+
+    /**
+     * person full name
+     */
+    person_full_name ("displayname"),
+
+    /**
+     * person position
+     */
+    person_position ("displayPosition")
     ;
 
     private String fieldName;

@@ -11,6 +11,8 @@ public class BaseQuery {
     public String searchString;
     public En_SortField sortField;
     public En_SortDir sortDir;
+    public int limit;
+    public int offset = 0;
 
     public BaseQuery() {
     }
@@ -19,6 +21,33 @@ public class BaseQuery {
         this.searchString = searchString;
         this.sortField = sortField;
         this.sortDir = sortDir;
+    }
+
+    public BaseQuery useSearch(String searchString) {
+        this.searchString = searchString;
+        return this;
+    }
+
+    public BaseQuery useSort (En_SortField sortField, En_SortDir sortDir) {
+        this.sortDir = sortDir;
+        this.sortField = sortField;
+        return this;
+    }
+
+    public int getLimit() {
+        return limit;
+    }
+
+    public void setLimit(int limit) {
+        this.limit = limit;
+    }
+
+    public int getOffset() {
+        return offset;
+    }
+
+    public void setOffset(int offset) {
+        this.offset = offset;
     }
 
     public String getSearchString() {
