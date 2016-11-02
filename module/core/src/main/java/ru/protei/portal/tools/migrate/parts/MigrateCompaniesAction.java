@@ -4,11 +4,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.core.model.dao.CompanyDAO;
 import ru.protei.portal.core.model.dao.MigrationEntryDAO;
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.view.ValueComment;
 import ru.protei.portal.tools.migrate.tools.MigrateAction;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by michael on 01.04.16.
@@ -45,7 +49,7 @@ public class MigrateCompaniesAction implements MigrateAction {
                     Company x = new Company();
                     x.setAddressDejure((String) row.get("strDeJureAddress"));
                     x.setAddressFact((String) row.get("strPhysicalAddress"));
-                    x.setEmail((String) row.get("strE_mail"));
+                    x.setEmail( new ValueComment((String)row.get("strE_mail"),""));
                     x.setFax(null);
                     x.setId(((Number) row.get("nID")).longValue());
                     x.setInfo((String) row.get("strInfo"));

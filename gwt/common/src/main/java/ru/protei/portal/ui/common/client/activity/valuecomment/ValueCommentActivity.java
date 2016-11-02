@@ -6,7 +6,7 @@ import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.ui.common.client.events.ValueCommentEvents;
-import ru.protei.portal.ui.common.client.view.valuecomment.ValueComment;
+import ru.protei.portal.core.model.view.ValueComment;
 
 import java.util.HashMap;
 import java.util.List;

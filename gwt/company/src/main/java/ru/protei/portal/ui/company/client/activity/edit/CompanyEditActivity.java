@@ -15,7 +15,7 @@ import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.ValueCommentEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.NameStatus;
-import ru.protei.portal.ui.common.client.view.valuecomment.ValueComment;
+import ru.protei.portal.core.model.view.ValueComment;
 import ru.protei.portal.ui.company.client.service.CompanyServiceAsync;
 
 import java.util.ArrayList;
@@ -83,6 +83,13 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
                 company.setAddressDejure(view.legalAddress().getText());
                 company.setAddressFact(view.actualAddress().getText());
 
+//                List<ValueComment> listvc = new ArrayList<ValueComment>();
+//                listvc.add(new ValueComment("1", "2"));
+//                listvc.add(new ValueComment("3", "4"));
+//                listvc.add(new ValueComment("5", "6"));
+//
+//                company.setEmail(listvc);
+
 //                List<ValueCommentPair>
 //                        phoneList = view.phonesContainer().getDataList(),
 //                        emailList = view.emailDataList().getDataList();
@@ -94,18 +101,18 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 //                    company.setEmail(buildJsonFromVCPairList(emailList));
 //                }
 //
-//                companyService.saveCompany(company, view.companyGroup().getValue(), new AsyncCallback<Boolean>() {
-//                    @Override
-//                    public void onFailure(Throwable throwable) {
-//                        fireEvent(new NotifyEvents.Show(lang.companyNotSaved(), NotifyEvents.NotifyType.ERROR));
-//                    }
-//
-//                    @Override
-//                    public void onSuccess(Boolean aBoolean) {
-//                        fireEvent(new CompanyEvents.Show());
-//                        fireEvent(new NotifyEvents.Show(lang.companySaved(), NotifyEvents.NotifyType.SUCCESS));
-//                    }
-//                });
+                companyService.saveCompany(company, view.companyGroup().getValue(), new AsyncCallback<Boolean>() {
+                    @Override
+                    public void onFailure(Throwable throwable) {
+                        fireEvent(new NotifyEvents.Show(lang.companyNotSaved(), NotifyEvents.NotifyType.ERROR));
+                    }
+
+                    @Override
+                    public void onSuccess(Boolean aBoolean) {
+                        fireEvent(new CompanyEvents.Show());
+                        fireEvent(new NotifyEvents.Show(lang.companySaved(), NotifyEvents.NotifyType.SUCCESS));
+                    }
+                });
             }
         });
     }
@@ -144,23 +151,23 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
     }
 
-    private String buildJsonFromVCPairList(List<ValueComment> list){
-        JSONObject items = new JSONObject();
-        int counter = 0;
-        for(ValueComment pair: list){
-            items.put(""+ counter++, buildJsonFromVCPair(pair));
-        }
-        return items.toString();
-    }
-
-    private JSONObject buildJsonFromVCPair(ValueComment pair){
-        JSONObject item = new JSONObject();
-        item.put("v", new JSONString(pair.value));
-        if(!pair.comment.trim().isEmpty())
-            item.put("c", new JSONString(pair.comment));
-
-        return item;
-    }
+//    private String buildJsonFromVCPairList(List<ValueComment> list){
+//        JSONObject items = new JSONObject();
+//        int counter = 0;
+//        for(ValueComment pair: list){
+//            items.put(""+ counter++, buildJsonFromVCPair(pair));
+//        }
+//        return items.toString();
+//    }
+//
+//    private JSONObject buildJsonFromVCPair(ValueComment pair){
+//        JSONObject item = new JSONObject();
+//        item.put("v", new JSONString(pair.value));
+//        if(!pair.comment.trim().isEmpty())
+//            item.put("c", new JSONString(pair.comment));
+//
+//        return item;
+//    }
 
     private void resetFields(){
         view.setCompanyNameStatus(NameStatus.NONE);
