@@ -16,6 +16,11 @@ import ru.protei.portal.core.utils.SimpleSidGenerator;
 public class MainConfiguration {
 
     @Bean
+    public ContactService getContactService () {
+        return new ContactServiceImpl();
+    }
+
+    @Bean
     public LDAPAuthProvider getLDAPAuthProvider() {
         return new LDAPAuthProvider();
     }

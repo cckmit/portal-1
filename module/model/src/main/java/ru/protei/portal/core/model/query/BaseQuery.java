@@ -21,6 +21,17 @@ public class BaseQuery {
         this.sortDir = sortDir;
     }
 
+    public BaseQuery useSearch(String searchString) {
+        this.searchString = searchString;
+        return this;
+    }
+
+    public BaseQuery useSort (En_SortField sortField, En_SortDir sortDir) {
+        this.sortDir = sortDir;
+        this.sortField = sortField;
+        return this;
+    }
+
     public String getSearchString() {
         return searchString;
     }

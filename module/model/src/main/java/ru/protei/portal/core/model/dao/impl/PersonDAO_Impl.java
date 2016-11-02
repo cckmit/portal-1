@@ -3,14 +3,19 @@ package ru.protei.portal.core.model.dao.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.core.model.dao.CompanyGroupHomeDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
+import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.CompanyHomeGroupItem;
 import ru.protei.portal.core.model.ent.Person;
 
+import ru.protei.portal.core.model.query.ContactQuery;
 import ru.protei.portal.core.utils.EntityCache;
 import ru.protei.portal.core.utils.EntitySelector;
+import ru.protei.portal.core.utils.HelperFunc;
+import ru.protei.portal.core.utils.TypeConverters;
 import ru.protei.winter.jdbc.JdbcSort;
 
 import javax.annotation.PostConstruct;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -50,13 +55,29 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
     @Override
     public List<Person> getEmployeesAll() {
 
+        final StringBuilder expr = buildHomeCompanyFilter();
+
+        /** no home-company exists, so no employees */
+        if (expr.length() == 0)
+            return Collections.emptyList();
+
+        expr.append(" and displayPosition is not null");
+
+        return getListByCondition(expr.toString(), new JdbcSort(JdbcSort.Direction.ASC, En_SortField.person_full_name.getFieldName()), new Object[]{});
+    }
+
+    private StringBuilder buildHomeCompanyFilter() {
+        return buildHomeCompanyFilter(false);
+    }
+
+    private StringBuilder buildHomeCompanyFilter(boolean inverse) {
         final StringBuilder expr = new StringBuilder();
 
         homeGroupCache.walkThrough(new EntityCache.Visitor<CompanyHomeGroupItem>() {
             @Override
             public void visitEntry(long idx, CompanyHomeGroupItem item) {
                 if (idx == 0) {
-                    expr.append("company_id in (");
+                    expr.append("company_id ").append(inverse ? "not in" : "in").append (" (");
                 }
                 else
                     expr.append(",");
@@ -65,12 +86,42 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
             }
         });
 
-        if (expr.length() == 0)
+        if (expr.length() > 0)
+            expr.append(")");
+
+        return expr;
+    }
+
+
+    @Override
+    public List<Person> getContacts(ContactQuery query) {
+
+        if (query.getCompanyId() != null && homeGroupCache.exists(entity -> entity.getCompanyId().equals(query.getCompanyId())))
             return Collections.emptyList();
 
-        expr.append(")");
-        expr.append(" and displayPosition is not null");
+        StringBuilder filter = new StringBuilder("1=1");
+        List<Object> args = new ArrayList<>();
 
-        return getListByCondition(expr.toString(), new JdbcSort(JdbcSort.Direction.ASC,"displayname"), new Object[]{});
+        if (query.getCompanyId() != null) {
+            filter.append(" and company_id = ?");
+            args.add(query.getCompanyId());
+        }
+        else {
+            StringBuilder hgc =  buildHomeCompanyFilter (true);
+            if (hgc.length() > 0) {
+                filter.append(" and ").append(hgc);
+            }
+        }
+
+        filter.append(" and displayName like ?");
+        args.add(HelperFunc.makeLikeArg(query.getSearchString(), true));
+
+        return getListByCondition (filter.toString(), TypeConverters.createSort(query), args);
+    }
+
+    @Override
+    public Person getContact(long id) {
+        Person p = get(id);
+        return ifPersonIsEmployee(p) ? null : p;
     }
 }

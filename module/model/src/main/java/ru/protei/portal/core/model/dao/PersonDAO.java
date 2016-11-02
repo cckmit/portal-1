@@ -1,6 +1,8 @@
 package ru.protei.portal.core.model.dao;
 
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.query.BaseQuery;
+import ru.protei.portal.core.model.query.ContactQuery;
 
 import java.util.List;
 
@@ -9,7 +11,11 @@ import java.util.List;
  */
 public interface PersonDAO extends PortalBaseDAO<Person> {
 
-    public List<Person> getEmployeesAll();
+    List<Person> getEmployeesAll();
 
-    public Person getEmployeeById (long id);
+    Person getEmployeeById (long id);
+
+    List<Person> getContacts (ContactQuery query);
+
+    Person getContact (long id);
 }
