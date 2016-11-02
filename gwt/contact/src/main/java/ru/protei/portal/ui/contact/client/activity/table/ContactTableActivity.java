@@ -71,7 +71,8 @@ public abstract class ContactTableActivity implements AbstractContactTableActivi
 
         view.clearRecords();
 
-        contactService.getContacts(view.searchPattern().getValue(), view.company().getValue(), view.showFired().getValue(),
+        contactService.getContacts(view.searchPattern().getValue(), view.company().getValue(),
+                view.showFired().getValue() ? null : view.showFired().getValue(),
                 view.sortField().getValue(), view.sortDir().getValue(), new RequestCallback< List< Person > >() {
                     @Override
                     public void onError(Throwable throwable) {

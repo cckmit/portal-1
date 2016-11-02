@@ -94,7 +94,7 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
 
 
     @Override
-    public List<Person> getContacts(ContactQuery query) {
+    public List<Person> getContactsByQuery(ContactQuery query) {
 
         if (query.getCompanyId() != null && homeGroupCache.exists(entity -> entity.getCompanyId().equals(query.getCompanyId())))
             return Collections.emptyList();
@@ -118,10 +118,14 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
             args.add(query.getFired() ? 1 : 0);
         }
 
-        filter.append(" and displayName like ?");
-        args.add(HelperFunc.makeLikeArg(query.getSearchString(), true));
-
-        //return getListByCondition (filter.toString(), TypeConverters.createSort(query), args);
+        if (query.getSearchString() != null && !query.getSearchString().trim().isEmpty()) {
+            filter.append(" and ( displayName like ? or phone_work like ? or phone_home like ? or phone_mobile like ? )");
+            String likeArg = HelperFunc.makeLikeArg(query.getSearchString(), true);
+            args.add(likeArg);
+            args.add(likeArg);
+            args.add(likeArg);
+            args.add(likeArg);
+        }
         return getListByCondition(filter.toString(),args,query.offset,query.limit,TypeConverters.createSort(query)).getResults();
     }
 

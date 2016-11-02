@@ -19,12 +19,12 @@ import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.ui.contact.client.activity.table.AbstractContactTableActivity;
 import ru.protei.portal.ui.contact.client.activity.table.AbstractContactTableView;
+import ru.protei.portal.ui.contact.client.view.table.columns.ColumnBuilder;
+import ru.protei.portal.ui.contact.client.view.table.columns.EditActionClickColumn;
 import ru.protei.portal.ui.contact.client.view.table.columns.EditClickColumn;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
-
-import java.util.List;
 
 /**
  * Представление таблицы контактов
@@ -127,7 +127,7 @@ public class ContactTableView extends Composite implements AbstractContactTableV
 
     private void initTable () {
 
-        EditClickColumn< Person > editClickColumn = new EditClickColumn< Person >() {};
+        EditActionClickColumn< Person > editClickColumn = new EditActionClickColumn< Person >( lang ) {};
         editClickColumn.setHandler( activity );
         editClickColumn.setEditHandler( activity );
 
@@ -179,7 +179,9 @@ public class ContactTableView extends Composite implements AbstractContactTableV
 
             @Override
             public void fillColumnValue( Element element, Person person ) {
-                element.setInnerText( person == null ? "" : person.getMobilePhone() );
+                element.appendChild( ColumnBuilder.make().add( null, person.getWorkPhone() )
+                        .add(null, person.getMobilePhone())
+                        .add( null, person.getHomePhone()).toElement() );
             }
         };
         phone.setHandler( activity );
@@ -192,12 +194,13 @@ public class ContactTableView extends Composite implements AbstractContactTableV
 
             @Override
             public void fillColumnValue( Element element, Person person ) {
-                element.setInnerText( person == null ? "" : person.getEmail() );
+                element.appendChild( ColumnBuilder.make().add( null, person.getEmail() )
+                        .add( null, person.getEmail_own() ).toElement() );
             }
         };
         email.setHandler( activity );
 
-        table.addColumn(selectionColumn.header, selectionColumn.values);
+        table.addColumn( selectionColumn.header, selectionColumn.values );
         table.addColumn( editClickColumn.header, editClickColumn.values );
         table.addColumn( displayName.header, displayName.values );
         table.addColumn( company.header, company.values );

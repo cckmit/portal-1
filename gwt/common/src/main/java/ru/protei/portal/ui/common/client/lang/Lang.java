@@ -111,4 +111,6 @@ public interface Lang extends Messages {
     String contactPosition();
 
     String email();
+
+    String edit();
 }
