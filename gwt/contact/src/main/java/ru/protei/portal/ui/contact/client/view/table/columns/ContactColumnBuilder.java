@@ -6,13 +6,13 @@ import com.google.gwt.user.client.DOM;
 /**
  * Билдер телефонов
  */
-public class ColumnBuilder {
+public class ContactColumnBuilder {
 
-    public static ColumnBuilder make() {
-        return new ColumnBuilder();
+    public static ContactColumnBuilder make() {
+        return new ContactColumnBuilder();
     }
 
-    public ColumnBuilder add ( String icon, String phone ) {
+    public ContactColumnBuilder add ( String icon, String phone ) {
         if ( phone != null ) {
             Element div = DOM.createDiv();
             if ( icon != null ) {

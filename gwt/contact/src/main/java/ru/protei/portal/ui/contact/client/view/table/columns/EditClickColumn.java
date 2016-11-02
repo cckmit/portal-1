@@ -41,12 +41,12 @@ public abstract class EditClickColumn< T > extends ClickColumn < T > {
 
         DOM.sinkEvents( a, Event.ONCLICK );
         DOM.setEventListener( a, (event) -> {
-            if ( !"click".equalsIgnoreCase( event.getType() ) ) {
+            if ( event.getTypeInt() != Event.ONCLICK ) {
                 return;
             }
 
             com.google.gwt.dom.client.Element target = event.getEventTarget().cast();
-            if ( !"a".equalsIgnoreCase(target.getNodeName() ) ) {
+            if ( !"a".equalsIgnoreCase( target.getNodeName() ) ) {
                 return;
             }
 

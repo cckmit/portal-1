@@ -48,7 +48,7 @@ public abstract class EditActionClickColumn< T > {
 
         @Override
         public void handleEvent( Event event, T value ) {
-            if ( !"click".equalsIgnoreCase( event.getType() ) ) {
+            if ( event.getTypeInt() != Event.ONCLICK ) {
                 return;
             }
 
@@ -99,7 +99,7 @@ public abstract class EditActionClickColumn< T > {
 
         DOM.sinkEvents( a, Event.ONCLICK );
         DOM.setEventListener( a, (event) -> {
-            if ( !"click".equalsIgnoreCase( event.getType() ) ) {
+            if ( event.getTypeInt() != Event.ONCLICK ) {
                 return;
             }
 

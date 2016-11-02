@@ -3,7 +3,7 @@ package ru.protei.portal.ui.common.client.factory;
 import com.google.gwt.inject.client.AbstractGinModule;
 import ru.protei.portal.ui.common.client.activity.notify.AbstractNotifyView;
 import ru.protei.portal.ui.common.client.activity.notify.NotifyActivity;
-import ru.protei.portal.ui.common.client.models.CompanyModel;
+import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
 import ru.protei.portal.ui.common.client.view.notify.NotifyView;
 import com.google.inject.Singleton;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
