@@ -1,9 +1,8 @@
-package ru.protei.portal.ui.contact.client.widget.company.buttonselector;
+package ru.protei.portal.ui.common.client.widget.selector.company;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.models.CompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 

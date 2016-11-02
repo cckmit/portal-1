@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.common.client.models;
+package ru.protei.portal.ui.common.client.widget.selector.company;
 
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;

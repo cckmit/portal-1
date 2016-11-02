@@ -11,10 +11,10 @@ import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.CompanyEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.CompanyServiceAsync;
 import ru.protei.portal.ui.common.client.service.NameStatus;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
+import ru.protei.portal.ui.common.client.service.CompanyServiceAsync;
 
 
 /**
@@ -48,8 +48,9 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
     @Override
     public void onSaveClicked() {
-        if(!validateFieldsAndGetResult())
+        if(!validateFieldsAndGetResult()) {
             return;
+        }
 
         companyService.isCompanyNameExists(view.companyName().getText(), null, new RequestCallback<Boolean>() {
             @Override

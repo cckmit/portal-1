@@ -3,42 +3,42 @@ package ru.protei.portal.ui.contact.client.view.table;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.TableWidget;
+import ru.brainworm.factory.widget.table.client.helper.ClickColumn;
 import ru.brainworm.factory.widget.table.client.helper.SelectionColumn;
-import ru.brainworm.factory.widget.table.client.helper.StaticTextColumn;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.contact.client.activity.table.AbstractContactTableActivity;
 import ru.protei.portal.ui.contact.client.activity.table.AbstractContactTableView;
-import ru.protei.portal.ui.contact.client.widget.company.buttonselector.CompanyButtonSelector;
-
-import java.util.List;
+import ru.protei.portal.ui.contact.client.view.table.columns.ContactColumnBuilder;
+import ru.protei.portal.ui.contact.client.view.table.columns.EditActionClickColumn;
+import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
+import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 
 /**
- * Created by turik on 28.10.16.
+ * Представление таблицы контактов
  */
-public class ContactTableView extends Composite implements AbstractContactTableView, KeyUpHandler {
+public class ContactTableView extends Composite implements AbstractContactTableView {
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
         search.getElement().setPropertyString( "placeholder", lang.search() );
-        initTable();
     }
 
     @Override
     public void setActivity( AbstractContactTableActivity activity ) {
         this.activity = activity;
+        initTable();
     }
 
     @Override
@@ -75,22 +75,13 @@ public class ContactTableView extends Composite implements AbstractContactTableV
         search.setText( "" );
     }
 
-    @Override
-    public void addRecords(List< Person > result) {
-        result.forEach( person -> {
-            table.addRow( person );
-        });
+    public void addRecord( Person person ) {
+        table.addRow( person );
     }
 
     @Override
     public void clearRecords() {
         table.clearRows();
-    }
-
-    @Override
-    public void onKeyUp( KeyUpEvent keyUpEvent ) {
-        timer.cancel();
-        timer.schedule( 300 );
     }
 
     @UiHandler( "company" )
@@ -102,12 +93,6 @@ public class ContactTableView extends Composite implements AbstractContactTableV
 
     @UiHandler( "showFired" )
     public void onShowFireClicked( ClickEvent event ) {
-
-        if (showFired.getValue())
-            showFired.removeStyleName("active");
-        else
-            showFired.addStyleName("active");
-
         if ( activity != null ) {
             activity.onFilterChanged();
         }
@@ -135,52 +120,87 @@ public class ContactTableView extends Composite implements AbstractContactTableV
 
     @UiHandler( "search" )
     public void onKeyUpSearch( KeyUpEvent event ) {
-        if ( activity != null ) {
-            activity.onFilterChanged();
-        }
+        timer.cancel();
+        timer.schedule( 300 );
     }
 
     private void initTable () {
 
+        EditActionClickColumn< Person > editClickColumn = new EditActionClickColumn< Person >( lang ) {};
+        editClickColumn.setHandler( activity );
+        editClickColumn.setEditHandler( activity );
 
-        SelectionColumn< Person > selectionColumn = new SelectionColumn< Person >();
-
-        StaticTextColumn< Person > displayName = new StaticTextColumn< Person >( lang.contactFullName() ) {
+        ClickColumn< Person > displayName = new ClickColumn< Person >() {
             @Override
-            public String getColumnValue(Person person) {
-                return person == null ? "" : person.getDisplayName();
+            protected void fillColumnHeader( Element element ) {
+                element.setInnerText( lang.contactFullName() );
+            }
+
+            @Override
+            public void fillColumnValue( Element element, Person person ) {
+                element.setInnerText( person == null ? "" : person.getDisplayName() );
             }
         };
+        displayName.setHandler( activity );
 
-        StaticTextColumn< Person > company = new StaticTextColumn< Person >( lang.company() ) {
+        ClickColumn< Person > company = new ClickColumn< Person >() {
             @Override
-            public String getColumnValue(Person person) {
-                return person == null || person.getCompany() == null ? "" : person.getCompany().getCname();
+            protected void fillColumnHeader( Element element ) {
+                element.setInnerText( lang.company() );
+            }
+
+            @Override
+            public void fillColumnValue( Element element, Person person ) {
+                element.setInnerText( person == null || person.getCompany() == null ? "" : person.getCompany().getCname() );
             }
         };
+        company.setHandler( activity );
 
-        StaticTextColumn< Person > position = new StaticTextColumn< Person >( lang.contactPosition() ) {
+        ClickColumn< Person > position = new ClickColumn< Person >() {
             @Override
-            public String getColumnValue(Person person) {
-                return person == null ? "" : person.getPosition();
+            protected void fillColumnHeader( Element element ) {
+                element.setInnerText( lang.contactPosition() );
+            }
+
+            @Override
+            public void fillColumnValue( Element element, Person person ) {
+                element.setInnerText( person == null ? "" : person.getPosition() );
+
             }
         };
+        position.setHandler( activity );
 
-        StaticTextColumn< Person > phone = new StaticTextColumn< Person >( lang.phone() ) {
+        ClickColumn< Person > phone = new ClickColumn< Person >() {
             @Override
-            public String getColumnValue(Person person) {
-                return person == null ? "" : person.getMobilePhone();
+            protected void fillColumnHeader( Element element ) {
+                element.setInnerText( lang.phone() );
+            }
+
+            @Override
+            public void fillColumnValue( Element element, Person person ) {
+                element.appendChild( ContactColumnBuilder.make().add( null, person.getWorkPhone() )
+                        .add(null, person.getMobilePhone())
+                        .add( null, person.getHomePhone()).toElement() );
             }
         };
+        phone.setHandler( activity );
 
-        StaticTextColumn< Person > email = new StaticTextColumn< Person >( lang.email() ) {
+        ClickColumn< Person > email = new ClickColumn< Person >() {
             @Override
-            public String getColumnValue(Person person) {
-                return person == null ? "" : person.getEmail();
+            protected void fillColumnHeader( Element element ) {
+                element.setInnerText( lang.email() );
+            }
+
+            @Override
+            public void fillColumnValue( Element element, Person person ) {
+                element.appendChild( ContactColumnBuilder.make().add( null, person.getEmail() )
+                        .add( null, person.getEmail_own() ).toElement() );
             }
         };
+        email.setHandler( activity );
 
         table.addColumn( selectionColumn.header, selectionColumn.values );
+        table.addColumn( editClickColumn.header, editClickColumn.values );
         table.addColumn( displayName.header, displayName.values );
         table.addColumn( company.header, company.values );
         table.addColumn( position.header, position.values );
@@ -190,7 +210,7 @@ public class ContactTableView extends Composite implements AbstractContactTableV
 
     @Inject
     @UiField ( provided = true )
-    CompanyButtonSelector company;
+    CompanySelector company;
 
     @UiField
     CheckBox showFired;
@@ -203,6 +223,9 @@ public class ContactTableView extends Composite implements AbstractContactTableV
     ToggleButton sortDir;
 
     @UiField
+    Button create;
+
+    @UiField
     TextBox search;
 
     @UiField
@@ -211,8 +234,6 @@ public class ContactTableView extends Composite implements AbstractContactTableV
     @Inject
     @UiField
     Lang lang;
-    @UiField
-    Button create;
 
     Timer timer = new Timer() {
         @Override
@@ -222,6 +243,8 @@ public class ContactTableView extends Composite implements AbstractContactTableV
             }
         }
     };
+
+    SelectionColumn< Person > selectionColumn = new SelectionColumn<>();
 
     AbstractContactTableActivity activity;
 

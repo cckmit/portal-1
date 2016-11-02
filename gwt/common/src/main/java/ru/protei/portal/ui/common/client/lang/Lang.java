@@ -139,4 +139,7 @@ public interface Lang extends Messages {
     String productDescription();
 
     String sex();
+
+    String edit();    
+    
 }

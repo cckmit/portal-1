@@ -6,10 +6,8 @@ import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Person;
 
-import java.util.List;
-
 /**
- * Created by turik on 28.10.16.
+ * Представление таблицы контактов
  */
 public interface AbstractContactTableView extends IsWidget {
 
@@ -21,5 +19,5 @@ public interface AbstractContactTableView extends IsWidget {
     HasValue< String > searchPattern();
     void resetFilter();
     void clearRecords();
-    void addRecords( List< Person > result );
+    void addRecord( Person person );
 }
