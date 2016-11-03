@@ -3,63 +3,40 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="">
-        <div class="mainInfo">
-            <div class="t_wrapper">
-                <div class="tc_wrapper">
-                    <div class="section info">
-                        <div class="head">
-                            <span class="header"><ui:text from="{lang.companyCommonHeader}"/></span>
-                        </div>
-                        <div class="body">
-                            <div id="scrollInfo" class="wrapper white-ps-container ps-container ps-active-x"
-                                 data-ps-id="f1d17374-ad8a-c76e-3b0f-4c17c324df6b">
-                                <div class="t_wrapper">
-                                    <div class="tr_wrapper companyGroup">
-                                        <div class="tc_wrapper header"><ui:text from="{lang.companyGroup}"/></div>
-                                        <label class="tc_wrapper content" ui:field="groupCompany"></label>
-                                    </div>
-                                    <div class="tr_wrapper">
-                                        <div class="tc_wrapper header"><ui:text from="{lang.companyLegalAddress}"/></div>
-                                        <label class="tc_wrapper content" ui:field="addressDejure"></label>
+    <g:HTMLPanel styleName="preview">
+        <g:HTMLPanel ui:field="groupContainer" tag="fieldset" styleName="header">
+            <legend><ui:text from="{lang.companyCommonHeader}"/></legend>
+            <label><ui:text from="{lang.companyGroup}"/></label>
+            <span ui:field="groupCompany"></span>
+        </g:HTMLPanel>
 
-                                    </div>
-                                    <div class="tr_wrapper">
-                                        <div class="tc_wrapper header"><ui:text from="{lang.companyActualAddress}"/></div>
-                                        <label class="tc_wrapper content" ui:field="addressFact"></label>
-                                    </div>
-
-                                    <div class="tr_wrapper">
-                                        <div class="tc_wrapper header"><ui:text from="{lang.phone}"/></div>
-                                        <label class="tc_wrapper content" ui:field="phone"></label>
-                                    </div>
-
-
-                                    <div class="tr_wrapper site">
-                                        <div class="tc_wrapper header"><ui:text from="{lang.companyWebSite}"/></div>
-                                        <label class="tc_wrapper content" ui:field="site"></label>
-                                    </div>
-                                    <div class="tr_wrapper email">
-                                        <div class="tc_wrapper header"><ui:text from="{lang.email}"/></div>
-                                        <label class="tc_wrapper content" ui:field="email"></label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="tc_wrapper large">
-                    <div class="section description">
-                        <div class="head">
-                            <span class="header"><ui:text from="{lang.companyInfoHeader}"/></span>
-                        </div>
-                        <div class="body">
-                            <label ui:field="info"></label>
-                        </div>
-                    </div>
-                </div>
+        <fieldset class="contacts">
+            <legend><ui:text from="{lang.companyInfoHeader}"/></legend>
+            <div>
+                <label><ui:text from="{lang.phone}"/></label>
+                <span ui:field="phone"></span>
             </div>
-        </div>
+            <div>
+                <label><ui:text from="{lang.companyWebSite}"/></label>
+                <span ui:field="site">http://www.helloworld.ru</span>
+            </div>
+            <div>
+                <label><ui:text from="{lang.email}"/></label>
+                <span ui:field="email">info@helloworld.ru</span>
+            </div>
+            <div>
+                <label><ui:text from="{lang.companyActualAddress}"/></label>
+                <span ui:field="addressFact">СПб, ул Козельского 56, офис 234</span>
+            </div>
+            <div>
+                <label><ui:text from="{lang.companyLegalAddress}"/></label>
+                <span ui:field="addressDejure">СПб, ул Козельского 56, офис 234</span>
+            </div>
+        </fieldset>
+
+        <fieldset class="comments">
+            <legend><ui:text from="{lang.companyAdditionalInfoHeader}"/></legend>
+            <span ui:field="info">Хорошая компания, молодцы!</span>
+        </fieldset>
     </g:HTMLPanel>
 </ui:UiBinder>

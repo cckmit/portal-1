@@ -22,4 +22,6 @@ public interface AbstractCompanyPreviewView extends IsWidget {
     void setGroupCompany( String value );
 
     void setInfo( String value );
+
+    void setGroupVisible( boolean value );
 }
