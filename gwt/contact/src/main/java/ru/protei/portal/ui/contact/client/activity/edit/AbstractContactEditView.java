@@ -1,11 +1,9 @@
 package ru.protei.portal.ui.contact.client.activity.edit;
 
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.HasText;
-import com.google.gwt.user.client.ui.IsWidget;
-import com.google.gwt.user.client.ui.TextArea;
-import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.*;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
+import ru.protei.portal.core.model.ent.Company;
 
 /**
  * Created by michael on 02.11.16.
@@ -43,4 +41,6 @@ public interface AbstractContactEditView extends IsWidget {
     HasText displayDepartment ();
 
     HasText personInfo ();
+
+    HasValue<Company> company();
 }

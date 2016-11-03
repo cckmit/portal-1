@@ -12,14 +12,17 @@ import java.util.Date;
 public class Person implements Serializable {
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
+
     @JdbcColumn(name = "created")
     private Date created;
+
     @JdbcColumn(name = "creator")
     private String creator;
+
     @JdbcColumn(name="company_id")
     private Long companyId;
 
-    @JdbcJoinedObject(localColumn = "company_id", table = "company")
+    @JdbcJoinedObject(localColumn = "company_id")
     private Company company;
 
     @JdbcColumn(name = "displayPosition")
@@ -31,8 +34,10 @@ public class Person implements Serializable {
 
     @JdbcColumn(name="firstname")
     private String firstName;
+
     @JdbcColumn(name="lastname")
     private String lastName;
+
     @JdbcColumn(name="secondname")
     private String secondName;
 
@@ -142,6 +147,7 @@ public class Person implements Serializable {
 
     public void setCompany(Company company) {
         this.company = company;
+        this.companyId = company != null ? company.getId() : null;
     }
 
     public String getPosition() {

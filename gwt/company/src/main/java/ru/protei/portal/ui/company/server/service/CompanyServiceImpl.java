@@ -121,6 +121,17 @@ public class CompanyServiceImpl implements CompanyService {
         return response.getData();
     }
 
+    @Override
+    public Company getCompany(long id) throws RequestFailedException {
+
+        CoreResponse<Company> response = companyService.getCompanyById(id);
+
+        if (response.isError())
+            throw new RequestFailedException(response.getMessage());
+
+        return response.getData();
+    }
+
     @Autowired
     private ru.protei.portal.core.service.dict.CompanyService companyService;
 

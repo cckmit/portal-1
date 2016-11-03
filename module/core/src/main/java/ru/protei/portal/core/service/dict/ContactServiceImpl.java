@@ -7,6 +7,8 @@ import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.query.BaseQuery;
 import ru.protei.portal.core.model.query.ContactQuery;
+import ru.protei.portal.core.utils.HelperFunc;
+import ru.protei.winter.core.utils.StringUtils;
 
 import java.util.List;
 
@@ -29,5 +31,26 @@ public class ContactServiceImpl implements ContactService {
 
         return person != null ? new CoreResponse<Person>().success(person)
                 : new CoreResponse<Person>().error("contact not found", "NE");
+    }
+
+
+    @Override
+    public CoreResponse<Person> saveContact(Person p) {
+        if (personDAO.isEmployee(p)) {
+            return new CoreResponse<Person>().error("This person is employee", "WrongPersonType");
+        }
+
+        if (HelperFunc.isEmpty(p.getFirstName()) || HelperFunc.isEmpty(p.getLastName())
+                || HelperFunc.isEmpty(p.getDisplayName()))
+            return new CoreResponse<Person>().error("Enter main contact information", "EmptyContactName");
+
+        if (HelperFunc.isEmpty(p.getPosition()))
+            return new CoreResponse<Person>().error("Enter main contact information", "EmptyContactPosition");
+
+        if (personDAO.saveOrUpdate(p)) {
+            return new CoreResponse<Person>().success(p);
+        }
+
+        return new CoreResponse<Person>().error("Unable to store contact", "InternalError");
     }
 }

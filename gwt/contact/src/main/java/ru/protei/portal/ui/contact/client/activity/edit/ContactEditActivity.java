@@ -7,11 +7,14 @@ import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.ContactEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.CompanyService;
+import ru.protei.portal.ui.common.client.service.CompanyServiceAsync;
 import ru.protei.portal.ui.contact.client.service.ContactServiceAsync;
 
 /**
@@ -54,7 +57,51 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
 
     @Override
     public void onSaveClicked() {
-        fireEvent( new NotifyEvents.Show(lang.asteriskRequired(), NotifyEvents.NotifyType.ERROR));
+        //
+        if (!applyChanges ()) {
+            fireEvent( new NotifyEvents.Show(lang.asteriskRequired(), NotifyEvents.NotifyType.ERROR));
+            return;
+        }
+
+        contactService.saveContact(contact, new AsyncCallback<Person>() {
+            @Override
+            public void onFailure(Throwable throwable) {
+                fireEvent( new NotifyEvents.Show(throwable.getMessage(), NotifyEvents.NotifyType.ERROR));
+            }
+
+            @Override
+            public void onSuccess(Person person) {
+                fireEvent(new Back());
+            }
+        });
+    }
+
+    protected boolean applyChanges () {
+
+        if (view.company().getValue() == null)
+            return false;
+
+        contact.setCompanyId(view.company().getValue().getId());
+        contact.setFirstName(view.firstName().getText());
+        contact.setLastName(view.lastName().getText());
+        contact.setSecondName(view.secondName().getText());
+        contact.setDisplayName(view.displayName().getText());
+        contact.setDisplayShortName(view.shortName().getText());
+        contact.setBirthday(view.birthDay().getValue());
+
+        contact.setInfo(view.personInfo().getText());
+        contact.setWorkPhone(view.workPhone().getText());
+        contact.setHomePhone(view.homePhone().getText());
+        contact.setEmail(view.workEmail().getText());
+        contact.setEmail_own(view.personalEmail().getText());
+        contact.setAddress(view.workAddress().getText());
+        contact.setAddressHome(view.homeAddress().getText());
+        contact.setFax(view.workFax().getText());
+        contact.setFaxHome(view.homeFax().getText());
+        contact.setPosition(view.displayPosition().getText());
+        contact.setDepartment(view.displayDepartment().getText());
+
+        return true;
     }
 
     @Override
@@ -67,6 +114,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         this.contact = person;
         initDetails.parent.clear();
 
+        view.company().setValue(person.getCompany());
         view.firstName().setText(person.getFirstName());
         view.lastName().setText(person.getLastName());
         view.secondName().setText(person.getSecondName());
@@ -100,6 +148,9 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
 
     @Inject
     ContactServiceAsync contactService;
+
+    @Inject
+    CompanyServiceAsync companyService;
 
 
     private AppEvents.InitDetails initDetails;

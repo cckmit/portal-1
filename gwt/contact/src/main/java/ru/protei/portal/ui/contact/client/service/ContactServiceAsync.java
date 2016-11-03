@@ -4,6 +4,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
 import java.util.List;
 
@@ -25,4 +26,6 @@ public interface ContactServiceAsync {
 
 
     void getContact (long id, AsyncCallback<Person> callback);
+
+    void saveContact (Person p, AsyncCallback<Person> callback);
 }

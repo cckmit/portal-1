@@ -1,7 +1,8 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:single="urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.single"
->
+             xmlns:companyselector='urn:import:ru.protei.portal.ui.contact.client.widget.company.buttonselector'
+            >
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel styleName="panel">
@@ -9,6 +10,16 @@
                 <div class="grid grid-indent">
                     <div class="col-xs-3">
                         <h3><ui:text from="{lang.personalData}" /></h3>
+
+                        <div>
+                            <label class="required">
+                                <ui:text from="{lang.company}"/>
+                            </label>
+                            <div class="panelField">
+                                <companyselector:CompanyButtonSelector ui:field="company"/>
+                            </div>
+                        </div>
+
                         <div>
                             <label class="required">
                                 <ui:text from="{lang.lastName}"/>

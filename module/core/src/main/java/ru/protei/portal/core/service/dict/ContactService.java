@@ -13,4 +13,5 @@ public interface ContactService {
 
     CoreResponse<List<Person>> contactList(ContactQuery query);
     CoreResponse<Person> getContact (long id);
+    CoreResponse<Person> saveContact (Person p);
 }

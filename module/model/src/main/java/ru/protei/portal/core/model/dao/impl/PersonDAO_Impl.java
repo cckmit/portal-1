@@ -44,6 +44,11 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
         return person != null && ifPersonIsEmployee(person) ? person : null;
     }
 
+    @Override
+    public boolean isEmployee(Person p) {
+        return ifPersonIsEmployee(p);
+    }
+
     private boolean ifPersonIsEmployee(final Person employee) {
         return homeGroupCache.exists(new EntitySelector<CompanyHomeGroupItem>() {
             public boolean matches(CompanyHomeGroupItem entity) {
@@ -63,7 +68,7 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
 
         expr.append(" and displayPosition is not null");
 
-        return getListByCondition(expr.toString(), new JdbcSort(JdbcSort.Direction.ASC, En_SortField.person_full_name.getFieldName()), new Object[]{});
+        return partialGetListByCondition(expr.toString(), new JdbcSort(JdbcSort.Direction.ASC, En_SortField.person_full_name.getFieldName()),Collections.emptyList());
     }
 
     private StringBuilder buildHomeCompanyFilter() {
@@ -122,12 +127,13 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
         args.add(HelperFunc.makeLikeArg(query.getSearchString(), true));
 
         //return getListByCondition (filter.toString(), TypeConverters.createSort(query), args);
-        return getListByCondition(filter.toString(),args,query.offset,query.limit,TypeConverters.createSort(query)).getResults();
+        return partialGetListByCondition(filter.toString(),args,query.offset,query.limit,TypeConverters.createSort(query)).getResults();
     }
 
     @Override
     public Person getContact(long id) {
         Person p = get(id);
+
         return ifPersonIsEmployee(p) ? null : p;
     }
 }

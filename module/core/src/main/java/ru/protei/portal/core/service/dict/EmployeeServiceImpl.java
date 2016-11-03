@@ -126,7 +126,13 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         JdbcSort sort = new JdbcSort(JdbcSort.Direction.ASC, "displayName");
 
-        for (Person p : personDAO.getListByCondition("company_id=? and isdeleted=? and displayName like ?", sort, our_comp.getId(), 0, param)) {
+        List<Object> args = new ArrayList<>();
+
+        args.add(our_comp.getId());
+        args.add(0);
+        args.add(param);
+
+        for (Person p : personDAO.partialGetListByCondition("company_id=? and isdeleted=? and displayName like ?", sort, args)) {
             r.add(new WorkerView(p, our_comp));
         }
 

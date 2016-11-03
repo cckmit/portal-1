@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.query.ContactQuery;
+import ru.protei.portal.core.utils.HelperFunc;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.contact.client.service.ContactService;
 
@@ -60,6 +61,26 @@ public class ContactServiceImpl implements ContactService {
         log.debug("get contact, id: " + id + " -> " + (response.isError() ? "error" : ("ok, " + response.getData().getDisplayName())));
 
         return response.getData();
+    }
+
+    @Override
+    public Person saveContact(Person p) throws RequestFailedException {
+        if (p == null) {
+            throw new RequestFailedException("Internal error: null person");
+        }
+
+        log.debug("store contact, id: " + HelperFunc.nvl(p.getId(), "new"));
+
+        CoreResponse<Person> response = contactService.saveContact(p);
+
+        log.debug("store contact, result: " + (response.isOk() ? "ok" : response.getMessage()));
+
+        if (response.isOk()) {
+            log.debug("store contact, applied id: " + response.getData().getId());
+            return response.getData();
+        }
+
+        throw new RequestFailedException(response.getMessage());
     }
 
     @Autowired

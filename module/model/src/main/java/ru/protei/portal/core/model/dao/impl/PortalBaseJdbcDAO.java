@@ -24,6 +24,17 @@ public abstract class PortalBaseJdbcDAO<T> extends JdbcBaseDAO<Long,T> implement
         return getMaxValue(getIdColumnName(), Long.class, cond, args);
     }
 
+    @Override
+    public boolean saveOrUpdate(T entity) {
+        Long id = getIdValue(entity);
+        if (id == null || id <= 0L) {
+            return persist(entity) != null;
+        }
+        else {
+            return merge(entity);
+        }
+    }
+
     public <V> V getMaxValue (String field, Class<V> type, String cond, Object...args) {
 
         String query = "select max(" + field + ") from " + getTableName();

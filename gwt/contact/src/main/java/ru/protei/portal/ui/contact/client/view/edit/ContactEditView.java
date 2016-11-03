@@ -3,14 +3,17 @@ package ru.protei.portal.ui.contact.client.view.edit;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
+import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.ui.contact.client.activity.edit.AbstractContactEditActivity;
 import ru.protei.portal.ui.contact.client.activity.edit.AbstractContactEditView;
+import ru.protei.portal.ui.contact.client.widget.company.buttonselector.CompanyButtonSelector;
 
 /**
  * Created by michael on 02.11.16.
@@ -109,6 +112,11 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     }
 
     @Override
+    public HasValue<Company> company() {
+        return company;
+    }
+
+    @Override
     public HasText personInfo() {
         return personInfo;
     }
@@ -125,7 +133,6 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
             activity.onCancelClicked();
         }
     }
-
 
     @UiField
     Button saveButton;
@@ -184,6 +191,11 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
 
     @UiField
     TextArea personInfo;
+
+    @Inject
+    @UiField ( provided = true )
+    CompanyButtonSelector company;
+
 
 //
 //

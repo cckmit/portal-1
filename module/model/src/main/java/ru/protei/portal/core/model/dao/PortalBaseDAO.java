@@ -10,9 +10,12 @@ import java.util.List;
  */
 public interface PortalBaseDAO<T> extends JdbcDAO<Long,T> {
 
-    public Long getMaxId ();
-    public Long getMaxId (String cond, Object...args);
-    public <V> V getMaxValue (String field, Class<V> type, String cond, Object...args);
-    public Long getIdValue (T obj);
-    public List<T> sortByField (List<T> entries, String fieldName, JdbcSort.Direction dir);
+    Long getMaxId ();
+    Long getMaxId (String cond, Object...args);
+
+    boolean saveOrUpdate (T entity);
+
+    <V> V getMaxValue (String field, Class<V> type, String cond, Object...args);
+    Long getIdValue (T obj);
+    List<T> sortByField (List<T> entries, String fieldName, JdbcSort.Direction dir);
 }

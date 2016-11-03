@@ -13,6 +13,10 @@ public class HelperFunc {
         return t == null ? v : t.getTime();
     }
 
+    public static boolean isEmpty (String s) {
+        return s == null || s.trim().isEmpty();
+    }
+
     public static Object nvl (Object...arr) {
         for (Object v : arr) {
             if (v != null)

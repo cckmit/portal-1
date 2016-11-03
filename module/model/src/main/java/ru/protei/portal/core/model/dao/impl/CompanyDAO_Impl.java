@@ -30,7 +30,8 @@ public class CompanyDAO_Impl extends PortalBaseJdbcDAO<Company> implements Compa
             condition.append(" and category_id in (" + query.getCategoryIds().stream().map(Object::toString).collect(Collectors.joining(",")) + ")");
         }
 
-        return getListByCondition(condition.toString(), TypeConverters.createSort(query), args);
+        return partialGetListByCondition(condition.toString(),TypeConverters.createSort(query), args);
+                //ListByCondition(condition.toString(), TypeConverters.createSort(query), args);
     }
 
     @Override

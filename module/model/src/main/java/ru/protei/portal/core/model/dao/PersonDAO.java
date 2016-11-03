@@ -18,4 +18,6 @@ public interface PersonDAO extends PortalBaseDAO<Person> {
     List<Person> getContacts (ContactQuery query);
 
     Person getContact (long id);
+
+    boolean isEmployee (Person p);
 }
