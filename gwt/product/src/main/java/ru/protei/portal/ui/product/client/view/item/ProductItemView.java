@@ -24,10 +24,10 @@ public class ProductItemView extends Composite implements AbstractProductItemVie
     }
 
     @UiHandler( "favorite" )
-    public void onMenuClicked( ClickEvent event ) {
+    public void onFavoriteClicked( ClickEvent event ) {
         event.preventDefault();
         if ( activity != null ) {
-            activity.onMenuClicked( this );
+            activity.onFavoriteClicked( this );
         }
     }
 
@@ -40,6 +40,15 @@ public class ProductItemView extends Composite implements AbstractProductItemVie
         }
     }
 
+    @UiHandler( "preview" )
+    public void onPreviewClicked ( ClickEvent event )
+    {
+        event.preventDefault();
+        if (activity != null) {
+            activity.onPreviewClicked( this );
+        }
+    }
+
     @Override
     public void setName(String name) {
         this.name.setInnerText(name);
@@ -47,8 +56,12 @@ public class ProductItemView extends Composite implements AbstractProductItemVie
 
     @Override
     public void setDeprecated(boolean value) {
-        if (value)
-            this.getElement().getFirstChildElement().addClassName("inactive");
+        if (value) {
+            addStyleName( "inactive" );
+            return;
+        }
+
+        removeStyleName( "inactive" );
     }
 
     @Override
@@ -64,6 +77,8 @@ public class ProductItemView extends Composite implements AbstractProductItemVie
     Anchor favorite;
     @UiField
     HTMLPanel previewContainer;
+    @UiField
+    Anchor preview;
 
     AbstractProductItemActivity activity;
 

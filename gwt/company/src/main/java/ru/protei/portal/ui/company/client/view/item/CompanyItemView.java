@@ -1,8 +1,10 @@
 package ru.protei.portal.ui.company.client.view.item;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.AnchorElement;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.HeadingElement;
+import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -40,20 +42,47 @@ public class CompanyItemView extends Composite implements AbstractCompanyItemVie
         return previewContainer;
     }
 
+    @Override
+    public void setPhone( String value ) {
+        phoneContainer.setVisible( value != null && !value.isEmpty() );
+        phone.setInnerText( value == null ? "" : value );
+    }
 
-    @UiHandler( "menuButton" )
-    public void onMenuClicked( ClickEvent event ) {
+    @Override
+    public void setEmail( String value ) {
+        emailContainer.setVisible( value != null && !value.isEmpty() );
+        email.setInnerText( value == null ? "" : value );
+    }
+
+    @Override
+    public void setWebsite( String value ) {
+        websiteContainer.setVisible( value != null && !value.isEmpty() );
+        website.setInnerText( value == null ? "" : value );
+        website.setHref( value == null ? "#" : value  );
+    }
+
+    @UiHandler( "edit" )
+    public void onEditClicked( ClickEvent event ) {
         event.preventDefault();
         if ( activity != null ) {
-            activity.onMenuClicked( this );
+            activity.onEditClicked( this );
         }
     }
 
-    @UiHandler( "favoriteButton" )
+    @UiHandler( "favorite" )
     public void onFavoriteClicked( ClickEvent event ) {
         event.preventDefault();
         if ( activity != null ) {
             activity.onFavoriteClicked( this );
+        }
+    }
+
+    @UiHandler( "preview" )
+    public void onPreviewClicked ( ClickEvent event )
+    {
+        event.preventDefault();
+        if (activity != null) {
+            activity.onPreviewClicked( this );
         }
     }
 
@@ -62,13 +91,25 @@ public class CompanyItemView extends Composite implements AbstractCompanyItemVie
     @UiField
     DivElement type;
     @UiField
-    Anchor menuButton;
+    Anchor edit;
     @UiField
-    Anchor favoriteButton;
+    Anchor favorite;
     @UiField
     HTMLPanel previewContainer;
     @UiField
     HTMLPanel root;
+    @UiField
+    SpanElement phone;
+    @UiField
+    AnchorElement email;
+    @UiField
+    AnchorElement website;
+    @UiField
+    HTMLPanel phoneContainer;
+    @UiField
+    HTMLPanel emailContainer;
+    @UiField
+    HTMLPanel websiteContainer;
 
     AbstractCompanyItemActivity activity;
 

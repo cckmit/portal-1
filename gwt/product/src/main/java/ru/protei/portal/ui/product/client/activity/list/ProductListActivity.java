@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.product.client.activity.list;
 
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -41,7 +42,6 @@ public abstract class ProductListActivity implements AbstractProductListActivity
 
     @Event
     public void onShow (ProductEvents.Show event) {
-
         this.fireEvent(new AppEvents.InitPanelName(lang.products()));
         init.parent.clear();
         init.parent.add(view.asWidget());
@@ -63,7 +63,7 @@ public abstract class ProductListActivity implements AbstractProductListActivity
     }
 
     @Override
-    public void onMenuClicked( AbstractProductItemView itemView ) {
+    public void onPreviewClicked( AbstractProductItemView itemView ) {
         DevUnit value = modelToView.get( itemView );
         if ( value == null ) {
             return;
@@ -74,10 +74,14 @@ public abstract class ProductListActivity implements AbstractProductListActivity
     }
 
     @Override
+    public void onFavoriteClicked( AbstractProductItemView itemView ) {
+        Window.alert( "On favorite clicked" );
+    }
+
+    @Override
     public void onFilterChanged() {
         requestProducts();
     }
-
 
     private void requestProducts() {
 

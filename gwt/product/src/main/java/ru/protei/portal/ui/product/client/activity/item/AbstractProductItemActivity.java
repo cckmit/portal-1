@@ -5,7 +5,9 @@ package ru.protei.portal.ui.product.client.activity.item;
  */
 public interface AbstractProductItemActivity {
 
-    void onMenuClicked( AbstractProductItemView itemView );
+    void onFavoriteClicked( AbstractProductItemView itemView );
 
     void onEditClicked( AbstractProductItemView itemView  );
+
+    void onPreviewClicked( AbstractProductItemView itemView );
 }

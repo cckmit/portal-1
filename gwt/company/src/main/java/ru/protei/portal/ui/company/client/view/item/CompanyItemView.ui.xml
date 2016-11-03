@@ -5,22 +5,23 @@
         <div class="header-block">
             <h2 ui:field="name"></h2>
             <p>
-                <g:Anchor ui:field="menuButton" styleName="fa fa-fw fa-pencil" href="#"/>
-                <g:Anchor ui:field="favoriteButton" styleName="fa fa-fw fa-heart" href="#"/>
+                <g:Anchor ui:field="preview" styleName="fa fa-fw fa-eye" href="#"/>
+                <g:Anchor ui:field="edit" styleName="fa fa-fw fa-pencil" href="#"/>
+                <g:Anchor ui:field="favorite" styleName="fa fa-fw fa-heart" href="#"/>
             </p>
 
-            <div class="contacts">
+            <g:HTMLPanel ui:field="phoneContainer" styleName="contacts">
                 <i class="fa fa-phone"></i>
-                <span>8-(812)-123-45-67</span>
-            </div>
-            <div class="contacts">
+                <span ui:field="phone"></span>
+            </g:HTMLPanel>
+            <g:HTMLPanel ui:field="emailContainer" styleName="contacts">
                 <i class="fa fa-envelope"></i>
-                <a href="#">big-company@company.ru</a>
-            </div>
-            <div class="contacts">
+                <a href="#" ui:field="email"></a>
+            </g:HTMLPanel>
+            <g:HTMLPanel ui:field="websiteContainer" styleName="contacts">
                 <i class="fa fa-globe"></i>
-                <a href="#">http://website.com</a>
-            </div>
+                <a href="#" ui:field="website"></a>
+            </g:HTMLPanel>
         </div>
 
         <div ui:field="type" class="type" style="display:none"/>
