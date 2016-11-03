@@ -3,20 +3,10 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="OrganizationPassport">
-        <div class="mainInfo">
-            <div class="t_wrapper">
-                <div class="tc_wrapper large">
-                    <div class="section description">
-                        <div class="head">
-                            <span class="header"><ui:text from="{lang.productDescription}"/></span>
-                        </div>
-                        <div class="body">
-                            <label ui:field="info"/>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <g:HTMLPanel styleName="preview">
+        <g:HTMLPanel tag="fieldset" styleName="header">
+            <legend><ui:text from="{lang.productDescription}"/></legend>
+            <span ui:field="info"></span>
+        </g:HTMLPanel>
     </g:HTMLPanel>
 </ui:UiBinder>

@@ -1,7 +1,7 @@
 package ru.protei.portal.ui.company.client.view.preview;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.LabelElement;
+import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
@@ -58,20 +58,27 @@ public class CompanyPreviewView extends Composite implements AbstractCompanyPrev
         this.info.setInnerText( value );
     }
 
+    @Override
+    public void setGroupVisible( boolean value ) {
+//        groupContainer.setVisible( value );
+    }
+
     @UiField
-    LabelElement phone;
+    SpanElement phone;
     @UiField
-    LabelElement site;
+    SpanElement site;
     @UiField
-    LabelElement email;
+    SpanElement email;
     @UiField
-    LabelElement groupCompany;
+    SpanElement groupCompany;
     @UiField
-    LabelElement addressDejure;
+    SpanElement addressDejure;
     @UiField
-    LabelElement addressFact;
+    SpanElement addressFact;
     @UiField
-    LabelElement info;
+    SpanElement info;
+    @UiField
+    HTMLPanel groupContainer;
 
     AbstractCompanyPreviewActivity activity;
 

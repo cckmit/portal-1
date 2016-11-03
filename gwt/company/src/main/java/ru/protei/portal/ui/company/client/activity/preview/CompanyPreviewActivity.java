@@ -5,7 +5,6 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.core.model.view.ValueComment;
 import ru.protei.portal.ui.common.client.events.CompanyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
@@ -30,6 +29,11 @@ public abstract class CompanyPreviewActivity
     }
 
     private void fillView( Company value ) {
+
+        if ( value.getGroups() == null || value.getGroups().isEmpty() ) {
+            view.setGroupVisible( false );
+        }
+
         view.setPhone( value.getPhone().value );
         view.setSite( value.getWebsite() );
         view.setEmail( value.getEmail().value );

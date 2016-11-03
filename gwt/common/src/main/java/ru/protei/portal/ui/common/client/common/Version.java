@@ -15,10 +15,11 @@ package ru.protei.portal.ui.common.client.common;
  * 4.0.5.9 - error-border добавление рамки при валидации
  * 4.0.6.9 - freq-16341 превью карточки продукта
  * 4.0.7.9 - freq-16070 CRM: список клиентов
- * 4.0.8.9 - freq-16227 список valuecomment
+ * 4.0.7.10 - устранение замечаний по универсальному списку - 8ч
+ * 4.0.8.10 - freq-16227 список valuecomment
  */
 public class Version {
     public static String getVersion() {
-        return "4.0.8.9";
+        return "4.0.8.10";
     }
 }

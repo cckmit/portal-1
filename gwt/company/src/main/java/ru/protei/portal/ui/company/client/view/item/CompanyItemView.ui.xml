@@ -1,12 +1,32 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'>
-    <g:HTMLPanel tag="li" styleName="organization">
-        <div class="wrapper">
-            <div ui:field="type" class="type"/>
-            <div ui:field="name" class="name"/>
-            <g:PushButton ui:field="menuButton" styleName="menu_button"/>
-            <g:PushButton ui:field="favoriteButton" styleName="favorite_button"/>
+
+    <g:HTMLPanel ui:field="root" tag="li">
+        <div class="header-block">
+            <h2 ui:field="name"></h2>
+            <p>
+                <g:Anchor ui:field="preview" styleName="fa fa-fw fa-eye" href="#"/>
+                <g:Anchor ui:field="edit" styleName="fa fa-fw fa-pencil" href="#"/>
+                <g:Anchor ui:field="favorite" styleName="fa fa-fw fa-heart" href="#"/>
+            </p>
+
+            <g:HTMLPanel ui:field="phoneContainer" styleName="contacts">
+                <i class="fa fa-phone"></i>
+                <span ui:field="phone"></span>
+            </g:HTMLPanel>
+            <g:HTMLPanel ui:field="emailContainer" styleName="contacts">
+                <i class="fa fa-envelope"></i>
+                <a href="#" ui:field="email"></a>
+            </g:HTMLPanel>
+            <g:HTMLPanel ui:field="websiteContainer" styleName="contacts">
+                <i class="fa fa-globe"></i>
+                <a href="#" ui:field="website"></a>
+            </g:HTMLPanel>
         </div>
+
+        <div ui:field="type" class="type" style="display:none"/>
+
+
         <g:HTMLPanel ui:field="previewContainer" styleName="plate-list-expander"/>
     </g:HTMLPanel>
 </ui:UiBinder>

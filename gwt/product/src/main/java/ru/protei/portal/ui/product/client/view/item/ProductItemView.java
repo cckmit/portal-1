@@ -1,7 +1,7 @@
 package ru.protei.portal.ui.product.client.view.item;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.dom.client.HeadingElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -23,19 +23,29 @@ public class ProductItemView extends Composite implements AbstractProductItemVie
         this.activity = activity;
     }
 
-    @UiHandler( "menuButton" )
-    public void onMenuClicked( ClickEvent event ) {
+    @UiHandler( "favorite" )
+    public void onFavoriteClicked( ClickEvent event ) {
         event.preventDefault();
         if ( activity != null ) {
-            activity.onMenuClicked( this );
+            activity.onFavoriteClicked( this );
         }
     }
 
-    @UiHandler( "favoriteButton" )
-    public void onUpdateClicked ( ClickEvent event )
+    @UiHandler( "edit" )
+    public void onEditClicked ( ClickEvent event )
     {
+        event.preventDefault();
         if (activity != null) {
-            activity.onUpdateClicked( this );
+            activity.onEditClicked( this );
+        }
+    }
+
+    @UiHandler( "preview" )
+    public void onPreviewClicked ( ClickEvent event )
+    {
+        event.preventDefault();
+        if (activity != null) {
+            activity.onPreviewClicked( this );
         }
     }
 
@@ -46,8 +56,12 @@ public class ProductItemView extends Composite implements AbstractProductItemVie
 
     @Override
     public void setDeprecated(boolean value) {
-        if (value)
-            this.getElement().getFirstChildElement().addClassName("inactive");
+        if (value) {
+            addStyleName( "inactive" );
+            return;
+        }
+
+        removeStyleName( "inactive" );
     }
 
     @Override
@@ -56,13 +70,15 @@ public class ProductItemView extends Composite implements AbstractProductItemVie
     }
 
     @UiField
-    DivElement name;
+    HeadingElement name;
     @UiField
-    PushButton favoriteButton;
+    Anchor edit;
     @UiField
-    PushButton menuButton;
+    Anchor favorite;
     @UiField
     HTMLPanel previewContainer;
+    @UiField
+    Anchor preview;
 
     AbstractProductItemActivity activity;
 
