@@ -23,6 +23,13 @@ public class ProductItemView extends Composite implements AbstractProductItemVie
         this.activity = activity;
     }
 
+    @UiHandler( "favorite" )
+    public void onMenuClicked( ClickEvent event ) {
+        event.preventDefault();
+        if ( activity != null ) {
+            activity.onMenuClicked( this );
+        }
+    }
 
     @UiHandler( "edit" )
     public void onEditClicked ( ClickEvent event )
@@ -44,6 +51,10 @@ public class ProductItemView extends Composite implements AbstractProductItemVie
             this.getElement().getFirstChildElement().addClassName("inactive");
     }
 
+    @Override
+    public HasWidgets getPreviewContainer() {
+        return previewContainer;
+    }
 
     @UiField
     HeadingElement name;
@@ -51,6 +62,8 @@ public class ProductItemView extends Composite implements AbstractProductItemVie
     Anchor edit;
     @UiField
     Anchor favorite;
+    @UiField
+    HTMLPanel previewContainer;
 
     AbstractProductItemActivity activity;
 

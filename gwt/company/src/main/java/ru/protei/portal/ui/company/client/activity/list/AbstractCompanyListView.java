@@ -10,16 +10,16 @@ import ru.protei.portal.core.model.ent.CompanyGroup;
 import java.util.Set;
 
 /**
- * Created by turik on 27.09.16.
+ * Представление списка компаний
  */
 public interface AbstractCompanyListView extends IsWidget {
 
     void setActivity( AbstractCompanyListActivity activity );
     HasWidgets getChildContainer();
-    String getSearchPattern();
-    HasValue< CompanyGroup > getGroup();
-    HasValue< Set< CompanyCategory > > getCategories();
-    HasValue< En_SortField > getSortField();
-    Boolean getDirSort();
+    HasValue< String > searchPattern();
+    HasValue< CompanyGroup > group();
+    HasValue< Set< CompanyCategory > > categories();
+    HasValue< En_SortField > sortField();
+    HasValue< Boolean > sortDir();
     void resetFilter();
 }

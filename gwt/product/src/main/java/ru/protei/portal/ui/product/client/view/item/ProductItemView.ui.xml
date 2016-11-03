@@ -3,7 +3,7 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="product" tag="li">
+    <g:HTMLPanel tag="li">
         <div class="header-block">
             <h2 ui:field="name"></h2>
             <p>
@@ -11,5 +11,6 @@
                 <g:Anchor ui:field="favorite" styleName="fa fa-fw fa-heart" href="#"/>
             </p>
         </div>
+        <g:HTMLPanel ui:field="previewContainer" styleName="plate-list-expander"/>
     </g:HTMLPanel>
 </ui:UiBinder>

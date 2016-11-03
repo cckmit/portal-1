@@ -1,9 +1,11 @@
 package ru.protei.portal.ui.product.client.activity.item;
 
 /**
- *  Активность карточки продукта
+ *  Абстракция активности карточки продукта
  */
 public interface AbstractProductItemActivity {
+
+    void onMenuClicked( AbstractProductItemView itemView );
 
     void onEditClicked( AbstractProductItemView itemView  );
 }

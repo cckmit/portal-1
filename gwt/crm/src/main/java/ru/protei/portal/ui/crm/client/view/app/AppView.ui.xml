@@ -75,6 +75,10 @@
                                         <span class="icon-organization"></span>
                                         <g:Anchor ui:field="companies" href="#" text="{lang.companies}"/>
                                     </div>
+                                    <div class="item">
+                                        <span class="icon-employees"></span>
+                                        <g:Anchor ui:field="contacts" href="#" text="{lang.contacts}" />
+                                    </div>
                                 </div>
                             </div>
                             <!--<div class="menu">-->

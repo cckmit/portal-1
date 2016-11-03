@@ -25,7 +25,6 @@ public class ButtonSelector<T> extends Selector<T> {
         text.setInnerText(selectedValue == null ? "" : selectedValue);
     }
 
-
     @UiHandler( "button" )
     public void onBtnClick (ClickEvent event)
     {

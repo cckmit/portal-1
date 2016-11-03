@@ -3,12 +3,10 @@ package ru.protei.portal.ui.company.client.view.list;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
@@ -18,25 +16,22 @@ import ru.protei.portal.core.model.ent.CompanyGroup;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.platelist.PlateList;
 import ru.protei.portal.ui.common.client.widget.platelist.events.AddEvent;
-import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.company.client.activity.list.AbstractCompanyListActivity;
 import ru.protei.portal.ui.company.client.activity.list.AbstractCompanyListView;
 import ru.protei.portal.ui.company.client.widget.category.btngroup.CategoryBtnGroup;
-import ru.protei.portal.ui.company.client.widget.group.selector.GroupSelector;
+import ru.protei.portal.ui.company.client.widget.group.buttonselector.GroupButtonSelector;
 
 import java.util.Set;
 
 /**
- * Вид формы списка компаний
+ * Представление списка компаний
  */
-public class CompanyListView extends Composite implements AbstractCompanyListView, KeyUpHandler {
+public class CompanyListView extends Composite implements AbstractCompanyListView {
 
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
-        initHandlers();
-        sortField.fillOptions( ModuleType.COMPANY );
         search.getElement().setPropertyString( "placeholder", lang.search() );
     }
 
@@ -50,34 +45,28 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
     }
 
     @Override
-    public String getSearchPattern() {
-        return search.getText();
+    public HasValue< String > searchPattern() {
+        return search;
     }
 
     @Override
-    public HasValue< En_SortField > getSortField() {
+    public HasValue< En_SortField > sortField() {
         return sortField;
     }
 
     @Override
-    public HasValue< CompanyGroup > getGroup() {
+    public HasValue< CompanyGroup > group() {
         return group;
     }
 
     @Override
-    public HasValue< Set < CompanyCategory > > getCategories() {
+    public HasValue< Set < CompanyCategory > > categories() {
         return categories;
     }
 
     @Override
-    public Boolean getDirSort() {
-        return directionButton.getValue();
-    }
-
-    @Override
-    public void onKeyUp( KeyUpEvent keyUpEvent ) {
-        timer.cancel();
-        timer.schedule( 300 );
+    public HasValue< Boolean > sortDir() {
+        return sortDir;
     }
 
     @Override
@@ -85,12 +74,12 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
         categories.setValue(null);
         group.setValue(null);
         sortField.setValue( En_SortField.comp_name );
-        directionButton.setValue( true );
+        sortDir.setValue(true);
         search.setText( "" );
     }
 
-    @UiHandler( "sortField" )
-    public void onSortFieldSelected( ValueChangeEvent< En_SortField > event ) {
+    @UiHandler( "categories" )
+    public void onCompanyCategorySelected( ValueChangeEvent< Set< CompanyCategory> > event ) {
         if ( activity != null ) {
             activity.onFilterChanged();
         }
@@ -103,24 +92,30 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
         }
     }
 
-    @UiHandler( "categories" )
-    public void onCompanyCategorySelected( ValueChangeEvent< Set< CompanyCategory> > event ) {
+    @UiHandler( "sortField" )
+    public void onSortFieldSelected( ValueChangeEvent< En_SortField > event ) {
         if ( activity != null ) {
             activity.onFilterChanged();
         }
     }
 
-    @UiHandler( "directionButton" )
+    @UiHandler("sortDir")
     public void onDirectionClicked( ClickEvent event ) {
 
-        if (directionButton.getValue())
-            directionButton.removeStyleName( "active" );
+        if (sortDir.getValue())
+            sortDir.removeStyleName( "active" );
         else
-            directionButton.addStyleName( "active" );
+            sortDir.addStyleName( "active" );
 
         if ( activity != null ) {
             activity.onFilterChanged();
         }
+    }
+
+    @UiHandler( "search" )
+    public void onKeyUpSearch( KeyUpEvent event ) {
+        timer.cancel();
+        timer.schedule( 300 );
     }
 
     @UiHandler( "childContainer" )
@@ -130,11 +125,6 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
         }
     }
 
-    private void initHandlers() {
-        search.sinkEvents( Event.ONKEYUP );
-        search.addHandler( this, KeyUpEvent.getType() );
-    }
-
     @UiField
     TextBox search;
 
@@ -142,7 +132,7 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
     PlateList childContainer;
 
     @UiField
-    ToggleButton directionButton;
+    ToggleButton sortDir;
 
     @Inject
     @UiField( provided = true )
@@ -150,7 +140,7 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
 
     @Inject
     @UiField( provided = true )
-    GroupSelector group;
+    GroupButtonSelector group;
 
     @Inject
     @UiField( provided = true )

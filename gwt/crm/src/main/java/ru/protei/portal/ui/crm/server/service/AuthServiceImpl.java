@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.crm.server.service;
 
-import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +17,7 @@ import javax.servlet.http.HttpServletRequest;
  * Сервис авторизации
  */
 @Service( "AuthService" )
-public class AuthServiceImpl extends RemoteServiceServlet implements AuthService {
+public class AuthServiceImpl implements AuthService {
 
     @Override
     public Profile authentificate( String login, String password ) throws RequestFailedException {

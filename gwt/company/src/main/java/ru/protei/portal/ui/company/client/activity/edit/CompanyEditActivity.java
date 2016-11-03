@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.company.client.activity.edit;
 
+import com.google.gwt.user.client.ui.HasText;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -11,8 +12,9 @@ import ru.protei.portal.ui.common.client.events.CompanyEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.NameStatus;
+import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
-import ru.protei.portal.ui.company.client.service.CompanyServiceAsync;
+import ru.protei.portal.ui.common.client.service.CompanyServiceAsync;
 
 
 /**
@@ -46,8 +48,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
     @Override
     public void onSaveClicked() {
-        if(view.companyName().getText().trim().isEmpty() || view.actualAddress().getText().trim().isEmpty() || view.legalAddress().getText().trim().isEmpty()){
-            fireEvent( new NotifyEvents.Show(lang.errAsteriskRequired(), NotifyEvents.NotifyType.ERROR));
+        if(!validateFieldsAndGetResult()) {
             return;
         }
 
@@ -82,6 +83,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
                     public void onSuccess(Boolean aBoolean) {
                         fireEvent(new CompanyEvents.Show());
                         fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+                        fireEvent(new CompanyEvents.ChangeModel());
                     }
                 });
             }
@@ -122,6 +124,23 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
     }
 
+    private boolean validateFieldAndGetResult(HasValidable validator, HasText field){
+        boolean result = !field.getText().trim().isEmpty();
+        validator.setValid(result);
+        return result;
+    }
+
+    private boolean validateFieldsAndGetResult(){
+        boolean isCorrect;
+
+        isCorrect = validateFieldAndGetResult(view.companyNameValidator(), view.companyName());
+
+        isCorrect = validateFieldAndGetResult(view.actualAddressValidator(), view.actualAddress()) && isCorrect;
+
+        isCorrect = validateFieldAndGetResult(view.legalAddressValidator(), view.legalAddress()) && isCorrect;
+
+        return isCorrect;
+    }
 
     private void resetFields(){
         view.setCompanyNameStatus(NameStatus.NONE);
@@ -131,6 +150,12 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         view.webSite().setText("");
         view.comment().setText("");
         view.companyGroup().setValue(null);
+
+
+        // reset validation
+        view.companyNameValidator().setValid(true);
+        view.actualAddressValidator().setValid(true);
+        view.legalAddressValidator().setValid(true);
     }
 
 

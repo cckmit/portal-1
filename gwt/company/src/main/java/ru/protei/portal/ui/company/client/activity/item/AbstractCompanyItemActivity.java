@@ -4,7 +4,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.ui.company.client.activity.list.AbstractCompanyListActivity;
 
 /**
- * Created by turik on 30.09.16.
+ * Активность компании
  */
 public interface AbstractCompanyItemActivity {
 
