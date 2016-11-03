@@ -108,12 +108,33 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
         }
     }
 
-    @UiHandler( "companyName" )
-    public void onKeyUp( KeyUpEvent keyUpEvent ) {
+    @UiHandler("companyName")
+    public void onChangeCompanyName( KeyUpEvent keyUpEvent ) {
         verifiableIcon.setClassName(NameStatus.UNDEFINED.getStyle());
         timer.cancel();
         timer.schedule( 300 );
     }
+
+    @UiHandler({"companyName", "actualAddress", "legalAddress"})
+    public void onChangeRequiredFields( KeyUpEvent keyUpEvent ) {
+        Element caughtElement = keyUpEvent.getRelativeElement();
+
+        if(caughtElement == companyName.getElement())
+            activity.validateFieldAndGetResult(companyName, companyName);
+        else if(caughtElement == actualAddress.getElement())
+            activity.validateFieldAndGetResult(actualAddress, actualAddress);
+        else if(caughtElement == legalAddress.getElement())
+            activity.validateFieldAndGetResult(legalAddress, legalAddress);
+    }
+
+//    @SafeVarargs
+//    private final <T extends UIObject & HasText & HasValidable> void validateIfEquals(Element elem, T ... validableElem){
+//        for(int i = 0; i< validableElem.length; i++)
+//            if(elem == validableElem[i].getElement()){
+//                activity.validateFieldAndGetResult(validableElem[i], validableElem[i]);
+//                return;
+//            }
+//    }
 
     Timer timer = new Timer() {
         @Override

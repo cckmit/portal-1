@@ -172,7 +172,8 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
     }
 
-    private boolean validateFieldAndGetResult(HasValidable validator, HasText field){
+    @Override
+    public boolean validateFieldAndGetResult(HasValidable validator, HasText field){
         boolean result = !field.getText().trim().isEmpty();
         validator.setValid(result);
         return result;
