@@ -130,7 +130,7 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
     }
 
     @Override
-    public Person getContact(long id) {
+    public Person getContactById( long id ) {
         Person p = get(id);
         return ifPersonIsEmployee(p) ? null : p;
     }

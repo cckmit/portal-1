@@ -33,7 +33,7 @@ public class ContactServiceImpl implements ContactService {
         CoreResponse<List<Person>> response = contactService.contactList(query);
 
         if (response.isError()) {
-            throw new RequestFailedException();
+            throw new RequestFailedException( response.getStatus() );
         }
         return response.getData();
     }
