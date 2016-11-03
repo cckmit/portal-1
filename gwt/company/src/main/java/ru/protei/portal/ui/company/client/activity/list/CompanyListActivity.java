@@ -45,7 +45,7 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
     public void onShow( CompanyEvents.Show event ) {
         fireEvent(new AppEvents.InitPanelName(lang.companies()));
         initDetails.parent.clear();
-        initDetails.parent.add( view.asWidget() );
+        initDetails.parent.add(view.asWidget());
 
         requestCompanies();
     }
@@ -71,7 +71,7 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
 
     @Override
     public void onFavoriteClicked(AbstractCompanyItemView itemView) {
-        Window.alert( "Clicked on favorite of company with id = " + itemViewToModel.get( itemView ).getId() + "!" );
+        Window.alert("Clicked on favorite of company with id = " + itemViewToModel.get(itemView).getId() + "!");
     }
 
     @Override
@@ -87,7 +87,7 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
 
     @Override
     public void onCreateClicked() {
-        fireEvent( new CompanyEvents.Edit ( null ));
+        fireEvent(new CompanyEvents.Edit(null));
     }
 
     private void requestCompanies() {
@@ -118,8 +118,19 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
         AbstractCompanyItemView itemView = factory.get();
         itemView.setActivity( this );
         itemView.setName( company.getCname() );
-        itemView.setPhone( company.getPhone().value );
-        itemView.setEmail( company.getEmail().value );
+
+
+        if(company.getPhone() != null)
+            itemView.setPhone( company.getPhone().value );
+        else
+            itemView.setPhone(null);
+
+        if(company.getEmail() != null)
+            itemView.setEmail( company.getEmail().value);
+        else
+            itemView.setEmail(null);
+
+
         itemView.setWebsite( company.getWebsite() );
 
         CompanyCategory category = company.getCategory();
