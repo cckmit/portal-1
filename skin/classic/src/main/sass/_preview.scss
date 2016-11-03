@@ -1,6 +1,10 @@
 .preview {
     padding: 15px;
-    //height: 400px;
+
+    .pre-formatted-info {
+        white-space: pre-wrap;
+    }
+
     legend
     {
         color: #5481c1;

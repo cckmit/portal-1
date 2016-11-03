@@ -36,7 +36,7 @@
 
         <fieldset class="comments">
             <legend><ui:text from="{lang.companyAdditionalInfoHeader}"/></legend>
-            <span ui:field="info"></span>
+            <span ui:field="info" class="pre-formatted-info"></span>
         </fieldset>
     </g:HTMLPanel>
 </ui:UiBinder>
