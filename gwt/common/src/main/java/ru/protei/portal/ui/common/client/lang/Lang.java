@@ -122,6 +122,7 @@ public interface Lang extends Messages {
 
     String contactPosition();
 
-    String edit();    
-    
+    String edit();
+
+    String companyAdditionalInfoHeader();
 }
