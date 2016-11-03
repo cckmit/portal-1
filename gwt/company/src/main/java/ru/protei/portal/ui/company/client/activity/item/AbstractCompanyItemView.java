@@ -24,4 +24,19 @@ public interface AbstractCompanyItemView extends IsWidget {
      * Возвращает контейнер для превью компании
      */
     HasWidgets getPreviewContainer();
+
+    /**
+     * Установить телефон
+     */
+    void setPhone( String value );
+
+    /**
+     * Установить email
+     */
+    void setEmail( String value );
+
+    /**
+     * Установить сайт
+     */
+    void setWebsite( String value );
 }

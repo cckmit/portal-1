@@ -60,7 +60,22 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
     }
 
     @Override
-    public void onMenuClicked( AbstractCompanyItemView itemView ) {
+    public void onEditClicked( AbstractCompanyItemView itemView ) {
+        Company value = itemViewToModel.get( itemView );
+        if ( value == null ) {
+            return;
+        }
+
+        fireEvent( new CompanyEvents.Edit ( value.getId() ));
+    }
+
+    @Override
+    public void onFavoriteClicked(AbstractCompanyItemView itemView) {
+        Window.alert( "Clicked on favorite of company with id = " + itemViewToModel.get( itemView ).getId() + "!" );
+    }
+
+    @Override
+    public void onPreviewClicked( AbstractCompanyItemView itemView ) {
         Company value = itemViewToModel.get( itemView );
         if ( value == null ) {
             return;
@@ -68,11 +83,6 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
 
         fireEvent(new CompanyEvents.ShowPreview(itemView.getPreviewContainer(), value));
         animation.showPreview(itemView, (IsWidget) itemView.getPreviewContainer());
-    }
-
-    @Override
-    public void onFavoriteClicked(AbstractCompanyItemView itemView) {
-        Window.alert( "Clicked on favorite of company with id = " + itemViewToModel.get( itemView ).getId() + "!" );
     }
 
     @Override
@@ -104,6 +114,21 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
         });
     }
 
+    private AbstractCompanyItemView makeView( Company company ) {
+        AbstractCompanyItemView itemView = factory.get();
+        itemView.setActivity( this );
+        itemView.setName( company.getCname() );
+        itemView.setPhone( company.getPhone() );
+        itemView.setEmail( company.getEmail() );
+        itemView.setWebsite( company.getWebsite() );
+
+        CompanyCategory category = company.getCategory();
+        if ( category != null ) {
+            itemView.setType( category.getName() );
+        }
+        return itemView;
+    }
+
     Consumer< Company > fillViewer = new Consumer< Company >() {
         @Override
         public void accept( Company company ) {
@@ -113,18 +138,6 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
             view.getChildContainer().add( itemView.asWidget() );
         }
     };
-
-    private AbstractCompanyItemView makeView( Company company ) {
-        AbstractCompanyItemView itemView = factory.get();
-        itemView.setActivity( this );
-        itemView.setName( company.getCname () );
-
-        CompanyCategory category = company.getCategory();
-        if ( category != null ) {
-            itemView.setType( category.getName() );
-        }
-        return itemView;
-    }
 
     @Inject
     Provider< AbstractCompanyItemView > factory;
