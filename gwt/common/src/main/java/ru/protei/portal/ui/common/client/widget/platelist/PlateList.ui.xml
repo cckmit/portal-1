@@ -4,7 +4,7 @@
     <g:HTMLPanel ui:field="root" styleName="plate-list" tag="ul">
         <g:FocusPanel ui:field="createButton">
             <g:HTMLPanel>
-                <img src="http://www.free-icons-download.net/images/create-a-documents-icon-63285.png"/>
+                <img src="./images/create-icon.png"/>
                 <div ui:field="name" class="name" style="display:none"></div>
             </g:HTMLPanel>
         </g:FocusPanel>

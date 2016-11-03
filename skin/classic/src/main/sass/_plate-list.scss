@@ -28,9 +28,12 @@ ul.plate-list {
       background: #005c5c;
     }
 
-    img {
-      width: 180px;
-      opacity: 0.3;
+    div {
+      text-align: center;
+      img {
+        width: 180px;
+        opacity: 0.3;
+      }
     }
   }
 
@@ -73,7 +76,7 @@ ul.plate-list {
       backface-visibility: hidden;
       z-index: 1;
       width: calc(100% - 3em);
-      //height: calc(100% - 3em);
+      height: calc(170px - 3em);
       top: 0;
       left: 0;
 
@@ -154,12 +157,12 @@ ul.plate-list {
 
     &.plate-list-expanded {
       transition: height 350ms ease;
-      height: 450px;
 
       .plate-list-expander {
         transition: height 350ms ease;
-        height: 250px;
         border: 1px solid #d3d3d3;
+        opacity: 1;
+        z-index: 10001;
       }
     }
     .plate-list-expander {
@@ -169,11 +172,11 @@ ul.plate-list {
       width: calc(100% - 240px);
       margin-top: 30px;
       text-align: left;
-      height: 0;
       overflow: hidden;
-      z-index: 10001;
       margin-left: 240px;
       background: white;
+      opacity: 0;
+      z-index: 0;
     }
   }
 }
