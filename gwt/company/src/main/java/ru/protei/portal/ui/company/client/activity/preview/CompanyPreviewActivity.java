@@ -5,6 +5,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.view.ValueComment;
 import ru.protei.portal.ui.common.client.events.CompanyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
@@ -29,9 +30,9 @@ public abstract class CompanyPreviewActivity
     }
 
     private void fillView( Company value ) {
-        view.setPhone( value.getPhone() );
+        view.setPhone( value.getPhone().value );
         view.setSite( value.getWebsite() );
-        view.setEmail( value.getEmail() );
+        view.setEmail( value.getEmail().value );
         view.setAddressDejure( value.getAddressDejure() );
         view.setAddressFact( value.getAddressFact() );
         view.setInfo( value.getInfo() );

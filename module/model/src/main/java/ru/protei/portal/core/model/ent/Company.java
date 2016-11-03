@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.view.ValueComment;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
@@ -30,8 +31,8 @@ public class Company implements Serializable {
     @JdbcColumn(name = "cname")
     private String cname;
 
-    @JdbcColumn(name = "email")
-    private String email;
+    @JdbcColumn(name = "email", converterType = ConverterType.JSON)
+    private ValueComment email;
 
     @JdbcColumn(name = "fax")
     private String fax;
@@ -39,8 +40,8 @@ public class Company implements Serializable {
     @JdbcColumn(name = "info")
     private String info;
 
-    @JdbcColumn(name = "phone")
-    private String phone;
+    @JdbcColumn(name = "phone", converterType = ConverterType.JSON)
+    private ValueComment phone;
 
     @JdbcColumn(name = "created")
     private Date created;
@@ -76,7 +77,7 @@ public class Company implements Serializable {
         return this.cname;
     }
 
-    public String getEmail() {
+    public ValueComment getEmail() {
         return this.email;
     }
 
@@ -92,8 +93,7 @@ public class Company implements Serializable {
         return this.info;
     }
 
-
-    public String getPhone() {
+    public ValueComment getPhone() {
         return this.phone;
     }
 
@@ -129,8 +129,12 @@ public class Company implements Serializable {
         this.cname = cname;
     }
 
-    public void setEmail(String email) {
+    public void setEmail(ValueComment email) {
         this.email = email;
+    }
+
+    public void setPhone(ValueComment phone){
+        this.phone = phone;
     }
 
     public void setFax(String fax) {
@@ -143,11 +147,6 @@ public class Company implements Serializable {
 
     public void setInfo(String info) {
         this.info = info;
-    }
-
-
-    public void setPhone(String phone) {
-        this.phone = phone;
     }
 
     public void setCreated(Date created) {

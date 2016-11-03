@@ -7,14 +7,19 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.view.ValueComment;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.CompanyEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.events.ValueCommentEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.NameStatus;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.common.client.service.CompanyServiceAsync;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -39,9 +44,11 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         resetFields();
         initDetails.parent.add(view.asWidget());
 
-        if(event.getCompanyId() == null)
-            this.fireEvent( new AppEvents.InitPanelName( lang.companyNew() ) );
-        else {
+        if(event.getCompanyId() == null) {
+            this.fireEvent(new AppEvents.InitPanelName(lang.companyNew()));
+            fireEvent(new ValueCommentEvents.ShowList(view.phonesContainer(), companyPhones = new ArrayList<>()));
+            fireEvent(new ValueCommentEvents.ShowList(view.emailsContainer(), companyEmails = new ArrayList<>()));
+        }else {
 
         }
     }
@@ -52,10 +59,11 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
             return;
         }
 
+        // оставить только saveCompany
         companyService.isCompanyNameExists(view.companyName().getText(), null, new RequestCallback<Boolean>() {
             @Override
             public void onError(Throwable throwable) {
-                //fireEvent(new NotifyEvents.Show(lang.errNotSaved(), NotifyEvents.NotifyType.ERROR));
+                fireEvent(new NotifyEvents.Show(lang.errNotSaved(), NotifyEvents.NotifyType.ERROR));
             }
 
             @Override
@@ -73,10 +81,10 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
                 company.setAddressFact(view.actualAddress().getText());
 
                 //установить в saveCompany группу
-                companyService.saveCompany(company, null, new RequestCallback<Boolean>() {
+                companyService.saveCompany(company, view.companyGroup().getValue(), new RequestCallback<Boolean>() {
                     @Override
                     public void onError(Throwable throwable) {
-                        //fireEvent(new NotifyEvents.Show(lang.errNotSaved(), NotifyEvents.NotifyType.ERROR));
+                        fireEvent(new NotifyEvents.Show(lang.errNotSaved(), NotifyEvents.NotifyType.ERROR));
                     }
 
                     @Override
@@ -158,6 +166,9 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         view.legalAddressValidator().setValid(true);
     }
 
+    //    native void consoleLog( String message) /*-{
+//        console.log( "me:" + message );
+//    }-*/;
 
     @Inject
     AbstractCompanyEditView view;
@@ -169,4 +180,6 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
 
     private AppEvents.InitDetails initDetails;
+    private List<ValueComment> companyPhones;
+    private List<ValueComment> companyEmails;
 }

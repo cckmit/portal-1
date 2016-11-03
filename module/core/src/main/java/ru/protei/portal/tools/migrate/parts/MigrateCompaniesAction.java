@@ -6,8 +6,8 @@ import ru.protei.portal.core.model.dao.CompanyGroupHomeDAO;
 import ru.protei.portal.core.model.dao.MigrationEntryDAO;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanyHomeGroupItem;
+import ru.protei.portal.core.model.view.ValueComment;
 import ru.protei.portal.tools.migrate.tools.MigrateAction;
-import ru.protei.portal.tools.migrate.tools.MigrateAdapter;
 import ru.protei.portal.tools.migrate.tools.MigrateUtils;
 
 import java.sql.Connection;
@@ -53,7 +53,7 @@ public class MigrateCompaniesAction implements MigrateAction {
                     Company x = new Company();
                     x.setAddressDejure((String) row.get("strDeJureAddress"));
                     x.setAddressFact((String) row.get("strPhysicalAddress"));
-                    x.setEmail((String) row.get("strE_mail"));
+                    x.setEmail( new ValueComment((String)row.get("strE_mail"),""));
                     x.setFax(null);
                     x.setId(((Number) row.get("nID")).longValue());
                     x.setInfo((String) row.get("strInfo"));
