@@ -22,7 +22,7 @@ public class ContactPreviewView extends Composite implements AbstractContactPrev
 
     @Override
     public void setActivity(AbstractContactPreviewActivity activity) {
-
+        this.activity = activity;
     }
 
     @Override
@@ -121,7 +121,6 @@ public class ContactPreviewView extends Composite implements AbstractContactPrev
     @UiField
     Lang lang;
 
-    @Inject
     AbstractContactPreviewActivity activity;
 
     interface ContactPreviewViewUiBinder extends UiBinder<HTMLPanel, ContactPreviewView> { }

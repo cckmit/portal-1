@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.common.client.animation;
 
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HTMLPanel;
 
 /**
@@ -8,17 +9,24 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 public class TableAnimation {
 
     public void showDetails() {
-        tableContainer.removeStyleName( "col-sm-12" );
-        tableContainer.addStyleName( "col-sm-7" );
+//        tableContainer.removeStyleName( "col-sm-12" );
+//        tableContainer.addStyleName( "col-sm-7" );
+//        detailsContainer.removeStyleName( "no-width" );
+//        detailsContainer.addStyleName( "col-sm-5" );
+
+        tableContainer.setWidth( "40%" );
         detailsContainer.removeStyleName( "no-width" );
-        detailsContainer.addStyleName( "col-sm-5" );
+        detailsContainer.setWidth( "30%" );
     }
 
     public void closeDetails() {
         detailsContainer.clear();
-        tableContainer.removeStyleName( "col-sm-7" );
-        tableContainer.addStyleName( "col-sm-12" );
-        detailsContainer.removeStyleName( "col-sm-5" );
+//        tableContainer.removeStyleName( "col-sm-7" );
+//        tableContainer.addStyleName( "col-sm-12" );
+//        detailsContainer.removeStyleName( "col-sm-5" );
+//        detailsContainer.addStyleName( "no-width" );
+
+        tableContainer.setWidth( "100%" );
         detailsContainer.addStyleName( "no-width" );
     }
 

@@ -1,10 +1,12 @@
 package ru.protei.portal.ui.contact.client.activity.table;
 
 import com.google.gwt.user.client.ui.HasValue;
+import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.ui.common.client.animation.TableAnimation;
 
 /**
  * Представление таблицы контактов
@@ -12,6 +14,8 @@ import ru.protei.portal.core.model.ent.Person;
 public interface AbstractContactTableView extends IsWidget {
 
     void setActivity( AbstractContactTableActivity activity );
+    void setAnimation ( TableAnimation animation );
+
     HasValue< Company > company();
     HasValue< Boolean > showFired();
     HasValue< En_SortField > sortField();
@@ -20,4 +24,5 @@ public interface AbstractContactTableView extends IsWidget {
     void resetFilter();
     void clearRecords();
     void addRecord( Person person );
+    HasWidgets getPreviewContainer ();
 }

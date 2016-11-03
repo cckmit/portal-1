@@ -28,11 +28,11 @@
                                         <label class="tc_wrapper content" ui:field="secondName"></label>
                                     </div>
                                     <div class="tr_wrapper">
-                                        <div class="tc_wrapper header"><ui:text from="{lang.contactSex}"/></div>
+                                        <div class="tc_wrapper header"><ui:text from="{lang.sex}"/></div>
                                         <label class="tc_wrapper content" ui:field="sex"></label>
                                     </div>
                                     <div class="tr_wrapper">
-                                        <div class="tc_wrapper header"><ui:text from="{lang.contactBirhday}"/></div>
+                                        <div class="tc_wrapper header"><ui:text from="{lang.birthday}"/></div>
                                         <label class="tc_wrapper content" ui:field="birthday"></label>
                                     </div>
                                     <div class="tr_wrapper">

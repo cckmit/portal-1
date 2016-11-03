@@ -17,6 +17,7 @@ import ru.brainworm.factory.widget.table.client.helper.SelectionColumn;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.contact.client.activity.table.AbstractContactTableActivity;
 import ru.protei.portal.ui.contact.client.activity.table.AbstractContactTableView;
 import ru.protei.portal.ui.contact.client.view.table.columns.ContactColumnBuilder;
@@ -40,6 +41,14 @@ public class ContactTableView extends Composite implements AbstractContactTableV
         this.activity = activity;
         initTable();
     }
+
+    @Override
+    public void setAnimation ( TableAnimation animation ) {
+        animation.setContainers( tableContainer, previewContainer );
+    }
+
+    @Override
+    public HasWidgets getPreviewContainer () { return previewContainer; }
 
     @Override
     public HasValue<Company> company() {
@@ -230,6 +239,11 @@ public class ContactTableView extends Composite implements AbstractContactTableV
 
     @UiField
     TableWidget table;
+
+    @UiField
+    HTMLPanel tableContainer;
+    @UiField
+    HTMLPanel previewContainer;
 
     @Inject
     @UiField

@@ -6,6 +6,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.ContactEvents;
@@ -26,6 +27,7 @@ public abstract class ContactTableActivity implements AbstractContactTableActivi
     @PostConstruct
     public void onInit() {
         view.setActivity( this );
+        view.setAnimation ( animation );
     }
 
     @Event
@@ -49,9 +51,7 @@ public abstract class ContactTableActivity implements AbstractContactTableActivi
     }
 
     @Override
-    public void onItemClicked( Person value ) {
-        Window.alert( "Clicked on contact!" );
-    }
+    public void onItemClicked ( Person value ) { showPreview( value ); }
 
     @Override
     public void onEditClicked(Person value) {
@@ -71,19 +71,29 @@ public abstract class ContactTableActivity implements AbstractContactTableActivi
 
         view.clearRecords();
 
-        contactService.getContacts(view.searchPattern().getValue(), view.company().getValue(),
+        contactService.getContacts( view.searchPattern().getValue(), view.company().getValue(),
                 view.showFired().getValue() ? null : view.showFired().getValue(),
-                view.sortField().getValue(), view.sortDir().getValue(), new RequestCallback< List< Person > >() {
+                view.sortField().getValue(), view.sortDir().getValue(), new RequestCallback<List<Person>>() {
                     @Override
-                    public void onError(Throwable throwable) {
-                        fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
+                    public void onError ( Throwable throwable ) {
+                        fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
                     }
 
                     @Override
-                    public void onSuccess(List<Person> persons) {
+                    public void onSuccess ( List<Person> persons ) {
                         fillViewHandler = taskService.startPeriodicTask( persons, fillViewer, 50, 50 );
                     }
-                });
+                } );
+    }
+
+    private void showPreview( Person value ) {
+
+        if ( value == null ) {
+            animation.closeDetails();
+        } else {
+            animation.showDetails();
+            fireEvent( new ContactEvents.ShowPreview( view.getPreviewContainer(), value ) );
+        }
     }
 
     Consumer< Person > fillViewer = new Consumer< Person >() {
@@ -101,6 +111,9 @@ public abstract class ContactTableActivity implements AbstractContactTableActivi
 
     @Inject
     ContactServiceAsync contactService;
+
+    @Inject
+    TableAnimation animation;
 
     @Inject
     PeriodicTaskService taskService;

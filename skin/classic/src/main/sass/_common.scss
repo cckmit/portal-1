@@ -633,3 +633,33 @@ label.bordered:after{
 .table-hover > tbody > tr:hover {
   background-color: white;
 }
+
+
+/**
+ TABLE PREVIEW
+ */
+
+.selected, .selected:hover {
+  background: #ddd;
+}
+
+.test-table-container {
+  -webkit-transition: all 0.5s;
+  -moz-transition: all 0.5s;
+  -o-transition: all 0.5s;
+  transition: all 0.5s;
+}
+
+.test-table-preview {
+  -webkit-transition: all 0.5s;
+  -moz-transition: all 0.5s;
+  -o-transition: all 0.5s;
+  transition: all 0.5s;
+  position: fixed;
+  right: 0;
+}
+
+.no-width {
+  width: 0%;
+  opacity: 0;
+}
