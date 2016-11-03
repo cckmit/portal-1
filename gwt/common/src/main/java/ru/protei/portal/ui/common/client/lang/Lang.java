@@ -125,4 +125,6 @@ public interface Lang extends Messages {
     String edit();
 
     String companyAdditionalInfoHeader();
+
+    String companyEdit();
 }
