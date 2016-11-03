@@ -17,5 +17,5 @@ public interface PersonDAO extends PortalBaseDAO<Person> {
 
     List<Person> getContactsByQuery(ContactQuery query);
 
-    Person getContact (long id);
+    Person getContactById( long id );
 }

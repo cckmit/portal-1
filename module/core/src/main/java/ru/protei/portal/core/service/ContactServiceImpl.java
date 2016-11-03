@@ -10,7 +10,7 @@ import ru.protei.portal.core.model.query.ContactQuery;
 import java.util.List;
 
 /**
- * Created by turik on 01.11.16.
+ * Реализация сервиса управления контактами
  */
 public class ContactServiceImpl implements ContactService {
 
@@ -19,12 +19,17 @@ public class ContactServiceImpl implements ContactService {
 
     @Override
     public CoreResponse<List<Person>> contactList(ContactQuery query) {
-        return new CoreResponse<List<Person>>().success(personDAO.getContactsByQuery(query));
+        List<Person> list = personDAO.getContactsByQuery(query);
+
+        if ( list == null )
+            new CoreResponse<List<Person>>().error(En_ResultStatus.GET_DATA_ERROR);
+
+        return new CoreResponse<List<Person>>().success(list);
     }
 
     @Override
-    public CoreResponse<Person> getContact(long id) {
-        Person person = personDAO.getContact(id);
+    public CoreResponse<Person> getContactById( long id ) {
+        Person person = personDAO.getContactById( id );
 
         return person != null ? new CoreResponse<Person>().success(person)
                 : new CoreResponse<Person>().error(En_ResultStatus.NOT_FOUND);

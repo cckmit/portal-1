@@ -45,7 +45,7 @@ public class ContactServiceTest {
         Assert.assertTrue(result.getData().size() > 0);
 
         for (Person person : result.getData()) {
-            CoreResponse<Person> x = service.getContact(person.getId());
+            CoreResponse<Person> x = service.getContactById( person.getId() );
             Assert.assertTrue(x.isOk());
             Assert.assertEquals(person.getId(), x.getData().getId());
             Assert.assertEquals(person.getDisplayName(), x.getData().getDisplayName());
