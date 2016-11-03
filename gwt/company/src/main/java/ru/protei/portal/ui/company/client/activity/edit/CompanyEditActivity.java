@@ -82,7 +82,10 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
     }
 
     private void fillView(Company company){
-        view.companyName().setText(company.getCname());
+        if(company.getId() != null){
+            view.companyName().setText(company.getCname());
+            view.setCompanyNameStatus(NameStatus.SUCCESS);
+        }
 
         if(!company.getGroups().isEmpty())
             view.companyGroup().setValue(company.getGroups().get(0));
