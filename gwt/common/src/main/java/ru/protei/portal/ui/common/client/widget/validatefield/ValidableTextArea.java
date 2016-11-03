@@ -19,7 +19,7 @@ public class ValidableTextArea extends TextArea implements HasValidable{
 
     @Override
     public boolean isValid() {
-        return isValid;
+        return isValid; //
     }
 
     private boolean isValid;
