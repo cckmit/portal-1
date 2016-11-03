@@ -1,0 +1,517 @@
+/*!
+ * Datetimepicker v2.1
+ */
+
+.protei-datetimepicker-popup {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.428571429;
+    color: #333333;
+}
+
+.protei-datetimepicker-popup a {
+    color: #428bca;
+    text-decoration: none;
+}
+
+.protei-datetimepicker-popup label {
+    display: inline-block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.protei-datetimepicker-popup *, .protei-datetimepicker-popup *:before, .protei-datetimepicker-popup *:after {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+/* Общие стили виджета выбора времени */
+.protei-datetimepicker-widget {
+    width: 240px;
+}
+
+.protei-datetimepicker-widget a {
+    text-decoration: none;
+}
+
+.protei-datetimepicker-widget .switch-btn {
+    width: 66.66666667%;
+    float: left;
+    min-height: 1px;
+    padding-left: 15px;
+    padding-right: 15px;
+    position: relative;
+    text-align: center;
+}
+
+.protei-datetimepicker-widget .switch-btn a {
+    cursor: pointer;
+    padding: 4px 20px;
+    font-size: 1.1em;
+    white-space: nowrap;
+}
+
+.protei-datetimepicker-widget .switch-btn a:hover {
+    background: #f4f4f4;
+    border-radius: 3px;
+}
+
+.protei-datetimepicker-widget .arrow-btn {
+    width: 16.66666667%;
+    float: left;
+    min-height: 1px;
+    padding-left: 15px;
+    padding-right: 15px;
+    position: relative;
+    text-align: center;
+}
+
+.protei-datetimepicker-widget .arrow-btn a {
+    font-size: 1.2em;
+    cursor: pointer;
+    padding: 2px 0;
+}
+
+.protei-datetimepicker-widget .time-btn-container {
+    margin-top: 10px;
+    text-align: center;
+    font-size: 1.2em;
+    margin-right: -15px;
+    margin-left: -15px;
+}
+
+.protei-datetimepicker-widget .time-btn-container .time-btn {
+    width: 100%;
+    min-height: 1px;
+    padding-left: 15px;
+    padding-right: 15px;
+    position: relative;
+}
+
+/* Общие стили виджетв выбора диапазона */
+.protei-daterangepicker-widget {
+    width: 505px;
+}
+
+.protei-daterangepicker-widget .from-date,
+.protei-daterangepicker-widget .to-date {
+    float: left;
+    padding: 5px;
+}
+
+.protei-daterangepicker-widget .from-date {
+    margin-right: 5px;
+}
+
+.protei-daterangepicker-widget .range-label {
+    width: 100%;
+    padding-bottom: 15px;
+    min-height: 1px;
+    padding-left: 15px;
+    padding-right: 15px;
+    position: relative;
+}
+
+.protei-daterangepicker-widget .range-label label,
+.protei-daterangepicker-widget .range-label div {
+    float: left;
+    font-size: 0.9em;
+    padding: 4px;
+}
+
+.protei-daterangepicker-widget .range-label label {
+}
+
+.protei-daterangepicker-widget .range-label div {
+    float: right;
+}
+
+
+/* Стиль выпадайки */
+.protei-datetimepicker-popup {
+    top: 0px;
+    left: 0;
+    padding: 4px;
+    margin-top: 5px;
+    z-index: 99999 !important;
+
+    background-color: #ffffff;
+    border: 1px solid #cccccc;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 4px;
+    -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+}
+
+.protei-datetimepicker-popup .popup-content {
+    padding: 5px;
+}
+
+.protei-datetimepicker-popup  .arrow,
+.protei-datetimepicker-popup  .arrow:after {
+    position: absolute;
+    display: block;
+    width: 0;
+    height: 0;
+    border-color: transparent;
+    border-style: solid;
+}
+
+.protei-datetimepicker-popup .arrow {
+    border-width: 11px;
+}
+
+.protei-datetimepicker-popup .arrow:after {
+    border-width: 10px;
+    content: "";
+}
+
+.protei-datetimepicker-popup .arrow {
+    top: -5px;
+    left: 4%;
+    margin-left: -12px;
+    border-bottom-color: rgba(0, 0, 0, 0.15);
+    border-top-width: 0;
+    z-index: 1000;
+}
+
+.protei-datetimepicker-popup .arrow:after {
+    top: 1px;
+    margin-left: -10px;
+    border-bottom-color: #ffffff;
+    border-top-width: 0;
+    content: " ";
+}
+
+/* Общие стили для таблицы календаря */
+.protei-datetimepicker-widget table {
+    width: 100%;
+    margin: 0;
+    border-collapse: collapse;
+    border-spacing: 0;
+    max-width: 100%;
+    background-color: transparent;
+}
+
+.protei-datetimepicker-widget .table-condensed {
+    width: 100%;
+    min-height: 1px;
+    padding-left: 15px;
+    padding-right: 15px;
+    position: relative;
+    padding-top: 10px;
+}
+
+.protei-datetimepicker-widget td,
+.protei-datetimepicker-widget th {
+    text-align: center;
+    cursor: pointer;
+    font-size: 0.9em;
+}
+
+.protei-datetimepicker-widget td:hover{
+    background: #f4f4f4;
+}
+
+
+.protei-datetimepicker-widget .dow {
+    width: 14.2857%;
+    font-weight: 500;
+    color: gray;
+}
+
+.protei-datetimepicker-widget .dow:hover {
+    background: none;
+    cursor: auto;
+}
+
+.protei-datetimepicker-widget td.old,
+.protei-datetimepicker-widget td.new {
+    color: #999999;
+}
+
+.protei-datetimepicker-widget td.today {
+    position: relative;
+    background-color: rgb(208, 245, 219);
+}
+
+.protei-datetimepicker-widget td.today:before {
+    content: '';
+    display: inline-block;
+    border-left: 7px solid transparent;
+    border-bottom: 7px solid #45AD72;
+    border-top-color: rgba(0, 0, 0, 0.2);
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+}
+
+.protei-datetimepicker-widget td.active,
+.protei-datetimepicker-widget td.active:hover {
+    background-color: #428bca !important;
+    color: #fff;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+}
+
+.protei-datetimepicker-widget td.marked{
+    background-color: #E4EFF7;
+    border-radius: 0px;
+}
+
+.protei-datetimepicker-widget.datetimepicker-months td {
+    display: block;
+    width: 76px;
+    height: 47px;
+    line-height: 46px;
+    float: left;
+     margin: 2px;
+    cursor: pointer;
+}
+
+
+.protei-datetimepicker-widget.datetimepicker-years td {
+    display: block;
+    width: 56px;
+    height: 45px;
+    line-height: 45px;
+    float: left;
+    margin: 2px;
+    cursor: pointer;
+}
+
+.protei-datetimepicker-widget.datetimepicker-days td {
+    width: 20px;
+    height: 22px;
+    line-height: 22px;
+    padding: 0;
+}
+
+.protei-datetimepicker-widget.datetimepicker-days td div {
+    padding: 3px;
+}
+
+/* Виджет выбора времени */
+.protei-datetimepicker-widget.datetimepicker-time .timepicker-hour,
+.protei-datetimepicker-widget.datetimepicker-time .timepicker-minute,
+.protei-datetimepicker-widget.datetimepicker-time .timepicker-second {
+    width: 100%;
+    font-size: 1.6em;
+    height: 54px;
+}
+
+.protei-datetimepicker-widget.datetimepicker-time .separator-container {
+    width: 8.33333333%;
+    float: left;
+    min-height: 1px;
+    padding-left: 15px;
+    padding-right: 15px;
+    position: relative;
+    text-align: center;
+}
+
+.protei-datetimepicker-widget.datetimepicker-time .separator-container .time-separator {
+    width: 4px;
+    padding: 0;
+    margin: 0;
+    font-size: 1.6em;
+}
+
+.protei-datetimepicker-widget.datetimepicker-time .time-container {
+    width: 25%;
+    float: left;
+    min-height: 1px;
+    padding-left: 15px;
+    padding-right: 15px;
+    position: relative;
+    text-align: center;
+}
+
+.protei-datetimepicker-widget.datetimepicker-time .up,
+.protei-datetimepicker-widget.datetimepicker-time .down {
+    padding: 44px 0px;
+    font-size: 1.2em;
+    cursor: pointer;
+}
+
+.protei-datetimepicker-widget.datetimepicker-time a.disabled {
+    cursor: not-allowed;
+    color: #999999;
+}
+
+.protei-datetimepicker-widget.datetimepicker-time .calendar-btn {
+    width: 100%;
+    min-height: 1px;
+    padding-left: 15px;
+    padding-right: 15px;
+    position: relative;
+    text-align: center;
+}
+
+.protei-datetimepicker-widget.datetimepicker-time .calendar-btn a {
+    font-size: 1.2em;
+    cursor: pointer;
+}
+
+/* Размеры */
+
+.dtpicker-size-1 {
+    width: 8.33333333%;
+}
+
+.dtpicker-size-2 {
+    width: 16.66666667%;
+}
+
+.dtpicker-size-3 {
+    width: 25%;
+}
+
+.dtpicker-size-4 {
+    width: 33.33333333%;
+}
+
+.dtpicker-size-5 {
+    width: 41.66666667%;
+}
+
+.dtpicker-size-6 {
+    width: 50%;
+}
+
+.dtpicker-size-7 {
+    width: 58.33333333%;
+}
+
+.dtpicker-size-8 {
+    width: 66.66666667%;
+}
+
+.dtpicker-size-9 {
+    width: 75%;
+}
+
+.dtpicker-size-10 {
+    width: 83.33333333%;
+}
+
+.dtpicker-size-11 {
+    width: 91.66666667%;
+}
+
+.dtpicker-size-12 {
+    width: 100%;
+}
+
+.dtpicker-size-1, .dtpicker-size-2, .dtpicker-size-3, .dtpicker-size-4, .dtpicker-size-5, .dtpicker-size-6, .dtpicker-size-7, .dtpicker-size-8, .dtpicker-size-9, .dtpicker-size-10, .dtpicker-size-11 {
+    float: left;
+}
+
+.dtpicker-size-1, .dtpicker-size-2, .dtpicker-size-3, .dtpicker-size-4, .dtpicker-size-5, .dtpicker-size-6, .dtpicker-size-7, .dtpicker-size-8, .dtpicker-size-9, .dtpicker-size-10, .dtpicker-size-11, .dtpicker-size-12 {
+    min-height: 1px;
+    padding-left: 15px;
+    padding-right: 15px;
+    position: relative;
+}
+
+/* Ряды */
+
+.protei-datetimepicker-popup .dtpicker-center {
+    text-align: center;
+}
+
+.dtpicker-row {
+    margin-right: -15px;
+    margin-left: -15px;
+}
+
+.dtpicker-row::before, .dtpicker-row::after {
+    content: " ";
+    display: table;
+}
+
+.dtpicker-row::after {
+    clear: both;
+}
+
+/* Кнопки */
+
+.protei-daterangepicker-widget .success-button {
+    display: inline-block;
+    padding: 5px 10px;
+    margin-bottom: 0;
+    font-size: 12px;
+    font-weight: normal;
+    line-height: 1.5;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    cursor: pointer;
+    border: 1px solid #4cae4c;
+    border-radius: 3px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+    color: #ffffff;
+    background-color: #5cb85c;
+}
+
+.protei-daterangepicker-widget .default-button {
+    display: inline-block;
+    padding: 5px 10px;
+    margin-bottom: 0;
+    font-size: 12px;
+    font-weight: normal;
+    line-height: 1.5;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    cursor: pointer;
+    border: 1px solid #adadad;
+    border-radius: 3px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+    color: #333333;
+    background-color: #ebebeb;
+}
+
+.range-message {
+    position: absolute;
+    font-size: 0.8em;
+
+    -webkit-animation-duration: 1s;
+    animation-duration: 1s;
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
+    animation-name: fadeIn;
+}
+
+@-webkit-keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+.fadeIn {
+    -webkit-animation-name: fadeIn;
+    animation-name: fadeIn;
+}
