@@ -34,9 +34,9 @@ public abstract class CompanyPreviewActivity
             view.setGroupVisible( false );
         }
 
-        view.setPhone( value.getPhone().value );
+        view.setPhone( value.getPhone() == null ? "" : value.getPhone().value );
         view.setSite( value.getWebsite() );
-        view.setEmail( value.getEmail().value );
+        view.setEmail( value.getEmail() == null ? "" : value.getEmail().value );
         view.setAddressDejure( value.getAddressDejure() );
         view.setAddressFact( value.getAddressFact() );
         view.setInfo( value.getInfo() );
