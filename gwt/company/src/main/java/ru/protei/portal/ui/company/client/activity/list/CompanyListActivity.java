@@ -118,8 +118,8 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
         AbstractCompanyItemView itemView = factory.get();
         itemView.setActivity( this );
         itemView.setName( company.getCname() );
-        itemView.setPhone( company.getPhone() );
-        itemView.setEmail( company.getEmail() );
+        itemView.setPhone( company.getPhone().value );
+        itemView.setEmail( company.getEmail().value );
         itemView.setWebsite( company.getWebsite() );
 
         CompanyCategory category = company.getCategory();
