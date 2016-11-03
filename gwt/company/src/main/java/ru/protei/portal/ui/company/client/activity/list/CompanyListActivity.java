@@ -60,7 +60,22 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
     }
 
     @Override
-    public void onMenuClicked( AbstractCompanyItemView itemView ) {
+    public void onEditClicked( AbstractCompanyItemView itemView ) {
+        Company value = itemViewToModel.get( itemView );
+        if ( value == null ) {
+            return;
+        }
+
+        fireEvent( new CompanyEvents.Edit ( value.getId() ));
+    }
+
+    @Override
+    public void onFavoriteClicked(AbstractCompanyItemView itemView) {
+        Window.alert( "Clicked on favorite of company with id = " + itemViewToModel.get( itemView ).getId() + "!" );
+    }
+
+    @Override
+    public void onPreviewClicked( AbstractCompanyItemView itemView ) {
         Company value = itemViewToModel.get( itemView );
         if ( value == null ) {
             return;
@@ -68,11 +83,6 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
 
         fireEvent(new CompanyEvents.ShowPreview(itemView.getPreviewContainer(), value));
         animation.showPreview(itemView, (IsWidget) itemView.getPreviewContainer());
-    }
-
-    @Override
-    public void onFavoriteClicked(AbstractCompanyItemView itemView) {
-        Window.alert( "Clicked on favorite of company with id = " + itemViewToModel.get( itemView ).getId() + "!" );
     }
 
     @Override

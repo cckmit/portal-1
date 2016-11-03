@@ -61,19 +61,28 @@ public class CompanyItemView extends Composite implements AbstractCompanyItemVie
         website.setHref( value == null ? "#" : value  );
     }
 
-    @UiHandler( "menuButton" )
-    public void onMenuClicked( ClickEvent event ) {
+    @UiHandler( "edit" )
+    public void onEditClicked( ClickEvent event ) {
         event.preventDefault();
         if ( activity != null ) {
-            activity.onMenuClicked( this );
+            activity.onEditClicked( this );
         }
     }
 
-    @UiHandler( "favoriteButton" )
+    @UiHandler( "favorite" )
     public void onFavoriteClicked( ClickEvent event ) {
         event.preventDefault();
         if ( activity != null ) {
             activity.onFavoriteClicked( this );
+        }
+    }
+
+    @UiHandler( "preview" )
+    public void onPreviewClicked ( ClickEvent event )
+    {
+        event.preventDefault();
+        if (activity != null) {
+            activity.onPreviewClicked( this );
         }
     }
 
@@ -82,9 +91,9 @@ public class CompanyItemView extends Composite implements AbstractCompanyItemVie
     @UiField
     DivElement type;
     @UiField
-    Anchor menuButton;
+    Anchor edit;
     @UiField
-    Anchor favoriteButton;
+    Anchor favorite;
     @UiField
     HTMLPanel previewContainer;
     @UiField

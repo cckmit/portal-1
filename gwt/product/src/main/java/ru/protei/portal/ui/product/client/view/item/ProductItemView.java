@@ -24,10 +24,10 @@ public class ProductItemView extends Composite implements AbstractProductItemVie
     }
 
     @UiHandler( "favorite" )
-    public void onMenuClicked( ClickEvent event ) {
+    public void onFavoriteClicked( ClickEvent event ) {
         event.preventDefault();
         if ( activity != null ) {
-            activity.onMenuClicked( this );
+            activity.onFavoriteClicked( this );
         }
     }
 
@@ -37,6 +37,15 @@ public class ProductItemView extends Composite implements AbstractProductItemVie
         event.preventDefault();
         if (activity != null) {
             activity.onEditClicked( this );
+        }
+    }
+
+    @UiHandler( "preview" )
+    public void onPreviewClicked ( ClickEvent event )
+    {
+        event.preventDefault();
+        if (activity != null) {
+            activity.onPreviewClicked( this );
         }
     }
 
@@ -64,6 +73,8 @@ public class ProductItemView extends Composite implements AbstractProductItemVie
     Anchor favorite;
     @UiField
     HTMLPanel previewContainer;
+    @UiField
+    Anchor preview;
 
     AbstractProductItemActivity activity;
 
