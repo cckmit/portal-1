@@ -4,6 +4,7 @@ import ru.protei.portal.core.model.view.ValueComment;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -32,7 +33,7 @@ public class Company implements Serializable {
     private String cname;
 
     @JdbcColumn(name = "email", converterType = ConverterType.JSON)
-    private ValueComment email;
+    private ValueComment email; //List<ValueComment>, NOT NULL!
 
     @JdbcColumn(name = "fax")
     private String fax;
@@ -41,7 +42,7 @@ public class Company implements Serializable {
     private String info;
 
     @JdbcColumn(name = "phone", converterType = ConverterType.JSON)
-    private ValueComment phone;
+    private ValueComment phone; //List<ValueComment>, NOT NULL!
 
     @JdbcColumn(name = "created")
     private Date created;
@@ -78,6 +79,8 @@ public class Company implements Serializable {
     }
 
     public ValueComment getEmail() {
+//        if(email == null)
+//            return new ArrayList<ValueComment>();
         return this.email;
     }
 
@@ -94,6 +97,8 @@ public class Company implements Serializable {
     }
 
     public ValueComment getPhone() {
+//        if(phone == null)
+//            return new ArrayList<ValueComment>();
         return this.phone;
     }
 
