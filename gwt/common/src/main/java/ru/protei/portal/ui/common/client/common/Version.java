@@ -14,9 +14,10 @@ package ru.protei.portal.ui.common.client.common;
  * 4.0.4.9 - task-59162 исправление inputSelector
  * 4.0.5.9 - error-border добавление рамки при валидации
  * 4.0.6.9 - freq-16341 превью карточки продукта
+ * 4.0.6.10 - устранение замечаний по универсальному списку - 8ч
  */
 public class Version {
     public static String getVersion() {
-        return "4.0.6.9";
+        return "4.0.6.10";
     }
 }
