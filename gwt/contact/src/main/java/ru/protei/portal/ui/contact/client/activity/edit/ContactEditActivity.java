@@ -74,6 +74,18 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         view.shortName().setText(person.getDisplayShortName());
         view.birthDay().setValue(person.getBirthday());
 
+        view.personInfo().setText(person.getInfo());
+        view.workPhone().setText(person.getWorkPhone());
+        view.homePhone().setText(person.getHomePhone());
+        view.workEmail().setText(person.getEmail());
+        view.personalEmail().setText(person.getEmail_own());
+        view.workAddress().setText(person.getAddress());
+        view.homeAddress().setText(person.getHomePhone());
+        view.workFax().setText(person.getFax());
+        view.homeFax().setText(person.getFaxHome());
+        view.displayPosition().setText(person.getPosition());
+        view.displayDepartment().setText(person.getDepartment());
+
         initDetails.parent.add(view.asWidget());
     }
 

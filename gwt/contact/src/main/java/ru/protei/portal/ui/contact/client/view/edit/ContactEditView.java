@@ -58,6 +58,61 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
         return birthDay;
     }
 
+    @Override
+    public HasText workPhone() {
+        return workPhone;
+    }
+
+    @Override
+    public HasText homePhone() {
+        return homePhone;
+    }
+
+    @Override
+    public HasText workEmail() {
+        return workEmail;
+    }
+
+    @Override
+    public HasText personalEmail() {
+        return personalEmail;
+    }
+
+    @Override
+    public HasText workFax() {
+        return workFax;
+    }
+
+    @Override
+    public HasText homeFax() {
+        return homeFax;
+    }
+
+    @Override
+    public HasText workAddress() {
+        return workAddress;
+    }
+
+    @Override
+    public HasText homeAddress() {
+        return homeAddress;
+    }
+
+    @Override
+    public HasText displayPosition() {
+        return displayPosition;
+    }
+
+    @Override
+    public HasText displayDepartment() {
+        return displayDepartment;
+    }
+
+    @Override
+    public HasText personInfo() {
+        return personInfo;
+    }
+
     @UiHandler( "saveButton" )
     public void onSaveClicked( ClickEvent event ) {
         if ( activity != null ) {
@@ -96,6 +151,39 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     @Inject
     @UiField(provided = true)
     SinglePicker birthDay;
+
+    @UiField
+    TextBox workPhone;
+
+    @UiField
+    TextBox homePhone;
+
+    @UiField
+    TextBox workEmail;
+
+    @UiField
+    TextBox personalEmail;
+
+    @UiField
+    TextBox workFax;
+
+    @UiField
+    TextBox homeFax;
+
+    @UiField
+    TextArea workAddress;
+
+    @UiField
+    TextArea homeAddress;
+
+    @UiField
+    TextArea displayPosition;
+
+    @UiField
+    TextArea displayDepartment;
+
+    @UiField
+    TextArea personInfo;
 
 //
 //

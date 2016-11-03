@@ -1,7 +1,10 @@
 package ru.protei.portal.ui.contact.client.activity.edit;
 
+import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.TextBox;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
 
 /**
@@ -19,4 +22,25 @@ public interface AbstractContactEditView extends IsWidget {
 
     SinglePicker birthDay ();
 
+    HasText workPhone ();
+
+    HasText homePhone ();
+
+    HasText workEmail();
+
+    HasText personalEmail ();
+
+    HasText workFax();
+
+    HasText homeFax();
+
+    HasText workAddress ();
+
+    HasText homeAddress ();
+
+    HasText displayPosition ();
+
+    HasText displayDepartment ();
+
+    HasText personInfo ();
 }

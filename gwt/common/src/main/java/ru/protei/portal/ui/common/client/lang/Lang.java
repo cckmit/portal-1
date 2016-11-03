@@ -127,4 +127,23 @@ public interface Lang extends Messages {
     String birthday ();
 
     String gender ();
+
+    String genderMale ();
+    String genderFemale ();
+    String genderUndefined ();
+
+    String personalData ();
+    String contactInfo ();
+    String advPersonalData ();
+    String workPhone ();
+    String personalPhone ();
+    String workEmail ();
+    String personalEmail ();
+    String primaryFax ();
+    String secondaryFax ();
+
+    String workAddress ();
+    String homeAddress ();
+    String department ();
+
 }
