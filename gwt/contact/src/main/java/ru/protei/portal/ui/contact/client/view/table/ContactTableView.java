@@ -19,15 +19,14 @@ import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.ui.contact.client.activity.table.AbstractContactTableActivity;
 import ru.protei.portal.ui.contact.client.activity.table.AbstractContactTableView;
-import ru.protei.portal.ui.contact.client.view.table.columns.ActionColumn;
-import ru.protei.portal.ui.contact.client.widget.company.buttonselector.CompanyButtonSelector;
+import ru.protei.portal.ui.contact.client.view.table.columns.ContactColumnBuilder;
+import ru.protei.portal.ui.contact.client.view.table.columns.EditActionClickColumn;
+import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 
-import java.util.List;
-
 /**
- * Вид формы таблицы контактов
+ * Представление таблицы контактов
  */
 public class ContactTableView extends Composite implements AbstractContactTableView {
     @Inject
@@ -76,11 +75,8 @@ public class ContactTableView extends Composite implements AbstractContactTableV
         search.setText( "" );
     }
 
-    @Override
-    public void addRecords(List< Person > result) {
-        result.forEach( person -> {
-            table.addRow( person );
-        });
+    public void addRecord( Person person ) {
+        table.addRow( person );
     }
 
     @Override
@@ -102,12 +98,6 @@ public class ContactTableView extends Composite implements AbstractContactTableV
 
     @UiHandler( "showFired" )
     public void onShowFireClicked( ClickEvent event ) {
-
-        if (showFired.getValue())
-            showFired.removeStyleName("active");
-        else
-            showFired.addStyleName("active");
-
         if ( activity != null ) {
             activity.onFilterChanged();
         }
@@ -141,8 +131,9 @@ public class ContactTableView extends Composite implements AbstractContactTableV
 
     private void initTable () {
 
-        ActionColumn< Person > actionColumn = new ActionColumn< Person >() {};
-        actionColumn.setHandler( activity );
+        EditActionClickColumn< Person > editClickColumn = new EditActionClickColumn< Person >( lang ) {};
+        editClickColumn.setHandler( activity );
+        editClickColumn.setEditHandler( activity );
 
         ClickColumn< Person > displayName = new ClickColumn< Person >() {
             @Override
@@ -192,7 +183,9 @@ public class ContactTableView extends Composite implements AbstractContactTableV
 
             @Override
             public void fillColumnValue( Element element, Person person ) {
-                element.setInnerText( person == null ? "" : person.getMobilePhone() );
+                element.appendChild( ContactColumnBuilder.make().add( null, person.getWorkPhone() )
+                        .add(null, person.getMobilePhone())
+                        .add( null, person.getHomePhone()).toElement() );
             }
         };
         phone.setHandler( activity );
@@ -205,13 +198,14 @@ public class ContactTableView extends Composite implements AbstractContactTableV
 
             @Override
             public void fillColumnValue( Element element, Person person ) {
-                element.setInnerText( person == null ? "" : person.getEmail() );
+                element.appendChild( ContactColumnBuilder.make().add( null, person.getEmail() )
+                        .add( null, person.getEmail_own() ).toElement() );
             }
         };
         email.setHandler( activity );
 
         table.addColumn( selectionColumn.header, selectionColumn.values );
-        table.addColumn( actionColumn.header, actionColumn.values );
+        table.addColumn( editClickColumn.header, editClickColumn.values );
         table.addColumn( displayName.header, displayName.values );
         table.addColumn( company.header, company.values );
         table.addColumn( position.header, position.values );
@@ -221,7 +215,7 @@ public class ContactTableView extends Composite implements AbstractContactTableV
 
     @Inject
     @UiField ( provided = true )
-    CompanyButtonSelector company;
+    CompanySelector company;
 
     @UiField
     CheckBox showFired;

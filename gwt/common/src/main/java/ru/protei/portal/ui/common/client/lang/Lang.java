@@ -6,11 +6,9 @@ import com.google.gwt.i18n.client.Messages;
  * Интерфейс со строковыми константами
  */
 public interface Lang extends Messages {
-    String appLogout();
+    String buttonLogout();
 
-    String authLogin();
-
-    String objectSearch();
+    String buttonLogin();
 
     String companies();
 
@@ -24,9 +22,9 @@ public interface Lang extends Messages {
 
     String products();
 
-    String newProduct();
+    String productNew();
 
-    String showDeprecated();
+    String productShowDeprecated();
 
     String buttonSave();
 
@@ -34,13 +32,11 @@ public interface Lang extends Messages {
 
     String buttonCreate();
 
-    String searchNoMatchesFound();
+    String errNoMatchesFound();
 
-    String errorGetList();
+    String errGetList();
 
-    String authentification();
-
-    String hello();
+    String msgHello();
 
     String unknownField();
 
@@ -50,37 +46,25 @@ public interface Lang extends Messages {
 
     String description();
 
-    String objectNotFound();
-
-    String buttonArchive();
-
-    String objectNotSaved();
+    String productToArchive();
 
     String productName();
 
-    String objectSaved();
+    String msgObjectSaved();
 
-    String notUniqName();
+    String productFromArchive();
 
-    String buttonFromArchive();
-
-    String emptyName();
-
-    String changeProduct();
-
-    String errorSave();
+    String errEmptyName();
 
     String error();
 
     String companyName();
 
-    String companiesGroup();
+    String companyActualAddress();
 
-    String actualAddress();
+    String companyLegalAddress();
 
-    String legalAddress();
-
-    String webSite();
+    String companyWebSite();
 
     String phone();
 
@@ -88,19 +72,47 @@ public interface Lang extends Messages {
 
     String contacts();
 
-    String save();
+    String companyNew();
 
-    String cancel();
+    String errAsteriskRequired();
 
-    String newCompany();
+    String email();
 
-    String asteriskRequired();
+    String errLoginOrPwd();
 
-    String companySaved();
+    String msgOK();
 
-    String companyNotSaved();
+    String errConnectionError();
 
-    String create();
+    String errInvalidSessionID();
+
+    String errGetDataError();
+
+    String errNotFound();
+
+    String errNotCreated();
+
+    String errNotUpdated();
+
+    String errNotSaved();
+
+    String errUndefinedObject();
+
+    String errAlreadyExist();
+
+    String errValidationError();
+
+    String errIncorrectParams();
+
+    String errInternalError();
+
+    String errUnknownResult();
+
+    String companyInfoHeader();
+
+    String companyCommonHeader();
+
+    String productDescription();
 
     String company();
 
@@ -110,7 +122,9 @@ public interface Lang extends Messages {
 
     String contactPosition();
 
-    String email();
+    String edit();
+
+    String companyAdditionalInfoHeader();
 
     String newContact ();
 
@@ -149,4 +163,5 @@ public interface Lang extends Messages {
     String errorCompanyRequired ();
     String errorFirstNameRequired();
     String errorLastNameRequired ();
+
 }

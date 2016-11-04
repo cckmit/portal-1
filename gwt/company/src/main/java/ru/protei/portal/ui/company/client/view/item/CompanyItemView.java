@@ -1,64 +1,119 @@
 package ru.protei.portal.ui.company.client.view.item;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.AnchorElement;
 import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.dom.client.HeadingElement;
+import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.PushButton;
+import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.ui.company.client.activity.item.AbstractCompanyItemActivity;
-import ru.protei.portal.ui.company.client.activity.list.AbstractCompanyListActivity;
 import ru.protei.portal.ui.company.client.activity.item.AbstractCompanyItemView;
 
 /**
- * Вид формы компания
+ * Представление компании
  */
 public class CompanyItemView extends Composite implements AbstractCompanyItemView {
 
-    private static CompanyItemViewUiBinder ourUiBinder = GWT.create( CompanyItemViewUiBinder.class );
+    public CompanyItemView() {
+        initWidget( ourUiBinder.createAndBindUi ( this ) );
+    }
 
+    @Override
     public void setActivity( AbstractCompanyItemActivity activity ) {
         this.activity = activity;
     }
 
+    @Override
     public void setName( String name ) {
         this.name.setInnerText( name );
     }
 
+    @Override
     public void setType( String type ) {
         this.type.setInnerText( type );
     }
 
-    @UiHandler( "menuButton" )
-    public void onMenuClicked( ClickEvent event ) {
-
-        if ( activity != null )
-            activity.onMenuClicked( this );
+    @Override
+    public HasWidgets getPreviewContainer() {
+        return previewContainer;
     }
 
-    @UiHandler( "favoriteButton" )
+    @Override
+    public void setPhone( String value ) {
+        phoneContainer.setVisible( value != null && !value.isEmpty() );
+        phone.setInnerText( value == null ? "" : value );
+    }
+
+    @Override
+    public void setEmail( String value ) {
+        emailContainer.setVisible( value != null && !value.isEmpty() );
+        email.setInnerText( value == null ? "" : value );
+    }
+
+    @Override
+    public void setWebsite( String value ) {
+        websiteContainer.setVisible( value != null && !value.isEmpty() );
+        website.setInnerText( value == null ? "" : value );
+        website.setHref( value == null ? "#" : value  );
+    }
+
+    @UiHandler( "edit" )
+    public void onEditClicked( ClickEvent event ) {
+        event.preventDefault();
+        if ( activity != null ) {
+            activity.onEditClicked( this );
+        }
+    }
+
+    @UiHandler( "favorite" )
     public void onFavoriteClicked( ClickEvent event ) {
-        if ( activity != null )
+        event.preventDefault();
+        if ( activity != null ) {
             activity.onFavoriteClicked( this );
+        }
+    }
+
+    @UiHandler( "preview" )
+    public void onPreviewClicked ( ClickEvent event )
+    {
+        event.preventDefault();
+        if (activity != null) {
+            activity.onPreviewClicked( this );
+        }
     }
 
     @UiField
-    DivElement name;
+    HeadingElement name;
     @UiField
     DivElement type;
     @UiField
-    PushButton menuButton;
+    Anchor edit;
     @UiField
-    PushButton favoriteButton;
+    Anchor favorite;
+    @UiField
+    HTMLPanel previewContainer;
+    @UiField
+    HTMLPanel root;
+    @UiField
+    SpanElement phone;
+    @UiField
+    AnchorElement email;
+    @UiField
+    AnchorElement website;
+    @UiField
+    HTMLPanel phoneContainer;
+    @UiField
+    HTMLPanel emailContainer;
+    @UiField
+    HTMLPanel websiteContainer;
 
     AbstractCompanyItemActivity activity;
 
     interface CompanyItemViewUiBinder extends UiBinder<HTMLPanel, CompanyItemView> {}
-    public CompanyItemView() {
-        initWidget( ourUiBinder.createAndBindUi ( this ) );
-    }
+    private static CompanyItemViewUiBinder ourUiBinder = GWT.create( CompanyItemViewUiBinder.class );
+
 }

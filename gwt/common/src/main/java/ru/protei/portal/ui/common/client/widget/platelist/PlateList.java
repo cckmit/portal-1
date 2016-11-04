@@ -17,7 +17,7 @@ import java.util.Spliterator;
 import java.util.function.Consumer;
 
 /**
- * Вид селектора
+ * Вид списка
  */
 public class PlateList extends Composite implements HasWidgets, HasAddHandlers {
 
@@ -81,7 +81,7 @@ public class PlateList extends Composite implements HasWidgets, HasAddHandlers {
     @UiField
     DivElement name;
 
-    interface InputSelectorUiBinder extends UiBinder<HTMLPanel, PlateList> { }
-    private static InputSelectorUiBinder ourUiBinder = GWT.create(InputSelectorUiBinder.class);
+    interface PlateListUiBinder extends UiBinder<HTMLPanel, PlateList> { }
+    private static PlateListUiBinder ourUiBinder = GWT.create(PlateListUiBinder.class);
 
 }

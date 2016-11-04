@@ -1,8 +1,10 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.view.ValueComment;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -33,8 +35,8 @@ public class Company implements Serializable {
     @JdbcColumn(name = "cname")
     private String cname;
 
-    @JdbcColumn(name = "email")
-    private String email;
+    @JdbcColumn(name = "email", converterType = ConverterType.JSON)
+    private ValueComment email; //List<ValueComment>, NOT NULL!
 
     @JdbcColumn(name = "fax")
     private String fax;
@@ -42,8 +44,8 @@ public class Company implements Serializable {
     @JdbcColumn(name = "info")
     private String info;
 
-    @JdbcColumn(name = "phone")
-    private String phone;
+    @JdbcColumn(name = "phone", converterType = ConverterType.JSON)
+    private ValueComment phone; //List<ValueComment>, NOT NULL!
 
     @JdbcColumn(name = "created")
     private Date created;
@@ -79,7 +81,9 @@ public class Company implements Serializable {
         return this.cname;
     }
 
-    public String getEmail() {
+    public ValueComment getEmail() {
+//        if(email == null)
+//            return new ArrayList<ValueComment>();
         return this.email;
     }
 
@@ -95,8 +99,9 @@ public class Company implements Serializable {
         return this.info;
     }
 
-
-    public String getPhone() {
+    public ValueComment getPhone() {
+//        if(phone == null)
+//            return new ArrayList<ValueComment>();
         return this.phone;
     }
 
@@ -136,8 +141,12 @@ public class Company implements Serializable {
         this.cname = cname;
     }
 
-    public void setEmail(String email) {
+    public void setEmail(ValueComment email) {
         this.email = email;
+    }
+
+    public void setPhone(ValueComment phone){
+        this.phone = phone;
     }
 
     public void setFax(String fax) {
@@ -150,11 +159,6 @@ public class Company implements Serializable {
 
     public void setInfo(String info) {
         this.info = info;
-    }
-
-
-    public void setPhone(String phone) {
-        this.phone = phone;
     }
 
     public void setCreated(Date created) {

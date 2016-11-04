@@ -1,12 +1,12 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'>
 
-    <g:HTMLPanel ui:field="root" styleName="list-group grid">
-        <g:FocusPanel ui:field="createButton" >
-            <g:HTMLPanel styleName="wrapper">
-                <div ui:field="name" class="name"></div>
+    <g:HTMLPanel ui:field="root" styleName="plate-list" tag="ul">
+        <g:FocusPanel ui:field="createButton">
+            <g:HTMLPanel>
+                <img src="./images/create-icon.png"/>
+                <div ui:field="name" class="name" style="display:none"></div>
             </g:HTMLPanel>
         </g:FocusPanel>
     </g:HTMLPanel>
-
 </ui:UiBinder>

@@ -5,6 +5,7 @@
     <stylesheet src="css/portal-classic.css"/>
     <stylesheet src="css/animate.css"/>
     <stylesheet src="css/modal.css"/>
+    <stylesheet src="css/font-awesome.min.css"/>
 
     <source path='client'/>
     <source path='shared'/>

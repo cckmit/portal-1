@@ -9,10 +9,12 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.PeriodicTaskService;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.contact.client.service.ContactServiceAsync;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Активность таблицы контактов
@@ -36,7 +38,7 @@ public abstract class ContactTableActivity implements AbstractContactTableActivi
         initDetails.parent.clear();
         initDetails.parent.add( view.asWidget() );
 
-        initContacts();
+        requestContacts();
     }
 
     @Event
@@ -63,25 +65,38 @@ public abstract class ContactTableActivity implements AbstractContactTableActivi
 
     @Override
     public void onFilterChanged() {
-        initContacts();
+        requestContacts();
     }
 
-    private void initContacts() {
+    private void requestContacts() {
 
-        contactService.getContacts(view.searchPattern().getValue(), view.company().getValue(), view.showFired().getValue() ? 1 : 0,
+        if ( fillViewHandler != null ) {
+            fillViewHandler.cancel();
+        }
+
+        view.clearRecords();
+
+        contactService.getContacts(view.searchPattern().getValue(), view.company().getValue(),
+                view.showFired().getValue() ? null : view.showFired().getValue(),
                 view.sortField().getValue(), view.sortDir().getValue(), new RequestCallback< List< Person > >() {
                     @Override
                     public void onError(Throwable throwable) {
-                        fireEvent(new NotifyEvents.Show(lang.errorGetList(), NotifyEvents.NotifyType.ERROR));
+                        fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
                     }
 
                     @Override
                     public void onSuccess(List<Person> persons) {
-                        view.clearRecords();
-                        view.addRecords( persons );
+                        fillViewHandler = taskService.startPeriodicTask( persons, fillViewer, 50, 50 );
                     }
                 });
     }
+
+    Consumer< Person > fillViewer = new Consumer< Person >() {
+        @Override
+        public void accept( Person person ) {
+            view.addRecord( person );
+        }
+    };
 
     @Inject
     Lang lang;
@@ -91,6 +106,11 @@ public abstract class ContactTableActivity implements AbstractContactTableActivi
 
     @Inject
     ContactServiceAsync contactService;
+
+    @Inject
+    PeriodicTaskService taskService;
+
+    PeriodicTaskService.PeriodicTaskHandler fillViewHandler;
 
     private AppEvents.InitDetails initDetails;
 }

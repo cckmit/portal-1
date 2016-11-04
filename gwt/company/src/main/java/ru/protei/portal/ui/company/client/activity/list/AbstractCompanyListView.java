@@ -10,7 +10,7 @@ import ru.protei.portal.core.model.ent.CompanyGroup;
 import java.util.Set;
 
 /**
- * Created by turik on 27.09.16.
+ * Представление списка компаний
  */
 public interface AbstractCompanyListView extends IsWidget {
 

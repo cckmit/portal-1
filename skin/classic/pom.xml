@@ -46,8 +46,8 @@
                     <include>**/*.ttf</include>
                     <include>**/*.woff</include>
 
-                    <!--<include>*.png</include>-->
-                    <!--<include>**/*.png</include>-->
+                    <include>*.png</include>
+                    <include>**/*.png</include>
                 </includes>
             </resource>
             <resource>

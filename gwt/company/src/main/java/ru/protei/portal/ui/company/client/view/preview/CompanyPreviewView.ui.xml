@@ -1,0 +1,42 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+
+    <g:HTMLPanel styleName="preview">
+        <g:HTMLPanel ui:field="groupContainer" tag="fieldset" styleName="header">
+            <legend><ui:text from="{lang.companyCommonHeader}"/></legend>
+            <label><ui:text from="{lang.companyGroup}"/></label>
+            <span ui:field="groupCompany"></span>
+        </g:HTMLPanel>
+
+        <fieldset class="contacts">
+            <legend><ui:text from="{lang.companyInfoHeader}"/></legend>
+            <div>
+                <label><ui:text from="{lang.phone}"/></label>
+                <span ui:field="phone"></span>
+            </div>
+            <div>
+                <label><ui:text from="{lang.companyWebSite}"/></label>
+                <span ui:field="site"></span>
+            </div>
+            <div>
+                <label><ui:text from="{lang.email}"/></label>
+                <span ui:field="email"></span>
+            </div>
+            <div>
+                <label><ui:text from="{lang.companyActualAddress}"/></label>
+                <span ui:field="addressFact"></span>
+            </div>
+            <div>
+                <label><ui:text from="{lang.companyLegalAddress}"/></label>
+                <span ui:field="addressDejure"></span>
+            </div>
+        </fieldset>
+
+        <fieldset class="comments">
+            <legend><ui:text from="{lang.companyAdditionalInfoHeader}"/></legend>
+            <span ui:field="info" class="pre-formatted-info"></span>
+        </fieldset>
+    </g:HTMLPanel>
+</ui:UiBinder>

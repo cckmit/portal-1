@@ -53,11 +53,9 @@ public class ProductListView extends Composite implements AbstractProductListVie
     @UiHandler("showDeprecated")
     public void onShowDeprecatedClick(ClickEvent event)
     {
-        if (showDeprecated.getValue())
-            showDeprecated.removeStyleName("active");
-        else
-            showDeprecated.addStyleName("active");
-        activity.onFilterChanged();
+        if ( activity != null ) {
+            activity.onFilterChanged();
+        }
     }
 
     @UiHandler( "search" )

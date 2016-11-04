@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.company.server.service;
 
-import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -121,19 +120,22 @@ public class CompanyServiceImpl implements CompanyService {
         return response.getData();
     }
 
+
     @Override
-    public Company getCompany(long id) throws RequestFailedException {
+    public Company getCompanyById(Long id) throws RequestFailedException {
+        log.debug( "getCompanyById: id={}", id );
 
         CoreResponse<Company> response = companyService.getCompanyById(id);
 
-        if (response.isError())
-            throw new RequestFailedException(response.getMessage());
+        log.debug( "getCompanyById: response.isOk()={} | response.getData()", response.isOk(), response.getData() );
+
+        if ( response.isError() ) throw new RequestFailedException();
 
         return response.getData();
     }
 
     @Autowired
-    private ru.protei.portal.core.service.dict.CompanyService companyService;
+    private ru.protei.portal.core.service.CompanyService companyService;
 
     private static final Logger log = LoggerFactory.getLogger( "web" );
 

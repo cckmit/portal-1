@@ -21,7 +21,7 @@
                                         <g:PasswordTextBox ui:field="password" styleName="inputField sticky"/>
                                     </div>
                                     <label class="submitBlock hideSource">
-                                        <g:Button ui:field="loginButton" text="{lang.authLogin}" styleName="button blueC"/>
+                                        <g:Button ui:field="loginButton" text="{lang.buttonLogin}" styleName="button blueC"/>
                                     </label>
                                 </div>
                             </div>

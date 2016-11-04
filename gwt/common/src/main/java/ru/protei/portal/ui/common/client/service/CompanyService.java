@@ -66,10 +66,10 @@ public interface CompanyService extends RemoteService {
 
 
     /**
-     * Получение компании по ID
-     * @param id
-     * @return
-     * @throws RequestFailedException
+     * Получение компании
+     * @param id идентификатор компании
+     * @return Company
      */
-    Company getCompany (long id) throws RequestFailedException;
+    Company getCompanyById ( Long id ) throws RequestFailedException;
+
 }
