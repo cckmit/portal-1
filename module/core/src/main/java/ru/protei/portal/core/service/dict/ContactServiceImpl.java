@@ -41,11 +41,12 @@ public class ContactServiceImpl implements ContactService {
         }
 
         if (HelperFunc.isEmpty(p.getFirstName()) || HelperFunc.isEmpty(p.getLastName())
-                || HelperFunc.isEmpty(p.getDisplayName()))
+                || HelperFunc.isEmpty(p.getDisplayName())
+                || p.getCompanyId() == null)
             return new CoreResponse<Person>().error("Enter main contact information", "EmptyContactName");
 
-        if (HelperFunc.isEmpty(p.getPosition()))
-            return new CoreResponse<Person>().error("Enter main contact information", "EmptyContactPosition");
+//        if (HelperFunc.isEmpty(p.getPosition()))
+//            return new CoreResponse<Person>().error("Enter main contact information", "EmptyContactPosition");
 
         if (personDAO.saveOrUpdate(p)) {
             return new CoreResponse<Person>().success(p);

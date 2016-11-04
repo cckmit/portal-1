@@ -175,6 +175,11 @@ public class Company implements Serializable {
     }
 
     @Override
+    public int hashCode() {
+        return this.id == null ? -1 : this.id.intValue();
+    }
+
+    @Override
     public String toString() {
         return "Company{" +
                 "id=" + id +

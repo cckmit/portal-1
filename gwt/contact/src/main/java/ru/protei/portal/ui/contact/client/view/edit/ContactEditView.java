@@ -4,13 +4,17 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.i18n.server.testing.Gender;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
+import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
+import ru.protei.portal.ui.common.client.widget.selector.dict.GenderButtonSelector;
 import ru.protei.portal.ui.contact.client.activity.edit.AbstractContactEditActivity;
 import ru.protei.portal.ui.contact.client.activity.edit.AbstractContactEditView;
 import ru.protei.portal.ui.contact.client.widget.company.buttonselector.CompanyButtonSelector;
@@ -112,8 +116,13 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     }
 
     @Override
-    public HasValue<Company> company() {
+    public Selector<Company> company() {
         return company;
+    }
+
+    @Override
+    public Selector<En_Gender> gender() {
+        return gender;
     }
 
     @Override
@@ -196,6 +205,9 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     @UiField ( provided = true )
     CompanyButtonSelector company;
 
+    @Inject
+    @UiField(provided = true)
+    GenderButtonSelector gender;
 
 //
 //

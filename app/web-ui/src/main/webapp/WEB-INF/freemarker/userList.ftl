@@ -2633,7 +2633,7 @@ $('#runTimeFixer').click(function () {
                     }
                 }
             },
-            sex: {
+            genderCode: {
                 name: 'Пол',
                 show: true,
                 back: true,

@@ -37,7 +37,9 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
 
         if(event.id == null) {
             this.fireEvent(new AppEvents.InitPanelName(lang.newContact()));
-            setup(new Person());
+            Person newPerson = new Person();
+            newPerson.setCompanyId(event.companyId);
+            setup(newPerson);
         }
         else {
             this.fireEvent( new AppEvents.InitPanelName( "Edit contact with ID: " + event.id ) );
@@ -59,7 +61,6 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
     public void onSaveClicked() {
         //
         if (!applyChanges ()) {
-            fireEvent( new NotifyEvents.Show(lang.asteriskRequired(), NotifyEvents.NotifyType.ERROR));
             return;
         }
 
@@ -76,17 +77,54 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         });
     }
 
+    protected boolean errorMsg (String msg) {
+        fireEvent( new NotifyEvents.Show(msg, NotifyEvents.NotifyType.ERROR));
+        return false;
+    }
+
     protected boolean applyChanges () {
 
-        if (view.company().getValue() == null)
-            return false;
+        if (view.company().getValue() == null) {
+            return errorMsg(lang.errorCompanyRequired());
+        }
 
+        if (view.firstName().getText().isEmpty()) {
+            return errorMsg(lang.errorFirstNameRequired());
+        }
+
+        if (view.lastName().getText().isEmpty()) {
+            return errorMsg(lang.errorLastNameRequired());
+        }
+
+        contact.setGender(view.gender().getValue());
         contact.setCompanyId(view.company().getValue().getId());
         contact.setFirstName(view.firstName().getText());
         contact.setLastName(view.lastName().getText());
         contact.setSecondName(view.secondName().getText());
-        contact.setDisplayName(view.displayName().getText());
-        contact.setDisplayShortName(view.shortName().getText());
+
+        if (view.displayName().getText().isEmpty()) {
+            contact.setDisplayName(contact.getLastName() + " " + contact.getFirstName());
+        }
+        else {
+            contact.setDisplayName(view.displayName().getText());
+        }
+
+        if (view.shortName().getText().isEmpty()) {
+            StringBuilder b = new StringBuilder();
+            b.append (contact.getLastName()).append(" ")
+            .append (contact.getFirstName().substring(0,1).toUpperCase()).append(".")
+            ;
+
+            if (!contact.getSecondName().isEmpty()) {
+                b.append(" ").append(contact.getSecondName().substring(0,1).toUpperCase()).append(".");
+            }
+
+            contact.setDisplayShortName(b.toString());
+        }
+        else {
+            contact.setDisplayShortName(view.shortName().getText());
+        }
+
         contact.setBirthday(view.birthDay().getValue());
 
         contact.setInfo(view.personInfo().getText());
@@ -114,11 +152,20 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         this.contact = person;
         initDetails.parent.clear();
 
-        view.company().setValue(person.getCompany());
+        if (person.getCompanyId() == null)
+            view.company().setValue(null);
+        else {
+            view.company().findAndSelectValue(
+                    company ->  company != null && person.getCompanyId().equals(company.getId()),
+                    true
+            );
+        }
+
+        view.gender().setValue(person.getGender());
         view.firstName().setText(person.getFirstName());
         view.lastName().setText(person.getLastName());
         view.secondName().setText(person.getSecondName());
-        view.displayName().setText(person.getId() == null ? "Enter name to display" : person.getDisplayName());
+        view.displayName().setText(person.getDisplayName());
         view.shortName().setText(person.getDisplayShortName());
         view.birthDay().setValue(person.getBirthday());
 

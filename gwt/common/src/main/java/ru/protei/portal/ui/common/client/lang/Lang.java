@@ -146,4 +146,7 @@ public interface Lang extends Messages {
     String homeAddress ();
     String department ();
 
+    String errorCompanyRequired ();
+    String errorFirstNameRequired();
+    String errorLastNameRequired ();
 }

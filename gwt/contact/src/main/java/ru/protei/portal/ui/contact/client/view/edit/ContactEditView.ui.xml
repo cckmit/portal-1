@@ -2,7 +2,8 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:single="urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.single"
              xmlns:companyselector='urn:import:ru.protei.portal.ui.contact.client.widget.company.buttonselector'
-            >
+             xmlns:dict="urn:import:ru.protei.portal.ui.common.client.widget.selector.dict"
+>
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel styleName="panel">
@@ -76,9 +77,7 @@
                                 <ui:text from="{lang.gender}"/>
                             </label>
                             <div class="panelField">
-                                <input type="radio" name="gender"/> <ui:text from="{lang.genderMale}"/>
-                                <input type="radio" name="gender"/> <ui:text from="{lang.genderFemale}"/>
-                                <input type="radio" name="gender"/> <ui:text from="{lang.genderUndefined}"/>
+                               <dict:GenderButtonSelector ui:field="gender" />
                             </div>
                         </div>
 

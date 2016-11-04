@@ -49,4 +49,23 @@ public class PersonDAO_Test {
 
     }
 
+
+    @Test
+    public void testInsert () {
+        PersonDAO dao = ctx.getBean(PersonDAO.class);
+        Person p = new Person();
+        p.setCompanyId(1L);
+        p.setFirstName("Test Create Person");
+        p.setLastName("Test");
+        p.setDisplayName("Test insert");
+
+        Long id = dao.persist(p);
+        Assert.assertNotNull(id);
+        Assert.assertTrue(id > 0);
+
+        Assert.assertNotNull(p.getId());
+
+        dao.remove(p);
+    }
+
 }
