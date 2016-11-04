@@ -22,7 +22,7 @@ public class Person implements Serializable {
     @JdbcColumn(name="company_id")
     private Long companyId;
 
-    @JdbcJoinedObject(localColumn = "company_id")
+    @JdbcJoinedObject (localColumn = "company_id")
     private Company company;
 
     @JdbcColumn(name = "displayPosition")

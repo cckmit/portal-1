@@ -68,7 +68,7 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
 
         expr.append(" and displayPosition is not null");
 
-        return partialGetListByCondition(expr.toString(), new JdbcSort(JdbcSort.Direction.ASC, En_SortField.person_full_name.getFieldName()),Collections.emptyList());
+        return getListByCondition(expr.toString(), new JdbcSort(JdbcSort.Direction.ASC, En_SortField.person_full_name.getFieldName()));
     }
 
     private StringBuilder buildHomeCompanyFilter() {
@@ -127,7 +127,7 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
         args.add(HelperFunc.makeLikeArg(query.getSearchString(), true));
 
         //return getListByCondition (filter.toString(), TypeConverters.createSort(query), args);
-        return partialGetListByCondition(filter.toString(),args,query.offset,query.limit,TypeConverters.createSort(query)).getResults();
+        return getListByCondition(filter.toString(),TypeConverters.createSort(query),query.offset,query.limit,args);
     }
 
     @Override

@@ -1,13 +1,14 @@
 package ru.protei.portal.core.model.dao.impl;
 
 import ru.protei.portal.core.model.dao.PortalBaseDAO;
+import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcBaseDAO;
 import ru.protei.winter.jdbc.JdbcSort;
 import ru.protei.winter.jdbc.column.JdbcObjectColumn;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.lang.reflect.Field;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by michael on 25.05.16.
@@ -15,6 +16,14 @@ import java.util.List;
 public abstract class PortalBaseJdbcDAO<T> extends JdbcBaseDAO<Long,T> implements PortalBaseDAO<T> {
 
     public static final Object[] EMPTY_ARG_SET = new Object[]{};
+
+//    @Autowired
+//    List<JdbcObjectColumn<T>> pojoColumns;
+    protected String[] pojoColumns;
+
+    public PortalBaseJdbcDAO () {
+        super();
+    }
 
     public Long getMaxId () {
         return getMaxValue(getIdColumnName(), Long.class, null, (Object[])null);
@@ -89,6 +98,44 @@ public abstract class PortalBaseJdbcDAO<T> extends JdbcBaseDAO<Long,T> implement
     }
 
 
+    @Override
+    public T plainGet(Long id) {
+        return partialGet(id,getPojoColumns());
+    }
 
+    @Override
+    public List<T> plainListByCondition(String query, JdbcSort sort, List<Object> args) {
+        return partialGetListByCondition(query, sort,args, getPojoColumns());
+    }
+
+    @Override
+    public List<T> plainListByCondition(String query, JdbcSort sort, List<Object> args, int offset, int limit) {
+        return partialGetListByCondition(query, args, offset, limit, sort, getPojoColumns()).getResults();
+    }
+
+    protected String[] getPojoColumns() {
+        if (pojoColumns == null) {
+            /**
+             * we are we are hack you!
+             */
+            try {
+                Field f = this.getObjectMapper().getClass().getDeclaredField("allColumns");
+                f.setAccessible(true);
+
+                pojoColumns = ((List<JdbcObjectColumn<T>>) f.get(this.getObjectMapper()))
+                        .stream()
+                        .filter(c -> c.getPath() == null || c.getPath().isEmpty())
+                        .map(c -> c.getName())
+                        .collect(Collectors.toList())
+                        .toArray(new String[]{});
+
+                f.setAccessible(false);
+            }
+            catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return pojoColumns;
+    }
 
 }
