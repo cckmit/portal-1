@@ -1,4 +1,4 @@
-package ru.protei.portal.core.service.dict;
+package ru.protei.portal.core.service;
 
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.ent.Person;
@@ -7,7 +7,7 @@ import ru.protei.portal.core.model.query.ContactQuery;
 import java.util.List;
 
 /**
- * Created by turik on 01.11.16.
+ * Сервис управления контактами
  */
 public interface ContactService {
 

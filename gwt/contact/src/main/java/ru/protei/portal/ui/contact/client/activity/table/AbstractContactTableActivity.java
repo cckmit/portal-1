@@ -11,6 +11,6 @@ import ru.protei.portal.ui.contact.client.view.table.columns.EditClickColumn;
 public interface AbstractContactTableActivity extends ClickColumn.Handler< Person >, EditActionClickColumn.Handler < Person >, EditActionClickColumn.EditHandler< Person > {
 
     void onFilterChanged();
-    void onEditClick(Person value );
+    void onEditClicked(Person value );
     void onCreateClick ();
 }

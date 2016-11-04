@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Company;
@@ -29,14 +30,9 @@ public class ContactServiceImpl implements ContactService {
                 searchPattern, company, fired, sortField, (sortDir ? En_SortDir.ASC : En_SortDir.DESC) );
 
         ContactQuery query = new ContactQuery(company, searchPattern, sortField, sortDir ? En_SortDir.ASC : En_SortDir.DESC);
-
-//        log.debug("before get contact list");
-
         query.setFired(fired);
 
         CoreResponse<List<Person>> response = contactService.contactList(query);
-
-//        log.debug("after get contact list");
 
         if (response.isError()) {
             throw new RequestFailedException( response.getStatus() );
@@ -59,25 +55,26 @@ public class ContactServiceImpl implements ContactService {
     @Override
     public Person saveContact(Person p) throws RequestFailedException {
         if (p == null) {
-            throw new RequestFailedException("Internal error: null person");
+            log.warn("null person in request");
+            throw new RequestFailedException(En_ResultStatus.INTERNAL_ERROR);
         }
 
         log.debug("store contact, id: " + HelperFunc.nvl(p.getId(), "new"));
 
         CoreResponse<Person> response = contactService.saveContact(p);
 
-        log.debug("store contact, result: " + (response.isOk() ? "ok" : response.getMessage()));
+        log.debug("store contact, result: " + (response.isOk() ? "ok" : response.getStatus()));
 
         if (response.isOk()) {
             log.debug("store contact, applied id: " + response.getData().getId());
             return response.getData();
         }
 
-        throw new RequestFailedException(response.getMessage());
+        throw new RequestFailedException(response.getStatus());
     }
 
     @Autowired
-    ru.protei.portal.core.service.dict.ContactService contactService;
+    ru.protei.portal.core.service.ContactService contactService;
 
     private static final Logger log = LoggerFactory.getLogger( "web" );
 

@@ -46,7 +46,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
             contactService.getContact(event.id, new AsyncCallback<Person>() {
                 @Override
                 public void onFailure(Throwable throwable) {
-                    fireEvent(new NotifyEvents.Show(lang.errorGetList(), NotifyEvents.NotifyType.ERROR));
+                    errorMsg (lang.errGetList());
                 }
 
                 @Override
@@ -67,7 +67,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         contactService.saveContact(contact, new AsyncCallback<Person>() {
             @Override
             public void onFailure(Throwable throwable) {
-                fireEvent( new NotifyEvents.Show(throwable.getMessage(), NotifyEvents.NotifyType.ERROR));
+                errorMsg(throwable.getMessage());
             }
 
             @Override

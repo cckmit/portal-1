@@ -67,6 +67,6 @@ public interface CompanyServiceAsync {
      * @param id
      * @param callback
      */
-    void getCompany (long id, AsyncCallback<Company> callback);
+    void getCompanyById (long id, AsyncCallback<Company> callback);
 
 }

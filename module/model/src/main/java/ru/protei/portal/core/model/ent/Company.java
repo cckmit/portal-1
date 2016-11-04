@@ -17,10 +17,7 @@ public class Company implements Serializable {
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
 
-    @JdbcColumn(name = "category_id")
-    private Long categoryId;
-
-    @JdbcJoinedObject( localColumn = "category_id")
+    @JdbcJoinedObject( localColumn = "category_id", table = "company_category" )
     private CompanyCategory category;
 
     @JdbcColumn(name = "parent_company")
@@ -122,11 +119,7 @@ public class Company implements Serializable {
     }
 
     public Long getCategoryId() {
-        return categoryId;
-    }
-
-    public void setCategoryId(Long categoryId) {
-        this.categoryId = categoryId;
+        return category == null ? null : category.getId();
     }
 
     public CompanyCategory getCategory() {
@@ -187,7 +180,7 @@ public class Company implements Serializable {
     public String toString() {
         return "Company{" +
                 "id=" + id +
-                ", categoryId=" + categoryId +
+                ", categoryId=" + String.valueOf(getCategoryId()) +
                 ", parentCompanyId=" + parentCompanyId +
                 ", addressDejure='" + addressDejure + '\'' +
                 ", addressFact='" + addressFact + '\'' +

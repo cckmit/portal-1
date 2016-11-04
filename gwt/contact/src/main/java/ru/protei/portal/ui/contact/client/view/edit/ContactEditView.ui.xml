@@ -1,8 +1,8 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:single="urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.single"
-             xmlns:companyselector='urn:import:ru.protei.portal.ui.contact.client.widget.company.buttonselector'
              xmlns:dict="urn:import:ru.protei.portal.ui.common.client.widget.selector.dict"
+             xmlns:companyselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.company'
 >
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
@@ -17,7 +17,7 @@
                                 <ui:text from="{lang.company}"/>
                             </label>
                             <div class="panelField">
-                                <companyselector:CompanyButtonSelector ui:field="company"/>
+                               <companyselector:CompanySelector ui:field="company" />
                             </div>
                         </div>
 
@@ -68,7 +68,7 @@
                                 <ui:text from="{lang.birthday}"/>
                             </label>
                             <div class="panelField">
-                                <single:SinglePicker ui:field="birthDay" />
+                                <single:SinglePicker ui:field="birthDay" formatValue="dd.MM.yyyy" />
                             </div>
                         </div>
 
@@ -187,8 +187,8 @@
                 </div>
             </div>
             <div class="footer">
-                <g:Button ui:field="saveButton" styleName="button greenC" text="{lang.save}"/>
-                <g:Button ui:field="cancelButton" styleName="button whiteC close_button" text="{lang.cancel}"/>
+                <g:Button ui:field="saveButton" styleName="button greenC" text="{lang.buttonSave}"/>
+                <g:Button ui:field="cancelButton" styleName="button whiteC close_button" text="{lang.buttonCancel}"/>
             </div>
     </g:HTMLPanel>
 </ui:UiBinder>

@@ -1,15 +1,14 @@
 package ru.protei.portal.core.service;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.model.query.BaseQuery;
 import ru.protei.portal.core.model.query.ContactQuery;
 import ru.protei.portal.core.utils.HelperFunc;
-import ru.protei.winter.core.utils.StringUtils;
 
 import java.util.Date;
 import java.util.List;
@@ -19,12 +18,14 @@ import java.util.List;
  */
 public class ContactServiceImpl implements ContactService {
 
+    private static Logger log = Logger.getLogger(CompanyServiceImpl.class);
+
     @Autowired
     PersonDAO personDAO;
 
     @Override
     public CoreResponse<List<Person>> contactList(ContactQuery query) {
-        List<Person> list = personDAO.getContactsByQuery(query);
+        List<Person> list = personDAO.getContacts(query);
 
         if ( list == null )
             new CoreResponse<List<Person>>().error(En_ResultStatus.GET_DATA_ERROR);
@@ -44,16 +45,14 @@ public class ContactServiceImpl implements ContactService {
     @Override
     public CoreResponse<Person> saveContact(Person p) {
         if (personDAO.isEmployee(p)) {
-            return new CoreResponse<Person>().error("This person is employee", "WrongPersonType");
+            log.warn(String.format("person %d is employee",p.getId()));
+            return new CoreResponse<Person>().error(En_ResultStatus.VALIDATION_ERROR);
         }
 
         if (HelperFunc.isEmpty(p.getFirstName()) || HelperFunc.isEmpty(p.getLastName())
                 || HelperFunc.isEmpty(p.getDisplayName())
                 || p.getCompanyId() == null)
-            return new CoreResponse<Person>().error("Enter main contact information", "EmptyContactName");
-
-//        if (HelperFunc.isEmpty(p.getPosition()))
-//            return new CoreResponse<Person>().error("Enter main contact information", "EmptyContactPosition");
+            return new CoreResponse<Person>().error(En_ResultStatus.VALIDATION_ERROR);
 
         if (p.getCreated() == null)
             p.setCreated(new Date());
@@ -68,6 +67,6 @@ public class ContactServiceImpl implements ContactService {
             return new CoreResponse<Person>().success(p);
         }
 
-        return new CoreResponse<Person>().error("Unable to store contact", "InternalError");
+        return new CoreResponse<Person>().error(En_ResultStatus.INTERNAL_ERROR);
     }
 }

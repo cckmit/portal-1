@@ -14,10 +14,11 @@ import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SingleP
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
+import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.dict.GenderButtonSelector;
 import ru.protei.portal.ui.contact.client.activity.edit.AbstractContactEditActivity;
 import ru.protei.portal.ui.contact.client.activity.edit.AbstractContactEditView;
-import ru.protei.portal.ui.contact.client.widget.company.buttonselector.CompanyButtonSelector;
+
 
 /**
  * Created by michael on 02.11.16.
@@ -203,7 +204,7 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
 
     @Inject
     @UiField ( provided = true )
-    CompanyButtonSelector company;
+    CompanySelector company;
 
     @Inject
     @UiField(provided = true)

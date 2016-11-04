@@ -52,7 +52,7 @@ public abstract class ContactTableActivity implements AbstractContactTableActivi
     }
 
     @Override
-    public void onEditClick(Person value ) {
+    public void onEditClicked(Person value ) {
         //Window.alert( "Clicked on edit icon!" );
         fireEvent(ContactEvents.Edit.byId(value.getId()));
     }

@@ -70,6 +70,6 @@ public interface CompanyService extends RemoteService {
      * @param id идентификатор компании
      * @return Company
      */
-    Company getCompanyById ( Long id ) throws RequestFailedException;
+    Company getCompanyById ( long id ) throws RequestFailedException;
 
 }
