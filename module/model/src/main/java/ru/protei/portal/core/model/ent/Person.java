@@ -20,8 +20,8 @@ public class Person implements Serializable {
     @JdbcColumn(name = "creator")
     private String creator;
 
-    @JdbcColumn(name="company_id")
-    private Long companyId;
+//    @JdbcColumn(name="company_id")
+//    private Long companyId;
 
     @JdbcJoinedObject (localColumn = "company_id",updateLocalColumn = false)
     private Company company;
@@ -135,11 +135,14 @@ public class Person implements Serializable {
     }
 
     public Long getCompanyId() {
-        return companyId;
+        return company != null ? company.getId() : company.getId();
     }
 
     public void setCompanyId(Long companyId) {
-        this.companyId = companyId;
+        if (this.company == null)
+            this.company = new Company();
+
+        this.company.setId (companyId);
     }
 
     public Company getCompany() {
@@ -148,7 +151,6 @@ public class Person implements Serializable {
 
     public void setCompany(Company company) {
         this.company = company;
-        this.companyId = company != null ? company.getId() : null;
     }
 
     public String getPosition() {

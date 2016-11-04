@@ -6,10 +6,13 @@ import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import ru.protei.portal.core.model.dao.PersonDAO;
+import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.test.model.config.TestConfiguration;
 import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
+
+import java.util.Date;
 
 /**
  * Created by Mike on 03.11.2016.
@@ -58,6 +61,9 @@ public class PersonDAO_Test {
         p.setFirstName("Test Create Person");
         p.setLastName("Test");
         p.setDisplayName("Test insert");
+        p.setCreated(new Date());
+        p.setCreator("");
+        p.setGender(En_Gender.MALE);
 
         Long id = dao.persist(p);
         Assert.assertNotNull(id);
