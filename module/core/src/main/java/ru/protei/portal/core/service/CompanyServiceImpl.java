@@ -3,7 +3,6 @@ package ru.protei.portal.core.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
-import ru.protei.portal.api.struct.HttpListResult;
 import ru.protei.portal.core.model.dao.CompanyCategoryDAO;
 import ru.protei.portal.core.model.dao.CompanyDAO;
 import ru.protei.portal.core.model.dao.CompanyGroupDAO;
@@ -159,27 +158,24 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public HttpListResult<Company> companyList(CompanyQuery query) {
-
-        return new HttpListResult<> (
-               companyDAO.getListByQuery (query), false
-        );
+    public CoreResponse<List<Company>> companyList(CompanyQuery query) {
+        return new CoreResponse<List<Company>> ()
+                .success(companyDAO.getListByQuery (query));
     }
 
     @Override
-    public HttpListResult<CompanyGroup> groupList(BaseQuery query) {
-        return new HttpListResult<>(
+    public CoreResponse<List<CompanyGroup>> groupList(BaseQuery query) {
+        return new CoreResponse<List<CompanyGroup>>().success(
                 companyGroupCache.collect(
                         new CompanyGroupSearchSelector(query.getSearchString()),
                         new ArrayList<>()
-                ), false
+                )
         );
     }
 
     @Override
-    public HttpListResult<CompanyCategory> categoryList() {
-
-        return new HttpListResult<>(companyCategoryDAO.getAll(), false);
+    public CoreResponse<List<CompanyCategory>> categoryList() {
+        return new CoreResponse<List<CompanyCategory>>().success(companyCategoryDAO.getAll());
     }
 
     @Override

@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
-import ru.protei.portal.api.struct.HttpListResult;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Company;
@@ -13,8 +12,8 @@ import ru.protei.portal.core.model.ent.CompanyCategory;
 import ru.protei.portal.core.model.ent.CompanyGroup;
 import ru.protei.portal.core.model.query.BaseQuery;
 import ru.protei.portal.core.model.query.CompanyQuery;
-import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.common.client.service.CompanyService;
+import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
 import java.util.List;
 import java.util.Set;
@@ -44,9 +43,9 @@ public class CompanyServiceImpl implements CompanyService {
         query.setGroupId( group != null ? group.getId() : null );
         query.setCategoryIds( categoryIds );
 
-        HttpListResult< Company> result = companyService.companyList(query);
+        CoreResponse< List<Company>> result = companyService.companyList(query);
 
-        return result.getItems();
+        return result.getData();
     }
 
     @Override
@@ -56,9 +55,9 @@ public class CompanyServiceImpl implements CompanyService {
 
         BaseQuery query = new BaseQuery( searchPattern, En_SortField.group_name, En_SortDir.ASC );
 
-        HttpListResult< CompanyGroup > result = companyService.groupList(query);
+        CoreResponse< List<CompanyGroup> > result = companyService.groupList(query);
 
-        return result.getItems();
+        return result.getData();
     }
 
     @Override
@@ -66,9 +65,9 @@ public class CompanyServiceImpl implements CompanyService {
 
         log.debug( "getCompanyCategories" );
 
-        HttpListResult< CompanyCategory > result = companyService.categoryList();
+        CoreResponse< List<CompanyCategory> > result = companyService.categoryList();
 
-        return result.getItems();
+        return result.getData();
     }
 
     @Override

@@ -7,8 +7,11 @@ import java.util.List;
 
 /**
  * Created by michael on 06.04.16.
+ *
+ * @deprecated Use CoreResponse instead
  */
 @JsonAutoDetect
+@Deprecated
 public class HttpListResult<T> {
 
     @JsonProperty("size")

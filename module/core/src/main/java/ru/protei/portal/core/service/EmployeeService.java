@@ -1,15 +1,17 @@
 package ru.protei.portal.core.service;
 
-import ru.protei.portal.api.struct.HttpListResult;
+import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.view.EmployeeDetailView;
 import ru.protei.portal.core.model.view.WorkerView;
+
+import java.util.List;
 
 /**
  * Created by michael on 06.04.16.
  */
 public interface EmployeeService {
 
-    HttpListResult<WorkerView> list(String param);
+    CoreResponse<List<WorkerView>> list(String param);
 
     EmployeeDetailView getEmployeeProfile (Long id);
 

@@ -2,7 +2,6 @@ package ru.protei.portal.core.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.CoreResponse;
-import ru.protei.portal.api.struct.HttpListResult;
 import ru.protei.portal.core.model.dao.DevUnitDAO;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
@@ -14,6 +13,7 @@ import ru.protei.portal.core.utils.TypeConverters;
 import ru.protei.winter.jdbc.JdbcSort;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by michael on 27.09.16.
@@ -30,13 +30,13 @@ public class ProductServiceImpl implements ProductService {
     DevUnitDAO devUnitDAO;
 
     @Override
-    public HttpListResult<DevUnit> list(ProductQuery query) {
+    public CoreResponse<List<DevUnit>> list(ProductQuery query) {
 
         String condition = HelperFunc.makeLikeArg(query.getSearchString(), true);
 
         JdbcSort sort = TypeConverters.createSort(query);
 
-        return new HttpListResult<DevUnit>(devUnitDAO.getUnitsByCondition(En_DevUnitType.PRODUCT, query.getState(), condition.trim(), sort), false);
+        return new CoreResponse<List<DevUnit>>().success(devUnitDAO.getUnitsByCondition(En_DevUnitType.PRODUCT, query.getState(), condition.trim(), sort));
     }
 
     @Override
