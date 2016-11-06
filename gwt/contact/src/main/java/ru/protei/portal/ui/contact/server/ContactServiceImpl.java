@@ -5,11 +5,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.query.ContactQuery;
+import ru.protei.portal.core.utils.HelperFunc;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.contact.client.service.ContactService;
 
@@ -23,19 +25,52 @@ public class ContactServiceImpl implements ContactService {
 
     @Override
     public List<Person> getContacts(String searchPattern, Company company, Boolean fired, En_SortField sortField, Boolean sortDir) throws RequestFailedException {
-        
+
         log.debug( "getContacts(): searchPattern={} | company={} | isFired={} | sortField={} | sortDir={}",
                 searchPattern, company, fired, sortField, (sortDir ? En_SortDir.ASC : En_SortDir.DESC) );
-        
+
         ContactQuery query = new ContactQuery(company, searchPattern, sortField, sortDir ? En_SortDir.ASC : En_SortDir.DESC);
         query.setFired(fired);
-        
+
         CoreResponse<List<Person>> response = contactService.contactList(query);
 
         if (response.isError()) {
             throw new RequestFailedException( response.getStatus() );
         }
         return response.getData();
+    }
+
+
+    @Override
+    public Person getContact(long id) throws RequestFailedException {
+        log.debug("get contact, id: " + id);
+
+        CoreResponse<Person> response = contactService.getContact(id);
+
+        log.debug("get contact, id: " + id + " -> " + (response.isError() ? "error" : ("ok, " + response.getData().getDisplayName())));
+
+        return response.getData();
+    }
+
+    @Override
+    public Person saveContact(Person p) throws RequestFailedException {
+        if (p == null) {
+            log.warn("null person in request");
+            throw new RequestFailedException(En_ResultStatus.INTERNAL_ERROR);
+        }
+
+        log.debug("store contact, id: " + HelperFunc.nvl(p.getId(), "new"));
+
+        CoreResponse<Person> response = contactService.saveContact(p);
+
+        log.debug("store contact, result: " + (response.isOk() ? "ok" : response.getStatus()));
+
+        if (response.isOk()) {
+            log.debug("store contact, applied id: " + response.getData().getId());
+            return response.getData();
+        }
+
+        throw new RequestFailedException(response.getStatus());
     }
 
     @Autowired

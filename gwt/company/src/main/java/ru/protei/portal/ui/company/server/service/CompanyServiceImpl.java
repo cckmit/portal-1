@@ -130,7 +130,7 @@ public class CompanyServiceImpl implements CompanyService {
 
 
     @Override
-    public Company getCompanyById(Long id) throws RequestFailedException {
+    public Company getCompanyById(long id) throws RequestFailedException {
         log.debug( "getCompanyById: id={}", id );
 
         CoreResponse<Company> response = companyService.getCompanyById(id);

@@ -43,15 +43,20 @@ public class PersonAbsenceDAO_Impl extends PortalBaseJdbcDAO<PersonAbsence> impl
         list.add(now);
         list.add(now);
 
-        String personIdColumn;
-        try {
-            personIdColumn = PersonAbsence.class.getField("personId").getAnnotation(JdbcColumn.class).name();
-        }catch (NoSuchFieldException e){
-            personIdColumn = "person_id";
-        }
 
-        return partialGetListByCondition("from_time < ? and till_time > ?", list, personIdColumn);
+        /**
+         * Review notes:
+         *
+         * to get ID column name use : getIdColumnName()
+         * to get reference of mapped entity class use : getObjectMapper().getEntityClass()
+         */
+//        String personIdColumn;
+//        try {
+//            personIdColumn = PersonAbsence.class.getField("personId").getAnnotation(JdbcColumn.class).name();
+//        }catch (NoSuchFieldException e){
+//            personIdColumn = "person_id";
+//        }
+
+        return getListByCondition("from_time < ? and till_time > ?", list);
     }
-
-
 }

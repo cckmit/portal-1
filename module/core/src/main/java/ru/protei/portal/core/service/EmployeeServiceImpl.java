@@ -55,25 +55,20 @@ public class EmployeeServiceImpl implements EmployeeService {
         if(personAbsences.size()==0)
             return;
 
-        TreeSet<Long> ids = new TreeSet<>();
-        for(PersonAbsence pa: personAbsences)
-            ids.add(pa.getCreatorId());
+        List<Long> ids = personAbsences.stream()
+                .map(p -> p.getCreatorId())
+                .distinct()
+                .collect(Collectors.toList());
+
+//        TreeSet<Long> ids = new TreeSet<>();
+//        for(PersonAbsence pa: personAbsences)
+//            ids.add(pa.getCreatorId());
 
         HashMap<Long,String> creators = new HashMap<>();
 
-        Iterator<Long> iterator = ids.iterator();
         for (Person p : personDAO.partialGetListByKeys(ids, "displayShortName")){
-            creators.put(iterator.next(), p.getDisplayShortName());
+            creators.put(p.getId(), p.getDisplayShortName());
         }
-
-
-//        System.out.println("**********************************");
-////        for (Long l : creators.keySet())
-////            System.out.println(l);
-////        for (String s : creators.values())
-////            System.out.println(s);
-//        System.out.print(creators.toString());
-
 
         for(PersonAbsence p:personAbsences)
             p.setCreator(creators.get(p.getCreatorId()));

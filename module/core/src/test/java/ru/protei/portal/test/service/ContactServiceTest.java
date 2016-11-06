@@ -31,7 +31,24 @@ public class ContactServiceTest {
 
 
     @Test
-    public void testGet () {
+    public void testGetById () {
+        ContactService service = ctx.getBean(ContactService.class);
+
+        Assert.assertNotNull(service);
+
+
+        CoreResponse<Person> response = service.getContact(1001L);
+
+        Assert.assertTrue(response.isOk());
+
+        Assert.assertNotNull(response.getData());
+        Assert.assertNotNull(response.getData().getCompany());
+
+        System.out.println(response.getData().getCompany());
+    }
+
+    @Test
+    public void testGetByFilter() {
 
         ContactService service = ctx.getBean(ContactService.class);
 
@@ -45,10 +62,13 @@ public class ContactServiceTest {
         Assert.assertTrue(result.getData().size() > 0);
 
         for (Person person : result.getData()) {
-            CoreResponse<Person> x = service.getContactById( person.getId() );
+            CoreResponse<Person> x = service.getContact( person.getId() );
             Assert.assertTrue(x.isOk());
             Assert.assertEquals(person.getId(), x.getData().getId());
             Assert.assertEquals(person.getDisplayName(), x.getData().getDisplayName());
+
+//            Assert.assertNull(person.getCompany());
+            Assert.assertNotNull(x.getData().getCompany());
         }
     }
 }
