@@ -68,5 +68,15 @@ public enum En_ResultStatus {
     /**
      * некорректные параметры
      */
-    INCORRECT_PARAMS
+    INCORRECT_PARAMS,
+
+    /**
+     * Временная ошибка взаимодействия с базой данных
+     */
+    DB_TEMP_ERROR,
+
+    /**
+     * Ошибка взаимодействия с базой данных
+     */
+    DB_COMMON_ERROR
 }
