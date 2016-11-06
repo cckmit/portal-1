@@ -50,9 +50,25 @@ public class ContactServiceImpl implements ContactService {
         }
 
         if (HelperFunc.isEmpty(p.getFirstName()) || HelperFunc.isEmpty(p.getLastName())
-                || HelperFunc.isEmpty(p.getDisplayName())
                 || p.getCompanyId() == null)
             return new CoreResponse<Person>().error(En_ResultStatus.VALIDATION_ERROR);
+
+        if (HelperFunc.isEmpty(p.getDisplayName())) {
+            p.setDisplayName(p.getLastName() + " " + p.getFirstName());
+        }
+
+        if (HelperFunc.isEmpty(p.getDisplayShortName())) {
+            StringBuilder b = new StringBuilder();
+            b.append (p.getLastName()).append(" ")
+                    .append (p.getFirstName().substring(0,1).toUpperCase()).append(".")
+            ;
+
+            if (!p.getSecondName().isEmpty()) {
+                b.append(" ").append(p.getSecondName().substring(0,1).toUpperCase()).append(".");
+            }
+
+            p.setDisplayShortName(b.toString());
+        }
 
         if (p.getCreated() == null)
             p.setCreated(new Date());

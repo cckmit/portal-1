@@ -21,13 +21,6 @@ public class GenderButtonSelector extends ButtonSelector<En_Gender> {
     }
 
 
-//    public void setHasAnyValue( boolean hasAnyValue ) {
-//        this.hasAnyValue = hasAnyValue;
-//    }
-
     @Inject
     Lang lang;
-
-//    private boolean hasAnyValue = true;
-
 }
