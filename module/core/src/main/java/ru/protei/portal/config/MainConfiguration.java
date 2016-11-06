@@ -2,6 +2,8 @@ package ru.protei.portal.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import ru.protei.portal.core.aspect.ServiceLayerInterceptor;
 import ru.protei.portal.core.controller.auth.AuthInterceptor;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
@@ -14,6 +16,7 @@ import ru.protei.portal.core.service.user.LDAPAuthProvider;
 import ru.protei.portal.core.utils.SessionIdGen;
 import ru.protei.portal.core.utils.SimpleSidGenerator;
 
+@EnableAspectJAutoProxy
 @Configuration
 public class MainConfiguration {
 
@@ -189,5 +192,13 @@ public class MainConfiguration {
     @Bean
     public ContactService getContactService () {
         return new ContactServiceImpl();
+    }
+
+
+
+    /** ASPECT/INTERCEPTORS **/
+    @Bean
+    public ServiceLayerInterceptor getServiceLayerInterceptor () {
+        return new ServiceLayerInterceptor();
     }
 }
