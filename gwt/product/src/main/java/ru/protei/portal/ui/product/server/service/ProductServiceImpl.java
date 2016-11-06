@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
-import ru.protei.portal.api.struct.HttpListResult;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
@@ -33,9 +32,12 @@ public class ProductServiceImpl implements ProductService {
         productQuery.setSortField(sortField);
         productQuery.setSortDir(sortDir ? En_SortDir.ASC : En_SortDir.DESC);
 
-        HttpListResult<DevUnit> result = productService.list(productQuery);
+        CoreResponse<List<DevUnit>> result = productService.list(productQuery);
 
-        return result.items;
+        if (result.isError())
+            throw new RequestFailedException(result.getStatus());
+
+        return result.getData();
 
    }
 

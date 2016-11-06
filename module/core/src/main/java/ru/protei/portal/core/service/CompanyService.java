@@ -1,7 +1,6 @@
 package ru.protei.portal.core.service;
 
 import ru.protei.portal.api.struct.CoreResponse;
-import ru.protei.portal.api.struct.HttpListResult;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanyCategory;
 import ru.protei.portal.core.model.ent.CompanyGroup;
@@ -9,16 +8,18 @@ import ru.protei.portal.core.model.ent.CompanyGroupItem;
 import ru.protei.portal.core.model.query.BaseQuery;
 import ru.protei.portal.core.model.query.CompanyQuery;
 
+import java.util.List;
+
 /**
  * Created by michael on 27.09.16.
  */
 public interface CompanyService {
 
-    HttpListResult<Company> companyList(CompanyQuery query);
+    CoreResponse<List<Company>> companyList(CompanyQuery query);
 
-    HttpListResult<CompanyGroup> groupList (BaseQuery query);
+    CoreResponse<List<CompanyGroup>> groupList (BaseQuery query);
 
-    HttpListResult<CompanyCategory> categoryList ();
+    CoreResponse<List<CompanyCategory>> categoryList ();
 
     CoreResponse<Company> getCompanyById(Long id);
 
