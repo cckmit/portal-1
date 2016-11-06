@@ -45,6 +45,9 @@ public class CompanyServiceImpl implements CompanyService {
 
         CoreResponse< List<Company>> result = companyService.companyList(query);
 
+        if (result.isError())
+            throw new RequestFailedException(result.getStatus());
+
         return result.getData();
     }
 
@@ -57,6 +60,9 @@ public class CompanyServiceImpl implements CompanyService {
 
         CoreResponse< List<CompanyGroup> > result = companyService.groupList(query);
 
+        if (result.isError())
+            throw new RequestFailedException(result.getStatus());
+
         return result.getData();
     }
 
@@ -66,6 +72,9 @@ public class CompanyServiceImpl implements CompanyService {
         log.debug( "getCompanyCategories" );
 
         CoreResponse< List<CompanyCategory> > result = companyService.categoryList();
+
+        if (result.isError())
+            throw new RequestFailedException(result.getStatus());
 
         return result.getData();
     }
@@ -86,7 +95,7 @@ public class CompanyServiceImpl implements CompanyService {
 
         log.debug( "saveCompany(): response.isOk()={}", response.isOk() );
 
-        if ( response.isError() ) throw new RequestFailedException();
+        if ( response.isError() ) throw new RequestFailedException(response.getStatus());
 
         return response.getData() != null;
     }
@@ -100,7 +109,7 @@ public class CompanyServiceImpl implements CompanyService {
 
         log.debug( "isCompanyNameExists(): response.isOk()={} | response.getData()", response.isOk(), response.getData() );
 
-        if ( response.isError() ) throw new RequestFailedException();
+        if ( response.isError() ) throw new RequestFailedException(response.getStatus());
 
         return response.getData();
     }
@@ -114,7 +123,7 @@ public class CompanyServiceImpl implements CompanyService {
 
         log.debug( "isGroupNameExists(): response.isOk()={} | response.getData()", response.isOk(), response.getData() );
 
-        if ( response.isError() ) throw new RequestFailedException();
+        if ( response.isError() ) throw new RequestFailedException(response.getStatus());
 
         return response.getData();
     }
@@ -128,7 +137,7 @@ public class CompanyServiceImpl implements CompanyService {
 
         log.debug( "getCompanyById: response.isOk()={} | response.getData()", response.isOk(), response.getData() );
 
-        if ( response.isError() ) throw new RequestFailedException();
+        if ( response.isError() ) throw new RequestFailedException(response.getStatus());
 
         return response.getData();
     }

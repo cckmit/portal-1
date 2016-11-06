@@ -34,6 +34,9 @@ public class ProductServiceImpl implements ProductService {
 
         CoreResponse<List<DevUnit>> result = productService.list(productQuery);
 
+        if (result.isError())
+            throw new RequestFailedException(result.getStatus());
+
         return result.getData();
 
    }
