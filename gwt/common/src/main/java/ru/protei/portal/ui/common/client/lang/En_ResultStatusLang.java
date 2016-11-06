@@ -40,6 +40,8 @@ public class En_ResultStatusLang {
             case ALREADY_EXIST :  return lang.errAlreadyExist();
             case VALIDATION_ERROR: return lang.errValidationError();
             case INCORRECT_PARAMS: return lang.errIncorrectParams();
+            case DB_COMMON_ERROR: return  lang.errDatabaseError ();
+            case DB_TEMP_ERROR: return lang.errDatabaseTempError ();
 
             default: return lang.errUnknownResult();
         }

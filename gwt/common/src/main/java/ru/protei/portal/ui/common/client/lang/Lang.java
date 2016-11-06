@@ -106,6 +106,10 @@ public interface Lang extends Messages {
 
     String errInternalError();
 
+    String errDatabaseError ();
+
+    String errDatabaseTempError ();
+
     String errUnknownResult();
 
     String companyInfoHeader();
@@ -125,4 +129,5 @@ public interface Lang extends Messages {
     String edit();
 
     String companyAdditionalInfoHeader();
+
 }
