@@ -31,7 +31,6 @@ public class CompanyServiceImpl implements CompanyService {
     /**
      *  @TODO
      *  - вынести обработку ответов БД в отдельный Interceptor
-     *  - возвращать HttpListResult внутри CoreResponse
      */
 
     @Autowired

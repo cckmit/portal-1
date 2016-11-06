@@ -23,7 +23,6 @@ public class ProductServiceImpl implements ProductService {
     /**
      *  @TODO
      *  - вынести обработку ответов БД в отдельный Interceptor
-     *  - возвращать HttpListResult внутри CoreResponse
      */
 
     @Autowired
