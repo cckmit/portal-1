@@ -15,7 +15,7 @@ public interface AbstractContactPreviewView extends IsWidget {
 
     void setSecondName( String value );
 
-    void setSex( String value );
+    void setGender ( String value );
 
     void setBirthday( String value );
 

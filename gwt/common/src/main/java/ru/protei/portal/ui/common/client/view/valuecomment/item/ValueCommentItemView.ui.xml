@@ -1,0 +1,9 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+
+    <g:HTMLPanel styleName="autoadd-vc-item">
+        <g:TextBox ui:field="value" styleName="inputField autoadd-vc-item-v"/>
+        <g:TextBox ui:field="comment" styleName="inputField autoadd-vc-item-c"/>
+    </g:HTMLPanel>
+</ui:UiBinder>

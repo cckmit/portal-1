@@ -38,7 +38,7 @@ public abstract class ContactPreviewActivity implements Activity, AbstractContac
         view.setEmail( value.getEmail() );
         view.setAddress( value.getAddress() );
         view.setBirthday( value.getBirthday().toString() );
-        view.setSex( value.getSex() );
+        view.setGender( value.getGender().getCode() );
         view.setInfo( value.getInfo() );
     }
 

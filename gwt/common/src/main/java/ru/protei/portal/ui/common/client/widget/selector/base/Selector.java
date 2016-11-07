@@ -14,11 +14,15 @@ import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.selector.event.HasSelectorChangeValHandlers;
+import ru.protei.portal.ui.common.client.widget.selector.event.SelectorChangeValEvent;
+import ru.protei.portal.ui.common.client.widget.selector.event.SelectorChangeValHandler;
 import ru.protei.portal.ui.common.client.widget.selector.item.SelectorItem;
 import ru.protei.portal.ui.common.client.widget.selector.popup.SelectorPopup;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Predicate;
 
 /**
  * Базовая логика селектора
@@ -27,10 +31,15 @@ public abstract class Selector<T>
         extends Composite
         implements HasValue<T>,
         ClickHandler, ValueChangeHandler< String >,
-        Window.ScrollHandler
+        Window.ScrollHandler,
+        HasSelectorChangeValHandlers
 {
     public void setValue( T value ) {
         setValue( value, false );
+    }
+
+    public void findAndSelectValue (Predicate<T> predicate, boolean fireEvents) {
+        setValue(itemToNameModel.keySet().stream().filter(predicate).findFirst().orElse(null), fireEvents);
     }
 
     @Override
@@ -127,6 +136,8 @@ public abstract class Selector<T>
         String searchText = event.getValue().toLowerCase();
 
         boolean isEmptyResult = true;
+        boolean exactMatch = false;
+
         popup.getChildContainer().clear();
 
         if ( searchText.isEmpty() && nullItemView != null ) {
@@ -134,13 +145,24 @@ public abstract class Selector<T>
         }
 
         for ( Map.Entry< T, String > entry : itemToNameModel.entrySet() ) {
-            if ( searchText.isEmpty() || entry.getValue().toLowerCase().contains(searchText) ) {
+            String entryText = entry.getValue().toLowerCase();
+            if ( searchText.isEmpty() || entryText.contains(searchText) ) {
                 SelectorItem itemView = itemToViewModel.get( entry.getKey() );
                 if ( itemView != null ) {
                     popup.getChildContainer().add( itemView );
                 }
+                if(entryText.equals(searchText))
+                    exactMatch = true;
+
                 isEmptyResult = false;
             }
+        }
+
+        // Нельзя использовать ValueChangeEvent, т.к нужен доступ к itemToNameModel
+        if(exactMatch){
+            SelectorChangeValEvent.fire(this, null);
+        }else {
+            SelectorChangeValEvent.fire(this, event.getValue());
         }
 
         if ( isEmptyResult ) {
@@ -153,6 +175,11 @@ public abstract class Selector<T>
         if ( popup.isAttached() ) {
             showPopup( relative );
         }
+    }
+
+    @Override
+    public HandlerRegistration addSelectorChangeValHandler(SelectorChangeValHandler handler) {
+        return addHandler( handler, SelectorChangeValEvent.getType() );
     }
 
     public abstract void fillSelectorView( String selectedValue );
@@ -173,11 +200,15 @@ public abstract class Selector<T>
     protected void showPopup( IsWidget relative ) {
         this.relative = relative;
         popup.setSearchVisible( searchEnabled );
-        popup.setSearchAutoFocus( searchAutoFocusEnabled );
+        popup.setSearchAutoFocus(searchAutoFocusEnabled);
 
-        popup.showNear( relative );
+        popup.showNear(relative);
         popup.addValueChangeHandler( this );
         popup.clearSearchField();
+    }
+
+    protected void closePopup(){
+        popup.hide();
     }
 
     private void addEmptyListGhostOption( String name ) {
@@ -185,10 +216,6 @@ public abstract class Selector<T>
         itemView.setName( name );
         itemView.addStyleName( "search-no-result" );
         popup.getChildContainer().add( itemView.asWidget() );
-    }
-
-    public void closePopup(){
-        popup.hide();
     }
 
     public void addCloseHandler(CloseHandler<PopupPanel> handler){

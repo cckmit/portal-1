@@ -45,7 +45,7 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
     public void onShow( CompanyEvents.Show event ) {
         fireEvent(new AppEvents.InitPanelName(lang.companies()));
         initDetails.parent.clear();
-        initDetails.parent.add( view.asWidget() );
+        initDetails.parent.add(view.asWidget());
 
         requestCompanies();
     }
@@ -60,7 +60,22 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
     }
 
     @Override
-    public void onMenuClicked( AbstractCompanyItemView itemView ) {
+    public void onEditClicked( AbstractCompanyItemView itemView ) {
+        Company value = itemViewToModel.get( itemView );
+        if ( value == null ) {
+            return;
+        }
+
+        fireEvent( new CompanyEvents.Edit ( value.getId() ));
+    }
+
+    @Override
+    public void onFavoriteClicked(AbstractCompanyItemView itemView) {
+        Window.alert("Clicked on favorite of company with id = " + itemViewToModel.get(itemView).getId() + "!");
+    }
+
+    @Override
+    public void onPreviewClicked( AbstractCompanyItemView itemView ) {
         Company value = itemViewToModel.get( itemView );
         if ( value == null ) {
             return;
@@ -71,13 +86,8 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
     }
 
     @Override
-    public void onFavoriteClicked(AbstractCompanyItemView itemView) {
-        Window.alert( "Clicked on favorite of company with id = " + itemViewToModel.get( itemView ).getId() + "!" );
-    }
-
-    @Override
     public void onCreateClicked() {
-        fireEvent( new CompanyEvents.Edit ( null ));
+        fireEvent(new CompanyEvents.Edit(null));
     }
 
     private void requestCompanies() {
@@ -104,6 +114,32 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
         });
     }
 
+    private AbstractCompanyItemView makeView( Company company ) {
+        AbstractCompanyItemView itemView = factory.get();
+        itemView.setActivity( this );
+        itemView.setName( company.getCname() );
+
+
+        if(company.getPhone() != null)
+            itemView.setPhone( company.getPhone().value );
+        else
+            itemView.setPhone(null);
+
+        if(company.getEmail() != null)
+            itemView.setEmail( company.getEmail().value);
+        else
+            itemView.setEmail(null);
+
+
+        itemView.setWebsite( company.getWebsite() );
+
+        CompanyCategory category = company.getCategory();
+        if ( category != null ) {
+            itemView.setType( category.getName() );
+        }
+        return itemView;
+    }
+
     Consumer< Company > fillViewer = new Consumer< Company >() {
         @Override
         public void accept( Company company ) {
@@ -113,18 +149,6 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
             view.getChildContainer().add( itemView.asWidget() );
         }
     };
-
-    private AbstractCompanyItemView makeView( Company company ) {
-        AbstractCompanyItemView itemView = factory.get();
-        itemView.setActivity( this );
-        itemView.setName( company.getCname () );
-
-        CompanyCategory category = company.getCategory();
-        if ( category != null ) {
-            itemView.setType( category.getName() );
-        }
-        return itemView;
-    }
 
     @Inject
     Provider< AbstractCompanyItemView > factory;

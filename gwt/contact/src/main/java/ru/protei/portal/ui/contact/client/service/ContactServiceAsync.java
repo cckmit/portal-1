@@ -22,4 +22,8 @@ public interface ContactServiceAsync {
      * @return список контактов
      */
     void getContacts( String searchPattern, Company company, Boolean fired, En_SortField sortField, Boolean sortDir, AsyncCallback< List< Person > > async );
+
+    void getContact (long id, AsyncCallback<Person> callback);
+
+    void saveContact (Person p, AsyncCallback<Person> callback);
 }

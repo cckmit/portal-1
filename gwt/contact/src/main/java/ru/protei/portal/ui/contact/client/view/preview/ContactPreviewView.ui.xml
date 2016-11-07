@@ -28,7 +28,7 @@
                                         <label class="tc_wrapper content" ui:field="secondName"></label>
                                     </div>
                                     <div class="tr_wrapper">
-                                        <div class="tc_wrapper header"><ui:text from="{lang.sex}"/></div>
+                                        <div class="tc_wrapper header"><ui:text from="{lang.gender}"/></div>
                                         <label class="tc_wrapper content" ui:field="sex"></label>
                                     </div>
                                     <div class="tr_wrapper">

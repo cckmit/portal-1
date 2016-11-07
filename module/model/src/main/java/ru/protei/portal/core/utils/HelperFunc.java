@@ -1,8 +1,6 @@
 package ru.protei.portal.core.utils;
 
 import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Created by michael on 06.07.16.
@@ -11,6 +9,10 @@ public class HelperFunc {
 
     public static Long toTime (Date t, Long v) {
         return t == null ? v : t.getTime();
+    }
+
+    public static boolean isEmpty (String s) {
+        return s == null || s.trim().isEmpty();
     }
 
     public static Object nvl (Object...arr) {

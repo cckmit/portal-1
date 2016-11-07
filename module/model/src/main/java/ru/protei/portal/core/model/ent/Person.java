@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
@@ -12,14 +13,17 @@ import java.util.Date;
 public class Person implements Serializable {
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
+
     @JdbcColumn(name = "created")
     private Date created;
+
     @JdbcColumn(name = "creator")
     private String creator;
-    @JdbcColumn(name="company_id")
-    private Long companyId;
 
-    @JdbcJoinedObject(localColumn = "company_id", table = "company")
+//    @JdbcColumn(name="company_id")
+//    private Long companyId;
+
+    @JdbcJoinedObject (localColumn = "company_id",updateLocalColumn = false)
     private Company company;
 
     @JdbcColumn(name = "displayPosition")
@@ -31,8 +35,10 @@ public class Person implements Serializable {
 
     @JdbcColumn(name="firstname")
     private String firstName;
+
     @JdbcColumn(name="lastname")
     private String lastName;
+
     @JdbcColumn(name="secondname")
     private String secondName;
 
@@ -46,7 +52,7 @@ public class Person implements Serializable {
      * constraint CHK_PERSON_SEX check (SEX in ('M','F','-')),
      */
     @JdbcColumn(name="sex")
-    private String sex;
+    private String genderCode;
 
     @JdbcColumn(name="birthday")
     private Date birthday;
@@ -129,11 +135,14 @@ public class Person implements Serializable {
     }
 
     public Long getCompanyId() {
-        return companyId;
+        return company != null ? company.getId() : company.getId();
     }
 
     public void setCompanyId(Long companyId) {
-        this.companyId = companyId;
+        if (this.company == null)
+            this.company = new Company();
+
+        this.company.setId (companyId);
     }
 
     public Company getCompany() {
@@ -190,14 +199,6 @@ public class Person implements Serializable {
 
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
-    }
-
-    public String getSex() {
-        return sex;
-    }
-
-    public void setSex(String sex) {
-        this.sex = sex;
     }
 
     public Date getBirthday() {
@@ -346,5 +347,13 @@ public class Person implements Serializable {
 
     public void setDisplayShortName(String displayShortName) {
         this.displayShortName = displayShortName;
+    }
+
+    public En_Gender getGender () {
+        return En_Gender.parse(this.genderCode);
+    }
+
+    public void setGender (En_Gender gender) {
+        this.genderCode = gender.getCode();
     }
 }

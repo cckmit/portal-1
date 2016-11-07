@@ -8,6 +8,7 @@ import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dao.UserLoginDAO;
 import ru.protei.portal.core.model.dict.En_AdminState;
 import ru.protei.portal.core.model.dict.En_AuthType;
+import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.tools.migrate.tools.BatchProcess;
@@ -181,7 +182,7 @@ public class MigratePersonAction implements MigrateAction {
                             )
             );
             x.setPassportInfo((String) row.get("strPassportInfo"));
-            x.setSex(row.get("nSexID") == null ? "-" : ((Number) row.get("nSexID")).intValue() == 1 ? "M" : "F");
+            x.setGender(row.get("nSexID") == null ? En_Gender.UNDEFINED : ((Number) row.get("nSexID")).intValue() == 1 ? En_Gender.MALE : En_Gender.FEMALE);
 
             x.setPosition(nvl((String) row.get("strPosition"), (String) row.get("category")));
 

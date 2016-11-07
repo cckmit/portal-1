@@ -1,7 +1,7 @@
 package ru.protei.portal.ui.product.client.view.preview;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.LabelElement;
+import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
@@ -27,11 +27,10 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
         this.info.setInnerText(value);
     }
 
-
     @UiField
     Lang lang;
     @UiField
-    LabelElement info;
+    SpanElement info;
 
     AbstractProductPreviewActivity activity;
 

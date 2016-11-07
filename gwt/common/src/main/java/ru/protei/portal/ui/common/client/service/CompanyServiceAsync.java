@@ -61,4 +61,11 @@ public interface CompanyServiceAsync {
      */
     void isGroupNameExists ( String name, Long excludeId, AsyncCallback< Boolean > async );
 
+    /**
+     * Получение компании по ID
+     * @param id
+     * @param callback
+     */
+    void getCompanyById (long id, AsyncCallback<Company> callback);
+
 }

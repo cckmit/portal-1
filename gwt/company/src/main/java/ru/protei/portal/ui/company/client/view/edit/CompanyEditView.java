@@ -12,13 +12,17 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.CompanyGroup;
+import ru.protei.portal.ui.common.client.activity.valuecomment.AbstractValueCommentListView;
 import ru.protei.portal.ui.common.client.service.NameStatus;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextArea;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
+import ru.protei.portal.ui.common.client.widget.selector.event.SelectorChangeValEvent;
 import ru.protei.portal.ui.company.client.activity.edit.AbstractCompanyEditActivity;
 import ru.protei.portal.ui.company.client.activity.edit.AbstractCompanyEditView;
 import ru.protei.portal.ui.company.client.widget.group.inputselector.GroupInputSelector;
+
+import java.util.logging.Logger;
 
 /**
  * Вид создания и редактирования компании
@@ -85,12 +89,23 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
         return companyGroup;
     }
 
+    @Override
+    public HasWidgets phonesContainer() {
+        return phonesContainer;
+    }
+
+    @Override
+    public HasWidgets emailsContainer() {
+        return emailsContainer;
+    }
+
     @UiHandler( "saveButton" )
     public void onSaveClicked( ClickEvent event ) {
         if ( activity != null ) {
             activity.onSaveClicked();
         }
     }
+
     @UiHandler( "cancelButton" )
     public void onCancelClicked( ClickEvent event ) {
         if ( activity != null ) {
@@ -159,6 +174,7 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
 
     @UiField
     TextBox webSite;
+    
 
     @UiField
     Button createCompanyGroupBtn;
@@ -167,9 +183,17 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     @UiField( provided = true )
     GroupInputSelector companyGroup;
 
+    @UiField
+    HTMLPanel phonesContainer;
+
+    @UiField
+    HTMLPanel emailsContainer;
+
 
     CompanyGroup tempCompanyGroup = new CompanyGroup();
     AbstractCompanyEditActivity activity;
+
+    private final static Logger log = Logger.getLogger( "ui" );
 
     private static CompanyViewUiBinder2 ourUiBinder = GWT.create(CompanyViewUiBinder2.class);
     interface CompanyViewUiBinder2 extends UiBinder<HTMLPanel, CompanyEditView> {}

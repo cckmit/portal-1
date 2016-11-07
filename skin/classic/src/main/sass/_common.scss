@@ -111,7 +111,7 @@
   padding-left: 3px;
   padding-top: 1px;
   position: absolute;
-  top: -7px;
+  top: -6px;
   width: 16px;
 }
 
@@ -177,6 +177,7 @@
   width: 250px;
   text-align: left;
   position: relative;
+  margin-right: 24px;
 }
 
 .button .caret {
@@ -487,6 +488,10 @@ label.bordered:after{
   content: "\e987";
 }
 
+.icon-cross:before{
+  content: "\e80b";
+}
+
 .panelField .button-selector{
   width: 100%;
   margin-right: 7px;
@@ -513,6 +518,42 @@ label.bordered:after{
 
 .inputField.error{
   border: 1px solid #f54646;
+}
+
+
+
+/*  auto-add-value-comment widget */
+
+.autoadd-vc-group{
+  width: 100%;
+}
+
+.autoadd-vc-item{
+  display: flex;
+}
+
+.autoadd-vc-item + .autoadd-vc-item{
+  margin-top: 7px;
+}
+
+//.autoadd-vc-item .inputField{
+//  margin-right: 7px;
+//}
+
+// value input field style
+.autoadd-vc-item-v{
+  margin-right: 7px;
+}
+
+// comment input field style
+.autoadd-vc-item-c{
+  width: 100%;
+}
+
+/************************/
+
+.panelField.phone .autoadd-vc-item-v{
+  width: 40%;
 }
 
 

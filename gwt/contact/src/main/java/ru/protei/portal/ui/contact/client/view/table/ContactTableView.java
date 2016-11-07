@@ -100,6 +100,11 @@ public class ContactTableView extends Composite implements AbstractContactTableV
         }
     }
 
+    @UiHandler("create")
+    public void onCreateClick (ClickEvent event) {
+        activity.onCreateClick();
+    }
+
     @UiHandler( "showFired" )
     public void onShowFireClicked( ClickEvent event ) {
         if ( activity != null ) {

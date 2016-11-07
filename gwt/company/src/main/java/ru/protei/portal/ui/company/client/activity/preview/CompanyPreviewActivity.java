@@ -29,9 +29,14 @@ public abstract class CompanyPreviewActivity
     }
 
     private void fillView( Company value ) {
-        view.setPhone( value.getPhone() );
+
+        if ( value.getGroups() == null || value.getGroups().isEmpty() ) {
+            view.setGroupVisible( false );
+        }
+
+        view.setPhone( value.getPhone() == null ? "" : value.getPhone().value );
         view.setSite( value.getWebsite() );
-        view.setEmail( value.getEmail() );
+        view.setEmail( value.getEmail() == null ? "" : value.getEmail().value );
         view.setAddressDejure( value.getAddressDejure() );
         view.setAddressFact( value.getAddressFact() );
         view.setInfo( value.getInfo() );

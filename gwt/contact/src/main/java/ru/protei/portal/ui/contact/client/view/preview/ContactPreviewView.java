@@ -41,7 +41,7 @@ public class ContactPreviewView extends Composite implements AbstractContactPrev
     }
 
     @Override
-    public void setSex(String value) {
+    public void setGender(String value) {
         this.sex.setInnerText( value );
     }
 

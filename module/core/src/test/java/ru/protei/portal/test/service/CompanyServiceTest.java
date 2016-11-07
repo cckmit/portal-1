@@ -6,7 +6,6 @@ import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import ru.protei.portal.api.struct.CoreResponse;
-import ru.protei.portal.api.struct.HttpListResult;
 import ru.protei.portal.config.MainConfiguration;
 import ru.protei.portal.core.model.dao.CompanyDAO;
 import ru.protei.portal.core.model.dao.CompanyGroupDAO;
@@ -20,6 +19,7 @@ import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by michael on 11.10.16.
@@ -41,11 +41,11 @@ public class CompanyServiceTest {
 
         Assert.assertNotNull(service);
 
-        HttpListResult<Company> result = service.companyList(new CompanyQuery());
+        CoreResponse<List<Company>> result = service.companyList(new CompanyQuery());
 
         Assert.assertNotNull(result);
-        Assert.assertNotNull(result.getItems());
-        Assert.assertTrue(result.getTotalSize() > 0);
+        Assert.assertNotNull(result.getData());
+        Assert.assertTrue(result.getDataAmountTotal() > 0);
 
 //        for (Company company : result.getItems())
 //            System.out.println(company.getCname());

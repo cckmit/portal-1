@@ -34,8 +34,8 @@ public class WorkerView {
     @JsonProperty("dname")
     private String displayName;
 
-    @JsonProperty("s")
-    private String sex;
+    @JsonProperty("gender")
+    private String gender;
 
     @JsonProperty("bday")
     private Date birthday;
@@ -75,7 +75,7 @@ public class WorkerView {
         this.lastName = p.getLastName();
         this.secondName = p.getSecondName();
         this.position = p.getPosition();
-        this.sex = p.getSex();
+        this.gender = p.getGender().getCode();
         this.ipAddress = p.getIpAddress();
         this.workPhone = p.getWorkPhone();
         this.mobilePhone = p.getMobilePhone();

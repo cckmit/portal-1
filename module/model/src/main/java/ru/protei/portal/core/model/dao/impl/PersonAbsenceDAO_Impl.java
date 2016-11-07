@@ -3,10 +3,11 @@ package ru.protei.portal.core.model.dao.impl;
 import org.apache.commons.lang3.time.DateUtils;
 import ru.protei.portal.core.model.dao.PersonAbsenceDAO;
 import ru.protei.portal.core.model.ent.PersonAbsence;
-import ru.protei.winter.jdbc.JdbcHelper;
-import ru.protei.winter.jdbc.annotations.JdbcColumn;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Created by michael on 05.07.16.
@@ -43,15 +44,20 @@ public class PersonAbsenceDAO_Impl extends PortalBaseJdbcDAO<PersonAbsence> impl
         list.add(now);
         list.add(now);
 
-        String personIdColumn;
-        try {
-            personIdColumn = PersonAbsence.class.getField("personId").getAnnotation(JdbcColumn.class).name();
-        }catch (NoSuchFieldException e){
-            personIdColumn = "person_id";
-        }
 
-        return partialGetListByCondition("from_time < ? and till_time > ?", list, personIdColumn);
+        /**
+         * Review notes:
+         *
+         * to get ID column name use : getIdColumnName()
+         * to get reference of mapped entity class use : getObjectMapper().getEntityClass()
+         */
+//        String personIdColumn;
+//        try {
+//            personIdColumn = PersonAbsence.class.getField("personId").getAnnotation(JdbcColumn.class).name();
+//        }catch (NoSuchFieldException e){
+//            personIdColumn = "person_id";
+//        }
+
+        return getListByCondition("from_time < ? and till_time > ?", list);
     }
-
-
 }

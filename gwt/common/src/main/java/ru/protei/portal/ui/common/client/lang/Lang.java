@@ -106,6 +106,10 @@ public interface Lang extends Messages {
 
     String errInternalError();
 
+    String errDatabaseError ();
+
+    String errDatabaseTempError ();
+
     String errUnknownResult();
 
     String companyInfoHeader();
@@ -128,8 +132,6 @@ public interface Lang extends Messages {
 
     String contactSecondName();
 
-    String birthday();
-
     String contactDepartment();
 
     String fax();
@@ -138,8 +140,47 @@ public interface Lang extends Messages {
     
     String productDescription();
 
-    String sex();
+    String edit();
 
-    String edit();    
-    
+    String companyAdditionalInfoHeader();
+
+    String newContact ();
+
+    String firstName ();
+
+    String lastName ();
+
+    String secondName ();
+
+    String displayName ();
+
+    String displayShortName ();
+
+    String birthday ();
+
+    String gender ();
+
+    String genderMale ();
+    String genderFemale ();
+    String genderUndefined ();
+
+    String personalData ();
+    String contactInfo ();
+    String advPersonalData ();
+    String workPhone ();
+    String personalPhone ();
+    String workEmail ();
+    String personalEmail ();
+    String primaryFax ();
+    String secondaryFax ();
+
+    String workAddress ();
+    String homeAddress ();
+    String department ();
+
+    String errorCompanyRequired ();
+    String errorFirstNameRequired();
+    String errorLastNameRequired ();
+
+    String companyGroupLabel ();
 }
