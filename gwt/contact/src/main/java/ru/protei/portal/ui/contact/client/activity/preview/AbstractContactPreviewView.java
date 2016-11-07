@@ -10,29 +10,27 @@ public interface AbstractContactPreviewView extends IsWidget {
     void setActivity( AbstractContactPreviewActivity activity );
 
     void setLastName( String value );
-
     void setFirstName( String value );
-
     void setSecondName( String value );
+    void setDisplayName ( String value );
+    void setShortName ( String value );
 
     void setGender ( String value );
-
     void setBirthday( String value );
-
-    void setPosition( String value );
-
-    void setDepartment( String value );
-
-    void setPhone( String value );
-
-    void setFax( String value );
-
-    void setEmail( String value );
-
-    void setAddress( String value );
-
     void setInfo( String value );
 
-    void setLinkToPreview ( String value );
+    void setCompany ( String value );
+    void setPosition( String value );
+    void setDepartment( String value );
 
+    void setWorkPhone( String value );
+    void setPersonalPhone( String value );
+    void setWorkFax( String value );
+    void setPersonalFax( String value );
+    void setWorkEmail( String value );
+    void setPersonalEmail( String value );
+    void setWorkAddress( String value );
+    void setPersonalAddress( String value );
+
+    void setLinkToPreview ( String value );
 }

@@ -76,6 +76,11 @@ public class ContactTableView extends Composite implements AbstractContactTableV
     }
 
     @Override
+    public void clearSelection () {
+        selectionColumn.clear();
+    }
+
+    @Override
     public void resetFilter() {
         company.setValue( null );
         showFired.setValue( false );

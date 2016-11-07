@@ -1,7 +1,7 @@
 package ru.protei.portal.ui.contact.client.view.preview;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.LabelElement;
+import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
@@ -26,23 +26,23 @@ public class ContactPreviewView extends Composite implements AbstractContactPrev
     }
 
     @Override
-    public void setLastName(String value) {
-        this.lastName.setInnerText( value );
-    }
+    public void setLastName(String value) { this.lastName.setInnerText( value ); }
 
     @Override
-    public void setFirstName(String value) {
-        this.firstName.setInnerText( value );
-    }
+    public void setFirstName(String value) { this.firstName.setInnerText( value ); }
 
     @Override
-    public void setSecondName(String value) {
-        this.secondName.setInnerText( value );
-    }
+    public void setSecondName(String value) { this.secondName.setInnerText( value ); }
+
+    @Override
+    public void setDisplayName(String value) { this.secondName.setInnerText( value ); }
+
+    @Override
+    public void setShortName(String value) { this.secondName.setInnerText( value ); }
 
     @Override
     public void setGender(String value) {
-        this.sex.setInnerText( value );
+        this.gender.setInnerText( value );
     }
 
     @Override
@@ -51,33 +51,48 @@ public class ContactPreviewView extends Composite implements AbstractContactPrev
     }
 
     @Override
-    public void setPosition(String value) {
-        this.position.setInnerText( value );
+    public void setCompany ( String value ) { this.company.setInnerText( value ); }
+
+    @Override
+    public void setPosition(String value) { this.position.setInnerText( value ); }
+
+    @Override
+    public void setDepartment(String value) { this.department.setInnerText( value ); }
+
+    @Override
+    public void setWorkPhone(String value) { this.workPhone.setInnerText( value ); }
+
+    @Override
+    public void setPersonalPhone(String value) { this.personalPhone.setInnerText( value ); }
+
+    @Override
+    public void setWorkFax(String value) {
+        this.workFax.setInnerText( value );
     }
 
     @Override
-    public void setDepartment(String value) {
-        this.department.setInnerText( value );
+    public void setPersonalFax(String value) {
+        this.personalFax.setInnerText( value );
     }
 
     @Override
-    public void setPhone(String value) {
-        this.phone.setInnerText( value );
+    public void setWorkEmail(String value) {
+        this.workEmail.setInnerText( value );
     }
 
     @Override
-    public void setFax(String value) {
-        this.fax.setInnerText( value );
+    public void setPersonalEmail(String value) {
+        this.personalEmail.setInnerText( value );
     }
 
     @Override
-    public void setEmail(String value) {
-        this.email.setInnerText( value );
+    public void setWorkAddress(String value) {
+        this.workAddress.setInnerText( value );
     }
 
     @Override
-    public void setAddress(String value) {
-        this.address.setInnerText( value );
+    public void setPersonalAddress(String value) {
+        this.personalAddress.setInnerText( value );
     }
 
     @Override
@@ -90,32 +105,47 @@ public class ContactPreviewView extends Composite implements AbstractContactPrev
         this.link.setInnerText( lang.linkToObject() );
     }
 
+
     @UiField
-    LabelElement lastName;
+    SpanElement lastName;
     @UiField
-    LabelElement firstName;
+    SpanElement firstName;
     @UiField
-    LabelElement secondName;
+    SpanElement secondName;
     @UiField
-    LabelElement sex;
+    SpanElement displayName;
     @UiField
-    LabelElement birthday;
+    SpanElement shortName;
     @UiField
-    LabelElement info;
+    SpanElement gender;
     @UiField
-    LabelElement phone;
+    SpanElement birthday;
     @UiField
-    LabelElement fax;
+    SpanElement info;
     @UiField
-    LabelElement email;
+    SpanElement workPhone;
     @UiField
-    LabelElement address;
+    SpanElement personalPhone;
     @UiField
-    LabelElement position;
+    SpanElement workFax;
     @UiField
-    LabelElement department;
+    SpanElement personalFax;
     @UiField
-    LabelElement link;
+    SpanElement workEmail;
+    @UiField
+    SpanElement personalEmail;
+    @UiField
+    SpanElement workAddress;
+    @UiField
+    SpanElement personalAddress;
+    @UiField
+    SpanElement company;
+    @UiField
+    SpanElement position;
+    @UiField
+    SpanElement department;
+    @UiField
+    SpanElement link;
 
     @Inject
     @UiField

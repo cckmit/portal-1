@@ -25,4 +25,6 @@ public interface AbstractContactTableView extends IsWidget {
     void clearRecords();
     void addRecord( Person person );
     HasWidgets getPreviewContainer ();
+
+    void clearSelection();
 }

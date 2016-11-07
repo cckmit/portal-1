@@ -1,7 +1,5 @@
 package ru.protei.portal.ui.contact.client.activity.table;
 
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -12,7 +10,6 @@ import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.ContactEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
-import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.PeriodicTaskService;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
@@ -57,7 +54,6 @@ public abstract class ContactTableActivity implements AbstractContactTableActivi
 
     @Override
     public void onEditClicked(Person value ) {
-        //Window.alert( "Clicked on edit icon!" );
         fireEvent(ContactEvents.Edit.byId(value.getId()));
     }
 
@@ -79,6 +75,8 @@ public abstract class ContactTableActivity implements AbstractContactTableActivi
         }
 
         view.clearRecords();
+        view.clearSelection();
+        animation.closeDetails();
 
         contactService.getContacts( view.searchPattern().getValue(), view.company().getValue(),
                 view.showFired().getValue() ? null : view.showFired().getValue(),
@@ -98,6 +96,7 @@ public abstract class ContactTableActivity implements AbstractContactTableActivi
     private void showPreview( Person value ) {
 
         if ( value == null ) {
+            view.clearSelection();
             animation.closeDetails();
         } else {
             animation.showDetails();

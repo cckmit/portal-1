@@ -25,9 +25,10 @@
                 <g:TextBox ui:field="search" styleName="inputField"/>
             </div>
         </div>
-        <g:HTMLPanel ui:field="tableContainer" styleName="test-table-container col-sm-12">
-            <table:TableWidget ui:field="table" styleName="table-hover"/>
-        </g:HTMLPanel>
-        <g:HTMLPanel ui:field="previewContainer" styleName="test-table-preview no-width"/>
-
+        <div class="grid">
+            <g:HTMLPanel ui:field="tableContainer" styleName="col-sm-12">
+                    <table:TableWidget ui:field="table" styleName="table-hover"/>
+            </g:HTMLPanel>
+            <g:HTMLPanel ui:field="previewContainer" styleName="no-width"/>
+        </div>
     </g:HTMLPanel></ui:UiBinder>
