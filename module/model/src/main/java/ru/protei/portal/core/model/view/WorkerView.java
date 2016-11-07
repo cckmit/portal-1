@@ -77,11 +77,11 @@ public class WorkerView {
         this.position = p.getPosition();
         this.gender = p.getGender().getCode();
         this.ipAddress = p.getIpAddress();
-        this.workPhone = p.getWorkPhone();
-        this.mobilePhone = p.getMobilePhone();
-        this.email = p.getEmail();
-        this.icq = p.getIcq();
-        this.jabber = p.getJabber();
+        this.workPhone = p.getContactInfo().defaultWorkPhone();
+        this.mobilePhone = p.getContactInfo().defaultMobilePhone();
+        this.email = p.getContactInfo().defaultEmail();
+        this.icq = p.getContactInfo().icq;
+        this.jabber = p.getContactInfo().jabber;
         this.info = p.getInfo();
     }
 }

@@ -53,14 +53,16 @@ public class MigrateCompaniesAction implements MigrateAction {
                     Company x = new Company();
                     x.setAddressDejure((String) row.get("strDeJureAddress"));
                     x.setAddressFact((String) row.get("strPhysicalAddress"));
-                    x.setEmail( new ValueComment((String)row.get("strE_mail"),""));
-                    x.setFax(null);
+//                    x.setEmail( new ValueComment((String)row.get("strE_mail"),""));
+                    x.getContactInfo().addEmail((String)row.get("strE_mail"), "");
+//                    x.setFax(null);
                     x.setId(((Number) row.get("nID")).longValue());
                     x.setInfo((String) row.get("strInfo"));
                     x.setCname((String) row.get("strName"));
-                    x.setPhone(null);
+//                    x.setPhone(null);
                     x.setCreated((Date) row.get("dtCreation"));
-                    x.setWebsite((String) row.get("strHTTP_url"));
+//                    x.setWebsite((String) row.get("strHTTP_url"));
+                    x.getContactInfo().webSite = (String) row.get("strHTTP_url");
                     return x;
                 });
 

@@ -17,6 +17,13 @@ public class HelperFunc {
         return s == null || s.trim().isEmpty();
     }
 
+    public static <T> T nvlt (T...arr) {
+        for (T t : arr)
+            if (t != null)
+                return t;
+        return null;
+    }
+
     public static Object nvl (Object...arr) {
         for (Object v : arr) {
             if (v != null)

@@ -48,14 +48,14 @@ public class EmployeeDetailView {
 
     public EmployeeDetailView fill(Person p) {
         this.department = p.getDepartment();
-        this.mobilePhone = p.getMobilePhone();
-        this.workPhone = p.getWorkPhone();
-        this.homePhone = p.getHomePhone();
-        this.jid = p.getJabber();
+        this.mobilePhone = p.getContactInfo().defaultMobilePhone();
+        this.workPhone = p.getContactInfo().defaultWorkPhone();
+        this.homePhone = p.getContactInfo().privatePhone();
+        this.jid = p.getContactInfo().jabber;
         this.ip = p.getIpAddress() != null ? new String[] {p.getIpAddress()} : null;
-        this.email = p.getEmail();
-        this.icq = p.getIcq();
-        this.fax = p.getFax();
+        this.email = p.getContactInfo().defaultEmail();
+        this.icq = p.getContactInfo().icq;
+        this.fax = p.getContactInfo().defaultFax();
         return this;
     }
 
