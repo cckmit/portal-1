@@ -7,8 +7,10 @@ import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanyCategory;
+import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.ui.common.client.animation.PlateListAnimation;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
@@ -24,7 +26,9 @@ import ru.protei.portal.ui.company.client.activity.item.AbstractCompanyItemView;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * Активность списка компаний
@@ -99,8 +103,24 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
         view.getChildContainer().clear();
         itemViewToModel.clear();
 
-        companyService.getCompanies( view.searchPattern().getValue(), view.categories().getValue(), view.group().getValue(),
-                view.sortField().getValue(), view.sortDir().getValue(), new RequestCallback< List < Company > >() {
+
+        CompanyQuery query = new CompanyQuery(
+                view.searchPattern().getValue(),
+                view.sortField().getValue(),
+                view.sortDir().getValue()? En_SortDir.ASC: En_SortDir.DESC);
+
+        if(view.categories().getValue() != null)
+            query.setCategoryIds(
+                    view.categories().getValue()
+                    .stream()
+                    .map( CompanyCategory::getId )
+                    .collect( Collectors.toList() ));
+
+        if(view.group().getValue() != null)
+            query.setGroupId(view.group().getValue().getId());
+
+
+        companyService.getCompanies(query, new RequestCallback< List < Company > >() {
 
             @Override
             public void onError( Throwable throwable ) {

@@ -5,6 +5,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.DevUnit;
+import ru.protei.portal.core.model.query.ProductQuery;
 
 import java.util.List;
 
@@ -13,7 +14,7 @@ import java.util.List;
  */
 public interface ProductServiceAsync {
 
-    void getProductList(String param, En_DevUnitState state, En_SortField sortField, Boolean sortDir, AsyncCallback<List<DevUnit>> async);
+    void getProductList(ProductQuery query, AsyncCallback<List<DevUnit>> async);
 
     void getProductById(Long productId, AsyncCallback<DevUnit> async);
 

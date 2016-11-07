@@ -5,6 +5,7 @@ import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanyCategory;
 import ru.protei.portal.core.model.ent.CompanyGroup;
+import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
 import java.util.List;
@@ -17,13 +18,10 @@ public interface CompanyServiceAsync {
 
     /**
      * Получение списка компаний
-     * @param searchPattern шаблон поиска
-     * @param group группа компаний
-     * @param  sortField поле для сортировки
-     * @param sortDir направление сортировки
+     * @param query запрос
      * @return список компаний
      */
-    void getCompanies( String searchPattern, Set< CompanyCategory > categories, CompanyGroup group, En_SortField sortField, Boolean sortDir, AsyncCallback< List< Company > > async );
+    void getCompanies( CompanyQuery query, AsyncCallback< List< Company > > async );
 
     /**
      * Получение списка групп компаний
