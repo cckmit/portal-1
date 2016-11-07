@@ -9,4 +9,6 @@ public interface HasValidable{
 
     boolean isValid();
 
+    void reset();
+
 }

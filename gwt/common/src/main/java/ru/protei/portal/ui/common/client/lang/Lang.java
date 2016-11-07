@@ -127,4 +127,6 @@ public interface Lang extends Messages {
     String companyAdditionalInfoHeader();
 
     String companyEdit();
+
+    String noCompanyGroup();
 }

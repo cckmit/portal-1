@@ -51,8 +51,10 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
     @Override
     public void onNameChanged() {
 
-        if (view.name().getValue() == null || view.name().getValue().trim().isEmpty()) {
+        if(!view.nameValidator().isValid()){
+            view.nameValidator().setValid(false);
             view.setNameStatus(NameStatus.NONE);
+            view.save().setEnabled(false);
             return;
         }
 
@@ -62,12 +64,14 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
                     public void onError(Throwable throwable) {
                         view.setNameStatus(NameStatus.ERROR);
                         view.save().setEnabled(false);
+                        view.nameValidator().setValid(true);
                     }
 
                     @Override
                     public void onSuccess(Boolean isUnique) {
                         view.setNameStatus(isUnique ? NameStatus.SUCCESS : NameStatus.ERROR);
                         view.save().setEnabled(isUnique);
+                        view.nameValidator().setValid(isUnique);
                     }
                 });
     }
@@ -104,6 +108,15 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         goBack();
     }
 
+//    private boolean validateFieldsAndGetResult(){
+//        boolean isCorrect = true;
+//        if(!view.nameValidator().isValid()){
+//            view.nameValidator().setValid(isCorrect = false);
+//        }
+//
+//        return isCorrect;
+//    }
+
     private void goBack() {
         fireEvent(new Back());
     }
@@ -125,6 +138,7 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
 
     private void resetView () {
         view.name().setValue("");
+        view.nameValidator().reset();
         view.info().setValue("");
         view.state().setVisible(false);
         view.save().setEnabled(false);
@@ -133,6 +147,7 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
 
     private void fillView(DevUnit devUnit) {
         view.name().setValue(devUnit.getName());
+        view.nameValidator().setValid(true);
         view.setNameStatus(NameStatus.SUCCESS);
         view.info().setValue(devUnit.getInfo());
         view.state().setVisible(true);

@@ -172,21 +172,20 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
     }
 
-    @Override
-    public boolean validateFieldAndGetResult(HasValidable validator, HasText field){
-        boolean result = !field.getText().trim().isEmpty();
-        validator.setValid(result);
-        return result;
-    }
-
     private boolean validateFieldsAndGetResult(){
-        boolean isCorrect;
+        boolean isCorrect = true;
 
-        isCorrect = validateFieldAndGetResult(view.companyNameValidator(), view.companyName());
+        if(!view.companyNameValidator().isValid()){
+            view.companyNameValidator().setValid(isCorrect = false);
+        }
 
-        isCorrect = validateFieldAndGetResult(view.actualAddressValidator(), view.actualAddress()) && isCorrect;
+        if(!view.actualAddressValidator().isValid()){
+            view.actualAddressValidator().setValid(isCorrect = false);
+        }
 
-        isCorrect = validateFieldAndGetResult(view.legalAddressValidator(), view.legalAddress()) && isCorrect;
+        if(!view.legalAddressValidator().isValid()){
+            view.legalAddressValidator().setValid(isCorrect = false);
+        }
 
         return isCorrect;
     }
@@ -200,9 +199,9 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
     private void resetFields(){
         view.setCompanyNameStatus(NameStatus.NONE);
-        view.companyNameValidator().setValid(true);
-        view.actualAddressValidator().setValid(true);
-        view.legalAddressValidator().setValid(true);
+        view.companyNameValidator().reset();
+        view.actualAddressValidator().reset();
+        view.legalAddressValidator().reset();
 
 //        fireEvent(new ValueCommentEvents.ShowList(view.phonesContainer(), company.getPhone()));
 //        fireEvent(new ValueCommentEvents.ShowList(view.emailsContainer(), company.getEmail()));

@@ -11,6 +11,7 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.CompanyGroup;
+import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.NameStatus;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextArea;
@@ -27,6 +28,7 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+        companyGroup.setDefaultValue(lang.noCompanyGroup());
     }
 
     @Override
@@ -115,27 +117,6 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
         timer.schedule( 300 );
     }
 
-    @UiHandler({"companyName", "actualAddress", "legalAddress"})
-    public void onChangeRequiredFields( KeyUpEvent keyUpEvent ) {
-        Element caughtElement = keyUpEvent.getRelativeElement();
-
-        if(caughtElement == companyName.getElement())
-            activity.validateFieldAndGetResult(companyName, companyName);
-        else if(caughtElement == actualAddress.getElement())
-            activity.validateFieldAndGetResult(actualAddress, actualAddress);
-        else if(caughtElement == legalAddress.getElement())
-            activity.validateFieldAndGetResult(legalAddress, legalAddress);
-    }
-
-//    @SafeVarargs
-//    private final <T extends UIObject & HasText & HasValidable> void validateIfEquals(Element elem, T ... validableElem){
-//        for(int i = 0; i< validableElem.length; i++)
-//            if(elem == validableElem[i].getElement()){
-//                activity.validateFieldAndGetResult(validableElem[i], validableElem[i]);
-//                return;
-//            }
-//    }
-
     Timer timer = new Timer() {
         @Override
         public void run() {
@@ -182,6 +163,10 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
 
     @UiField
     HTMLPanel emailsContainer;
+
+    @Inject
+    @UiField
+    Lang lang;
 
     AbstractCompanyEditActivity activity;
 
