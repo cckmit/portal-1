@@ -26,24 +26,15 @@ import java.util.stream.Collectors;
 public class CompanyServiceImpl implements CompanyService {
 
     @Override
-    public List< Company > getCompanies( String searchPattern, Set< CompanyCategory > categories, CompanyGroup group, En_SortField sortField, Boolean sortDir) throws RequestFailedException {
+    public List< Company > getCompanies( CompanyQuery companyQuery) throws RequestFailedException {
 
-        List< Long > categoryIds = null;
-        if ( categories != null ) {
-            categoryIds = categories.stream()
-                    .map( CompanyCategory::getId )
-                    .collect( Collectors.toList() );
-        }
+        List< Long > categoryIds = companyQuery.getCategoryIds();
 
         log.debug( "getCompanies(): searchPattern={} | categories={} | group={} | sortField={} | sortDir={}",
-                searchPattern, categoryIds, (group != null ? group.getId() : null),
-                sortField, (sortDir ? En_SortDir.ASC : En_SortDir.DESC) );
+                companyQuery.getSearchString(), categoryIds, companyQuery.getGroupId(),
+                companyQuery.getSortField(), companyQuery.getSortDir() );
 
-        CompanyQuery query = new CompanyQuery( searchPattern, sortField, sortDir ? En_SortDir.ASC : En_SortDir.DESC );
-        query.setGroupId( group != null ? group.getId() : null );
-        query.setCategoryIds( categoryIds );
-
-        CoreResponse< List<Company>> result = companyService.companyList(query);
+        CoreResponse< List<Company>> result = companyService.companyList(companyQuery);
 
         if (result.isError())
             throw new RequestFailedException(result.getStatus());

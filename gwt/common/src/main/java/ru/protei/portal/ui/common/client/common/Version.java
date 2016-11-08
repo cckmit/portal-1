@@ -17,9 +17,10 @@ package ru.protei.portal.ui.common.client.common;
  * 4.0.7.9 - freq-16070 CRM: список клиентов
  * 4.0.7.10 - устранение замечаний по универсальному списку - 8ч
  * 4.0.8.10 - freq-16227 список valuecomment
+ * 4.0.8.11 - 7-2 изменение UI сигнатуры методов
  */
 public class Version {
     public static String getVersion() {
-        return "4.0.8.10";
+        return "4.0.8.11";
     }
 }

@@ -3,8 +3,10 @@ package ru.protei.portal.ui.common.client.widget.selector.company;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
+import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.CompanyEvents;
 import ru.protei.portal.ui.common.client.service.CompanyServiceAsync;
@@ -43,18 +45,21 @@ public abstract class CompanyModel implements Activity {
 
     private void refreshOptions() {
 
-        companyService.getCompanies( null, null, null, En_SortField.comp_name, true, new RequestCallback< List< Company > >() {
-            @Override
-            public void onError( Throwable throwable ) {
-            }
+        companyService.getCompanies(
+                new CompanyQuery( null, En_SortField.comp_name, En_SortDir.ASC),
+                new RequestCallback< List< Company > >() {
 
-            @Override
-            public void onSuccess( List< Company > companies ) {
-                list.clear();
-                list.addAll( companies );
+                    @Override
+                    public void onError( Throwable throwable ) {
+                    }
 
-                notifySubscribers();
-            }
+                    @Override
+                    public void onSuccess( List< Company > companies ) {
+                        list.clear();
+                        list.addAll( companies );
+
+                        notifySubscribers();
+                }
         });
     }
 
