@@ -81,3 +81,36 @@
         }
     }
 }
+
+.preview-container {
+
+    .preview {
+        margin-left: 15px;
+        background: white;
+        display: inline-block;
+        min-width: 400px;
+
+        fieldset {
+
+            &.contact {
+                width: calc(100% - 30px);
+                padding-top: 5px;
+                padding-left: 10px;
+                float: left;
+                border-top: 1px solid rgba(84, 129, 193, 0.44);
+                margin-bottom: 10px;
+
+                label {
+                    margin: 0;
+                    text-align: left;
+                    min-width: 150px;
+                }
+            }
+        }
+    }
+}
+
+.no-width {
+    width: 0%;
+    opacity: 0;
+}

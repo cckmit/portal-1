@@ -557,13 +557,15 @@ label.bordered:after{
 }
 
 
+/**
+ TABLE
+ */
+
 .table {
   width: 100%;
   max-width: 100%;
   margin-bottom: 20px;
-  background-color: #f6f7f8;
-  //border: 1px solid;
-  //border-color: #ced2d7 #c5cad0 #ced2d7;
+  background-color: white/*#f6f7f8*/;
 }
 
 .table > thead > tr > th,
@@ -582,15 +584,21 @@ label.bordered:after{
   vertical-align: bottom;
   border-bottom: 2px solid #ddd;
   text-align: left;
+  border-top: 0;
 }
 
 .table-hover .table > tbody > tr:hover {
-  background-color: white;
+  background-color: #f6f7f8;
 }
 
 .table > tbody > tr .selected {
   background-color: #ddd;
 }
+
+.selected, .selected:hover {
+  background: #ddd;
+}
+/************************/
 
 
 .badge {
@@ -645,62 +653,3 @@ label.bordered:after{
   margin-right: 7px;
 }
 
-
-.table {
-  width: 100%;
-  max-width: 100%;
-  margin-bottom: 20px;
-  background-color: #f6f7f8;
-}
-
-.table > thead > tr > th,
-.table > tbody > tr > th,
-.table > tfoot > tr > th,
-.table > thead > tr > td,
-.table > tbody > tr > td,
-.table > tfoot > tr > td {
-  padding: 8px;
-  line-height: 1.42857143;
-  vertical-align: top;
-  border-top: 1px solid #ddd;
-}
-
-.table > thead > tr > th {
-  vertical-align: bottom;
-  border-bottom: 2px solid #ddd;
-  text-align: left;
-}
-
-.table-hover > tbody > tr:hover {
-  background-color: white;
-}
-
-
-/**
- TABLE PREVIEW
- */
-
-.selected, .selected:hover {
-  background: #ddd;
-}
-
-.test-table-container {
-  -webkit-transition: all 0.5s;
-  -moz-transition: all 0.5s;
-  -o-transition: all 0.5s;
-  transition: all 0.5s;
-}
-
-.test-table-preview {
-  -webkit-transition: all 0.5s;
-  -moz-transition: all 0.5s;
-  -o-transition: all 0.5s;
-  transition: all 0.5s;
-  position: fixed;
-  right: 0;
-}
-
-.no-width {
-  width: 0%;
-  opacity: 0;
-}

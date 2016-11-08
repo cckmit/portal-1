@@ -75,7 +75,6 @@ public abstract class ContactTableActivity implements AbstractContactTableActivi
         }
 
         view.clearRecords();
-        view.clearSelection();
         animation.closeDetails();
 
         contactService.getContacts( view.searchPattern().getValue(), view.company().getValue(),
@@ -96,7 +95,6 @@ public abstract class ContactTableActivity implements AbstractContactTableActivi
     private void showPreview( Person value ) {
 
         if ( value == null ) {
-            view.clearSelection();
             animation.closeDetails();
         } else {
             animation.showDetails();

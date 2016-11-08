@@ -29,6 +29,6 @@
             <g:HTMLPanel ui:field="tableContainer" styleName="col-sm-12">
                     <table:TableWidget ui:field="table" styleName="table-hover"/>
             </g:HTMLPanel>
-            <g:HTMLPanel ui:field="previewContainer" styleName="no-width"/>
+            <g:HTMLPanel ui:field="previewContainer" styleName="preview-container no-width"/>
         </div>
     </g:HTMLPanel></ui:UiBinder>
