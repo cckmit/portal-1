@@ -1,8 +1,8 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.struct.ContactInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.EntityOptionSupport;
-import ru.protei.portal.core.model.view.ValueComment;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
@@ -34,29 +34,32 @@ public class Company implements Serializable,EntityOptionSupport {
     @JdbcColumn(name = "cname")
     private String cname;
 
-    @JdbcColumn(name = "email", converterType = ConverterType.JSON)
-    private ValueComment email; //List<ValueComment>, NOT NULL!
+    @JdbcColumn(name = "contactInfo", converterType = ConverterType.JSON)
+    private ContactInfo contactInfo;
 
-    @JdbcColumn(name = "fax")
-    private String fax;
+//    @JdbcColumn(name = "email", converterType = ConverterType.JSON)
+//    private ValueComment email; //List<ValueComment>, NOT NULL!
+//
+//    @JdbcColumn(name = "fax")
+//    private String fax;
 
     @JdbcColumn(name = "info")
     private String info;
 
-    @JdbcColumn(name = "phone", converterType = ConverterType.JSON)
-    private ValueComment phone; //List<ValueComment>, NOT NULL!
+//    @JdbcColumn(name = "phone", converterType = ConverterType.JSON)
+//    private ValueComment phone; //List<ValueComment>, NOT NULL!
 
     @JdbcColumn(name = "created")
     private Date created;
 
-    @JdbcColumn(name = "website")
-    private String website;
+//    @JdbcColumn(name = "website")
+//    private String website;
 
     @SuppressWarnings("GwtInconsistentSerializableClass")
     private List<CompanyGroup> groups;
 
-
     public Company() {
+        contactInfo = new ContactInfo();
         groups = null;
     }
 
@@ -80,15 +83,15 @@ public class Company implements Serializable,EntityOptionSupport {
         return this.cname;
     }
 
-    public ValueComment getEmail() {
-//        if(email == null)
-//            return new ArrayList<ValueComment>();
-        return this.email;
-    }
+//    public ValueComment defaultEmail() {
+////        if(email == null)
+////            return new ArrayList<ValueComment>();
+//        return this.email;
+//    }
 
-    public String getFax() {
-        return this.fax;
-    }
+//    public String getFax() {
+//        return this.fax;
+//    }
 
     public Long getId() {
         return this.id;
@@ -98,19 +101,19 @@ public class Company implements Serializable,EntityOptionSupport {
         return this.info;
     }
 
-    public ValueComment getPhone() {
-//        if(phone == null)
-//            return new ArrayList<ValueComment>();
-        return this.phone;
-    }
+//    public ValueComment getPhone() {
+////        if(phone == null)
+////            return new ArrayList<ValueComment>();
+//        return this.phone;
+//    }
 
     public Date getCreated() {
         return this.created;
     }
 
-    public String getWebsite() {
-        return this.website;
-    }
+//    public String getWebsite() {
+//        return this.website;
+//    }
 
     public void setAddressDejure(String addressDejure) {
         this.addressDejure = addressDejure;
@@ -136,17 +139,17 @@ public class Company implements Serializable,EntityOptionSupport {
         this.cname = cname;
     }
 
-    public void setEmail(ValueComment email) {
-        this.email = email;
-    }
-
-    public void setPhone(ValueComment phone){
-        this.phone = phone;
-    }
-
-    public void setFax(String fax) {
-        this.fax = fax;
-    }
+//    public void setEmail(ValueComment email) {
+//        this.email = email;
+//    }
+//
+//    public void setPhone(ValueComment phone){
+//        this.phone = phone;
+//    }
+//
+//    public void setFax(String fax) {
+//        this.fax = fax;
+//    }
 
     public void setId(Long id) {
         this.id = id;
@@ -160,10 +163,18 @@ public class Company implements Serializable,EntityOptionSupport {
         this.created = created;
     }
 
-    public void setWebsite(String website) {
-        this.website = website;
+//    public void setWebsite(String website) {
+//        this.website = website;
+//    }
+
+
+    public ContactInfo getContactInfo() {
+        return contactInfo;
     }
 
+    public void setContactInfo(ContactInfo contactInfo) {
+        this.contactInfo = contactInfo;
+    }
 
     public void setGroups(List<CompanyGroup> groups) {
         this.groups = groups;
@@ -172,6 +183,8 @@ public class Company implements Serializable,EntityOptionSupport {
     public List<CompanyGroup> getGroups() {
         return groups;
     }
+
+
 
     @Override
     public int hashCode() {
@@ -193,12 +206,12 @@ public class Company implements Serializable,EntityOptionSupport {
                 ", addressDejure='" + addressDejure + '\'' +
                 ", addressFact='" + addressFact + '\'' +
                 ", cname='" + cname + '\'' +
-                ", email='" + email + '\'' +
-                ", fax='" + fax + '\'' +
+//                ", email='" + email + '\'' +
+//                ", fax='" + fax + '\'' +
                 ", info='" + info + '\'' +
-                ", phone='" + phone + '\'' +
+//                ", phone='" + phone + '\'' +
                 ", created=" + created +
-                ", website='" + website + '\'' +
+//                ", website='" + website + '\'' +
                 ", groups=" + groups +
                 '}';
     }

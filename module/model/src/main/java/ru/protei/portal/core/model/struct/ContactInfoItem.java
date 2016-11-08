@@ -23,6 +23,12 @@ public class ContactInfoItem {
         this.access = En_ContactInfoAccess.PUBLIC;
     }
 
+    public ContactInfoItem(String value, String comment) {
+        this.value = value;
+        this.comment = comment;
+        this.access = En_ContactInfoAccess.PUBLIC;
+    }
+
     public String getValue() {
         return value;
     }
@@ -45,5 +51,13 @@ public class ContactInfoItem {
 
     public void setAccess(En_ContactInfoAccess access) {
         this.access = access;
+    }
+
+    public boolean isPrivateItem () {
+        return this.access == En_ContactInfoAccess.PRIVATE;
+    }
+
+    public boolean isPublicItem () {
+        return this.access == En_ContactInfoAccess.PUBLIC;
     }
 }

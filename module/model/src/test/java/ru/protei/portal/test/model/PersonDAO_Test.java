@@ -65,11 +65,29 @@ public class PersonDAO_Test {
         p.setCreator("");
         p.setGender(En_Gender.MALE);
 
+        p.getContactInfo().addEmail("junit@test.org", "test-email");
+        p.getContactInfo().addFax("999-22-33-11", "work fax");
+        p.getContactInfo().addMobilePhone("+7-921-555-44-33", "main phone");
+        p.getContactInfo().addPhone("8(812)-4494727", "protei");
+        p.getContactInfo().icq = "00000000001";
+        p.getContactInfo().jabber = "dev@jabber.protei.ru";
+        p.getContactInfo().webSite = "http://www.protei.ru";
+
         Long id = dao.persist(p);
         Assert.assertNotNull(id);
         Assert.assertTrue(id > 0);
 
         Assert.assertNotNull(p.getId());
+
+        Person readPerson = dao.get(p.getId());
+
+        Assert.assertNotNull(readPerson);
+        Assert.assertNotNull(readPerson.getCompany());
+        Assert.assertNotNull(readPerson.getContactInfo());
+        Assert.assertEquals("junit@test.org", readPerson.getContactInfo().defaultEmail());
+        Assert.assertEquals("dev@jabber.protei.ru", readPerson.getContactInfo().jabber);
+        Assert.assertEquals("8(812)-4494727", readPerson.getContactInfo().defaultWorkPhone());
+        Assert.assertEquals("+7-921-555-44-33", readPerson.getContactInfo().defaultMobilePhone());
 
         dao.remove(p);
     }
