@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import ru.protei.portal.core.model.dict.En_ContactDataAccess;
 import ru.protei.portal.core.model.dict.En_PhoneType;
 
+import java.beans.Transient;
+
 /**
  * Created by michael on 07.11.16.
  */
@@ -20,6 +22,7 @@ public class ContactPhone {
     @JsonProperty("a")
     public En_ContactDataAccess access;
 
+    @JsonProperty("t")
     public En_PhoneType type;
 
     public ContactPhone() {
@@ -44,6 +47,7 @@ public class ContactPhone {
         this.type = type;
     }
 
+    @Transient
     public String getPhone() {
         return phone;
     }
@@ -52,6 +56,7 @@ public class ContactPhone {
         this.phone = phone;
     }
 
+    @Transient
     public En_PhoneType getType() {
         return type;
     }
@@ -60,6 +65,7 @@ public class ContactPhone {
         this.type = type;
     }
 
+    @Transient
     public String getComment() {
         return comment;
     }
@@ -68,6 +74,7 @@ public class ContactPhone {
         this.comment = comment;
     }
 
+    @Transient
     public En_ContactDataAccess getAccess() {
         return access;
     }
@@ -76,10 +83,12 @@ public class ContactPhone {
         this.access = access;
     }
 
+    @Transient
     public boolean isPrivateItem () {
         return this.access == En_ContactDataAccess.PRIVATE;
     }
 
+    @Transient
     public boolean isPublicItem () {
         return this.access == En_ContactDataAccess.PUBLIC;
     }

@@ -9,6 +9,8 @@ import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 
+import java.util.Date;
+
 /**
  * Created by michael on 02.11.16.
  */
@@ -22,7 +24,7 @@ public interface AbstractContactEditView extends IsWidget {
     HasText displayName();
     HasText shortName();
 
-    SinglePicker birthDay ();
+    HasValue<Date> birthDay ();
 
     HasText workPhone ();
 

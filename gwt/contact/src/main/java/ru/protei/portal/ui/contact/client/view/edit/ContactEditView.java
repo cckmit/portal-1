@@ -20,6 +20,8 @@ import ru.protei.portal.ui.common.client.widget.selector.dict.GenderButtonSelect
 import ru.protei.portal.ui.contact.client.activity.edit.AbstractContactEditActivity;
 import ru.protei.portal.ui.contact.client.activity.edit.AbstractContactEditView;
 
+import java.util.Date;
+
 
 /**
  * Created by michael on 02.11.16.
@@ -63,7 +65,7 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     }
 
     @Override
-    public SinglePicker birthDay() {
+    public HasValue<Date> birthDay() {
         return birthDay;
     }
 

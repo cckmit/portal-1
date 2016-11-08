@@ -171,6 +171,11 @@ public class ContactInfo implements Serializable {
         item.setComment(comment);
     }
 
+    public void updatePrivatePhone (En_PhoneType type, String number) {
+        ContactPhone item = findOrCreatePhone(p -> p.type==type && p.isPrivateItem(), ()->new ContactPhone(type,En_ContactDataAccess.PRIVATE));
+        item.setPhone(number);
+    }
+
 
 
     /*
@@ -203,19 +208,18 @@ public class ContactInfo implements Serializable {
     }
 
     public ContactPhone findPhone (Predicate<ContactPhone> predicate) {
-        return phoneList != null && !phoneList.isEmpty() ? phoneList.stream().filter(predicate).findFirst().get() : null;
+        return phoneList != null && !phoneList.isEmpty() ? phoneList.stream().filter(predicate).findFirst().orElse(null) : null;
     }
-
 
 
 
     public ContactEmail findEmail (En_ContactDataAccess accessType) {
         return emailList != null && !emailList.isEmpty() ?
-                emailList.stream().filter(item -> item.access == accessType).findFirst().get() : null;
+                emailList.stream().filter(item -> item.access == accessType).findFirst().orElse(null) : null;
     }
 
     public ContactEmail findOrCreateEmail (En_ContactDataAccess accessType) {
-        ContactEmail email = emailList.stream().filter(e -> e.access == accessType).findFirst().get();
+        ContactEmail email = findEmail (accessType);
         if (email == null) {
             emailList.add(email = new ContactEmail(accessType));
         }

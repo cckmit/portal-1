@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import ru.protei.portal.core.model.dict.En_ContactDataAccess;
 
+import java.beans.Transient;
+
 /**
  * Created by michael on 07.11.16.
  */
@@ -33,6 +35,7 @@ public class ContactEmail {
         this.access = En_ContactDataAccess.PUBLIC;
     }
 
+    @Transient
     public String getEmail() {
         return email;
     }
@@ -41,6 +44,7 @@ public class ContactEmail {
         this.email = email;
     }
 
+    @Transient
     public String getComment() {
         return comment;
     }
@@ -49,6 +53,7 @@ public class ContactEmail {
         this.comment = comment;
     }
 
+    @Transient
     public En_ContactDataAccess getAccess() {
         return access;
     }
@@ -57,10 +62,12 @@ public class ContactEmail {
         this.access = access;
     }
 
+    @Transient
     public boolean isPrivateItem () {
         return this.access == En_ContactDataAccess.PRIVATE;
     }
 
+    @Transient
     public boolean isPublicItem () {
         return this.access == En_ContactDataAccess.PUBLIC;
     }
