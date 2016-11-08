@@ -4,6 +4,7 @@ import ru.protei.portal.core.model.view.ValueComment;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -163,6 +164,8 @@ public class Company implements Serializable {
     }
 
     public List<CompanyGroup> getGroups() {
+        if(groups == null)
+            groups = new ArrayList<>();
         return groups;
     }
 

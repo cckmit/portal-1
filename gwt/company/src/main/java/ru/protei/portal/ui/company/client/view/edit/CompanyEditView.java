@@ -11,6 +11,7 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.CompanyGroup;
+import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.NameStatus;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextArea;
@@ -27,6 +28,7 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+        companyGroup.setDefaultValue(lang.noCompanyGroup());
     }
 
     @Override
@@ -108,8 +110,8 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
         }
     }
 
-    @UiHandler( "companyName" )
-    public void onKeyUp( KeyUpEvent keyUpEvent ) {
+    @UiHandler("companyName")
+    public void onChangeCompanyName( KeyUpEvent keyUpEvent ) {
         verifiableIcon.setClassName(NameStatus.UNDEFINED.getStyle());
         timer.cancel();
         timer.schedule( 300 );
@@ -161,6 +163,10 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
 
     @UiField
     HTMLPanel emailsContainer;
+
+    @Inject
+    @UiField
+    Lang lang;
 
     AbstractCompanyEditActivity activity;
 

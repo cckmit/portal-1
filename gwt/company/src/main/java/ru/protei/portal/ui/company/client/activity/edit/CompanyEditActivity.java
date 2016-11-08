@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.company.client.activity.edit;
 
-import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
@@ -19,7 +18,7 @@ import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.common.client.service.CompanyServiceAsync;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -47,8 +46,8 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
         if(event.getCompanyId() == null) {
             this.fireEvent(new AppEvents.InitPanelName(lang.companyNew()));
-            resetFields();
             fillView(tempCompany = createCompany());
+            resetValidationStatus();
         }else {
             this.fireEvent(new AppEvents.InitPanelName(lang.companyEdit()));
             companyService.getCompanyById(event.getCompanyId(), new RequestCallback<Company>() {
@@ -57,8 +56,8 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
                 @Override
                 public void onSuccess(Company company) {
-                    tempCompany = company;
-                    fillView(company);
+                    fillView(tempCompany = company);
+                    resetValidationStatus();
                 }
             });
 
@@ -145,13 +144,16 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
     @Override
     public void onChangeCompanyName() {
-        if(!view.companyNameValidator().isValid()){
+        String value = view.companyName().getText().trim();
+
+        //isCompanyNameExists не принимает пустые строки!
+        if ( value.isEmpty() ){
             view.setCompanyNameStatus(NameStatus.NONE);
             return;
         }
 
         companyService.isCompanyNameExists(
-                view.companyName().getText(),
+                value,
                 tempCompany.getId(),
                 new RequestCallback<Boolean>() {
                     @Override
@@ -161,33 +163,26 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
                     @Override
                     public void onSuccess(Boolean isExists) {
-                        if (isExists) {
-                            view.setCompanyNameStatus(NameStatus.ERROR);
-                        } else {
-                            view.setCompanyNameStatus(NameStatus.SUCCESS);
-                        }
+                        view.setCompanyNameStatus(isExists ? NameStatus.ERROR : NameStatus.SUCCESS);
                     }
                 }
         );
 
     }
 
-    private boolean validateFieldAndGetResult(HasValidable validator, HasText field){
-        boolean result = !field.getText().trim().isEmpty();
-        validator.setValid(result);
-        return result;
-    }
-
     private boolean validateFieldsAndGetResult(){
-        boolean isCorrect;
+        boolean result = true;
 
-        isCorrect = validateFieldAndGetResult(view.companyNameValidator(), view.companyName());
+        if(!view.companyNameValidator().isValid())
+            view.companyNameValidator().setValid(result = false);
 
-        isCorrect = validateFieldAndGetResult(view.actualAddressValidator(), view.actualAddress()) && isCorrect;
+        if(!view.actualAddressValidator().isValid())
+            view.actualAddressValidator().setValid(result = false);
 
-        isCorrect = validateFieldAndGetResult(view.legalAddressValidator(), view.legalAddress()) && isCorrect;
+        if(!view.legalAddressValidator().isValid())
+            view.legalAddressValidator().setValid(result = false);
 
-        return isCorrect;
+        return result;
     }
 
     private Company createCompany(){
@@ -197,15 +192,14 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         return company;
     }
 
-    private void resetFields(){
+    private void resetValidationStatus(){
         view.setCompanyNameStatus(NameStatus.NONE);
         view.companyNameValidator().setValid(true);
         view.actualAddressValidator().setValid(true);
         view.legalAddressValidator().setValid(true);
-
-//        fireEvent(new ValueCommentEvents.ShowList(view.phonesContainer(), company.getPhone()));
-//        fireEvent(new ValueCommentEvents.ShowList(view.emailsContainer(), company.getEmail()));
     }
+
+
 
     @Inject
     AbstractCompanyEditView view;

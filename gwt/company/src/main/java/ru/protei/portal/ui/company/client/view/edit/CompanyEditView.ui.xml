@@ -13,7 +13,7 @@
                         </label>
                         <div class="panelField verifiable">
                             <i ui:field="verifiableIcon"/>
-                            <validablefield:ValidableTextBox ui:field="companyName" styleName="inputField"/>
+                            <validablefield:ValidableTextBox ui:field="companyName" styleName="inputField" notNull="true"/>
                         </div>
                     </div>
                     <div class="col-xs-12 col-lg-6">
@@ -31,13 +31,13 @@
                         <label class="required">
                             <ui:text from="{lang.companyActualAddress}"/>
                         </label>
-                        <validablefield:ValidableTextArea ui:field="actualAddress" styleName="inputField description"/>
+                        <validablefield:ValidableTextArea ui:field="actualAddress" styleName="inputField description" notNull="true"/>
                     </div>
                     <div class="col-xs-12 col-lg-6">
                         <label class="required">
                             <ui:text from="{lang.companyLegalAddress}"/>
                         </label>
-                        <validablefield:ValidableTextArea ui:field="legalAddress" styleName="inputField description"/>
+                        <validablefield:ValidableTextArea ui:field="legalAddress" styleName="inputField description" notNull="true"/>
                     </div>
                     <div class="col-xs-12">
                         <label>

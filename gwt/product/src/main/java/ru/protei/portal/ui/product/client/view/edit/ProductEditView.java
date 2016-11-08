@@ -13,6 +13,8 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.NameStatus;
+import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
+import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.product.client.activity.edit.AbstractProductEditActivity;
 import ru.protei.portal.ui.product.client.activity.edit.AbstractProductEditView;
 
@@ -31,6 +33,9 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
 
     @Override
     public HasValue<String> name() { return name; }
+
+    @Override
+    public HasValidable nameValidator() { return name; }
 
     @Override
     public HasValue<String> info() { return info; }
@@ -105,7 +110,7 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
 
 
     @UiField
-    TextBox name;
+    ValidableTextBox name;
     @UiField
     Element verifiableIcon;
     @UiField
