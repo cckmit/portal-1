@@ -9,7 +9,7 @@ import ru.protei.portal.ui.company.client.widget.category.CategoryModel;
 import java.util.List;
 
 /**
- * Created by turik on 08.11.16.
+ * Селектор списка категорий компаний
  */
 public class CategoryButtonSelector extends ButtonSelector< CompanyCategory > implements ModelSelector< CompanyCategory > {
 
