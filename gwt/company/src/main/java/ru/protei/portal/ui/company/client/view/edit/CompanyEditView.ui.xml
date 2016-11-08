@@ -22,7 +22,7 @@
                             <ui:text from="{lang.companyCategory}"/>
                         </label>
                         <div class="panelField">
-                            <companycategory:CategoryButtonSelector ui:field="companyCategory"/>
+                            <companycategory:CategoryButtonSelector ui:field="companyCategory" defaultValue="Заказчик"/>
                         </div>
                     </div>
                     <div class="col-xs-12 col-lg-4">

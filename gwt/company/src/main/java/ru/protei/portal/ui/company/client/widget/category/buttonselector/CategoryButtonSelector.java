@@ -23,15 +23,21 @@ public class CategoryButtonSelector extends ButtonSelector< CompanyCategory > im
 
         for ( CompanyCategory category : categories ) {
             addOption( category.getName(), category );
-            if ( category.getName() != null && category.getName().equals( "Заказчик" ) ) {
-                customerValue = category;
+            if ( category.getName() != null && defaultValue != null && category.getName().equals( defaultValue ) ) {
+                defaultCategory = category;
             }
         }
     }
 
-    private CompanyCategory customerValue;
-
-    public CompanyCategory getCustomerValue() {
-        return customerValue;
+    public void setDefaultValue( String value ) {
+        defaultValue = value;
     }
+
+    public CompanyCategory getDefaultCategory() {
+        return defaultCategory;
+    }
+
+    private String defaultValue;
+
+    private CompanyCategory defaultCategory;
 }
