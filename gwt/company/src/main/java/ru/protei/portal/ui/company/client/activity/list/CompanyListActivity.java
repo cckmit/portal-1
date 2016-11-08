@@ -120,18 +120,18 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
         itemView.setName( company.getCname() );
 
 
-        if(company.getPhone() != null)
-            itemView.setPhone( company.getPhone().value );
-        else
-            itemView.setPhone(null);
+//        if(company.getPhone() != null)
+//            itemView.setPhone( company.getPhone().value );
+//        else
+        itemView.setPhone(company.getContactInfo().defaultWorkPhone());
 
-        if(company.getEmail() != null)
-            itemView.setEmail( company.getEmail().value);
-        else
-            itemView.setEmail(null);
+//        if(company.getEmail() != null)
+//            itemView.setEmail( company.getEmail().value);
+//        else
+        itemView.setEmail(company.getContactInfo().defaultEmail());
 
 
-        itemView.setWebsite( company.getWebsite() );
+        itemView.setWebsite( company.getContactInfo().getWebSite() );
 
         CompanyCategory category = company.getCategory();
         if ( category != null ) {

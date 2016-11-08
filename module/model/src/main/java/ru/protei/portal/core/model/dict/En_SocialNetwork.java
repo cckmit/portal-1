@@ -1,4 +1,4 @@
-package ru.protei.portal.core.model.struct;
+package ru.protei.portal.core.model.dict;
 
 /**
  * Created by michael on 07.11.16.

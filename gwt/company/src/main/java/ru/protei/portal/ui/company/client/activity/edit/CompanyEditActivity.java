@@ -76,7 +76,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
                 Company company = new Company();
                 company.setCname(view.companyName().getText());
                 company.setInfo(view.comment().getText());
-                company.setWebsite(view.webSite().getText());
+                company.getContactInfo().setWebSite(view.webSite().getText());
                 company.setAddressDejure(view.legalAddress().getText());
                 company.setAddressFact(view.actualAddress().getText());
 

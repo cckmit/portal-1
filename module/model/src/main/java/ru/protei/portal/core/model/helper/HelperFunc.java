@@ -1,4 +1,4 @@
-package ru.protei.portal.core.utils;
+package ru.protei.portal.core.model.helper;
 
 import java.util.Date;
 import java.util.List;

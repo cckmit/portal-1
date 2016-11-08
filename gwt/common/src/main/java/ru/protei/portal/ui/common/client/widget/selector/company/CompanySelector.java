@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Селектор списка компаний
  */
-public class CompanySelector extends ButtonSelector< EntityOption > implements ModelSelector <Company> {
+public class CompanySelector extends ButtonSelector< EntityOption > implements ModelSelector <EntityOption> {
 
     @Inject
     public void init( CompanyModel companyModel ) {
@@ -21,16 +21,14 @@ public class CompanySelector extends ButtonSelector< EntityOption > implements M
         setSearchAutoFocus( true );
     }
 
-    public void fillOptions( List< Company > companies ) {
+    public void fillOptions( List< EntityOption > options ) {
         clearOptions();
 
         if ( hasAnyValue ) {
             addOption( lang.company(), null );
         }
-        for ( Company company : companies ) {
-            EntityOption option = company.toEntityOption();
-            addOption( option.getDisplayText(), option);
-        }
+
+        options.forEach(option -> addOption(option.getDisplayText(),option));
     }
 
     public void setHasAnyValue( boolean hasAnyValue ) {

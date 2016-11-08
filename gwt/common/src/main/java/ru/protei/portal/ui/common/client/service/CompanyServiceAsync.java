@@ -5,6 +5,7 @@ import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanyCategory;
 import ru.protei.portal.core.model.ent.CompanyGroup;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
 import java.util.List;
@@ -69,4 +70,10 @@ public interface CompanyServiceAsync {
      */
     void getCompanyById (long id, AsyncCallback<Company> callback);
 
+
+    /**
+     * Получение списка сокращенного представления компании (name,id)
+     * @param callback
+     */
+    void companyOptionList (AsyncCallback<List<EntityOption>> callback);
 }

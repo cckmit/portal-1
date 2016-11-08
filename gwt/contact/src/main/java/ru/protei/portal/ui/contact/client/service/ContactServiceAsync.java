@@ -15,13 +15,13 @@ public interface ContactServiceAsync {
     /**
      * Получение списка компаний
      * @param searchPattern шаблон поиска
-     * @param company компания
+     * @param companyId id компании
      * @param fired признак уволенности
      * @param sortField поле для сортировки
      * @param sortDir направление сортировки
      * @return список контактов
      */
-    void getContacts( String searchPattern, Company company, Boolean fired, En_SortField sortField, Boolean sortDir, AsyncCallback< List< Person > > async );
+    void getContacts( String searchPattern, Long companyId, Boolean fired, En_SortField sortField, Boolean sortDir, AsyncCallback< List< Person > > async );
 
     void getContact (long id, AsyncCallback<Person> callback);
 

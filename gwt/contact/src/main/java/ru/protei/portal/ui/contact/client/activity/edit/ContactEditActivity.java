@@ -7,7 +7,10 @@ import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_ContactDataAccess;
+import ru.protei.portal.core.model.dict.En_PhoneType;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.struct.ContactPhone;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.ContactEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
@@ -90,14 +93,17 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         contact.setDisplayShortName(view.shortName().getText());
         contact.setBirthday(view.birthDay().getValue());
         contact.setInfo(view.personInfo().getText());
-        contact.setWorkPhone(view.workPhone().getText());
-        contact.setHomePhone(view.homePhone().getText());
-        contact.setEmail(view.workEmail().getText());
-        contact.setEmail_own(view.personalEmail().getText());
+
+        contact.getContactInfo().updateDefaultPhone(En_PhoneType.GENERAL, view.workPhone().getText());
+        ContactPhone homePhone = contact.getContactInfo().findOrCreatePhone(ContactPhone::isPrivateItem, ()->new ContactPhone(En_PhoneType.GENERAL, En_ContactDataAccess.PRIVATE));
+        homePhone.setPhone(view.homePhone().getText());
+
+        contact.getContactInfo().updateDefaultEmail(view.workEmail().getText());
+//        contact.setEmail_own(view.personalEmail().getText());
         contact.setAddress(view.workAddress().getText());
         contact.setAddressHome(view.homeAddress().getText());
-        contact.setFax(view.workFax().getText());
-        contact.setFaxHome(view.homeFax().getText());
+        contact.getContactInfo().updateDefaultPhone(En_PhoneType.FAX, view.workFax().getText());
+//        contact.setFaxHome(view.homeFax().getText());
         contact.setPosition(view.displayPosition().getText());
         contact.setDepartment(view.displayDepartment().getText());
         return contact;
@@ -147,14 +153,16 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         view.birthDay().setValue(person.getBirthday());
 
         view.personInfo().setText(person.getInfo());
-        view.workPhone().setText(person.getWorkPhone());
-        view.homePhone().setText(person.getHomePhone());
-        view.workEmail().setText(person.getEmail());
-        view.personalEmail().setText(person.getEmail_own());
+        view.workPhone().setText(person.getContactInfo().defaultWorkPhone());
+        view.homePhone().setText(person.getContactInfo().privatePhone());
+
+        view.workEmail().setText(person.getContactInfo().defaultEmail());
+//        view.personalEmail().setText(person.getEmail_own());
         view.workAddress().setText(person.getAddress());
-        view.homeAddress().setText(person.getHomePhone());
-        view.workFax().setText(person.getFax());
-        view.homeFax().setText(person.getFaxHome());
+        view.homeAddress().setText(person.getAddressHome());
+
+        view.workFax().setText(person.getContactInfo().defaultFax());
+//        view.homeFax().setText(person.getFaxHome());
         view.displayPosition().setText(person.getPosition());
         view.displayDepartment().setText(person.getDepartment());
 

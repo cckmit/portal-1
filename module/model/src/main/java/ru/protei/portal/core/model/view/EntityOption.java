@@ -1,9 +1,11 @@
 package ru.protei.portal.core.model.view;
 
+import java.io.Serializable;
+
 /**
  * Created by michael on 08.11.16.
  */
-public class EntityOption {
+public class EntityOption implements Serializable {
 
     private String displayText;
     private Long id;
