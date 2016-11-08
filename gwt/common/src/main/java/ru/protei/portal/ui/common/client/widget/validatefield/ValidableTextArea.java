@@ -1,6 +1,8 @@
 package ru.protei.portal.ui.common.client.widget.validatefield;
 
 
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.TextAreaElement;
 import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.TextArea;
@@ -8,67 +10,38 @@ import com.google.gwt.user.client.ui.TextArea;
 /**
  * TextArea c возможностью валидации
  */
-public class ValidableTextArea extends TextArea implements HasValidable{
+public class ValidableTextArea extends ValidableTextBoxBase{
 
     public ValidableTextArea(){
-        super();
-
-        addBlurHandler(blurEvent -> {
-            validationTimer.cancel();
-            validationTimer.run();
-        });
-
-        addKeyPressHandler(keyPressEvent -> {
-            validationTimer.cancel();
-            validationTimer.schedule(200);
-        });
+        super(Document.get().createTextAreaElement());
+        this.setStyleName("gwt-TextArea");
     }
 
-    @Override
-    public void setValid(boolean isValid) {
-        if(isValid)
-            removeStyleName( ERROR_STYLE_NAME );
-        else
-            addStyleName( ERROR_STYLE_NAME );
+    public int getCharacterWidth() {
+        return this.getTextAreaElement().getCols();
     }
 
-    @Override
-    public void setValue( String value ) {
-        super.setValue( value );
-        validateValue();
+    public int getCursorPos() {
+        return this.getImpl().getTextAreaCursorPos(this.getElement());
     }
 
-    @Override
-    public boolean isValid() {
-        return !getStyleName().contains( ERROR_STYLE_NAME );
+    public int getSelectionLength() {
+        return this.getImpl().getTextAreaSelectionLength(this.getElement());
     }
 
-    public void setRegexp( String regexp ){
-        this.regexp = RegExp.compile(regexp);
+    public int getVisibleLines() {
+        return this.getTextAreaElement().getRows();
     }
 
-    public void setNotNull( boolean value ) {
-        if ( value ) {
-            this.regexp = notEmptyStringRegexp;
-        }
+    public void setCharacterWidth(int width) {
+        this.getTextAreaElement().setCols(width);
     }
 
-    private void validateValue() {
-        if ( regexp == null ) {
-            return;
-        }
-        String value = getValue();
-        setValid( regexp.test( value ) );
+    public void setVisibleLines(int lines) {
+        this.getTextAreaElement().setRows(lines);
     }
 
-    Timer validationTimer = new Timer(){
-        @Override
-        public void run() {
-            validateValue();
-        }
-    };
-
-    private RegExp regexp = null;
-    private RegExp notEmptyStringRegexp = RegExp.compile(".+");
-    private static final String ERROR_STYLE_NAME="error";
+    private TextAreaElement getTextAreaElement() {
+        return (TextAreaElement)this.getElement().cast();
+    }
 }

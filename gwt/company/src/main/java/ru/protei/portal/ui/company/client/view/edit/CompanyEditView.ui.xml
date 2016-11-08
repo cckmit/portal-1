@@ -13,7 +13,7 @@
                         </label>
                         <div class="panelField verifiable">
                             <i ui:field="verifiableIcon"/>
-                            <validablefield:ValidableTextBox ui:field="companyName" styleName="inputField"/>
+                            <validablefield:ValidableTextBox ui:field="companyName" styleName="inputField" notNull="true"/>
                         </div>
                     </div>
                     <div class="col-xs-12 col-lg-6">

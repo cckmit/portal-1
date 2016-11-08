@@ -1,72 +1,44 @@
 package ru.protei.portal.ui.common.client.widget.validatefield;
 
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.InputElement;
 import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 
 /**
  * TextBox c возможностью валидации
  */
-public class ValidableTextBox extends TextBox implements HasValidable {
+public class ValidableTextBox extends ValidableTextBoxBase{
 
-    public ValidableTextBox(){
-        super();
-        addBlurHandler(blurEvent -> {
-            validationTimer.cancel();
-            validationTimer.run();
-        });
-        addKeyPressHandler(keyPressEvent -> {
-            validationTimer.cancel();
-            validationTimer.schedule(200);
-        });
+    public ValidableTextBox() {
+        super(Document.get().createTextInputElement());
+        setStyleName("gwt-TextBox");
     }
 
-    @Override
-    public void setValid(boolean isValid) {
-        if(isValid)
-            removeStyleName( ERROR_STYLE_NAME );
-        else
-            addStyleName( ERROR_STYLE_NAME );
+    public int getMaxLength() {
+        return this.getInputElement().getMaxLength();
     }
 
-    @Override
-    public void setValue( String value ) {
-        super.setValue( value );
-        validateValue();
+    public int getVisibleLength() {
+        return this.getInputElement().getSize();
     }
 
-    @Override
-    public boolean isValid() {
-        return !getStyleName().contains( ERROR_STYLE_NAME );
+    public void setMaxLength(int length) {
+        this.getInputElement().setMaxLength(length);
     }
 
-    public void setRegexp( String regexp ){
-        this.regexp = RegExp.compile(regexp);
+    public void setVisibleLength(int length) {
+        this.getInputElement().setSize(length);
     }
 
-    public void setNotNull( boolean value ) {
-        if ( value ) {
-            this.regexp = notEmptyStringRegexp;
-        }
+    private InputElement getInputElement() {
+        return (InputElement)this.getElement().cast();
     }
 
-    private void validateValue() {
-        if ( regexp == null ) {
-            setValid( true );
-            return;
-        }
-        String value = getValue();
-        setValid( regexp.test( value ) );
-    }
 
-    Timer validationTimer = new Timer(){
-        @Override
-        public void run() {
-            validateValue();
-        }
-    };
 
-    private RegExp regexp = null;
-    private RegExp notEmptyStringRegexp = RegExp.compile("/\\S+/");
-    private static final String ERROR_STYLE_NAME="error";
+
 }
