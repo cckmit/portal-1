@@ -50,11 +50,11 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
 
     @Override
     public void onNameChanged() {
+        String value = view.name().getValue().trim();
+        view.save().setEnabled( false );
 
-        if(!view.nameValidator().isValid()){
-            view.nameValidator().setValid(false);
-            view.setNameStatus(NameStatus.NONE);
-            view.save().setEnabled(false);
+        if ( value.isEmpty() ) {
+            view.nameValidator().setValid( false );
             return;
         }
 
@@ -63,7 +63,6 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
                     @Override
                     public void onError(Throwable throwable) {
                         view.setNameStatus(NameStatus.ERROR);
-                        view.save().setEnabled(false);
                         view.nameValidator().setValid(true);
                     }
 
@@ -138,7 +137,6 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
 
     private void resetView () {
         view.name().setValue("");
-        view.nameValidator().reset();
         view.info().setValue("");
         view.state().setVisible(false);
         view.save().setEnabled(false);
@@ -147,7 +145,6 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
 
     private void fillView(DevUnit devUnit) {
         view.name().setValue(devUnit.getName());
-        view.nameValidator().setValid(true);
         view.setNameStatus(NameStatus.SUCCESS);
         view.info().setValue(devUnit.getInfo());
         view.state().setVisible(true);

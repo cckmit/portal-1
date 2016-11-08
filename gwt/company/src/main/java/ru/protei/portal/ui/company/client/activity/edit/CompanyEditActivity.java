@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.company.client.activity.edit;
 
-import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
@@ -15,11 +14,9 @@ import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.ValueCommentEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.NameStatus;
-import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.common.client.service.CompanyServiceAsync;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -117,7 +114,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
     @Override
     public void onSaveClicked() {
-        if(!validateFieldsAndGetResult()) {
+        if(!isValidDto()) {
             return;
         }
 
@@ -145,8 +142,10 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
     @Override
     public void onChangeCompanyName() {
-        if(!view.companyNameValidator().isValid()){
-            view.setCompanyNameStatus(NameStatus.NONE);
+        String value = view.companyName().getText().trim();
+
+        if ( value.isEmpty() ) {
+            view.companyNameValidator().setValid( false );
             return;
         }
 
@@ -161,33 +160,18 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
                     @Override
                     public void onSuccess(Boolean isExists) {
-                        if (isExists) {
-                            view.setCompanyNameStatus(NameStatus.ERROR);
-                        } else {
-                            view.setCompanyNameStatus(NameStatus.SUCCESS);
-                        }
+                        view.setCompanyNameStatus(isExists ? NameStatus.ERROR : NameStatus.SUCCESS);
+                        view.companyNameValidator().setValid(!isExists);
                     }
                 }
         );
 
     }
 
-    private boolean validateFieldsAndGetResult(){
-        boolean isCorrect = true;
-
-        if(!view.companyNameValidator().isValid()){
-            view.companyNameValidator().setValid(isCorrect = false);
-        }
-
-        if(!view.actualAddressValidator().isValid()){
-            view.actualAddressValidator().setValid(isCorrect = false);
-        }
-
-        if(!view.legalAddressValidator().isValid()){
-            view.legalAddressValidator().setValid(isCorrect = false);
-        }
-
-        return isCorrect;
+    private boolean isValidDto(){
+        return view.companyNameValidator().isValid()
+                && view.actualAddressValidator().isValid()
+                && view.legalAddressValidator().isValid();
     }
 
     private Company createCompany(){
@@ -199,10 +183,6 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
     private void resetFields(){
         view.setCompanyNameStatus(NameStatus.NONE);
-        view.companyNameValidator().reset();
-        view.actualAddressValidator().reset();
-        view.legalAddressValidator().reset();
-
 //        fireEvent(new ValueCommentEvents.ShowList(view.phonesContainer(), company.getPhone()));
 //        fireEvent(new ValueCommentEvents.ShowList(view.emailsContainer(), company.getEmail()));
     }

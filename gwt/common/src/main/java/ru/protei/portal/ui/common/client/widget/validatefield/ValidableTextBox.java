@@ -7,60 +7,66 @@ import com.google.gwt.user.client.ui.TextBox;
 /**
  * TextBox c возможностью валидации
  */
-public class ValidableTextBox extends TextBox implements HasValidable{
+public class ValidableTextBox extends TextBox implements HasValidable {
 
     public ValidableTextBox(){
         super();
         addBlurHandler(blurEvent -> {
-            timer.cancel();
-            timer.run();
+            validationTimer.cancel();
+            validationTimer.run();
         });
         addKeyPressHandler(keyPressEvent -> {
-            timer.cancel();
-            timer.schedule(200);
+            validationTimer.cancel();
+            validationTimer.schedule(200);
         });
     }
 
     @Override
     public void setValid(boolean isValid) {
-        this.isValid = isValid;
         if(isValid)
-            removeStyleName("error");
+            removeStyleName( ERROR_STYLE_NAME );
         else
-            addStyleName("error");
+            addStyleName( ERROR_STYLE_NAME );
+    }
+
+    @Override
+    public void setValue( String value ) {
+        super.setValue( value );
+        validateValue();
     }
 
     @Override
     public boolean isValid() {
-        return isValid;
-    }
-
-    // делает поле псевдовалидным
-    @Override
-    public void reset(){
-        setValid(true);
-        isValid = false;
+        return !getStyleName().contains( ERROR_STYLE_NAME );
     }
 
     public void setRegexp( String regexp ){
         this.regexp = RegExp.compile(regexp);
     }
 
+    public void setNotNull( boolean value ) {
+        if ( value ) {
+            this.regexp = notEmptyStringRegexp;
+        }
+    }
 
-    private RegExp regexp;
-    private boolean isValid;
+    private void validateValue() {
+        if ( regexp == null ) {
+            setValid( true );
+            return;
+        }
+        String value = getValue();
+        setValid( regexp.test( value ) );
+    }
 
-    Timer timer = new Timer() {
+    Timer validationTimer = new Timer(){
         @Override
         public void run() {
-            if(regexp == null){
-                regexp = RegExp.compile(".*\\S.*"); //"not empty input" by default
-            }
-            if(regexp.test(getValue()))
-                setValid(true);
-            else
-                setValid(false);
+            validateValue();
         }
     };
 
+    private RegExp regexp = null;
+    private RegExp notEmptyStringRegexp = RegExp.compile("/\\S+/");
+    private static final String ERROR_STYLE_NAME="error";
 }
