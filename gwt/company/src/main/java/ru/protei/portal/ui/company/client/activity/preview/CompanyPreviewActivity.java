@@ -6,6 +6,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.ui.common.client.events.CompanyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
@@ -35,10 +36,12 @@ public abstract class CompanyPreviewActivity
             view.setGroupVisible( false );
         }
 
-        view.setPhone( HelperFunc.nvlt(value.getContactInfo().defaultWorkPhone(),""));
+        PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(value.getContactInfo());
 
-        view.setSite( HelperFunc.nvlt(value.getContactInfo().getWebSite(), "") );
-        view.setEmail( HelperFunc.nvlt(value.getContactInfo().defaultEmail(), ""));
+        view.setPhone( HelperFunc.nvlt(infoFacade.getWorkPhone(),""));
+
+        view.setSite( HelperFunc.nvlt(infoFacade.getWebSite(), "") );
+        view.setEmail( HelperFunc.nvlt(infoFacade.getEmail(), ""));
 
         view.setAddressDejure( value.getAddressDejure() );
         view.setAddressFact( value.getAddressFact() );

@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.dict.En_AuthType;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.UserLogin;
+import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.tools.migrate.tools.BatchProcess;
 import ru.protei.portal.tools.migrate.tools.MigrateAction;
 import ru.protei.portal.tools.migrate.tools.MigrateAdapter;
@@ -102,7 +103,7 @@ public class MigratePersonAction implements MigrateAction {
 
 
     private String createLogin(Person p) {
-        String email = p == null ? null : p.getContactInfo().defaultEmail();
+        String email = p == null ? null : new PlainContactInfoFacade(p.getContactInfo()).getEmail();
         if (email == null || email.indexOf('@') <= 0)
             return null;
 

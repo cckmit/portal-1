@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.dict.En_ContactDataAccess;
 import ru.protei.portal.core.model.dict.En_PhoneType;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.struct.ContactPhone;
+import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.ContactEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
@@ -94,15 +95,16 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         contact.setBirthday(view.birthDay().getValue());
         contact.setInfo(view.personInfo().getText());
 
-        contact.getContactInfo().updateDefaultPhone(En_PhoneType.GENERAL, view.workPhone().getText());
-        ContactPhone homePhone = contact.getContactInfo().findOrCreatePhone(ContactPhone::isPrivateItem, ()->new ContactPhone(En_PhoneType.GENERAL, En_ContactDataAccess.PRIVATE));
-        homePhone.setPhone(view.homePhone().getText());
+        PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(contact.getContactInfo());
 
-        contact.getContactInfo().updateDefaultEmail(view.workEmail().getText());
+        infoFacade.setWorkPhone(view.workPhone().getText());
+        infoFacade.setHomePhone(view.homePhone().getText());
+
+        infoFacade.setEmail(view.workEmail().getText());
 //        contact.setEmail_own(view.personalEmail().getText());
         contact.setAddress(view.workAddress().getText());
         contact.setAddressHome(view.homeAddress().getText());
-        contact.getContactInfo().updateDefaultPhone(En_PhoneType.FAX, view.workFax().getText());
+        infoFacade.setFax(view.workFax().getText());
 //        contact.setFaxHome(view.homeFax().getText());
         contact.setPosition(view.displayPosition().getText());
         contact.setDepartment(view.displayDepartment().getText());
@@ -153,15 +155,18 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         view.birthDay().setValue(person.getBirthday());
 
         view.personInfo().setText(person.getInfo());
-        view.workPhone().setText(person.getContactInfo().defaultWorkPhone());
-        view.homePhone().setText(person.getContactInfo().privatePhone());
 
-        view.workEmail().setText(person.getContactInfo().defaultEmail());
+        PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(person.getContactInfo());
+
+        view.workPhone().setText(infoFacade.getWorkPhone());
+        view.homePhone().setText(infoFacade.getHomePhone());
+
+        view.workEmail().setText(infoFacade.getEmail());
 //        view.personalEmail().setText(person.getEmail_own());
         view.workAddress().setText(person.getAddress());
         view.homeAddress().setText(person.getAddressHome());
 
-        view.workFax().setText(person.getContactInfo().defaultFax());
+        view.workFax().setText(infoFacade.getFax());
 //        view.homeFax().setText(person.getFaxHome());
         view.displayPosition().setText(person.getPosition());
         view.displayDepartment().setText(person.getDepartment());

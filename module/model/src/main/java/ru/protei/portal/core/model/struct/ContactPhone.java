@@ -7,12 +7,13 @@ import ru.protei.portal.core.model.dict.En_ContactDataAccess;
 import ru.protei.portal.core.model.dict.En_PhoneType;
 
 import java.beans.Transient;
+import java.io.Serializable;
 
 /**
  * Created by michael on 07.11.16.
  */
 @JsonAutoDetect
-public class ContactPhone {
+public class ContactPhone implements Serializable {
 
     @JsonProperty("v")
     public String phone;
@@ -41,6 +42,7 @@ public class ContactPhone {
         this.phone = phone;
         this.comment = comment;
         this.type = type;
+        this.access = En_ContactDataAccess.PUBLIC;
     }
 
     public ContactPhone(En_PhoneType type, En_ContactDataAccess access) {

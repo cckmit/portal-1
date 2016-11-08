@@ -16,6 +16,7 @@ import ru.brainworm.factory.widget.table.client.helper.ClickColumn;
 import ru.brainworm.factory.widget.table.client.helper.SelectionColumn;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.contact.client.activity.table.AbstractContactTableActivity;
 import ru.protei.portal.ui.contact.client.activity.table.AbstractContactTableView;
@@ -183,9 +184,10 @@ public class ContactTableView extends Composite implements AbstractContactTableV
 
             @Override
             public void fillColumnValue( Element element, Person person ) {
-                element.appendChild( ContactColumnBuilder.make().add( null, person.getContactInfo().defaultWorkPhone() )
-                        .add(null, person.getContactInfo().defaultMobilePhone())
-                        .add( null, person.getContactInfo().privatePhone()).toElement() );
+                PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(person.getContactInfo());
+                element.appendChild( ContactColumnBuilder.make().add( null, infoFacade.getWorkPhone() )
+                        .add(null, infoFacade.getMobilePhone())
+                        .add( null, infoFacade.getHomePhone()).toElement() );
             }
         };
         phone.setHandler( activity );
@@ -198,8 +200,9 @@ public class ContactTableView extends Composite implements AbstractContactTableV
 
             @Override
             public void fillColumnValue( Element element, Person person ) {
-                element.appendChild( ContactColumnBuilder.make().add( null, person.getContactInfo().defaultEmail() )
-                        .add( null, person.getContactInfo().privateEmail() ).toElement() );
+                PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(person.getContactInfo());
+                element.appendChild( ContactColumnBuilder.make().add( null, infoFacade.getEmail() )
+                        .add( null, infoFacade.getEmail_own() ).toElement() );
             }
         };
         email.setHandler( activity );

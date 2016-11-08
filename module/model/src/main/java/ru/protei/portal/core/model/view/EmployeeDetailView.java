@@ -3,6 +3,7 @@ package ru.protei.portal.core.model.view;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.PersonAbsence;
+import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 
 import java.util.List;
 
@@ -48,14 +49,17 @@ public class EmployeeDetailView {
 
     public EmployeeDetailView fill(Person p) {
         this.department = p.getDepartment();
-        this.mobilePhone = p.getContactInfo().defaultMobilePhone();
-        this.workPhone = p.getContactInfo().defaultWorkPhone();
-        this.homePhone = p.getContactInfo().privatePhone();
+
+        PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(p.getContactInfo());
+
+        this.mobilePhone = infoFacade.getMobilePhone();
+        this.workPhone = infoFacade.getWorkPhone();
+        this.homePhone = infoFacade.getHomePhone();
         this.jid = p.getContactInfo().jabber;
         this.ip = p.getIpAddress() != null ? new String[] {p.getIpAddress()} : null;
-        this.email = p.getContactInfo().defaultEmail();
+        this.email = infoFacade.getEmail();
         this.icq = p.getContactInfo().icq;
-        this.fax = p.getContactInfo().defaultFax();
+        this.fax = infoFacade.getFax();
         return this;
     }
 

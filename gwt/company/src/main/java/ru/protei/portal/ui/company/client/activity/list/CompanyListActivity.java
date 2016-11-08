@@ -9,6 +9,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanyCategory;
+import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.ui.common.client.animation.PlateListAnimation;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
@@ -119,16 +120,17 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
         itemView.setActivity( this );
         itemView.setName( company.getCname() );
 
+        PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(company.getContactInfo());
 
 //        if(company.getPhone() != null)
 //            itemView.setPhone( company.getPhone().value );
 //        else
-        itemView.setPhone(company.getContactInfo().defaultWorkPhone());
+        itemView.setPhone(infoFacade.getWorkPhone());
 
 //        if(company.getEmail() != null)
 //            itemView.setEmail( company.getEmail().value);
 //        else
-        itemView.setEmail(company.getContactInfo().defaultEmail());
+        itemView.setEmail(infoFacade.getEmail());
 
 
         itemView.setWebsite( company.getContactInfo().getWebSite() );

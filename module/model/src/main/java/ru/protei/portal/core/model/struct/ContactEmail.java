@@ -6,12 +6,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import ru.protei.portal.core.model.dict.En_ContactDataAccess;
 
 import java.beans.Transient;
+import java.io.Serializable;
 
 /**
  * Created by michael on 07.11.16.
  */
 @JsonAutoDetect
-public class ContactEmail {
+public class ContactEmail implements Serializable {
 
     @JsonProperty("e")
     public String email;
