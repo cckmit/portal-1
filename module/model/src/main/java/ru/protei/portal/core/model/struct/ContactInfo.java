@@ -1,6 +1,7 @@
 package ru.protei.portal.core.model.struct;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import ru.protei.portal.core.model.dict.En_ContactDataAccess;
 import ru.protei.portal.core.model.dict.En_PhoneType;
@@ -55,18 +56,22 @@ public class ContactInfo implements Serializable {
         this.webSite = src.webSite;
     }
 
+    @JsonIgnore
     public List<ContactEmail> getEmailList() {
         return emailList;
     }
 
+    @JsonIgnore
     public List<ContactPhone> getPhoneList() {
         return phoneList;
     }
 
+    @JsonIgnore
     public List<SocialNetworkLink> getSocialNetworkLinks() {
         return socialNetworkLinks;
     }
 
+    @JsonIgnore
     public String getIcq() {
         return icq;
     }
@@ -75,6 +80,7 @@ public class ContactInfo implements Serializable {
         this.icq = icq;
     }
 
+    @JsonIgnore
     public String getJabber() {
         return jabber;
     }
@@ -83,6 +89,7 @@ public class ContactInfo implements Serializable {
         this.jabber = jabber;
     }
 
+    @JsonIgnore
     public String getWebSite() {
         return webSite;
     }
@@ -116,14 +123,17 @@ public class ContactInfo implements Serializable {
         return this;
     }
 
+    @JsonIgnore
     public List<ContactPhone> getFaxList () {
         return filterPhoneList(contactPhone -> contactPhone.type == En_PhoneType.FAX);
     }
 
+    @JsonIgnore
     public List<ContactPhone> getMobilePhoneList () {
         return filterPhoneList(contactPhone -> contactPhone.type == En_PhoneType.MOBILE);
     }
 
+    @JsonIgnore
     public List<ContactPhone> getGeneralPhoneList () {
         return filterPhoneList(contactPhone -> contactPhone.type == En_PhoneType.GENERAL);
     }
@@ -225,5 +235,4 @@ public class ContactInfo implements Serializable {
         }
         return email;
     }
-
 }

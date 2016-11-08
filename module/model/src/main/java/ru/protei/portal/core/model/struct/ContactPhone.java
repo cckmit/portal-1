@@ -1,6 +1,7 @@
 package ru.protei.portal.core.model.struct;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import ru.protei.portal.core.model.dict.En_ContactDataAccess;
 import ru.protei.portal.core.model.dict.En_PhoneType;
@@ -47,7 +48,7 @@ public class ContactPhone {
         this.type = type;
     }
 
-    @Transient
+    @JsonIgnore
     public String getPhone() {
         return phone;
     }
@@ -56,7 +57,7 @@ public class ContactPhone {
         this.phone = phone;
     }
 
-    @Transient
+    @JsonIgnore
     public En_PhoneType getType() {
         return type;
     }
@@ -65,7 +66,7 @@ public class ContactPhone {
         this.type = type;
     }
 
-    @Transient
+    @JsonIgnore
     public String getComment() {
         return comment;
     }
@@ -74,7 +75,7 @@ public class ContactPhone {
         this.comment = comment;
     }
 
-    @Transient
+    @JsonIgnore
     public En_ContactDataAccess getAccess() {
         return access;
     }
@@ -83,12 +84,12 @@ public class ContactPhone {
         this.access = access;
     }
 
-    @Transient
+    @JsonIgnore
     public boolean isPrivateItem () {
         return this.access == En_ContactDataAccess.PRIVATE;
     }
 
-    @Transient
+    @JsonIgnore
     public boolean isPublicItem () {
         return this.access == En_ContactDataAccess.PUBLIC;
     }

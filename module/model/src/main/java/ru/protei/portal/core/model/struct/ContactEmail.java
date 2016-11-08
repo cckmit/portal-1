@@ -1,6 +1,7 @@
 package ru.protei.portal.core.model.struct;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import ru.protei.portal.core.model.dict.En_ContactDataAccess;
 
@@ -12,7 +13,7 @@ import java.beans.Transient;
 @JsonAutoDetect
 public class ContactEmail {
 
-    @JsonProperty("v")
+    @JsonProperty("e")
     public String email;
 
     @JsonProperty("c")
@@ -35,7 +36,7 @@ public class ContactEmail {
         this.access = En_ContactDataAccess.PUBLIC;
     }
 
-    @Transient
+    @JsonIgnore
     public String getEmail() {
         return email;
     }
@@ -44,7 +45,7 @@ public class ContactEmail {
         this.email = email;
     }
 
-    @Transient
+    @JsonIgnore
     public String getComment() {
         return comment;
     }
@@ -53,7 +54,7 @@ public class ContactEmail {
         this.comment = comment;
     }
 
-    @Transient
+    @JsonIgnore
     public En_ContactDataAccess getAccess() {
         return access;
     }
@@ -62,12 +63,12 @@ public class ContactEmail {
         this.access = access;
     }
 
-    @Transient
+    @JsonIgnore
     public boolean isPrivateItem () {
         return this.access == En_ContactDataAccess.PRIVATE;
     }
 
-    @Transient
+    @JsonIgnore
     public boolean isPublicItem () {
         return this.access == En_ContactDataAccess.PUBLIC;
     }
