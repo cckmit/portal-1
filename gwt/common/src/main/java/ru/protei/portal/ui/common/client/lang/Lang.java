@@ -168,4 +168,6 @@ public interface Lang extends Messages {
     String errorFirstNameRequired();
     String errorLastNameRequired ();
 
+    String companyCategory();
+
 }

@@ -41,7 +41,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
     public void onShow( CompanyEvents.Edit event ) {
 
         initDetails.parent.clear();
-        resetFields();
+        view.resetFields();
         initDetails.parent.add(view.asWidget());
 
         if(event.getCompanyId() == null) {
@@ -148,22 +148,6 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         isCorrect = validateFieldAndGetResult(view.legalAddressValidator(), view.legalAddress()) && isCorrect;
 
         return isCorrect;
-    }
-
-    private void resetFields(){
-        view.setCompanyNameStatus(NameStatus.NONE);
-        view.companyName().setText("");
-        view.actualAddress().setText("");
-        view.legalAddress().setText("");
-        view.webSite().setText("");
-        view.comment().setText("");
-        view.companyGroup().setValue(null);
-
-
-        // reset validation
-        view.companyNameValidator().setValid(true);
-        view.actualAddressValidator().setValid(true);
-        view.legalAddressValidator().setValid(true);
     }
 
     //    native void consoleLog( String message) /*-{
