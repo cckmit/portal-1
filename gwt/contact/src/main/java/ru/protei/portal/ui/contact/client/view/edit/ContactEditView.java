@@ -13,6 +13,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.dict.GenderButtonSelector;
@@ -117,12 +118,12 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     }
 
     @Override
-    public Selector<Company> company() {
+    public HasValue<EntityOption> company() {
         return company;
     }
 
     @Override
-    public Selector<En_Gender> gender() {
+    public HasValue<En_Gender> gender() {
         return gender;
     }
 

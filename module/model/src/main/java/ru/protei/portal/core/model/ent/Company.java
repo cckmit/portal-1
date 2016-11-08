@@ -1,5 +1,7 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.EntityOptionSupport;
 import ru.protei.portal.core.model.view.ValueComment;
 import ru.protei.winter.jdbc.annotations.*;
 
@@ -12,7 +14,7 @@ import java.util.List;
  * @author michael
  */
 @JdbcEntity(table = "Company")
-public class Company implements Serializable {
+public class Company implements Serializable,EntityOptionSupport {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -174,6 +176,12 @@ public class Company implements Serializable {
     @Override
     public int hashCode() {
         return this.id == null ? -1 : this.id.intValue();
+    }
+
+
+    @Override
+    public EntityOption toEntityOption() {
+        return new EntityOption(this.cname, this.id);
     }
 
     @Override

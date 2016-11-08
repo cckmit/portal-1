@@ -1,6 +1,8 @@
 package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_Gender;
+import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.EntityOptionSupport;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
@@ -10,7 +12,7 @@ import java.util.Date;
  * Created by michael on 30.03.16.
  */
 @JdbcEntity(table = "Person")
-public class Person implements Serializable {
+public class Person implements Serializable, EntityOptionSupport {
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
 
@@ -355,5 +357,10 @@ public class Person implements Serializable {
 
     public void setGender (En_Gender gender) {
         this.genderCode = gender.getCode();
+    }
+
+    @Override
+    public EntityOption toEntityOption() {
+        return new EntityOption(this.displayShortName, this.getId());
     }
 }

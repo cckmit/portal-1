@@ -13,4 +13,5 @@ public interface CompanyDAO extends PortalBaseDAO<Company> {
     List<Company> getListByQuery (CompanyQuery query);
 
     Company getCompanyByName( String name );
+
 }

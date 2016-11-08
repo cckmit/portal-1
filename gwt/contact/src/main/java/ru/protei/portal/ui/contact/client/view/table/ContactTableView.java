@@ -17,6 +17,7 @@ import ru.brainworm.factory.widget.table.client.helper.SelectionColumn;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.contact.client.activity.table.AbstractContactTableActivity;
 import ru.protei.portal.ui.contact.client.activity.table.AbstractContactTableView;
 import ru.protei.portal.ui.contact.client.view.table.columns.ContactColumnBuilder;
@@ -42,7 +43,7 @@ public class ContactTableView extends Composite implements AbstractContactTableV
     }
 
     @Override
-    public HasValue<Company> company() {
+    public HasValue<EntityOption> company() {
         return company;
     }
 

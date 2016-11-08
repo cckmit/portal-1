@@ -39,7 +39,6 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
             fillView(newPerson);
         }
         else {
-            this.fireEvent( new AppEvents.InitPanelName( "Edit contact with ID: " + event.id ) );
             contactService.getContact(event.id, new AsyncCallback<Person>() {
                 @Override
                 public void onFailure(Throwable throwable) {
@@ -48,6 +47,8 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
 
                 @Override
                 public void onSuccess(Person person) {
+                    fireEvent( new AppEvents.InitPanelName( lang.editContactHeader(person.getDisplayName())));
+
                     fillView(person);
                 }
             });
@@ -127,14 +128,15 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         this.contact = person;
         initDetails.parent.clear();
 
-        if (person.getCompanyId() == null)
-            view.company().setValue(null);
-        else {
-            view.company().findAndSelectValue(
-                    company ->  company != null && person.getCompanyId().equals(company.getId()),
-                    true
-            );
-        }
+        view.company().setValue(person.getCompany() == null ? null : person.getCompany().toEntityOption());
+//        if (person.getCompanyId() == null)
+//            view.company().setValue(null);
+//        else {
+//            view.company().findAndSelectValue(
+//                    company ->  company != null && person.getCompanyId().equals(company.getId()),
+//                    true
+//            );
+//        }
 
         view.gender().setValue(person.getGender());
         view.firstName().setText(person.getFirstName());
