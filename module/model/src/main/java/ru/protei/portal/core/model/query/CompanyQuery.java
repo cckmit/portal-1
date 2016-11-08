@@ -3,12 +3,13 @@ package ru.protei.portal.core.model.query;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by michael on 12.10.16.
  */
-public class CompanyQuery extends BaseQuery {
+public class CompanyQuery extends BaseQuery implements Serializable {
 
     /**
      * request for companies that a members of group with id=groupId

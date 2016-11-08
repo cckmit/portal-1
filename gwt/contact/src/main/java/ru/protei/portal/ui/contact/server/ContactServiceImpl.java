@@ -24,15 +24,12 @@ import java.util.List;
 public class ContactServiceImpl implements ContactService {
 
     @Override
-    public List<Person> getContacts(String searchPattern, Company company, Boolean fired, En_SortField sortField, Boolean sortDir) throws RequestFailedException {
+    public List<Person> getContacts(ContactQuery contactQuery) throws RequestFailedException {
 
-        log.debug( "getContacts(): searchPattern={} | company={} | isFired={} | sortField={} | sortDir={}",
-                searchPattern, company, fired, sortField, (sortDir ? En_SortDir.ASC : En_SortDir.DESC) );
+        log.debug( "getContacts(): searchPattern={} | companyId={} | isFired={} | sortField={} | sortDir={}",
+                contactQuery.getSearchString(), contactQuery.getCompanyId(), contactQuery.getFired(), contactQuery.getSortField(), contactQuery.getSortDir() );
 
-        ContactQuery query = new ContactQuery(company, searchPattern, sortField, sortDir ? En_SortDir.ASC : En_SortDir.DESC);
-        query.setFired(fired);
-
-        CoreResponse<List<Person>> response = contactService.contactList(query);
+        CoreResponse<List<Person>> response = contactService.contactList(contactQuery);
 
         if (response.isError()) {
             throw new RequestFailedException( response.getStatus() );
