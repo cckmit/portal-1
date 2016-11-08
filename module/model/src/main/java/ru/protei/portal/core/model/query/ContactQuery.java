@@ -9,7 +9,7 @@ import java.io.Serializable;
 /**
  * Created by Mike on 02.11.2016.
  */
-public class ContactQuery extends BaseQuery implements Serializable {
+public class ContactQuery extends BaseQuery {
 
     private Long companyId;
     private Boolean fired;

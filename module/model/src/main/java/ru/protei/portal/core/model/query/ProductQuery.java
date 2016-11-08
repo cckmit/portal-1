@@ -9,7 +9,7 @@ import java.io.Serializable;
 /**
  * Created by michael on 12.10.16.
  */
-public class ProductQuery extends BaseQuery implements Serializable {
+public class ProductQuery extends BaseQuery {
 
     En_DevUnitState state;
 
