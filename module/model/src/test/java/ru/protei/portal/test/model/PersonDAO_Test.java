@@ -89,7 +89,7 @@ public class PersonDAO_Test {
         Assert.assertEquals("8(812)-4494727", readPerson.getContactInfo().defaultWorkPhone());
         Assert.assertEquals("+7-921-555-44-33", readPerson.getContactInfo().defaultMobilePhone());
 
-        dao.remove(p);
+        dao.remove(readPerson);
     }
 
 }

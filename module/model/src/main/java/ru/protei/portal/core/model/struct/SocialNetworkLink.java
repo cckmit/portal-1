@@ -10,4 +10,8 @@ public class SocialNetworkLink {
     public En_SocialNetwork type;
     public String address;
 
+    SocialNetworkLink () {
+
+    }
+
 }
