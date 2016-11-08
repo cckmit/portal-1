@@ -1,6 +1,8 @@
 package ru.protei.portal.core.service;
 
-import org.apache.log4j.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.PersonDAO;
@@ -18,7 +20,7 @@ import java.util.List;
  */
 public class ContactServiceImpl implements ContactService {
 
-    private static Logger log = Logger.getLogger(CompanyServiceImpl.class);
+    private static Logger log = LoggerFactory.getLogger(CompanyServiceImpl.class);
 
     @Autowired
     PersonDAO personDAO;
@@ -45,7 +47,7 @@ public class ContactServiceImpl implements ContactService {
     @Override
     public CoreResponse<Person> saveContact(Person p) {
         if (personDAO.isEmployee(p)) {
-            log.warn(String.format("person %d is employee",p.getId()));
+            log.warn("person with id = {} is employee",p.getId());
             return new CoreResponse<Person>().error(En_ResultStatus.VALIDATION_ERROR);
         }
 

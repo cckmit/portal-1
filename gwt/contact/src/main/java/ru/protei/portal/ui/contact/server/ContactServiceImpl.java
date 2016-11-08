@@ -43,11 +43,11 @@ public class ContactServiceImpl implements ContactService {
 
     @Override
     public Person getContact(long id) throws RequestFailedException {
-        log.debug("get contact, id: " + id);
+        log.debug("get contact, id: {}", id);
 
         CoreResponse<Person> response = contactService.getContact(id);
 
-        log.debug("get contact, id: " + id + " -> " + (response.isError() ? "error" : ("ok, " + response.getData().getDisplayName())));
+        log.debug("get contact, id: {} -> {} ", id, response.isError() ? "error" : response.getData().getDisplayName());
 
         return response.getData();
     }
@@ -59,14 +59,14 @@ public class ContactServiceImpl implements ContactService {
             throw new RequestFailedException(En_ResultStatus.INTERNAL_ERROR);
         }
 
-        log.debug("store contact, id: " + HelperFunc.nvl(p.getId(), "new"));
+        log.debug("store contact, id: {} ", HelperFunc.nvl(p.getId(), "new"));
 
         CoreResponse<Person> response = contactService.saveContact(p);
 
-        log.debug("store contact, result: " + (response.isOk() ? "ok" : response.getStatus()));
+        log.debug("store contact, result: {}", response.isOk() ? "ok" : response.getStatus());
 
         if (response.isOk()) {
-            log.debug("store contact, applied id: " + response.getData().getId());
+            log.debug("store contact, applied id: {}", response.getData().getId());
             return response.getData();
         }
 
