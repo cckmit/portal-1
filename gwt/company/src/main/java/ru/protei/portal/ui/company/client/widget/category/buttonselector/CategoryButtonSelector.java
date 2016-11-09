@@ -21,23 +21,18 @@ public class CategoryButtonSelector extends ButtonSelector< CompanyCategory > im
     public void fillOptions( List< CompanyCategory > categories ) {
         clearOptions();
 
+        int rowNum = 0;
         for ( CompanyCategory category : categories ) {
             addOption( category.getName(), category );
-            if ( category.getName() != null && defaultValue != null && category.getName().equals( defaultValue ) ) {
-                defaultCategory = category;
+            if ( ++ rowNum == 1 ) {
+                firstCategory = category;
             }
         }
     }
 
-    public void setDefaultValue( String value ) {
-        defaultValue = value;
+    public CompanyCategory getFirstCategory() {
+        return firstCategory;
     }
 
-    public CompanyCategory getDefaultCategory() {
-        return defaultCategory;
-    }
-
-    private String defaultValue;
-
-    private CompanyCategory defaultCategory;
+    private CompanyCategory firstCategory;
 }

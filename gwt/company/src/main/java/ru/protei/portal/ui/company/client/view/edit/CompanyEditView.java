@@ -142,7 +142,7 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
         webSite().setText("");
         comment().setText("");
         companyGroup().setValue(null);
-        companyCategory().setValue( companyCategory.getDefaultCategory() );
+        companyCategory().setValue( companyCategory.getFirstCategory() );
 
         // reset validation
         companyNameValidator().setValid(true);
