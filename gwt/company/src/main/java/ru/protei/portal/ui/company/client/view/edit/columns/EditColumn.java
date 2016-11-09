@@ -9,7 +9,7 @@ import ru.brainworm.factory.widget.table.client.ColumnValue;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
 /**
- * Created by turik on 09.11.16.
+ * Колонка редактирования контакта.
  */
 public class EditColumn< T > {
 

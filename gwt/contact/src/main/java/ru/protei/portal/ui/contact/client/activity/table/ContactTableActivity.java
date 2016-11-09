@@ -81,7 +81,7 @@ public abstract class ContactTableActivity implements AbstractContactTableActivi
         query.setSearchString(view.searchPattern().getValue());
         if(view.company().getValue() != null)
             query.setCompanyId(view.company().getValue().getId());
-        query.setFired(view.showFired().getValue());
+        query.setFired(view.showFired().getValue() ? null : view.showFired().getValue());
         query.setSortField(view.sortField().getValue());
         query.setSortDir(view.sortDir().getValue()? En_SortDir.ASC: En_SortDir.DESC);
 
