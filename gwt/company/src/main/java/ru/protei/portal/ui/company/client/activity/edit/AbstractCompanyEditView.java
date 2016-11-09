@@ -32,6 +32,4 @@ public interface AbstractCompanyEditView extends IsWidget {
 
     HasWidgets phonesContainer();
     HasWidgets emailsContainer();
-
-    void resetFields();
 }

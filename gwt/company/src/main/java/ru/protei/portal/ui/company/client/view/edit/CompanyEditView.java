@@ -133,24 +133,6 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
         }
     };
 
-    @Override
-    public void resetFields(){
-        setCompanyNameStatus( NameStatus.NONE );
-        companyName().setText("");
-        actualAddress().setText("");
-        legalAddress().setText("");
-        webSite().setText("");
-        comment().setText("");
-        companyGroup().setValue(null);
-        companyCategory().setValue( companyCategory.getFirstCategory() );
-
-        // reset validation
-        companyNameValidator().setValid(true);
-        actualAddressValidator().setValid(true);
-        legalAddressValidator().setValid(true);
-    }
-
-
     @UiField
     Button saveButton;
 

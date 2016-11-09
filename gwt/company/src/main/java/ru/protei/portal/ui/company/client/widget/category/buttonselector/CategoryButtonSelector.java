@@ -16,23 +16,14 @@ public class CategoryButtonSelector extends ButtonSelector< CompanyCategory > im
     @Inject
     public void init( CategoryModel categoryModel ) {
         categoryModel.subscribe( this );
+        setHasNullValue( false );
     }
 
     public void fillOptions( List< CompanyCategory > categories ) {
         clearOptions();
 
-        int rowNum = 0;
         for ( CompanyCategory category : categories ) {
             addOption( category.getName(), category );
-            if ( ++ rowNum == 1 ) {
-                firstCategory = category;
-            }
         }
     }
-
-    public CompanyCategory getFirstCategory() {
-        return firstCategory;
-    }
-
-    private CompanyCategory firstCategory;
 }
