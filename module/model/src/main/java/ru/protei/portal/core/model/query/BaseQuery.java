@@ -8,7 +8,7 @@ import java.io.Serializable;
 /**
  * Created by michael on 12.10.16.
  */
-public class BaseQuery implements Serializable {
+public class BaseQuery implements Serializable{
 
     public String searchString;
     public En_SortField sortField;

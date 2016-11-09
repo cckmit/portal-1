@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Created by michael on 12.10.16.
  */
-public class CompanyQuery extends BaseQuery implements Serializable {
+public class CompanyQuery extends BaseQuery {
 
     /**
      * request for companies that a members of group with id=groupId
