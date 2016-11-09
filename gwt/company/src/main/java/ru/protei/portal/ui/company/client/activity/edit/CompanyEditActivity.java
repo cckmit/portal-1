@@ -45,37 +45,44 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         initDetails.parent.add(view.asWidget());
 
         if(event.getCompanyId() == null) {
-            this.fireEvent(new AppEvents.InitPanelName(lang.companyNew()));
-            fillView(tempCompany = createCompany());
-            resetValidationStatus();
+            fireEvent(new AppEvents.InitPanelName(lang.companyNew()));
+            fillCompanyView( createCompany() );
         }else {
-            this.fireEvent(new AppEvents.InitPanelName(lang.companyEdit()));
-            companyService.getCompanyById(event.getCompanyId(), new RequestCallback<Company>() {
-                @Override
-                public void onError(Throwable throwable) {}
-
-                @Override
-                public void onSuccess(Company company) {
-                    fillView(tempCompany = company);
-                    resetValidationStatus();
-                }
-            });
-
+            fireEvent(new AppEvents.InitPanelName(lang.companyEdit()));
+            requestCompany(event.getCompanyId());
         }
     }
 
 
-    private <T> List<T> removeNullableValues(List<T> dataList){
-        dataList.removeIf(Objects::isNull); //remove all null values
-        return dataList;
-
+    private void fillCompanyView(Company company){
+        tempCompany = company;
+        fillView(tempCompany);
+        resetValidationStatus();
     }
+
+    private void requestCompany(Long id){
+        companyService.getCompanyById(id, new RequestCallback<Company>() {
+            @Override
+            public void onError(Throwable throwable) {}
+
+            @Override
+            public void onSuccess(Company company) {
+                fillCompanyView(company);
+            }
+        });
+    }
+
+//    private <T> List<T> removeNullableValues(List<T> dataList){
+//        dataList.removeIf(Objects::isNull); //remove all null values
+//        return dataList;
+//
+//    }
 
     private void setValueCommentList(HasWidgets parent, List<ValueComment> dataList){
         fireEvent(
                 new ValueCommentEvents.ShowList(
                         parent,
-                        removeNullableValues(dataList)
+                        //removeNullableValues(dataList)
                 )
         );
     }
@@ -124,9 +131,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
         companyService.saveCompany(tempCompany, view.companyGroup().getValue(), new RequestCallback<Boolean>() {
             @Override
-            public void onError(Throwable throwable) {
-                //fireEvent(new NotifyEvents.Show(lang.errNotSaved(), NotifyEvents.NotifyType.ERROR));
-            }
+            public void onError(Throwable throwable) {}
 
             @Override
             public void onSuccess(Boolean aBoolean) {
@@ -157,9 +162,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
                 tempCompany.getId(),
                 new RequestCallback<Boolean>() {
                     @Override
-                    public void onError(Throwable throwable) {
-                        //fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
-                    }
+                    public void onError(Throwable throwable) {}
 
                     @Override
                     public void onSuccess(Boolean isExists) {
@@ -169,6 +172,11 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         );
 
     }
+
+//    private List<ValueComment> contactEmailToValueComment(ContactEmail emails){
+//
+//
+//    }
 
     private boolean validateFieldsAndGetResult(){
         boolean result = true;
@@ -199,8 +207,6 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         view.legalAddressValidator().setValid(true);
     }
 
-
-
     @Inject
     AbstractCompanyEditView view;
     @Inject
@@ -210,7 +216,6 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
     CompanyServiceAsync companyService;
 
     private Company tempCompany;
-
 
     private AppEvents.InitDetails initDetails;
 }
