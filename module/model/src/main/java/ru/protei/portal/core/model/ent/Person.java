@@ -1,6 +1,9 @@
 package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_Gender;
+import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.EntityOptionSupport;
+import ru.protei.portal.core.model.struct.ContactInfo;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
@@ -10,7 +13,7 @@ import java.util.Date;
  * Created by michael on 30.03.16.
  */
 @JdbcEntity(table = "Person")
-public class Person implements Serializable {
+public class Person implements Serializable, EntityOptionSupport {
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
 
@@ -20,10 +23,10 @@ public class Person implements Serializable {
     @JdbcColumn(name = "creator")
     private String creator;
 
-//    @JdbcColumn(name="company_id")
-//    private Long companyId;
+    @JdbcColumn(name="company_id")
+    private Long companyId;
 
-    @JdbcJoinedObject (localColumn = "company_id",updateLocalColumn = false)
+    @JdbcJoinedObject (localColumn = "company_id", remoteColumn = "id", updateLocalColumn = false)
     private Company company;
 
     @JdbcColumn(name = "displayPosition")
@@ -60,39 +63,11 @@ public class Person implements Serializable {
     @JdbcColumn(name="ipaddress")
     private String ipAddress;
 
-    @JdbcColumn(name="phone_work")
-    private String workPhone;
-
-    @JdbcColumn(name="phone_home")
-    private String homePhone;
-
-    @JdbcColumn(name="phone_mobile")
-    private String mobilePhone;
-
-
-    @JdbcColumn(name="email")
-    private String email;
-
-    @JdbcColumn(name="email_own")
-    private String email_own;
-
-
-    @JdbcColumn(name="fax")
-    private String fax;
-    @JdbcColumn(name="fax_home")
-    private String faxHome;
-
     @JdbcColumn(name="address")
     private String address;
 
     @JdbcColumn(name="address_home")
     private String addressHome;
-
-    @JdbcColumn(name="icq")
-    private String icq;
-
-    @JdbcColumn(name="jabber")
-    private String jabber;
 
     @JdbcColumn(name="passportinfo")
     private String passportInfo;
@@ -106,7 +81,12 @@ public class Person implements Serializable {
     @JdbcColumn(name = "isfired")
     private boolean isFired;
 
+    @JdbcColumn(name = "contactInfo", converterType = ConverterType.JSON)
+    private ContactInfo contactInfo;
+
+
     public Person () {
+        this.contactInfo = new ContactInfo();
     }
 
 
@@ -135,14 +115,11 @@ public class Person implements Serializable {
     }
 
     public Long getCompanyId() {
-        return company != null ? company.getId() : company.getId();
+        return companyId;
     }
 
     public void setCompanyId(Long companyId) {
-        if (this.company == null)
-            this.company = new Company();
-
-        this.company.setId (companyId);
+        this.companyId = companyId;
     }
 
     public Company getCompany() {
@@ -151,6 +128,7 @@ public class Person implements Serializable {
 
     public void setCompany(Company company) {
         this.company = company;
+        this.companyId = company.getId();
     }
 
     public String getPosition() {
@@ -217,61 +195,16 @@ public class Person implements Serializable {
         this.ipAddress = ipAddress;
     }
 
-    public String getWorkPhone() {
-        return workPhone;
+
+    public ContactInfo getContactInfo() {
+        return contactInfo;
     }
 
-    public void setWorkPhone(String workPhone) {
-        this.workPhone = workPhone;
+    public void setContactInfo(ContactInfo contactInfo) {
+        this.contactInfo = contactInfo;
     }
 
-    public String getHomePhone() {
-        return homePhone;
-    }
 
-    public void setHomePhone(String homePhone) {
-        this.homePhone = homePhone;
-    }
-
-    public String getMobilePhone() {
-        return mobilePhone;
-    }
-
-    public void setMobilePhone(String mobilePhone) {
-        this.mobilePhone = mobilePhone;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getEmail_own() {
-        return email_own;
-    }
-
-    public void setEmail_own(String email_own) {
-        this.email_own = email_own;
-    }
-
-    public String getFax() {
-        return fax;
-    }
-
-    public void setFax(String fax) {
-        this.fax = fax;
-    }
-
-    public String getFaxHome() {
-        return faxHome;
-    }
-
-    public void setFaxHome(String faxHome) {
-        this.faxHome = faxHome;
-    }
 
     public String getAddress() {
         return address;
@@ -287,22 +220,6 @@ public class Person implements Serializable {
 
     public void setAddressHome(String addressHome) {
         this.addressHome = addressHome;
-    }
-
-    public String getIcq() {
-        return icq;
-    }
-
-    public void setIcq(String icq) {
-        this.icq = icq;
-    }
-
-    public String getJabber() {
-        return jabber;
-    }
-
-    public void setJabber(String jabber) {
-        this.jabber = jabber;
     }
 
     public String getPassportInfo() {
@@ -355,5 +272,10 @@ public class Person implements Serializable {
 
     public void setGender (En_Gender gender) {
         this.genderCode = gender.getCode();
+    }
+
+    @Override
+    public EntityOption toEntityOption() {
+        return new EntityOption(this.displayShortName, this.getId());
     }
 }

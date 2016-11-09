@@ -10,6 +10,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanyCategory;
+import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.ui.common.client.animation.PlateListAnimation;
 import ru.protei.portal.ui.common.client.events.AppEvents;
@@ -26,7 +27,6 @@ import ru.protei.portal.ui.company.client.activity.item.AbstractCompanyItemView;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -139,19 +139,11 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
         itemView.setActivity( this );
         itemView.setName( company.getCname() );
 
+        PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(company.getContactInfo());
 
-        if(company.getPhone() != null)
-            itemView.setPhone( company.getPhone().value );
-        else
-            itemView.setPhone(null);
-
-        if(company.getEmail() != null)
-            itemView.setEmail( company.getEmail().value);
-        else
-            itemView.setEmail(null);
-
-
-        itemView.setWebsite( company.getWebsite() );
+        itemView.setPhone(infoFacade.getWorkPhone());
+        itemView.setEmail(infoFacade.getEmail());
+        itemView.setWebsite( company.getContactInfo().getWebSite() );
 
         CompanyCategory category = company.getCategory();
         if ( category != null ) {

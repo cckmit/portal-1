@@ -15,8 +15,9 @@ import ru.brainworm.factory.widget.table.client.TableWidget;
 import ru.brainworm.factory.widget.table.client.helper.ClickColumn;
 import ru.brainworm.factory.widget.table.client.helper.SelectionColumn;
 import ru.protei.portal.core.model.dict.En_SortField;
-import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.contact.client.activity.table.AbstractContactTableActivity;
 import ru.protei.portal.ui.contact.client.activity.table.AbstractContactTableView;
 import ru.protei.portal.ui.contact.client.view.table.columns.ContactColumnBuilder;
@@ -42,7 +43,7 @@ public class ContactTableView extends Composite implements AbstractContactTableV
     }
 
     @Override
-    public HasValue<Company> company() {
+    public HasValue<EntityOption> company() {
         return company;
     }
 
@@ -85,7 +86,7 @@ public class ContactTableView extends Composite implements AbstractContactTableV
     }
 
     @UiHandler( "company" )
-    public void onCompanySelected( ValueChangeEvent< Company > event ) {
+    public void onCompanySelected( ValueChangeEvent< EntityOption > event ) {
         if ( activity != null ) {
             activity.onFilterChanged();
         }
@@ -183,9 +184,10 @@ public class ContactTableView extends Composite implements AbstractContactTableV
 
             @Override
             public void fillColumnValue( Element element, Person person ) {
-                element.appendChild( ContactColumnBuilder.make().add( null, person.getWorkPhone() )
-                        .add(null, person.getMobilePhone())
-                        .add( null, person.getHomePhone()).toElement() );
+                PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(person.getContactInfo());
+                element.appendChild( ContactColumnBuilder.make().add( null, infoFacade.getWorkPhone() )
+                        .add(null, infoFacade.getMobilePhone())
+                        .add( null, infoFacade.getHomePhone()).toElement() );
             }
         };
         phone.setHandler( activity );
@@ -198,8 +200,9 @@ public class ContactTableView extends Composite implements AbstractContactTableV
 
             @Override
             public void fillColumnValue( Element element, Person person ) {
-                element.appendChild( ContactColumnBuilder.make().add( null, person.getEmail() )
-                        .add( null, person.getEmail_own() ).toElement() );
+                PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(person.getContactInfo());
+                element.appendChild( ContactColumnBuilder.make().add( null, infoFacade.getEmail() )
+                        .add( null, infoFacade.getEmail_own() ).toElement() );
             }
         };
         email.setHandler( activity );
