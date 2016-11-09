@@ -22,9 +22,12 @@ import ru.protei.portal.core.utils.HelperFunc;
 import ru.protei.portal.ui.common.client.columns.EditActionClickColumn;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
+import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.issue.client.activity.table.AbstractIssueTableActivity;
 import ru.protei.portal.ui.issue.client.activity.table.AbstractIssueTableView;
+
+import java.util.Date;
 
 /**
  * Представление таблицы обращений
@@ -34,6 +37,7 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
         search.getElement().setPropertyString( "placeholder", lang.search() );
+        sortField.setType( ModuleType.ISSUE );
     }
 
     @Override
@@ -71,7 +75,7 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
     public void resetFilter() {
         company.setValue( null );
         showFired.setValue( false );
-        sortField.setValue( En_SortField.person_full_name );
+        sortField.setValue( En_SortField.creation_date );
         sortDir.setValue( true );
         search.setText( "" );
     }
@@ -170,7 +174,8 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
 
             @Override
             public void fillColumnValue( Element element, CaseObject caseObject ) {
-                element.setInnerText( caseObject == null ? "" : caseObject.getCreatorInfo() );
+                Person initiator = caseObject == null ? null : caseObject.getCreator();
+                element.setInnerText( initiator == null ? "" : initiator.getDisplayName() );
             }
         };
         contacts.setHandler( activity );
@@ -183,7 +188,8 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
 
             @Override
             public void fillColumnValue( Element element, CaseObject caseObject ) {
-                element.setInnerText( caseObject == null ? "" : caseObject.getInfo() );
+                String info = caseObject == null ? "" : caseObject.getInfo();
+                element.setInnerText( info );
             }
         };
         info.setHandler( activity );
@@ -196,7 +202,8 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
 
             @Override
             public void fillColumnValue( Element element, CaseObject caseObject ) {
-                element.setInnerText( caseObject == null ? "" : caseObject.getCreated().toString() );
+                Date created = caseObject == null ? null : caseObject.getCreated();
+                element.setInnerText( created == null ? "" : created.toString() );
             }
         };
         creationDate.setHandler( activity );
@@ -209,7 +216,8 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
 
             @Override
             public void fillColumnValue( Element element, CaseObject caseObject ) {
-                element.setInnerText( caseObject == null ? "" : caseObject.getManagerId().toString() );
+                Person manager = caseObject == null ? null : caseObject.getManager();
+                element.setInnerText( manager == null ? "" : manager.getDisplayName() );
             }
         };
         manager.setHandler( activity );

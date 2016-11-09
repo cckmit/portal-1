@@ -25,7 +25,7 @@ public class CaseServiceImpl implements CaseService {
     CaseObjectDAO caseObjectDAO;
 
     @Override
-    public CoreResponse<List<CaseObject>> contactList(CaseQuery query) {
+    public CoreResponse<List<CaseObject>> caseObjectList(CaseQuery query) {
         List<CaseObject> list = caseObjectDAO.getCases( query );
 
         if ( list == null )
@@ -42,9 +42,13 @@ public class CaseServiceImpl implements CaseService {
                 : new CoreResponse<CaseObject>().error(En_ResultStatus.NOT_FOUND);
     }
 
-
     @Override
-    public CoreResponse<Person> saveContact(Person p) {
+    public CoreResponse< CaseObject > saveCaseObject( CaseObject p ) {
+        return new CoreResponse<CaseObject>().success( p );
+    }
+
+//    @Override
+//    public CoreResponse<Person> saveContact(Person p) {
 //        if ( caseObjectDAO.isEmployee(p)) {
 //            log.warn(String.format("person %d is employee",p.getId()));
 //            return new CoreResponse<Person>().error(En_ResultStatus.VALIDATION_ERROR);
@@ -85,5 +89,5 @@ public class CaseServiceImpl implements CaseService {
 //        }
 //
 //        return new CoreResponse<Person>().error(En_ResultStatus.INTERNAL_ERROR);
-    }
+//    }
 }

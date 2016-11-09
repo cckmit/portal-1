@@ -4,13 +4,14 @@ import protei.sql.Column;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.winter.jdbc.annotations.*;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Created by michael on 19.05.16.
  */
 @JdbcEntity(table = "case_object")
-public class CaseObject {
+public class CaseObject implements Serializable {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -45,14 +46,23 @@ public class CaseObject {
     @JdbcColumn(name = "CREATOR")
     private Long creatorId;
 
+    @JdbcJoinedObject( localColumn = "CREATOR", remoteColumn = "id", updateLocalColumn = false )
+    private Person creator;
+
     @JdbcColumn(name = "CREATOR_IP")
     private String creatorIp;
 
     @JdbcColumn(name = "INITIATOR")
     private Long initiatorId;
 
+    @JdbcJoinedObject( localColumn = "INITIATOR", remoteColumn = "id", updateLocalColumn = false )
+    private Person initiator;
+
     @JdbcColumn(name = "MANAGER")
     private Long managerId;
+
+    @JdbcJoinedObject( localColumn = "MANAGER", remoteColumn = "id", updateLocalColumn = false )
+    private Person manager;
 
     @JdbcColumn(name = "KEYWORDS")
     private String keywords;
@@ -218,5 +228,17 @@ public class CaseObject {
 
     public void setCreatorInfo(String creatorInfo) {
         this.creatorInfo = creatorInfo;
+    }
+
+    public Person getCreator() {
+        return creator;
+    }
+
+    public Person getInitiator() {
+        return initiator;
+    }
+
+    public Person getManager() {
+        return manager;
     }
 }

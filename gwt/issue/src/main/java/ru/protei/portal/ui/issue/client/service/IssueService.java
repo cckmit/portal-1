@@ -24,7 +24,7 @@ public interface IssueService extends RemoteService {
      * @param sortDir направление сортировки
      * @return список контактов
      */
-    List< CaseObject > getIssues( String searchPattern, Long companyId, Boolean fired, En_SortField sortField, Boolean sortDir );
+    List< CaseObject > getIssues( String searchPattern, Long companyId, Boolean fired, En_SortField sortField, Boolean sortDir ) throws RequestFailedException;
 
     CaseObject getIssue( long id );
 

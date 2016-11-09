@@ -53,7 +53,7 @@ public abstract class IssueTableActivity implements AbstractIssueTableActivity, 
 
     @Override
     public void onEditClicked(CaseObject value ) {
-        fireEvent(IssueEvents.Edit.byId(value.getId()));
+//        fireEvent(IssueEvents.Edit.byId(value.getId()));
     }
 
 
