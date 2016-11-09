@@ -22,6 +22,7 @@ import ru.protei.portal.ui.common.client.widget.selector.popup.SelectorPopup;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Predicate;
 
 /**
  * Базовая логика селектора
@@ -36,6 +37,10 @@ public abstract class Selector<T>
     public void setValue( T value ) {
         setValue( value, false );
     }
+
+//    public void findAndSelectValue (Predicate<T> predicate, boolean fireEvents) {
+//        setValue(itemToNameModel.keySet().stream().filter(predicate).findFirst().orElse(null), fireEvents);
+//    }
 
     @Override
     public void setValue( T value, boolean fireEvents ) {

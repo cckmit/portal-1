@@ -6,7 +6,6 @@ import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import ru.protei.portal.api.struct.CoreResponse;
-import ru.protei.portal.api.struct.HttpListResult;
 import ru.protei.portal.config.MainConfiguration;
 import ru.protei.portal.core.model.dao.DevUnitDAO;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
@@ -18,6 +17,7 @@ import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by michael on 11.10.16.
@@ -50,15 +50,15 @@ public class ProductServiceTest {
         Assert.assertNotNull(ctx.getBean(DevUnitDAO.class).persist(product));
 
 
-        HttpListResult<DevUnit> result = ctx.getBean(ProductService.class).list(new ProductQuery());
+        CoreResponse<List<DevUnit>> result = ctx.getBean(ProductService.class).list(new ProductQuery());
 
         Assert.assertNotNull(result);
-        Assert.assertTrue(result.getTotalSize() > 0);
+        Assert.assertTrue(result.getDataAmountTotal() > 0);
 
-        Assert.assertNotNull(result.getItems());
-        Assert.assertTrue(result.getItems().size() > 0);
+        Assert.assertNotNull(result.getData());
+        Assert.assertTrue(result.getData().size() > 0);
 
-        System.out.println(result.getItems().get(0).getName());
+        System.out.println(result.getData().get(0).getName());
 
         Assert.assertNotNull(ctx.getBean(DevUnitDAO.class).remove(product));
     }

@@ -15,8 +15,8 @@ public class ValueComment implements Serializable{
     }
 
     public ValueComment(String value, String comment){
-        this.value = value;
-        this.comment = comment;
+        this.value = value == null? "": value;
+        this.comment = comment == null? "": comment;
     }
 
     @JsonProperty(value = "v")

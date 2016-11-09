@@ -3,18 +3,20 @@ package ru.protei.portal.core.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
-import ru.protei.portal.api.struct.HttpListResult;
 import ru.protei.portal.core.model.dao.CompanyCategoryDAO;
 import ru.protei.portal.core.model.dao.CompanyDAO;
 import ru.protei.portal.core.model.dao.CompanyGroupDAO;
 import ru.protei.portal.core.model.dao.CompanyGroupItemDAO;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.dict.En_SortDir;
+import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanyCategory;
 import ru.protei.portal.core.model.ent.CompanyGroup;
 import ru.protei.portal.core.model.ent.CompanyGroupItem;
 import ru.protei.portal.core.model.query.BaseQuery;
 import ru.protei.portal.core.model.query.CompanyQuery;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.utils.EntityCache;
 import ru.protei.portal.core.utils.EntitySelector;
 
@@ -22,6 +24,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 
 /**
@@ -32,7 +35,6 @@ public class CompanyServiceImpl implements CompanyService {
     /**
      *  @TODO
      *  - вынести обработку ответов БД в отдельный Interceptor
-     *  - возвращать HttpListResult внутри CoreResponse
      */
 
     @Autowired
@@ -94,6 +96,14 @@ public class CompanyServiceImpl implements CompanyService {
         company2group.clear();
     }
 
+
+    @Override
+    public CoreResponse<List<EntityOption>> companyOptionList() {
+        List<EntityOption> result = companyDAO.getListByQuery(new CompanyQuery("", En_SortField.comp_name, En_SortDir.ASC))
+                .stream().map(Company::toEntityOption).collect(Collectors.toList());
+
+        return new CoreResponse<List<EntityOption>>().success(result,result.size());
+    }
 
     @Override
     public CoreResponse<CompanyGroup> createGroup(String name, String info) {
@@ -159,27 +169,24 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public HttpListResult<Company> companyList(CompanyQuery query) {
-
-        return new HttpListResult<> (
-               companyDAO.getListByQuery (query), false
-        );
+    public CoreResponse<List<Company>> companyList(CompanyQuery query) {
+        return new CoreResponse<List<Company>> ()
+                .success(companyDAO.getListByQuery (query));
     }
 
     @Override
-    public HttpListResult<CompanyGroup> groupList(BaseQuery query) {
-        return new HttpListResult<>(
+    public CoreResponse<List<CompanyGroup>> groupList(BaseQuery query) {
+        return new CoreResponse<List<CompanyGroup>>().success(
                 companyGroupCache.collect(
                         new CompanyGroupSearchSelector(query.getSearchString()),
                         new ArrayList<>()
-                ), false
+                )
         );
     }
 
     @Override
-    public HttpListResult<CompanyCategory> categoryList() {
-
-        return new HttpListResult<>(companyCategoryDAO.getAll(), false);
+    public CoreResponse<List<CompanyCategory>> categoryList() {
+        return new CoreResponse<List<CompanyCategory>>().success(companyCategoryDAO.getAll());
     }
 
     @Override

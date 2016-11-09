@@ -10,6 +10,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.ent.CompanyCategory;
 import ru.protei.portal.core.model.ent.CompanyGroup;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.NameStatus;
@@ -18,6 +19,7 @@ import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextArea;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.company.client.activity.edit.AbstractCompanyEditActivity;
 import ru.protei.portal.ui.company.client.activity.edit.AbstractCompanyEditView;
+import ru.protei.portal.ui.company.client.widget.category.buttonselector.CategoryButtonSelector;
 import ru.protei.portal.ui.company.client.widget.group.buttonselector.GroupButtonSelector;
 
 /**
@@ -87,6 +89,11 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     }
 
     @Override
+    public HasValue<CompanyCategory> companyCategory() {
+        return companyCategory;
+    }
+
+    @Override
     public HasWidgets phonesContainer() {
         return phonesContainer;
     }
@@ -126,7 +133,6 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
         }
     };
 
-
     @UiField
     Button saveButton;
 
@@ -151,9 +157,6 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     @UiField
     TextBox webSite;
     
-    @UiField
-    Button createCompanyGroupBtn;
-
     @Inject
     @UiField( provided = true )
     GroupButtonSelector companyGroup;
@@ -165,8 +168,13 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     HTMLPanel emailsContainer;
 
     @Inject
+    @UiField ( provided = true )
+    CategoryButtonSelector companyCategory;
+    
+    @Inject
     @UiField
     Lang lang;
+
 
     AbstractCompanyEditActivity activity;
 

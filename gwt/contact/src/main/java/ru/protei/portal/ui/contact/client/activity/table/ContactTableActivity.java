@@ -5,11 +5,10 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.AuthEvents;
-import ru.protei.portal.ui.common.client.events.ContactEvents;
-import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.core.model.query.ContactQuery;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.PeriodicTaskService;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
@@ -54,8 +53,15 @@ public abstract class ContactTableActivity implements AbstractContactTableActivi
     }
 
     @Override
-    public void onEditClicked(Person value) {
-        Window.alert( "Clicked on edit icon!" );
+    public void onEditClicked(Person value ) {
+        //Window.alert( "Clicked on edit icon!" );
+        fireEvent(ContactEvents.Edit.byId(value.getId()));
+    }
+
+
+    @Override
+    public void onCreateClick() {
+        fireEvent(ContactEvents.Edit.newItem(view.company().getValue()));
     }
 
     @Override
@@ -71,9 +77,15 @@ public abstract class ContactTableActivity implements AbstractContactTableActivi
 
         view.clearRecords();
 
-        contactService.getContacts(view.searchPattern().getValue(), view.company().getValue(),
-                view.showFired().getValue() ? null : view.showFired().getValue(),
-                view.sortField().getValue(), view.sortDir().getValue(), new RequestCallback< List< Person > >() {
+        ContactQuery query = new ContactQuery();
+        query.setSearchString(view.searchPattern().getValue());
+        if(view.company().getValue() != null)
+            query.setCompanyId(view.company().getValue().getId());
+        query.setFired(view.showFired().getValue());
+        query.setSortField(view.sortField().getValue());
+        query.setSortDir(view.sortDir().getValue()? En_SortDir.ASC: En_SortDir.DESC);
+
+        contactService.getContacts(query, new RequestCallback< List< Person > >() {
                     @Override
                     public void onError(Throwable throwable) {
                         fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));

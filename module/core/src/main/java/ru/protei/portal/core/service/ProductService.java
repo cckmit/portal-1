@@ -1,16 +1,17 @@
 package ru.protei.portal.core.service;
 
 import ru.protei.portal.api.struct.CoreResponse;
-import ru.protei.portal.api.struct.HttpListResult;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.query.ProductQuery;
+
+import java.util.List;
 
 /**
  * Created by michael on 27.09.16.
  */
 public interface ProductService {
 
-    HttpListResult<DevUnit> list(ProductQuery query);
+    CoreResponse<List<DevUnit>> list(ProductQuery query);
 
     CoreResponse<DevUnit> getProductById(Long id);
 

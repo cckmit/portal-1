@@ -52,17 +52,19 @@ ul.plate-list {
     -webkit-font-smoothing: antialiased;
 
     &.inactive {
-      opacity: 0.7;
-      position: relative;
+      .header-block {
+        opacity: 0.7;
+        position: relative;
 
-      &:after {
-        font: normal normal normal 14px/1 FontAwesome;
-        content: "\f187";
-        position: absolute;
-        font-size: 4em;
-        opacity: 0.25;
-        bottom: 10px;
-        right: 10px;
+        &:after {
+          font: normal normal normal 14px/1 FontAwesome;
+          content: "\f187";
+          position: absolute;
+          font-size: 4em;
+          opacity: 0.25;
+          bottom: 10px;
+          right: 10px;
+        }
       }
     }
 

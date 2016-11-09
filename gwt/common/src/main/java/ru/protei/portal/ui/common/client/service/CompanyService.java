@@ -2,10 +2,13 @@ package ru.protei.portal.ui.common.client.service;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanyCategory;
 import ru.protei.portal.core.model.ent.CompanyGroup;
+import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
 import java.util.List;
@@ -19,13 +22,10 @@ public interface CompanyService extends RemoteService {
 
     /**
      * Получение списка компаний
-     * @param searchPattern шаблон поиска
-     * @param group группа компаний
-     * @param sortField поле для сортировки
-     * @param sortDir направление сортировки
+     * @param query запрос
      * @return список компаний
      */
-    List<Company> getCompanies( String searchPattern, Set< CompanyCategory > categories, CompanyGroup group, En_SortField sortField, Boolean sortDir ) throws RequestFailedException;
+    List<Company> getCompanies( CompanyQuery query ) throws RequestFailedException;
 
     /**
      * Получение списка групп компаний
@@ -70,6 +70,13 @@ public interface CompanyService extends RemoteService {
      * @param id идентификатор компании
      * @return Company
      */
-    Company getCompanyById ( Long id ) throws RequestFailedException;
+    Company getCompanyById ( long id ) throws RequestFailedException;
+
+
+    /**
+     * Получение списка сокращенного представления компании (name,id)
+     * @return
+     */
+    List<EntityOption> companyOptionList () throws RequestFailedException;
 
 }
