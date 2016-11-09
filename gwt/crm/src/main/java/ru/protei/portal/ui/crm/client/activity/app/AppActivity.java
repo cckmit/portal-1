@@ -65,6 +65,11 @@ public abstract class AppActivity
         fireEvent( new ContactEvents.Show ( ));
     }
 
+    @Override
+    public void onIssuesClicked() {
+        fireEvent( new IssueEvents.Show() );
+    }
+
     @Inject
     AbstractAppView view;
 

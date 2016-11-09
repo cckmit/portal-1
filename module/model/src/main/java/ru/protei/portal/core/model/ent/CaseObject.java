@@ -2,10 +2,7 @@ package ru.protei.portal.core.model.ent;
 
 import protei.sql.Column;
 import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.winter.jdbc.annotations.IdInsertMode;
-import ru.protei.winter.jdbc.annotations.JdbcColumn;
-import ru.protei.winter.jdbc.annotations.JdbcEntity;
-import ru.protei.winter.jdbc.annotations.JdbcId;
+import ru.protei.winter.jdbc.annotations.*;
 
 import java.util.Date;
 

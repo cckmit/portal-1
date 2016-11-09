@@ -14,4 +14,6 @@ public interface AbstractAppActivity {
     void onProductsClicked();
 
     void onContactsClicked();
+
+    void onIssuesClicked();
 }

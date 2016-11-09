@@ -1,8 +1,10 @@
-package ru.protei.portal.ui.contact.client.view.table.columns;
+package ru.protei.portal.ui.common.client.columns;
 
 import com.google.gwt.dom.client.AnchorElement;
 import com.google.gwt.dom.client.Style;
-import com.google.gwt.user.client.*;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Event;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.ColumnHeader;
 import ru.brainworm.factory.widget.table.client.ColumnValue;
@@ -20,7 +22,7 @@ public abstract class EditActionClickColumn< T > {
     }
 
     public interface EditHandler< T > extends AbstractColumnHandler< T > {
-        void onEditClicked(T value);
+        void onEditClicked( T value );
     }
 
     @Inject

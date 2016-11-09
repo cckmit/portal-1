@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.contact.client.view.table;
+package ru.protei.portal.ui.issue.client.view.table;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -15,20 +15,21 @@ import ru.brainworm.factory.widget.table.client.TableWidget;
 import ru.brainworm.factory.widget.table.client.helper.ClickColumn;
 import ru.brainworm.factory.widget.table.client.helper.SelectionColumn;
 import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.utils.HelperFunc;
 import ru.protei.portal.ui.common.client.columns.EditActionClickColumn;
-import ru.protei.portal.ui.contact.client.activity.table.AbstractContactTableActivity;
-import ru.protei.portal.ui.contact.client.activity.table.AbstractContactTableView;
-import ru.protei.portal.ui.contact.client.view.table.columns.ContactColumnBuilder;
-import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
+import ru.protei.portal.ui.issue.client.activity.table.AbstractIssueTableActivity;
+import ru.protei.portal.ui.issue.client.activity.table.AbstractIssueTableView;
 
 /**
- * Представление таблицы контактов
+ * Представление таблицы обращений
  */
-public class ContactTableView extends Composite implements AbstractContactTableView {
+public class IssueTableView extends Composite implements AbstractIssueTableView {
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
@@ -36,16 +37,16 @@ public class ContactTableView extends Composite implements AbstractContactTableV
     }
 
     @Override
-    public void setActivity( AbstractContactTableActivity activity ) {
+    public void setActivity( AbstractIssueTableActivity activity ) {
         this.activity = activity;
         initTable();
     }
 
-    @Override
-    public HasValue<Company> company() {
-        return company;
-    }
-
+//    @Override
+//    public HasValue<Company> company() {
+//        return company;
+//    }
+//
     @Override
     public HasValue<Boolean> showFired() {
         return showFired;
@@ -75,8 +76,8 @@ public class ContactTableView extends Composite implements AbstractContactTableV
         search.setText( "" );
     }
 
-    public void addRecord( Person person ) {
-        table.addRow( person );
+    public void addRecord( CaseObject issue ) {
+        table.addRow( issue );
     }
 
     @Override
@@ -84,12 +85,12 @@ public class ContactTableView extends Composite implements AbstractContactTableV
         table.clearRows();
     }
 
-    @UiHandler( "company" )
-    public void onCompanySelected( ValueChangeEvent< Company > event ) {
-        if ( activity != null ) {
-            activity.onFilterChanged();
-        }
-    }
+//    @UiHandler( "company" )
+//    public void onCompanySelected( ValueChangeEvent< Company > event ) {
+//        if ( activity != null ) {
+//            activity.onFilterChanged();
+//        }
+//    }
 
     @UiHandler("create")
     public void onCreateClick (ClickEvent event) {
@@ -131,86 +132,96 @@ public class ContactTableView extends Composite implements AbstractContactTableV
 
     private void initTable () {
 
-        EditActionClickColumn< Person > editClickColumn = new EditActionClickColumn< Person >( lang ) {};
+        EditActionClickColumn< CaseObject > editClickColumn = new EditActionClickColumn< CaseObject> ( lang ) {};
         editClickColumn.setHandler( activity );
         editClickColumn.setEditHandler( activity );
 
-        ClickColumn< Person > displayName = new ClickColumn< Person >() {
+        ClickColumn< CaseObject > issueNumber = new ClickColumn< CaseObject >() {
             @Override
             protected void fillColumnHeader( Element element ) {
-                element.setInnerText( lang.contactFullName() );
+                element.setInnerText( lang.issueNumber() );
             }
 
             @Override
-            public void fillColumnValue( Element element, Person person ) {
-                element.setInnerText( person == null ? "" : person.getDisplayName() );
+            public void fillColumnValue( Element element, CaseObject caseObject ) {
+                element.setInnerText( caseObject == null ? "" : caseObject.getCaseNumber().toString() );
             }
         };
-        displayName.setHandler( activity );
+        issueNumber.setHandler( activity );
 
-        ClickColumn< Person > company = new ClickColumn< Person >() {
+        ClickColumn< CaseObject > product = new ClickColumn< CaseObject >() {
             @Override
             protected void fillColumnHeader( Element element ) {
-                element.setInnerText( lang.company() );
+                element.setInnerText( lang.issueProduct() );
             }
 
             @Override
-            public void fillColumnValue( Element element, Person person ) {
-                element.setInnerText( person == null || person.getCompany() == null ? "" : person.getCompany().getCname() );
+            public void fillColumnValue( Element element, CaseObject caseObject ) {
+                element.setInnerText( caseObject == null ? "" : "продукт" );
             }
         };
-        company.setHandler( activity );
+        product.setHandler( activity );
 
-        ClickColumn< Person > position = new ClickColumn< Person >() {
+        ClickColumn< CaseObject > contacts = new ClickColumn< CaseObject >() {
             @Override
             protected void fillColumnHeader( Element element ) {
-                element.setInnerText( lang.contactPosition() );
+                element.setInnerText( lang.issueContacts() );
             }
 
             @Override
-            public void fillColumnValue( Element element, Person person ) {
-                element.setInnerText( person == null ? "" : person.getPosition() );
-
+            public void fillColumnValue( Element element, CaseObject caseObject ) {
+                element.setInnerText( caseObject == null ? "" : caseObject.getCreatorInfo() );
             }
         };
-        position.setHandler( activity );
+        contacts.setHandler( activity );
 
-        ClickColumn< Person > phone = new ClickColumn< Person >() {
+        ClickColumn< CaseObject > info = new ClickColumn< CaseObject >() {
             @Override
             protected void fillColumnHeader( Element element ) {
-                element.setInnerText( lang.phone() );
+                element.setInnerText( lang.issueInfo() );
             }
 
             @Override
-            public void fillColumnValue( Element element, Person person ) {
-                element.appendChild( ContactColumnBuilder.make().add( null, person.getWorkPhone() )
-                        .add(null, person.getMobilePhone())
-                        .add( null, person.getHomePhone()).toElement() );
+            public void fillColumnValue( Element element, CaseObject caseObject ) {
+                element.setInnerText( caseObject == null ? "" : caseObject.getInfo() );
             }
         };
-        phone.setHandler( activity );
+        info.setHandler( activity );
 
-        ClickColumn< Person > email = new ClickColumn< Person >() {
+        ClickColumn< CaseObject > creationDate = new ClickColumn< CaseObject >() {
             @Override
             protected void fillColumnHeader( Element element ) {
-                element.setInnerText( lang.email() );
+                element.setInnerText( lang.issueCreationDate() );
             }
 
             @Override
-            public void fillColumnValue( Element element, Person person ) {
-                element.appendChild( ContactColumnBuilder.make().add( null, person.getEmail() )
-                        .add( null, person.getEmail_own() ).toElement() );
+            public void fillColumnValue( Element element, CaseObject caseObject ) {
+                element.setInnerText( caseObject == null ? "" : caseObject.getCreated().toString() );
             }
         };
-        email.setHandler( activity );
+        creationDate.setHandler( activity );
+
+        ClickColumn< CaseObject > manager = new ClickColumn< CaseObject >() {
+            @Override
+            protected void fillColumnHeader( Element element ) {
+                element.setInnerText( lang.issueManager() );
+            }
+
+            @Override
+            public void fillColumnValue( Element element, CaseObject caseObject ) {
+                element.setInnerText( caseObject == null ? "" : caseObject.getManagerId().toString() );
+            }
+        };
+        manager.setHandler( activity );
 
         table.addColumn( selectionColumn.header, selectionColumn.values );
         table.addColumn( editClickColumn.header, editClickColumn.values );
-        table.addColumn( displayName.header, displayName.values );
-        table.addColumn( company.header, company.values );
-        table.addColumn( position.header, position.values );
-        table.addColumn( phone.header, phone.values );
-        table.addColumn( email.header, email.values );
+        table.addColumn( issueNumber.header, issueNumber.values );
+        table.addColumn( product.header, product.values );
+        table.addColumn( contacts.header, contacts.values );
+        table.addColumn( info.header, info.values );
+        table.addColumn( creationDate.header, creationDate.values );
+        table.addColumn( manager.header, manager.values );
     }
 
     @Inject
@@ -251,8 +262,8 @@ public class ContactTableView extends Composite implements AbstractContactTableV
 
     SelectionColumn< Person > selectionColumn = new SelectionColumn<>();
 
-    AbstractContactTableActivity activity;
+    AbstractIssueTableActivity activity;
 
     private static ContactTableViewUiBinder ourUiBinder = GWT.create( ContactTableViewUiBinder.class );
-    interface ContactTableViewUiBinder extends UiBinder< HTMLPanel, ContactTableView> {}
+    interface ContactTableViewUiBinder extends UiBinder< HTMLPanel, IssueTableView > {}
 }

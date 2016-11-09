@@ -109,6 +109,14 @@ public class AppView extends Composite implements AbstractAppView, KeyUpHandler,
         }
     }
 
+    @UiHandler( "issues" )
+    public void onIssuesClicked( ClickEvent event ) {
+        event.preventDefault();
+        if ( activity != null ) {
+            activity.onIssuesClicked();
+        }
+    }
+
     @Override
     public void onKeyUp (KeyUpEvent event) {
 
@@ -177,6 +185,8 @@ public class AppView extends Composite implements AbstractAppView, KeyUpHandler,
     HTMLPanel notifyContainer;
     @UiField
     Anchor searchButton;
+    @UiField
+    Anchor issues;
 
     AbstractAppActivity activity;
 
