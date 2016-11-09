@@ -20,9 +20,9 @@
         color:#444;
         font-size: 14px;
         /*     float: left; */
-        text-align: right;
-        margin-right: 6px;
-        margin-top:2px;
+        text-align: left;
+/*        margin-right: 6px;
+        margin-top:2px;*/
     }
 
     fieldset {
@@ -31,9 +31,15 @@
         border-right: none;
         border-top: black 1px solid;
 
+        text-align: left;
+
         legend {
             padding-left: 10px;
             padding-right: 10px;
+        }
+
+        div {
+            width:100%;
         }
 
         span {
@@ -51,9 +57,6 @@
             border-top: 1px solid rgba(84, 129, 193, 0.44);
             margin-bottom:10px;
 
-            label {
-                width:250px;
-            }
         }
 
         &.contacts {
@@ -66,9 +69,6 @@
             padding-top: 5px;
             margin-bottom: 15px;
 
-            label {
-                width:250px;
-            }
         }
 
         &.comments {
@@ -89,28 +89,6 @@
         background: white;
         display: inline-block;
         min-width: 400px;
-
-        fieldset {
-
-            &.contact {
-                width: calc(100% - 30px);
-                padding-top: 5px;
-                padding-left: 10px;
-                float: left;
-                border-top: 1px solid rgba(84, 129, 193, 0.44);
-                margin-bottom: 10px;
-
-                label {
-                    margin: 0;
-                    text-align: left;
-                    min-width: 150px;
-                }
-            }
-        }
     }
-}
 
-.no-width {
-    width: 0%;
-    opacity: 0;
 }

@@ -10,27 +10,27 @@
             <span ui:field="groupCompany"></span>
         </g:HTMLPanel>
 
-        <fieldset class="contacts">
+        <fieldset class="contacts grid">
             <legend><ui:text from="{lang.companyInfoHeader}"/></legend>
-            <div>
-                <label><ui:text from="{lang.phone}"/></label>
-                <span ui:field="phone"></span>
+            <div class="col-xs-12">
+                <label class="col-xs-5 col-md-5"><ui:text from="{lang.phone}"/></label>
+                <span class="col-xs-7 col-md-7" ui:field="phone"></span>
             </div>
-            <div>
-                <label><ui:text from="{lang.companyWebSite}"/></label>
-                <span ui:field="site"></span>
+            <div class="col-xs-12">
+                <label class="col-xs-5 col-md-5"><ui:text from="{lang.companyWebSite}"/></label>
+                <span class="col-xs-7 col-md-7" ui:field="site"></span>
             </div>
-            <div>
-                <label><ui:text from="{lang.email}"/></label>
-                <span ui:field="email"></span>
+            <div class="col-xs-12">
+                <label class="col-xs-5 col-md-5"><ui:text from="{lang.email}"/></label>
+                <span class="col-xs-7 col-md-7" ui:field="email"></span>
             </div>
-            <div>
-                <label><ui:text from="{lang.companyActualAddress}"/></label>
-                <span ui:field="addressFact"></span>
+            <div class="col-xs-12">
+                <label class="col-xs-5 col-md-5"><ui:text from="{lang.companyActualAddress}"/></label>
+                <span class="col-xs-7 col-md-7" ui:field="addressFact"></span>
             </div>
-            <div>
-                <label><ui:text from="{lang.companyLegalAddress}"/></label>
-                <span ui:field="addressDejure"></span>
+            <div class="col-xs-12">
+                <label class="col-xs-5 col-md-5"><ui:text from="{lang.companyLegalAddress}"/></label>
+                <span class="col-xs-7 col-md-7" ui:field="addressDejure"></span>
             </div>
         </fieldset>
 

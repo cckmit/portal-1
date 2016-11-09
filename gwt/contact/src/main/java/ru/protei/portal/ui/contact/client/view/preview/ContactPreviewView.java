@@ -2,10 +2,11 @@ package ru.protei.portal.ui.contact.client.view.preview;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.SpanElement;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.contact.client.activity.preview.AbstractContactPreviewActivity;
@@ -41,14 +42,10 @@ public class ContactPreviewView extends Composite implements AbstractContactPrev
     public void setShortName(String value) { this.secondName.setInnerText( value ); }
 
     @Override
-    public void setGender(String value) {
-        this.gender.setInnerText( value );
-    }
+    public void setGender(String value) { this.gender.setInnerText( value ); }
 
     @Override
-    public void setBirthday(String value) {
-        this.birthday.setInnerText( value );
-    }
+    public void setBirthday(String value) { this.birthday.setInnerText( value ); }
 
     @Override
     public void setCompany ( String value ) { this.company.setInnerText( value ); }
@@ -66,14 +63,10 @@ public class ContactPreviewView extends Composite implements AbstractContactPrev
     public void setPersonalPhone(String value) { this.personalPhone.setInnerText( value ); }
 
     @Override
-    public void setWorkFax(String value) {
-        this.workFax.setInnerText( value );
-    }
+    public void setWorkFax(String value) { this.workFax.setInnerText( value ); }
 
     @Override
-    public void setPersonalFax(String value) {
-        this.personalFax.setInnerText( value );
-    }
+    public void setPersonalFax(String value) { this.personalFax.setInnerText( value ); }
 
     @Override
     public void setWorkEmail(String value) {
@@ -96,16 +89,25 @@ public class ContactPreviewView extends Composite implements AbstractContactPrev
     }
 
     @Override
-    public void setInfo(String value) {
-        this.info.setInnerText( value );
-    }
+    public void setInfo(String value) { this.info.setInnerText( value ); }
 
     @Override
-    public void setLinkToPreview(String value) {
-        this.link.setInnerText( lang.linkToObject() );
+    public HasVisibility fullScreen () { return fullScreen; }
+
+    @Override
+    public HTMLPanel preview () { return preview; }
+
+    @UiHandler( "fullScreen" )
+    public void onFullScreenClicked ( ClickEvent event) {
+        event.preventDefault();
+
+        if ( activity != null ) {
+            activity.onFullScreenPreviewClicked();
+        }
     }
 
-
+    @UiField
+    HTMLPanel preview;
     @UiField
     SpanElement lastName;
     @UiField
@@ -145,7 +147,7 @@ public class ContactPreviewView extends Composite implements AbstractContactPrev
     @UiField
     SpanElement department;
     @UiField
-    SpanElement link;
+    Anchor fullScreen;
 
     @Inject
     @UiField

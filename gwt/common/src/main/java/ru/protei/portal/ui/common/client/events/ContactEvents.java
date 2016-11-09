@@ -1,9 +1,10 @@
 package ru.protei.portal.ui.common.client.events;
 
 import com.google.gwt.user.client.ui.HasWidgets;
+import ru.brainworm.factory.context.client.annotation.Name;
 import ru.brainworm.factory.context.client.annotation.Url;
-import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.ent.Person;
 
 /**
  * Created by turik on 28.10.16.
@@ -20,10 +21,7 @@ public class ContactEvents {
     /**
      * Показать превью контакта
      */
-//    @Url( value = "preview", primary = false )
     public static class ShowPreview {
-
-//        public ShowPreview() {}
 
         public ShowPreview ( HasWidgets parent, Person contact )
         {
@@ -34,6 +32,23 @@ public class ContactEvents {
         public Person contact;
         public HasWidgets parent;
 
+    }
+
+    /**
+     * Показать превью контакта full screen
+     */
+    @Url( value = "contact_preview", primary = true )
+    public static class ShowFullScreen {
+
+        public ShowFullScreen() {}
+
+        public ShowFullScreen ( Long id )
+        {
+            this.contactId = id;
+        }
+
+        @Name( "id" )
+        public Long contactId;
     }
 
     @Url( value = "contact", primary = false )

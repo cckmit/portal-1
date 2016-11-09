@@ -591,13 +591,35 @@ label.bordered:after{
   background-color: #f6f7f8;
 }
 
-.table > tbody > tr .selected {
+.table > tbody > tr.selected, tr.selected:hover {
   background-color: #ddd;
 }
 
-.selected, .selected:hover {
-  background: #ddd;
+/* table expandable width */
+
+.no-width {
+  width: 0%;
+  opacity: 0;
 }
+
+.table-container {
+  -webkit-transition: all 0.5s;
+  -moz-transition: all 0.5s;
+  -o-transition: all 0.5s;
+  transition: all 0.5s;
+  // временное решение
+  height: calc(100% - 59px - 30px);
+  overflow-y: auto;
+}
+
+.preview-container {
+  -webkit-transition: all 0.5s;
+  -moz-transition: all 0.5s;
+  -o-transition: all 0.5s;
+  transition: all 0.5s;
+  right: 0;
+}
+
 /************************/
 
 
@@ -653,3 +675,9 @@ label.bordered:after{
   margin-right: 7px;
 }
 
+.pull-right {
+  float: right !important;
+}
+.pull-left {
+  float: left !important;
+}

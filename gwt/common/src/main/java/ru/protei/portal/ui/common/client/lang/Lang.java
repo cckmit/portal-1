@@ -124,7 +124,7 @@ public interface Lang extends Messages {
 
     String contactPosition();
 
-    String linkToObject();
+    String fullScreen();
 
     String contactLastName();
 

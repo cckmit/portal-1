@@ -1,12 +1,17 @@
 package ru.protei.portal.ui.contact.client.activity.preview;
 
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.ContactEvents;
+import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.shared.model.RequestCallback;
+import ru.protei.portal.ui.contact.client.service.ContactServiceAsync;
 
 /**
  * Активность превью контакта
@@ -19,11 +24,37 @@ public abstract class ContactPreviewActivity implements Activity, AbstractContac
     }
 
     @Event
+    public void onInit( AppEvents.InitDetails event ) {
+        this.initDetails = event;
+    }
+
+    @Event
     public void onShow( ContactEvents.ShowPreview event ) {
         event.parent.clear();
         event.parent.add( view.asWidget() );
 
+        this.contactId = event.contact.getId();
+
         fillView( event.contact );
+        view.fullScreen().setVisible( true );
+        view.preview().setStyleName( "preview" );
+    }
+
+    @Event
+    public void onShow( ContactEvents.ShowFullScreen event ) {
+        initDetails.parent.clear();
+        initDetails.parent.add( view.asWidget() );
+
+        this.contactId = event.contactId;
+
+        fillView( contactId );
+        view.fullScreen().setVisible( false );
+        view.preview().addStyleName( "col-xs-12 col-lg-6" );
+    }
+
+    @Override
+    public void onFullScreenPreviewClicked () {
+        fireEvent( new ContactEvents.ShowFullScreen( contactId ) );
     }
 
 
@@ -37,20 +68,49 @@ public abstract class ContactPreviewActivity implements Activity, AbstractContac
         view.setPosition( value.getPosition() );
         view.setDepartment( value.getDepartment() );
         view.setWorkPhone( value.getWorkPhone() );
-        view.setPersonalPhone ( value.getHomePhone() );
+        view.setPersonalPhone( value.getHomePhone() );
         view.setWorkFax( value.getFax() );
         view.setPersonalFax( value.getFaxHome() );
         view.setWorkEmail( value.getEmail() );
         view.setPersonalEmail( value.getEmail_own() );
         view.setWorkAddress( value.getAddress() );
         view.setPersonalAddress( value.getAddressHome() );
-        view.setBirthday( value.getBirthday().toString() );
+        view.setBirthday( format.format( value.getBirthday() ) );
         view.setGender( value.getGender().getCode() );
         view.setInfo( value.getInfo() );
+    }
+
+    private void fillView( Long id ) {
+
+        if (id == null) {
+            fireEvent( new NotifyEvents.Show( lang.errIncorrectParams(), NotifyEvents.NotifyType.ERROR ) );
+            return;
+        }
+
+        contactService.getContact( id, new RequestCallback<Person>() {
+            @Override
+            public void onError ( Throwable throwable ) {
+                fireEvent( new NotifyEvents.Show( lang.errNotFound(), NotifyEvents.NotifyType.ERROR ) );
+            }
+
+            @Override
+            public void onSuccess ( Person value ) {
+                fireEvent( new AppEvents.InitPanelName( value.getDisplayName() ) );
+                fillView( value );
+            }
+        } );
     }
 
     @Inject
     Lang lang;
     @Inject
     AbstractContactPreviewView view;
+
+    @Inject
+    ContactServiceAsync contactService;
+
+    private Long contactId;
+    private AppEvents.InitDetails initDetails;
+
+    DateTimeFormat format = DateTimeFormat.getFormat("dd.MM.yyyy");
 }
