@@ -66,12 +66,14 @@ public class CompanyServiceTest {
             CompanyGroup testGroup = resp.getData();
             Company proteiCompany = service.getCompanyById(1L).getData();
 
+            service.updateCompany(proteiCompany, testGroup);
+
             Assert.assertNotNull(proteiCompany);
 
-            CoreResponse<CompanyGroupItem> linkResult = service.addCompanyToGroup(testGroup.getId(), proteiCompany.getId());
-
-            Assert.assertTrue(linkResult.isOk());
-            Assert.assertNotNull(linkResult.getData());
+//            CoreResponse<CompanyGroupItem> linkResult = service.addCompanyToGroup(testGroup.getId(), proteiCompany.getId());
+//
+//            Assert.assertTrue(linkResult.isOk());
+//            Assert.assertNotNull(linkResult.getData());
 
             proteiCompany = service.getCompanyById(1L).getData();
 

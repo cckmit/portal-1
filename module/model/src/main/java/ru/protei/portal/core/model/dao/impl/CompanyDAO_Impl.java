@@ -22,7 +22,7 @@ public class CompanyDAO_Impl extends PortalBaseJdbcDAO<Company> implements Compa
         args.add(HelperFunc.makeLikeArg(query.getSearchString(), true));
 
         if (query.getGroupId() != null && query.getGroupId() > 0) {
-            condition.append(" and Company.id in (select company_id from company_group_item where group_id=?)");
+            condition.append(" and groupId = ?");
             args.add(query.getGroupId());
         }
 

@@ -39,8 +39,8 @@ public interface CompanyService {
      */
     CoreResponse<CompanyGroup> createGroup (String name, String info);
 
-    CoreResponse<CompanyGroupItem> addCompanyToGroup (Long groupId, Long companyId);
-
-    CoreResponse<CompanyGroupItem> delCompanyFromGroup (Long groupId,
-                                                      Long companyId);
+//    CoreResponse<CompanyGroupItem> addCompanyToGroup (Long groupId, Long companyId);
+//
+//    CoreResponse<CompanyGroupItem> delCompanyFromGroup (Long groupId,
+//                                                      Long companyId);
 }
