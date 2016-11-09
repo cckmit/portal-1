@@ -46,7 +46,8 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
         if(event.getCompanyId() == null) {
             this.fireEvent(new AppEvents.InitPanelName(lang.companyNew()));
-            fillView(tempCompany = createCompany());
+            tempCompany = createCompany();
+            fillView(tempCompany);
             resetValidationStatus();
         }else {
             this.fireEvent(new AppEvents.InitPanelName(lang.companyEdit()));
@@ -56,7 +57,8 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
                 @Override
                 public void onSuccess(Company company) {
-                    fillView(tempCompany = company);
+                    tempCompany = company;
+                    fillView(tempCompany);
                     resetValidationStatus();
                 }
             });
