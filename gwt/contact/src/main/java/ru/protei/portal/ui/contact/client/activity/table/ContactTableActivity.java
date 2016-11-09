@@ -4,7 +4,9 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.query.ContactQuery;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
@@ -54,13 +56,13 @@ public abstract class ContactTableActivity implements AbstractContactTableActivi
 
     @Override
     public void onEditClicked(Person value ) {
-        fireEvent(ContactEvents.Edit.byId(value.getId()));
+        fireEvent( ContactEvents.Edit.byId( value.getId() ) );
     }
 
 
     @Override
     public void onCreateClick() {
-        fireEvent(ContactEvents.Edit.newItem(view.company().getValue()));
+        fireEvent(ContactEvents.Edit.newItem( view.company().getValue() ));
     }
 
     @Override
@@ -77,22 +79,28 @@ public abstract class ContactTableActivity implements AbstractContactTableActivi
         view.clearRecords();
         animation.closeDetails();
 
-        contactService.getContacts( view.searchPattern().getValue(), view.company().getValue(),
-                view.showFired().getValue() ? null : view.showFired().getValue(),
-                view.sortField().getValue(), view.sortDir().getValue(), new RequestCallback<List<Person>>() {
-                    @Override
-                    public void onError ( Throwable throwable ) {
-                        fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
-                    }
+        ContactQuery query = new ContactQuery();
+        query.setSearchString(view.searchPattern().getValue());
+        if(view.company().getValue() != null)
+            query.setCompanyId(view.company().getValue().getId());
+        query.setFired(view.showFired().getValue());
+        query.setSortField(view.sortField().getValue() );
+        query.setSortDir(view.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC );
 
-                    @Override
+        contactService.getContacts(query, new RequestCallback< List< Person > >() {
+            @Override
+            public void onError ( Throwable throwable ) {
+                fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
+            }
+
+            @Override
                     public void onSuccess ( List<Person> persons ) {
                         fillViewHandler = taskService.startPeriodicTask( persons, fillViewer, 50, 50 );
                     }
-                } );
+        } );
     }
 
-    private void showPreview( Person value ) {
+    private void showPreview ( Person value ) {
 
         if ( value == null ) {
             animation.closeDetails();

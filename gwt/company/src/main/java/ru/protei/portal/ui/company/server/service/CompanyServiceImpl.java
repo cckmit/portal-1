@@ -12,12 +12,11 @@ import ru.protei.portal.core.model.ent.CompanyCategory;
 import ru.protei.portal.core.model.ent.CompanyGroup;
 import ru.protei.portal.core.model.query.BaseQuery;
 import ru.protei.portal.core.model.query.CompanyQuery;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.service.CompanyService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Реализация сервиса по работе с компаниями
@@ -26,24 +25,29 @@ import java.util.stream.Collectors;
 public class CompanyServiceImpl implements CompanyService {
 
     @Override
-    public List< Company > getCompanies( String searchPattern, Set< CompanyCategory > categories, CompanyGroup group, En_SortField sortField, Boolean sortDir) throws RequestFailedException {
+    public List<EntityOption> companyOptionList() throws RequestFailedException {
+        log.debug( "get company option list" );
 
-        List< Long > categoryIds = null;
-        if ( categories != null ) {
-            categoryIds = categories.stream()
-                    .map( CompanyCategory::getId )
-                    .collect( Collectors.toList() );
-        }
+        CoreResponse< List<EntityOption> > result = companyService.companyOptionList();
+
+        log.debug("result status: {}, data-amount: {}", result.getStatus(), result.isOk() ? result.getDataAmountTotal() : 0);
+
+        if (result.isError())
+            throw new RequestFailedException(result.getStatus());
+
+        return result.getData();
+    }
+
+    @Override
+    public List< Company > getCompanies( CompanyQuery companyQuery) throws RequestFailedException {
+
+        List< Long > categoryIds = companyQuery.getCategoryIds();
 
         log.debug( "getCompanies(): searchPattern={} | categories={} | group={} | sortField={} | sortDir={}",
-                searchPattern, categoryIds, (group != null ? group.getId() : null),
-                sortField, (sortDir ? En_SortDir.ASC : En_SortDir.DESC) );
+                companyQuery.getSearchString(), categoryIds, companyQuery.getGroupId(),
+                companyQuery.getSortField(), companyQuery.getSortDir() );
 
-        CompanyQuery query = new CompanyQuery( searchPattern, sortField, sortDir ? En_SortDir.ASC : En_SortDir.DESC );
-        query.setGroupId( group != null ? group.getId() : null );
-        query.setCategoryIds( categoryIds );
-
-        CoreResponse< List<Company>> result = companyService.companyList(query);
+        CoreResponse< List<Company>> result = companyService.companyList(companyQuery);
 
         if (result.isError())
             throw new RequestFailedException(result.getStatus());

@@ -8,8 +8,10 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
+import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.DevUnit;
+import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.ui.common.client.animation.PlateListAnimation;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
@@ -92,10 +94,13 @@ public abstract class ProductListActivity implements AbstractProductListActivity
         view.getItemsContainer().clear();
         modelToView.clear();
 
-        productService.getProductList(view.searchPattern().getValue(),
-                view.showDeprecated().getValue() ? null : En_DevUnitState.ACTIVE,
-                view.sortField().getValue(),
-                view.sortDir().getValue(),
+        ProductQuery query = new ProductQuery();
+        query.setSearchString(view.searchPattern().getValue());
+        query.setState(view.showDeprecated().getValue() ? null : En_DevUnitState.ACTIVE);
+        query.setSortField(view.sortField().getValue());
+        query.setSortDir(view.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
+
+        productService.getProductList(query,
                 new RequestCallback<List<DevUnit>>() {
                     @Override
                     public void onError(Throwable throwable) {

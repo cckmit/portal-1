@@ -1,13 +1,13 @@
 package ru.protei.portal.ui.common.client.service;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanyCategory;
 import ru.protei.portal.core.model.ent.CompanyGroup;
+import ru.protei.portal.core.model.query.CompanyQuery;
+import ru.protei.portal.core.model.view.EntityOption;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * Асинхронный сервис по работе с компаниями
@@ -16,13 +16,10 @@ public interface CompanyServiceAsync {
 
     /**
      * Получение списка компаний
-     * @param searchPattern шаблон поиска
-     * @param group группа компаний
-     * @param  sortField поле для сортировки
-     * @param sortDir направление сортировки
+     * @param query запрос
      * @return список компаний
      */
-    void getCompanies( String searchPattern, Set< CompanyCategory > categories, CompanyGroup group, En_SortField sortField, Boolean sortDir, AsyncCallback< List< Company > > async );
+    void getCompanies( CompanyQuery query, AsyncCallback< List< Company > > async );
 
     /**
      * Получение списка групп компаний
@@ -68,4 +65,10 @@ public interface CompanyServiceAsync {
      */
     void getCompanyById (long id, AsyncCallback<Company> callback);
 
+
+    /**
+     * Получение списка сокращенного представления компании (name,id)
+     * @param callback
+     */
+    void companyOptionList (AsyncCallback<List<EntityOption>> callback);
 }

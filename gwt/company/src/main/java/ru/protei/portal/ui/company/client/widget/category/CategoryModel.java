@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.company.client.widget.category.btngroup;
+package ru.protei.portal.ui.company.client.widget.category;
 
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -22,9 +22,9 @@ public abstract class CategoryModel implements Activity {
         refreshOptions();
     }
 
-    public void subscribe( CategoryBtnGroup btnGroup ) {
-        subscribers.add( btnGroup );
-        btnGroup.fillOptions( list );
+    public void subscribe( ModelSelector<CompanyCategory> selector ) {
+        subscribers.add( selector );
+        selector.fillOptions( list );
     }
 
     private void notifySubscribers() {

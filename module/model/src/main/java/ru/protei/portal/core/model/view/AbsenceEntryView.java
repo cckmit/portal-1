@@ -1,10 +1,8 @@
 package ru.protei.portal.core.model.view;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.springframework.beans.factory.annotation.Autowired;
-import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.ent.PersonAbsence;
-import ru.protei.portal.core.utils.HelperFunc;
+import ru.protei.portal.core.model.helper.HelperFunc;
 
 /**
  * Created by michael on 06.07.16.

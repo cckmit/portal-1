@@ -1,11 +1,12 @@
 package ru.protei.portal.ui.contact.client.activity.edit;
 
 import com.google.gwt.user.client.ui.HasText;
+import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
-import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
 import ru.protei.portal.core.model.dict.En_Gender;
-import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
+import ru.protei.portal.core.model.view.EntityOption;
+
+import java.util.Date;
 
 /**
  * Created by michael on 02.11.16.
@@ -20,7 +21,7 @@ public interface AbstractContactEditView extends IsWidget {
     HasText displayName();
     HasText shortName();
 
-    SinglePicker birthDay ();
+    HasValue<Date> birthDay ();
 
     HasText workPhone ();
 
@@ -28,11 +29,11 @@ public interface AbstractContactEditView extends IsWidget {
 
     HasText workEmail();
 
-    HasText personalEmail ();
+//    HasText personalEmail ();
 
     HasText workFax();
 
-    HasText homeFax();
+//    HasText homeFax();
 
     HasText workAddress ();
 
@@ -44,7 +45,7 @@ public interface AbstractContactEditView extends IsWidget {
 
     HasText personInfo ();
 
-    Selector<Company> company();
+    HasValue<EntityOption> company();
 
-    Selector<En_Gender> gender ();
+    HasValue<En_Gender> gender ();
 }

@@ -5,9 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
-import ru.protei.portal.core.model.dict.En_DevUnitState;
-import ru.protei.portal.core.model.dict.En_SortDir;
-import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
@@ -22,15 +19,10 @@ import java.util.List;
 public class ProductServiceImpl implements ProductService {
 
     @Override
-    public List<DevUnit> getProductList(String param, En_DevUnitState state, En_SortField sortField, Boolean sortDir) throws RequestFailedException {
+    public List<DevUnit> getProductList(ProductQuery productQuery) throws RequestFailedException {
 
-        log.info (" getProductList: param={} | showDeprecated={} | sortField={} | order={}", param, state, sortField.getFieldName(), sortDir.toString());
-
-        productQuery = new ProductQuery();
-        productQuery.setSearchString(param);
-        productQuery.setState(state);
-        productQuery.setSortField(sortField);
-        productQuery.setSortDir(sortDir ? En_SortDir.ASC : En_SortDir.DESC);
+        log.info (" getProductList: search={} | showDeprecated={} | sortField={} | order={}",
+                productQuery.getSearchString(), productQuery.getState(), productQuery.getSortField(), productQuery.getSortDir());
 
         CoreResponse<List<DevUnit>> result = productService.list(productQuery);
 

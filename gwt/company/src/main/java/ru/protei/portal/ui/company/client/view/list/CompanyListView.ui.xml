@@ -1,20 +1,20 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:companycategorybtngroup='urn:import:ru.protei.portal.ui.company.client.widget.category.btngroup'
-             xmlns:sortfieldselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.sortfield'
-             xmlns:companygroupselector='urn:import:ru.protei.portal.ui.company.client.widget.group.buttonselector'
+             xmlns:companycategory='urn:import:ru.protei.portal.ui.company.client.widget.category.btngroup'
+             xmlns:sortfield='urn:import:ru.protei.portal.ui.common.client.widget.selector.sortfield'
+             xmlns:companygroup='urn:import:ru.protei.portal.ui.company.client.widget.group.buttonselector'
              xmlns:platelist="urn:import:ru.protei.portal.ui.common.client.widget.platelist">
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
     <g:HTMLPanel styleName="main-content">
         <div class="controlButtons">
-            <companycategorybtngroup:CategoryBtnGroup ui:field="categories"/>
+            <companycategory:CategoryBtnGroup ui:field="categories"/>
             <div class="buttons_group">
-                <companygroupselector:GroupButtonSelector ui:field="group"/>
+                <companygroup:GroupButtonSelector ui:field="group"/>
             </div>
             <div class="buttons_group">
                 <div class="regulator">
                     <ui:text from="{lang.sortBy}"/>
-                    <sortfieldselector:SortFieldSelector ui:field="sortField" type="COMPANY"/>
+                    <sortfield:SortFieldSelector ui:field="sortField" type="COMPANY"/>
                     <div class="button empty whiteC switcher">
                         <g:ToggleButton ui:field="sortDir" styleName="sorting_button"/>
                     </div>

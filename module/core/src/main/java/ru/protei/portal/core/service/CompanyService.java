@@ -7,6 +7,7 @@ import ru.protei.portal.core.model.ent.CompanyGroup;
 import ru.protei.portal.core.model.ent.CompanyGroupItem;
 import ru.protei.portal.core.model.query.BaseQuery;
 import ru.protei.portal.core.model.query.CompanyQuery;
+import ru.protei.portal.core.model.view.EntityOption;
 
 import java.util.List;
 
@@ -14,6 +15,8 @@ import java.util.List;
  * Created by michael on 27.09.16.
  */
 public interface CompanyService {
+
+    CoreResponse<List<EntityOption>> companyOptionList ();
 
     CoreResponse<List<Company>> companyList(CompanyQuery query);
 
