@@ -48,6 +48,7 @@ public class MigrateCrmSessions implements MigrateAction {
                     obj.setId(null);
                     obj.setCreated((Date) row.get("dtCreation"));
                     obj.setCaseNumber((Long) row.get("nID"));
+                    obj.setInitiatorCompanyId((Long)row.get("nCompanyID"));
 //                    obj.setCreatorId((Long) row.get("nCreatorID"));
 //                    obj.setCreatorIp((String)row.get("strClientIp"));
 //                    obj.setCreatorInfo((String)row.get("str"));

@@ -158,13 +158,13 @@ public class CompanyServiceImpl implements CompanyService {
      * @return
      */
     protected Company complete(Company company) {
-        company.setGroups(company2group.get(company.getId()));
+//        company.setGroups(company2group.get(company.getId()));
         return company;
     }
 
     protected List<Company> completeList (List<Company> companies) {
-        for (Company company : companies)
-            complete(company);
+//        for (Company company : companies)
+//            complete(company);
         return companies;
     }
 
