@@ -165,6 +165,13 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
             }
         };
 
+        StaticTextColumn< Person > department = new StaticTextColumn<Person>( lang.department() ) {
+            @Override
+            public String getColumnValue( Person person ) {
+                return person == null ? "" : person.getDepartment();
+            }
+        };
+
         StaticTextColumn< Person > phone = new StaticTextColumn<Person>( lang.phone() ) {
             @Override
             public String getColumnValue( Person person ) {
@@ -185,6 +192,7 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
         table.addColumn( editColumn.header, editColumn.values );
         table.addColumn( displayName.header, displayName.values );
         table.addColumn( position.header, position.values );
+        table.addColumn( department.header, department.values );
         table.addColumn( phone.header, phone.values );
         table.addColumn( email.header, email.values );
 

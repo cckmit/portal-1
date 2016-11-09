@@ -53,18 +53,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
             fireEvent(new ValueCommentEvents.ShowList(view.emailsContainer(), companyEmails = new ArrayList<>()));
         } else {
 
-            ContactQuery query = new ContactQuery( event.getCompanyId(), null, En_SortField.person_full_name, En_SortDir.ASC );
-            contactService.getContacts( query, new RequestCallback<List<Person>>() {
-                @Override
-                public void onError( Throwable throwable ) {
-                    fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
-                }
-
-                @Override
-                public void onSuccess( List<Person> persons ) {
-                    view.addContacts( persons );
-                }
-            } );
+            requestContacts( event.getCompanyId() );
 
         }
     }
@@ -152,6 +141,22 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
                 }
         );
 
+    }
+
+    private void requestContacts( Long companyId ) {
+
+        ContactQuery query = new ContactQuery( companyId, null, En_SortField.person_full_name, En_SortDir.ASC );
+        contactService.getContacts( query, new RequestCallback<List<Person>>() {
+            @Override
+            public void onError( Throwable throwable ) {
+                fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
+            }
+
+            @Override
+            public void onSuccess( List<Person> persons ) {
+                view.addContacts( persons );
+            }
+        } );
     }
 
     private boolean validateFieldAndGetResult(HasValidable validator, HasText field){

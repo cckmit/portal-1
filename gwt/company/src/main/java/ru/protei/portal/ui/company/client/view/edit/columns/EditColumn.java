@@ -43,6 +43,11 @@ public class EditColumn< T > {
                 return;
             }
 
+            com.google.gwt.dom.client.Element target = event.getEventTarget().cast();
+            if ( !"a".equalsIgnoreCase(target.getNodeName() ) ) {
+                return;
+            }
+
             event.preventDefault();
             if ( handler != null ) {
                 handler.onEditClicked( t );
