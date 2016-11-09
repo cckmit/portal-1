@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.contact.client.service;
+package ru.protei.portal.ui.common.client.service;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import ru.protei.portal.core.model.ent.Person;

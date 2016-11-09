@@ -12,7 +12,7 @@ import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.ContactEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.contact.client.service.ContactServiceAsync;
+import ru.protei.portal.ui.common.client.service.ContactServiceAsync;
 
 /**
  * Created by michael on 02.11.16.

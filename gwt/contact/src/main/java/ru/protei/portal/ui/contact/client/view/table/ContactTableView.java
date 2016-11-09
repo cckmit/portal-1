@@ -19,7 +19,7 @@ import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.ui.contact.client.activity.table.AbstractContactTableActivity;
 import ru.protei.portal.ui.contact.client.activity.table.AbstractContactTableView;
-import ru.protei.portal.ui.contact.client.view.table.columns.ContactColumnBuilder;
+import ru.protei.portal.ui.common.client.common.ContactColumnBuilder;
 import ru.protei.portal.ui.contact.client.view.table.columns.EditActionClickColumn;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -75,6 +75,7 @@ public class ContactTableView extends Composite implements AbstractContactTableV
         search.setText( "" );
     }
 
+    @Override
     public void addRecord( Person person ) {
         table.addRow( person );
     }

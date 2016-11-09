@@ -10,9 +10,9 @@ import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.query.ContactQuery;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.PeriodicTaskService;
+import ru.protei.portal.ui.common.client.common.PeriodicTaskService;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
-import ru.protei.portal.ui.contact.client.service.ContactServiceAsync;
+import ru.protei.portal.ui.common.client.service.ContactServiceAsync;
 
 import java.util.List;
 import java.util.function.Consumer;

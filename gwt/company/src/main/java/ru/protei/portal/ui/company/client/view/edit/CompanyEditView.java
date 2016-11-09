@@ -10,17 +10,24 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.brainworm.factory.widget.table.client.TableWidget;
+import ru.brainworm.factory.widget.table.client.helper.StaticTextColumn;
 import ru.protei.portal.core.model.ent.CompanyCategory;
 import ru.protei.portal.core.model.ent.CompanyGroup;
-import ru.protei.portal.ui.common.client.service.NameStatus;
+import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.ui.common.client.common.ContactColumnBuilder;
+import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextArea;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.company.client.activity.edit.AbstractCompanyEditActivity;
 import ru.protei.portal.ui.company.client.activity.edit.AbstractCompanyEditView;
+import ru.protei.portal.ui.company.client.view.edit.columns.EditColumn;
 import ru.protei.portal.ui.company.client.widget.category.buttonselector.CategoryButtonSelector;
 import ru.protei.portal.ui.company.client.widget.group.buttonselector.GroupButtonSelector;
 
+import java.util.List;
 import java.util.logging.Logger;
 
 /**
@@ -31,11 +38,13 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+        initContactTable();
     }
 
     @Override
     public void setActivity( AbstractCompanyEditActivity activity ) {
         this.activity = activity;
+        editColumn.setHandler( activity );
     }
 
     @Override
@@ -103,6 +112,20 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
         return emailsContainer;
     }
 
+    @Override
+    public void addContacts( List<Person> persons ) {
+        persons.forEach( person -> {
+            table.addRow( person );
+        } );
+        table.setVisible( true );
+    }
+
+    @Override
+    public void clearContacts() {
+        table.clearRows();
+        table.setVisible( false );
+    }
+
     @UiHandler( "saveButton" )
     public void onSaveClicked( ClickEvent event ) {
         if ( activity != null ) {
@@ -124,14 +147,49 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
         timer.schedule( 300 );
     }
 
-    Timer timer = new Timer() {
-        @Override
-        public void run() {
-            if ( activity != null ) {
-                activity.onChangeCompanyName();
+    private void initContactTable() {
+
+        editColumn = new EditColumn<>( lang );
+
+        StaticTextColumn< Person > displayName = new StaticTextColumn<Person>( lang.contactFullName() ) {
+            @Override
+            public String getColumnValue( Person person ) {
+                return person == null ? "" : person.getDisplayName();
             }
-        }
-    };
+        };
+
+        StaticTextColumn< Person > position = new StaticTextColumn<Person>( lang.contactPosition() ) {
+            @Override
+            public String getColumnValue( Person person ) {
+                return person == null ? "" : person.getPosition();
+            }
+        };
+
+        StaticTextColumn< Person > phone = new StaticTextColumn<Person>( lang.phone() ) {
+            @Override
+            public String getColumnValue( Person person ) {
+                return ContactColumnBuilder.make().add( null, person.getWorkPhone() )
+                        .add(null, person.getMobilePhone())
+                        .add( null, person.getHomePhone()).toElement().getInnerText();
+            }
+        };
+
+        StaticTextColumn< Person > email = new StaticTextColumn<Person>( lang.email() ) {
+            @Override
+            public String getColumnValue( Person person ) {
+                return ContactColumnBuilder.make().add( null, person.getEmail() )
+                        .add( null, person.getEmail_own() ).toElement().getInnerText();
+            }
+        };
+
+        table.addColumn( editColumn.header, editColumn.values );
+        table.addColumn( displayName.header, displayName.values );
+        table.addColumn( position.header, position.values );
+        table.addColumn( phone.header, phone.values );
+        table.addColumn( email.header, email.values );
+
+        table.setVisible( false );
+    }
 
     @UiField
     Button saveButton;
@@ -171,6 +229,23 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     @UiField ( provided = true )
     CategoryButtonSelector companyCategory;
 
+    @UiField
+    TableWidget table;
+
+    @Inject
+    @UiField
+    Lang lang;
+
+    EditColumn< Person > editColumn;
+
+    Timer timer = new Timer() {
+        @Override
+        public void run() {
+            if ( activity != null ) {
+                activity.onChangeCompanyName();
+            }
+        }
+    };
 
     AbstractCompanyEditActivity activity;
 
