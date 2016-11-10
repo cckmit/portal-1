@@ -3,5 +3,7 @@
     <source path='dict'/>
     <source path='ent'/>
     <source path='view'/>
+    <source path='struct'/>
+    <source path='helper'/>
     <source path='query'/>
 </module>

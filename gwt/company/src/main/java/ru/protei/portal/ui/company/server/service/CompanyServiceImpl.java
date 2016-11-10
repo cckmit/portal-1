@@ -12,6 +12,7 @@ import ru.protei.portal.core.model.ent.CompanyCategory;
 import ru.protei.portal.core.model.ent.CompanyGroup;
 import ru.protei.portal.core.model.query.BaseQuery;
 import ru.protei.portal.core.model.query.CompanyQuery;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.service.CompanyService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
@@ -24,6 +25,20 @@ import java.util.stream.Collectors;
  */
 @Service( "CompanyService" )
 public class CompanyServiceImpl implements CompanyService {
+
+    @Override
+    public List<EntityOption> companyOptionList() throws RequestFailedException {
+        log.debug( "get company option list" );
+
+        CoreResponse< List<EntityOption> > result = companyService.companyOptionList();
+
+        log.debug("result status: {}, data-amount: {}", result.getStatus(), result.isOk() ? result.getDataAmountTotal() : 0);
+
+        if (result.isError())
+            throw new RequestFailedException(result.getStatus());
+
+        return result.getData();
+    }
 
     @Override
     public List< Company > getCompanies( CompanyQuery companyQuery) throws RequestFailedException {

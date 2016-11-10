@@ -120,6 +120,8 @@ public interface Lang extends Messages {
 
     String company();
 
+    String companyCategory();
+
     String showFired();
 
     String contactFullName();
@@ -131,6 +133,8 @@ public interface Lang extends Messages {
     String companyAdditionalInfoHeader();
 
     String newContact ();
+
+    String editContactHeader (String contactName);
 
     String firstName ();
 

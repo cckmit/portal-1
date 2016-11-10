@@ -6,7 +6,10 @@ import com.google.gwt.user.client.ui.*;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
+
+import java.util.Date;
 
 /**
  * Created by michael on 02.11.16.
@@ -21,7 +24,7 @@ public interface AbstractContactEditView extends IsWidget {
     HasText displayName();
     HasText shortName();
 
-    SinglePicker birthDay ();
+    HasValue<Date> birthDay ();
 
     HasText workPhone ();
 
@@ -29,11 +32,11 @@ public interface AbstractContactEditView extends IsWidget {
 
     HasText workEmail();
 
-    HasText personalEmail ();
+//    HasText personalEmail ();
 
     HasText workFax();
 
-    HasText homeFax();
+//    HasText homeFax();
 
     HasText workAddress ();
 
@@ -45,7 +48,7 @@ public interface AbstractContactEditView extends IsWidget {
 
     HasText personInfo ();
 
-    Selector<Company> company();
+    HasValue<EntityOption> company();
 
-    Selector<En_Gender> gender ();
+    HasValue<En_Gender> gender ();
 }

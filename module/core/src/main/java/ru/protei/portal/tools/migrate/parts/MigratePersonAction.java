@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.dict.En_AuthType;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.UserLogin;
+import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.tools.migrate.tools.BatchProcess;
 import ru.protei.portal.tools.migrate.tools.MigrateAction;
 import ru.protei.portal.tools.migrate.tools.MigrateAdapter;
@@ -102,15 +103,16 @@ public class MigratePersonAction implements MigrateAction {
 
 
     private String createLogin(Person p) {
-        if (p == null || p.getEmail() == null || p.getEmail().indexOf('@') <= 0)
+        String email = p == null ? null : new PlainContactInfoFacade(p.getContactInfo()).getEmail();
+        if (email == null || email.indexOf('@') <= 0)
             return null;
 
-        String special = email2loginMap.get(p.getEmail());
+        String special = email2loginMap.get(email);
 
         if (special != null)
             return special;
 
-        return p.getEmail().substring(0, p.getEmail().indexOf('@'));
+        return email.substring(0, email.indexOf('@'));
     }
 
     @Override
@@ -191,22 +193,29 @@ public class MigratePersonAction implements MigrateAction {
 
             x.setIpAddress((String) row.get("strIP_Address"));
 
-            x.setEmail((String) row.get("strE_Mail"));
-            x.setEmail_own((String) row.get("strOther_E_mail"));
+//            x.setEmail((String) row.get("strE_Mail"));
+//            x.setEmail_own((String) row.get("strOther_E_mail"));
 
-            x.setHomePhone((String) row.get("strHomeTel"));
-            x.setWorkPhone((String) row.get("strWorkTel"));
-            x.setMobilePhone((String) row.get("strMobileTel"));
+            x.getContactInfo().addEmail((String) row.get("strE_Mail"), "default");
+            x.getContactInfo().addEmail((String) row.get("strOther_E_mail"), "personal");
 
-            x.setFax((String) row.get("strFaxTel"));
+//            x.setHomePhone((String) row.get("strHomeTel"));
+//            x.setWorkPhone((String) row.get("strWorkTel"));
+//            x.setMobilePhone((String) row.get("strMobileTel"));
+            x.getContactInfo().addPhone((String) row.get("strHomeTel"), "home");
+            x.getContactInfo().addPhone((String) row.get("strWorkTel"), "work");
+            x.getContactInfo().addMobilePhone((String) row.get("strMobileTel"), "");
+
+//            x.setFax((String) row.get("strFaxTel"));
+            x.getContactInfo().addFax((String) row.get("strFaxTel"), "");
 
             x.setAddress((String) row.get("strOficialAddress"));
             x.setAddressHome((String) row.get("strActualAddress"));
 
-            x.setIcq((String) row.get("strICQ"));
-            x.setJabber(row.get("nJID") != null && ((Number) row.get("nJID")).longValue() > 0 ? row.get("nJID").toString() : null);
-
-
+//            x.setIcq((String) row.get("strICQ"));
+            x.getContactInfo().icq = (String) row.get("strICQ");
+//            x.setJabber(row.get("nJID") != null && ((Number) row.get("nJID")).longValue() > 0 ? row.get("nJID").toString() : null);
+            x.getContactInfo().jabber = row.get("nJID") != null && ((Number) row.get("nJID")).longValue() > 0 ? row.get("nJID").toString() : null;
 
 
 /*            if (row.get("nCategoryID") != null) {
@@ -228,18 +237,36 @@ x.setWorkRoleID(role.getId());
                 x.setAddress(nvl(xp.get("Адрес рабочий"), xp.get("Адрес без категории")));
                 x.setAddressHome(xp.get("Адрес домашний"));
 
-                x.setEmail(nvl(xp.get("E-mail рабочий"), xp.get("E-mail без категории")));
-                x.setEmail_own(xp.get("E-mail домашний"));
+//                x.setEmail(nvl(xp.get("E-mail рабочий"), xp.get("E-mail без категории")));
+//                x.setEmail_own(xp.get("E-mail домашний"));
 
-                x.setFax(nvl(xp.get("Факс рабочий"), xp.get("Факс без категории")));
-                x.setFaxHome(xp.get("Факс домашний"));
+                x.getContactInfo().addEmail(xp.get("E-mail рабочий"), "рабочий");
+                x.getContactInfo().addEmail(xp.get("E-mail без категории"), "без категории");
+                x.getContactInfo().addEmail(xp.get("E-mail домашний"), "персональный");
 
-                x.setWorkPhone(nvl(xp.get("Телефон рабочий"), xp.get("Телефон без категории")));
-                x.setMobilePhone(xp.get("Телефон мобильный"));
-                x.setHomePhone(xp.get("Телефон домашний"));
+//                x.setFax(nvl(xp.get("Факс рабочий"), xp.get("Факс без категории")));
+//                x.setFaxHome(xp.get("Факс домашний"));
 
-                x.setJabber(nvl(xp.get("Интернет рабочий"), nvl(xp.get("Интернет без категории"), xp.get("Интернет домашний"))));
-                x.setIcq(nvl(xp.get("ICQ рабочий"), nvl(xp.get("ICQ без категории"), xp.get("ICQ домашний"))));
+                x.getContactInfo().addFax(xp.get("Факс рабочий"), "Факс рабочий");
+                x.getContactInfo().addFax(xp.get("Факс без категории"), "Факс без категории");
+                x.getContactInfo().addFax(xp.get("Факс домашний"), "Факс домашний");
+//
+//                x.setWorkPhone(nvl(xp.get("Телефон рабочий"), xp.get("Телефон без категории")));
+//                x.setMobilePhone(xp.get("Телефон мобильный"));
+//                x.setHomePhone(xp.get("Телефон домашний"));
+
+                x.getContactInfo().addPhone(xp.get("Телефон рабочий"), "рабочий");
+                x.getContactInfo().addPhone(xp.get("Телефон без категории"), "без категории");
+                x.getContactInfo().addMobilePhone(xp.get("Телефон мобильный"), "мобильный");
+                x.getContactInfo().addPhone(xp.get("Телефон домашний"), "домашний");
+
+                String jabber = nvl(xp.get("Интернет рабочий"), nvl(xp.get("Интернет без категории"), xp.get("Интернет домашний")));
+                if (jabber != null)
+                    x.getContactInfo().jabber = jabber;
+
+                String icq = nvl(xp.get("ICQ рабочий"), nvl(xp.get("ICQ без категории"), xp.get("ICQ домашний")));
+                if (icq != null)
+                    x.getContactInfo().icq = icq;
             }
 
             logger.debug(x.getId() + "/" + x.getDisplayName());

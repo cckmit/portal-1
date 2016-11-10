@@ -3,7 +3,7 @@ package ru.protei.portal.core.model.dao.impl;
 import ru.protei.portal.core.model.dao.CompanyDAO;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.query.CompanyQuery;
-import ru.protei.portal.core.utils.HelperFunc;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.utils.TypeConverters;
 
 import java.util.ArrayList;
@@ -22,7 +22,7 @@ public class CompanyDAO_Impl extends PortalBaseJdbcDAO<Company> implements Compa
         args.add(HelperFunc.makeLikeArg(query.getSearchString(), true));
 
         if (query.getGroupId() != null && query.getGroupId() > 0) {
-            condition.append(" and Company.id in (select company_id from company_group_item where group_id=?)");
+            condition.append(" and groupId = ?");
             args.add(query.getGroupId());
         }
 

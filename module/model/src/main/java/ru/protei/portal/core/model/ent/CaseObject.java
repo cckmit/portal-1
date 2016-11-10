@@ -58,6 +58,12 @@ public class CaseObject implements Serializable {
     @JdbcJoinedObject( localColumn = "INITIATOR", remoteColumn = "id", updateLocalColumn = false )
     private Person initiator;
 
+    @JdbcColumn(name = "initiator_company")
+    private Long initiatorCompanyId;
+
+    @JdbcJoinedObject( localColumn = "initiator_company", remoteColumn = "id", updateLocalColumn = false )
+    private Company initiatorCompany;
+
     @JdbcColumn(name = "MANAGER")
     private Long managerId;
 
@@ -190,6 +196,14 @@ public class CaseObject implements Serializable {
         this.initiatorId = initiatorId;
     }
 
+    public Long getInitiatorCompanyId() {
+        return initiatorCompanyId;
+    }
+
+    public void setInitiatorCompanyId(Long initiatorCompanyId) {
+        this.initiatorCompanyId = initiatorCompanyId;
+    }
+
     public Long getManagerId() {
         return managerId;
     }
@@ -240,5 +254,9 @@ public class CaseObject implements Serializable {
 
     public Person getManager() {
         return manager;
+    }
+
+    public Company getInitiatorCompany() {
+        return initiatorCompany;
     }
 }

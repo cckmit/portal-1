@@ -18,9 +18,10 @@ import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.utils.HelperFunc;
 import ru.protei.portal.ui.common.client.columns.EditActionClickColumn;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
@@ -47,10 +48,10 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
     }
 
 //    @Override
-//    public HasValue<Company> company() {
+//    public HasValue<EntityOption> company() {
 //        return company;
 //    }
-//
+
     @Override
     public HasValue<Boolean> showFired() {
         return showFired;
@@ -90,7 +91,7 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
     }
 
 //    @UiHandler( "company" )
-//    public void onCompanySelected( ValueChangeEvent< Company > event ) {
+//    public void onCompanySelected( ValueChangeEvent< EntityOption > event ) {
 //        if ( activity != null ) {
 //            activity.onFilterChanged();
 //        }
