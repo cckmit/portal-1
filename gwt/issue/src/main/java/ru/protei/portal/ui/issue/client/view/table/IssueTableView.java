@@ -16,12 +16,9 @@ import ru.brainworm.factory.widget.table.client.helper.ClickColumn;
 import ru.brainworm.factory.widget.table.client.helper.SelectionColumn;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.CaseObject;
-import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.ui.common.client.columns.EditActionClickColumn;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
-import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
@@ -37,6 +34,7 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+        initTable();
         search.getElement().setPropertyString( "placeholder", lang.search() );
         sortField.setType( ModuleType.ISSUE );
     }
@@ -44,7 +42,14 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
     @Override
     public void setActivity( AbstractIssueTableActivity activity ) {
         this.activity = activity;
-        initTable();
+        editClickColumn.setHandler( activity );
+        editClickColumn.setEditHandler( activity );
+        issueNumber.setHandler( activity );
+        product.setHandler( activity );
+        contacts.setHandler( activity );
+        info.setHandler( activity );
+        creationDate.setHandler( activity );
+        manager.setHandler( activity );
     }
 
 //    @Override
@@ -137,11 +142,9 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
 
     private void initTable () {
 
-        EditActionClickColumn< CaseObject > editClickColumn = new EditActionClickColumn< CaseObject> ( lang ) {};
-        editClickColumn.setHandler( activity );
-        editClickColumn.setEditHandler( activity );
+        editClickColumn = new EditActionClickColumn< CaseObject> ( lang ) {};
 
-        ClickColumn< CaseObject > issueNumber = new ClickColumn< CaseObject >() {
+        issueNumber = new ClickColumn< CaseObject >() {
             @Override
             protected void fillColumnHeader( Element element ) {
                 element.setInnerText( lang.issueNumber() );
@@ -152,9 +155,8 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
                 element.setInnerText( caseObject == null ? "" : caseObject.getCaseNumber().toString() );
             }
         };
-        issueNumber.setHandler( activity );
 
-        ClickColumn< CaseObject > product = new ClickColumn< CaseObject >() {
+        product = new ClickColumn< CaseObject >() {
             @Override
             protected void fillColumnHeader( Element element ) {
                 element.setInnerText( lang.issueProduct() );
@@ -165,9 +167,8 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
                 element.setInnerText( caseObject == null ? "" : "продукт" );
             }
         };
-        product.setHandler( activity );
 
-        ClickColumn< CaseObject > contacts = new ClickColumn< CaseObject >() {
+        contacts = new ClickColumn< CaseObject >() {
             @Override
             protected void fillColumnHeader( Element element ) {
                 element.setInnerText( lang.issueContacts() );
@@ -179,9 +180,8 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
                 element.setInnerText( initiator == null ? "" : initiator.getDisplayName() );
             }
         };
-        contacts.setHandler( activity );
 
-        ClickColumn< CaseObject > info = new ClickColumn< CaseObject >() {
+        info = new ClickColumn< CaseObject >() {
             @Override
             protected void fillColumnHeader( Element element ) {
                 element.setInnerText( lang.issueInfo() );
@@ -190,12 +190,12 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
             @Override
             public void fillColumnValue( Element element, CaseObject caseObject ) {
                 String info = caseObject == null ? "" : caseObject.getInfo();
+                element.addClassName( "info" );
                 element.setInnerText( info );
             }
         };
-        info.setHandler( activity );
 
-        ClickColumn< CaseObject > creationDate = new ClickColumn< CaseObject >() {
+        creationDate = new ClickColumn< CaseObject >() {
             @Override
             protected void fillColumnHeader( Element element ) {
                 element.setInnerText( lang.issueCreationDate() );
@@ -207,9 +207,8 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
                 element.setInnerText( created == null ? "" : created.toString() );
             }
         };
-        creationDate.setHandler( activity );
 
-        ClickColumn< CaseObject > manager = new ClickColumn< CaseObject >() {
+        manager = new ClickColumn< CaseObject >() {
             @Override
             protected void fillColumnHeader( Element element ) {
                 element.setInnerText( lang.issueManager() );
@@ -221,7 +220,6 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
                 element.setInnerText( manager == null ? "" : manager.getDisplayName() );
             }
         };
-        manager.setHandler( activity );
 
         table.addColumn( selectionColumn.header, selectionColumn.values );
         table.addColumn( editClickColumn.header, editClickColumn.values );
@@ -270,6 +268,13 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
     };
 
     SelectionColumn< Person > selectionColumn = new SelectionColumn<>();
+    EditActionClickColumn< CaseObject > editClickColumn;
+    ClickColumn< CaseObject > issueNumber;
+    ClickColumn< CaseObject > product;
+    ClickColumn< CaseObject > contacts;
+    ClickColumn< CaseObject > info;
+    ClickColumn< CaseObject > creationDate;
+    ClickColumn< CaseObject > manager;
 
     AbstractIssueTableActivity activity;
 

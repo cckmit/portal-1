@@ -26,4 +26,5 @@
             </div>
         </div>
         <table:TableWidget ui:field="table" styleName="table-hover"/>
-    </g:HTMLPanel></ui:UiBinder>
+    </g:HTMLPanel>
+</ui:UiBinder>
