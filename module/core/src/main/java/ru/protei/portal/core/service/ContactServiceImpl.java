@@ -8,6 +8,7 @@ import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.query.ContactQuery;
 import ru.protei.portal.core.model.helper.HelperFunc;
@@ -34,6 +35,7 @@ public class ContactServiceImpl implements ContactService {
 
         return new CoreResponse<List<Person>>().success(list);
     }
+
 
     @Override
     public CoreResponse<Person> getContact(long id) {

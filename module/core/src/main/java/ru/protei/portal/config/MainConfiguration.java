@@ -194,6 +194,11 @@ public class MainConfiguration {
         return new ContactServiceImpl();
     }
 
+    @Bean
+    public CommonService getCommonService () {
+        return new CommonServiceImpl();
+    }
+
 
 
     /** ASPECT/INTERCEPTORS **/
