@@ -17,6 +17,7 @@ import ru.brainworm.factory.widget.table.client.helper.SelectionColumn;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.columns.EditActionClickColumn;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
@@ -52,14 +53,9 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
         manager.setHandler( activity );
     }
 
-//    @Override
-//    public HasValue<EntityOption> company() {
-//        return company;
-//    }
-
     @Override
-    public HasValue<Boolean> showFired() {
-        return showFired;
+    public HasValue<EntityOption> company() {
+        return company;
     }
 
     @Override
@@ -80,7 +76,6 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
     @Override
     public void resetFilter() {
         company.setValue( null );
-        showFired.setValue( false );
         sortField.setValue( En_SortField.creation_date );
         sortDir.setValue( true );
         search.setText( "" );
@@ -95,23 +90,16 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
         table.clearRows();
     }
 
-//    @UiHandler( "company" )
-//    public void onCompanySelected( ValueChangeEvent< EntityOption > event ) {
-//        if ( activity != null ) {
-//            activity.onFilterChanged();
-//        }
-//    }
+    @UiHandler( "company" )
+    public void onCompanySelected( ValueChangeEvent< EntityOption > event ) {
+        if ( activity != null ) {
+            activity.onFilterChanged();
+        }
+    }
 
     @UiHandler("create")
     public void onCreateClick (ClickEvent event) {
         activity.onCreateClick();
-    }
-
-    @UiHandler( "showFired" )
-    public void onShowFireClicked( ClickEvent event ) {
-        if ( activity != null ) {
-            activity.onFilterChanged();
-        }
     }
 
     @UiHandler( "sortField" )
@@ -234,9 +222,6 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
     @Inject
     @UiField ( provided = true )
     CompanySelector company;
-
-    @UiField
-    CheckBox showFired;
 
     @Inject
     @UiField( provided = true )

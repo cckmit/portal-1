@@ -8,7 +8,6 @@
         <div class="controlButtons">
             <div class="buttons_group">
                 <companyselector:CompanySelector ui:field="company"/>
-                <g:CheckBox ui:field="showFired" styleName="checkbox" text="{lang.showFired}"/>
             </div>
             <div class="buttons_group">
                 <ui:text from="{lang.sortBy}"/>

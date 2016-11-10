@@ -5,6 +5,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.query.CaseQuery;
@@ -58,7 +59,6 @@ public abstract class IssueTableActivity implements AbstractIssueTableActivity, 
 //        fireEvent(IssueEvents.Edit.byId(value.getId()));
     }
 
-
     @Override
     public void onCreateClick() {
 //        fireEvent(IssueEvents.Edit.newItem(view.company().getValue()));
@@ -88,7 +88,10 @@ public abstract class IssueTableActivity implements AbstractIssueTableActivity, 
     }
 
     private CaseQuery getQuery() {
-        return new CaseQuery( (Long)null, view.searchPattern().getValue(), view.sortField().getValue(), view.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC );
+        return new CaseQuery(
+                En_CaseType.CRM_SUPPORT, view.company().getValue(), view.searchPattern().getValue(),
+                view.sortField().getValue(), view.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC
+        );
     }
 
     @Inject
