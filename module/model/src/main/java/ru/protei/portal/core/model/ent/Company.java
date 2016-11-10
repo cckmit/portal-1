@@ -26,7 +26,6 @@ public class Company implements Serializable,EntityOptionSupport {
     @JdbcJoinedObject(localColumn = "groupId", remoteColumn = "id", updateLocalColumn = false)
     CompanyGroup companyGroup;
 
-
     @JdbcColumn(name = "address_dejure")
     private String addressDejure;
 
@@ -134,7 +133,7 @@ public class Company implements Serializable,EntityOptionSupport {
 
     public void setCompanyGroup(CompanyGroup companyGroup) {
         this.companyGroup = companyGroup;
-        this.groupId = companyGroup.getId();
+        this.groupId = companyGroup == null ? null : companyGroup.getId();
     }
 
     @Override
