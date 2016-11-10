@@ -2,6 +2,7 @@ package ru.protei.portal.ui.common.client.events;
 
 import ru.brainworm.factory.context.client.annotation.Url;
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.view.EntityOption;
 
 /**
  * Created by turik on 28.10.16.
@@ -32,8 +33,8 @@ public class ContactEvents {
             return new Edit(id, null);
         }
 
-        public static Edit newItem (Company company) {
-            return new Edit(null, company != null ? company.getId() : null);
+        public static Edit newItem (EntityOption option) {
+            return new Edit(null, option != null ? option.getId() : null);
         }
     }
 }

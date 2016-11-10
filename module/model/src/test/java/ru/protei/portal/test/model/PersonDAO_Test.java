@@ -8,6 +8,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.test.model.config.TestConfiguration;
 import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
@@ -65,13 +66,34 @@ public class PersonDAO_Test {
         p.setCreator("");
         p.setGender(En_Gender.MALE);
 
+        p.getContactInfo().addEmail("junit@test.org", "test-email");
+        p.getContactInfo().addFax("999-22-33-11", "work fax");
+        p.getContactInfo().addMobilePhone("+7-921-555-44-33", "main phone");
+        p.getContactInfo().addPhone("8(812)-4494727", "protei");
+        p.getContactInfo().icq = "00000000001";
+        p.getContactInfo().jabber = "dev@jabber.protei.ru";
+        p.getContactInfo().webSite = "http://www.protei.ru";
+
         Long id = dao.persist(p);
         Assert.assertNotNull(id);
         Assert.assertTrue(id > 0);
 
         Assert.assertNotNull(p.getId());
 
-        dao.remove(p);
+        Person readPerson = dao.get(p.getId());
+
+        Assert.assertNotNull(readPerson);
+        Assert.assertNotNull(readPerson.getCompany());
+        Assert.assertNotNull(readPerson.getContactInfo());
+
+        PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(readPerson.getContactInfo());
+
+        Assert.assertEquals("junit@test.org", infoFacade.getEmail());
+        Assert.assertEquals("dev@jabber.protei.ru", infoFacade.getJabber());
+        Assert.assertEquals("8(812)-4494727", infoFacade.getWorkPhone());
+        Assert.assertEquals("+7-921-555-44-33", infoFacade.getMobilePhone());
+
+        dao.remove(readPerson);
     }
 
 }

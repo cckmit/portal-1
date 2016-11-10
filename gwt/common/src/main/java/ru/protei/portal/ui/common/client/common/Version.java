@@ -18,9 +18,10 @@ package ru.protei.portal.ui.common.client.common;
  * 4.0.7.10 - устранение замечаний по универсальному списку - 8ч
  * 4.0.8.10 - freq-16227 список valuecomment
  * 4.0.8.11 - 7-2 изменение UI сигнатуры методов
+ * 4.0.9.11 - 7-3 в создание/редактирование компании добавлена категория
  */
 public class Version {
     public static String getVersion() {
-        return "4.0.8.11";
+        return "4.0.9.11";
     }
 }

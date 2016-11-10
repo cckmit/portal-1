@@ -13,11 +13,14 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.dict.GenderButtonSelector;
 import ru.protei.portal.ui.contact.client.activity.edit.AbstractContactEditActivity;
 import ru.protei.portal.ui.contact.client.activity.edit.AbstractContactEditView;
+
+import java.util.Date;
 
 
 /**
@@ -62,7 +65,7 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     }
 
     @Override
-    public SinglePicker birthDay() {
+    public HasValue<Date> birthDay() {
         return birthDay;
     }
 
@@ -81,20 +84,20 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
         return workEmail;
     }
 
-    @Override
-    public HasText personalEmail() {
-        return personalEmail;
-    }
+//    @Override
+//    public HasText personalEmail() {
+//        return personalEmail;
+//    }
 
     @Override
     public HasText workFax() {
         return workFax;
     }
 
-    @Override
-    public HasText homeFax() {
-        return homeFax;
-    }
+//    @Override
+//    public HasText homeFax() {
+//        return homeFax;
+//    }
 
     @Override
     public HasText workAddress() {
@@ -117,12 +120,12 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     }
 
     @Override
-    public Selector<Company> company() {
+    public HasValue<EntityOption> company() {
         return company;
     }
 
     @Override
-    public Selector<En_Gender> gender() {
+    public HasValue<En_Gender> gender() {
         return gender;
     }
 
@@ -178,14 +181,14 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     @UiField
     TextBox workEmail;
 
-    @UiField
-    TextBox personalEmail;
+//    @UiField
+//    TextBox personalEmail;
 
     @UiField
     TextBox workFax;
 
-    @UiField
-    TextBox homeFax;
+//    @UiField
+//    TextBox homeFax;
 
     @UiField
     TextArea workAddress;
@@ -210,10 +213,6 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     @UiField(provided = true)
     GenderButtonSelector gender;
 
-//
-//
-//    @UiField
-//    TextArea personInfo;
 
     AbstractContactEditActivity activity;
 

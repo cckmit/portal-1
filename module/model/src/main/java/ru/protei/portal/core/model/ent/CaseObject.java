@@ -54,6 +54,9 @@ public class CaseObject {
     @JdbcColumn(name = "INITIATOR")
     private Long initiatorId;
 
+    @JdbcColumn(name = "initiator_company")
+    private Long initiatorCompanyId;
+
     @JdbcColumn(name = "MANAGER")
     private Long managerId;
 
@@ -181,6 +184,14 @@ public class CaseObject {
 
     public void setInitiatorId(Long initiatorId) {
         this.initiatorId = initiatorId;
+    }
+
+    public Long getInitiatorCompanyId() {
+        return initiatorCompanyId;
+    }
+
+    public void setInitiatorCompanyId(Long initiatorCompanyId) {
+        this.initiatorCompanyId = initiatorCompanyId;
     }
 
     public Long getManagerId() {

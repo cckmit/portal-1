@@ -75,8 +75,9 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
                 Company company = new Company();
                 company.setCname(view.companyName().getText());
+                company.setCategory( view.companyCategory().getValue() );
                 company.setInfo(view.comment().getText());
-                company.setWebsite(view.webSite().getText());
+                company.getContactInfo().setWebSite(view.webSite().getText());
                 company.setAddressDejure(view.legalAddress().getText());
                 company.setAddressFact(view.actualAddress().getText());
 
@@ -158,7 +159,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         view.webSite().setText("");
         view.comment().setText("");
         view.companyGroup().setValue(null);
-
+        view.companyCategory().setValue(null);
 
         // reset validation
         view.companyNameValidator().setValid(true);
