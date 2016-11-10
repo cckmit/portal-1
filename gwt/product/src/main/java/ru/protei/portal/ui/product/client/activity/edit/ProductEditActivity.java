@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.product.client.activity.edit;
 
+import com.google.gwt.user.client.ui.HasValue;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -7,11 +8,12 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.ent.DevUnit;
+import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.ProductEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.NameStatus;
+import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.product.client.service.ProductServiceAsync;
 
@@ -111,15 +113,6 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         goBack();
     }
 
-//    private boolean validateFieldsAndGetResult(){
-//        boolean isCorrect = true;
-//        if(!view.nameValidator().isValid()){
-//            view.nameValidator().setValid(isCorrect = false);
-//        }
-//
-//        return isCorrect;
-//    }
-
     private void goBack() {
         fireEvent(new Back());
     }
@@ -133,7 +126,8 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
             @Override
             public void onSuccess(DevUnit devUnit) {
                 fireEvent(new AppEvents.InitPanelName(product.getName()));
-                fillView(product = devUnit);
+                product = devUnit;
+                fillView(product);
                 resetValidationStatus();
             }
         });

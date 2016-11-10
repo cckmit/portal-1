@@ -6,9 +6,7 @@ import ru.protei.portal.core.model.view.EntityOptionSupport;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 /**
  * @author michael
@@ -22,8 +20,11 @@ public class Company implements Serializable,EntityOptionSupport {
     @JdbcJoinedObject( localColumn = "category_id", table = "company_category" )
     private CompanyCategory category;
 
-    @JdbcColumn(name = "parent_company")
-    private Long parentCompanyId;
+    @JdbcColumn(name = "groupId")
+    private Long groupId;
+
+    @JdbcJoinedObject(localColumn = "groupId", remoteColumn = "id", updateLocalColumn = false)
+    CompanyGroup companyGroup;
 
     @JdbcColumn(name = "address_dejure")
     private String addressDejure;
@@ -44,20 +45,8 @@ public class Company implements Serializable,EntityOptionSupport {
     private Date created;
 
 
-    @SuppressWarnings("GwtInconsistentSerializableClass")
-    private List<CompanyGroup> groups;
-
     public Company() {
         contactInfo = new ContactInfo();
-        groups = null;
-    }
-
-    public Long getParentCompanyId() {
-        return parentCompanyId;
-    }
-
-    public void setParentCompanyId(Long parentCompanyId) {
-        this.parentCompanyId = parentCompanyId;
     }
 
     public String getAddressDejure() {
@@ -130,15 +119,23 @@ public class Company implements Serializable,EntityOptionSupport {
         this.contactInfo = contactInfo;
     }
 
-    public void setGroups(List<CompanyGroup> groups) {
-        this.groups = groups;
+    public Long getGroupId() {
+        return groupId;
     }
 
-    public List<CompanyGroup> getGroups() {
-        return groups;
+    public void setGroupId(Long groupId) {
+        this.groupId = groupId;
     }
 
+    public CompanyGroup getCompanyGroup() {
+        return companyGroup;
+    }
 
+    public void setCompanyGroup(CompanyGroup companyGroup) {
+        this.companyGroup = companyGroup;
+        if(companyGroup != null)
+            this.groupId = companyGroup.getId();
+    }
 
     @Override
     public int hashCode() {
@@ -153,16 +150,16 @@ public class Company implements Serializable,EntityOptionSupport {
 
     @Override
     public String toString() {
-        return "Company{" +
-                "id=" + id +
-                ", categoryId=" + String.valueOf(getCategoryId()) +
-                ", parentCompanyId=" + parentCompanyId +
-                ", addressDejure='" + addressDejure + '\'' +
-                ", addressFact='" + addressFact + '\'' +
-                ", cname='" + cname + '\'' +
-                ", info='" + info + '\'' +
-                ", created=" + created +
-                ", groups=" + groups +
-                '}';
+        return new StringBuilder("Company{")
+                .append("id=").append(id)
+                .append(", categoryId=").append(getCategoryId())
+                .append(", groupId=").append(groupId)
+                .append(", addressDejure='").append(addressDejure).append('\'')
+                .append(", addressFact='").append(addressFact).append('\'')
+                .append(", cname='").append(cname).append('\'')
+                .append(", info='").append(info).append('\'')
+                .append(", created=").append(created)
+                .append(", group=").append(getCompanyGroup())
+                .append('}').toString();
     }
 }

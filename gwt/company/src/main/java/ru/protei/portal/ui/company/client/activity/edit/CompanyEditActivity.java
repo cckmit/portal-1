@@ -1,19 +1,30 @@
 package ru.protei.portal.ui.company.client.activity.edit;
 
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.HasText;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_SortDir;
+import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.struct.ContactInfo;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.CompanyEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.query.ContactQuery;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.NameStatus;
+import ru.protei.portal.ui.common.client.common.NameStatus;
+import ru.protei.portal.ui.common.client.service.ContactServiceAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.common.client.service.CompanyServiceAsync;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Активность создания и редактирования компании
@@ -34,6 +45,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
     public void onShow( CompanyEvents.Edit event ) {
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
+        
 
         if(event.getCompanyId() == null) {
             fireEvent(new AppEvents.InitPanelName(lang.companyNew()));
@@ -41,7 +53,13 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         }else {
             fireEvent(new AppEvents.InitPanelName(lang.companyEdit()));
             requestCompany(event.getCompanyId());
+            requestContacts( event.getCompanyId() );
         }
+    }
+
+    @Override
+    public void onEditClicked( Person value ) {
+        fireEvent( ContactEvents.Edit.byId( value.getId() ) );
     }
 
     @Override
@@ -94,6 +112,23 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         );
     }
 
+    private void requestContacts( Long companyId ) {
+
+        ContactQuery query = new ContactQuery( companyId, null, En_SortField.person_full_name, En_SortDir.ASC );
+        contactService.getContacts( query, new RequestCallback<List<Person>>() {
+            @Override
+            public void onError( Throwable throwable ) {
+                fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
+            }
+
+            @Override
+            public void onSuccess( List<Person> persons ) {
+                view.addContacts( persons );
+            }
+        } );
+    }
+    
+
     private boolean validateFieldsAndGetResult(){
         boolean result = true;
 
@@ -119,6 +154,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
     private void initialView(Company company){
         tempCompany = company;
         fillView(tempCompany);
+        view.clearContacts();
         resetValidationStatus();
     }
 
@@ -140,6 +176,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         view.legalAddress().setText(company.getAddressDejure());
         view.comment().setText(company.getInfo());
         view.companyCategory().setValue(company.getCategory());
+        view.companyGroup().setValue(company.getCompanyGroup());
 
         ContactInfo contactInfo = company.getContactInfo();
         view.webSite().setText(contactInfo.getWebSite());
@@ -152,6 +189,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         company.setAddressFact(view.actualAddress().getText());
         company.setInfo(view.comment().getText());
         company.setCategory(view.companyCategory().getValue());
+        company.setCompanyGroup(view.companyGroup().getValue());
 
         ContactInfo contactInfo = company.getContactInfo();
         contactInfo.setWebSite(view.webSite().getText());
@@ -165,7 +203,9 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
     @Inject
     CompanyServiceAsync companyService;
 
-    private Company tempCompany;
+    @Inject
+    ContactServiceAsync contactService;
 
+    private Company tempCompany;
     private AppEvents.InitDetails initDetails;
 }

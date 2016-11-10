@@ -116,15 +116,29 @@ public interface Lang extends Messages {
 
     String companyCommonHeader();
 
-    String productDescription();
-
     String company();
 
-    String showFired();
+    String contactShowFired();
 
     String contactFullName();
 
     String contactPosition();
+
+    String fullScreen();
+
+    String contactLastName();
+
+    String contactFirstName();
+
+    String contactSecondName();
+
+    String contactDepartment();
+
+    String fax();
+
+    String address();
+    
+    String productDescription();
 
     String edit();
 
@@ -176,4 +190,5 @@ public interface Lang extends Messages {
     String companyEdit();
 
     String noCompanyGroup();
+    String companyGroupLabel ();
 }

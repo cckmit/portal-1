@@ -1,7 +1,6 @@
 package ru.protei.portal.ui.common.client.widget.selector.company;
 
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;

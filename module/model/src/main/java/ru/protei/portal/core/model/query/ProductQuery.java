@@ -4,8 +4,6 @@ import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 
-import java.io.Serializable;
-
 /**
  * Created by michael on 12.10.16.
  */
