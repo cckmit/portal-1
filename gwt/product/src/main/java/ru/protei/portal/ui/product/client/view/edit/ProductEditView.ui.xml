@@ -11,7 +11,7 @@
                     <label class="required"><ui:text from="{lang.productName}"/></label>
                     <div class="panelField verifiable">
                         <i ui:field="verifiableIcon"></i>
-                        <validablefield:ValidableTextBox ui:field="name" styleName="inputField"/>
+                        <validablefield:ValidableTextBox ui:field="name" styleName="inputField" notNull="true"/>
                     </div>
                 </div>
                 <div class="col-xs-12">

@@ -186,5 +186,9 @@ public interface Lang extends Messages {
 
     String companyCategory();
 
+
+    String companyEdit();
+
+    String noCompanyGroup();
     String companyGroupLabel ();
 }

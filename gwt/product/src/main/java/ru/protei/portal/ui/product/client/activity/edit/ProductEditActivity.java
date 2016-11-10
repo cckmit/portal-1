@@ -42,6 +42,7 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
 
         if( productId == null ) {
             resetView();
+            resetValidationStatus();
 
             fireEvent(new AppEvents.InitPanelName(lang.productNew()));
             return;
@@ -52,24 +53,30 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
 
     @Override
     public void onNameChanged() {
+        String value = view.name().getValue().trim();
 
-        if (view.name().getValue() == null || view.name().getValue().trim().isEmpty()) {
+        //isNameUnique не принимает пустые строки!
+        if ( value.isEmpty()) {
             view.setNameStatus(NameStatus.NONE);
+            view.save().setEnabled(false);
             return;
         }
 
-        productService.isNameUnique(view.name().getValue().trim(), productId,
+        productService.isNameUnique(
+                value,
+                productId,
                 new RequestCallback<Boolean>() {
                     @Override
                     public void onError(Throwable throwable) {
                         view.setNameStatus(NameStatus.ERROR);
-                        view.save().setEnabled(false);
+//                        view.nameValidator().setValid(true);
                     }
 
                     @Override
                     public void onSuccess(Boolean isUnique) {
                         view.setNameStatus(isUnique ? NameStatus.SUCCESS : NameStatus.ERROR);
                         view.save().setEnabled(isUnique);
+//                        view.nameValidator().setValid(isUnique);
                     }
                 });
     }
@@ -81,9 +88,6 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
 
     @Override
     public void onSaveClicked() {
-
-        if(!validateFieldsAndGetResult())
-            return;
 
         if (productId == null) {
             product = new DevUnit();
@@ -121,21 +125,12 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
 
             @Override
             public void onSuccess(DevUnit devUnit) {
-                product = devUnit;
-                fillView(devUnit);
                 fireEvent(new AppEvents.InitPanelName(product.getName()));
+                product = devUnit;
+                fillView(product);
+                resetValidationStatus();
             }
         });
-    }
-
-    private boolean validateFieldAndGetResult(HasValidable validator, HasValue<String> field){
-        boolean result = !field.getValue().trim().isEmpty();
-        validator.setValid(result);
-        return result;
-    }
-
-    private boolean validateFieldsAndGetResult(){
-        return validateFieldAndGetResult(view.nameValidator(), view.name() );
     }
 
     private void resetView () {
@@ -143,20 +138,20 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         view.info().setValue("");
         view.state().setVisible(false);
         view.save().setEnabled(false);
-        view.setNameStatus(NameStatus.NONE);
-
-        // reset validation
-        view.nameValidator().setValid(true);
     }
 
     private void fillView(DevUnit devUnit) {
         view.name().setValue(devUnit.getName());
-        view.setNameStatus(NameStatus.SUCCESS);
         view.info().setValue(devUnit.getInfo());
         view.state().setVisible(true);
         view.save().setEnabled(true);
 
         view.setStateBtnText(devUnit.isActiveUnit() ? lang.productToArchive() : lang.productFromArchive());
+    }
+
+    private void resetValidationStatus(){
+        view.setNameStatus(NameStatus.NONE);
+        view.nameValidator().setValid(true);
     }
 
     @Inject
