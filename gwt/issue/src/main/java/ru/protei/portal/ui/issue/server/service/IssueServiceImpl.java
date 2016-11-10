@@ -5,8 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
-import ru.protei.portal.core.model.dict.En_SortDir;
-import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.service.CaseService;
@@ -22,9 +20,9 @@ import java.util.List;
 public class IssueServiceImpl implements IssueService {
 
     @Override
-    public List< CaseObject > getIssues( String searchPattern, Long companyId, Boolean fired, En_SortField sortField, Boolean sortDir ) throws RequestFailedException {
-        log.debug( "companyId={} | searchPattern={} | sortField={} | sortDir={} | caseService={}", companyId, searchPattern, sortField, sortDir, caseService );
-        CoreResponse<List<CaseObject>> response = caseService.caseObjectList( new CaseQuery( companyId, searchPattern, sortField, sortDir ? En_SortDir.ASC : En_SortDir.DESC ) );
+    public List< CaseObject > getIssues( CaseQuery query ) throws RequestFailedException {
+        log.debug( "companyId={} | searchPattern={} | sortField={} | sortDir={} | caseService={}", query.getCompanyId(), query.getSearchString(), query.getSortField(), query.getSortDir(), caseService );
+        CoreResponse<List<CaseObject>> response = caseService.caseObjectList( query );
         if (response.isError()) {
             throw new RequestFailedException( response.getStatus() );
         }
