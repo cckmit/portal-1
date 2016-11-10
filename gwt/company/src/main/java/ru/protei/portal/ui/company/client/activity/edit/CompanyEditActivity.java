@@ -1,27 +1,19 @@
 package ru.protei.portal.ui.company.client.activity.edit;
 
-import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.core.model.view.ValueComment;
+import ru.protei.portal.core.model.struct.ContactInfo;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.CompanyEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
-import ru.protei.portal.ui.common.client.events.ValueCommentEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.NameStatus;
-import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.common.client.service.CompanyServiceAsync;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
 
 /**
  * Активность создания и редактирования компании
@@ -40,79 +32,15 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
     @Event
     public void onShow( CompanyEvents.Edit event ) {
-
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
 
         if(event.getCompanyId() == null) {
-            this.fireEvent(new AppEvents.InitPanelName(lang.companyNew()));
-            tempCompany = createCompany();
-            fillView(tempCompany);
-            resetValidationStatus();
+            fireEvent(new AppEvents.InitPanelName(lang.companyNew()));
+            initialView(new Company());
         }else {
-            this.fireEvent(new AppEvents.InitPanelName(lang.companyEdit()));
-            companyService.getCompanyById(event.getCompanyId(), new RequestCallback<Company>() {
-                @Override
-                public void onError(Throwable throwable) {}
-
-                @Override
-                public void onSuccess(Company company) {
-                    tempCompany = company;
-                    fillView(tempCompany);
-                    resetValidationStatus();
-                }
-            });
-
-        }
-    }
-
-
-    private <T> List<T> removeNullableValues(List<T> dataList){
-        dataList.removeIf(Objects::isNull); //remove all null values
-        return dataList;
-
-    }
-
-    private void setValueCommentList(HasWidgets parent, List<ValueComment> dataList){
-        fireEvent(
-                new ValueCommentEvents.ShowList(
-                        parent,
-                        removeNullableValues(dataList)
-                )
-        );
-    }
-
-    private void fillView(Company company){
-        if(company.getId() != null){
-            view.companyName().setText(company.getCname());
-            view.setCompanyNameStatus(NameStatus.SUCCESS);
-        }
-
-        if(!company.getGroups().isEmpty())
-            view.companyGroup().setValue(company.getGroups().get(0));
-        else
-            view.companyGroup().setValue(null);
-
-        view.actualAddress().setText(company.getAddressFact());
-        view.legalAddress().setText(company.getAddressDejure());
-
-        view.webSite().setText(company.getWebsite());
-        view.comment().setText(company.getInfo());
-
-//        setValueCommentList(view.phonesContainer(), company.getPhone());
-//        setValueCommentList(view.emailsContainer(), company.getEmail());
-    }
-
-
-    private void fillCompany(Company company){
-        company.setCname(view.companyName().getText());
-        company.setInfo(view.comment().getText());
-        company.setWebsite(view.webSite().getText());
-        company.setAddressDejure(view.legalAddress().getText());
-        company.setAddressFact(view.actualAddress().getText());
-
-        if(view.companyGroup() != null){
-            company.getGroups().add(view.companyGroup().getValue());
+            fireEvent(new AppEvents.InitPanelName(lang.companyEdit()));
+            requestCompany(event.getCompanyId());
         }
     }
 
@@ -126,9 +54,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
         companyService.saveCompany(tempCompany, view.companyGroup().getValue(), new RequestCallback<Boolean>() {
             @Override
-            public void onError(Throwable throwable) {
-                //fireEvent(new NotifyEvents.Show(lang.errNotSaved(), NotifyEvents.NotifyType.ERROR));
-            }
+            public void onError(Throwable throwable) {}
 
             @Override
             public void onSuccess(Boolean aBoolean) {
@@ -153,15 +79,12 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
             view.setCompanyNameStatus(NameStatus.NONE);
             return;
         }
-
         companyService.isCompanyNameExists(
                 value,
                 tempCompany.getId(),
                 new RequestCallback<Boolean>() {
                     @Override
-                    public void onError(Throwable throwable) {
-                        //fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
-                    }
+                    public void onError(Throwable throwable) {}
 
                     @Override
                     public void onSuccess(Boolean isExists) {
@@ -169,7 +92,6 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
                     }
                 }
         );
-
     }
 
     private boolean validateFieldsAndGetResult(){
@@ -187,13 +109,6 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         return result;
     }
 
-    private Company createCompany(){
-        Company company = new Company();
-//        company.setPhone(new ArrayList<ValueComment>());
-//        company.setEmail(new ArrayList<ValueComment>());
-        return company;
-    }
-
     private void resetValidationStatus(){
         view.setCompanyNameStatus(NameStatus.NONE);
         view.companyNameValidator().setValid(true);
@@ -201,7 +116,46 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         view.legalAddressValidator().setValid(true);
     }
 
+    private void initialView(Company company){
+        tempCompany = company;
+        fillView(tempCompany);
+        resetValidationStatus();
+    }
 
+    private void requestCompany(Long id){
+        companyService.getCompanyById(id, new RequestCallback<Company>() {
+            @Override
+            public void onError(Throwable throwable) {}
+
+            @Override
+            public void onSuccess(Company company) {
+                initialView(company);
+            }
+        });
+    }
+
+    private void fillView(Company company){
+        view.companyName().setText(company.getCname());
+        view.actualAddress().setText(company.getAddressFact());
+        view.legalAddress().setText(company.getAddressDejure());
+        view.comment().setText(company.getInfo());
+        view.companyCategory().setValue(company.getCategory());
+
+        ContactInfo contactInfo = company.getContactInfo();
+        view.webSite().setText(contactInfo.getWebSite());
+    }
+
+
+    private void fillCompany(Company company){
+        company.setCname(view.companyName().getText());
+        company.setAddressDejure(view.legalAddress().getText());
+        company.setAddressFact(view.actualAddress().getText());
+        company.setInfo(view.comment().getText());
+        company.setCategory(view.companyCategory().getValue());
+
+        ContactInfo contactInfo = company.getContactInfo();
+        contactInfo.setWebSite(view.webSite().getText());
+    }
 
     @Inject
     AbstractCompanyEditView view;
@@ -212,7 +166,6 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
     CompanyServiceAsync companyService;
 
     private Company tempCompany;
-
 
     private AppEvents.InitDetails initDetails;
 }

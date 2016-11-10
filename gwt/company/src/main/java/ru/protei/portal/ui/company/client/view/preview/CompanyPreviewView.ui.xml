@@ -18,25 +18,25 @@
             </div>
             <div>
                 <label><ui:text from="{lang.companyWebSite}"/></label>
-                <span ui:field="site">http://www.helloworld.ru</span>
+                <span ui:field="site"></span>
             </div>
             <div>
                 <label><ui:text from="{lang.email}"/></label>
-                <span ui:field="email">info@helloworld.ru</span>
+                <span ui:field="email"></span>
             </div>
             <div>
                 <label><ui:text from="{lang.companyActualAddress}"/></label>
-                <span ui:field="addressFact">СПб, ул Козельского 56, офис 234</span>
+                <span ui:field="addressFact"></span>
             </div>
             <div>
                 <label><ui:text from="{lang.companyLegalAddress}"/></label>
-                <span ui:field="addressDejure">СПб, ул Козельского 56, офис 234</span>
+                <span ui:field="addressDejure"></span>
             </div>
         </fieldset>
 
         <fieldset class="comments">
             <legend><ui:text from="{lang.companyAdditionalInfoHeader}"/></legend>
-            <span ui:field="info">Хорошая компания, молодцы!</span>
+            <span ui:field="info" class="pre-formatted-info"></span>
         </fieldset>
     </g:HTMLPanel>
 </ui:UiBinder>

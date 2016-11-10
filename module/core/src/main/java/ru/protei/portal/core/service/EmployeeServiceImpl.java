@@ -1,7 +1,7 @@
 package ru.protei.portal.core.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.protei.portal.api.struct.HttpListResult;
+import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.CompanyDAO;
 import ru.protei.portal.core.model.dao.CompanyGroupHomeDAO;
 import ru.protei.portal.core.model.dao.PersonAbsenceDAO;
@@ -11,10 +11,11 @@ import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.PersonAbsence;
 import ru.protei.portal.core.model.view.EmployeeDetailView;
 import ru.protei.portal.core.model.view.WorkerView;
-import ru.protei.portal.core.utils.HelperFunc;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.winter.jdbc.JdbcSort;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 /**
@@ -54,25 +55,20 @@ public class EmployeeServiceImpl implements EmployeeService {
         if(personAbsences.size()==0)
             return;
 
-        TreeSet<Long> ids = new TreeSet<>();
-        for(PersonAbsence pa: personAbsences)
-            ids.add(pa.getCreatorId());
+        List<Long> ids = personAbsences.stream()
+                .map(p -> p.getCreatorId())
+                .distinct()
+                .collect(Collectors.toList());
+
+//        TreeSet<Long> ids = new TreeSet<>();
+//        for(PersonAbsence pa: personAbsences)
+//            ids.add(pa.getCreatorId());
 
         HashMap<Long,String> creators = new HashMap<>();
 
-        Iterator<Long> iterator = ids.iterator();
         for (Person p : personDAO.partialGetListByKeys(ids, "displayShortName")){
-            creators.put(iterator.next(), p.getDisplayShortName());
+            creators.put(p.getId(), p.getDisplayShortName());
         }
-
-
-//        System.out.println("**********************************");
-////        for (Long l : creators.keySet())
-////            System.out.println(l);
-////        for (String s : creators.values())
-////            System.out.println(s);
-//        System.out.print(creators.toString());
-
 
         for(PersonAbsence p:personAbsences)
             p.setCreator(creators.get(p.getCreatorId()));
@@ -115,22 +111,20 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 
     @Override
-    public HttpListResult<WorkerView> list(String param) {
+    public CoreResponse<List<WorkerView>> list(String param) {
 
         // temp-hack, hardcoded company-id. must be replaced to sys_config.ownCompanyId
         Company our_comp = companyDAO.get(1L);
-
-        List<WorkerView> r = new ArrayList<>();
 
         param = HelperFunc.makeLikeArg(param, true);
 
         JdbcSort sort = new JdbcSort(JdbcSort.Direction.ASC, "displayName");
 
-        for (Person p : personDAO.getListByCondition("company_id=? and isdeleted=? and displayName like ?", sort, our_comp.getId(), 0, param)) {
-            r.add(new WorkerView(p, our_comp));
-        }
+        List<WorkerView> result = personDAO.getListByCondition("company_id=? and isdeleted=? and displayName like ?", sort, our_comp.getId(), 0, param)
+                .stream().map(p -> new WorkerView(p, our_comp))
+                .collect(Collectors.toList());
 
-        return new HttpListResult<>(r, false);
+        return new CoreResponse<List<WorkerView>>().success(result, result.size());
     }
 
 }

@@ -3,7 +3,7 @@ package ru.protei.portal.core.model.dao.impl;
 import ru.protei.portal.core.model.dao.CompanyDAO;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.query.CompanyQuery;
-import ru.protei.portal.core.utils.HelperFunc;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.utils.TypeConverters;
 
 import java.util.ArrayList;
@@ -30,7 +30,7 @@ public class CompanyDAO_Impl extends PortalBaseJdbcDAO<Company> implements Compa
             condition.append(" and category_id in (" + query.getCategoryIds().stream().map(Object::toString).collect(Collectors.joining(",")) + ")");
         }
 
-        return getListByCondition(condition.toString(), TypeConverters.createSort(query), args);
+        return getListByCondition(condition.toString(),TypeConverters.createSort(query), args);
     }
 
     @Override

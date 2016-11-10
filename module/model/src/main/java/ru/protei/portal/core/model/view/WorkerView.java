@@ -3,6 +3,7 @@ package ru.protei.portal.core.model.view;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 
 import java.util.Date;
 
@@ -34,8 +35,8 @@ public class WorkerView {
     @JsonProperty("dname")
     private String displayName;
 
-    @JsonProperty("s")
-    private String sex;
+    @JsonProperty("gender")
+    private String gender;
 
     @JsonProperty("bday")
     private Date birthday;
@@ -75,13 +76,15 @@ public class WorkerView {
         this.lastName = p.getLastName();
         this.secondName = p.getSecondName();
         this.position = p.getPosition();
-        this.sex = p.getSex();
+        this.gender = p.getGender().getCode();
         this.ipAddress = p.getIpAddress();
-        this.workPhone = p.getWorkPhone();
-        this.mobilePhone = p.getMobilePhone();
-        this.email = p.getEmail();
-        this.icq = p.getIcq();
-        this.jabber = p.getJabber();
+
+        PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(p.getContactInfo());
+        this.workPhone = infoFacade.getWorkPhone();
+        this.mobilePhone = infoFacade.getMobilePhone();
+        this.email = infoFacade.getEmail();
+        this.icq = p.getContactInfo().icq;
+        this.jabber = p.getContactInfo().jabber;
         this.info = p.getInfo();
     }
 }

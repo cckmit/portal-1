@@ -2,18 +2,18 @@ package ru.protei.portal.core.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.CoreResponse;
-import ru.protei.portal.api.struct.HttpListResult;
 import ru.protei.portal.core.model.dao.DevUnitDAO;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.query.ProductQuery;
-import ru.protei.portal.core.utils.HelperFunc;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.utils.TypeConverters;
 import ru.protei.winter.jdbc.JdbcSort;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by michael on 27.09.16.
@@ -23,20 +23,19 @@ public class ProductServiceImpl implements ProductService {
     /**
      *  @TODO
      *  - вынести обработку ответов БД в отдельный Interceptor
-     *  - возвращать HttpListResult внутри CoreResponse
      */
 
     @Autowired
     DevUnitDAO devUnitDAO;
 
     @Override
-    public HttpListResult<DevUnit> list(ProductQuery query) {
+    public CoreResponse<List<DevUnit>> list(ProductQuery query) {
 
         String condition = HelperFunc.makeLikeArg(query.getSearchString(), true);
 
         JdbcSort sort = TypeConverters.createSort(query);
 
-        return new HttpListResult<DevUnit>(devUnitDAO.getUnitsByCondition(En_DevUnitType.PRODUCT, query.getState(), condition.trim(), sort), false);
+        return new CoreResponse<List<DevUnit>>().success(devUnitDAO.getUnitsByCondition(En_DevUnitType.PRODUCT, query.getState(), condition.trim(), sort));
     }
 
     @Override

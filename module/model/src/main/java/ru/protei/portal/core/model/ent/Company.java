@@ -1,6 +1,8 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.portal.core.model.view.ValueComment;
+import ru.protei.portal.core.model.struct.ContactInfo;
+import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.EntityOptionSupport;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
@@ -12,7 +14,7 @@ import java.util.List;
  * @author michael
  */
 @JdbcEntity(table = "Company")
-public class Company implements Serializable {
+public class Company implements Serializable,EntityOptionSupport {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -32,29 +34,21 @@ public class Company implements Serializable {
     @JdbcColumn(name = "cname")
     private String cname;
 
-    @JdbcColumn(name = "email", converterType = ConverterType.JSON)
-    private ValueComment email;
-
-    @JdbcColumn(name = "fax")
-    private String fax;
+    @JdbcColumn(name = "contactInfo", converterType = ConverterType.JSON)
+    private ContactInfo contactInfo;
 
     @JdbcColumn(name = "info")
     private String info;
 
-    @JdbcColumn(name = "phone", converterType = ConverterType.JSON)
-    private ValueComment phone;
-
     @JdbcColumn(name = "created")
     private Date created;
 
-    @JdbcColumn(name = "website")
-    private String website;
 
     @SuppressWarnings("GwtInconsistentSerializableClass")
     private List<CompanyGroup> groups;
 
-
     public Company() {
+        contactInfo = new ContactInfo();
         groups = null;
     }
 
@@ -78,13 +72,6 @@ public class Company implements Serializable {
         return this.cname;
     }
 
-    public ValueComment getEmail() {
-        return this.email;
-    }
-
-    public String getFax() {
-        return this.fax;
-    }
 
     public Long getId() {
         return this.id;
@@ -94,16 +81,8 @@ public class Company implements Serializable {
         return this.info;
     }
 
-    public ValueComment getPhone() {
-        return this.phone;
-    }
-
     public Date getCreated() {
         return this.created;
-    }
-
-    public String getWebsite() {
-        return this.website;
     }
 
     public void setAddressDejure(String addressDejure) {
@@ -130,17 +109,6 @@ public class Company implements Serializable {
         this.cname = cname;
     }
 
-    public void setEmail(ValueComment email) {
-        this.email = email;
-    }
-
-    public void setPhone(ValueComment phone){
-        this.phone = phone;
-    }
-
-    public void setFax(String fax) {
-        this.fax = fax;
-    }
 
     public void setId(Long id) {
         this.id = id;
@@ -154,36 +122,46 @@ public class Company implements Serializable {
         this.created = created;
     }
 
-    public void setWebsite(String website) {
-        this.website = website;
+    public ContactInfo getContactInfo() {
+        return contactInfo;
     }
 
+    public void setContactInfo(ContactInfo contactInfo) {
+        this.contactInfo = contactInfo;
+    }
 
     public void setGroups(List<CompanyGroup> groups) {
         this.groups = groups;
     }
 
     public List<CompanyGroup> getGroups() {
-        if(groups == null)
-            groups = new ArrayList<>();
         return groups;
+    }
+
+
+
+    @Override
+    public int hashCode() {
+        return this.id == null ? -1 : this.id.intValue();
+    }
+
+
+    @Override
+    public EntityOption toEntityOption() {
+        return new EntityOption(this.cname, this.id);
     }
 
     @Override
     public String toString() {
         return "Company{" +
                 "id=" + id +
-                ", categoryId=" + category.getId() +
+                ", categoryId=" + String.valueOf(getCategoryId()) +
                 ", parentCompanyId=" + parentCompanyId +
                 ", addressDejure='" + addressDejure + '\'' +
                 ", addressFact='" + addressFact + '\'' +
                 ", cname='" + cname + '\'' +
-                ", email='" + email + '\'' +
-                ", fax='" + fax + '\'' +
                 ", info='" + info + '\'' +
-                ", phone='" + phone + '\'' +
                 ", created=" + created +
-                ", website='" + website + '\'' +
                 ", groups=" + groups +
                 '}';
     }

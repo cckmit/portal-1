@@ -10,7 +10,7 @@ import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.query.ContactQuery;
 import ru.protei.portal.core.utils.EntityCache;
 import ru.protei.portal.core.utils.EntitySelector;
-import ru.protei.portal.core.utils.HelperFunc;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.utils.TypeConverters;
 import ru.protei.winter.jdbc.JdbcSort;
 
@@ -44,6 +44,11 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
         return person != null && ifPersonIsEmployee(person) ? person : null;
     }
 
+    @Override
+    public boolean isEmployee(Person p) {
+        return ifPersonIsEmployee(p);
+    }
+
     private boolean ifPersonIsEmployee(final Person employee) {
         return homeGroupCache.exists(new EntitySelector<CompanyHomeGroupItem>() {
             public boolean matches(CompanyHomeGroupItem entity) {
@@ -63,7 +68,7 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
 
         expr.append(" and displayPosition is not null");
 
-        return getListByCondition(expr.toString(), new JdbcSort(JdbcSort.Direction.ASC, En_SortField.person_full_name.getFieldName()), new Object[]{});
+        return getListByCondition(expr.toString(), new JdbcSort(JdbcSort.Direction.ASC, En_SortField.person_full_name.getFieldName()));
     }
 
     private StringBuilder buildHomeCompanyFilter() {
@@ -94,7 +99,7 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
 
 
     @Override
-    public List<Person> getContactsByQuery(ContactQuery query) {
+    public List<Person> getContacts(ContactQuery query) {
 
         if (query.getCompanyId() != null && homeGroupCache.exists(entity -> entity.getCompanyId().equals(query.getCompanyId())))
             return Collections.emptyList();
@@ -130,8 +135,9 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
     }
 
     @Override
-    public Person getContactById( long id ) {
+    public Person getContact(long id) {
         Person p = get(id);
+
         return ifPersonIsEmployee(p) ? null : p;
     }
 }

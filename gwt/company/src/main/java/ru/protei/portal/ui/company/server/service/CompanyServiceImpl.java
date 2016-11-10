@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
-import ru.protei.portal.api.struct.HttpListResult;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Company;
@@ -13,8 +12,9 @@ import ru.protei.portal.core.model.ent.CompanyCategory;
 import ru.protei.portal.core.model.ent.CompanyGroup;
 import ru.protei.portal.core.model.query.BaseQuery;
 import ru.protei.portal.core.model.query.CompanyQuery;
-import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.service.CompanyService;
+import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
 import java.util.List;
 import java.util.Set;
@@ -27,26 +27,34 @@ import java.util.stream.Collectors;
 public class CompanyServiceImpl implements CompanyService {
 
     @Override
-    public List< Company > getCompanies( String searchPattern, Set< CompanyCategory > categories, CompanyGroup group, En_SortField sortField, Boolean sortDir) throws RequestFailedException {
+    public List<EntityOption> companyOptionList() throws RequestFailedException {
+        log.debug( "get company option list" );
 
-        List< Long > categoryIds = null;
-        if ( categories != null ) {
-            categoryIds = categories.stream()
-                    .map( CompanyCategory::getId )
-                    .collect( Collectors.toList() );
-        }
+        CoreResponse< List<EntityOption> > result = companyService.companyOptionList();
+
+        log.debug("result status: {}, data-amount: {}", result.getStatus(), result.isOk() ? result.getDataAmountTotal() : 0);
+
+        if (result.isError())
+            throw new RequestFailedException(result.getStatus());
+
+        return result.getData();
+    }
+
+    @Override
+    public List< Company > getCompanies( CompanyQuery companyQuery) throws RequestFailedException {
+
+        List< Long > categoryIds = companyQuery.getCategoryIds();
 
         log.debug( "getCompanies(): searchPattern={} | categories={} | group={} | sortField={} | sortDir={}",
-                searchPattern, categoryIds, (group != null ? group.getId() : null),
-                sortField, (sortDir ? En_SortDir.ASC : En_SortDir.DESC) );
+                companyQuery.getSearchString(), categoryIds, companyQuery.getGroupId(),
+                companyQuery.getSortField(), companyQuery.getSortDir() );
 
-        CompanyQuery query = new CompanyQuery( searchPattern, sortField, sortDir ? En_SortDir.ASC : En_SortDir.DESC );
-        query.setGroupId( group != null ? group.getId() : null );
-        query.setCategoryIds( categoryIds );
+        CoreResponse< List<Company>> result = companyService.companyList(companyQuery);
 
-        HttpListResult< Company> result = companyService.companyList(query);
+        if (result.isError())
+            throw new RequestFailedException(result.getStatus());
 
-        return result.getItems();
+        return result.getData();
     }
 
     @Override
@@ -56,9 +64,12 @@ public class CompanyServiceImpl implements CompanyService {
 
         BaseQuery query = new BaseQuery( searchPattern, En_SortField.group_name, En_SortDir.ASC );
 
-        HttpListResult< CompanyGroup > result = companyService.groupList(query);
+        CoreResponse< List<CompanyGroup> > result = companyService.groupList(query);
 
-        return result.getItems();
+        if (result.isError())
+            throw new RequestFailedException(result.getStatus());
+
+        return result.getData();
     }
 
     @Override
@@ -66,9 +77,12 @@ public class CompanyServiceImpl implements CompanyService {
 
         log.debug( "getCompanyCategories" );
 
-        HttpListResult< CompanyCategory > result = companyService.categoryList();
+        CoreResponse< List<CompanyCategory> > result = companyService.categoryList();
 
-        return result.getItems();
+        if (result.isError())
+            throw new RequestFailedException(result.getStatus());
+
+        return result.getData();
     }
 
     @Override
@@ -87,7 +101,7 @@ public class CompanyServiceImpl implements CompanyService {
 
         log.debug( "saveCompany(): response.isOk()={}", response.isOk() );
 
-        if ( response.isError() ) throw new RequestFailedException();
+        if ( response.isError() ) throw new RequestFailedException(response.getStatus());
 
         return response.getData() != null;
     }
@@ -101,7 +115,7 @@ public class CompanyServiceImpl implements CompanyService {
 
         log.debug( "isCompanyNameExists(): response.isOk()={} | response.getData()", response.isOk(), response.getData() );
 
-        if ( response.isError() ) throw new RequestFailedException();
+        if ( response.isError() ) throw new RequestFailedException(response.getStatus());
 
         return response.getData();
     }
@@ -115,21 +129,21 @@ public class CompanyServiceImpl implements CompanyService {
 
         log.debug( "isGroupNameExists(): response.isOk()={} | response.getData()", response.isOk(), response.getData() );
 
-        if ( response.isError() ) throw new RequestFailedException();
+        if ( response.isError() ) throw new RequestFailedException(response.getStatus());
 
         return response.getData();
     }
 
 
     @Override
-    public Company getCompanyById(Long id) throws RequestFailedException {
+    public Company getCompanyById(long id) throws RequestFailedException {
         log.debug( "getCompanyById: id={}", id );
 
         CoreResponse<Company> response = companyService.getCompanyById(id);
 
         log.debug( "getCompanyById: response.isOk()={} | response.getData()", response.isOk(), response.getData() );
 
-        if ( response.isError() ) throw new RequestFailedException();
+        if ( response.isError() ) throw new RequestFailedException(response.getStatus());
 
         return response.getData();
     }

@@ -6,7 +6,7 @@
     <g:HTMLPanel styleName="preview">
         <g:HTMLPanel tag="fieldset" styleName="header">
             <legend><ui:text from="{lang.productDescription}"/></legend>
-            <span ui:field="info"></span>
+            <span ui:field="info" class="pre-formatted-info"></span>
         </g:HTMLPanel>
     </g:HTMLPanel>
 </ui:UiBinder>
