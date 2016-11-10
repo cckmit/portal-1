@@ -132,6 +132,8 @@ public interface Lang extends Messages {
 
     String newContact ();
 
+    String editContactHeader (String contactName);
+
     String firstName ();
 
     String lastName ();

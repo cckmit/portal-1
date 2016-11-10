@@ -3,10 +3,7 @@ package ru.protei.portal.ui.common.client.widget.selector.company;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
-import ru.protei.portal.core.model.dict.En_SortDir;
-import ru.protei.portal.core.model.dict.En_SortField;
-import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.core.model.query.CompanyQuery;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.CompanyEvents;
 import ru.protei.portal.ui.common.client.service.CompanyServiceAsync;
@@ -31,13 +28,13 @@ public abstract class CompanyModel implements Activity {
         refreshOptions();
     }
 
-    public void subscribe( ModelSelector< Company > selector ) {
+    public void subscribe( ModelSelector<EntityOption> selector ) {
         subscribers.add( selector );
         selector.fillOptions( list );
     }
 
     private void notifySubscribers() {
-        for ( ModelSelector< Company > selector : subscribers ) {
+        for ( ModelSelector< EntityOption > selector : subscribers ) {
             selector.fillOptions( list );
             selector.refreshValue();
         }
@@ -45,29 +42,26 @@ public abstract class CompanyModel implements Activity {
 
     private void refreshOptions() {
 
-        companyService.getCompanies(
-                new CompanyQuery( null, En_SortField.comp_name, En_SortDir.ASC),
-                new RequestCallback< List< Company > >() {
+        companyService.companyOptionList(new RequestCallback< List< EntityOption > >() {
+            @Override
+            public void onError( Throwable throwable ) {
+            }
 
-                    @Override
-                    public void onError( Throwable throwable ) {
-                    }
+            @Override
+            public void onSuccess( List< EntityOption > options ) {
+                list.clear();
+                list.addAll( options );
 
-                    @Override
-                    public void onSuccess( List< Company > companies ) {
-                        list.clear();
-                        list.addAll( companies );
-
-                        notifySubscribers();
-                }
+                notifySubscribers();
+            }
         });
     }
 
     @Inject
     CompanyServiceAsync companyService;
 
-    private List< Company > list = new ArrayList<>();
+    private List< EntityOption > list = new ArrayList<>();
 
-    List< ModelSelector< Company > > subscribers = new ArrayList<>();
+    List< ModelSelector< EntityOption > > subscribers = new ArrayList<>();
 
 }

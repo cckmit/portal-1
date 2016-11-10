@@ -1,6 +1,5 @@
 package ru.protei.portal.test.service;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;

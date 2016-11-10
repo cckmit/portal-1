@@ -15,6 +15,7 @@ import ru.brainworm.factory.widget.table.client.helper.StaticTextColumn;
 import ru.protei.portal.core.model.ent.CompanyCategory;
 import ru.protei.portal.core.model.ent.CompanyGroup;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.ui.common.client.common.ContactColumnBuilder;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.common.NameStatus;
@@ -175,17 +176,19 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
         StaticTextColumn< Person > phone = new StaticTextColumn<Person>( lang.phone() ) {
             @Override
             public String getColumnValue( Person person ) {
-                return ContactColumnBuilder.make().add( null, person.getWorkPhone() )
-                        .add(null, person.getMobilePhone())
-                        .add( null, person.getHomePhone()).toElement().getInnerText();
+                PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(person.getContactInfo());
+                return ContactColumnBuilder.make().add( null, infoFacade.getWorkPhone() )
+                        .add(null, infoFacade.getMobilePhone())
+                        .add( null, infoFacade.getHomePhone()).toElement().getInnerText();
             }
         };
 
         StaticTextColumn< Person > email = new StaticTextColumn<Person>( lang.email() ) {
             @Override
             public String getColumnValue( Person person ) {
-                return ContactColumnBuilder.make().add( null, person.getEmail() )
-                        .add( null, person.getEmail_own() ).toElement().getInnerText();
+                PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(person.getContactInfo());
+                return ContactColumnBuilder.make().add( null, infoFacade.getEmail() )
+                        .add( null, infoFacade.getEmail_own() ).toElement().getInnerText();
             }
         };
 

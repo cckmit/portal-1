@@ -6,6 +6,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.view.EntityOption;
 
 import java.util.List;
 
@@ -15,7 +16,7 @@ import java.util.List;
 public interface AbstractContactTableView extends IsWidget {
 
     void setActivity( AbstractContactTableActivity activity );
-    HasValue< Company > company();
+    HasValue<EntityOption> company();
     HasValue< Boolean > showFired();
     HasValue< En_SortField > sortField();
     HasValue< Boolean > sortDir();

@@ -1,6 +1,8 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.portal.core.model.view.ValueComment;
+import ru.protei.portal.core.model.struct.ContactInfo;
+import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.EntityOptionSupport;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
@@ -12,7 +14,7 @@ import java.util.List;
  * @author michael
  */
 @JdbcEntity(table = "Company")
-public class Company implements Serializable {
+public class Company implements Serializable,EntityOptionSupport {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -20,8 +22,12 @@ public class Company implements Serializable {
     @JdbcJoinedObject( localColumn = "category_id", table = "company_category" )
     private CompanyCategory category;
 
-    @JdbcColumn(name = "parent_company")
-    private Long parentCompanyId;
+    @JdbcColumn(name = "groupId")
+    private Long groupId;
+
+    @JdbcJoinedObject(localColumn = "groupId", remoteColumn = "id", updateLocalColumn = false)
+    CompanyGroup companyGroup;
+
 
     @JdbcColumn(name = "address_dejure")
     private String addressDejure;
@@ -32,38 +38,18 @@ public class Company implements Serializable {
     @JdbcColumn(name = "cname")
     private String cname;
 
-    @JdbcColumn(name = "email", converterType = ConverterType.JSON)
-    private ValueComment email; //List<ValueComment>, NOT NULL!
-
-    @JdbcColumn(name = "fax")
-    private String fax;
+    @JdbcColumn(name = "contactInfo", converterType = ConverterType.JSON)
+    private ContactInfo contactInfo;
 
     @JdbcColumn(name = "info")
     private String info;
 
-    @JdbcColumn(name = "phone", converterType = ConverterType.JSON)
-    private ValueComment phone; //List<ValueComment>, NOT NULL!
-
     @JdbcColumn(name = "created")
     private Date created;
 
-    @JdbcColumn(name = "website")
-    private String website;
-
-    @SuppressWarnings("GwtInconsistentSerializableClass")
-    private List<CompanyGroup> groups;
-
 
     public Company() {
-        groups = null;
-    }
-
-    public Long getParentCompanyId() {
-        return parentCompanyId;
-    }
-
-    public void setParentCompanyId(Long parentCompanyId) {
-        this.parentCompanyId = parentCompanyId;
+        contactInfo = new ContactInfo();
     }
 
     public String getAddressDejure() {
@@ -78,15 +64,6 @@ public class Company implements Serializable {
         return this.cname;
     }
 
-    public ValueComment getEmail() {
-//        if(email == null)
-//            return new ArrayList<ValueComment>();
-        return this.email;
-    }
-
-    public String getFax() {
-        return this.fax;
-    }
 
     public Long getId() {
         return this.id;
@@ -96,18 +73,8 @@ public class Company implements Serializable {
         return this.info;
     }
 
-    public ValueComment getPhone() {
-//        if(phone == null)
-//            return new ArrayList<ValueComment>();
-        return this.phone;
-    }
-
     public Date getCreated() {
         return this.created;
-    }
-
-    public String getWebsite() {
-        return this.website;
     }
 
     public void setAddressDejure(String addressDejure) {
@@ -134,17 +101,6 @@ public class Company implements Serializable {
         this.cname = cname;
     }
 
-    public void setEmail(ValueComment email) {
-        this.email = email;
-    }
-
-    public void setPhone(ValueComment phone){
-        this.phone = phone;
-    }
-
-    public void setFax(String fax) {
-        this.fax = fax;
-    }
 
     public void setId(Long id) {
         this.id = id;
@@ -158,17 +114,29 @@ public class Company implements Serializable {
         this.created = created;
     }
 
-    public void setWebsite(String website) {
-        this.website = website;
+    public ContactInfo getContactInfo() {
+        return contactInfo;
     }
 
-
-    public void setGroups(List<CompanyGroup> groups) {
-        this.groups = groups;
+    public void setContactInfo(ContactInfo contactInfo) {
+        this.contactInfo = contactInfo;
     }
 
-    public List<CompanyGroup> getGroups() {
-        return groups;
+    public Long getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(Long groupId) {
+        this.groupId = groupId;
+    }
+
+    public CompanyGroup getCompanyGroup() {
+        return companyGroup;
+    }
+
+    public void setCompanyGroup(CompanyGroup companyGroup) {
+        this.companyGroup = companyGroup;
+        this.groupId = companyGroup.getId();
     }
 
     @Override
@@ -176,22 +144,24 @@ public class Company implements Serializable {
         return this.id == null ? -1 : this.id.intValue();
     }
 
+
+    @Override
+    public EntityOption toEntityOption() {
+        return new EntityOption(this.cname, this.id);
+    }
+
     @Override
     public String toString() {
-        return "Company{" +
-                "id=" + id +
-                ", categoryId=" + String.valueOf(getCategoryId()) +
-                ", parentCompanyId=" + parentCompanyId +
-                ", addressDejure='" + addressDejure + '\'' +
-                ", addressFact='" + addressFact + '\'' +
-                ", cname='" + cname + '\'' +
-                ", email='" + email + '\'' +
-                ", fax='" + fax + '\'' +
-                ", info='" + info + '\'' +
-                ", phone='" + phone + '\'' +
-                ", created=" + created +
-                ", website='" + website + '\'' +
-                ", groups=" + groups +
-                '}';
+        return new StringBuilder("Company{")
+                .append("id=").append(id)
+                .append(", categoryId=").append(getCategoryId())
+                .append(", groupId=").append(groupId)
+                .append(", addressDejure='").append(addressDejure).append('\'')
+                .append(", addressFact='").append(addressFact).append('\'')
+                .append(", cname='").append(cname).append('\'')
+                .append(", info='").append(info).append('\'')
+                .append(", created=").append(created)
+                .append(", group=").append(getCompanyGroup())
+                .append('}').toString();
     }
 }

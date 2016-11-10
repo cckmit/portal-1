@@ -66,19 +66,21 @@ public class CompanyServiceTest {
             CompanyGroup testGroup = resp.getData();
             Company proteiCompany = service.getCompanyById(1L).getData();
 
+            service.updateCompany(proteiCompany, testGroup);
+
             Assert.assertNotNull(proteiCompany);
 
-            CoreResponse<CompanyGroupItem> linkResult = service.addCompanyToGroup(testGroup.getId(), proteiCompany.getId());
-
-            Assert.assertTrue(linkResult.isOk());
-            Assert.assertNotNull(linkResult.getData());
+//            CoreResponse<CompanyGroupItem> linkResult = service.addCompanyToGroup(testGroup.getId(), proteiCompany.getId());
+//
+//            Assert.assertTrue(linkResult.isOk());
+//            Assert.assertNotNull(linkResult.getData());
 
             proteiCompany = service.getCompanyById(1L).getData();
 
-            Assert.assertNotNull(proteiCompany.getGroups());
-            Assert.assertTrue(proteiCompany.getGroups().size() > 0);
+            Assert.assertNotNull(proteiCompany.getCompanyGroup());
+//            Assert.assertTrue(proteiCompany.getGroups().size() > 0);
 
-            System.out.println(proteiCompany.getGroups().get(0).getName());
+            System.out.println(proteiCompany.getCompanyGroup().getName());
         }
         finally {
             ctx.getBean(CompanyGroupItemDAO.class).removeByCondition("company_id=?", 1L);
