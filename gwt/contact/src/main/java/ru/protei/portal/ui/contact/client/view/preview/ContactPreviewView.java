@@ -57,36 +57,16 @@ public class ContactPreviewView extends Composite implements AbstractContactPrev
     public void setDepartment(String value) { this.department.setInnerText( value ); }
 
     @Override
-    public void setWorkPhone(String value) { this.workPhone.setInnerText( value ); }
+    public void setPhone(String value) { this.phone.setInnerText( value ); }
 
     @Override
-    public void setPersonalPhone(String value) { this.personalPhone.setInnerText( value ); }
+    public void setEmail(String value) { this.email.setInnerText( value ); }
 
     @Override
-    public void setWorkFax(String value) { this.workFax.setInnerText( value ); }
+    public void setAddress(String value) { this.address.setInnerText( value ); }
 
     @Override
-    public void setPersonalFax(String value) { this.personalFax.setInnerText( value ); }
-
-    @Override
-    public void setWorkEmail(String value) {
-        this.workEmail.setInnerText( value );
-    }
-
-    @Override
-    public void setPersonalEmail(String value) {
-        this.personalEmail.setInnerText( value );
-    }
-
-    @Override
-    public void setWorkAddress(String value) {
-        this.workAddress.setInnerText( value );
-    }
-
-    @Override
-    public void setPersonalAddress(String value) {
-        this.personalAddress.setInnerText( value );
-    }
+    public void setHomeAddress(String value) { this.homeAddress.setInnerText( value ); }
 
     @Override
     public void setInfo(String value) { this.info.setInnerText( value ); }
@@ -125,21 +105,13 @@ public class ContactPreviewView extends Composite implements AbstractContactPrev
     @UiField
     SpanElement info;
     @UiField
-    SpanElement workPhone;
+    SpanElement phone;
     @UiField
-    SpanElement personalPhone;
+    SpanElement email;
     @UiField
-    SpanElement workFax;
+    SpanElement address;
     @UiField
-    SpanElement personalFax;
-    @UiField
-    SpanElement workEmail;
-    @UiField
-    SpanElement personalEmail;
-    @UiField
-    SpanElement workAddress;
-    @UiField
-    SpanElement personalAddress;
+    SpanElement homeAddress;
     @UiField
     SpanElement company;
     @UiField

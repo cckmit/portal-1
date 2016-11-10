@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.contact.client.activity.preview;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -12,6 +13,8 @@ import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.contact.client.service.ContactServiceAsync;
+
+import java.util.stream.Collectors;
 
 /**
  * Активность превью контакта
@@ -67,17 +70,18 @@ public abstract class ContactPreviewActivity implements Activity, AbstractContac
         view.setCompany( value.getCompany().getCname() );
         view.setPosition( value.getPosition() );
         view.setDepartment( value.getDepartment() );
-        view.setWorkPhone( value.getWorkPhone() );
-        view.setPersonalPhone( value.getHomePhone() );
-        view.setWorkFax( value.getFax() );
-        view.setPersonalFax( value.getFaxHome() );
-        view.setWorkEmail( value.getEmail() );
-        view.setPersonalEmail( value.getEmail_own() );
-        view.setWorkAddress( value.getAddress() );
-        view.setPersonalAddress( value.getAddressHome() );
+        view.setAddress( value.getAddress() );
+        view.setHomeAddress( value.getAddressHome() );
         view.setBirthday( format.format( value.getBirthday() ) );
         view.setGender( value.getGender().getCode() );
         view.setInfo( value.getInfo() );
+
+        String phones = value.getContactInfo().phoneList.stream().map( p -> (p.phone + " (" + p.comment + ")") ).collect( Collectors.joining( "," ) );
+        view.setPhone( phones );
+        String emails = value.getContactInfo().emailList.stream().map( e -> (e.email + " (" + e.comment + ")") ).collect( Collectors.joining( "," ) );
+        view.setEmail( emails );
+
+        Window.alert("phones="+phones + "\n" + "emails="+emails);
     }
 
     private void fillView( Long id ) {

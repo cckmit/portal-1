@@ -25,14 +25,10 @@ public interface AbstractContactPreviewView extends IsWidget {
     void setPosition( String value );
     void setDepartment( String value );
 
-    void setWorkPhone( String value );
-    void setPersonalPhone( String value );
-    void setWorkFax( String value );
-    void setPersonalFax( String value );
-    void setWorkEmail( String value );
-    void setPersonalEmail( String value );
-    void setWorkAddress( String value );
-    void setPersonalAddress( String value );
+    void setPhone( String value );
+    void setEmail( String value );
+    void setAddress( String value );
+    void setHomeAddress( String value );
 
     HasVisibility fullScreen ();
     HTMLPanel preview ();

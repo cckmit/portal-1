@@ -27,7 +27,7 @@
                     </div>
                     <div class="col-xs-12 col-lg-4">
                         <label>
-                            <ui:text from="{lang.companyGroup}"/>
+                            <ui:text from="{lang.companyGroupLabel}"/>
                         </label>
                         <div class="panelField">
                             <companygroup:GroupButtonSelector ui:field="companyGroup"/>

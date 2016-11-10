@@ -48,36 +48,20 @@
                     <span class="col-xs-7 col-md-7" ui:field="department"></span>
                 </div>
                 <div class="col-xs-12">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.workPhone}"/></label>
-                    <span class="col-xs-7 col-md-7" ui:field="workPhone"></span>
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.phone}"/></label>
+                    <span class="col-xs-7 col-md-7" ui:field="phone"></span>
                 </div>
                 <div class="col-xs-12">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.personalPhone}"/></label>
-                    <span class="col-xs-7 col-md-7" ui:field="personalPhone"></span>
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.email}"/></label>
+                    <span class="col-xs-7 col-md-7" ui:field="email"></span>
                 </div>
                 <div class="col-xs-12">
-                    <label class="col-xs-5"><ui:text from="{lang.primaryFax}"/></label>
-                    <span class="col-xs-7 col-md-7" ui:field="workFax"></span>
-                </div>
-                <div class="col-xs-12">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.secondaryFax}"/></label>
-                    <span class="col-xs-7 col-md-7" ui:field="personalFax"></span>
-                </div>
-                <div class="col-xs-12">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.workEmail}"/></label>
-                    <span class="col-xs-7 col-md-7" ui:field="workEmail"></span>
-                </div>
-                <div class="col-xs-12">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.personalEmail}"/></label>
-                    <span class="col-xs-7 col-md-7" ui:field="personalEmail"></span>
-                </div>
-                <div>
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.workAddress}"/></label>
-                    <span class="col-xs-7 col-md-7" ui:field="workAddress"></span>
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.address}"/></label>
+                    <span class="col-xs-7 col-md-7" ui:field="address"></span>
                 </div>
                 <div class="col-xs-12">
                     <label class="col-xs-5 col-md-5"><ui:text from="{lang.homeAddress}"/></label>
-                    <span class="col-xs-7 col-md-7" ui:field="personalAddress"></span>
+                    <span class="col-xs-7 col-md-7" ui:field="homeAddress"></span>
                 </div>
             </fieldset>
             <fieldset class="header col-xs-12 col-lg-6">

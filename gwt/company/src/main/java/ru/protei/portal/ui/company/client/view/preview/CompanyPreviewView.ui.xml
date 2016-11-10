@@ -6,7 +6,7 @@
     <g:HTMLPanel styleName="preview">
         <g:HTMLPanel ui:field="groupContainer" tag="fieldset" styleName="header">
             <legend><ui:text from="{lang.companyCommonHeader}"/></legend>
-            <label><ui:text from="{lang.companyGroup}"/></label>
+            <label><ui:text from="{lang.companyGroupLabel}"/></label>
             <span ui:field="groupCompany"></span>
         </g:HTMLPanel>
 
