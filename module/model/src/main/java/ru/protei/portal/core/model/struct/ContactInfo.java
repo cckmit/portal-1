@@ -19,13 +19,13 @@ import static ru.protei.portal.core.model.helper.HelperFunc.nvlt;
 public class ContactInfo implements Serializable {
 
     @JsonProperty("emails")
-    public List<ContactEmail> emailList;
+    public List<ContactItem> emailList;
 
     @JsonProperty("phones")
-    public List<ContactPhone> phoneList;
+    public List<ContactItem> phoneList;
 
     @JsonProperty("scn")
-    public List<SocialNetworkLink> socialNetworkLinks;
+    public List<ContactItem> socialNetworks;
 
     @JsonProperty("icq")
     public String icq;
@@ -39,32 +39,32 @@ public class ContactInfo implements Serializable {
 
     public ContactInfo () {
         emailList = new ArrayList<>();
-        socialNetworkLinks = new ArrayList<>();
+        socialNetworks = new ArrayList<>();
         phoneList = new ArrayList<>();
     }
 
     public ContactInfo (ContactInfo src) {
         this.emailList = new ArrayList<>(nvlt(src.emailList, Collections.emptyList()));
         this.phoneList = new ArrayList<>(nvlt(src.phoneList,Collections.emptyList()));
-        this.socialNetworkLinks = new ArrayList<>(nvlt(src.socialNetworkLinks,Collections.emptyList()));
+        this.socialNetworks = new ArrayList<>(nvlt(src.socialNetworks,Collections.emptyList()));
         this.icq = src.icq;
         this.jabber = src.jabber;
         this.webSite = src.webSite;
     }
 
     @JsonIgnore
-    public List<ContactEmail> getEmailList() {
+    public List<ContactItem> getEmailList() {
         return emailList;
     }
 
     @JsonIgnore
-    public List<ContactPhone> getPhoneList() {
+    public List<ContactItem> getPhoneList() {
         return phoneList;
     }
 
     @JsonIgnore
-    public List<SocialNetworkLink> getSocialNetworkLinks() {
-        return socialNetworkLinks;
+    public List<ContactItem> getSocialNetworkLinks() {
+        return socialNetworks;
     }
 
     @JsonIgnore
@@ -95,11 +95,9 @@ public class ContactInfo implements Serializable {
     }
 
 
-    public ContactInfo addPhone (String phone, String comment, En_PhoneType type) {
-        if (phone != null)
-            this.phoneList.add(new ContactPhone(phone, comment, type));
-
-        return this;
+    public ContactInfo addPhone (String phone) {
+       this.phoneList.add(ContactItemFactory.phone(phone));
+       return this;
     }
 
     public ContactInfo addPhone (String phone, String comment) {

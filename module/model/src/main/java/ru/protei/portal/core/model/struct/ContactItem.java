@@ -4,19 +4,19 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import ru.protei.portal.core.model.dict.En_ContactDataAccess;
+import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.dict.En_PhoneType;
 
-import java.beans.Transient;
 import java.io.Serializable;
 
 /**
  * Created by michael on 07.11.16.
  */
 @JsonAutoDetect
-public class ContactPhone implements Serializable {
+public class ContactItem implements Serializable {
 
     @JsonProperty("v")
-    public String phone;
+    public String value;
 
     @JsonProperty("c")
     public String comment;
@@ -25,46 +25,38 @@ public class ContactPhone implements Serializable {
     public En_ContactDataAccess access;
 
     @JsonProperty("t")
-    public En_PhoneType type;
+    public En_ContactItemType type;
 
-    public ContactPhone() {
+    public ContactItem () {
         this.access = En_ContactDataAccess.PUBLIC;
+        this.type = En_ContactItemType.TEXT;
     }
 
-    public ContactPhone(String phone, String comment) {
-        this.phone = phone;
-        this.comment = comment;
-        this.access = En_ContactDataAccess.PUBLIC;
-        this.type = En_PhoneType.GENERAL;
+    public ContactItem (En_ContactItemType type, String value) {
+        this (type, En_ContactDataAccess.PUBLIC, value);
     }
 
-    public ContactPhone(String phone, String comment, En_PhoneType type) {
-        this.phone = phone;
-        this.comment = comment;
-        this.type = type;
-        this.access = En_ContactDataAccess.PUBLIC;
-    }
-
-    public ContactPhone(En_PhoneType type, En_ContactDataAccess access) {
+    public ContactItem (En_ContactItemType type, En_ContactDataAccess access, String value) {
         this.access = access;
         this.type = type;
+        this.value = value;
     }
 
     @JsonIgnore
-    public String getPhone() {
-        return phone;
+    public String getValue() {
+        return value;
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
+    public void setValue(String value) {
+        this.value = value;
     }
 
     @JsonIgnore
-    public En_PhoneType getType() {
+    public En_ContactItemType getType() {
         return type;
     }
 
-    public void setType(En_PhoneType type) {
+    public void setType(En_ContactItemType type) {
         this.type = type;
     }
 
