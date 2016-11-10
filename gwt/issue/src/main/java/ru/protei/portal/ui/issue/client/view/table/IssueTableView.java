@@ -19,6 +19,7 @@ import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.columns.EditActionClickColumn;
+import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
@@ -164,7 +165,7 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
 
             @Override
             public void fillColumnValue( Element element, CaseObject caseObject ) {
-                Person initiator = caseObject == null ? null : caseObject.getCreator();
+                Person initiator = caseObject == null ? null : caseObject.getInitiator();
                 element.setInnerText( initiator == null ? "" : initiator.getDisplayName() );
             }
         };
@@ -192,7 +193,7 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
             @Override
             public void fillColumnValue( Element element, CaseObject caseObject ) {
                 Date created = caseObject == null ? null : caseObject.getCreated();
-                element.setInnerText( created == null ? "" : created.toString() );
+                element.setInnerText( created == null ? "" : dateFormatter.formatDateOnly( created ) );
             }
         };
 
@@ -242,6 +243,9 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
     @Inject
     @UiField
     Lang lang;
+
+    @Inject
+    DateFormatter dateFormatter;
 
     Timer timer = new Timer() {
         @Override

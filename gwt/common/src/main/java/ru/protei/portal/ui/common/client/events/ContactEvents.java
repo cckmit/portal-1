@@ -1,7 +1,6 @@
 package ru.protei.portal.ui.common.client.events;
 
 import ru.brainworm.factory.context.client.annotation.Url;
-import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.view.EntityOption;
 
 /**
