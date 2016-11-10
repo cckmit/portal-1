@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.contact.client.view.table.columns;
+package ru.protei.portal.ui.common.client.common;
 
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.DOM;

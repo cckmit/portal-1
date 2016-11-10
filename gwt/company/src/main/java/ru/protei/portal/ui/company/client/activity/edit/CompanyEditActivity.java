@@ -1,19 +1,22 @@
 package ru.protei.portal.ui.company.client.activity.edit;
 
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_SortDir;
+import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.query.ContactQuery;
 import ru.protei.portal.core.model.view.ValueComment;
-import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.CompanyEvents;
-import ru.protei.portal.ui.common.client.events.NotifyEvents;
-import ru.protei.portal.ui.common.client.events.ValueCommentEvents;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.NameStatus;
+import ru.protei.portal.ui.common.client.common.NameStatus;
+import ru.protei.portal.ui.common.client.service.ContactServiceAsync;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.common.client.service.CompanyServiceAsync;
@@ -41,16 +44,23 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
     public void onShow( CompanyEvents.Edit event ) {
 
         initDetails.parent.clear();
-        resetFields();
         initDetails.parent.add(view.asWidget());
+        resetFields();
 
         if(event.getCompanyId() == null) {
             this.fireEvent(new AppEvents.InitPanelName(lang.companyNew()));
             fireEvent(new ValueCommentEvents.ShowList(view.phonesContainer(), companyPhones = new ArrayList<>()));
             fireEvent(new ValueCommentEvents.ShowList(view.emailsContainer(), companyEmails = new ArrayList<>()));
-        }else {
+        } else {
+
+            requestContacts( event.getCompanyId() );
 
         }
+    }
+
+    @Override
+    public void onEditClicked( Person value ) {
+        fireEvent( ContactEvents.Edit.byId( value.getId() ) );
     }
 
     @Override
@@ -133,6 +143,22 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
     }
 
+    private void requestContacts( Long companyId ) {
+
+        ContactQuery query = new ContactQuery( companyId, null, En_SortField.person_full_name, En_SortDir.ASC );
+        contactService.getContacts( query, new RequestCallback<List<Person>>() {
+            @Override
+            public void onError( Throwable throwable ) {
+                fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
+            }
+
+            @Override
+            public void onSuccess( List<Person> persons ) {
+                view.addContacts( persons );
+            }
+        } );
+    }
+
     private boolean validateFieldAndGetResult(HasValidable validator, HasText field){
         boolean result = !field.getText().trim().isEmpty();
         validator.setValid(result);
@@ -165,7 +191,10 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         view.companyNameValidator().setValid(true);
         view.actualAddressValidator().setValid(true);
         view.legalAddressValidator().setValid(true);
+
+        view.clearContacts();
     }
+
 
     //    native void consoleLog( String message) /*-{
 //        console.log( "me:" + message );
@@ -179,6 +208,8 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
     @Inject
     CompanyServiceAsync companyService;
 
+    @Inject
+    ContactServiceAsync contactService;
 
     private AppEvents.InitDetails initDetails;
     private List<ValueComment> companyPhones;

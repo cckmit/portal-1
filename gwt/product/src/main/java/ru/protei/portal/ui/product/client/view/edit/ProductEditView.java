@@ -12,7 +12,7 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.NameStatus;
+import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.product.client.activity.edit.AbstractProductEditActivity;
 import ru.protei.portal.ui.product.client.activity.edit.AbstractProductEditView;
 
