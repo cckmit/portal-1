@@ -31,9 +31,9 @@ public class CommonClientModule extends AbstractGinModule {
         bind( AbstractValueCommentItemView.class ).to( ValueCommentItemView.class );
         
         bind( CompanyModel.class ).asEagerSingleton();
-        
+
         requestStaticInjection( RequestCallback.class );
-        
+
     }
 }
 

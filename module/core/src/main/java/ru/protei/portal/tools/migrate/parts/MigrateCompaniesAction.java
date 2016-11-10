@@ -6,7 +6,6 @@ import ru.protei.portal.core.model.dao.CompanyGroupHomeDAO;
 import ru.protei.portal.core.model.dao.MigrationEntryDAO;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanyHomeGroupItem;
-import ru.protei.portal.core.model.view.ValueComment;
 import ru.protei.portal.tools.migrate.tools.MigrateAction;
 import ru.protei.portal.tools.migrate.tools.MigrateUtils;
 

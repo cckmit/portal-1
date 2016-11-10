@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.product.client.activity.edit;
 
+import com.google.gwt.user.client.ui.HasValue;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -7,11 +8,12 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.ent.DevUnit;
+import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.ProductEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.common.NameStatus;
+import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.product.client.service.ProductServiceAsync;
 
@@ -80,6 +82,9 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
     @Override
     public void onSaveClicked() {
 
+        if(!validateFieldsAndGetResult())
+            return;
+
         if (productId == null) {
             product = new DevUnit();
         }
@@ -123,12 +128,25 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         });
     }
 
+    private boolean validateFieldAndGetResult(HasValidable validator, HasValue<String> field){
+        boolean result = !field.getValue().trim().isEmpty();
+        validator.setValid(result);
+        return result;
+    }
+
+    private boolean validateFieldsAndGetResult(){
+        return validateFieldAndGetResult(view.nameValidator(), view.name() );
+    }
+
     private void resetView () {
         view.name().setValue("");
         view.info().setValue("");
         view.state().setVisible(false);
         view.save().setEnabled(false);
         view.setNameStatus(NameStatus.NONE);
+
+        // reset validation
+        view.nameValidator().setValid(true);
     }
 
     private void fillView(DevUnit devUnit) {

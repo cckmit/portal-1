@@ -557,13 +557,15 @@ label.bordered:after{
 }
 
 
+/**
+ TABLE
+ */
+
 .table {
   width: 100%;
   max-width: 100%;
   margin-bottom: 20px;
-  background-color: #f6f7f8;
-  //border: 1px solid;
-  //border-color: #ced2d7 #c5cad0 #ced2d7;
+  background-color: white/*#f6f7f8*/;
 }
 
 .table > thead > tr > th,
@@ -582,15 +584,43 @@ label.bordered:after{
   vertical-align: bottom;
   border-bottom: 2px solid #ddd;
   text-align: left;
+  border-top: 0;
 }
 
 .table-hover .table > tbody > tr:hover {
-  background-color: white;
+  background-color: #f6f7f8;
 }
 
-.table > tbody > tr .selected {
+.table > tbody > tr.selected, tr.selected:hover {
   background-color: #ddd;
 }
+
+/* table expandable width */
+
+.no-width {
+  width: 0%;
+  opacity: 0;
+}
+
+.table-container {
+  -webkit-transition: all 0.5s;
+  -moz-transition: all 0.5s;
+  -o-transition: all 0.5s;
+  transition: all 0.5s;
+  // временное решение
+  height: calc(100% - 59px - 30px);
+  overflow-y: auto;
+}
+
+.preview-container {
+  -webkit-transition: all 0.5s;
+  -moz-transition: all 0.5s;
+  -o-transition: all 0.5s;
+  transition: all 0.5s;
+  right: 0;
+}
+
+/************************/
 
 
 .badge {
@@ -643,4 +673,11 @@ label.bordered:after{
 
 .panelField .input-selector{
   margin-right: 7px;
+}
+
+.pull-right {
+  float: right !important;
+}
+.pull-left {
+  float: left !important;
 }

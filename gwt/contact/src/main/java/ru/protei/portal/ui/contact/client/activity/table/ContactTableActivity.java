@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.contact.client.activity.table;
 
-import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -8,7 +7,11 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.query.ContactQuery;
-import ru.protei.portal.ui.common.client.events.*;
+import ru.protei.portal.ui.common.client.animation.TableAnimation;
+import ru.protei.portal.ui.common.client.events.AppEvents;
+import ru.protei.portal.ui.common.client.events.AuthEvents;
+import ru.protei.portal.ui.common.client.events.ContactEvents;
+import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.common.PeriodicTaskService;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
@@ -25,6 +28,7 @@ public abstract class ContactTableActivity implements AbstractContactTableActivi
     @PostConstruct
     public void onInit() {
         view.setActivity( this );
+        view.setAnimation ( animation );
     }
 
     @Event
@@ -48,20 +52,17 @@ public abstract class ContactTableActivity implements AbstractContactTableActivi
     }
 
     @Override
-    public void onItemClicked( Person value ) {
-        Window.alert( "Clicked on contact!" );
-    }
+    public void onItemClicked ( Person value ) { showPreview( value ); }
 
     @Override
     public void onEditClicked(Person value ) {
-        //Window.alert( "Clicked on edit icon!" );
-        fireEvent(ContactEvents.Edit.byId(value.getId()));
+        fireEvent( ContactEvents.Edit.byId( value.getId() ) );
     }
 
 
     @Override
     public void onCreateClick() {
-        fireEvent(ContactEvents.Edit.newItem(view.company().getValue()));
+        fireEvent(ContactEvents.Edit.newItem( view.company().getValue() ));
     }
 
     @Override
@@ -76,6 +77,7 @@ public abstract class ContactTableActivity implements AbstractContactTableActivi
         }
 
         view.clearRecords();
+        animation.closeDetails();
 
         ContactQuery query = new ContactQuery();
         query.setSearchString(view.searchPattern().getValue());
@@ -98,6 +100,16 @@ public abstract class ContactTableActivity implements AbstractContactTableActivi
                 });
     }
 
+    private void showPreview ( Person value ) {
+
+        if ( value == null ) {
+            animation.closeDetails();
+        } else {
+            animation.showDetails();
+            fireEvent( new ContactEvents.ShowPreview( view.getPreviewContainer(), value ) );
+        }
+    }
+
     Consumer< Person > fillViewer = new Consumer< Person >() {
         @Override
         public void accept( Person person ) {
@@ -113,6 +125,9 @@ public abstract class ContactTableActivity implements AbstractContactTableActivi
 
     @Inject
     ContactServiceAsync contactService;
+
+    @Inject
+    TableAnimation animation;
 
     @Inject
     PeriodicTaskService taskService;

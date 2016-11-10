@@ -17,8 +17,6 @@ import ru.protei.portal.ui.common.client.service.CompanyService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Реализация сервиса по работе с компаниями

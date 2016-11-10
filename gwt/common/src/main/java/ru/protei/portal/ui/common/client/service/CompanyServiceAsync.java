@@ -6,10 +6,8 @@ import ru.protei.portal.core.model.ent.CompanyCategory;
 import ru.protei.portal.core.model.ent.CompanyGroup;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * Асинхронный сервис по работе с компаниями
