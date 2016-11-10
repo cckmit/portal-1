@@ -32,7 +32,7 @@ public abstract class CompanyPreviewActivity
 
     private void fillView( Company value ) {
 
-        if ( value.getGroups() == null || value.getGroups().isEmpty() ) {
+        if ( value.getCompanyGroup() == null ) {
             view.setGroupVisible( false );
         }
 

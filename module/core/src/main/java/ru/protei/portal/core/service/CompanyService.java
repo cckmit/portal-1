@@ -4,7 +4,6 @@ import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanyCategory;
 import ru.protei.portal.core.model.ent.CompanyGroup;
-import ru.protei.portal.core.model.ent.CompanyGroupItem;
 import ru.protei.portal.core.model.query.BaseQuery;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -39,8 +38,8 @@ public interface CompanyService {
      */
     CoreResponse<CompanyGroup> createGroup (String name, String info);
 
-    CoreResponse<CompanyGroupItem> addCompanyToGroup (Long groupId, Long companyId);
-
-    CoreResponse<CompanyGroupItem> delCompanyFromGroup (Long groupId,
-                                                      Long companyId);
+//    CoreResponse<CompanyGroupItem> addCompanyToGroup (Long groupId, Long companyId);
+//
+//    CoreResponse<CompanyGroupItem> delCompanyFromGroup (Long groupId,
+//                                                      Long companyId);
 }

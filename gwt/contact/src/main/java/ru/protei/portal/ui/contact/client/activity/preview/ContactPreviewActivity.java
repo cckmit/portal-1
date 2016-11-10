@@ -70,18 +70,13 @@ public abstract class ContactPreviewActivity implements Activity, AbstractContac
         view.setCompany( value.getCompany().getCname() );
         view.setPosition( value.getPosition() );
         view.setDepartment( value.getDepartment() );
+        view.setPhone( value.getContactInfo().phoneList.stream().map( p -> (p.phone + " (" + p.comment + ")") ).collect( Collectors.joining( "," ) ) );
+        view.setEmail( value.getContactInfo().emailList.stream().map( e -> (e.email + " (" + e.comment + ")") ).collect( Collectors.joining( "," ) ) );
         view.setAddress( value.getAddress() );
         view.setHomeAddress( value.getAddressHome() );
-        view.setBirthday( format.format( value.getBirthday() ) );
+        view.setBirthday( value.getBirthday() != null ? format.format( value.getBirthday() ) : "" );
         view.setGender( value.getGender().getCode() );
         view.setInfo( value.getInfo() );
-
-        String phones = value.getContactInfo().phoneList.stream().map( p -> (p.phone + " (" + p.comment + ")") ).collect( Collectors.joining( "," ) );
-        view.setPhone( phones );
-        String emails = value.getContactInfo().emailList.stream().map( e -> (e.email + " (" + e.comment + ")") ).collect( Collectors.joining( "," ) );
-        view.setEmail( emails );
-
-        Window.alert("phones="+phones + "\n" + "emails="+emails);
     }
 
     private void fillView( Long id ) {
