@@ -26,6 +26,10 @@ public class CompanyCategory implements Serializable {
     public CompanyCategory() {
     }
 
+    public CompanyCategory (long id) {
+        this.id = id;
+    }
+
     public Long getId() {
         return id;
     }
