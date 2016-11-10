@@ -28,7 +28,7 @@ public abstract class AppActivity
 
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
-        view.setUsername(event.profile.getName());
+        view.setUsername( event.profile.getName(), event.profile.getRole().getCaRoleName() );
     }
 
     @Event

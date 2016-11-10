@@ -8,117 +8,139 @@
     <g:HTMLPanel ui:field="appPanel" styleName="global">
         <g:HTMLPanel tag="header" styleName="main-header">
             <a href="http://protei.ru" class="logo">
-                <img src="./images/logo.svg"/>
-                <b>Protei</b>LTD
+                <span>
+                    <img src="./images/logo.svg"/>
+                    <b>Protei</b> LTD
+                </span>
             </a>
 
             <nav class="navbar">
-                <a href="#" class="sidebar-toggle">
+                <g:Anchor ui:field="hideBarButton" styleName="sidebar-toggle" href="#">
                     <span class="sr-only">Toggle navigation</span>
-                </a>
+                </g:Anchor>
 
-                <ul class="nav navbar-nav">
+
+                <div class="gl-search" style="display:none">
+                    <g:TextBox ui:field="search" styleName="gl-search-input"/>
+                    <!--<g:Anchor ui:field="searchButton" styleName="gl-search-button" href="#">-->
+                    <!--<i class="fa fa-search"></i>-->
+                    <!--</g:Anchor>-->
+                </div>
+                <ul class="nav navbar-nav navbar-right">
                     <li>
-                        <a href="#" data-toggle="control-sidebar">
+                        <g:Anchor ui:field="searchButton" href="#">
                             <i class="fa fa-search"></i>
-                        </a>
+                        </g:Anchor>
                     </li>
                     <li>
-                        <a href="#" data-toggle="control-sidebar">
+
+                        <g:Anchor ui:field="logout" title="{lang.buttonLogout} (you can use Ctrl+F4)" href="#">
                             <i class="fa fa-sign-out"></i>
-                        </a>
+                        </g:Anchor>
                     </li>
                 </ul>
             </nav>
         </g:HTMLPanel>
 
-        <div class="header_global">
-            <div ui:field="logo" class="leftBlock">
-                <div class="company">
-                    <span class="logo"></span>
-                    <span class="name">PROTEI</span>
-                </div>
-                <g:Anchor ui:field="hideBarButton" styleName="hideBar_button" href="#"/>
-            </div>
-
-            <g:HTMLPanel ui:field="navbar" styleName="rightBlock">
-                <div class="topicTitle employees">
-                    <div class="title">
-                        <g:Label ui:field="panelName" />
-                    </div>
-                </div>
-                <div class="rightSide">
-                    <div class="icons">
-                        <g:Anchor ui:field="user" styleName="user_button" href="#"/>
-                        <g:Anchor ui:field="logout" title="{lang.buttonLogout} (you can use Ctrl+F4)" styleName="exit_button" href="#"/>
-                    </div>
-                </div>
-                <div class="rightSide gl-search">
-                    <g:TextBox ui:field="search" styleName="gl-search-input"/>
-                    <g:Anchor ui:field="searchButton" styleName="gl-search-button" href="#"/>
-                </div>
-            </g:HTMLPanel>
-        </div>
-
 
         <div class="body_global">
-
-            <g:HTMLPanel ui:field="sidebar" styleName="leftBlock">
-                <g:HTMLPanel ui:field="noScrol" styleName="noScrolling">
-                    <div class="scrolling">
-                        <div class="mainButtons"></div>
-                        <div class="menuList">
-                            <!--<div class="menu">-->
-                            <!--<div class="title">Рабочее место</div>-->
-                            <!--<div class="list">-->
-                            <!--<div class="item"><span class="icon-plan"></span>Мой план</div>-->
-                            <!--<div class="item"><span class="icon-created"></span>Инспектор</div>-->
-                            <!--<div class="item"><span class="icon-activity"></span>Моя активность</div>-->
-                            <!--<div class="item"><span class="icon-subscription"></span>Мои подписки</div>-->
-                            <!--<div class="item"><span class="icon-favorites"></span>Мои избранные</div>-->
-                            <!--</div>-->
-                            <!--</div>-->
-                            <!--<div class="menu">-->
-                            <!--<div class="title">Компания</div>-->
-                            <!--<div class="list">-->
-                            <!--<div class="item"><span class="icon-employees"></span>Сотрудники</div>-->
-                            <!--<div class="item"><span class="icon-me"></span>Мой паспорт</div>-->
-                            <!--</div>-->
-                            <!--</div>-->
-                            <div class="menu">
-                                <div class="title">Объекты системы</div>
-                                <div style="max-height: 500px" class="list active">
-                                    <!--<div class="item"><span class="icon-component"></span>Компоненты</div>-->
-                                    <div class="item">
-                                        <span class="icon-product"></span>
-                                        <g:Anchor ui:field="products" href="#" text="{lang.products}"/>
-                                    </div>
-                                    <!--<div class="item"><span class="icon-case"></span>Задачи</div>-->
-                                    <!--<div class="item"><span class="icon-order"></span>Группы задач</div>-->
-                                    <!--<div class="item"><span class="icon-order"></span>Заказы</div>-->
-                                    <!--<div class="item"><span class="icon-project"></span>Проекты</div>-->
-                                    <div class="item">
-                                        <span class="icon-organization"></span>
-                                        <g:Anchor ui:field="companies" href="#" text="{lang.companies}"/>
-                                    </div>
-                                    <div class="item">
-                                        <span class="icon-employees"></span>
-                                        <g:Anchor ui:field="contacts" href="#" text="{lang.contacts}" />
-                                    </div>
-                                </div>
-                            </div>
-                            <!--<div class="menu">-->
-                            <!--<div class="title">Управление и отчёты</div>-->
-                            <!--<div class="list">-->
-                            <!--<div class="item"><span class="icon-employees"></span>Сотрудники</div>-->
-                            <!--<div class="item"><span class="icon-component"></span>Компоненты</div>-->
-                            <!--<div class="item"><span class="icon-product"></span>Продукты</div>-->
-                            <!--</div>-->
-                            <!--</div>-->
+            <g:HTMLPanel styleName="main-sidebar" ui:field="sidebar">
+                <section class="sidebar">
+                    <div class="user-panel">
+                        <div class="pull-left image">
+                            <img src="./images/user-icon.png" class="img-circle"/>
+                        </div>
+                        <div class="pull-left info">
+                            <p ui:field="username"></p>
+                            <a ui:field="role"></a>
                         </div>
                     </div>
-                </g:HTMLPanel>
+                    <ul class="sidebar-menu">
+                        <li class="header">Объекты системы</li>
+                        <li ui:field="productsLi">
+                            <g:Anchor ui:field="products" href="#">
+                                <i class="icon icon-product"></i>
+                                <ui:text from="{lang.products}"/>
+                            </g:Anchor>
+
+                        </li>
+
+                        <li ui:field="companiesLi">
+                            <g:Anchor ui:field="companies" href="#">
+                                <i class="icon icon-organization"></i>
+                                <ui:text from="{lang.companies}"/>
+                            </g:Anchor>
+
+                        </li>
+
+                        <li ui:field="contactsLi">
+                            <g:Anchor ui:field="contacts" href="#">
+                                <i class="fa fa-group"></i>
+                                <ui:text from="{lang.contacts}"/>
+                            </g:Anchor>
+                        </li>
+
+                    </ul>
+                </section>
             </g:HTMLPanel>
+
+
+            <!--<g:HTMLPanel ui:field="sidebar" styleName="leftBlock">-->
+                <!--<g:HTMLPanel ui:field="noScrol" styleName="noScrolling">-->
+                    <!--<div class="scrolling">-->
+                        <!--<div class="mainButtons"></div>-->
+                        <!--<div class="menuList">-->
+                            <!--&lt;!&ndash;<div class="menu">&ndash;&gt;-->
+                            <!--&lt;!&ndash;<div class="title">Рабочее место</div>&ndash;&gt;-->
+                            <!--&lt;!&ndash;<div class="list">&ndash;&gt;-->
+                            <!--&lt;!&ndash;<div class="item"><span class="icon-plan"></span>Мой план</div>&ndash;&gt;-->
+                            <!--&lt;!&ndash;<div class="item"><span class="icon-created"></span>Инспектор</div>&ndash;&gt;-->
+                            <!--&lt;!&ndash;<div class="item"><span class="icon-activity"></span>Моя активность</div>&ndash;&gt;-->
+                            <!--&lt;!&ndash;<div class="item"><span class="icon-subscription"></span>Мои подписки</div>&ndash;&gt;-->
+                            <!--&lt;!&ndash;<div class="item"><span class="icon-favorites"></span>Мои избранные</div>&ndash;&gt;-->
+                            <!--&lt;!&ndash;</div>&ndash;&gt;-->
+                            <!--&lt;!&ndash;</div>&ndash;&gt;-->
+                            <!--&lt;!&ndash;<div class="menu">&ndash;&gt;-->
+                            <!--&lt;!&ndash;<div class="title">Компания</div>&ndash;&gt;-->
+                            <!--&lt;!&ndash;<div class="list">&ndash;&gt;-->
+                            <!--&lt;!&ndash;<div class="item"><span class="icon-employees"></span>Сотрудники</div>&ndash;&gt;-->
+                            <!--&lt;!&ndash;<div class="item"><span class="icon-me"></span>Мой паспорт</div>&ndash;&gt;-->
+                            <!--&lt;!&ndash;</div>&ndash;&gt;-->
+                            <!--&lt;!&ndash;</div>&ndash;&gt;-->
+                            <!--<div class="menu">-->
+                                <!--<div class="title">Объекты системы</div>-->
+                                <!--<div style="max-height: 500px" class="list active">-->
+                                    <!--&lt;!&ndash;<div class="item"><span class="icon-component"></span>Компоненты</div>&ndash;&gt;-->
+                                    <!--<div class="item">-->
+                                        <!--<span class="icon-product"></span>-->
+                                        <!--<g:Anchor ui:field="products" href="#" text="{lang.products}"/>-->
+                                    <!--</div>-->
+                                    <!--&lt;!&ndash;<div class="item"><span class="icon-case"></span>Задачи</div>&ndash;&gt;-->
+                                    <!--&lt;!&ndash;<div class="item"><span class="icon-order"></span>Группы задач</div>&ndash;&gt;-->
+                                    <!--&lt;!&ndash;<div class="item"><span class="icon-order"></span>Заказы</div>&ndash;&gt;-->
+                                    <!--&lt;!&ndash;<div class="item"><span class="icon-project"></span>Проекты</div>&ndash;&gt;-->
+                                    <!--<div class="item">-->
+                                        <!--<span class="icon-organization"></span>-->
+                                        <!--<g:Anchor ui:field="companies" href="#" text="{lang.companies}"/>-->
+                                    <!--</div>-->
+                                    <!--<div class="item">-->
+                                        <!--<span class="icon-employees"></span>-->
+                                        <!--<g:Anchor ui:field="contacts" href="#" text="{lang.contacts}" />-->
+                                    <!--</div>-->
+                                <!--</div>-->
+                            <!--</div>-->
+                            <!--&lt;!&ndash;<div class="menu">&ndash;&gt;-->
+                            <!--&lt;!&ndash;<div class="title">Управление и отчёты</div>&ndash;&gt;-->
+                            <!--&lt;!&ndash;<div class="list">&ndash;&gt;-->
+                            <!--&lt;!&ndash;<div class="item"><span class="icon-employees"></span>Сотрудники</div>&ndash;&gt;-->
+                            <!--&lt;!&ndash;<div class="item"><span class="icon-component"></span>Компоненты</div>&ndash;&gt;-->
+                            <!--&lt;!&ndash;<div class="item"><span class="icon-product"></span>Продукты</div>&ndash;&gt;-->
+                            <!--&lt;!&ndash;</div>&ndash;&gt;-->
+                            <!--&lt;!&ndash;</div>&ndash;&gt;-->
+                        <!--</div>-->
+                    <!--</div>-->
+                <!--</g:HTMLPanel>-->
+            <!--</g:HTMLPanel>-->
 
             <g:HTMLPanel ui:field="container" styleName="rightBlock"/>
 

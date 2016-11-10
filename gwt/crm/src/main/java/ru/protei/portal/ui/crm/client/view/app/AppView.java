@@ -1,7 +1,10 @@
 package ru.protei.portal.ui.crm.client.view.app;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.AnchorElement;
 import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.dom.client.LIElement;
+import com.google.gwt.dom.client.ParagraphElement;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -26,13 +29,14 @@ public class AppView extends Composite implements AbstractAppView, KeyUpHandler,
     }
 
     @Override
-    public void setUsername(String username) {
-        this.user.setText( username );
+    public void setUsername( String username, String role) {
+        this.username.setInnerText( username );
+        this.role.setInnerText( role );
     }
 
     @Override
     public void setPanelName(String panelName) {
-        this.panelName.setText( panelName );
+//        this.panelName.setText( panelName );
     }
 
     @Override
@@ -62,14 +66,6 @@ public class AppView extends Composite implements AbstractAppView, KeyUpHandler,
         }
      }
 
-    @UiHandler("user")
-    public void onUserClicked( ClickEvent event ) {
-        event.preventDefault();
-        if ( activity != null ) {
-            activity.onUserClicked();
-        }
-    }
-
     @UiHandler("logout")
     public void onLogoutClicked(ClickEvent event) {
         event.preventDefault();
@@ -81,13 +77,14 @@ public class AppView extends Composite implements AbstractAppView, KeyUpHandler,
     @UiHandler("hideBarButton")
     public void onHideBarButtonClicked(ClickEvent event) {
         event.preventDefault();
-        logo.addClassName("inactive");
         sidebar.addStyleName("inactive");
     }
 
     @UiHandler("companies")
     public void onCompaniesClicked(ClickEvent event) {
         event.preventDefault();
+        clearTabs();
+        companiesLi.addClassName( "active" );
         if ( activity != null ) {
             activity.onCompaniesClicked();
         }
@@ -96,6 +93,8 @@ public class AppView extends Composite implements AbstractAppView, KeyUpHandler,
     @UiHandler("products")
     public void onProductsClicked(ClickEvent event) {
         event.preventDefault();
+        clearTabs();
+        productsLi.addClassName( "active" );
         if ( activity != null ) {
             activity.onProductsClicked();
         }
@@ -104,6 +103,8 @@ public class AppView extends Composite implements AbstractAppView, KeyUpHandler,
     @UiHandler("contacts")
     public void onContactsClicked(ClickEvent event) {
         event.preventDefault();
+        clearTabs();
+        contactsLi.addClassName( "active" );
         if ( activity != null ) {
             activity.onContactsClicked();
         }
@@ -111,7 +112,6 @@ public class AppView extends Composite implements AbstractAppView, KeyUpHandler,
 
     @Override
     public void onKeyUp (KeyUpEvent event) {
-
         if (event.getNativeKeyCode() == KeyCodes.KEY_F4 && event.isAnyModifierKeyDown() && event.isControlKeyDown()) {
             event.preventDefault();
             activity.onLogoutClicked();
@@ -120,15 +120,10 @@ public class AppView extends Composite implements AbstractAppView, KeyUpHandler,
 
     @Override
     public void onClick (ClickEvent event) {
-        logo.removeClassName("inactive");
         sidebar.removeStyleName("inactive");
     }
 
     private void initHandlers() {
-
-        noScrol.sinkEvents(Event.ONCLICK);
-        noScrol.addHandler(this, ClickEvent.getType());
-
         RootPanel.get().sinkEvents(Event.ONKEYUP);
         RootPanel.get().addHandler(this, KeyUpEvent.getType());
     }
@@ -137,19 +132,18 @@ public class AppView extends Composite implements AbstractAppView, KeyUpHandler,
         search.setFocus(true);
     }
 
+    private void clearTabs() {
+        companiesLi.removeClassName( "active" );
+        contactsLi.removeClassName( "active" );
+        productsLi.removeClassName( "active" );
+    }
+
     @UiField
     HTMLPanel appPanel;
 
     @UiField
-    DivElement logo;
-    @UiField
     Anchor hideBarButton;
 
-    @UiField
-    HTMLPanel noScrol;
-
-    @UiField
-    HTMLPanel navbar;
     @UiField
     TextBox search;
     @UiField
@@ -160,10 +154,8 @@ public class AppView extends Composite implements AbstractAppView, KeyUpHandler,
     @UiField
     HTMLPanel container;
 
-    @UiField
-    Anchor user;
-    @UiField
-    Label panelName;
+//    @UiField
+//    Label panelName;
 
 
     @UiField
@@ -177,6 +169,16 @@ public class AppView extends Composite implements AbstractAppView, KeyUpHandler,
     HTMLPanel notifyContainer;
     @UiField
     Anchor searchButton;
+    @UiField
+    LIElement productsLi;
+    @UiField
+    LIElement companiesLi;
+    @UiField
+    LIElement contactsLi;
+    @UiField
+    ParagraphElement username;
+    @UiField
+    AnchorElement role;
 
     AbstractAppActivity activity;
 
