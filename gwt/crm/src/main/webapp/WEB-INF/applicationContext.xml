@@ -17,4 +17,5 @@
        <context:component-scan base-package="ru.protei.portal.ui.product" />
        <context:component-scan base-package="ru.protei.portal.ui.company" />
        <context:component-scan base-package="ru.protei.portal.ui.contact" />
+       <context:component-scan base-package="ru.protei.portal.ui.issue" />
 </beans>
