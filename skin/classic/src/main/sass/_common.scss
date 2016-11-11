@@ -678,6 +678,23 @@ label.bordered:after{
 .pull-right {
   float: right !important;
 }
+
 .pull-left {
   float: left !important;
+}
+
+td.info {
+  word-break: break-word;
+}
+
+.dropdown-searchbox {
+  position: relative;
+}
+
+.dropdown-searchbox:after {
+  font: normal normal normal 14px/1 FontAwesome;
+  content: "\f002";
+  position: absolute;
+  right: 10px;
+  top: 5px;
 }

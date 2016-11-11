@@ -5,7 +5,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
-import ru.protei.portal.ui.common.client.service.CommonServiceAsync;
+import ru.protei.portal.ui.common.client.service.CaseServiceAsync;
 import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
@@ -44,5 +44,5 @@ public class IssueStatesButtonSelector extends ButtonSelector<En_CaseState> impl
     }
 
     @Inject
-    CommonServiceAsync commonService;
+    CaseServiceAsync commonService;
 }

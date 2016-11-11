@@ -191,4 +191,12 @@ public interface Lang extends Messages {
 
     String noCompanyGroup();
     String companyGroupLabel ();
+
+    String issues();
+    String issueNumber();
+    String issueProduct();
+    String issueContacts();
+    String issueInfo();
+    String issueCreationDate();
+    String issueManager();
 }

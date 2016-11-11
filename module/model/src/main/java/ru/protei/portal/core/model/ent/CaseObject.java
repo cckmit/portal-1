@@ -2,18 +2,16 @@ package ru.protei.portal.core.model.ent;
 
 import protei.sql.Column;
 import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.winter.jdbc.annotations.IdInsertMode;
-import ru.protei.winter.jdbc.annotations.JdbcColumn;
-import ru.protei.winter.jdbc.annotations.JdbcEntity;
-import ru.protei.winter.jdbc.annotations.JdbcId;
+import ru.protei.winter.jdbc.annotations.*;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Created by michael on 19.05.16.
  */
 @JdbcEntity(table = "case_object")
-public class CaseObject {
+public class CaseObject implements Serializable {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -48,17 +46,35 @@ public class CaseObject {
     @JdbcColumn(name = "CREATOR")
     private Long creatorId;
 
+    @JdbcJoinedObject( localColumn = "CREATOR", remoteColumn = "id", updateLocalColumn = false )
+    private Person creator;
+
     @JdbcColumn(name = "CREATOR_IP")
     private String creatorIp;
 
     @JdbcColumn(name = "INITIATOR")
     private Long initiatorId;
 
+    @JdbcJoinedObject( localColumn = "INITIATOR", remoteColumn = "id", updateLocalColumn = false )
+    private Person initiator;
+
     @JdbcColumn(name = "initiator_company")
     private Long initiatorCompanyId;
 
+    @JdbcJoinedObject( localColumn = "initiator_company", remoteColumn = "id", updateLocalColumn = false )
+    private Company initiatorCompany;
+
+    @JdbcColumn(name = "product_id")
+    private Long productId;
+
+    @JdbcJoinedObject(localColumn = "product_id", remoteColumn = "id", updateLocalColumn = false)
+    private DevUnit product;
+
     @JdbcColumn(name = "MANAGER")
     private Long managerId;
+
+    @JdbcJoinedObject( localColumn = "MANAGER", remoteColumn = "id", updateLocalColumn = false )
+    private Person manager;
 
     @JdbcColumn(name = "KEYWORDS")
     private String keywords;
@@ -71,6 +87,12 @@ public class CaseObject {
 
     @Column(name = "creator_info")
     private String creatorInfo;
+
+    @Column(name = "deleted")
+    private boolean deleted;
+
+    @Column(name = "private_flag")
+    private boolean privateCase;
 
 
     public CaseObject() {
@@ -232,5 +254,55 @@ public class CaseObject {
 
     public void setCreatorInfo(String creatorInfo) {
         this.creatorInfo = creatorInfo;
+    }
+
+
+    public Long getProductId() {
+        return productId;
+    }
+
+    public void setProductId(Long productId) {
+        this.productId = productId;
+    }
+
+    public DevUnit getProduct() {
+        return product;
+    }
+
+    public void setProduct(DevUnit product) {
+        this.product = product;
+        this.productId = product == null ? null : product.getId();
+    }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    public boolean isPrivateCase() {
+        return privateCase;
+    }
+
+    public void setPrivateCase(boolean privateCase) {
+        this.privateCase = privateCase;
+    }
+
+    public Person getCreator() {
+        return creator;
+    }
+
+    public Person getInitiator() {
+        return initiator;
+    }
+
+    public Person getManager() {
+        return manager;
+    }
+
+    public Company getInitiatorCompany() {
+        return initiatorCompany;
     }
 }
