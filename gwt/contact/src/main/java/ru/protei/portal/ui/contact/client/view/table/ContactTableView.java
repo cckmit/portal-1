@@ -1,7 +1,6 @@
 package ru.protei.portal.ui.contact.client.view.table;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -295,10 +294,10 @@ public class ContactTableView extends Composite implements AbstractContactTableV
     };
 
     AbstractColumn hideColumn;
-    EditClickColumn<Person > editClickColumn;
+    ClickColumnProvider<Person> columnProvider = new ClickColumnProvider<>();
     SelectionColumn< Person > selectionColumn = new SelectionColumn<>();
-    ClickColumnProvider<Person> columnProvider = new ClickColumnProvider< Person >();
-    List<ClickColumn > columns = new ArrayList< ClickColumn >();
+    EditClickColumn<Person > editClickColumn;
+    List<ClickColumn > columns = new ArrayList<>();
 
     AbstractContactTableActivity activity;
 

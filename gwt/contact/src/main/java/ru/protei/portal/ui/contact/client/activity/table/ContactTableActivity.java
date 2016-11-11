@@ -5,6 +5,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_SortDir;
+import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.query.ContactQuery;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
@@ -126,20 +127,14 @@ public abstract class ContactTableActivity implements AbstractContactTableActivi
     }
 
     private ContactQuery makeQuery( Long companyId ) {
-        ContactQuery query = new ContactQuery();
         if ( companyId != null ) {
-            query.setSearchString( null );
-            query.setFired( null );
-            query.setCompanyId( companyId );
+            return new ContactQuery( companyId, null, null, En_SortField.person_full_name, En_SortDir.ASC);
         } else {
-            query.setSearchString(view.searchPattern().getValue());
-            query.setFired(view.showFired().getValue() ? null : view.showFired().getValue());
-            if( view.company().getValue() != null )
-                query.setCompanyId(view.company().getValue().getId());
+            return new ContactQuery( view.company().getValue(),
+                    view.showFired().getValue() ? null : view.showFired().getValue(),
+                    view.searchPattern().getValue(), view.sortField().getValue(),
+                    view.sortDir().getValue()? En_SortDir.ASC: En_SortDir.DESC );
         }
-        query.setSortField(view.sortField().getValue());
-        query.setSortDir(view.sortDir().getValue()? En_SortDir.ASC: En_SortDir.DESC);
-        return query;
     };
 
     Consumer< Person > fillViewer = new Consumer< Person >() {
