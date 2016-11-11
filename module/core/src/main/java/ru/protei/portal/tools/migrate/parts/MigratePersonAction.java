@@ -6,9 +6,7 @@ import ru.protei.portal.core.model.dao.CompanyGroupHomeDAO;
 import ru.protei.portal.core.model.dao.MigrationEntryDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dao.UserLoginDAO;
-import ru.protei.portal.core.model.dict.En_AdminState;
-import ru.protei.portal.core.model.dict.En_AuthType;
-import ru.protei.portal.core.model.dict.En_Gender;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
@@ -185,80 +183,58 @@ public class MigratePersonAction implements MigrateAction {
             );
             x.setPassportInfo((String) row.get("strPassportInfo"));
             x.setGender(row.get("nSexID") == null ? En_Gender.UNDEFINED : ((Number) row.get("nSexID")).intValue() == 1 ? En_Gender.MALE : En_Gender.FEMALE);
-
             x.setPosition(nvl((String) row.get("strPosition"), (String) row.get("category")));
-
-
             x.setDepartment((String) row.get("strDescription"));
 
             x.setIpAddress((String) row.get("strIP_Address"));
 
-//            x.setEmail((String) row.get("strE_Mail"));
-//            x.setEmail_own((String) row.get("strOther_E_mail"));
+            ContactInfoMigrationFacade contactInfoFacade = new ContactInfoMigrationFacade (x.getContactInfo());
 
-            x.getContactInfo().addEmail((String) row.get("strE_Mail"), "default");
-            x.getContactInfo().addEmail((String) row.get("strOther_E_mail"), "personal");
+            contactInfoFacade.addEmail((String) row.get("strE_Mail"), "Основной");
 
-//            x.setHomePhone((String) row.get("strHomeTel"));
-//            x.setWorkPhone((String) row.get("strWorkTel"));
-//            x.setMobilePhone((String) row.get("strMobileTel"));
-            x.getContactInfo().addPhone((String) row.get("strHomeTel"), "home");
-            x.getContactInfo().addPhone((String) row.get("strWorkTel"), "work");
-            x.getContactInfo().addMobilePhone((String) row.get("strMobileTel"), "");
+            contactInfoFacade.addPrivateEmail((String) row.get("strOther_E_mail"), "Персональный");
 
-//            x.setFax((String) row.get("strFaxTel"));
-            x.getContactInfo().addFax((String) row.get("strFaxTel"), "");
+            contactInfoFacade.addHomePhone((String) row.get("strHomeTel"), "Домашний");
 
-            x.setAddress((String) row.get("strOficialAddress"));
-            x.setAddressHome((String) row.get("strActualAddress"));
+            contactInfoFacade.addWorkPhone((String) row.get("strWorkTel"), "Рабочий");
 
-//            x.setIcq((String) row.get("strICQ"));
-            x.getContactInfo().icq = (String) row.get("strICQ");
-//            x.setJabber(row.get("nJID") != null && ((Number) row.get("nJID")).longValue() > 0 ? row.get("nJID").toString() : null);
-            x.getContactInfo().jabber = row.get("nJID") != null && ((Number) row.get("nJID")).longValue() > 0 ? row.get("nJID").toString() : null;
+            contactInfoFacade.addMobilePhone((String) row.get("strMobileTel"), "Мобильный");
 
+            contactInfoFacade.addFax((String) row.get("strFaxTel"), "");
 
-/*            if (row.get("nCategoryID") != null) {
-Tm_PersonRole role = commonMapper.getPersonRole(row.get("category").toString());
-if (role == null)
-{
-    role = new Tm_PersonRole();
-    role.setRoleName(row.get("category").toString());
-    commonMapper.insertRole(role);
-    System.out.println("create new role:" + role.getRoleName() + ", id=" + role.getId());
-}
-x.setWorkRoleID(role.getId());
-}*/
+            contactInfoFacade.addLegalAddress((String) row.get("strOficialAddress"), "Официальный адрес");
+
+            contactInfoFacade.addAddress((String) row.get("strActualAddress"), "Фактический адрес");
+
+            contactInfoFacade.addIcq((String) row.get("strICQ"), "");
+
+            contactInfoFacade.addJabber(
+                    row.get("nJID") != null && ((Number) row.get("nJID")).longValue() > 0 ? row.get("nJID").toString() : null
+                    , "");
+
 
             if (row.get("properties") != null) {
                 logger.debug("properties: " + row.get("properties"));
 
                 Map<String, String> xp = splitProps((String) row.get("properties"));
-                x.setAddress(nvl(xp.get("Адрес рабочий"), xp.get("Адрес без категории")));
-                x.setAddressHome(xp.get("Адрес домашний"));
 
-//                x.setEmail(nvl(xp.get("E-mail рабочий"), xp.get("E-mail без категории")));
-//                x.setEmail_own(xp.get("E-mail домашний"));
+                contactInfoFacade.addAddress(xp.get("Адрес рабочий"), "Адрес рабочий");
+                contactInfoFacade.addAddress(xp.get("Адрес без категории"), "Адрес без категории");
+                contactInfoFacade.addPrivateAddress(xp.get("Адрес домашний"), "Адрес домашний");
 
-                x.getContactInfo().addEmail(xp.get("E-mail рабочий"), "рабочий");
-                x.getContactInfo().addEmail(xp.get("E-mail без категории"), "без категории");
-                x.getContactInfo().addEmail(xp.get("E-mail домашний"), "персональный");
+                contactInfoFacade.addEmail(xp.get("E-mail рабочий"), "рабочий");
+                contactInfoFacade.addEmail(xp.get("E-mail без категории"), "без категории");
+                contactInfoFacade.addPrivateEmail(xp.get("E-mail домашний"), "персональный");
 
-//                x.setFax(nvl(xp.get("Факс рабочий"), xp.get("Факс без категории")));
-//                x.setFaxHome(xp.get("Факс домашний"));
 
-                x.getContactInfo().addFax(xp.get("Факс рабочий"), "Факс рабочий");
-                x.getContactInfo().addFax(xp.get("Факс без категории"), "Факс без категории");
-                x.getContactInfo().addFax(xp.get("Факс домашний"), "Факс домашний");
-//
-//                x.setWorkPhone(nvl(xp.get("Телефон рабочий"), xp.get("Телефон без категории")));
-//                x.setMobilePhone(xp.get("Телефон мобильный"));
-//                x.setHomePhone(xp.get("Телефон домашний"));
+                contactInfoFacade.addFax(xp.get("Факс рабочий"), "Факс рабочий");
+                contactInfoFacade.addFax(xp.get("Факс без категории"), "Факс без категории");
+                contactInfoFacade.addHomeFax(xp.get("Факс домашний"), "Факс домашний");
 
-                x.getContactInfo().addPhone(xp.get("Телефон рабочий"), "рабочий");
-                x.getContactInfo().addPhone(xp.get("Телефон без категории"), "без категории");
-                x.getContactInfo().addMobilePhone(xp.get("Телефон мобильный"), "мобильный");
-                x.getContactInfo().addPhone(xp.get("Телефон домашний"), "домашний");
+                contactInfoFacade.addWorkPhone(xp.get("Телефон рабочий"), "рабочий");
+                contactInfoFacade.addWorkPhone(xp.get("Телефон без категории"), "без категории");
+                contactInfoFacade.addMobilePhone(xp.get("Телефон мобильный"), "мобильный");
+                contactInfoFacade.addHomePhone(xp.get("Телефон домашний"), "домашний");
 
                 String jabber = nvl(xp.get("Интернет рабочий"), nvl(xp.get("Интернет без категории"), xp.get("Интернет домашний")));
                 if (jabber != null)

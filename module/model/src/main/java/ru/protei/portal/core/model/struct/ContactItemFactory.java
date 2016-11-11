@@ -8,15 +8,15 @@ import ru.protei.portal.core.model.dict.En_ContactItemType;
 public class ContactItemFactory {
 
     public static ContactItem mobilePhone (String phone) {
-        return new ContactItem (En_ContactItemType.MOBILE_PHONE, phone);
+        return new ContactItem (En_ContactItemType.MOBILE_PHONE).modify(phone);
     }
 
     public static ContactItem phone (String phone) {
-        return new ContactItem(En_ContactItemType.GENERAL_PHONE, phone);
+        return new ContactItem(En_ContactItemType.GENERAL_PHONE).modify(phone);
     }
 
     public static ContactItem email (String email) {
-        return new ContactItem(En_ContactItemType.EMAIL, email);
+        return new ContactItem(En_ContactItemType.EMAIL).modify(email);
     }
 
 }

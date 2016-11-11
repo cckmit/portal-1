@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import ru.protei.portal.core.model.dict.En_ContactDataAccess;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
-import ru.protei.portal.core.model.dict.En_PhoneType;
 
 import java.io.Serializable;
 
@@ -22,69 +21,110 @@ public class ContactItem implements Serializable {
     public String comment;
 
     @JsonProperty("a")
-    public En_ContactDataAccess access;
+    public En_ContactDataAccess accessType;
 
     @JsonProperty("t")
-    public En_ContactItemType type;
+    public final En_ContactItemType itemType;
 
     public ContactItem () {
-        this.access = En_ContactDataAccess.PUBLIC;
-        this.type = En_ContactItemType.TEXT;
+        this.accessType = En_ContactDataAccess.PUBLIC;
+        this.itemType = En_ContactItemType.UNDEFINED;
     }
 
-    public ContactItem (En_ContactItemType type, String value) {
-        this (type, En_ContactDataAccess.PUBLIC, value);
+    public ContactItem (En_ContactItemType type) {
+        this (type, En_ContactDataAccess.PUBLIC);
     }
 
-    public ContactItem (En_ContactItemType type, En_ContactDataAccess access, String value) {
-        this.access = access;
-        this.type = type;
-        this.value = value;
+    public ContactItem (En_ContactItemType type, En_ContactDataAccess access) {
+        this.accessType = access;
+        this.itemType = type;
     }
 
-    @JsonIgnore
-    public String getValue() {
-        return value;
+
+    /*
+     *
+     *   readers
+     *
+     */
+
+    public String value () {
+        return this.value;
     }
 
-    public void setValue(String value) {
-        this.value = value;
+    public En_ContactItemType type() {
+        return itemType;
     }
 
-    @JsonIgnore
-    public En_ContactItemType getType() {
-        return type;
-    }
-
-    public void setType(En_ContactItemType type) {
-        this.type = type;
-    }
-
-    @JsonIgnore
-    public String getComment() {
+    public String comment() {
         return comment;
     }
 
-    public void setComment(String comment) {
+    public En_ContactDataAccess accessType () {
+        return this.accessType;
+    }
+
+
+    /*
+     *
+     *   writers
+     *
+     */
+
+    public ContactItem modify (String value) {
+        this.value = value;
+        return this;
+    }
+
+    public ContactItem modify (String value, String comment) {
+        this.value = value;
         this.comment = comment;
+        return this;
+    }
+
+    public ContactItem modify (En_ContactDataAccess accessType) {
+        this.accessType = accessType;
+        return this;
+    }
+
+    public ContactItem toggleAccessType () {
+        this.accessType = (this.accessType == En_ContactDataAccess.PRIVATE ? En_ContactDataAccess.PUBLIC : En_ContactDataAccess.PRIVATE);
+        return this;
+    }
+
+
+    /*
+     *
+     *   predicates
+     *
+     */
+
+    @JsonIgnore
+    public boolean isItemOf (En_ContactItemType type) {
+        return this.itemType == type;
     }
 
     @JsonIgnore
-    public En_ContactDataAccess getAccess() {
-        return access;
+    public boolean isEmptyValue () {
+        return this.value == null || this.value.trim().isEmpty();
     }
 
-    public void setAccess(En_ContactDataAccess access) {
-        this.access = access;
+    @JsonIgnore
+    public boolean isEmptyComment () {
+        return this.comment == null || this.comment.trim().isEmpty();
+    }
+
+    @JsonIgnore
+    public boolean isEmpty () {
+        return isEmptyValue() && isEmptyComment();
     }
 
     @JsonIgnore
     public boolean isPrivateItem () {
-        return this.access == En_ContactDataAccess.PRIVATE;
+        return this.accessType == En_ContactDataAccess.PRIVATE;
     }
 
     @JsonIgnore
     public boolean isPublicItem () {
-        return this.access == En_ContactDataAccess.PUBLIC;
+        return this.accessType == En_ContactDataAccess.PUBLIC;
     }
 }
