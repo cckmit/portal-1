@@ -29,7 +29,6 @@ import ru.protei.portal.ui.company.client.widget.category.buttonselector.Categor
 import ru.protei.portal.ui.company.client.widget.group.buttonselector.GroupButtonSelector;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * Вид создания и редактирования компании
@@ -40,6 +39,7 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
         initContactTable();
+        companyGroup.setDefaultValue(lang.noCompanyGroup());
     }
 
     @Override
@@ -141,8 +141,8 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
         }
     }
 
-    @UiHandler( "companyName" )
-    public void onKeyUp( KeyUpEvent keyUpEvent ) {
+    @UiHandler("companyName")
+    public void onChangeCompanyName( KeyUpEvent keyUpEvent ) {
         verifiableIcon.setClassName(NameStatus.UNDEFINED.getStyle());
         timer.cancel();
         timer.schedule( 300 );
@@ -259,8 +259,6 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     };
 
     AbstractCompanyEditActivity activity;
-
-    private final static Logger log = Logger.getLogger( "ui" );
 
     private static CompanyViewUiBinder2 ourUiBinder = GWT.create(CompanyViewUiBinder2.class);
     interface CompanyViewUiBinder2 extends UiBinder<HTMLPanel, CompanyEditView> {}

@@ -2,7 +2,7 @@ package ru.protei.portal.ui.contact.client.activity.table;
 
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
-import ru.protei.portal.ui.contact.client.view.table.columns.EditClickColumn;
+import ru.protei.portal.ui.common.client.columns.EditClickColumn;
 
 /**
  * Активность таблицы контактов

@@ -26,6 +26,7 @@ public class Company implements Serializable,EntityOptionSupport {
     @JdbcJoinedObject(localColumn = "groupId", remoteColumn = "id", updateLocalColumn = false)
     CompanyGroup companyGroup;
 
+
     @JdbcColumn(name = "address_dejure")
     private String addressDejure;
 

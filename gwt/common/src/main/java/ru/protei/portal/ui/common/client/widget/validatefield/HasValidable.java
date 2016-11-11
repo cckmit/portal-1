@@ -7,4 +7,5 @@ public interface HasValidable{
 
     void setValid(boolean isValid);
 
+    boolean isValid();
 }

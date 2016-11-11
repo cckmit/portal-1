@@ -7,6 +7,7 @@ import ru.protei.portal.core.aspect.ServiceLayerInterceptor;
 import ru.protei.portal.core.controller.auth.AuthInterceptor;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
+import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.ContactService;
 import ru.protei.portal.core.service.ContactServiceImpl;
@@ -193,6 +194,9 @@ public class MainConfiguration {
     public ContactService getContactService () {
         return new ContactServiceImpl();
     }
+
+    @Bean
+    public CaseService getCaseService() { return new CaseServiceImpl(); }
 
 
 
