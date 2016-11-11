@@ -1,22 +1,22 @@
-package ru.protei.portal.ui.product.client.widgets;
+package ru.protei.portal.ui.common.client.widget.selector.person;
 
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
-import ru.protei.portal.core.model.ent.DevUnit;
+import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
-import ru.protei.portal.ui.common.client.events.ProductEvents;
+import ru.protei.portal.ui.common.client.events.PersonEvents;
+import ru.protei.portal.ui.common.client.service.ContactServiceAsync;
 import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
-import ru.protei.portal.ui.product.client.service.ProductServiceAsync;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Модель селектора продуктов
+ * Модель контактов домашней компании
  */
-public abstract class ProductModel implements Activity {
+public abstract class EmployeeModel implements Activity {
 
     @Event
     public void onInit( AuthEvents.Success event ) {
@@ -24,17 +24,17 @@ public abstract class ProductModel implements Activity {
     }
 
     @Event
-    public void onProductListChanged( ProductEvents.ChangeModel event ) {
+    public void onEmployeeListChanged( PersonEvents.ChangeEmployeeModel event ) {
         refreshOptions();
     }
 
-    public void subscribe( ModelSelector<DevUnit> selector ) {
+    public void subscribe( ModelSelector<Person> selector ) {
         subscribers.add( selector );
         selector.fillOptions( list );
     }
 
     private void notifySubscribers() {
-        for ( ModelSelector<DevUnit> selector : subscribers ) {
+        for ( ModelSelector< Person > selector : subscribers ) {
             selector.fillOptions( list );
             selector.refreshValue();
         }
@@ -42,15 +42,15 @@ public abstract class ProductModel implements Activity {
 
     private void refreshOptions() {
 
-        productService.getProductList(null, new RequestCallback<List<DevUnit>>() {
+        contactService.getEmployees(new RequestCallback<List<Person>>() {
             @Override
             public void onError(Throwable throwable) {
             }
 
             @Override
-            public void onSuccess(List<DevUnit> groups) {
+            public void onSuccess(List<Person> options) {
                 list.clear();
-                list.addAll(groups);
+                list.addAll(options);
 
                 notifySubscribers();
             }
@@ -58,9 +58,10 @@ public abstract class ProductModel implements Activity {
     }
 
     @Inject
-    ProductServiceAsync productService;
+    ContactServiceAsync contactService;
 
-    private List< DevUnit > list = new ArrayList<>();
+    private List< Person > list = new ArrayList<>();
 
-    List< ModelSelector<DevUnit> > subscribers = new ArrayList<>();
+    List< ModelSelector< Person > > subscribers = new ArrayList<>();
+
 }

@@ -1,10 +1,9 @@
-package ru.protei.portal.ui.product.client.widgets.buttonselector;
+package ru.protei.portal.ui.common.client.widget.selector.product;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
-import ru.protei.portal.ui.product.client.widgets.ProductModel;
 
 import java.util.List;
 

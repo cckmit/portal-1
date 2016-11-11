@@ -199,4 +199,30 @@ public interface Lang extends Messages {
     String issueInfo();
     String issueCreationDate();
     String issueManager();
+
+    String createdCaseCaseState();
+    String openedCaseState();
+    String closedCaseState();
+    String pausedCaseState();
+    String verifiedCaseState();
+    String reopenedCaseState();
+    String ignoredCaseState();
+    String assignedCaseState();
+    String estimatedCaseState();
+    String discussCaseState();
+    String plannedCaseState();
+    String activeCaseState();
+    String doneCaseState();
+    String testCaseState();
+    String testLocalCaseState();
+    String testCustCaseState();
+    String designCaseState();
+    String solvedNoapCaseState();
+    String solvedFixCaseState();
+    String solvedDupCaseState();
+
+    String criticalImportance();
+    String importantImportance();
+    String basicImportance();
+    String cosmeticImportance();
 }

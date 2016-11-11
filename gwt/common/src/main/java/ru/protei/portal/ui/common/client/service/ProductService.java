@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.product.client.service;
+package ru.protei.portal.ui.common.client.service;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;

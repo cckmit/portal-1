@@ -11,9 +11,6 @@ public class ImportanceButtonSelector extends ButtonSelector<En_ImportanceLevel>
 
     @Inject
     public void init( ) {
-        setSearchEnabled( false );
-        setSearchAutoFocus( true );
-
         addOption(En_ImportanceLevel.BASIC.getCode(), En_ImportanceLevel.BASIC);
         addOption(En_ImportanceLevel.IMPORTANT.getCode(), En_ImportanceLevel.IMPORTANT);
         addOption(En_ImportanceLevel.CRITICAL.getCode(), En_ImportanceLevel.CRITICAL);

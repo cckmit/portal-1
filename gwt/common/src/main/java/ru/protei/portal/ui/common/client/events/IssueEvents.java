@@ -35,5 +35,7 @@ public class IssueEvents {
 //            return new Edit(null, option != null ? option.getId() : null);
 //        }
     }
+
+    public static class ChangeStateModel {}
 }
 

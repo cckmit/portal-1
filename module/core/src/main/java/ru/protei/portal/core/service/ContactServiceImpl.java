@@ -8,10 +8,9 @@ import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.model.query.ContactQuery;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.query.ContactQuery;
 
 import java.util.Date;
 import java.util.List;
@@ -36,6 +35,15 @@ public class ContactServiceImpl implements ContactService {
         return new CoreResponse<List<Person>>().success(list);
     }
 
+    @Override
+    public CoreResponse<List<Person>> employeeList() {
+        List<Person> list = personDAO.getEmployeesAll();
+
+        if ( list == null )
+            new CoreResponse<List<Person>>().error(En_ResultStatus.GET_DATA_ERROR);
+
+        return new CoreResponse<List<Person>>().success(list);
+    }
 
     @Override
     public CoreResponse<Person> getContact(long id) {
