@@ -1,7 +1,8 @@
 package ru.protei.portal.ui.crm.client.view.app;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.dom.client.AnchorElement;
+import com.google.gwt.dom.client.ParagraphElement;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -10,11 +11,15 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.ui.crm.client.activity.app.AbstractAppActivity;
 import ru.protei.portal.ui.crm.client.activity.app.AbstractAppView;
+import ru.protei.portal.ui.crm.client.widget.navsearch.NavSearchBox;
 
 /**
  * Вид основной формы приложения
  */
-public class AppView extends Composite implements AbstractAppView, KeyUpHandler, ClickHandler {
+public class AppView extends Composite
+        implements AbstractAppView,
+        KeyUpHandler
+{
     public AppView() {
         initWidget(ourUiBinder.createAndBindUi(this));
         initHandlers();
@@ -26,13 +31,9 @@ public class AppView extends Composite implements AbstractAppView, KeyUpHandler,
     }
 
     @Override
-    public void setUsername(String username) {
-        this.user.setText( username );
-    }
-
-    @Override
-    public void setPanelName(String panelName) {
-        this.panelName.setText( panelName );
+    public void setUsername( String username, String role) {
+        this.username.setInnerText( username );
+        this.role.setInnerText( role );
     }
 
     @Override
@@ -41,33 +42,13 @@ public class AppView extends Composite implements AbstractAppView, KeyUpHandler,
     }
 
     @Override
-    public HasWidgets getNotifyContainer() {
-        return notifyContainer;
+    public HasWidgets getMenuContainer() {
+        return menuContainer;
     }
 
-    @UiHandler("searchButton")
-    public void onSearchClicked(ClickEvent event) {
-        event.preventDefault();
-        if (search.getStyleName().contains("gl-search-input-open")) {
-            search.removeStyleName("gl-search-input-open");
-            search.setFocus(false);
-            search.setText("");
-            searchButton.removeStyleName("gl-close-button");
-            searchButton.addStyleName("gl-search-button");
-        } else {
-            search.addStyleName("gl-search-input-open");
-            search.setFocus(true);
-            searchButton.removeStyleName("gl-search-button");
-            searchButton.addStyleName("gl-close-button");
-        }
-     }
-
-    @UiHandler("user")
-    public void onUserClicked( ClickEvent event ) {
-        event.preventDefault();
-        if ( activity != null ) {
-            activity.onUserClicked();
-        }
+    @Override
+    public HasWidgets getNotifyContainer() {
+        return notifyContainer;
     }
 
     @UiHandler("logout")
@@ -78,88 +59,36 @@ public class AppView extends Composite implements AbstractAppView, KeyUpHandler,
         }
     }
 
-    @UiHandler("hideBarButton")
-    public void onHideBarButtonClicked(ClickEvent event) {
+    @UiHandler( "toggleButton" )
+    public void onToggleButtonClicked( ClickEvent event) {
         event.preventDefault();
-        logo.addClassName("inactive");
-        sidebar.addStyleName("inactive");
-    }
-
-    @UiHandler("companies")
-    public void onCompaniesClicked(ClickEvent event) {
-        event.preventDefault();
-        if ( activity != null ) {
-            activity.onCompaniesClicked();
+        boolean isCollapsed = RootPanel.get().getStyleName().contains( "sidebar-collapse" );
+        if ( isCollapsed ) {
+            RootPanel.get().removeStyleName( "sidebar-collapse" );
+            return;
         }
-    }
 
-    @UiHandler("products")
-    public void onProductsClicked(ClickEvent event) {
-        event.preventDefault();
-        if ( activity != null ) {
-            activity.onProductsClicked();
-        }
-    }
-
-    @UiHandler("contacts")
-    public void onContactsClicked(ClickEvent event) {
-        event.preventDefault();
-        if ( activity != null ) {
-            activity.onContactsClicked();
-        }
-    }
-
-    @UiHandler( "issues" )
-    public void onIssuesClicked( ClickEvent event ) {
-        event.preventDefault();
-        if ( activity != null ) {
-            activity.onIssuesClicked();
-        }
+        RootPanel.get().addStyleName( "sidebar-collapse" );
     }
 
     @Override
     public void onKeyUp (KeyUpEvent event) {
-
         if (event.getNativeKeyCode() == KeyCodes.KEY_F4 && event.isAnyModifierKeyDown() && event.isControlKeyDown()) {
             event.preventDefault();
             activity.onLogoutClicked();
         }
     }
 
-    @Override
-    public void onClick (ClickEvent event) {
-        logo.removeClassName("inactive");
-        sidebar.removeStyleName("inactive");
-    }
-
     private void initHandlers() {
-
-        noScrol.sinkEvents(Event.ONCLICK);
-        noScrol.addHandler(this, ClickEvent.getType());
-
         RootPanel.get().sinkEvents(Event.ONKEYUP);
         RootPanel.get().addHandler(this, KeyUpEvent.getType());
     }
 
-    public void setFocus () {
-        search.setFocus(true);
-    }
+    @UiField
+    Anchor toggleButton;
 
     @UiField
-    HTMLPanel appPanel;
-
-    @UiField
-    DivElement logo;
-    @UiField
-    Anchor hideBarButton;
-
-    @UiField
-    HTMLPanel noScrol;
-
-    @UiField
-    HTMLPanel navbar;
-    @UiField
-    TextBox search;
+    NavSearchBox search;
     @UiField
     Anchor logout;
 
@@ -169,24 +98,13 @@ public class AppView extends Composite implements AbstractAppView, KeyUpHandler,
     HTMLPanel container;
 
     @UiField
-    Anchor user;
-    @UiField
-    Label panelName;
-
-
-    @UiField
-    Anchor companies;
-    @UiField
-    Anchor products;
-    @UiField
-    Anchor contacts;
-
-    @UiField
     HTMLPanel notifyContainer;
     @UiField
-    Anchor searchButton;
+    ParagraphElement username;
     @UiField
-    Anchor issues;
+    AnchorElement role;
+    @UiField
+    HTMLPanel menuContainer;
 
     AbstractAppActivity activity;
 

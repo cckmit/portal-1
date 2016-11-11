@@ -1,106 +1,64 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
-             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:navsearch="urn:import:ru.protei.portal.ui.crm.client.widget.navsearch">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel ui:field="appPanel" styleName="global">
 
-        <div class="header_global">
 
-            <div ui:field="logo" class="leftBlock">
-                <div class="company">
-                    <span class="logo"></span>
-                    <span class="name">PROTEI</span>
-                </div>
-                <g:Anchor ui:field="hideBarButton" styleName="hideBar_button" href="#"/>
-            </div>
+    <g:HTMLPanel styleName="global">
+        <g:HTMLPanel tag="header" styleName="main-header">
+            <a href="http://protei.ru" class="logo">
+                <span class="logo-lg">
+                    <img src="./images/logo.svg"/>
+                    <b>Protei</b> LTD
+                </span>
 
-            <g:HTMLPanel ui:field="navbar" styleName="rightBlock">
-                <div class="topicTitle employees">
-                    <div class="title">
-                        <g:Label ui:field="panelName" />
+                <span class="logo-mini">
+                    <img src="./images/logo.svg"/>
+                </span>
+            </a>
+
+            <nav class="navbar">
+                <g:Anchor ui:field="toggleButton" styleName="sidebar-toggle" href="#">
+                    <span class="sr-only">Toggle navigation</span>
+                </g:Anchor>
+
+
+
+                <ul class="nav navbar-nav navbar-right">
+                    <navsearch:NavSearchBox ui:field="search"/>
+                    <li>
+
+                        <g:Anchor ui:field="logout" title="{lang.buttonLogout} (you can use Ctrl+F4)" href="#">
+                            <i class="fa fa-lg fa-sign-out"></i>
+                        </g:Anchor>
+                    </li>
+                </ul>
+            </nav>
+        </g:HTMLPanel>
+
+
+        <g:HTMLPanel styleName="main-sidebar" ui:field="sidebar">
+            <section class="sidebar">
+                <div class="user-panel">
+                    <div class="pull-left image">
+                        <img src="./images/user-icon.png" class="img-circle"/>
+                    </div>
+                    <div class="pull-left info">
+                        <p ui:field="username"></p>
+                        <a ui:field="role"></a>
                     </div>
                 </div>
-                <div class="rightSide">
-                    <div class="icons">
-                        <g:Anchor ui:field="user" styleName="user_button" href="#"/>
-                        <g:Anchor ui:field="logout" title="{lang.buttonLogout} (you can use Ctrl+F4)" styleName="exit_button" href="#"/>
-                    </div>
-                </div>
-                <div class="rightSide gl-search">
-                    <g:TextBox ui:field="search" styleName="gl-search-input"/>
-                    <g:Anchor ui:field="searchButton" styleName="gl-search-button" href="#"/>
-                </div>
-            </g:HTMLPanel>
-        </div>
+                <ul class="sidebar-menu">
+                    <li class="header"><ui:text from="{lang.appNavHeader}"/></li>
+                </ul>
 
+                <g:HTMLPanel styleName="sidebar-menu" ui:field="menuContainer"/>
+            </section>
+        </g:HTMLPanel>
 
-        <div class="body_global">
-
-            <g:HTMLPanel ui:field="sidebar" styleName="leftBlock">
-                <g:HTMLPanel ui:field="noScrol" styleName="noScrolling">
-                    <div class="scrolling">
-                        <div class="mainButtons"></div>
-                        <div class="menuList">
-                            <!--<div class="menu">-->
-                                <!--<div class="title">Рабочее место</div>-->
-                                <!--<div class="list">-->
-                                    <!--<div class="item"><span class="icon-plan"></span>Мой план</div>-->
-                                    <!--<div class="item"><span class="icon-created"></span>Инспектор</div>-->
-                                    <!--<div class="item"><span class="icon-activity"></span>Моя активность</div>-->
-                                    <!--<div class="item"><span class="icon-subscription"></span>Мои подписки</div>-->
-                                    <!--<div class="item"><span class="icon-favorites"></span>Мои избранные</div>-->
-                                <!--</div>-->
-                            <!--</div>-->
-                            <!--<div class="menu">-->
-                                <!--<div class="title">Компания</div>-->
-                                <!--<div class="list">-->
-                                    <!--<div class="item"><span class="icon-employees"></span>Сотрудники</div>-->
-                                    <!--<div class="item"><span class="icon-me"></span>Мой паспорт</div>-->
-                                <!--</div>-->
-                            <!--</div>-->
-                            <div class="menu">
-                                <div class="title">Объекты системы</div>
-                                <div style="max-height: 500px" class="list active">
-                                    <!--<div class="item"><span class="icon-component"></span>Компоненты</div>-->
-                                    <div class="item">
-                                        <span class="icon-product"></span>
-                                        <g:Anchor ui:field="products" href="#" text="{lang.products}"/>
-                                    </div>
-                                    <div class="item">
-                                        <span class="icon-case"></span>
-                                        <g:Anchor ui:field="issues" href="#" text="{lang.issues}"/>
-                                    </div>
-                                    <!--<div class="item"><span class="icon-case"></span>Задачи</div>-->
-                                    <!--<div class="item"><span class="icon-order"></span>Группы задач</div>-->
-                                    <!--<div class="item"><span class="icon-order"></span>Заказы</div>-->
-                                    <!--<div class="item"><span class="icon-project"></span>Проекты</div>-->
-                                    <div class="item">
-                                        <span class="icon-organization"></span>
-                                        <g:Anchor ui:field="companies" href="#" text="{lang.companies}"/>
-                                    </div>
-                                    <div class="item">
-                                        <span class="icon-employees"></span>
-                                        <g:Anchor ui:field="contacts" href="#" text="{lang.contacts}" />
-                                    </div>
-                                </div>
-                            </div>
-                            <!--<div class="menu">-->
-                                <!--<div class="title">Управление и отчёты</div>-->
-                                <!--<div class="list">-->
-                                    <!--<div class="item"><span class="icon-employees"></span>Сотрудники</div>-->
-                                    <!--<div class="item"><span class="icon-component"></span>Компоненты</div>-->
-                                    <!--<div class="item"><span class="icon-product"></span>Продукты</div>-->
-                                <!--</div>-->
-                            <!--</div>-->
-                        </div>
-                    </div>
-                </g:HTMLPanel>
-            </g:HTMLPanel>
-
-            <g:HTMLPanel ui:field="container" styleName="rightBlock"/>
-
-        </div>
+        <g:HTMLPanel ui:field="container" styleName="right-side"/>
 
         <g:HTMLPanel ui:field="notifyContainer"  styleName="notifyPanel"/>
 

@@ -137,7 +137,7 @@ public interface Lang extends Messages {
     String fax();
 
     String address();
-    
+
     String productDescription();
 
     String edit();
@@ -186,6 +186,7 @@ public interface Lang extends Messages {
 
     String companyCategory();
 
+    String appNavHeader();
 
     String companyEdit();
 

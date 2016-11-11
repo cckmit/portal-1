@@ -9,13 +9,11 @@ import com.google.gwt.user.client.ui.IsWidget;
 public interface AbstractAppView extends IsWidget {
     void setActivity( AbstractAppActivity activity );
 
-    void setUsername(String username);
-
-    void setPanelName(String panelName);
+    void setUsername( String username, String role );
 
     HasWidgets getDetailsContainer();
 
-    HasWidgets getNotifyContainer();
+    HasWidgets getMenuContainer();
 
-    void setFocus();
+    HasWidgets getNotifyContainer();
 }
