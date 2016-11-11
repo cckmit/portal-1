@@ -22,7 +22,6 @@ import ru.protei.portal.ui.common.client.widget.selector.popup.SelectorPopup;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Predicate;
 
 /**
  * Базовая логика селектора
@@ -158,7 +157,6 @@ public abstract class Selector<T>
             }
         }
 
-        // Нельзя использовать ValueChangeEvent, т.к нужен доступ к itemToNameModel
         if(exactMatch){
             SelectorChangeValEvent.fire(this, null);
         }else {

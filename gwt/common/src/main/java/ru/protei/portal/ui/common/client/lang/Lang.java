@@ -199,6 +199,12 @@ public interface Lang extends Messages {
     String issueInfo();
     String issueCreationDate();
     String issueManager();
+    String issueName();
+    String issueState();
+    String issueImportance();
+    String issueCompany();
+    String issueInitiator();
+    String issueLocal();
 
     String createdCaseCaseState();
     String openedCaseState();
@@ -225,4 +231,6 @@ public interface Lang extends Messages {
     String importantImportance();
     String basicImportance();
     String cosmeticImportance();
+
+
 }
