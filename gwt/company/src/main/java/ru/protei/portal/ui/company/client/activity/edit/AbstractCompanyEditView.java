@@ -36,6 +36,5 @@ public interface AbstractCompanyEditView extends IsWidget {
     HasWidgets phonesContainer();
     HasWidgets emailsContainer();
 
-    void clearContacts();
-    void addContacts( List< Person > persons );
+    HasWidgets tableContainer();
 }
