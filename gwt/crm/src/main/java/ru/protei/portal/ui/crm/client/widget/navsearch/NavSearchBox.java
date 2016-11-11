@@ -14,7 +14,7 @@ import com.google.gwt.user.client.ui.*;
  * Поле поиска в навигационном баре
  */
 public class NavSearchBox
-        extends Composite, HasValue<String> {
+        extends Composite implements HasValue< String > {
 
     public NavSearchBox() {
         initWidget( ourUiBinder.createAndBindUi( this ) );

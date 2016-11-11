@@ -11,7 +11,7 @@ public class UiConstants {
         public static final String COMPANY = "icon icon-organization";
         public static final String CONTACT = "fa fa-group";
         public static final String PRODUCT = "icon icon-product";
-        public static final String ISSUE = "";
+        public static final String ISSUE = "fa fa-tasks";
     }
 
 }

@@ -1,11 +1,10 @@
-package ru.protei.portal.ui.contact.client.page;
+package ru.protei.portal.ui.contact.client.activity.page;
 
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.ui.common.client.common.UiConstants;
-import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.ContactEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.winter.web.common.client.events.MenuEvents;
@@ -30,6 +29,11 @@ public abstract class ContactPage
 
     @Event
     public void onShowDetail( ContactEvents.Edit event ) {
+        fireSelectTab();
+    }
+
+    @Event
+    public void onShowPreview( ContactEvents.ShowFullScreen event ) {
         fireSelectTab();
     }
 

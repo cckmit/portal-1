@@ -9,7 +9,7 @@ import ru.protei.portal.ui.contact.client.activity.edit.ContactEditActivity;
 import ru.protei.portal.ui.contact.client.activity.table.AbstractContactTableView;
 import ru.protei.portal.ui.contact.client.activity.table.ContactTableActivity;
 import ru.protei.portal.ui.contact.client.view.preview.ContactPreviewView;
-import ru.protei.portal.ui.contact.client.page.ContactPage;
+import ru.protei.portal.ui.contact.client.activity.page.ContactPage;
 import ru.protei.portal.ui.contact.client.view.edit.ContactEditView;
 import ru.protei.portal.ui.contact.client.view.table.ContactTableView;
 
