@@ -42,8 +42,25 @@ public abstract class ContactTableActivity implements AbstractContactTableActivi
         this.fireEvent( new AppEvents.InitPanelName( lang.contacts() ) );
         initDetails.parent.clear();
         initDetails.parent.add( view.asWidget() );
+        view.showFilter();
+        isShowTable = false;
 
-        requestContacts();
+        ContactQuery query = makeQuery( null );
+
+        requestContacts( query );
+    }
+
+    @Event
+    public void onShowTable( ContactEvents.ShowTable event ) {
+
+        event.parent.clear();
+        event.parent.add( view.asWidget() );
+        view.hideFilter();
+        isShowTable = true;
+
+        ContactQuery query = makeQuery( event.companyId );
+
+        requestContacts( query );
     }
 
     @Event
@@ -52,7 +69,11 @@ public abstract class ContactTableActivity implements AbstractContactTableActivi
     }
 
     @Override
-    public void onItemClicked ( Person value ) { showPreview( value ); }
+    public void onItemClicked ( Person value ) {
+        if ( !isShowTable ) {
+            showPreview( value );
+        }
+    }
 
     @Override
     public void onEditClicked(Person value ) {
@@ -67,10 +88,11 @@ public abstract class ContactTableActivity implements AbstractContactTableActivi
 
     @Override
     public void onFilterChanged() {
-        requestContacts();
+        ContactQuery query = makeQuery( null );
+        requestContacts( query );
     }
 
-    private void requestContacts() {
+    private void requestContacts( ContactQuery query ) {
 
         if ( fillViewHandler != null ) {
             fillViewHandler.cancel();
@@ -79,13 +101,6 @@ public abstract class ContactTableActivity implements AbstractContactTableActivi
         view.clearRecords();
         animation.closeDetails();
 
-        ContactQuery query = new ContactQuery();
-        query.setSearchString(view.searchPattern().getValue());
-        if(view.company().getValue() != null)
-            query.setCompanyId(view.company().getValue().getId());
-        query.setFired(view.showFired().getValue() ? null : view.showFired().getValue());
-        query.setSortField(view.sortField().getValue());
-        query.setSortDir(view.sortDir().getValue()? En_SortDir.ASC: En_SortDir.DESC);
 
         contactService.getContacts(query, new RequestCallback< List< Person > >() {
                     @Override
@@ -110,6 +125,23 @@ public abstract class ContactTableActivity implements AbstractContactTableActivi
         }
     }
 
+    private ContactQuery makeQuery( Long companyId ) {
+        ContactQuery query = new ContactQuery();
+        if ( companyId != null ) {
+            query.setSearchString( null );
+            query.setFired( null );
+            query.setCompanyId( companyId );
+        } else {
+            query.setSearchString(view.searchPattern().getValue());
+            query.setFired(view.showFired().getValue() ? null : view.showFired().getValue());
+            if( view.company().getValue() != null )
+                query.setCompanyId(view.company().getValue().getId());
+        }
+        query.setSortField(view.sortField().getValue());
+        query.setSortDir(view.sortDir().getValue()? En_SortDir.ASC: En_SortDir.DESC);
+        return query;
+    };
+
     Consumer< Person > fillViewer = new Consumer< Person >() {
         @Override
         public void accept( Person person ) {
@@ -133,6 +165,8 @@ public abstract class ContactTableActivity implements AbstractContactTableActivi
     PeriodicTaskService taskService;
 
     PeriodicTaskService.PeriodicTaskHandler fillViewHandler;
+
+    private boolean isShowTable = false;
 
     private AppEvents.InitDetails initDetails;
 }

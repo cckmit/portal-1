@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.contact.client.view.table;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -87,6 +88,16 @@ public class ContactTableView extends Composite implements AbstractContactTableV
         sortField.setValue( En_SortField.person_full_name );
         sortDir.setValue( true );
         search.setText( "" );
+    }
+
+    @Override
+    public void hideFilter() {
+        filter.setVisible( false );
+    }
+
+    @Override
+    public void showFilter() {
+        filter.setVisible( true );
     }
 
     @Override
@@ -262,8 +273,12 @@ public class ContactTableView extends Composite implements AbstractContactTableV
 
     @UiField
     HTMLPanel tableContainer;
+
     @UiField
     HTMLPanel previewContainer;
+
+    @UiField
+    HTMLPanel filter;
 
     @Inject
     @UiField
