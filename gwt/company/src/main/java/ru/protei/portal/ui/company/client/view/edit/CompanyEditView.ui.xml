@@ -2,8 +2,7 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:companygroup='urn:import:ru.protei.portal.ui.company.client.widget.group.buttonselector'
              xmlns:validablefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'
-             xmlns:companycategory='urn:import:ru.protei.portal.ui.company.client.widget.category.buttonselector'
-             xmlns:table="urn:import:ru.brainworm.factory.widget.table.client">
+             xmlns:companycategory='urn:import:ru.protei.portal.ui.company.client.widget.category.buttonselector'>
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel styleName="panel">
@@ -74,7 +73,7 @@
                         <label class="bordered">
                             <ui:text from="{lang.contacts}"/>
                         </label>
-                        <table:TableWidget ui:field="table" styleName="table-hover"/>
+                        <g:HTMLPanel ui:field="tableContainer"></g:HTMLPanel>
                     </div>
                 </div>
             </div>

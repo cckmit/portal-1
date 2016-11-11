@@ -7,7 +7,7 @@ import ru.protei.portal.ui.company.client.view.edit.columns.EditColumn;
 /**
  * Активность создания и редактирования компании
  */
-public interface AbstractCompanyEditActivity extends EditColumn.EditHandler< Person> {
+public interface AbstractCompanyEditActivity {
     void onSaveClicked();
     void onCancelClicked();
     void onChangeCompanyName();

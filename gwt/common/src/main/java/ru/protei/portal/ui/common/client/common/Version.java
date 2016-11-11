@@ -22,9 +22,10 @@ package ru.protei.portal.ui.common.client.common;
  * 4.0.10.11 - 7-6 в редактирование компании добавлены контактные лица
  * 4.0.11.11 - freq-16347 карточка просмотра клиента (front+back)
  * 4.0.11.12 - freq-16231 редактирование компании и error border
+ * 4.0.11.13 - sprint-8-task-8 рефакторинг таблицы контактов
  */
 public class Version {
     public static String getVersion() {
-        return "4.0.11.12";
+        return "4.0.11.13";
     }
 }
