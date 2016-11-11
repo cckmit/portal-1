@@ -129,12 +129,12 @@ public abstract class ContactTableActivity implements AbstractContactTableActivi
     private ContactQuery makeQuery( Long companyId ) {
         if ( companyId != null ) {
             return new ContactQuery( companyId, null, null, En_SortField.person_full_name, En_SortDir.ASC);
-        } else {
-            return new ContactQuery( view.company().getValue(),
-                    view.showFired().getValue() ? null : view.showFired().getValue(),
-                    view.searchPattern().getValue(), view.sortField().getValue(),
-                    view.sortDir().getValue()? En_SortDir.ASC: En_SortDir.DESC );
         }
+        return new ContactQuery( view.company().getValue(),
+                view.showFired().getValue() ? null : view.showFired().getValue(),
+                view.searchPattern().getValue(), view.sortField().getValue(),
+                view.sortDir().getValue()? En_SortDir.ASC: En_SortDir.DESC );
+
     };
 
     Consumer< Person > fillViewer = new Consumer< Person >() {
