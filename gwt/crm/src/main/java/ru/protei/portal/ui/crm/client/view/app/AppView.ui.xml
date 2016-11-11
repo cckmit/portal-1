@@ -68,7 +68,7 @@
                                         <g:Anchor ui:field="products" href="#" text="{lang.products}"/>
                                     </div>
                                     <div class="item">
-                                        <span class="icon-product"></span>
+                                        <span class="icon-case"></span>
                                         <g:Anchor ui:field="issues" href="#" text="{lang.issues}"/>
                                     </div>
                                     <!--<div class="item"><span class="icon-case"></span>Задачи</div>-->
