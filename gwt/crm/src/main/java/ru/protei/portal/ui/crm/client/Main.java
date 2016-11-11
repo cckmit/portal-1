@@ -17,10 +17,8 @@ public class Main implements EntryPoint {
     public void onModuleLoad() {
         ClientFactory factory = GWT.create( ClientFactory.class);
 
-        factory.getAppActivity().fireEvent( new AppEvents.Init( RootPanel.get() ));
         factory.getAppActivity().fireEvent( new AuthEvents.Init( RootPanel.get() ));
-
-        factory.getAppActivity().fireEvent( new AuthEvents.Show() );
+        factory.getAppActivity().fireEvent( new AppEvents.Init( RootPanel.get() ));
     }
 
     private static final Logger log = Logger.getLogger( Main.class.getName() );
