@@ -15,6 +15,7 @@ import ru.brainworm.factory.widget.table.client.TableWidget;
 import ru.brainworm.factory.widget.table.client.helper.SelectionColumn;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.CaseObject;
+import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
@@ -142,7 +143,6 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
     }
 
     private void initTable () {
-
         editClickColumn = new EditClickColumn< CaseObject>( lang ) {};
         editClickColumn.setColumnProvider( columnProvider );
 
@@ -180,8 +180,14 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
 
             @Override
             public void fillColumnValue( Element element, CaseObject caseObject ) {
+                Company company = caseObject == null ? null : caseObject.getInitiatorCompany();
+                String companyName = company == null ? "" : company.getCname();
+
                 Person initiator = caseObject == null ? null : caseObject.getInitiator();
-                element.setInnerText( initiator == null ? "" : initiator.getDisplayName() );
+                String initiatorName = initiator == null ? "" : initiator.getDisplayName();
+
+                String separator = companyName.isEmpty() ? "" : ":\n";
+                element.setInnerText( companyName+separator+initiatorName );
             }
         };
         contacts.setColumnProvider( columnProvider );
