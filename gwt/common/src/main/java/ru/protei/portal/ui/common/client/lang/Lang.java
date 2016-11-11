@@ -199,4 +199,9 @@ public interface Lang extends Messages {
     String issueInfo();
     String issueCreationDate();
     String issueManager();
+    String issueMainHeader();
+    String issueContactHeader();
+    String issueAdditionalHeader();
+    String issueState();
+    String issueCriticality();
 }
