@@ -8,10 +8,4 @@ public interface AbstractAppActivity {
     void onUserClicked();
 
     void onLogoutClicked();
-
-    void onCompaniesClicked();
-
-    void onProductsClicked();
-
-    void onContactsClicked();
 }

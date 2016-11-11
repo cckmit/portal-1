@@ -127,7 +127,7 @@ ul.plate-list {
 
       h2 {
         text-transform: uppercase;
-        word-spacing: -0.15em;
+        word-spacing: 0.15em;
         font-weight: 300;
       }
 
@@ -196,4 +196,9 @@ ul.plate-list {
       z-index: 0;
     }
   }
+}
+
+.sidebar-collapse .plate-list-expander {
+    margin-left: 50px !important;
+    width: calc(100% - 50px) !important;
 }

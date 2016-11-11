@@ -172,4 +172,5 @@ public interface Lang extends Messages {
 
     String companyCategory();
 
+    String appNavHeader();
 }

@@ -11,11 +11,9 @@ public interface AbstractAppView extends IsWidget {
 
     void setUsername( String username, String role );
 
-    void setPanelName( String panelName);
-
     HasWidgets getDetailsContainer();
 
-    HasWidgets getNotifyContainer();
+    HasWidgets getMenuContainer();
 
-    void setFocus();
+    HasWidgets getNotifyContainer();
 }

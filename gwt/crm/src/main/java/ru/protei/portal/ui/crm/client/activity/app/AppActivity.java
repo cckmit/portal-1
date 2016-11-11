@@ -6,6 +6,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.ui.common.client.events.*;
+import ru.protei.winter.web.common.client.events.MenuEvents;
 
 /**
  * Активность приложения
@@ -16,14 +17,15 @@ public abstract class AppActivity
     @PostConstruct
     public void onInit() {
         view.setActivity(this);
+
+        fireEvent( new MenuEvents.Init( view.getMenuContainer() ) );
     }
 
     @Event
     public void onInit(AppEvents.Init event) {
         this.init = event;
 
-        fireEvent(new AppEvents.InitDetails(view.getDetailsContainer()));
-        fireEvent(new NotifyEvents.Init(view.getNotifyContainer()));
+        initApp();
     }
 
     @Event
@@ -38,31 +40,19 @@ public abstract class AppActivity
     }
 
     @Event
-    public void onInitPanelName(AppEvents.InitPanelName event) {
-        view.setPanelName(event.panelName);
-    }
+    public void onInitPanelName(AppEvents.InitPanelName event) {}
 
     public void onUserClicked() {
         Window.alert("Wow! User clicked!");
     }
 
     public void onLogoutClicked() {
-        fireEvent(new AppEvents.Logout());
+        fireEvent( new AppEvents.Logout() );
     }
 
-    @Override
-    public void onCompaniesClicked() {
-        fireEvent( new CompanyEvents.Show ( ));
-    }
-
-    @Override
-    public void onProductsClicked() {
-        fireEvent( new ProductEvents.Show ( ));
-    }
-
-    @Override
-    public void onContactsClicked() {
-        fireEvent( new ContactEvents.Show ( ));
+    private void initApp() {
+        fireEvent( new AppEvents.InitDetails( view.getDetailsContainer() ) );
+        fireEvent( new NotifyEvents.Init(view.getNotifyContainer()) );
     }
 
     @Inject
