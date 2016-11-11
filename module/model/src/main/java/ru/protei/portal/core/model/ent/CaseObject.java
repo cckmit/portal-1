@@ -64,6 +64,12 @@ public class CaseObject implements Serializable {
     @JdbcJoinedObject( localColumn = "initiator_company", remoteColumn = "id", updateLocalColumn = false )
     private Company initiatorCompany;
 
+    @JdbcColumn(name = "product_id")
+    private Long productId;
+
+    @JdbcJoinedObject(localColumn = "product_id", remoteColumn = "id", updateLocalColumn = false)
+    private DevUnit product;
+
     @JdbcColumn(name = "MANAGER")
     private Long managerId;
 
@@ -81,6 +87,12 @@ public class CaseObject implements Serializable {
 
     @Column(name = "creator_info")
     private String creatorInfo;
+
+    @Column(name = "deleted")
+    private boolean deleted;
+
+    @Column(name = "private_flag")
+    private boolean privateCase;
 
 
     public CaseObject() {
@@ -242,6 +254,40 @@ public class CaseObject implements Serializable {
 
     public void setCreatorInfo(String creatorInfo) {
         this.creatorInfo = creatorInfo;
+    }
+
+
+    public Long getProductId() {
+        return productId;
+    }
+
+    public void setProductId(Long productId) {
+        this.productId = productId;
+    }
+
+    public DevUnit getProduct() {
+        return product;
+    }
+
+    public void setProduct(DevUnit product) {
+        this.product = product;
+        this.productId = product == null ? null : product.getId();
+    }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    public boolean isPrivateCase() {
+        return privateCase;
+    }
+
+    public void setPrivateCase(boolean privateCase) {
+        this.privateCase = privateCase;
     }
 
     public Person getCreator() {
