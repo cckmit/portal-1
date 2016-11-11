@@ -54,7 +54,7 @@ public class ContactServiceTest {
 
         Assert.assertNotNull(service);
 
-        CoreResponse<List<Person>> result = service.contactList(new ContactQuery((Long)null, "Михаил", En_SortField.person_full_name, En_SortDir.ASC));
+        CoreResponse<List<Person>> result = service.contactList(new ContactQuery((Long)null, null, "Михаил", En_SortField.person_full_name, En_SortDir.ASC));
 
         Assert.assertNotNull(result);
         Assert.assertTrue(result.isOk());

@@ -33,6 +33,7 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
         search.getElement().setPropertyString( "placeholder", lang.search() );
+        group.setDefaultValue(lang.companyGroup());
     }
 
     public void setActivity( AbstractCompanyListActivity activity ) {

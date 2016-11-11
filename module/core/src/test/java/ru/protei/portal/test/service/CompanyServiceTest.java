@@ -12,7 +12,6 @@ import ru.protei.portal.core.model.dao.CompanyGroupDAO;
 import ru.protei.portal.core.model.dao.CompanyGroupItemDAO;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanyGroup;
-import ru.protei.portal.core.model.ent.CompanyGroupItem;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.service.CompanyService;
 import ru.protei.winter.core.CoreConfigurationContext;

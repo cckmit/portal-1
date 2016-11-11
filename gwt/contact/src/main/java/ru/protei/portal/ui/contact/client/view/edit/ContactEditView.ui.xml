@@ -101,14 +101,14 @@
                                     <g:TextBox ui:field="workEmail" styleName="inputField"/>
                                 </div>
                             </div>
-                            <!--<div>-->
-                                <!--<label class="">-->
-                                    <!--<ui:text from="{lang.personalEmail}"/>-->
-                                <!--</label>-->
-                                <!--<div class="panelField">-->
-                                    <!--<g:TextBox ui:field="personalEmail" styleName="inputField"/>-->
-                                <!--</div>-->
-                            <!--</div>-->
+                            <div>
+                                <label class="">
+                                    <ui:text from="{lang.personalEmail}"/>
+                                </label>
+                                <div class="panelField">
+                                    <g:TextBox ui:field="personalEmail" styleName="inputField"/>
+                                </div>
+                            </div>
                             <div>
                                 <label>
                                     <ui:text from="{lang.workPhone}"/>
@@ -146,14 +146,14 @@
                                 </div>
                             </div>
 
-                            <!--<div>-->
-                                <!--<label class="">-->
-                                    <!--<ui:text from="{lang.secondaryFax}"/>-->
-                                <!--</label>-->
-                                <!--<div class="panelField">-->
-                                    <!--<g:TextBox ui:field="homeFax" styleName="inputField"/>-->
-                                <!--</div>-->
-                            <!--</div>-->
+                            <div>
+                                <label class="">
+                                    <ui:text from="{lang.secondaryFax}"/>
+                                </label>
+                                <div class="panelField">
+                                    <g:TextBox ui:field="homeFax" styleName="inputField"/>
+                                </div>
+                            </div>
 
                             <div>
                                 <label class="">

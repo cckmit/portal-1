@@ -10,7 +10,7 @@ import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.query.ContactQuery;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
-import ru.protei.portal.ui.contact.client.service.ContactService;
+import ru.protei.portal.ui.common.client.service.ContactService;
 
 import java.util.List;
 

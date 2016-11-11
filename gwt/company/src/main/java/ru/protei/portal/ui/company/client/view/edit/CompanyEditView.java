@@ -12,7 +12,8 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.CompanyCategory;
 import ru.protei.portal.core.model.ent.CompanyGroup;
-import ru.protei.portal.ui.common.client.service.NameStatus;
+import ru.protei.portal.ui.common.client.common.NameStatus;
+import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextArea;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
@@ -20,8 +21,6 @@ import ru.protei.portal.ui.company.client.activity.edit.AbstractCompanyEditActiv
 import ru.protei.portal.ui.company.client.activity.edit.AbstractCompanyEditView;
 import ru.protei.portal.ui.company.client.widget.category.buttonselector.CategoryButtonSelector;
 import ru.protei.portal.ui.company.client.widget.group.buttonselector.GroupButtonSelector;
-
-import java.util.logging.Logger;
 
 /**
  * Вид создания и редактирования компании
@@ -31,6 +30,7 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+        companyGroup.setDefaultValue(lang.noCompanyGroup());
     }
 
     @Override
@@ -103,6 +103,11 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
         return emailsContainer;
     }
 
+    @Override
+    public HasWidgets tableContainer() {
+        return tableContainer;
+    }
+
     @UiHandler( "saveButton" )
     public void onSaveClicked( ClickEvent event ) {
         if ( activity != null ) {
@@ -117,21 +122,12 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
         }
     }
 
-    @UiHandler( "companyName" )
-    public void onKeyUp( KeyUpEvent keyUpEvent ) {
+    @UiHandler("companyName")
+    public void onChangeCompanyName( KeyUpEvent keyUpEvent ) {
         verifiableIcon.setClassName(NameStatus.UNDEFINED.getStyle());
         timer.cancel();
         timer.schedule( 300 );
     }
-
-    Timer timer = new Timer() {
-        @Override
-        public void run() {
-            if ( activity != null ) {
-                activity.onChangeCompanyName();
-            }
-        }
-    };
 
     @UiField
     Button saveButton;
@@ -171,10 +167,23 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     @UiField ( provided = true )
     CategoryButtonSelector companyCategory;
 
+    @UiField
+    HTMLPanel tableContainer;
+
+    @Inject
+    @UiField
+    Lang lang;
+
+    Timer timer = new Timer() {
+        @Override
+        public void run() {
+            if ( activity != null ) {
+                activity.onChangeCompanyName();
+            }
+        }
+    };
 
     AbstractCompanyEditActivity activity;
-
-    private final static Logger log = Logger.getLogger( "ui" );
 
     private static CompanyViewUiBinder2 ourUiBinder = GWT.create(CompanyViewUiBinder2.class);
     interface CompanyViewUiBinder2 extends UiBinder<HTMLPanel, CompanyEditView> {}

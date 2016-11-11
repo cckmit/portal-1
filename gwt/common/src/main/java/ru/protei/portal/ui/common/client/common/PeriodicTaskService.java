@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.common.client.service;
+package ru.protei.portal.ui.common.client.common;
 
 import com.google.gwt.user.client.Timer;
 

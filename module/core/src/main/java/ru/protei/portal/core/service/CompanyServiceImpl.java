@@ -6,24 +6,20 @@ import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.CompanyCategoryDAO;
 import ru.protei.portal.core.model.dao.CompanyDAO;
 import ru.protei.portal.core.model.dao.CompanyGroupDAO;
-import ru.protei.portal.core.model.dao.CompanyGroupItemDAO;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanyCategory;
 import ru.protei.portal.core.model.ent.CompanyGroup;
-import ru.protei.portal.core.model.ent.CompanyGroupItem;
 import ru.protei.portal.core.model.query.BaseQuery;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.core.utils.EntityCache;
-import ru.protei.portal.core.utils.EntitySelector;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import java.util.*;
-import java.util.concurrent.TimeUnit;
+import java.util.Date;
+import java.util.List;
 import java.util.stream.Collectors;
 
 

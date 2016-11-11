@@ -1,11 +1,8 @@
 package ru.protei.portal.core.model.dao;
 
-import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcDAO;
 import ru.protei.winter.jdbc.JdbcSort;
-import ru.protei.winter.jdbc.column.JdbcObjectColumn;
 
-import java.util.Collection;
 import java.util.List;
 
 /**

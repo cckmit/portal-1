@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.common.client.widget.selector.sortfield;
 
-import com.google.gwt.uibinder.client.UiField;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.ui.common.client.lang.En_SortFieldLang;
@@ -33,6 +32,8 @@ public class SortFieldSelector extends ButtonSelector< En_SortField > {
                 addOption( sortFieldLang.getName( En_SortField.person_full_name ), En_SortField.person_full_name );
                 addOption( sortFieldLang.getName( En_SortField.person_position ), En_SortField.person_position );
                 addOption( lang.company(), En_SortField.comp_name );
+            case ISSUE:
+                addOption( sortFieldLang.getName( En_SortField.creation_date ), En_SortField.creation_date );
                 break;
         }
     }

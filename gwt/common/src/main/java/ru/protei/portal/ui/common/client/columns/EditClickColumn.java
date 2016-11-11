@@ -1,21 +1,17 @@
-package ru.protei.portal.ui.contact.client.view.table.columns;
+package ru.protei.portal.ui.common.client.columns;
 
 import com.google.gwt.dom.client.AnchorElement;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.EventListener;
 import com.google.inject.Inject;
-import ru.brainworm.factory.widget.table.client.ColumnHeader;
-import ru.brainworm.factory.widget.table.client.ColumnValue;
 import ru.brainworm.factory.widget.table.client.helper.AbstractColumnHandler;
-import ru.brainworm.factory.widget.table.client.helper.ClickColumn;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
 /**
  * Колонка редактирования контакта.
  */
-public abstract class EditClickColumn< T > extends ClickColumn < T > {
+public abstract class EditClickColumn< T > extends ru.protei.portal.ui.common.client.columns.ClickColumn< T > {
 
     public interface EditHandler< T > extends AbstractColumnHandler< T > {
         void onEditClicked(T value);

@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.crm.client.activity.app;
 
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -25,12 +26,34 @@ public abstract class AppActivity
     public void onInit(AppEvents.Init event) {
         this.init = event;
 
-        initApp();
+        fireEvent(new AppEvents.InitDetails(view.getDetailsContainer()));
+        fireEvent(new NotifyEvents.Init(view.getNotifyContainer()));
+
+        // запомнить токен
+        initialToken = History.getToken();
+
+        fireEvent( new AuthEvents.Show() );
     }
 
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
+
+        init.parent.clear();
+        init.parent.add( view.asWidget() );
+
         view.setUsername( event.profile.getName(), event.profile.getRole().getCaRoleName() );
+
+        if ( initialToken.isEmpty() ) {
+            fireEvent( new AppEvents.Show() );
+            return;
+        }
+
+        if (initialToken.equals( History.getToken() )) {
+            fireEvent( new AppEvents.Show() );
+            return;
+        }
+
+        History.newItem( initialToken );
     }
 
     @Event
@@ -48,6 +71,7 @@ public abstract class AppActivity
 
     public void onLogoutClicked() {
         fireEvent( new AppEvents.Logout() );
+        view.getDetailsContainer().clear();
     }
 
     private void initApp() {
@@ -58,5 +82,6 @@ public abstract class AppActivity
     @Inject
     AbstractAppView view;
 
+    String initialToken;
     private AppEvents.Init init;
 }

@@ -11,20 +11,26 @@ import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.brainworm.factory.widget.table.client.AbstractColumn;
 import ru.brainworm.factory.widget.table.client.TableWidget;
-import ru.brainworm.factory.widget.table.client.helper.ClickColumn;
 import ru.brainworm.factory.widget.table.client.helper.SelectionColumn;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.ui.common.client.animation.TableAnimation;
+import ru.protei.portal.ui.common.client.columns.ClickColumn;
+import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
+import ru.protei.portal.ui.common.client.columns.EditClickColumn;
+import ru.protei.portal.ui.common.client.common.ContactColumnBuilder;
+import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
+import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.contact.client.activity.table.AbstractContactTableActivity;
 import ru.protei.portal.ui.contact.client.activity.table.AbstractContactTableView;
-import ru.protei.portal.ui.contact.client.view.table.columns.ContactColumnBuilder;
-import ru.protei.portal.ui.contact.client.view.table.columns.EditActionClickColumn;
-import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
-import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Представление таблицы контактов
@@ -34,14 +40,29 @@ public class ContactTableView extends Composite implements AbstractContactTableV
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
         search.getElement().setPropertyString( "placeholder", lang.search() );
+        initTable();
     }
 
     @Override
     public void setActivity( AbstractContactTableActivity activity ) {
         this.activity = activity;
-        initTable();
+        editClickColumn.setHandler( activity );
+        editClickColumn.setEditHandler( activity );
+        editClickColumn.setColumnProvider( columnProvider );
+        columns.forEach( clickColumn -> {
+            clickColumn.setHandler( activity );
+            clickColumn.setColumnProvider( columnProvider );
+        });
+    }
+    
+    @Override
+    public void setAnimation ( TableAnimation animation ) {
+        animation.setContainers( tableContainer, previewContainer );
     }
 
+    @Override
+    public HasWidgets getPreviewContainer () { return previewContainer; }
+    
     @Override
     public HasValue<EntityOption> company() {
         return company;
@@ -76,6 +97,19 @@ public class ContactTableView extends Composite implements AbstractContactTableV
         search.setText( "" );
     }
 
+    @Override
+    public void hideElements() {
+        filter.setVisible( false );
+        hideColumn.setVisibility( false );
+    }
+
+    @Override
+    public void showElements() {
+        filter.setVisible( true );
+        hideColumn.setVisibility( true );
+    }
+
+    @Override
     public void addRecord( Person person ) {
         table.addRow( person );
     }
@@ -132,9 +166,7 @@ public class ContactTableView extends Composite implements AbstractContactTableV
 
     private void initTable () {
 
-        EditActionClickColumn< Person > editClickColumn = new EditActionClickColumn< Person >( lang ) {};
-        editClickColumn.setHandler( activity );
-        editClickColumn.setEditHandler( activity );
+        editClickColumn = new EditClickColumn<Person>( lang ) {};
 
         ClickColumn< Person > displayName = new ClickColumn< Person >() {
             @Override
@@ -143,11 +175,11 @@ public class ContactTableView extends Composite implements AbstractContactTableV
             }
 
             @Override
-            public void fillColumnValue( Element element, Person person ) {
+            public void fillColumnValue ( Element element, Person person ) {
                 element.setInnerText( person == null ? "" : person.getDisplayName() );
             }
         };
-        displayName.setHandler( activity );
+        columns.add( displayName );
 
         ClickColumn< Person > company = new ClickColumn< Person >() {
             @Override
@@ -156,11 +188,11 @@ public class ContactTableView extends Composite implements AbstractContactTableV
             }
 
             @Override
-            public void fillColumnValue( Element element, Person person ) {
+            public void fillColumnValue ( Element element, Person person ) {
                 element.setInnerText( person == null || person.getCompany() == null ? "" : person.getCompany().getCname() );
             }
         };
-        company.setHandler( activity );
+        columns.add( company );
 
         ClickColumn< Person > position = new ClickColumn< Person >() {
             @Override
@@ -169,12 +201,12 @@ public class ContactTableView extends Composite implements AbstractContactTableV
             }
 
             @Override
-            public void fillColumnValue( Element element, Person person ) {
+            public void fillColumnValue ( Element element, Person person ) {
                 element.setInnerText( person == null ? "" : person.getPosition() );
 
             }
         };
-        position.setHandler( activity );
+        columns.add( position );
 
         ClickColumn< Person > phone = new ClickColumn< Person >() {
             @Override
@@ -186,11 +218,11 @@ public class ContactTableView extends Composite implements AbstractContactTableV
             public void fillColumnValue( Element element, Person person ) {
                 PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(person.getContactInfo());
                 element.appendChild( ContactColumnBuilder.make().add( null, infoFacade.getWorkPhone() )
-                        .add(null, infoFacade.getMobilePhone())
+                        .add(null, infoFacade.getMobilePhone() )
                         .add( null, infoFacade.getHomePhone()).toElement() );
             }
         };
-        phone.setHandler( activity );
+        columns.add( phone );
 
         ClickColumn< Person > email = new ClickColumn< Person >() {
             @Override
@@ -200,14 +232,14 @@ public class ContactTableView extends Composite implements AbstractContactTableV
 
             @Override
             public void fillColumnValue( Element element, Person person ) {
-                PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(person.getContactInfo());
+                PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(person.getContactInfo() );
                 element.appendChild( ContactColumnBuilder.make().add( null, infoFacade.getEmail() )
                         .add( null, infoFacade.getEmail_own() ).toElement() );
             }
         };
-        email.setHandler( activity );
+        columns.add( email );
 
-        table.addColumn( selectionColumn.header, selectionColumn.values );
+        hideColumn = table.addColumn( selectionColumn.header, selectionColumn.values );
         table.addColumn( editClickColumn.header, editClickColumn.values );
         table.addColumn( displayName.header, displayName.values );
         table.addColumn( company.header, company.values );
@@ -239,6 +271,15 @@ public class ContactTableView extends Composite implements AbstractContactTableV
     @UiField
     TableWidget table;
 
+    @UiField
+    HTMLPanel tableContainer;
+
+    @UiField
+    HTMLPanel previewContainer;
+
+    @UiField
+    HTMLPanel filter;
+
     @Inject
     @UiField
     Lang lang;
@@ -252,7 +293,11 @@ public class ContactTableView extends Composite implements AbstractContactTableV
         }
     };
 
+    AbstractColumn hideColumn;
+    ClickColumnProvider<Person> columnProvider = new ClickColumnProvider<>();
     SelectionColumn< Person > selectionColumn = new SelectionColumn<>();
+    EditClickColumn<Person > editClickColumn;
+    List<ClickColumn > columns = new ArrayList<>();
 
     AbstractContactTableActivity activity;
 

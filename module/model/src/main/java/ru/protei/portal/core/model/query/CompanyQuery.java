@@ -3,7 +3,6 @@ package ru.protei.portal.core.model.query;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 
-import java.io.Serializable;
 import java.util.List;
 
 /**

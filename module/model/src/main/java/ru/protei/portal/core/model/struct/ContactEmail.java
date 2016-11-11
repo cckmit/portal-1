@@ -12,7 +12,17 @@ import java.io.Serializable;
  * Created by michael on 07.11.16.
  */
 @JsonAutoDetect
-public class ContactEmail implements Serializable {
+public class ContactEmail implements Serializable, ContactItem{
+
+    @Override
+    public String getValue() {
+        return getEmail();
+    }
+
+    @Override
+    public void setValue(String value) {
+        setEmail(value);
+    }
 
     @JsonProperty("e")
     public String email;

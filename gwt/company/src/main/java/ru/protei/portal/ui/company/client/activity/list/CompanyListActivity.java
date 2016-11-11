@@ -19,7 +19,7 @@ import ru.protei.portal.ui.common.client.events.CompanyEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CompanyServiceAsync;
-import ru.protei.portal.ui.common.client.service.PeriodicTaskService;
+import ru.protei.portal.ui.common.client.common.PeriodicTaskService;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.company.client.activity.item.AbstractCompanyItemActivity;
 import ru.protei.portal.ui.company.client.activity.item.AbstractCompanyItemView;

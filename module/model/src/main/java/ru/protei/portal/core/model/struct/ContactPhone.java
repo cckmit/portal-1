@@ -13,7 +13,18 @@ import java.io.Serializable;
  * Created by michael on 07.11.16.
  */
 @JsonAutoDetect
-public class ContactPhone implements Serializable {
+public class ContactPhone implements Serializable, ContactItem {
+
+    @Override
+    public String getValue() {
+        return getPhone();
+    }
+
+    @Override
+    public void setValue(String value) {
+        setPhone(value);
+    }
+
 
     @JsonProperty("v")
     public String phone;

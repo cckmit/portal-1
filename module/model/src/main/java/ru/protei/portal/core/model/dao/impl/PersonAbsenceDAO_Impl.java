@@ -3,10 +3,11 @@ package ru.protei.portal.core.model.dao.impl;
 import org.apache.commons.lang3.time.DateUtils;
 import ru.protei.portal.core.model.dao.PersonAbsenceDAO;
 import ru.protei.portal.core.model.ent.PersonAbsence;
-import ru.protei.winter.jdbc.JdbcHelper;
-import ru.protei.winter.jdbc.annotations.JdbcColumn;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Created by michael on 05.07.16.

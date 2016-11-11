@@ -1,13 +1,10 @@
 package ru.protei.portal.ui.contact.client.activity.edit;
 
-import com.google.gwt.i18n.server.testing.Gender;
-import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.*;
-import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
+import com.google.gwt.user.client.ui.HasText;
+import com.google.gwt.user.client.ui.HasValue;
+import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_Gender;
-import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 
 import java.util.Date;
 

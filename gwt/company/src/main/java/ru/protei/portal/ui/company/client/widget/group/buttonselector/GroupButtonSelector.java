@@ -22,21 +22,16 @@ public class GroupButtonSelector extends ButtonSelector< CompanyGroup > implemen
     public void fillOptions( List< CompanyGroup > groups ) {
         clearOptions();
 
-        if ( hasAnyValue ) {
-            addOption( lang.companyGroup(), null );
-        }
+        addOption( defaultValue == null? "" : defaultValue , null );
         for ( CompanyGroup group : groups ) {
             addOption( group.getName(), group );
         }
     }
 
-    public void setHasAnyValue( boolean hasAnyValue ) {
-        this.hasAnyValue = hasAnyValue;
+    public void setDefaultValue( String value ) {
+        this.defaultValue = value;
     }
 
-    @Inject
-    Lang lang;
-
-    private boolean hasAnyValue = true;
+    private String defaultValue = null;
 
 }
