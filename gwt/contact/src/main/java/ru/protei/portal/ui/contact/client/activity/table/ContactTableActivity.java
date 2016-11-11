@@ -42,7 +42,7 @@ public abstract class ContactTableActivity implements AbstractContactTableActivi
         this.fireEvent( new AppEvents.InitPanelName( lang.contacts() ) );
         initDetails.parent.clear();
         initDetails.parent.add( view.asWidget() );
-        view.showFilter();
+        view.showElements();
         isShowTable = false;
 
         ContactQuery query = makeQuery( null );
@@ -55,7 +55,7 @@ public abstract class ContactTableActivity implements AbstractContactTableActivi
 
         event.parent.clear();
         event.parent.add( view.asWidget() );
-        view.hideFilter();
+        view.hideElements();
         isShowTable = true;
 
         ContactQuery query = makeQuery( event.companyId );

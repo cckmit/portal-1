@@ -22,8 +22,8 @@ public interface AbstractContactTableView extends IsWidget {
     HasValue< Boolean > sortDir();
     HasValue< String > searchPattern();
     void resetFilter();
-    void hideFilter();
-    void showFilter();
+    void hideElements();
+    void showElements();
     void clearRecords();
     void addRecord( Person person );
     HasWidgets getPreviewContainer ();

@@ -38,7 +38,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
     public void onShow( CompanyEvents.Edit event ) {
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
-        
+        view.tableContainer().clear();
 
         if(event.getCompanyId() == null) {
             fireEvent(new AppEvents.InitPanelName(lang.companyNew()));
