@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.struct;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import ru.protei.portal.core.model.dict.En_ContactDataAccess;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
 
@@ -14,6 +15,7 @@ public interface AbstractContactInfo {
      * возвращает список всех элементов
      * @return
      */
+    @JsonIgnore
     List<ContactItem> getItems();
 
     /**
@@ -21,6 +23,7 @@ public interface AbstractContactInfo {
      * @param type
      * @return
      */
+    @JsonIgnore
     List<ContactItem> getItems (En_ContactItemType type);
 
     /**
@@ -74,4 +77,12 @@ public interface AbstractContactInfo {
      * @return
      */
     ContactItem replaceOthers(ContactItem item);
+
+    /**
+     * Удаляет все элементы заданного типа, добавляет новый и возвращает его
+     * Операция аналогична replaceOthers (ContactItem item), только создание происходит внутри реализации
+     * @param type
+     * @return
+     */
+    ContactItem replaceOthers(En_ContactItemType type);
 }

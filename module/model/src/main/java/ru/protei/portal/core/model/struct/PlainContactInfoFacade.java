@@ -3,6 +3,13 @@ package ru.protei.portal.core.model.struct;
 import ru.protei.portal.core.model.dict.En_ContactDataAccess;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
 
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static ru.protei.portal.core.model.helper.HelperFunc.isNotEmpty;
+import static ru.protei.portal.core.model.helper.HelperFunc.nvl;
+
 /**
  * Created by Mike on 09.11.2016.
  */
@@ -16,6 +23,30 @@ public class PlainContactInfoFacade extends CustomContactInfoFacade {
         super(info);
     }
 
+    public Stream<ContactItem> allPhonesStream () {
+        return this.contactInfo.getItems().stream().filter(
+                item -> (item.isItemOf(En_ContactItemType.GENERAL_PHONE)
+                        || item.isItemOf(En_ContactItemType.MOBILE_PHONE))
+                        && !item.isEmptyValue()
+        );
+    }
+
+    public Stream<ContactItem> emailsStream () {
+        return this.contactInfo.getItems(En_ContactItemType.EMAIL).stream().filter(item -> !item.isEmptyValue());
+    }
+
+    public String allPhonesAsString () {
+        return allPhonesStream().map (
+                    p -> p.value() + (isNotEmpty(p.comment()) ? " (" + p.comment() + ")" :"")
+                )
+                .collect( Collectors.joining( "," ) );
+    }
+
+    public String allEmailsAsString () {
+        return emailsStream().map(
+                e -> e.value() + (isNotEmpty(e.comment()) ? " (" + e.comment() + ")" : "")
+        ).collect( Collectors.joining( "," ) );
+    }
 
     public String getWorkPhone() {
         return findItemValue(En_ContactItemType.GENERAL_PHONE,En_ContactDataAccess.PUBLIC);
@@ -34,7 +65,7 @@ public class PlainContactInfoFacade extends CustomContactInfoFacade {
     }
 
     public String getMobilePhone() {
-        return findItemValue(En_ContactItemType.GENERAL_PHONE, En_ContactDataAccess.PUBLIC);
+        return findItemValue(En_ContactItemType.MOBILE_PHONE, En_ContactDataAccess.PUBLIC);
     }
 
     public void setMobilePhone(String mobilePhone) {
@@ -95,5 +126,30 @@ public class PlainContactInfoFacade extends CustomContactInfoFacade {
 
     public void setWebSite (String webSite) {
         contactInfo.findOrCreate(En_ContactItemType.WEB_SITE, En_ContactDataAccess.PUBLIC).modify(webSite);
+    }
+
+
+    public String getLegalAddress () {
+        return findItemValue(En_ContactItemType.ADDRESS_LEGAL, En_ContactDataAccess.PUBLIC);
+    }
+
+    public void setLegalAddress (String address) {
+        contactInfo.findOrCreate(En_ContactItemType.ADDRESS_LEGAL, En_ContactDataAccess.PUBLIC).modify(address);
+    }
+
+    public String getFactAddress () {
+        return findItemValue(En_ContactItemType.ADDRESS, En_ContactDataAccess.PUBLIC);
+    }
+
+    public void setFactAddress (String address) {
+        contactInfo.findOrCreate(En_ContactItemType.ADDRESS, En_ContactDataAccess.PUBLIC).modify(address);
+    }
+
+    public String getHomeAddress () {
+        return findItemValue(En_ContactItemType.ADDRESS, En_ContactDataAccess.PRIVATE);
+    }
+
+    public void setHomeAddress (String address) {
+        contactInfo.findOrCreate(En_ContactItemType.ADDRESS, En_ContactDataAccess.PRIVATE).modify(address);
     }
 }

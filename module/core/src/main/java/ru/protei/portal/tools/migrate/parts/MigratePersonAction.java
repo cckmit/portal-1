@@ -21,6 +21,8 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static ru.protei.portal.core.model.helper.HelperFunc.nvlt;
+
 /**
  * Created by michael on 04.04.16.
  */
@@ -236,13 +238,13 @@ public class MigratePersonAction implements MigrateAction {
                 contactInfoFacade.addMobilePhone(xp.get("Телефон мобильный"), "мобильный");
                 contactInfoFacade.addHomePhone(xp.get("Телефон домашний"), "домашний");
 
-                String jabber = nvl(xp.get("Интернет рабочий"), nvl(xp.get("Интернет без категории"), xp.get("Интернет домашний")));
-                if (jabber != null)
-                    x.getContactInfo().jabber = jabber;
+                contactInfoFacade.addJabber(
+                        nvl(
+                                xp.get("Интернет рабочий"),
+                                nvl(xp.get("Интернет без категории"), xp.get("Интернет домашний"))
+                        ), "");
 
-                String icq = nvl(xp.get("ICQ рабочий"), nvl(xp.get("ICQ без категории"), xp.get("ICQ домашний")));
-                if (icq != null)
-                    x.getContactInfo().icq = icq;
+                contactInfoFacade.addIcq(nvl(xp.get("ICQ рабочий"), nvl(xp.get("ICQ без категории"), xp.get("ICQ домашний"))), "");
             }
 
             logger.debug(x.getId() + "/" + x.getDisplayName());

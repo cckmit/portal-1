@@ -95,7 +95,7 @@ public abstract class ContactTableActivity implements AbstractContactTableActivi
 
                     @Override
                     public void onSuccess(List<Person> persons) {
-                        fillViewHandler = taskService.startPeriodicTask( persons, fillViewer, 50, 50 );
+                        fillViewHandler = taskService.startPeriodicTask( persons, p -> view.addRecord(p), 50, 50 );
                     }
                 });
     }
@@ -110,12 +110,6 @@ public abstract class ContactTableActivity implements AbstractContactTableActivi
         }
     }
 
-    Consumer< Person > fillViewer = new Consumer< Person >() {
-        @Override
-        public void accept( Person person ) {
-            view.addRecord( person );
-        }
-    };
 
     @Inject
     Lang lang;

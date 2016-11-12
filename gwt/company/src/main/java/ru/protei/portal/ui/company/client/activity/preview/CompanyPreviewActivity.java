@@ -38,13 +38,13 @@ public abstract class CompanyPreviewActivity
 
         PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(value.getContactInfo());
 
-        view.setPhone( HelperFunc.nvlt(infoFacade.getWorkPhone(),""));
+        view.setPhone( infoFacade.getWorkPhone() );
 
-        view.setSite( HelperFunc.nvlt(infoFacade.getWebSite(), "") );
-        view.setEmail( HelperFunc.nvlt(infoFacade.getEmail(), ""));
+        view.setSite( infoFacade.getWebSite() );
+        view.setEmail( infoFacade.getEmail() );
 
-        view.setAddressDejure( value.getAddressDejure() );
-        view.setAddressFact( value.getAddressFact() );
+        view.setAddressDejure( infoFacade.getLegalAddress() );
+        view.setAddressFact( infoFacade.getFactAddress() );
         view.setInfo( value.getInfo() );
     }
 

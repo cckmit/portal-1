@@ -27,12 +27,6 @@ public class Company implements Serializable,EntityOptionSupport {
     CompanyGroup companyGroup;
 
 
-    @JdbcColumn(name = "address_dejure")
-    private String addressDejure;
-
-    @JdbcColumn(name = "address_fact")
-    private String addressFact;
-
     @JdbcColumn(name = "cname")
     private String cname;
 
@@ -50,13 +44,6 @@ public class Company implements Serializable,EntityOptionSupport {
         contactInfo = new ContactInfo();
     }
 
-    public String getAddressDejure() {
-        return this.addressDejure;
-    }
-
-    public String getAddressFact() {
-        return this.addressFact;
-    }
 
     public String getCname() {
         return this.cname;
@@ -73,14 +60,6 @@ public class Company implements Serializable,EntityOptionSupport {
 
     public Date getCreated() {
         return this.created;
-    }
-
-    public void setAddressDejure(String addressDejure) {
-        this.addressDejure = addressDejure;
-    }
-
-    public void setAddressFact(String addressFact) {
-        this.addressFact = addressFact;
     }
 
     public Long getCategoryId() {
@@ -154,8 +133,6 @@ public class Company implements Serializable,EntityOptionSupport {
                 .append("id=").append(id)
                 .append(", categoryId=").append(getCategoryId())
                 .append(", groupId=").append(groupId)
-                .append(", addressDejure='").append(addressDejure).append('\'')
-                .append(", addressFact='").append(addressFact).append('\'')
                 .append(", cname='").append(cname).append('\'')
                 .append(", info='").append(info).append('\'')
                 .append(", created=").append(created)

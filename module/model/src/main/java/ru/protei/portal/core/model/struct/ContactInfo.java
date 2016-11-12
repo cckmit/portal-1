@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static ru.protei.portal.core.model.helper.HelperFunc.nvlt;
 
@@ -32,11 +33,13 @@ public class ContactInfo implements Serializable, AbstractContactInfo {
         this.itemList = new ArrayList<>(src.itemList);
     }
 
+
     /**
      * возвращает список всех элементов
      * @return
      */
     @Override
+    @JsonIgnore
     public List<ContactItem> getItems() {
         return itemList;
     }
@@ -47,6 +50,7 @@ public class ContactInfo implements Serializable, AbstractContactInfo {
      * @return
      */
     @Override
+    @JsonIgnore
     public List<ContactItem> getItems(En_ContactItemType type) {
         return itemList.stream()
                 .filter(contactItem -> contactItem.isItemOf(type))
@@ -60,12 +64,15 @@ public class ContactInfo implements Serializable, AbstractContactInfo {
      */
     @Override
     public ContactItem findFirst(En_ContactItemType type) {
-        return itemList.stream().filter(contactItem -> contactItem.isItemOf(type)).findFirst().orElse(null);
+        return itemList.stream()
+                .filter(contactItem -> contactItem.isItemOf(type))
+                .findFirst().orElse(null);
     }
 
     @Override
     public ContactItem findFirst(En_ContactItemType type, En_ContactDataAccess accessType) {
-        return itemList.stream().filter(contactItem -> contactItem.isItemOf(type) && contactItem.accessType() == accessType)
+        return itemList.stream()
+                .filter(contactItem -> contactItem.isItemOf(type) && contactItem.accessType() == accessType)
                 .findFirst().orElse(null);
     }
 
@@ -117,5 +124,11 @@ public class ContactInfo implements Serializable, AbstractContactInfo {
         itemList.removeIf(contactItem -> contactItem.isItemOf(item.type()));
         itemList.add(item);
         return item;
+    }
+
+    @Override
+    public ContactItem replaceOthers(En_ContactItemType type) {
+        itemList.removeIf(contactItem -> contactItem.isItemOf(type));
+        return addItem(type);
     }
 }

@@ -143,7 +143,7 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
 
         itemView.setPhone(infoFacade.getWorkPhone());
         itemView.setEmail(infoFacade.getEmail());
-        itemView.setWebsite( company.getContactInfo().getWebSite() );
+        itemView.setWebsite(infoFacade.getWebSite() );
 
         CompanyCategory category = company.getCategory();
         if ( category != null ) {

@@ -15,16 +15,16 @@ import java.io.Serializable;
 public class ContactItem implements Serializable {
 
     @JsonProperty("v")
-    public String value;
+    private String value;
 
     @JsonProperty("c")
-    public String comment;
+    private String comment;
 
     @JsonProperty("a")
-    public En_ContactDataAccess accessType;
+    private En_ContactDataAccess accessType;
 
     @JsonProperty("t")
-    public final En_ContactItemType itemType;
+    private En_ContactItemType itemType;
 
     public ContactItem () {
         this.accessType = En_ContactDataAccess.PUBLIC;
