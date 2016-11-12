@@ -5,8 +5,13 @@ import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_ContactItemType;
+import ru.protei.portal.core.model.dict.En_SortDir;
+import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.struct.ContactInfo;
+import ru.protei.portal.core.model.struct.ContactItem;
+import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.CompanyEvents;
@@ -138,28 +143,30 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
     }
 
     private void fillView(Company company){
+        PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(company.getContactInfo());
         view.companyName().setText(company.getCname());
-        view.actualAddress().setText(company.getAddressFact());
-        view.legalAddress().setText(company.getAddressDejure());
+        view.actualAddress().setText(infoFacade.getFactAddress());
+        view.legalAddress().setText(infoFacade.getLegalAddress());
+
         view.comment().setText(company.getInfo());
         view.companyCategory().setValue(company.getCategory());
         view.companyGroup().setValue(company.getCompanyGroup());
 
-        ContactInfo contactInfo = company.getContactInfo();
-        view.webSite().setText(contactInfo.getWebSite());
+        view.webSite().setText(infoFacade.getWebSite());
     }
 
 
     private void fillCompany(Company company){
         company.setCname(view.companyName().getText());
-        company.setAddressDejure(view.legalAddress().getText());
-        company.setAddressFact(view.actualAddress().getText());
+
+        PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(company.getContactInfo());
+
+        infoFacade.setLegalAddress(view.legalAddress().getText());
+        infoFacade.setFactAddress(view.actualAddress().getText());
         company.setInfo(view.comment().getText());
         company.setCategory(view.companyCategory().getValue());
         company.setCompanyGroup(view.companyGroup().getValue());
-
-        ContactInfo contactInfo = company.getContactInfo();
-        contactInfo.setWebSite(view.webSite().getText());
+        infoFacade.setWebSite(view.webSite().getText());
     }
 
     @Inject

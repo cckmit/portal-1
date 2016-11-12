@@ -1,19 +1,130 @@
 package ru.protei.portal.core.model.struct;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import ru.protei.portal.core.model.dict.En_ContactDataAccess;
+import ru.protei.portal.core.model.dict.En_ContactItemType;
+
+import java.io.Serializable;
 
 /**
- * Created by bondarenko on 09.11.16.
+ * Created by michael on 07.11.16.
  */
-public interface ContactItem {
+@JsonAutoDetect
+public class ContactItem implements Serializable {
+
+    @JsonProperty("v")
+    private String value;
+
+    @JsonProperty("c")
+    private String comment;
+
+    @JsonProperty("a")
+    private En_ContactDataAccess accessType;
+
+    @JsonProperty("t")
+    private En_ContactItemType itemType;
+
+    public ContactItem () {
+        this.accessType = En_ContactDataAccess.PUBLIC;
+        this.itemType = En_ContactItemType.UNDEFINED;
+    }
+
+    public ContactItem (En_ContactItemType type) {
+        this (type, En_ContactDataAccess.PUBLIC);
+    }
+
+    public ContactItem (En_ContactItemType type, En_ContactDataAccess access) {
+        this.accessType = access;
+        this.itemType = type;
+    }
+
+
+    /*
+     *
+     *   readers
+     *
+     */
+
+    public String value () {
+        return this.value;
+    }
+
+    public En_ContactItemType type() {
+        return itemType;
+    }
+
+    public String comment() {
+        return comment;
+    }
+
+    public En_ContactDataAccess accessType () {
+        return this.accessType;
+    }
+
+
+    /*
+     *
+     *   writers
+     *
+     */
+
+    public ContactItem modify (String value) {
+        this.value = value;
+        return this;
+    }
+
+    public ContactItem modify (String value, String comment) {
+        this.value = value;
+        this.comment = comment;
+        return this;
+    }
+
+    public ContactItem modify (En_ContactDataAccess accessType) {
+        this.accessType = accessType;
+        return this;
+    }
+
+    public ContactItem toggleAccessType () {
+        this.accessType = (this.accessType == En_ContactDataAccess.PRIVATE ? En_ContactDataAccess.PUBLIC : En_ContactDataAccess.PRIVATE);
+        return this;
+    }
+
+
+    /*
+     *
+     *   predicates
+     *
+     */
 
     @JsonIgnore
-    String getValue();
-
-    void setValue(String value);
+    public boolean isItemOf (En_ContactItemType type) {
+        return this.itemType == type;
+    }
 
     @JsonIgnore
-    String getComment();
+    public boolean isEmptyValue () {
+        return this.value == null || this.value.trim().isEmpty();
+    }
 
-    void setComment(String comment);
+    @JsonIgnore
+    public boolean isEmptyComment () {
+        return this.comment == null || this.comment.trim().isEmpty();
+    }
+
+    @JsonIgnore
+    public boolean isEmpty () {
+        return isEmptyValue() && isEmptyComment();
+    }
+
+    @JsonIgnore
+    public boolean isPrivateItem () {
+        return this.accessType == En_ContactDataAccess.PRIVATE;
+    }
+
+    @JsonIgnore
+    public boolean isPublicItem () {
+        return this.accessType == En_ContactDataAccess.PUBLIC;
+    }
 }
