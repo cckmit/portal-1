@@ -25,9 +25,10 @@ package ru.protei.portal.ui.common.client.common;
  * 4.0.11.13 - sprint-8-task-8 рефакторинг таблицы контактов
  * 4.0.12.13 - 8-3 доработка с сохранением данных сессии
  * 4.0.13.13 - доработка sidebar'а, перевод меню на page
+ * 4.0.14.13 - sprint-8-task-9 карточка просмотра обращения
  */
 public class Version {
     public static String getVersion() {
-        return "4.0.13.13";
+        return "4.0.14.13";
     }
 }
