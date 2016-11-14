@@ -204,4 +204,6 @@ public interface Lang extends Messages {
     String issueAdditionalHeader();
     String issueState();
     String issueCriticality();
+    String issueCompany();
+    String issueContact();
 }

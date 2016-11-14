@@ -30,52 +30,28 @@
                     <span class="col-xs-7 col-md-7" ui:field="product"></span>
                 </div>
             </fieldset>
-            <!--fieldset class="header col-xs-12 col-lg-5">
-                <legend><ui:text from="{lang.contactInfo}"/></legend>
+            <fieldset class="header col-xs-12 col-lg-5">
+                <legend><ui:text from="{lang.issueContactHeader}"/></legend>
                 <div class="col-xs-12">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.company}"/></label>
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.issueCompany}"/></label>
                     <span class="col-xs-7 col-md-7" ui:field="company"></span>
                 </div>
                 <div class="col-xs-12">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.contactPosition}"/></label>
-                    <span class="col-xs-7 col-md-7" ui:field="position"></span>
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.issueContact}"/></label>
+                    <span class="col-xs-7 col-md-7" ui:field="contact"></span>
                 </div>
                 <div class="col-xs-12">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.contactDepartment}"/></label>
-                    <span class="col-xs-7 col-md-7" ui:field="department"></span>
-                </div>
-                <div class="col-xs-12">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.phone}"/></label>
-                    <span class="col-xs-7 col-md-7" ui:field="phone"></span>
-                </div>
-                <div class="col-xs-12">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.email}"/></label>
-                    <span class="col-xs-7 col-md-7" ui:field="email"></span>
-                </div>
-                <div class="col-xs-12">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.address}"/></label>
-                    <span class="col-xs-7 col-md-7" ui:field="address"></span>
-                </div>
-                <div class="col-xs-12">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.homeAddress}"/></label>
-                    <span class="col-xs-7 col-md-7" ui:field="homeAddress"></span>
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.issueManager}"/></label>
+                    <span class="col-xs-7 col-md-7" ui:field="manager"></span>
                 </div>
             </fieldset>
             <fieldset class="header col-xs-12 col-lg-5">
-                <legend><ui:text from="{lang.advPersonalData}"/></legend>
+                <legend><ui:text from="{lang.issueAdditionalHeader}"/></legend>
                 <div class="col-xs-12">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.gender}"/></label>
-                    <span class="col-xs-7 col-md-7" ui:field="gender"></span>
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.issueInfo}"/></label>
+                    <span class="col-xs-12 col-md-12 pre-formatted-info" ui:field="info"></span>
                 </div>
-                <div class="col-xs-12">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.birthday}"/></label>
-                    <span class="col-xs-7 col-md-7" ui:field="birthday"></span>
-                </div>
-                <div class="col-xs-12">
-                    <label class="col-xs-12"><ui:text from="{lang.comment}"/></label>
-                    <span ui:field="info" class="col-xs-12 col-md-12 pre-formatted-info"></span>
-                </div>
-            </fieldset-->
+            </fieldset>
         </g:HTMLPanel>
     </g:HTMLPanel>
 </ui:UiBinder>

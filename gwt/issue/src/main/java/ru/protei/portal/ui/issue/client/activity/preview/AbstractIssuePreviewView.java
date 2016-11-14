@@ -16,6 +16,10 @@ public interface AbstractIssuePreviewView extends IsWidget {
     void setState( String value );
     void setCriticality( String value );
     void setProduct( String value );
+    void setCompany( String value );
+    void setContact( String value );
+    void setManager( String value );
+    void setInfo( String value );
 
     HasVisibility fullScreen ();
     HTMLPanel preview ();

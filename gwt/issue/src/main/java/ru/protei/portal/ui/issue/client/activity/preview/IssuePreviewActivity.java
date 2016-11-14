@@ -1,7 +1,6 @@
 package ru.protei.portal.ui.issue.client.activity.preview;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
-import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -29,15 +28,8 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
         this.initDetails = event;
     }
 
-    @Override
-    public void onFullScreenPreviewClicked() {
-
-    }
-
     @Event
     public void onShow( IssueEvents.ShowPreview event ) {
-        Window.alert( "Show preview !" + event.issue);
-
         event.parent.clear();
         event.parent.add( view.asWidget() );
 
@@ -48,12 +40,33 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
         view.preview().setStyleName( "preview" );
     }
 
+    @Event
+    public void onShow( IssueEvents.ShowFullScreen event ) {
+        initDetails.parent.clear();
+        initDetails.parent.add( view.asWidget() );
+
+        this.issueId = event.issueId;
+
+        fillView( issueId );
+        view.fullScreen().setVisible( false );
+        view.preview().addStyleName( "col-xs-12 col-lg-6" );
+    }
+
+    @Override
+    public void onFullScreenPreviewClicked() {
+        fireEvent( new IssueEvents.ShowFullScreen( issueId ) );
+    }
+
     private void fillView( CaseObject value ) {
-        view.setNumber( value.getCaseNumber().toString() );
-        view.setCreationDate( value.getCreated() != null ? format.format( value.getCreated() ) : "" );
+        view.setNumber( value.getCaseNumber() == null ? "" : value.getCaseNumber().toString() );
+        view.setCreationDate( value.getCreated() == null ? "" : format.format( value.getCreated() ) );
         view.setState( Long.toString( value.getStateId() ) );
         view.setCriticality( Integer.toString( value.getImpLevel() ) );
-        view.setProduct( value.getProduct() != null ? value.getProduct().getName() : "" );
+        view.setProduct( value.getProduct() == null ? "" : value.getProduct().getName() );
+        view.setCompany( value.getInitiatorCompany() == null ? "" : value.getInitiatorCompany().getCname() );
+        view.setContact( value.getInitiator() == null ? "" : value.getInitiator().getDisplayName() );
+        view.setManager( value.getManager() == null ? "" : value.getManager().getDisplayName() );
+        view.setInfo( value.getInfo() == null ? "" : value.getInfo() );
     }
 
     private void fillView( Long id ) {
