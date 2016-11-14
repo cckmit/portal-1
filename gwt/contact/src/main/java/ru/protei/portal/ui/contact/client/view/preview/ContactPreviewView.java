@@ -36,10 +36,10 @@ public class ContactPreviewView extends Composite implements AbstractContactPrev
     public void setSecondName(String value) { this.secondName.setInnerText( value ); }
 
     @Override
-    public void setDisplayName(String value) { this.secondName.setInnerText( value ); }
+    public void setDisplayName(String value) { this.displayName.setInnerText( value ); }
 
     @Override
-    public void setShortName(String value) { this.secondName.setInnerText( value ); }
+    public void setShortName(String value) { this.shortName.setInnerText( value ); }
 
     @Override
     public void setGender(String value) { this.gender.setInnerText( value ); }

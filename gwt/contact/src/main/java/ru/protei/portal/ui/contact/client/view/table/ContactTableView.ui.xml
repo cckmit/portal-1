@@ -4,7 +4,7 @@
              xmlns:sortfieldselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.sortfield'
              xmlns:table="urn:import:ru.brainworm.factory.widget.table.client">
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
-    <g:HTMLPanel styleName="OrganizationList">
+    <g:HTMLPanel styleName="main-container">
         <g:HTMLPanel ui:field="filter" styleName="controlButtons">
             <div class="buttons_group">
                 <companyselector:CompanySelector ui:field="company"/>
@@ -25,7 +25,7 @@
                 <g:TextBox ui:field="search" styleName="inputField"/>
             </div>
         </g:HTMLPanel>
-        <div class="grid">
+        <div class="grid grid-indent">
             <g:HTMLPanel ui:field="tableContainer" styleName="table-container col-sm-12">
                     <table:TableWidget ui:field="table" styleName="table-hover"/>
             </g:HTMLPanel>
