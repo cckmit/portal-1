@@ -50,20 +50,27 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
         this.activity = activity;
         editClickColumn.setHandler( activity );
         editClickColumn.setEditHandler( activity );
+        editClickColumn.setColumnProvider( columnProvider );
         issueNumber.setHandler( activity );
+        issueNumber.setColumnProvider( columnProvider );
         product.setHandler( activity );
+        product.setColumnProvider( columnProvider );
         contacts.setHandler( activity );
+        contacts.setColumnProvider( columnProvider );
         info.setHandler( activity );
+        info.setColumnProvider( columnProvider );
         creationDate.setHandler( activity );
+        creationDate.setColumnProvider( columnProvider );
         manager.setHandler( activity );
+        manager.setColumnProvider( columnProvider );
     }
     
-//    @Override
+    @Override
     public void setAnimation ( TableAnimation animation ) {
         animation.setContainers( tableContainer, previewContainer );
     }
 
-//    @Override
+    @Override
     public HasWidgets getPreviewContainer () { return previewContainer; }
     
     @Override
@@ -144,7 +151,7 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
 
     private void initTable () {
         editClickColumn = new EditClickColumn< CaseObject>( lang ) {};
-        editClickColumn.setColumnProvider( columnProvider );
+        //editClickColumn.setColumnProvider( columnProvider );
 
         issueNumber = new ClickColumn< CaseObject >() {
             @Override
@@ -157,7 +164,7 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
                 element.setInnerText( caseObject == null ? "" : caseObject.getCaseNumber().toString() );
             }
         };
-        issueNumber.setColumnProvider( columnProvider );
+        //issueNumber.setColumnProvider( columnProvider );
 
         product = new ClickColumn< CaseObject >() {
             @Override
@@ -170,7 +177,7 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
                 element.setInnerText( caseObject == null ? "" : "продукт" );
             }
         };
-        product.setColumnProvider( columnProvider );
+        //product.setColumnProvider( columnProvider );
 
         contacts = new ClickColumn< CaseObject >() {
             @Override
@@ -190,7 +197,7 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
                 element.setInnerText( companyName+separator+initiatorName );
             }
         };
-        contacts.setColumnProvider( columnProvider );
+        //contacts.setColumnProvider( columnProvider );
 
         info = new ClickColumn< CaseObject >() {
             @Override
@@ -205,7 +212,7 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
                 element.setInnerText( info );
             }
         };
-        info.setColumnProvider( columnProvider );
+        //info.setColumnProvider( columnProvider );
 
         creationDate = new ClickColumn< CaseObject >() {
             @Override
@@ -219,7 +226,7 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
                 element.setInnerText( created == null ? "" : dateFormatter.formatDateOnly( created ) );
             }
         };
-        creationDate.setColumnProvider( columnProvider );
+        //creationDate.setColumnProvider( columnProvider );
 
         manager = new ClickColumn< CaseObject >() {
             @Override
@@ -233,7 +240,7 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
                 element.setInnerText( manager == null ? "" : manager.getDisplayName() );
             }
         };
-        manager.setColumnProvider( columnProvider );
+        //manager.setColumnProvider( columnProvider );
 
         table.addColumn( selectionColumn.header, selectionColumn.values );
         table.addColumn( editClickColumn.header, editClickColumn.values );

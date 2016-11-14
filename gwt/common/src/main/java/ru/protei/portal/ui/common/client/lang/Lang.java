@@ -200,4 +200,10 @@ public interface Lang extends Messages {
     String issueInfo();
     String issueCreationDate();
     String issueManager();
+    String issueHeader( String issueNumber );
+    String issueCurrentStateHeader();
+    String issueContactHeader();
+    String issueInfoHeader();
+    String issueState();
+    String issueCriticality();
 }
