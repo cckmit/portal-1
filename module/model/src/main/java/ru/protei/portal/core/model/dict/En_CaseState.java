@@ -25,7 +25,10 @@ public enum En_CaseState {
     TEST_CUST(20, "customer test"),
     DESIGN(21, "design");
 
-    public static En_CaseState getById(long id) {
+    public static En_CaseState getById(Long id) {
+        if(id == null)
+            return null;
+
         for (En_CaseState cs : En_CaseState.values())
             if (cs.id == id)
                 return cs;

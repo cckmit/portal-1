@@ -34,6 +34,11 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        state.setDefaultValue(lang.selectIssueState());
+        importance.setDefaultValue(lang.selectIssueImportance());
+        initiator.setDefaultValue(lang.selectIssueInitiator());
+        product.setDefaultValue(lang.selectIssueProduct());
+        manager.setDefaultValue(lang.selectIssueManager());
     }
 
     @Override
@@ -43,52 +48,52 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
 
     @Override
     public HasText name() {
-        return null;
+        return name;
     }
 
     @Override
     public HasValidable nameValidator() {
-        return null;
+        return name;
     }
 
     @Override
     public HasText description() {
-        return null;
+        return description;
     }
 
     @Override
     public HasValue<En_CaseState> state() {
-        return null;
+        return state;
     }
 
     @Override
     public HasValue<En_ImportanceLevel> importance() {
-        return null;
+        return importance;
     }
 
     @Override
-    public HasValue<Company> company() {
-        return null;
+    public HasValue<EntityOption> company() {
+        return company;
     }
 
     @Override
     public HasValue<Person> initiator() {
-        return null;
+        return initiator;
     }
 
     @Override
     public HasValue<Person> manager() {
-        return null;
+        return manager;
     }
 
     @Override
     public HasValue<DevUnit> product() {
-        return null;
+        return product;
     }
 
     @Override
     public HasValue<Boolean> isLocal() {
-        return null;
+        return local;
     }
 
     @UiHandler("company")
@@ -100,6 +105,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
             initiator.setDisabled(false);
             Company company = new Company(event.getValue().getId());
             initiator.updateCompany(company);
+            initiator.setValue(null);
         }
     }
 
@@ -118,6 +124,9 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
 
     @UiField
     ValidableTextBox name;
+
+    @UiField
+    TextArea description;
 
     @UiField
     CheckBox local;
@@ -144,7 +153,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
 
     @Inject
     @UiField(provided = true)
-    EmployeeButtonSelector employee;
+    EmployeeButtonSelector manager;
 
     @UiField
     Button saveButton;

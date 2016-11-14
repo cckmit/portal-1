@@ -16,7 +16,7 @@ public interface IssueServiceAsync {
 
     void getIssue( long id, AsyncCallback< CaseObject > callback );
 
-    void saveIssue( CaseObject p, AsyncCallback< CaseObject > callback );
+    void saveIssue( CaseObject p, AsyncCallback< Boolean > callback );
 
     /**
      * Получение списка статусов

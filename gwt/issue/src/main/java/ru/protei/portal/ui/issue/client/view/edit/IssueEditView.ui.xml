@@ -82,7 +82,7 @@
                             <ui:text from="{lang.issueManager}"/>
                         </label>
                         <div class="panelField">
-                            <person:EmployeeButtonSelector ui:field="employee"/>
+                            <person:EmployeeButtonSelector ui:field="manager"/>
                         </div>
                     </div>
                 </div>

@@ -213,6 +213,12 @@ public interface Lang extends Messages {
     String issueCriticality();
     String newIssue();
     String issueEdit();
+    String selectIssueState();
+    String selectIssueImportance();
+    String selectIssueCompany();
+    String selectIssueInitiator();
+    String selectIssueProduct();
+    String selectIssueManager();
 
     String createdCaseState();
     String openedCaseState();

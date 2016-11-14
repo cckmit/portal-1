@@ -274,6 +274,21 @@ public class CaseObject implements Serializable {
         this.productId = product == null ? null : product.getId();
     }
 
+    public void setInitiatorCompany(Company company) {
+        this.initiatorCompany = company;
+        this.initiatorCompanyId = company == null ? null : company.getId();
+    }
+
+    public void setManager(Person person) {
+        this.manager = person;
+        this.managerId = person == null ? null : person.getId();
+    }
+
+    public void setInitiator(Person person) {
+        this.initiator = person;
+        this.initiatorId = person == null ? null : person.getId();
+    }
+
     public boolean isDeleted() {
         return deleted;
     }
@@ -305,4 +320,20 @@ public class CaseObject implements Serializable {
     public Company getInitiatorCompany() {
         return initiatorCompany;
     }
+
+    @Override
+    public String toString() {
+        return new StringBuilder("CaseObject{")
+                .append("id=").append(id)
+                .append(", typeId=").append(getTypeId())
+                .append(", caseNumber=").append(getCaseNumber())
+                .append(", created='").append(getCreated())
+                .append(", modified='").append(getModified())
+                .append(", name=").append(getName())
+                .append(", extId=").append(getExtId())
+                .append('}').toString();
+    }
+
+
+
 }

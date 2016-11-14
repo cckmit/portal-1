@@ -72,6 +72,14 @@ public class IssueEvents {
         }
     }
 
+    /**
+     * Изменения статусов обращения
+     */
     public static class ChangeStateModel {}
+
+    /**
+     * Добавление / изменение / удаление обращений
+     */
+    public static class ChangeModel {}
 }
 

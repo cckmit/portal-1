@@ -5,9 +5,9 @@ import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
-import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 /**
@@ -22,7 +22,7 @@ public interface AbstractIssueEditView extends IsWidget {
     HasText description();
     HasValue<En_CaseState> state();
     HasValue<En_ImportanceLevel> importance();
-    HasValue<Company> company();
+    HasValue<EntityOption> company();
     HasValue<Person> initiator();
     HasValue<Person> manager();
     HasValue<DevUnit> product();
