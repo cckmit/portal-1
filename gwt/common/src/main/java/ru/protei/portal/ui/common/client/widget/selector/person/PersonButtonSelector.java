@@ -22,7 +22,7 @@ public class PersonButtonSelector extends ButtonSelector<Person> {
 
     @Inject
     public void init() {
-        setSearchEnabled(false);
+        setSearchEnabled( true );
         setSearchAutoFocus( true );
     }
 

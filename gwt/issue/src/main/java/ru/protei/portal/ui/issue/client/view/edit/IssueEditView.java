@@ -28,7 +28,7 @@ import ru.protei.portal.ui.issue.client.widget.buttonselector.IssueStatesButtonS
 public class IssueEditView extends Composite implements AbstractIssueEditiew {
 
     @Inject
-    public IssueEditView() {
+    public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
     }
 
@@ -109,11 +109,11 @@ public class IssueEditView extends Composite implements AbstractIssueEditiew {
 
 
     @Inject
-    @UiField
+    @UiField(provided = true)
     IssueStatesButtonSelector state;
 
     @Inject
-    @UiField
+    @UiField(provided = true)
     ImportanceButtonSelector importance;
 
     @Inject
@@ -121,15 +121,15 @@ public class IssueEditView extends Composite implements AbstractIssueEditiew {
     CompanySelector company;
 
     @Inject
-    @UiField
+    @UiField(provided = true)
     PersonButtonSelector initiator;
 
     @Inject
-    @UiField
+    @UiField(provided = true)
     ProductButtonSelector product;
 
     @Inject
-    @UiField
+    @UiField(provided = true)
     EmployeeButtonSelector employee;
 
     @UiField
