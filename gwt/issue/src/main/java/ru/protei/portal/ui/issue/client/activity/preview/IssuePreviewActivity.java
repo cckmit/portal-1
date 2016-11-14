@@ -6,6 +6,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.CaseObject;
+import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.IssueEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
@@ -58,13 +59,22 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
     }
 
     private void fillView( CaseObject value ) {
-        view.setNumber( value.getCaseNumber() == null ? "" : value.getCaseNumber().toString() );
+        if ( value.getLocal() == 1 ) {
+            view.local().removeClassName( "fa-unlock-alt" );
+            view.local().addClassName( "fa-lock" );
+        } else {
+            view.local().removeClassName( "fa-lock" );
+            view.local().addClassName( "fa-unlock-alt" );
+        }
+        view.setHeader( value.getCaseNumber() == null ? "" : lang.issueHeader( value.getCaseNumber().toString() ) );
         view.setCreationDate( value.getCreated() == null ? "" : format.format( value.getCreated() ) );
         view.setState( Long.toString( value.getStateId() ) );
         view.setCriticality( Integer.toString( value.getImpLevel() ) );
         view.setProduct( value.getProduct() == null ? "" : value.getProduct().getName() );
         view.setCompany( value.getInitiatorCompany() == null ? "" : value.getInitiatorCompany().getCname() );
         view.setContact( value.getInitiator() == null ? "" : value.getInitiator().getDisplayName() );
+        Company ourCompany = value.getManager() == null ? null : value.getManager().getCompany();
+        view.setOurCompany( ourCompany == null ? "" : ourCompany.getCname() );
         view.setManager( value.getManager() == null ? "" : value.getManager().getDisplayName() );
         view.setInfo( value.getInfo() == null ? "" : value.getInfo() );
     }

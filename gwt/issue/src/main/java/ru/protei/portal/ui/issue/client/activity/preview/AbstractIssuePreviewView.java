@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.issue.client.activity.preview;
 
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -11,16 +12,19 @@ public interface AbstractIssuePreviewView extends IsWidget {
 
     void setActivity( AbstractIssuePreviewActivity activity );
 
-    void setNumber( String value );
+    void setHeader( String value );
     void setCreationDate( String value );
     void setState( String value );
     void setCriticality( String value );
     void setProduct( String value );
     void setCompany( String value );
     void setContact( String value );
+    void setOurCompany( String value );
     void setManager( String value );
     void setInfo( String value );
 
     HasVisibility fullScreen ();
     HTMLPanel preview ();
+    Element local();
+
 }

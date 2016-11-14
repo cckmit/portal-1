@@ -1,6 +1,8 @@
 package ru.protei.portal.ui.issue.client.view.preview;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -30,13 +32,23 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     }
 
     @Override
-    public void setCreationDate( String value ) {
-        this.creationDate.setInnerText( value );
+    public HTMLPanel preview() {
+        return preview;
     }
 
     @Override
-    public void setNumber( String value ) {
-        this.number.setInnerText( value );
+    public Element local() {
+        return local;
+    }
+
+    @Override
+    public void setHeader( String value ) {
+        this.header.setInnerText( value );
+    }
+
+    @Override
+    public void setCreationDate( String value ) {
+        this.creationDate.setInnerText( value );
     }
 
     @Override
@@ -65,6 +77,11 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     }
 
     @Override
+    public void setOurCompany( String value ) {
+        this.ourCompany.setInnerText( value );
+    }
+
+    @Override
     public void setManager( String value ) {
         this.manager.setInnerText( value );
     }
@@ -72,11 +89,6 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     @Override
     public void setInfo( String value ) {
         this.info.setInnerText( value );
-    }
-
-    @Override
-    public HTMLPanel preview() {
-        return preview;
     }
 
     @Override
@@ -98,7 +110,9 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     @UiField
     Anchor fullScreen;
     @UiField
-    SpanElement number;
+    Element local;
+    @UiField
+    Element header;
     @UiField
     SpanElement creationDate;
     @UiField
@@ -108,17 +122,19 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     @UiField
     SpanElement criticality;
     @UiField
-    SpanElement company;
+    LabelElement company;
     @UiField
     SpanElement contact;
     @UiField
+    LabelElement ourCompany;
+    @UiField
     SpanElement manager;
+    @UiField
+    SpanElement info;
 
     @Inject
     @UiField
     Lang lang;
-    @UiField
-    SpanElement info;
 
     AbstractIssuePreviewActivity activity;
 
