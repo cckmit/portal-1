@@ -35,6 +35,15 @@ public class ButtonSelector<T> extends Selector<T> {
         this.label.setInnerText( header );
     }
 
+    public void setDisabled(boolean isDisabled){
+        if(isDisabled){
+            button.addStyleName("inactive");
+        }else {
+            button.removeStyleName("inactive");
+        }
+        button.setEnabled(!isDisabled);
+    }
+
     @UiField
     HTMLPanel inputContainer;
     @UiField

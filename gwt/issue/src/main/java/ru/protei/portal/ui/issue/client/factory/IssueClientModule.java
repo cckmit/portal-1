@@ -2,7 +2,7 @@ package ru.protei.portal.ui.issue.client.factory;
 
 import com.google.gwt.inject.client.AbstractGinModule;
 import com.google.inject.Singleton;
-import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditiew;
+import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditView;
 import ru.protei.portal.ui.issue.client.activity.edit.IssueEditActivity;
 import ru.protei.portal.ui.issue.client.activity.page.IssuePage;
 import ru.protei.portal.ui.issue.client.activity.preview.AbstractIssuePreviewView;
@@ -29,7 +29,7 @@ public class IssueClientModule extends AbstractGinModule {
         bind( AbstractIssuePreviewView.class ).to( IssuePreviewView.class ).in( Singleton.class );
         
         bind( IssueEditActivity.class ).asEagerSingleton();
-        bind( AbstractIssueEditiew.class ).to( IssueEditView.class );
+        bind( AbstractIssueEditView.class ).to( IssueEditView.class );
     }
 }
 

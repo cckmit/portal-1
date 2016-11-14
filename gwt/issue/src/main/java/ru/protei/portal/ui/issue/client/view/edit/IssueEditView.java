@@ -1,8 +1,11 @@
 package ru.protei.portal.ui.issue.client.view.edit;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseState;
@@ -10,6 +13,7 @@ import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.dict.ImportanceButtonSelector;
@@ -19,13 +23,13 @@ import ru.protei.portal.ui.common.client.widget.selector.product.ProductButtonSe
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditActivity;
-import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditiew;
+import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditView;
 import ru.protei.portal.ui.issue.client.widget.buttonselector.IssueStatesButtonSelector;
 
 /**
  * Вид создания и редактирования обращения
  */
-public class IssueEditView extends Composite implements AbstractIssueEditiew {
+public class IssueEditView extends Composite implements AbstractIssueEditView {
 
     @Inject
     public void onInit() {
@@ -87,26 +91,36 @@ public class IssueEditView extends Composite implements AbstractIssueEditiew {
         return null;
     }
 
-//    @UiHandler("company")
-//    public void onChangeCompany(ValueChangeEvent<EntityOption> event){
-//        if(event.getValue() == null){
-//            initiator.addStyleName("inactive");
-//            initiator.updateCompany(null);
-//        }else {
-//            initiator.removeStyleName("inactive");
-//            Company company = new Company();
-//            company.setId(event.getValue().getId());
-//            initiator.updateCompany(company);
-//        }
-//    }
+    @UiHandler("company")
+    public void onChangeCompany(ValueChangeEvent<EntityOption> event){
+        if(event.getValue() == null){
+            initiator.setDisabled(true);
+            initiator.updateCompany(null);
+        }else {
+            initiator.setDisabled(false);
+            Company company = new Company(event.getValue().getId());
+            initiator.updateCompany(company);
+        }
+    }
 
+    @UiHandler( "saveButton" )
+    public void onSaveClicked( ClickEvent event ) {
+        if ( activity != null ) {
+            activity.onSaveClicked();
+        }
+    }
+    @UiHandler( "cancelButton" )
+    public void onCancelClicked( ClickEvent event ) {
+        if ( activity != null ) {
+            activity.onCancelClicked();
+        }
+    }
 
     @UiField
     ValidableTextBox name;
 
     @UiField
     CheckBox local;
-
 
     @Inject
     @UiField(provided = true)

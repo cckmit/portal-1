@@ -13,7 +13,7 @@ import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 /**
  * Представление создания и редактирования обращения
  */
-public interface AbstractIssueEditiew extends IsWidget {
+public interface AbstractIssueEditView extends IsWidget {
 
     void setActivity( AbstractIssueEditActivity activity );
 

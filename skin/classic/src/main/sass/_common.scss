@@ -403,6 +403,10 @@ label.required:after {
   box-sizing: border-box;
 }
 
+[class*='col-'] [class*='col-']{
+  padding: 0;
+}
+
 .panelField .label{
   padding: 0 12px;
   background: #a9b4bb;
@@ -699,3 +703,16 @@ td.info {
   right: 10px;
   top: 5px;
 }
+
+
+/* issue editing */
+
+.checkbox.no-space{
+  white-space: nowrap;
+}
+
+[class*='col-'].right-sticking{
+  float: right;
+}
+
+/****************/

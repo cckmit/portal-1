@@ -44,6 +44,10 @@ public class Company implements Serializable,EntityOptionSupport {
         contactInfo = new ContactInfo();
     }
 
+    public Company(Long id) {
+        this.id = id;
+    }
+
 
     public String getCname() {
         return this.cname;
