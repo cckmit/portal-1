@@ -43,7 +43,6 @@
             <fieldset class="header col-xs-12 col-lg-5">
                 <legend><ui:text from="{lang.issueInfoHeader}"/></legend>
                 <div class="col-xs-12">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.issueInfo}"/></label>
                     <span class="col-xs-12 col-md-12 pre-formatted-info" ui:field="info"></span>
                 </div>
             </fieldset>
