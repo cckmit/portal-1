@@ -15,8 +15,7 @@ public class EmployeeButtonSelector extends ButtonSelector<Person> implements Mo
     @Inject
     public void init( EmployeeModel employeeModel ) {
         employeeModel.subscribe(this);
-
-        setSearchEnabled(false);
+        setSearchEnabled( true );
         setSearchAutoFocus( true );
     }
 

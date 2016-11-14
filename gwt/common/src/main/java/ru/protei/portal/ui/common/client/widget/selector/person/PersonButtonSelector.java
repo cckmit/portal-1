@@ -22,7 +22,7 @@ public class PersonButtonSelector extends ButtonSelector<Person> {
 
     @Inject
     public void init() {
-        setSearchEnabled(false);
+        setSearchEnabled( true );
         setSearchAutoFocus( true );
     }
 
@@ -40,6 +40,10 @@ public class PersonButtonSelector extends ButtonSelector<Person> {
     }
 
     public void updateCompany(Company company){
+        if(company == null) {
+            clearOptions();
+            return;
+        }
         this.company = company;
         updatePersons();
     }

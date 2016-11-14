@@ -10,7 +10,7 @@ public class En_CaseStateLang {
 
     public String getStateName(En_CaseState state){
         if(state == null)
-            throw new NullPointerException("state can't be null");
+            return lang.errUnknownResult();
 
         switch (state){
             case CREATED: return lang.createdCaseState();
@@ -33,7 +33,7 @@ public class En_CaseStateLang {
             case TEST_CUST: return lang.testCustCaseState();
             case DESIGN: return lang.designCaseState();
             default:
-                throw new IllegalArgumentException("unknown state");
+                return lang.errUnknownResult();
         }
     }
 

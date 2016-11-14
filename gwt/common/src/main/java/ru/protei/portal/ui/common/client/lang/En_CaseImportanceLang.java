@@ -11,7 +11,7 @@ public class En_CaseImportanceLang {
     public String getImportanceName(En_ImportanceLevel importance){
 
         if(importance == null)
-            throw new NullPointerException("importance can't be null");
+            return lang.errUnknownResult();
 
         switch (importance){
             case BASIC: return lang.basicImportance();
@@ -19,7 +19,7 @@ public class En_CaseImportanceLang {
             case CRITICAL: return lang.criticalImportance();
             case COSMETIC: return lang.cosmeticImportance();
             default:
-                throw new IllegalArgumentException("unknown importance level");
+                return lang.errUnknownResult();
         }
     }
 

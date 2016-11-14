@@ -15,12 +15,16 @@ public class ProductButtonSelector extends ButtonSelector<DevUnit> implements Mo
     @Inject
     public void init( ProductModel productModel) {
         productModel.subscribe(this);
+        setSearchEnabled( true );
+        setSearchAutoFocus( true );
     }
 
     public void fillOptions( List< DevUnit > products) {
         clearOptions();
 
-        addOption( defaultValue == null? "" : defaultValue , null );
+        if(defaultValue != null)
+            addOption( defaultValue , null );
+
         for ( DevUnit product : products) {
             addOption( product.getName(), product);
         }
