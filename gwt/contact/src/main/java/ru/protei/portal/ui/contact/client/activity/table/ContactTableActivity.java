@@ -9,17 +9,16 @@ import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.query.ContactQuery;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
+import ru.protei.portal.ui.common.client.common.PeriodicTaskService;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.ContactEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.common.PeriodicTaskService;
-import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.common.client.service.ContactServiceAsync;
+import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 /**
  * Активность таблицы контактов
@@ -111,7 +110,7 @@ public abstract class ContactTableActivity implements AbstractContactTableActivi
 
                     @Override
                     public void onSuccess(List<Person> persons) {
-                        fillViewHandler = taskService.startPeriodicTask( persons, fillViewer, 50, 50 );
+                        fillViewHandler = taskService.startPeriodicTask( persons, p -> view.addRecord(p), 50, 50 );
                     }
                 });
     }
@@ -137,12 +136,6 @@ public abstract class ContactTableActivity implements AbstractContactTableActivi
 
     };
 
-    Consumer< Person > fillViewer = new Consumer< Person >() {
-        @Override
-        public void accept( Person person ) {
-            view.addRecord( person );
-        }
-    };
 
     @Inject
     Lang lang;

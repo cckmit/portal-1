@@ -72,7 +72,14 @@ public class ContactPreviewView extends Composite implements AbstractContactPrev
     public void setInfo(String value) { this.info.setInnerText( value ); }
 
     @Override
-    public HasVisibility fullScreen () { return fullScreen; }
+    public void showFullScreen ( boolean value ) {
+
+        fullScreen.setVisible( !value );
+        if (value)
+            preview.addStyleName( "col-xs-12 col-md-6" );
+        else
+            preview.setStyleName( "preview" );
+    }
 
     @Override
     public HTMLPanel preview () { return preview; }

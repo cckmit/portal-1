@@ -6,14 +6,13 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.ContactEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ContactServiceAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
-
-import java.util.stream.Collectors;
 
 /**
  * Активность превью контакта
@@ -38,8 +37,7 @@ public abstract class ContactPreviewActivity implements Activity, AbstractContac
         this.contactId = event.contact.getId();
 
         fillView( event.contact );
-        view.fullScreen().setVisible( true );
-        view.preview().setStyleName( "preview" );
+        view.showFullScreen( false );
     }
 
     @Event
@@ -50,8 +48,7 @@ public abstract class ContactPreviewActivity implements Activity, AbstractContac
         this.contactId = event.contactId;
 
         fillView( contactId );
-        view.fullScreen().setVisible( false );
-        view.preview().addStyleName( "col-xs-12 col-lg-6" );
+        view.showFullScreen( true );
     }
 
     @Override
@@ -69,10 +66,13 @@ public abstract class ContactPreviewActivity implements Activity, AbstractContac
         view.setCompany( value.getCompany().getCname() );
         view.setPosition( value.getPosition() );
         view.setDepartment( value.getDepartment() );
-        view.setPhone( value.getContactInfo().phoneList.stream().map( p -> (p.phone + " (" + p.comment + ")") ).collect( Collectors.joining( "," ) ) );
-        view.setEmail( value.getContactInfo().emailList.stream().map( e -> (e.email + " (" + e.comment + ")") ).collect( Collectors.joining( "," ) ) );
-        view.setAddress( value.getAddress() );
-        view.setHomeAddress( value.getAddressHome() );
+
+        PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(value.getContactInfo());
+
+        view.setPhone( infoFacade.allPhonesAsString() );
+        view.setEmail( infoFacade.allEmailsAsString() );
+        view.setAddress( infoFacade.getFactAddress() );
+        view.setHomeAddress( infoFacade.getHomeAddress() );
         view.setBirthday( value.getBirthday() != null ? format.format( value.getBirthday() ) : "" );
         view.setGender( value.getGender().getCode() );
         view.setInfo( value.getInfo() );

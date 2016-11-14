@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.core.model.dao.CompanyDAO;
 import ru.protei.portal.core.model.dao.CompanyGroupHomeDAO;
 import ru.protei.portal.core.model.dao.MigrationEntryDAO;
+import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanyCategory;
 import ru.protei.portal.core.model.ent.CompanyHomeGroupItem;
@@ -52,14 +53,17 @@ public class MigrateCompaniesAction implements MigrateAction {
                 row -> {
                     Company x = new Company();
                     x.setCategory(new CompanyCategory(1L));
-                    x.setAddressDejure((String) row.get("strDeJureAddress"));
-                    x.setAddressFact((String) row.get("strPhysicalAddress"));
-                    x.getContactInfo().addEmail((String)row.get("strE_mail"),"");
                     x.setId(((Number) row.get("nID")).longValue());
                     x.setInfo((String) row.get("strInfo"));
                     x.setCname((String) row.get("strName"));
                     x.setCreated((Date) row.get("dtCreation"));
-                    x.getContactInfo().webSite = (String) row.get("strHTTP_url");
+
+                    ContactInfoMigrationFacade infoFacade = new ContactInfoMigrationFacade(x.getContactInfo());
+
+                    infoFacade.addItem (En_ContactItemType.ADDRESS_LEGAL, (String) row.get("strDeJureAddress"));
+                    infoFacade.addItem (En_ContactItemType.ADDRESS, (String) row.get("strPhysicalAddress"));
+                    infoFacade.addItem (En_ContactItemType.EMAIL, (String)row.get("strE_mail"));
+                    infoFacade.addItem (En_ContactItemType.WEB_SITE, (String) row.get("strHTTP_url"));
                     return x;
                 });
 

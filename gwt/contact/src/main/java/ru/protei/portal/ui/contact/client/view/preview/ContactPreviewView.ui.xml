@@ -4,13 +4,13 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel styleName="grid">
-        <g:HTMLPanel ui:field="preview" styleName="preview">
+        <g:HTMLPanel ui:field="preview" styleName="preview col-md-7">
 
             <div class="col-xs-12"><!--{lang.fullScreen}-->
-                <g:Anchor ui:field="fullScreen" styleName="icon fa fa-4 fa-external-link fa-3 pull-right" href="#"/>
+                <g:Anchor ui:field="fullScreen" styleName="fa fa-4 fa-external-link pull-right" href="#"/>
             </div>
 
-            <fieldset class="header col-xs-12 col-lg-5" >
+            <fieldset class="header col-xs-12 col-md-7" >
                 <legend><ui:text from="{lang.personalData}"/></legend>
                 <div class="col-xs-12">
                     <label class="col-xs-5 col-md-5"><ui:text from="{lang.contactLastName}"/></label>

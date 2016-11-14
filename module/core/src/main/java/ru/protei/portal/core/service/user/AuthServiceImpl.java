@@ -69,7 +69,7 @@ public class AuthServiceImpl implements AuthService {
             }
 
             if (!descriptor.getSession().getClientIp().equals(ip)) {
-                logger.warn("Security exception, host " + ip + " is trying to access session " + descriptor.getSessionId() + " created for " + descriptor.getSession().getClientIp());
+                logger.warn("Security exception, host " + ip + " is trying to accessType session " + descriptor.getSessionId() + " created for " + descriptor.getSession().getClientIp());
                 return null;
             }
 
@@ -139,13 +139,13 @@ public class AuthServiceImpl implements AuthService {
         if (descriptor != null) {
             if (!descriptor.getLogin().getId().equals(login.getId())) {
                 logger.warn("Security exception, client " + login.getUlogin() + " from host " + ip
-                        + " is trying to access session " + descriptor.getSessionId()
+                        + " is trying to accessType session " + descriptor.getSessionId()
                         + " created for " + descriptor.getLogin().getUlogin() + "@" + descriptor.getSession().getClientIp());
                 return new CoreResponse().error(En_ResultStatus.INVALID_SESSION_ID);
             }
 
             if (!descriptor.getSession().getClientIp().equals(ip)) {
-                logger.warn("Security exception, host " + ip + " is trying to access session " + descriptor.getSessionId() + " created for " + descriptor.getSession().getClientIp());
+                logger.warn("Security exception, host " + ip + " is trying to accessType session " + descriptor.getSessionId() + " created for " + descriptor.getSession().getClientIp());
                 return new CoreResponse().error(En_ResultStatus.INVALID_SESSION_ID);
             }
         } else {

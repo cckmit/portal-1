@@ -339,10 +339,6 @@
 
 
 
-.main-content {
-  margin: 15px;
-}
-
 /* OVERRIDED STYLES! */
 .header_global > .rightBlock .topicTitle {
   //background: #F3F1F4 none !important;
@@ -602,14 +598,14 @@ label.bordered:after{
   opacity: 0;
 }
 
-.table-container {
+.global-table-container {
   -webkit-transition: all 0.5s;
   -moz-transition: all 0.5s;
   -o-transition: all 0.5s;
   transition: all 0.5s;
   // временное решение
-  height: calc(100% - 59px - 30px);
-  overflow-y: auto;
+  height: calc(100% - 95px);
+  overflow-x: auto;
 }
 
 .preview-container {
@@ -673,6 +669,11 @@ label.bordered:after{
 
 .panelField .input-selector{
   margin-right: 7px;
+}
+
+
+.img-circle {
+  border-radius: 50%;
 }
 
 .pull-right {

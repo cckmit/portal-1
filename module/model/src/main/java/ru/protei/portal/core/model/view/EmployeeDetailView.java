@@ -55,10 +55,10 @@ public class EmployeeDetailView {
         this.mobilePhone = infoFacade.getMobilePhone();
         this.workPhone = infoFacade.getWorkPhone();
         this.homePhone = infoFacade.getHomePhone();
-        this.jid = p.getContactInfo().jabber;
+        this.jid = infoFacade.getJabber();
         this.ip = p.getIpAddress() != null ? new String[] {p.getIpAddress()} : null;
         this.email = infoFacade.getEmail();
-        this.icq = p.getContactInfo().icq;
+        this.icq = infoFacade.getIcq();
         this.fax = infoFacade.getFax();
         return this;
     }

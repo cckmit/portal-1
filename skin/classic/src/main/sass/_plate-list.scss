@@ -127,13 +127,13 @@ ul.plate-list {
 
       h2 {
         text-transform: uppercase;
-        word-spacing: -0.15em;
+        word-spacing: 0.15em;
         font-weight: 300;
       }
 
       p {
         letter-spacing: 1px;
-        padding: 0.5em 0.5em;
+        padding: 0.3em;
         font-weight: 600;
         font-size: 1.5em;
         line-height: 1.5;
@@ -186,7 +186,7 @@ ul.plate-list {
       position: absolute;
       top: auto;
       left: 0;
-      width: calc(100% - 240px);
+      width: calc(100% - 242px);
       margin-top: 30px;
       text-align: left;
       overflow: hidden;
@@ -196,4 +196,9 @@ ul.plate-list {
       z-index: 0;
     }
   }
+}
+
+.sidebar-collapse .plate-list-expander {
+    margin-left: 50px !important;
+    width: calc(100% - 50px) !important;
 }
