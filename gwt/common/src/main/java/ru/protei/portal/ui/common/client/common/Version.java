@@ -23,9 +23,11 @@ package ru.protei.portal.ui.common.client.common;
  * 4.0.11.11 - freq-16347 карточка просмотра клиента (front+back)
  * 4.0.11.12 - freq-16231 редактирование компании и error border
  * 4.0.11.13 - sprint-8-task-8 рефакторинг таблицы контактов
+ * 4.0.12.13 - 8-3 доработка с сохранением данных сессии
+ * 4.0.13.13 - доработка sidebar'а, перевод меню на page
  */
 public class Version {
     public static String getVersion() {
-        return "4.0.11.13";
+        return "4.0.13.13";
     }
 }

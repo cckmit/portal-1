@@ -7,10 +7,7 @@ import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.dict.En_ContactDataAccess;
-import ru.protei.portal.core.model.dict.En_PhoneType;
 import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.model.struct.ContactPhone;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.ContactEvents;
@@ -102,8 +99,8 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
 
         infoFacade.setEmail(view.workEmail().getText());
 //        contact.setEmail_own(view.personalEmail().getText());
-        contact.setAddress(view.workAddress().getText());
-        contact.setAddressHome(view.homeAddress().getText());
+        infoFacade.setFactAddress(view.workAddress().getText());
+        infoFacade.setHomeAddress(view.homeAddress().getText());
         infoFacade.setFax(view.workFax().getText());
 //        contact.setFaxHome(view.homeFax().getText());
         contact.setPosition(view.displayPosition().getText());
@@ -163,8 +160,8 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
 
         view.workEmail().setText(infoFacade.getEmail());
 //        view.personalEmail().setText(person.getEmail_own());
-        view.workAddress().setText(person.getAddress());
-        view.homeAddress().setText(person.getAddressHome());
+        view.workAddress().setText(infoFacade.getFactAddress());
+        view.homeAddress().setText(infoFacade.getHomeAddress());
 
         view.workFax().setText(infoFacade.getFax());
 //        view.homeFax().setText(person.getFaxHome());

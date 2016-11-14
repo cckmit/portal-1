@@ -15,6 +15,11 @@ public class HelperFunc {
         return s == null || s.trim().isEmpty();
     }
 
+
+    public static boolean isNotEmpty (String s) {
+        return !isEmpty(s);
+    }
+
     public static <T> T nvlt (T...arr) {
         for (T t : arr)
             if (t != null)

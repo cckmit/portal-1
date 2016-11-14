@@ -12,8 +12,8 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.CompanyCategory;
 import ru.protei.portal.core.model.ent.CompanyGroup;
-import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.common.NameStatus;
+import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextArea;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
@@ -21,8 +21,6 @@ import ru.protei.portal.ui.company.client.activity.edit.AbstractCompanyEditActiv
 import ru.protei.portal.ui.company.client.activity.edit.AbstractCompanyEditView;
 import ru.protei.portal.ui.company.client.widget.category.buttonselector.CategoryButtonSelector;
 import ru.protei.portal.ui.company.client.widget.group.buttonselector.GroupButtonSelector;
-
-import java.util.List;
 
 /**
  * Вид создания и редактирования компании

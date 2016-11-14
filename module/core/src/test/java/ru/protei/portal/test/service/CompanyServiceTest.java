@@ -13,6 +13,7 @@ import ru.protei.portal.core.model.dao.CompanyGroupItemDAO;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanyGroup;
 import ru.protei.portal.core.model.query.CompanyQuery;
+import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.service.CompanyService;
 import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
@@ -99,8 +100,11 @@ public class CompanyServiceTest {
             Company company = new Company();
             company.setCreated(new Date());
             company.setCname("Тестовая компания");
-            company.setAddressDejure("Тестовый адрес");
-            company.setAddressFact("Тестовый адрес");
+
+            PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(company.getContactInfo());
+
+            infoFacade.setLegalAddress("Тестовый адрес");
+            infoFacade.setFactAddress("Тестовый адрес");
 
             Company dupCompany = ctx.getBean(CompanyDAO.class).getCompanyByName(company.getCname());
             Assert.assertNull(dupCompany);

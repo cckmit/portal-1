@@ -12,8 +12,10 @@ import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanyCategory;
 import ru.protei.portal.core.model.ent.CompanyGroup;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.BaseQuery;
 import ru.protei.portal.core.model.query.CompanyQuery;
+import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.view.EntityOption;
 
 import javax.annotation.PostConstruct;
@@ -266,11 +268,18 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     private boolean isValidCompany(Company company) {
-        return company != null &&
-                company.getCname() != null && !company.getCname().trim().isEmpty() &&
-                company.getAddressDejure() != null && !company.getAddressDejure().trim().isEmpty() &&
-                company.getAddressFact() != null && !company.getAddressFact().trim().isEmpty() &&
-                !checkCompanyExists(company.getCname(), company.getId());
+        return company != null
+                && company.getCname() != null
+                && !company.getCname().trim().isEmpty()
+                && isValidContactInfo(company)
+                && !checkCompanyExists(company.getCname(), company.getId());
+    }
+
+    private boolean isValidContactInfo (Company company) {
+        PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(company.getContactInfo());
+
+        return HelperFunc.isNotEmpty(infoFacade.getLegalAddress()) &&
+                HelperFunc.isNotEmpty(infoFacade.getFactAddress());
     }
 
     private boolean isValidGroup(CompanyGroup group) {

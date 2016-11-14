@@ -29,7 +29,7 @@
             <version>${project.gwt.version}</version>
         </dependency>
 
-        <!-- Project client dependency -->
+        <!-- factory dependency -->
         <dependency>
             <groupId>ru.brainworm</groupId>
             <artifactId>factory.generator.injector</artifactId>
@@ -51,7 +51,14 @@
             <version>${project.factory.version}</version>
         </dependency>
 
-        <!-- Project client dependency -->
+        <!-- winter-web dependency -->
+        <dependency>
+            <groupId>ru.protei</groupId>
+            <artifactId>winter.web.common</artifactId>
+            <version>${project.winter.web.version}</version>
+        </dependency>
+
+        <!-- server dependency -->
         <dependency>
             <groupId>ru.protei</groupId>
             <artifactId>portal4.model</artifactId>

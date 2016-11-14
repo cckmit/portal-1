@@ -32,6 +32,7 @@ public class PeriodicTaskService {
             this.items = items;
             this.consumer = consumer;
             this.blockSize = blockSize;
+            this.index = 0;
 
             scheduleRepeating( interval );
         }
@@ -39,21 +40,24 @@ public class PeriodicTaskService {
         @Override
         public void run() {
             int count = 0;
-            while ( !items.isEmpty() ) {
-                consumer.accept( items.get( 0 ) );
-                items.remove( 0 );
+            while ( index < items.size() ) {
+                T item = items.get( index );
+                index++;
+                consumer.accept( item );
                 if ( count++ > blockSize ) {
                     break;
                 }
             }
 
-            if ( items.isEmpty() ) {
+            if ( index >= items.size() ) {
                 cancel();
+                items.clear();
             }
         }
 
         List<T> items;
         Consumer<T> consumer;
         int blockSize;
+        int index;
     }
 }

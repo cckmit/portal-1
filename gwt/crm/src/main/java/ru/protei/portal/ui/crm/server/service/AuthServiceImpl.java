@@ -37,7 +37,7 @@ public class AuthServiceImpl implements AuthService {
             throw new RequestFailedException( result.getStatus() );
         }
 
-        //sessionService.setUserSessionDescriptor( httpRequest, result.getDescriptor() );
+        sessionService.setUserSessionDescriptor( httpRequest, result.getData() );
         return makeProfileByDescriptor( result.getData() );
     }
 
@@ -46,6 +46,7 @@ public class AuthServiceImpl implements AuthService {
         UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor( httpRequest );
         if ( descriptor != null )  {
             authService.logout( httpRequest.getSession().getId(), httpRequest.getRemoteAddr(), httpRequest.getHeader( SystemConstants.USER_AGENT_HEADER ) );
+            sessionService.setUserSessionDescriptor( httpRequest, null );
         }
     }
 

@@ -1,0 +1,10 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+
+    <g:HTMLPanel tag="li" styleName="nav-search" ui:field="root">
+        <g:Anchor ui:field="search">
+            <i class="fa fa-search"/>
+        </g:Anchor>
+        <g:TextBox ui:field="searchText"/>
+    </g:HTMLPanel>
+</ui:UiBinder>

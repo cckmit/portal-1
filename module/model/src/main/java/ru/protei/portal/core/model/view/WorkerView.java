@@ -83,8 +83,8 @@ public class WorkerView {
         this.workPhone = infoFacade.getWorkPhone();
         this.mobilePhone = infoFacade.getMobilePhone();
         this.email = infoFacade.getEmail();
-        this.icq = p.getContactInfo().icq;
-        this.jabber = p.getContactInfo().jabber;
+        this.icq = infoFacade.getIcq();
+        this.jabber = infoFacade.getJabber();
         this.info = p.getInfo();
     }
 }
