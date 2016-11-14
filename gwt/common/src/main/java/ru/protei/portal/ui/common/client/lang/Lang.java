@@ -200,7 +200,7 @@ public interface Lang extends Messages {
     String issueCreationDate();
     String issueManager();
 
-    String createdCaseCaseState();
+    String createdCaseState();
     String openedCaseState();
     String closedCaseState();
     String pausedCaseState();

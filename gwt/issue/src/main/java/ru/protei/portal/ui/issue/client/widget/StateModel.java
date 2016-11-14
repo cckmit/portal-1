@@ -43,19 +43,19 @@ public abstract class StateModel implements Activity {
     private void refreshOptions() {
 
         issueService.getStateList(
-                new RequestCallback<List<En_CaseState>>() {
-                    @Override
-                    public void onError(Throwable throwable) {
-                    }
-
-                    @Override
-                    public void onSuccess(List<En_CaseState> caseStates) {
-                        list.clear();
-                        list.addAll( caseStates );
-
-                        notifySubscribers();
-                    }
+            new RequestCallback<List<En_CaseState>>() {
+                @Override
+                public void onError(Throwable throwable) {
                 }
+
+                @Override
+                public void onSuccess(List<En_CaseState> caseStates) {
+                    list.clear();
+                    list.addAll( caseStates );
+
+                    notifySubscribers();
+                }
+            }
         );
 
 
