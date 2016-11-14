@@ -37,8 +37,7 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
         this.issueId = event.issue.getId();
 
         fillView( event.issue );
-        view.fullScreen().setVisible( true );
-        view.preview().setStyleName( "preview" );
+        view.showFullScreen( false );
     }
 
     @Event
@@ -49,8 +48,7 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
         this.issueId = event.issueId;
 
         fillView( issueId );
-        view.fullScreen().setVisible( false );
-        view.preview().addStyleName( "col-xs-12 col-lg-6" );
+        view.showFullScreen( true );
     }
 
     @Override
@@ -59,13 +57,7 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
     }
 
     private void fillView( CaseObject value ) {
-        if ( value.getLocal() == 1 ) {
-            view.local().removeClassName( "fa-unlock-alt" );
-            view.local().addClassName( "fa-lock" );
-        } else {
-            view.local().removeClassName( "fa-lock" );
-            view.local().addClassName( "fa-unlock-alt" );
-        }
+        view.setLocal( value.getLocal() );
         view.setHeader( value.getCaseNumber() == null ? "" : lang.issueHeader( value.getCaseNumber().toString() ) );
         view.setCreationDate( value.getCreated() == null ? "" : format.format( value.getCreated() ) );
         view.setState( Long.toString( value.getStateId() ) );

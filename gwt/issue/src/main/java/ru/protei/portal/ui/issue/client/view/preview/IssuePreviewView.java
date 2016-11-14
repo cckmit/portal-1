@@ -32,13 +32,14 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     }
 
     @Override
-    public HTMLPanel preview() {
-        return preview;
-    }
-
-    @Override
-    public Element local() {
-        return local;
+    public void setLocal( int local ) {
+        if ( local == 1 ) {
+            this.local.removeClassName( "fa-unlock-alt" );
+            this.local.addClassName( "fa-lock" );
+        } else {
+            this.local.removeClassName( "fa-lock" );
+            this.local.addClassName( "fa-unlock-alt" );
+        }
     }
 
     @Override
@@ -92,8 +93,13 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     }
 
     @Override
-    public HasVisibility fullScreen() {
-        return fullScreen;
+    public void showFullScreen( boolean value ) {
+        this.fullScreen.setVisible( !value );
+        if ( value ) {
+            this.preview.addStyleName( "col-xs-12 col-lg-6" );
+        } else {
+            this.preview.setStyleName( "preview" );
+        }
     }
 
     @UiHandler( "fullScreen" )
