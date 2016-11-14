@@ -76,7 +76,7 @@ public class ContactPreviewView extends Composite implements AbstractContactPrev
 
         fullScreen.setVisible( !value );
         if (value)
-            preview.addStyleName( "col-xs-12 col-md-6" );
+            preview.addStyleName( "col-xs-12 col-lg-6" );
         else
             preview.setStyleName( "preview" );
     }
