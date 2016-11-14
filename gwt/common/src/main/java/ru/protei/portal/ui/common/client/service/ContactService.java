@@ -15,11 +15,17 @@ import java.util.List;
 public interface ContactService extends RemoteService {
 
     /**
-     * Получение списка компаний
+     * Получение списка контактов компании
      * @param query запрос
      * @return список контактов
      */
     List< Person > getContacts (ContactQuery query) throws RequestFailedException;
+
+    /**
+     * Получение списка контактов домашней компании
+     * @return список контактов
+     */
+    List< Person > getEmployees () throws RequestFailedException;
 
     Person getContact (long id) throws RequestFailedException;
 

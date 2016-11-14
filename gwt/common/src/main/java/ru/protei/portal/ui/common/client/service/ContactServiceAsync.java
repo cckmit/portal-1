@@ -12,7 +12,7 @@ import java.util.List;
 public interface ContactServiceAsync {
 
     /**
-     * Получение списка компаний
+     * Получение списка контактов компании
      * @param query запрос
      * @return список контактов
      */
@@ -21,4 +21,10 @@ public interface ContactServiceAsync {
     void getContact (long id, AsyncCallback<Person> callback);
 
     void saveContact (Person p, AsyncCallback<Person> callback);
+
+    /**
+     * Получение списка контактов домашней компании
+     * @return список контактов
+     */
+    void getEmployees(AsyncCallback<List<Person>> async);
 }

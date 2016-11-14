@@ -7,10 +7,10 @@ import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.model.query.ContactQuery;
 import ru.protei.portal.core.model.helper.HelperFunc;
-import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
+import ru.protei.portal.core.model.query.ContactQuery;
 import ru.protei.portal.ui.common.client.service.ContactService;
+import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
 import java.util.List;
 
@@ -34,6 +34,17 @@ public class ContactServiceImpl implements ContactService {
         return response.getData();
     }
 
+    @Override
+    public List<Person> getEmployees() throws RequestFailedException {
+        log.debug( "getEmployees():");
+
+        CoreResponse<List<Person>> response = contactService.employeeList();
+
+        if (response.isError()) {
+            throw new RequestFailedException( response.getStatus() );
+        }
+        return response.getData();
+    }
 
     @Override
     public Person getContact(long id) throws RequestFailedException {

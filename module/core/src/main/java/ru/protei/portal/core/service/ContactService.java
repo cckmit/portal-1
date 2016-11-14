@@ -12,6 +12,7 @@ import java.util.List;
 public interface ContactService {
 
     CoreResponse<List<Person>> contactList(ContactQuery query);
+    CoreResponse<List<Person>> employeeList();
     CoreResponse<Person> getContact (long id);
     CoreResponse<Person> saveContact (Person p);
 }

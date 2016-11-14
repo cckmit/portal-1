@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.issue.client.service;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.query.CaseQuery;
 
@@ -16,4 +17,10 @@ public interface IssueServiceAsync {
     void getIssue( long id, AsyncCallback< CaseObject > callback );
 
     void saveIssue( CaseObject p, AsyncCallback< CaseObject > callback );
+
+    /**
+     * Получение списка статусов
+     * @return список статусов
+     */
+    void getStateList(AsyncCallback<List<En_CaseState>> async);
 }
