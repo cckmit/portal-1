@@ -18,7 +18,7 @@ import ru.protei.portal.ui.issue.client.activity.preview.AbstractIssuePreviewAct
 import ru.protei.portal.ui.issue.client.activity.preview.AbstractIssuePreviewView;
 
 /**
- * Created by turik on 11.11.16.
+ * Вид превью обращения
  */
 public class IssuePreviewView extends Composite implements AbstractIssuePreviewView {
 

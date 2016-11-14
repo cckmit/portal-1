@@ -109,7 +109,7 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
     @Inject
     IssueServiceAsync issueService;
 
-    DateTimeFormat format = DateTimeFormat.getFormat("dd.MM.yyyy");
+    DateTimeFormat format = DateTimeFormat.getFormat("dd.MM.yyyy hh:mm");
 
     private Long issueId;
 
