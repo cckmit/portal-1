@@ -45,4 +45,6 @@ public class ProductEvents {
 
         public Long productId;
     }
+
+    public static class ChangeModel {}
 }

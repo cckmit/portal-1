@@ -5,6 +5,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.core.model.dict.En_CaseState;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.service.CaseService;
@@ -21,7 +23,7 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public List< CaseObject > getIssues( CaseQuery query ) throws RequestFailedException {
-        log.debug( "companyId={} | searchPattern={} | sortField={} | sortDir={} | caseService={}", query.getCompanyId(), query.getSearchString(), query.getSortField(), query.getSortDir(), caseService );
+        log.debug( "getIssues(): companyId={} | searchPattern={} | sortField={} | sortDir={} | caseService={}", query.getCompanyId(), query.getSearchString(), query.getSortField(), query.getSortDir(), caseService );
         CoreResponse<List<CaseObject>> response = caseService.caseObjectList( query );
         if (response.isError()) {
             throw new RequestFailedException( response.getStatus() );
@@ -31,12 +33,31 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public CaseObject getIssue( long id ) {
-        return null;
+        log.debug("getIssue(): id: {}", id);
+        CoreResponse<CaseObject> response = caseService.getCaseObject( id );
+        log.debug("getIssue(), id: {} -> {} ", id, response.isError() ? "error" : response.getData().getCaseNumber());
+        return response.getData();
     }
 
     @Override
     public CaseObject saveIssue( CaseObject p ) {
         return null;
+    }
+
+    @Override
+    public List<En_CaseState> getStateList() throws RequestFailedException {
+        En_CaseType type = En_CaseType.CRM_SUPPORT;
+
+        log.debug( "getStatesByCaseType: caseType={} ", type );
+
+        CoreResponse< List<En_CaseState> > result = caseService.getStateList(type);
+
+        log.debug("result status: {}, data-amount: {}", result.getStatus(), result.isOk() ? result.getDataAmountTotal() : 0);
+
+        if (result.isError())
+            throw new RequestFailedException(result.getStatus());
+
+        return result.getData();
     }
 
     @Autowired

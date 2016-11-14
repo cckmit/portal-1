@@ -12,8 +12,8 @@ import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.ProductEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.ProductServiceAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
-import ru.protei.portal.ui.product.client.service.ProductServiceAsync;
 
 /**
  * Активность карточки создания и редактирования продуктов
@@ -123,8 +123,9 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
 
             @Override
             public void onSuccess(DevUnit devUnit) {
-                fireEvent( new AppEvents.InitPanelName( devUnit.getName() ) );
-                fillView(product = devUnit);
+                fireEvent(new AppEvents.InitPanelName(product.getName()));
+                product = devUnit;
+                fillView(product);
                 resetValidationStatus();
             }
         });
