@@ -31,7 +31,7 @@ public interface PortalBaseDAO<T> extends JdbcDAO<Long,T> {
     boolean saveOrUpdate(T entity);
 
     /**
-     * Максимальное значение поля field по заданному условию cond, с ожидаемым типом type
+     * Максимальное значение поля field по заданному условию cond, с ожидаемым типом itemType
      * @param field
      * @param type
      * @param cond

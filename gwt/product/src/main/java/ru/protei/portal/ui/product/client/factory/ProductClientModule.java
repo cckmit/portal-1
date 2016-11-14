@@ -9,6 +9,7 @@ import ru.protei.portal.ui.product.client.activity.list.AbstractProductListView;
 import ru.protei.portal.ui.product.client.activity.list.ProductListActivity;
 import ru.protei.portal.ui.product.client.activity.preview.AbstractProductPreviewView;
 import ru.protei.portal.ui.product.client.activity.preview.ProductPreviewActivity;
+import ru.protei.portal.ui.product.client.page.ProductPage;
 import ru.protei.portal.ui.product.client.view.edit.ProductEditView;
 import ru.protei.portal.ui.product.client.view.item.ProductItemView;
 import ru.protei.portal.ui.product.client.view.list.ProductListView;
@@ -20,6 +21,8 @@ import ru.protei.portal.ui.product.client.view.preview.ProductPreviewView;
 public class ProductClientModule extends AbstractGinModule {
     @Override
     protected void configure()    {
+        bind( ProductPage.class ).asEagerSingleton();
+
         bind( ProductListActivity.class ).asEagerSingleton ();
         bind( AbstractProductListView.class ).to(ProductListView.class).in(Singleton.class);
         bind( AbstractProductItemView.class).to(ProductItemView.class);

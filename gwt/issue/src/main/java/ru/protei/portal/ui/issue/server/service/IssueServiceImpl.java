@@ -23,7 +23,7 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public List< CaseObject > getIssues( CaseQuery query ) throws RequestFailedException {
-        log.debug( "companyId={} | searchPattern={} | sortField={} | sortDir={} | caseService={}", query.getCompanyId(), query.getSearchString(), query.getSortField(), query.getSortDir(), caseService );
+        log.debug( "getIssues(): companyId={} | searchPattern={} | sortField={} | sortDir={} | caseService={}", query.getCompanyId(), query.getSearchString(), query.getSortField(), query.getSortDir(), caseService );
         CoreResponse<List<CaseObject>> response = caseService.caseObjectList( query );
         if (response.isError()) {
             throw new RequestFailedException( response.getStatus() );
@@ -33,7 +33,10 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public CaseObject getIssue( long id ) {
-        return null;
+        log.debug("getIssue(): id: {}", id);
+        CoreResponse<CaseObject> response = caseService.getCaseObject( id );
+        log.debug("getIssue(), id: {} -> {} ", id, response.isError() ? "error" : response.getData().getCaseNumber());
+        return response.getData();
     }
 
     @Override

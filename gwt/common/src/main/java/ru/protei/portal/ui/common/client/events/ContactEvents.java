@@ -11,11 +11,28 @@ import ru.protei.portal.core.model.view.EntityOption;
  */
 public class ContactEvents {
 
+    /**
+     * Показать контакты
+     */
     @Url( value = "contacts", primary = true )
     public static class Show {
 
         public Show () {}
 
+    }
+
+    /**
+     * Показать таблицу котактов
+     */
+    public static class ShowTable {
+
+        public ShowTable ( HasWidgets parent, Long companyId) {
+            this.parent = parent;
+            this.companyId = companyId;
+        }
+
+        public HasWidgets parent;
+        public Long companyId;
     }
 
     /**

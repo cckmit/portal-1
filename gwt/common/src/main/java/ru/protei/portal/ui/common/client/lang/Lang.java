@@ -186,6 +186,7 @@ public interface Lang extends Messages {
 
     String companyCategory();
 
+    String appNavHeader();
 
     String companyEdit();
 
@@ -205,8 +206,13 @@ public interface Lang extends Messages {
     String issueCompany();
     String issueInitiator();
     String issueLocal();
+    String issueHeader( String issueNumber );
+    String issueCurrentStateHeader();
+    String issueContactHeader();
+    String issueInfoHeader();
+    String issueCriticality();
 
-    String createdCaseCaseState();
+    String createdCaseState();
     String openedCaseState();
     String closedCaseState();
     String pausedCaseState();

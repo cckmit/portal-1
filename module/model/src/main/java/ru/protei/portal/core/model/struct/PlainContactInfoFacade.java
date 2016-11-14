@@ -1,7 +1,12 @@
 package ru.protei.portal.core.model.struct;
 
 import ru.protei.portal.core.model.dict.En_ContactDataAccess;
-import ru.protei.portal.core.model.dict.En_PhoneType;
+import ru.protei.portal.core.model.dict.En_ContactItemType;
+
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static ru.protei.portal.core.model.helper.HelperFunc.isNotEmpty;
 
 /**
  * Created by Mike on 09.11.2016.
@@ -9,91 +14,140 @@ import ru.protei.portal.core.model.dict.En_PhoneType;
 public class PlainContactInfoFacade extends CustomContactInfoFacade {
 
     public PlainContactInfoFacade() {
+        this (new ContactInfo());
     }
 
     public PlainContactInfoFacade(ContactInfo info) {
         super(info);
     }
 
+    public Stream<ContactItem> allPhonesStream () {
+        return this.contactInfo.getItems().stream().filter(
+                item -> (item.isItemOf(En_ContactItemType.GENERAL_PHONE)
+                        || item.isItemOf(En_ContactItemType.MOBILE_PHONE))
+                        && !item.isEmptyValue()
+        );
+    }
+
+    public Stream<ContactItem> emailsStream () {
+        return this.contactInfo.getItems(En_ContactItemType.EMAIL).stream().filter(item -> !item.isEmptyValue());
+    }
+
+    public String allPhonesAsString () {
+        return allPhonesStream().map (
+                    p -> p.value() + (isNotEmpty(p.comment()) ? " (" + p.comment() + ")" :"")
+                )
+                .collect( Collectors.joining( "," ) );
+    }
+
+    public String allEmailsAsString () {
+        return emailsStream().map(
+                e -> e.value() + (isNotEmpty(e.comment()) ? " (" + e.comment() + ")" : "")
+        ).collect( Collectors.joining( "," ) );
+    }
 
     public String getWorkPhone() {
-        return findPhoneValue(En_PhoneType.GENERAL, En_ContactDataAccess.PUBLIC);
+        return findItemValue(En_ContactItemType.GENERAL_PHONE,En_ContactDataAccess.PUBLIC);
     }
 
     public void setWorkPhone(String workPhone) {
-        findOrCreatePhone(En_PhoneType.GENERAL, En_ContactDataAccess.PUBLIC).setPhone(workPhone);
+        contactInfo.findOrCreate(En_ContactItemType.GENERAL_PHONE, En_ContactDataAccess.PUBLIC).modify(workPhone);
     }
 
     public String getHomePhone() {
-        return findPhoneValue(En_PhoneType.GENERAL, En_ContactDataAccess.PRIVATE);
+        return findItemValue(En_ContactItemType.GENERAL_PHONE, En_ContactDataAccess.PRIVATE);
     }
 
     public void setHomePhone(String homePhone) {
-        findOrCreatePhone(En_PhoneType.GENERAL, En_ContactDataAccess.PRIVATE).setPhone(homePhone);
+        contactInfo.findOrCreate(En_ContactItemType.GENERAL_PHONE, En_ContactDataAccess.PRIVATE).modify(homePhone);
     }
 
     public String getMobilePhone() {
-        return findPhoneValue(En_PhoneType.MOBILE, En_ContactDataAccess.PUBLIC);
+        return findItemValue(En_ContactItemType.MOBILE_PHONE, En_ContactDataAccess.PUBLIC);
     }
 
     public void setMobilePhone(String mobilePhone) {
-        findOrCreatePhone(En_PhoneType.MOBILE, En_ContactDataAccess.PUBLIC).setPhone(mobilePhone);
+        contactInfo.findOrCreate(En_ContactItemType.MOBILE_PHONE, En_ContactDataAccess.PUBLIC).modify(mobilePhone);
     }
 
     public String getEmail() {
-        return findEmailValue(En_ContactDataAccess.PUBLIC);
+        return findItemValue(En_ContactItemType.EMAIL, En_ContactDataAccess.PUBLIC);
     }
 
     public void setEmail(String email) {
-        findOrCreateEmail(En_ContactDataAccess.PUBLIC).setEmail(email);
+        contactInfo.findOrCreate(En_ContactItemType.EMAIL, En_ContactDataAccess.PUBLIC).modify(email);
     }
 
     public String getEmail_own() {
-        return findEmailValue(En_ContactDataAccess.PRIVATE);
+        return findItemValue(En_ContactItemType.EMAIL, En_ContactDataAccess.PRIVATE);
     }
 
     public void setEmail_own(String email_own) {
-        findOrCreateEmail(En_ContactDataAccess.PRIVATE).setEmail(email_own);
+        contactInfo.findOrCreate(En_ContactItemType.EMAIL,En_ContactDataAccess.PRIVATE).modify(email_own);
     }
 
     public String getFax() {
-        return findPhoneValue(En_PhoneType.FAX, En_ContactDataAccess.PUBLIC);
+        return findItemValue(En_ContactItemType.FAX, En_ContactDataAccess.PUBLIC);
     }
 
     public void setFax(String fax) {
-        findOrCreatePhone(En_PhoneType.FAX, En_ContactDataAccess.PUBLIC).setPhone(fax);
+        contactInfo.findOrCreate(En_ContactItemType.FAX, En_ContactDataAccess.PUBLIC).modify(fax);
     }
 
     public String getFaxHome() {
-        return findPhoneValue(En_PhoneType.FAX, En_ContactDataAccess.PRIVATE);
+        return findItemValue(En_ContactItemType.FAX, En_ContactDataAccess.PRIVATE);
     }
 
     public void setFaxHome(String faxHome) {
-        findOrCreatePhone(En_PhoneType.FAX, En_ContactDataAccess.PRIVATE).setPhone(faxHome);
+        contactInfo.findOrCreate(En_ContactItemType.FAX, En_ContactDataAccess.PRIVATE).modify(faxHome);
     }
 
     public String getIcq() {
-        return editItem().icq;
+        return findItemValue(En_ContactItemType.ICQ, En_ContactDataAccess.PUBLIC);
     }
 
     public void setIcq(String icq) {
-        editItem().icq = icq;
+        contactInfo.findOrCreate(En_ContactItemType.ICQ, En_ContactDataAccess.PUBLIC).modify(icq);
     }
 
     public String getJabber() {
-        return editItem().jabber;
+        return findItemValue(En_ContactItemType.JABBER, En_ContactDataAccess.PUBLIC);
     }
 
     public void setJabber(String jabber) {
-        editItem().jabber = jabber;
+        contactInfo.findOrCreate(En_ContactItemType.JABBER,En_ContactDataAccess.PUBLIC).modify(jabber);
     }
 
-
     public String getWebSite () {
-        return editItem().webSite;
+        return findItemValue(En_ContactItemType.WEB_SITE, En_ContactDataAccess.PUBLIC);
     }
 
     public void setWebSite (String webSite) {
-        editItem().webSite = webSite;
+        contactInfo.findOrCreate(En_ContactItemType.WEB_SITE, En_ContactDataAccess.PUBLIC).modify(webSite);
+    }
+
+
+    public String getLegalAddress () {
+        return findItemValue(En_ContactItemType.ADDRESS_LEGAL, En_ContactDataAccess.PUBLIC);
+    }
+
+    public void setLegalAddress (String address) {
+        contactInfo.findOrCreate(En_ContactItemType.ADDRESS_LEGAL, En_ContactDataAccess.PUBLIC).modify(address);
+    }
+
+    public String getFactAddress () {
+        return findItemValue(En_ContactItemType.ADDRESS, En_ContactDataAccess.PUBLIC);
+    }
+
+    public void setFactAddress (String address) {
+        contactInfo.findOrCreate(En_ContactItemType.ADDRESS, En_ContactDataAccess.PUBLIC).modify(address);
+    }
+
+    public String getHomeAddress () {
+        return findItemValue(En_ContactItemType.ADDRESS, En_ContactDataAccess.PRIVATE);
+    }
+
+    public void setHomeAddress (String address) {
+        contactInfo.findOrCreate(En_ContactItemType.ADDRESS, En_ContactDataAccess.PRIVATE).modify(address);
     }
 }

@@ -53,7 +53,6 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
             public void onSuccess( Profile profile ) {
                 view.hideError();
                 fireEvent(new AuthEvents.Success(profile ) );
-                fireEvent( new AppEvents.Show() );
                 fireEvent(new NotifyEvents.Show(lang.msgHello(), NotifyEvents.NotifyType.SUCCESS));
             }
         } );

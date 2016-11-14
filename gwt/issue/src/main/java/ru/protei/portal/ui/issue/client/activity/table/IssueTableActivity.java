@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.issue.client.activity.table;
 
-import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -9,6 +8,7 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.IssueEvents;
@@ -27,6 +27,7 @@ public abstract class IssueTableActivity implements AbstractIssueTableActivity, 
     @PostConstruct
     public void onInit() {
         view.setActivity( this );
+        view.setAnimation( animation );
     }
 
     @Event
@@ -51,7 +52,7 @@ public abstract class IssueTableActivity implements AbstractIssueTableActivity, 
 
     @Override
     public void onItemClicked( CaseObject value ) {
-        Window.alert( "Clicked on issue!" );
+        showPreview( value );
     }
 
     @Override
@@ -72,6 +73,7 @@ public abstract class IssueTableActivity implements AbstractIssueTableActivity, 
 
     private void requestIssues() {
         view.clearRecords();
+        animation.closeDetails();
 
         issueService.getIssues( getQuery(), new RequestCallback< List< CaseObject > >() {
                 @Override
@@ -86,6 +88,16 @@ public abstract class IssueTableActivity implements AbstractIssueTableActivity, 
                     } );
                 }
             } );
+    }
+
+    private void showPreview ( CaseObject value ) {
+
+        if ( value == null ) {
+            animation.closeDetails();
+        } else {
+            animation.showDetails();
+            fireEvent( new IssueEvents.ShowPreview( view.getPreviewContainer(), value ) );
+        }
     }
 
     private CaseQuery getQuery() {
@@ -103,6 +115,9 @@ public abstract class IssueTableActivity implements AbstractIssueTableActivity, 
 
     @Inject
     IssueServiceAsync issueService;
+
+    @Inject
+    TableAnimation animation;
 
     private AppEvents.InitDetails initDetails;
 }

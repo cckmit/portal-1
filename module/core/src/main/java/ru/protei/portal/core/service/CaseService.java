@@ -4,9 +4,7 @@ import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.CaseObject;
-import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.query.CaseQuery;
-import ru.protei.portal.core.model.query.ContactQuery;
 
 import java.util.List;
 

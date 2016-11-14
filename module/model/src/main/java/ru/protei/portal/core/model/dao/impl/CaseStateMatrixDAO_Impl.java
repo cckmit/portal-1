@@ -1,8 +1,8 @@
 package ru.protei.portal.core.model.dao.impl;
 
 import ru.protei.portal.core.model.dao.CaseStateMatrixDAO;
-import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_CaseState;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.CaseStateMatrix;
 
 import java.util.ArrayList;

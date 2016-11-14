@@ -3,120 +3,127 @@ package ru.protei.portal.core.model.struct;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import ru.protei.portal.core.model.dict.En_PhoneType;
+import ru.protei.portal.core.model.dict.En_ContactDataAccess;
+import ru.protei.portal.core.model.dict.En_ContactItemType;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-
-import static ru.protei.portal.core.model.helper.HelperFunc.nvlt;
+import java.util.stream.Collectors;
 
 /**
  * Created by michael on 07.11.16.
  */
 @JsonAutoDetect
-public class ContactInfo implements Serializable {
+public class ContactInfo implements Serializable, AbstractContactInfo {
 
-    @JsonProperty("emails")
-    public List<ContactEmail> emailList;
-
-    @JsonProperty("phones")
-    public List<ContactPhone> phoneList;
-
-    @JsonProperty("scn")
-    public List<SocialNetworkLink> socialNetworkLinks;
-
-    @JsonProperty("icq")
-    public String icq;
-
-    @JsonProperty("jabber")
-    public String jabber;
-
-    @JsonProperty("web")
-    public String webSite;
-
+    @JsonProperty("items")
+    private List<ContactItem> itemList;
 
     public ContactInfo () {
-        emailList = new ArrayList<>();
-        socialNetworkLinks = new ArrayList<>();
-        phoneList = new ArrayList<>();
+        itemList = new ArrayList<>();
     }
 
     public ContactInfo (ContactInfo src) {
-        this.emailList = new ArrayList<>(nvlt(src.emailList, Collections.emptyList()));
-        this.phoneList = new ArrayList<>(nvlt(src.phoneList,Collections.emptyList()));
-        this.socialNetworkLinks = new ArrayList<>(nvlt(src.socialNetworkLinks,Collections.emptyList()));
-        this.icq = src.icq;
-        this.jabber = src.jabber;
-        this.webSite = src.webSite;
+        this.itemList = new ArrayList<>(src.itemList);
     }
 
+
+    /**
+     * возвращает список всех элементов
+     * @return
+     */
+    @Override
     @JsonIgnore
-    public List<ContactEmail> getEmailList() {
-        return emailList;
+    public List<ContactItem> getItems() {
+        return itemList;
     }
 
+    /**
+     * Возвращает список всех найденных элементов с типом type
+     * @param type
+     * @return
+     */
+    @Override
     @JsonIgnore
-    public List<ContactPhone> getPhoneList() {
-        return phoneList;
+    public List<ContactItem> getItems(En_ContactItemType type) {
+        return itemList.stream()
+                .filter(contactItem -> contactItem.isItemOf(type))
+                .collect(Collectors.toList());
     }
 
-    @JsonIgnore
-    public List<SocialNetworkLink> getSocialNetworkLinks() {
-        return socialNetworkLinks;
+    /**
+     * Возвращает первый найденный элемент с типом type или null, если элемента с таким типом нет в списке
+     * @param type
+     * @return
+     */
+    @Override
+    public ContactItem findFirst(En_ContactItemType type) {
+        return itemList.stream()
+                .filter(contactItem -> contactItem.isItemOf(type))
+                .findFirst().orElse(null);
     }
 
-    @JsonIgnore
-    public String getIcq() {
-        return icq;
+    @Override
+    public ContactItem findFirst(En_ContactItemType type, En_ContactDataAccess accessType) {
+        return itemList.stream()
+                .filter(contactItem -> contactItem.isItemOf(type) && contactItem.accessType() == accessType)
+                .findFirst().orElse(null);
     }
 
-    public void setIcq(String icq) {
-        this.icq = icq;
+    /**
+     * Производит поиск элемента с типом type и доступом accessType и возвращает первый найденный.
+     * Если таких элементов нет, то создает и добавляет новый с указанными параметрами, возвращая его в качестве результата
+     *
+     * @param type
+     * @param accessType
+     * @return элемент с типом type и доступом accessType
+     */
+    @Override
+    public ContactItem findOrCreate(En_ContactItemType type, En_ContactDataAccess accessType) {
+        ContactItem item = findFirst(type, accessType);
+        if (item == null) {
+            item = addItem(type,accessType);
+        }
+        return item;
     }
 
-    @JsonIgnore
-    public String getJabber() {
-        return jabber;
+    /**
+     * Добавляет новый элемент указанного типа type и уровня доступа accessType
+     *
+     * @param type
+     * @param accessType
+     * @return
+     */
+    @Override
+    public ContactItem addItem(En_ContactItemType type, En_ContactDataAccess accessType) {
+        ContactItem item = new ContactItem(type,accessType);
+        this.itemList.add(item);
+        return item;
     }
 
-    public void setJabber(String jabber) {
-        this.jabber = jabber;
+    @Override
+    public ContactItem addItem(En_ContactItemType type) {
+        return addItem(type, En_ContactDataAccess.PUBLIC);
     }
 
-    @JsonIgnore
-    public String getWebSite() {
-        return webSite;
+    /**
+     *
+     * Удаляет все элементы с таким же типом как у item и добавляет указанный item
+     *
+     * @param item
+     * @return
+     */
+    @Override
+    public ContactItem replaceOthers(ContactItem item) {
+        itemList.removeIf(contactItem -> contactItem.isItemOf(item.type()));
+        itemList.add(item);
+        return item;
     }
 
-    public void setWebSite(String webSite) {
-        this.webSite = webSite;
-    }
-
-
-    public ContactInfo addPhone (String phone, String comment, En_PhoneType type) {
-        if (phone != null)
-            this.phoneList.add(new ContactPhone(phone, comment, type));
-
-        return this;
-    }
-
-    public ContactInfo addPhone (String phone, String comment) {
-        return addPhone(phone,comment,En_PhoneType.GENERAL);
-    }
-
-    public ContactInfo addMobilePhone (String phone, String comment) {
-        return addPhone(phone, comment, En_PhoneType.MOBILE);
-    }
-
-    public ContactInfo addFax (String fax, String comment) {
-        return addPhone(fax,comment,En_PhoneType.FAX);
-    }
-
-    public ContactInfo addEmail (String email, String comment) {
-        if (email != null)
-            this.emailList.add(new ContactEmail(email, comment));
-        return this;
+    @Override
+    public ContactItem replaceOthers(En_ContactItemType type) {
+        itemList.removeIf(contactItem -> contactItem.isItemOf(type));
+        return addItem(type);
     }
 }

@@ -1,11 +1,15 @@
 package ru.protei.portal.ui.crm.client.activity.app;
 
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.ui.common.client.events.*;
+import ru.protei.portal.ui.common.client.events.AppEvents;
+import ru.protei.portal.ui.common.client.events.AuthEvents;
+import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.winter.web.common.client.events.MenuEvents;
 
 /**
  * Активность приложения
@@ -16,6 +20,8 @@ public abstract class AppActivity
     @PostConstruct
     public void onInit() {
         view.setActivity(this);
+
+        fireEvent( new MenuEvents.Init( view.getMenuContainer() ) );
     }
 
     @Event
@@ -24,11 +30,32 @@ public abstract class AppActivity
 
         fireEvent(new AppEvents.InitDetails(view.getDetailsContainer()));
         fireEvent(new NotifyEvents.Init(view.getNotifyContainer()));
+
+        // запомнить токен
+        initialToken = History.getToken();
+
+        fireEvent( new AuthEvents.Show() );
     }
 
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
-        view.setUsername(event.profile.getName());
+
+        init.parent.clear();
+        init.parent.add( view.asWidget() );
+
+        view.setUsername( event.profile.getName(), event.profile.getRole().getCaRoleName() );
+
+        if ( initialToken.isEmpty() ) {
+            fireEvent( new AppEvents.Show() );
+            return;
+        }
+
+        if (initialToken.equals( History.getToken() )) {
+            fireEvent( new AppEvents.Show() );
+            return;
+        }
+
+        History.newItem( initialToken );
     }
 
     @Event
@@ -38,40 +65,25 @@ public abstract class AppActivity
     }
 
     @Event
-    public void onInitPanelName(AppEvents.InitPanelName event) {
-        view.setPanelName(event.panelName);
-    }
+    public void onInitPanelName(AppEvents.InitPanelName event) {}
 
     public void onUserClicked() {
         Window.alert("Wow! User clicked!");
     }
 
     public void onLogoutClicked() {
-        fireEvent(new AppEvents.Logout());
+        fireEvent( new AppEvents.Logout() );
+        view.getDetailsContainer().clear();
     }
 
-    @Override
-    public void onCompaniesClicked() {
-        fireEvent( new CompanyEvents.Show ( ));
-    }
-
-    @Override
-    public void onProductsClicked() {
-        fireEvent( new ProductEvents.Show ( ));
-    }
-
-    @Override
-    public void onContactsClicked() {
-        fireEvent( new ContactEvents.Show ( ));
-    }
-
-    @Override
-    public void onIssuesClicked() {
-        fireEvent( new IssueEvents.Show() );
+    private void initApp() {
+        fireEvent( new AppEvents.InitDetails( view.getDetailsContainer() ) );
+        fireEvent( new NotifyEvents.Init(view.getNotifyContainer()) );
     }
 
     @Inject
     AbstractAppView view;
 
+    String initialToken;
     private AppEvents.Init init;
 }

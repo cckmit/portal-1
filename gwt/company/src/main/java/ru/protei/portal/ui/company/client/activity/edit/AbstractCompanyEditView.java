@@ -6,11 +6,8 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.ent.CompanyCategory;
 import ru.protei.portal.core.model.ent.CompanyGroup;
-import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
-
-import java.util.List;
 
 /**
  * Представление создания и редактирования компании
@@ -36,6 +33,5 @@ public interface AbstractCompanyEditView extends IsWidget {
     HasWidgets phonesContainer();
     HasWidgets emailsContainer();
 
-    void clearContacts();
-    void addContacts( List< Person > persons );
+    HasWidgets tableContainer();
 }

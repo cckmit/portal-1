@@ -11,6 +11,7 @@ import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.brainworm.factory.widget.table.client.AbstractColumn;
 import ru.brainworm.factory.widget.table.client.TableWidget;
 import ru.brainworm.factory.widget.table.client.helper.SelectionColumn;
 import ru.protei.portal.core.model.dict.En_SortField;
@@ -39,12 +40,19 @@ public class ContactTableView extends Composite implements AbstractContactTableV
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
         search.getElement().setPropertyString( "placeholder", lang.search() );
+        initTable();
     }
 
     @Override
     public void setActivity( AbstractContactTableActivity activity ) {
         this.activity = activity;
-        initTable();
+        editClickColumn.setHandler( activity );
+        editClickColumn.setEditHandler( activity );
+        editClickColumn.setColumnProvider( columnProvider );
+        columns.forEach( clickColumn -> {
+            clickColumn.setHandler( activity );
+            clickColumn.setColumnProvider( columnProvider );
+        });
     }
     
     @Override
@@ -87,6 +95,18 @@ public class ContactTableView extends Composite implements AbstractContactTableV
         sortField.setValue( En_SortField.person_full_name );
         sortDir.setValue( true );
         search.setText( "" );
+    }
+
+    @Override
+    public void hideElements() {
+        filter.setVisible( false );
+        hideColumn.setVisibility( false );
+    }
+
+    @Override
+    public void showElements() {
+        filter.setVisible( true );
+        hideColumn.setVisibility( true );
     }
 
     @Override
@@ -146,14 +166,7 @@ public class ContactTableView extends Composite implements AbstractContactTableV
 
     private void initTable () {
 
-        table.addColumn( selectionColumn.header, selectionColumn.values );
-
-        EditClickColumn<Person > editClickColumn = new EditClickColumn<Person>( lang ) {
-        };
-        table.addColumn( editClickColumn.header, editClickColumn.values );
-        editClickColumn.setHandler( activity );
-        editClickColumn.setEditHandler( activity );
-        editClickColumn.setColumnProvider( columnProvider );
+        editClickColumn = new EditClickColumn<Person>( lang ) {};
 
         ClickColumn< Person > displayName = new ClickColumn< Person >() {
             @Override
@@ -166,9 +179,7 @@ public class ContactTableView extends Composite implements AbstractContactTableV
                 element.setInnerText( person == null ? "" : person.getDisplayName() );
             }
         };
-        table.addColumn( displayName.header, displayName.values );
-        displayName.setHandler( activity );
-        displayName.setColumnProvider( columnProvider );
+        columns.add( displayName );
 
         ClickColumn< Person > company = new ClickColumn< Person >() {
             @Override
@@ -181,9 +192,7 @@ public class ContactTableView extends Composite implements AbstractContactTableV
                 element.setInnerText( person == null || person.getCompany() == null ? "" : person.getCompany().getCname() );
             }
         };
-        table.addColumn( company.header, company.values );
-        company.setHandler( activity );
-        company.setColumnProvider( columnProvider );
+        columns.add( company );
 
         ClickColumn< Person > position = new ClickColumn< Person >() {
             @Override
@@ -197,9 +206,7 @@ public class ContactTableView extends Composite implements AbstractContactTableV
 
             }
         };
-        table.addColumn( position.header, position.values );
-        position.setHandler( activity );
-        position.setColumnProvider( columnProvider );
+        columns.add( position );
 
         ClickColumn< Person > phone = new ClickColumn< Person >() {
             @Override
@@ -215,9 +222,7 @@ public class ContactTableView extends Composite implements AbstractContactTableV
                         .add( null, infoFacade.getHomePhone()).toElement() );
             }
         };
-        table.addColumn( phone.header, phone.values );
-        phone.setHandler( activity );
-        phone.setColumnProvider( columnProvider );
+        columns.add( phone );
 
         ClickColumn< Person > email = new ClickColumn< Person >() {
             @Override
@@ -232,9 +237,15 @@ public class ContactTableView extends Composite implements AbstractContactTableV
                         .add( null, infoFacade.getEmail_own() ).toElement() );
             }
         };
+        columns.add( email );
+
+        hideColumn = table.addColumn( selectionColumn.header, selectionColumn.values );
+        table.addColumn( editClickColumn.header, editClickColumn.values );
+        table.addColumn( displayName.header, displayName.values );
+        table.addColumn( company.header, company.values );
+        table.addColumn( position.header, position.values );
+        table.addColumn( phone.header, phone.values );
         table.addColumn( email.header, email.values );
-        email.setHandler( activity );
-        email.setColumnProvider( columnProvider );
     }
 
     @Inject
@@ -262,8 +273,12 @@ public class ContactTableView extends Composite implements AbstractContactTableV
 
     @UiField
     HTMLPanel tableContainer;
+
     @UiField
     HTMLPanel previewContainer;
+
+    @UiField
+    HTMLPanel filter;
 
     @Inject
     @UiField
@@ -278,9 +293,11 @@ public class ContactTableView extends Composite implements AbstractContactTableV
         }
     };
 
+    AbstractColumn hideColumn;
+    ClickColumnProvider<Person> columnProvider = new ClickColumnProvider<>();
     SelectionColumn< Person > selectionColumn = new SelectionColumn<>();
-    ClickColumnProvider<Person> columnProvider = new ClickColumnProvider< Person >();
-    List<ClickColumn > columns = new ArrayList< ClickColumn >();
+    EditClickColumn<Person > editClickColumn;
+    List<ClickColumn > columns = new ArrayList<>();
 
     AbstractContactTableActivity activity;
 

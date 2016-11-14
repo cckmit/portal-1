@@ -19,7 +19,10 @@ import java.util.function.Consumer;
 public abstract class PersonModel implements Activity {
 
     public void requestPersonList(Company company, Consumer<List<Person>> fillOptionsAction){
-        ContactQuery query = new ContactQuery(company, null, En_SortField.comp_name, En_SortDir.ASC);
+        ContactQuery query = new ContactQuery();
+        query.setCompanyId(company.getId());
+        query.setSortDir(En_SortDir.ASC);
+        query.setSortField(En_SortField.comp_name);
 
         contactService.getContacts(
                 query,

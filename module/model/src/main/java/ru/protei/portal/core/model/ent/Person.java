@@ -1,9 +1,9 @@
 package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_Gender;
+import ru.protei.portal.core.model.struct.ContactInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.EntityOptionSupport;
-import ru.protei.portal.core.model.struct.ContactInfo;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
@@ -63,11 +63,11 @@ public class Person implements Serializable, EntityOptionSupport {
     @JdbcColumn(name="ipaddress")
     private String ipAddress;
 
-    @JdbcColumn(name="address")
-    private String address;
-
-    @JdbcColumn(name="address_home")
-    private String addressHome;
+//    @JdbcColumn(name="address")
+//    private String address;
+//
+//    @JdbcColumn(name="address_home")
+//    private String addressHome;
 
     @JdbcColumn(name="passportinfo")
     private String passportInfo;
@@ -206,21 +206,21 @@ public class Person implements Serializable, EntityOptionSupport {
 
 
 
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public String getAddressHome() {
-        return addressHome;
-    }
-
-    public void setAddressHome(String addressHome) {
-        this.addressHome = addressHome;
-    }
+//    public String getAddress() {
+//        return address;
+//    }
+//
+//    public void setAddress(String address) {
+//        this.address = address;
+//    }
+//
+//    public String getAddressHome() {
+//        return addressHome;
+//    }
+//
+//    public void setAddressHome(String addressHome) {
+//        this.addressHome = addressHome;
+//    }
 
     public String getPassportInfo() {
         return passportInfo;
