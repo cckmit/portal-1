@@ -31,7 +31,6 @@ public interface AbstractIssueEditView extends IsWidget {
     HasValidable stateValidator();
     HasValidable importanceValidator();
     HasValidable companyValidator();
-    HasValidable initiatorValidator();
     HasValidable productValidator();
     HasValidable managerValidator();
 
