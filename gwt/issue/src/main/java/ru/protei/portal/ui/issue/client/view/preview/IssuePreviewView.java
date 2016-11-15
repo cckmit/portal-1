@@ -38,13 +38,13 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     }
 
     @Override
-    public void setLocal( int local ) {
-        if ( local == 1 ) {
-            this.local.removeClassName( "fa-unlock-alt" );
-            this.local.addClassName( "fa-lock" );
+    public void setPrivateIssue( boolean privateIssue ) {
+        if ( privateIssue ) {
+            this.privateIssue.removeClassName( "fa-unlock-alt" );
+            this.privateIssue.addClassName( "fa-lock" );
         } else {
-            this.local.removeClassName( "fa-lock" );
-            this.local.addClassName( "fa-unlock-alt" );
+            this.privateIssue.removeClassName( "fa-lock" );
+            this.privateIssue.addClassName( "fa-unlock-alt" );
         }
     }
 
@@ -126,7 +126,7 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     @UiField
     Anchor fullScreen;
     @UiField
-    Element local;
+    Element privateIssue;
     @UiField
     Element header;
     @UiField

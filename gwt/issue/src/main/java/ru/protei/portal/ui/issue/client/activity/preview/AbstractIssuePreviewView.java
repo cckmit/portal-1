@@ -11,7 +11,7 @@ public interface AbstractIssuePreviewView extends IsWidget {
 
     void setActivity( AbstractIssuePreviewActivity activity );
 
-    void setLocal( int local );
+    void setPrivateIssue( boolean privateIssue );
     void setHeader( String value );
     void setCreationDate( String value );
     void setState( long value );

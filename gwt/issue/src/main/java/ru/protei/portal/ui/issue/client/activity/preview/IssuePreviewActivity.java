@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.issue.client.activity.preview;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -59,7 +60,7 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
     }
 
     private void fillView( CaseObject value ) {
-        view.setLocal( value.getLocal() );
+        view.setPrivateIssue( value.isPrivateCase() );
         view.setHeader( value.getCaseNumber() == null ? "" : lang.issueHeader( value.getCaseNumber().toString() ) );
         view.setCreationDate( value.getCreated() == null ? "" : format.format( value.getCreated() ) );
         view.setState( value.getStateId() );
