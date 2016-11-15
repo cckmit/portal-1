@@ -321,6 +321,15 @@ public class CaseObject implements Serializable {
         return initiatorCompany;
     }
 
+
+    public En_CaseType getCaseType () {
+        return En_CaseType.find(this.typeId);
+    }
+
+    public void setCaseType (En_CaseType type) {
+        this.typeId = type.getId();
+    }
+
     @Override
     public String toString() {
         return new StringBuilder("CaseObject{")
