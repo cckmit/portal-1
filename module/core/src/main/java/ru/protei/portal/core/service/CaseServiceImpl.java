@@ -53,9 +53,8 @@ public class CaseServiceImpl implements CaseService {
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
 
         caseObject.setCreated(new Date());
-
-        Long caseId = caseObjectDAO.persist(caseObject);
-
+        Long caseId = caseObjectDAO.insertCase(caseObject);
+        caseObject.setId(caseId);
 
         if (caseId == null)
             return new CoreResponse().error(En_ResultStatus.NOT_CREATED);
@@ -64,8 +63,17 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
-    public CoreResponse< CaseObject > updateCaseObject( CaseObject p ) {
-        return new CoreResponse<CaseObject>().success( p );
+    public CoreResponse< CaseObject > updateCaseObject( CaseObject caseObject ) {
+        if (caseObject == null)
+            return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
+
+        caseObject.setModified(new Date());
+        boolean isUpdated = caseObjectDAO.merge(caseObject);
+
+        if (isUpdated)
+            return new CoreResponse().error(En_ResultStatus.NOT_UPDATED);
+
+        return new CoreResponse<CaseObject>().success( caseObject );
     }
 
     @Override
