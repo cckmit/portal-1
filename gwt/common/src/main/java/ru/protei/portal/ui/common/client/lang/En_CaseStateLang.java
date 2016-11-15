@@ -14,6 +14,7 @@ public class En_CaseStateLang {
 
         switch (state){
             case CREATED: return lang.createdCaseState();
+            case OPENED: return lang.openedCaseState();
             case CLOSED: return lang.closedCaseState();
             case PAUSED: return lang.pausedCaseState();
             case VERIFIED: return lang.verifiedCaseState();
