@@ -14,8 +14,8 @@ public interface AbstractIssuePreviewView extends IsWidget {
     void setLocal( int local );
     void setHeader( String value );
     void setCreationDate( String value );
-    void setState( String value );
-    void setCriticality( String value );
+    void setState( long value );
+    void setCriticality( int value );
     void setProduct( String value );
     void setCompany( String value );
     void setContact( String value );

@@ -4,15 +4,21 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.dom.client.SpanElement;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.dict.En_CaseState;
+import ru.protei.portal.core.model.dict.En_ImportanceLevel;
+import ru.protei.portal.ui.common.client.lang.En_CaseImportanceLang;
+import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.issue.client.activity.preview.AbstractIssuePreviewActivity;
 import ru.protei.portal.ui.issue.client.activity.preview.AbstractIssuePreviewView;
@@ -53,13 +59,17 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     }
 
     @Override
-    public void setState( String value ) {
-        this.state.setInnerText( value );
+    public void setState( long value ) {
+        En_CaseState caseState = En_CaseState.getById( value );
+        this.iconState.setClassName( "icon-status fa fa-circle-o " + caseState.toString() );
+        this.state.setInnerText( caseStateLang.getStateName( caseState ) );
     }
 
     @Override
-    public void setCriticality( String value ) {
-        this.criticality.setInnerText( value );
+    public void setCriticality( int value ) {
+        En_ImportanceLevel importanceLevel = En_ImportanceLevel.find( value );
+        this.iconCriticality.setClassName( "icon-importance fa fa-exclamation-triangle " + importanceLevel.toString() );
+        this.criticality.setInnerText( caseImportanceLang.getImportanceName( importanceLevel ) );
     }
 
     @Override
@@ -124,7 +134,11 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     @UiField
     SpanElement product;
     @UiField
+    Element iconState;
+    @UiField
     SpanElement state;
+    @UiField
+    Element iconCriticality;
     @UiField
     SpanElement criticality;
     @UiField
@@ -141,6 +155,12 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     @Inject
     @UiField
     Lang lang;
+
+    @Inject
+    En_CaseImportanceLang caseImportanceLang;
+
+    @Inject
+    En_CaseStateLang caseStateLang;
 
     AbstractIssuePreviewActivity activity;
 
