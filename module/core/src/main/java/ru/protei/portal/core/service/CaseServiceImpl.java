@@ -52,7 +52,10 @@ public class CaseServiceImpl implements CaseService {
         if (caseObject == null)
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
 
-        caseObject.setCreated(new Date());
+        Date now = new Date();
+        caseObject.setCreated(now);
+        caseObject.setModified(now);
+
         Long caseId = caseObjectDAO.insertCase(caseObject);
         caseObject.setId(caseId);
 

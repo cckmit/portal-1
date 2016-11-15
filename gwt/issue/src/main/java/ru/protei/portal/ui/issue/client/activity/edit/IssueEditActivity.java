@@ -82,7 +82,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         view.stateValidator().setValid(true);
         view.importanceValidator().setValid(true);
         view.companyValidator().setValid(true);
-        view.initiatorValidator().setValid(true);
         view.productValidator().setValid(true);
         view.managerValidator().setValid(true);
     }
@@ -157,9 +156,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
         if(!view.companyValidator().isValid())
             view.companyValidator().setValid(result = false);
-
-        if(!view.initiatorValidator().isValid())
-            view.initiatorValidator().setValid(result = false);
 
         if(!view.productValidator().isValid())
             view.productValidator().setValid(result = false);

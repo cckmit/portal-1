@@ -60,11 +60,11 @@
                         </div>
                     </div>
                     <div class="col-xs-12 col-lg-6">
-                        <label class="required">
+                        <label>
                             <ui:text from="{lang.issueInitiator}"/>
                         </label>
                         <div class="panelField">
-                            <person:PersonButtonSelector ui:field="initiator" validation="true"/>
+                            <person:PersonButtonSelector ui:field="initiator"/>
                         </div>
                     </div>
 
