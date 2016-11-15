@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.PersonEvents;
 import ru.protei.portal.ui.common.client.service.ContactServiceAsync;
@@ -28,13 +29,13 @@ public abstract class EmployeeModel implements Activity {
         refreshOptions();
     }
 
-    public void subscribe( ModelSelector<Person> selector ) {
+    public void subscribe( ModelSelector<EntityOption> selector ) {
         subscribers.add( selector );
         selector.fillOptions( list );
     }
 
     private void notifySubscribers() {
-        for ( ModelSelector< Person > selector : subscribers ) {
+        for ( ModelSelector< EntityOption > selector : subscribers ) {
             selector.fillOptions( list );
             selector.refreshValue();
         }
@@ -48,9 +49,9 @@ public abstract class EmployeeModel implements Activity {
             }
 
             @Override
-            public void onSuccess(List<Person> options) {
+            public void onSuccess(List<Person> persons) {
                 list.clear();
-                list.addAll(options);
+                persons.forEach(person -> list.add(EntityOption.fromPerson(person)));
 
                 notifySubscribers();
             }
@@ -60,8 +61,8 @@ public abstract class EmployeeModel implements Activity {
     @Inject
     ContactServiceAsync contactService;
 
-    private List< Person > list = new ArrayList<>();
+    private List< EntityOption > list = new ArrayList<>();
 
-    List< ModelSelector< Person > > subscribers = new ArrayList<>();
+    List< ModelSelector< EntityOption > > subscribers = new ArrayList<>();
 
 }

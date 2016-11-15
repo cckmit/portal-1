@@ -205,7 +205,7 @@ public interface Lang extends Messages {
     String issueImportance();
     String issueCompany();
     String issueInitiator();
-    String issueLocal();
+    String issuePrivate();
     String issueHeader( String issueNumber );
     String issueCurrentStateHeader();
     String issueContactHeader();

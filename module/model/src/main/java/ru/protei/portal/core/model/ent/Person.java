@@ -85,6 +85,16 @@ public class Person implements Serializable, EntityOptionSupport {
     private ContactInfo contactInfo;
 
 
+    public static Person fromEntityOption(EntityOption entityOption){
+        if(entityOption == null)
+            return null;
+
+        Person person = new Person();
+        person.setId(entityOption.getId());
+        person.setDisplayShortName(entityOption.getDisplayText());
+        return person;
+    }
+
     public Person () {
         this.contactInfo = new ContactInfo();
     }

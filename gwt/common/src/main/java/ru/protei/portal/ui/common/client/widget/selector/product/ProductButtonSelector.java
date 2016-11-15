@@ -1,7 +1,7 @@
 package ru.protei.portal.ui.common.client.widget.selector.product;
 
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.ent.DevUnit;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 
@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Button селектор с продуктами
  */
-public class ProductButtonSelector extends ButtonSelector<DevUnit> implements ModelSelector<DevUnit> {
+public class ProductButtonSelector extends ButtonSelector<EntityOption> implements ModelSelector<EntityOption> {
 
     @Inject
     public void init( ProductModel productModel) {
@@ -19,14 +19,14 @@ public class ProductButtonSelector extends ButtonSelector<DevUnit> implements Mo
         setSearchAutoFocus( true );
     }
 
-    public void fillOptions( List< DevUnit > products) {
+    public void fillOptions( List< EntityOption > products) {
         clearOptions();
 
         if(defaultValue != null)
             addOption( defaultValue , null );
 
-        for ( DevUnit product : products) {
-            addOption( product.getName(), product);
+        for ( EntityOption product : products) {
+            addOption( product.getDisplayText(), product);
         }
     }
 

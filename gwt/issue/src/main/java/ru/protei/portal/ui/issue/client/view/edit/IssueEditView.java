@@ -11,8 +11,6 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.core.model.ent.DevUnit;
-import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
@@ -52,11 +50,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
-    public HasValidable nameValidator() {
-        return name;
-    }
-
-    @Override
     public HasText description() {
         return description;
     }
@@ -77,17 +70,17 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
-    public HasValue<Person> initiator() {
+    public HasValue<EntityOption> initiator() {
         return initiator;
     }
 
     @Override
-    public HasValue<Person> manager() {
+    public HasValue<EntityOption> manager() {
         return manager;
     }
 
     @Override
-    public HasValue<DevUnit> product() {
+    public HasValue<EntityOption> product() {
         return product;
     }
 
@@ -96,17 +89,58 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         return local;
     }
 
+    @Override
+    public HasValidable nameValidator() {
+        return name;
+    }
+
+    @Override
+    public HasValidable stateValidator() {
+        return state;
+    }
+
+    @Override
+    public HasValidable importanceValidator() {
+        return importance;
+    }
+
+    @Override
+    public HasValidable companyValidator() {
+        return company;
+    }
+
+    @Override
+    public HasValidable initiatorValidator() {
+        return initiator;
+    }
+
+    @Override
+    public HasValidable productValidator() {
+        return product;
+    }
+
+    @Override
+    public HasValidable managerValidator() {
+        return manager;
+    }
+
+    @Override
+    public HasEnabled initiatorState() {
+        return initiator;
+    }
+
+    @Override
+    public void changeCompany(Company company){
+        initiator.updateCompany(company);
+    }
+
     @UiHandler("company")
     public void onChangeCompany(ValueChangeEvent<EntityOption> event){
-        if(event.getValue() == null){
-            initiator.setDisabled(true);
-            initiator.updateCompany(null);
-        }else {
-            initiator.setDisabled(false);
-            Company company = new Company(event.getValue().getId());
-            initiator.updateCompany(company);
-            initiator.setValue(null);
-        }
+        Company company = Company.fromEntityOption(event.getValue());
+
+        initiator.setEnabled(company != null);
+        changeCompany(company);
+        initiator.setValue(null);
     }
 
     @UiHandler( "saveButton" )

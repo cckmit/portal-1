@@ -2,6 +2,7 @@ package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.winter.jdbc.annotations.IdInsertMode;
 import ru.protei.winter.jdbc.annotations.JdbcColumn;
 import ru.protei.winter.jdbc.annotations.JdbcEntity;
@@ -43,8 +44,20 @@ public class DevUnit implements Serializable {
     @JdbcColumn(name = "old_id")
     private Long oldId;
 
-    public DevUnit () {
+    public static DevUnit fromEntityOption(EntityOption entityOption){
+        if(entityOption == null)
+            return null;
 
+        DevUnit product = new DevUnit(entityOption.getId());
+        product.setName(entityOption.getDisplayText());
+        return product;
+    }
+
+
+    public DevUnit () {}
+
+    public DevUnit (Long id) {
+        this.id = id;
     }
 
     public DevUnit(int typeId, String name, String info) {

@@ -9,6 +9,8 @@ import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.ent.DevUnit;
+import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.IssueEvents;
@@ -51,8 +53,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
     @Override
     public void onSaveClicked() {
-        if(!view.nameValidator().isValid()){
-            view.nameValidator().setValid(false);
+        if(!validateFieldsAndGetResult()){
             return;
         }
 
@@ -78,12 +79,23 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
     private void resetValidation(){
         view.nameValidator().setValid(true);
+        view.stateValidator().setValid(true);
+        view.importanceValidator().setValid(true);
+        view.companyValidator().setValid(true);
+        view.initiatorValidator().setValid(true);
+        view.productValidator().setValid(true);
+        view.managerValidator().setValid(true);
+    }
+
+    private void resetState(){
+        view.initiatorState().setEnabled(view.companyValidator().isValid());
     }
 
     private void initialView(CaseObject issue){
         tempIssue = issue;
         fillView(tempIssue);
         resetValidation();
+        resetState();
     }
 
     private void requestIssue(Long id, Consumer<CaseObject> successAction){
@@ -103,17 +115,16 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         view.isLocal().setValue(issue.isPrivateCase());
         view.description().setText(issue.getInfo());
 
-        view.state().setValue(
-                En_CaseState.getById(issue.getStateId()));
-        view.importance().setValue(
-                En_ImportanceLevel.getById(issue.getImpLevel()));
+        view.state().setValue(En_CaseState.getById(issue.getStateId()));
+        view.importance().setValue(En_ImportanceLevel.getById(issue.getImpLevel()));
 
-        EntityOption entityOption = new EntityOption(issue.getInitiatorCompany().getCname(), issue.getInitiatorCompany().getId());
-        view.company().setValue(entityOption);
-        view.initiator().setValue(issue.getInitiator());
+        Company initiatorCompany = issue.getInitiatorCompany();
+        view.company().setValue(EntityOption.fromCompany(initiatorCompany));
+        view.changeCompany(initiatorCompany);
+        view.initiator().setValue(EntityOption.fromPerson(issue.getInitiator()));
 
-        view.product().setValue(issue.getProduct());
-        view.manager().setValue(issue.getManager());
+        view.product().setValue(EntityOption.fromProduct(issue.getProduct()));
+        view.manager().setValue(EntityOption.fromPerson(issue.getManager()));
     }
 
     private void fillIssueObject(CaseObject issue){
@@ -124,12 +135,39 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         issue.setStateId(view.state().getValue().getId());
         issue.setImpLevel(view.importance().getValue().getId());
 
-        Company company = new Company(view.company().getValue().getId());
-        issue.setInitiatorCompany(company);
-        issue.setInitiator(view.initiator().getValue());
+        issue.setInitiatorCompany(Company.fromEntityOption(view.company().getValue()));
+        issue.setInitiator(Person.fromEntityOption(view.initiator().getValue()));
 
-        issue.setProduct(view.product().getValue());
-        issue.setManager(view.manager().getValue());
+        issue.setProduct(DevUnit.fromEntityOption(view.product().getValue()));
+        issue.setManager(Person.fromEntityOption(view.manager().getValue()));
+    }
+
+
+    private boolean validateFieldsAndGetResult(){
+        boolean result = true;
+
+        if(!view.nameValidator().isValid())
+            view.nameValidator().setValid(result = false);
+
+        if(!view.stateValidator().isValid())
+            view.stateValidator().setValid(result = false);
+
+        if(!view.importanceValidator().isValid())
+            view.importanceValidator().setValid(result = false);
+
+        if(!view.companyValidator().isValid())
+            view.companyValidator().setValid(result = false);
+
+        if(!view.initiatorValidator().isValid())
+            view.initiatorValidator().setValid(result = false);
+
+        if(!view.productValidator().isValid())
+            view.productValidator().setValid(result = false);
+
+        if(!view.managerValidator().isValid())
+            view.managerValidator().setValid(result = false);
+
+        return result;
     }
 
     @Inject

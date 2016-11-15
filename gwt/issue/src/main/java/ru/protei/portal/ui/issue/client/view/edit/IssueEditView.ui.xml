@@ -19,7 +19,7 @@
                     <div class="panelField verifiable">
                         <i ui:field="verifiableIcon"/>
                         <validablefield:ValidableTextBox ui:field="name" styleName="inputField" notNull="true"/>
-                        <g:CheckBox ui:field="local" styleName="checkbox no-space" text="{lang.issueLocal}"/>
+                        <g:CheckBox ui:field="local" styleName="checkbox no-space" text="{lang.issuePrivate}"/>
                     </div>
                 </div>
 
@@ -38,7 +38,7 @@
                             <ui:text from="{lang.issueState}"/>
                         </label>
                         <div class="panelField">
-                            <state:IssueStatesButtonSelector ui:field="state"/>
+                            <state:IssueStatesButtonSelector ui:field="state" validation="true"/>
                         </div>
                     </div>
                     <div class="col-xs-12 col-lg-6">
@@ -46,7 +46,7 @@
                             <ui:text from="{lang.issueImportance}"/>
                         </label>
                         <div class="panelField">
-                            <importance:ImportanceButtonSelector ui:field="importance"/>
+                            <importance:ImportanceButtonSelector ui:field="importance" validation="true"/>
                         </div>
                     </div>
 
@@ -56,7 +56,7 @@
                             <ui:text from="{lang.issueCompany}"/>
                         </label>
                         <div class="panelField">
-                            <company:CompanySelector ui:field="company"/>
+                            <company:CompanySelector ui:field="company" validation="true"/>
                         </div>
                     </div>
                     <div class="col-xs-12 col-lg-6">
@@ -64,7 +64,7 @@
                             <ui:text from="{lang.issueInitiator}"/>
                         </label>
                         <div class="panelField">
-                            <person:PersonButtonSelector ui:field="initiator" disabled="true"/>
+                            <person:PersonButtonSelector ui:field="initiator" validation="true"/>
                         </div>
                     </div>
 
@@ -73,7 +73,7 @@
                             <ui:text from="{lang.issueProduct}"/>
                         </label>
                         <div class="panelField">
-                            <product:ProductButtonSelector ui:field="product"/>
+                            <product:ProductButtonSelector ui:field="product" validation="true"/>
                         </div>
                     </div>
 
@@ -82,7 +82,7 @@
                             <ui:text from="{lang.issueManager}"/>
                         </label>
                         <div class="panelField">
-                            <person:EmployeeButtonSelector ui:field="manager"/>
+                            <person:EmployeeButtonSelector ui:field="manager" validation="true"/>
                         </div>
                     </div>
                 </div>
