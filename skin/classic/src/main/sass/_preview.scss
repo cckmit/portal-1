@@ -1,5 +1,6 @@
 .preview {
-    padding: 15px;
+    //padding: 15px;
+    padding-top: 15px;
 
     .pre-formatted-info {
         white-space: pre-wrap;
@@ -26,6 +27,8 @@
     }
 
     fieldset {
+        margin-left: 15px;
+
         border-bottom: none;
         border-left: none;
         border-right: none;
@@ -50,7 +53,7 @@
         }
 
         &.header {
-            width: calc(100% - 30px );
+            width: calc(100% - 45px );
             padding-top: 5px;
             padding-left: 10px;
             float:left;
@@ -77,7 +80,8 @@
             padding-left: 15px;
             float:left;
             margin-left: 0;
-            width: calc(100% - 450px);
+            margin-bottom: 15px;
+            width: calc(100% - 470px);
         }
     }
 }
@@ -86,8 +90,16 @@
 
     .preview {
         margin-left: 10px;
+        padding-left: 15px;
+        padding-right: 15px;
         background: white;
         display: inline-block;
+
+        fieldset {
+            margin-top: 0;
+            margin-left: 0;
+            width: calc(100% - 20px);
+        }
     }
 
 }

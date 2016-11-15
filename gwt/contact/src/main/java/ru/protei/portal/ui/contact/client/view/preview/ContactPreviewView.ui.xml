@@ -5,12 +5,11 @@
 
     <g:HTMLPanel styleName="grid">
         <g:HTMLPanel ui:field="preview" styleName="preview">
-
             <div class="col-xs-12">
                 <g:Anchor ui:field="fullScreen" styleName="fa fa-4 fa-external-link pull-right" href="#"/>
             </div>
 
-            <fieldset class="header col-xs-12 col-lg-5">
+            <fieldset class="header">
                 <legend><ui:text from="{lang.personalData}"/></legend>
                 <div class="col-xs-12">
                     <label class="col-xs-5 col-md-5"><ui:text from="{lang.contactLastName}"/></label>
@@ -33,7 +32,7 @@
                     <span class="col-xs-7 col-md-7" ui:field="shortName"></span>
                 </div>
             </fieldset>
-            <fieldset class="header col-xs-12 col-lg-5">
+            <fieldset class="header">
                 <legend><ui:text from="{lang.contactInfo}"/></legend>
                 <div class="col-xs-12">
                     <label class="col-xs-5 col-md-5"><ui:text from="{lang.company}"/></label>
@@ -64,7 +63,7 @@
                     <span class="col-xs-7 col-md-7" ui:field="homeAddress"></span>
                 </div>
             </fieldset>
-            <fieldset class="header col-xs-12 col-lg-5">
+            <fieldset class="header">
                 <legend><ui:text from="{lang.advPersonalData}"/></legend>
                 <div class="col-xs-12">
                     <label class="col-xs-5 col-md-5"><ui:text from="{lang.gender}"/></label>

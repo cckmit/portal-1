@@ -3,14 +3,14 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="preview">
+    <g:HTMLPanel styleName="preview grid">
         <g:HTMLPanel ui:field="groupContainer" tag="fieldset" styleName="header">
             <legend><ui:text from="{lang.companyCommonHeader}"/></legend>
             <label><ui:text from="{lang.companyGroupLabel}"/></label>
             <span ui:field="groupCompany"></span>
         </g:HTMLPanel>
 
-        <fieldset class="contacts grid">
+        <fieldset class="contacts">
             <legend><ui:text from="{lang.companyInfoHeader}"/></legend>
             <div class="col-xs-12">
                 <label class="col-xs-5 col-md-5"><ui:text from="{lang.phone}"/></label>

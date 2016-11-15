@@ -200,5 +200,12 @@ ul.plate-list {
 
 .sidebar-collapse .plate-list-expander {
     margin-left: 50px !important;
-    width: calc(100% - 50px) !important;
+    width: calc(100% - 52px) !important;
+}
+
+@media (max-width: 767px) {
+  .plate-list-expander {
+    margin-left: 50px !important;
+    width: calc(100% - 52px) !important;
+  }
 }
