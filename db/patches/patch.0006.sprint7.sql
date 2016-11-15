@@ -7,9 +7,7 @@ alter table company drop foreign key FK_PARENT_COMPANY;
 alter table company drop key FK_PARENT_COMPANY;
 alter table company drop column parent_company;
 
-SET foreign_key_checks = 0;
-alter table company add constraint fk_compgroup_smp foreign key (groupId) references CompanyGroup(id) on delete set null;
-SET foreign_key_checks = 1;
+alter table company add constraint fk_compgroup_smp foreign key(groupId) references company_group(id) on delete set null;
 
 alter table case_object add (initiator_company bigint);
 alter table case_object add constraint fk_caseobj_initcomp foreign key (initiator_company) references Company(id);

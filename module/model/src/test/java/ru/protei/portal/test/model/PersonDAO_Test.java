@@ -30,39 +30,8 @@ public class PersonDAO_Test {
         ctx = new AnnotationConfigApplicationContext(CoreConfigurationContext.class, JdbcConfigurationContext.class, TestConfiguration.class);
     }
 
-    @Test
-    public void testGetPerson () {
 
-        PersonDAO dao = ctx.getBean(PersonDAO.class);
-
-        //  System.out.println(dao.getPojoColumns());
-
-        Person person = dao.get(18L);
-        Assert.assertNotNull(person);
-        Assert.assertNotNull(person.getCompany());
-
-        ContactItem item = person.getContactInfo().findFirst(En_ContactItemType.EMAIL, En_ContactDataAccess.PUBLIC);
-
-        System.out.println(item.comment());
-    }
-
-
-    @Test
-    public void testGetPlainPerson () {
-
-        PersonDAO dao = ctx.getBean(PersonDAO.class);
-
-      //  System.out.println(dao.getPojoColumns());
-
-        Person person = dao.plainGet(18L);
-        Assert.assertNotNull(person);
-        Assert.assertNull(person.getCompany());
-
-    }
-
-
-    @Test
-    public void testInsert () {
+    public Person createTestPerson () {
         PersonDAO dao = ctx.getBean(PersonDAO.class);
         Person p = new Person();
         p.setCompanyId(1L);
@@ -81,7 +50,63 @@ public class PersonDAO_Test {
         p.getContactInfo().addItem(En_ContactItemType.JABBER).modify("dev@jabber.protei.ru");
         p.getContactInfo().addItem(En_ContactItemType.WEB_SITE).modify("http://www.protei.ru");
 
-        Long id = dao.persist(p);
+        dao.persist(p);
+
+        return p;
+    }
+
+    @Test
+    public void testGetPerson () {
+
+        PersonDAO dao = ctx.getBean(PersonDAO.class);
+
+        //  System.out.println(dao.getPojoColumns());
+
+        Long testId  = createTestPerson().getId();
+        try {
+
+            Person person = dao.get(testId);
+
+            Assert.assertNotNull(person);
+            Assert.assertNotNull(person.getCompany());
+
+            ContactItem item = person.getContactInfo().findFirst(En_ContactItemType.EMAIL, En_ContactDataAccess.PUBLIC);
+
+            System.out.println(item.comment());
+
+        }
+        finally {
+            dao.removeByKey(testId);
+        }
+    }
+
+
+    @Test
+    public void testGetPlainPerson () {
+
+        PersonDAO dao = ctx.getBean(PersonDAO.class);
+
+        Long testId  = createTestPerson().getId();
+        try {
+
+            Person person = dao.plainGet(testId);
+            Assert.assertNotNull(person);
+            Assert.assertNull(person.getCompany());
+
+        }
+        finally {
+            dao.removeByKey(testId);
+        }
+    }
+
+
+    @Test
+    public void testInsert () {
+        PersonDAO dao = ctx.getBean(PersonDAO.class);
+
+        Person p = createTestPerson();
+        Long id = p.getId();
+
         Assert.assertNotNull(id);
         Assert.assertTrue(id > 0);
 
