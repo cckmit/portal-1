@@ -355,6 +355,8 @@ body {
   .main-header {
     .logo {
       width: 50px;
+      font-size: 24px; // new experiment
+      text-align: left; // new experiment
 
       .logo-mini {
         display: block;
@@ -365,6 +367,7 @@ body {
 
       .logo-lg{
         display: none;
+        padding-left: 15px; //new experiment
       }
     }
 
@@ -373,6 +376,7 @@ body {
     }
   }
 }
+
 
 .sidebar-mini.sidebar-collapse .sidebar-menu>li>a {
   margin-right: 0;
@@ -424,9 +428,10 @@ body {
 
       .logo-mini {
         display: block;
-        margin-left: -15px;
-        margin-right: -15px;
+        //margin-left: -15px; // new experiment
+        //margin-right: -15px; // new experiment
         font-size: 18px;
+        text-align: center; // new experiment
       }
 
       .logo-lg {
@@ -438,6 +443,7 @@ body {
       margin-left: 50px !important;
     }
   }
+
 
   .main-sidebar .user-panel >.info,
   .sidebar-menu>li>a>span,
