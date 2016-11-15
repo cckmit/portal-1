@@ -330,7 +330,14 @@ public class CaseObject implements Serializable {
                 .append(", created='").append(getCreated())
                 .append(", modified='").append(getModified())
                 .append(", name=").append(getName())
-                .append(", extId=").append(getExtId())
+                .append(", stateId=").append(getStateId())
+                .append(", importanceId=").append(getImpLevel())
+                .append(", private=").append(isPrivateCase())
+                .append(", info=").append(getInfo())
+                .append(", company=").append(getInitiatorCompany())
+                .append(", initiator=").append(getInitiator())
+                .append(", product=").append(getProduct())
+                .append(", manager=").append(getManager())
                 .append('}').toString();
     }
 

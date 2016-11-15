@@ -44,9 +44,12 @@ public class IssueServiceImpl implements IssueService {
         log.debug( "saveIssue(): case={}", caseObject );
 
         CoreResponse< CaseObject > response;
-        if ( caseObject.getId() == null )
+        if ( caseObject.getId() == null ) {
+            caseObject.setTypeId(En_CaseType.CRM_SUPPORT.getId());
+//            caseObject.setCreatorId();
+
             response = caseService.saveCaseObject(caseObject);
-        else
+        }else
             response = caseService.updateCaseObject(caseObject);
 
         log.debug( "saveIssue(): response.isOk()={}", response.isOk() );
