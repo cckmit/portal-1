@@ -27,9 +27,10 @@ package ru.protei.portal.ui.common.client.common;
  * 4.0.13.13 - доработка sidebar'а, перевод меню на page
  * 4.0.14.13 - sprint-8-task-9 карточка просмотра обращения
  * 4.0.15.13 - sprint-8-task-10 Дополнительные селекторы (статус, критичность, продукты, сотрудники, контакты)
+ * 4.0.16.13 - sprint-8-task-6 Проблемы с вёрсткой таблицы и карточки контактных лиц (и обращениях), fix style bugs
  */
 public class Version {
     public static String getVersion() {
-        return "4.0.15.13";
+        return "4.0.16.13";
     }
 }
