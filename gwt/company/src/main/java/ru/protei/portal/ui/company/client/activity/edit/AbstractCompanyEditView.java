@@ -17,9 +17,9 @@ public interface AbstractCompanyEditView extends IsWidget {
     void setActivity( AbstractCompanyEditActivity activity );
 
     void setCompanyNameStatus(NameStatus status);
-    HasText companyName();
-    HasText actualAddress();
-    HasText legalAddress();
+    HasValue<String> companyName();
+    HasValue<String> actualAddress();
+    HasValue<String> legalAddress();
 
     HasValidable companyNameValidator();
     HasValidable actualAddressValidator();

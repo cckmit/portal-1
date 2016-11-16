@@ -39,7 +39,7 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     }
 
     @Override
-    public HasText companyName() {
+    public HasValue<String> companyName() {
         return companyName;
     }
 
@@ -54,7 +54,7 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     }
 
     @Override
-    public HasText actualAddress() {
+    public HasValue<String> actualAddress() {
         return actualAddress;
     }
 
@@ -64,7 +64,7 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     }
 
     @Override
-    public HasText legalAddress() {
+    public HasValue<String> legalAddress() {
         return legalAddress;
     }
 

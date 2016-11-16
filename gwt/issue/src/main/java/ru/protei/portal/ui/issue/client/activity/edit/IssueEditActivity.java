@@ -77,15 +77,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         fireEvent(new Back());
     }
 
-    private void resetValidation(){
-        view.nameValidator().setValid(true);
-        view.stateValidator().setValid(true);
-        view.importanceValidator().setValid(true);
-        view.companyValidator().setValid(true);
-        view.productValidator().setValid(true);
-        view.managerValidator().setValid(true);
-    }
-
     private void resetState(){
         view.initiatorState().setEnabled(view.companyValidator().isValid());
     }
@@ -93,7 +84,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     private void initialView(CaseObject issue){
         this.issue = issue;
         fillView(this.issue);
-        resetValidation();
         resetState();
     }
 
@@ -110,7 +100,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     }
 
     private void fillView(CaseObject issue){
-        view.name().setText(issue.getName());
+        view.name().setValue(issue.getName());
         view.isLocal().setValue(issue.isPrivateCase());
         view.description().setText(issue.getInfo());
 
@@ -127,7 +117,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     }
 
     private void fillIssueObject(CaseObject issue){
-        issue.setName(view.name().getText());
+        issue.setName(view.name().getValue());
         issue.setPrivateCase(view.isLocal().getValue());
         issue.setInfo(view.description().getText());
 
@@ -143,27 +133,12 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
 
     private boolean validateFieldsAndGetResult(){
-        boolean result = true;
-
-        if(!view.nameValidator().isValid())
-            view.nameValidator().setValid(result = false);
-
-        if(!view.stateValidator().isValid())
-            view.stateValidator().setValid(result = false);
-
-        if(!view.importanceValidator().isValid())
-            view.importanceValidator().setValid(result = false);
-
-        if(!view.companyValidator().isValid())
-            view.companyValidator().setValid(result = false);
-
-        if(!view.productValidator().isValid())
-            view.productValidator().setValid(result = false);
-
-        if(!view.managerValidator().isValid())
-            view.managerValidator().setValid(result = false);
-
-        return result;
+        return view.nameValidator().isValid() &&
+                view.stateValidator().isValid() &&
+                view.importanceValidator().isValid() &&
+                view.companyValidator().isValid() &&
+                view.productValidator().isValid() &&
+                view.managerValidator().isValid();
     }
 
     @Inject
@@ -175,6 +150,5 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
     private AppEvents.InitDetails initDetails;
     private CaseObject issue;
-
 
 }

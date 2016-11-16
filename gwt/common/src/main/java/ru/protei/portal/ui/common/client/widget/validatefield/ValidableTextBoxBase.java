@@ -8,7 +8,7 @@ import com.google.gwt.user.client.ui.TextBoxBase;
 /**
  * Created by bondarenko on 08.11.16.
  */
-abstract public class ValidableTextBoxBase extends TextBoxBase implements HasValidable{
+abstract class ValidableTextBoxBase extends TextBoxBase implements HasValidable{
 
     ValidableTextBoxBase(Element elem){
         super(elem);
@@ -22,13 +22,12 @@ abstract public class ValidableTextBoxBase extends TextBoxBase implements HasVal
         });
     }
 
-
     @Override
     public void setValid(boolean isValid) {
         if(isValid)
-            removeStyleName( ERROR_STYLE_NAME );
+            removeStyleName( REQUIRED_STYLE_NAME );
         else
-            addStyleName( ERROR_STYLE_NAME );
+            addStyleName( REQUIRED_STYLE_NAME );
     }
 
     @Override
@@ -68,5 +67,5 @@ abstract public class ValidableTextBoxBase extends TextBoxBase implements HasVal
 
     private RegExp regexp = null;
     private RegExp notEmptyStringRegexp = RegExp.compile("\\S+");
-    private static final String ERROR_STYLE_NAME="error";
+    private static final String REQUIRED_STYLE_NAME="required";
 }

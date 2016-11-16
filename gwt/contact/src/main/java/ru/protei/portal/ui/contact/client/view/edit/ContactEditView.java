@@ -1,10 +1,7 @@
 package ru.protei.portal.ui.contact.client.view.edit;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.i18n.server.testing.Gender;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -12,11 +9,11 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
 import ru.protei.portal.core.model.dict.En_Gender;
-import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.dict.GenderButtonSelector;
+import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
+import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.contact.client.activity.edit.AbstractContactEditActivity;
 import ru.protei.portal.ui.contact.client.activity.edit.AbstractContactEditView;
 
@@ -40,12 +37,12 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     }
 
     @Override
-    public HasText firstName() {
+    public HasValue<String> firstName() {
         return firstName;
     }
 
     @Override
-    public HasText lastName() {
+    public HasValue<String> lastName() {
         return lastName;
     }
 
@@ -134,6 +131,21 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
         return personInfo;
     }
 
+    @Override
+    public HasValidable companyValidator(){
+        return company;
+    }
+
+    @Override
+    public HasValidable firstNameValidator(){
+        return firstName;
+    }
+
+    @Override
+    public HasValidable lastNameValidator(){
+        return lastName;
+    }
+
     @UiHandler( "saveButton" )
     public void onSaveClicked( ClickEvent event ) {
         if ( activity != null ) {
@@ -154,10 +166,10 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     Button cancelButton;
 
     @UiField
-    TextBox firstName;
+    ValidableTextBox firstName;
 
     @UiField
-    TextBox lastName;
+    ValidableTextBox lastName;
 
     @UiField
     TextBox secondName;

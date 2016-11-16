@@ -31,9 +31,10 @@ package ru.protei.portal.ui.common.client.common;
  * 4.0.15.15 - sprint-8-task-6 Проблемы с вёрсткой таблицы и карточки контактных лиц (и обращениях), fix style bugs
  * 4.0.16.15 - sprint-8-task-5 IssueEdit (frontend)
  * 4.0.17.15 - sprint-8-task-11 IssueEdit (backend)
+ * 4.0.18.15 - sprint-8-task-14 замена звёздочек на красные рамки
  */
 public class Version {
     public static String getVersion() {
-        return "4.0.17.15";
+        return "4.0.18.15";
     }
 }

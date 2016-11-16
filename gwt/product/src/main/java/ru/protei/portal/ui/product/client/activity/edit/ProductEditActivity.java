@@ -56,7 +56,7 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         //isNameUnique не принимает пустые строки!
         if ( value.isEmpty()) {
             view.setNameStatus(NameStatus.NONE);
-            view.save().setEnabled(false);
+//            view.save().setEnabled(false);
             return;
         }
 
@@ -73,7 +73,7 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
                     @Override
                     public void onSuccess(Boolean isUnique) {
                         view.setNameStatus(isUnique ? NameStatus.SUCCESS : NameStatus.ERROR);
-                        view.save().setEnabled(isUnique);
+//                        view.save().setEnabled(isUnique);
 //                        view.nameValidator().setValid(isUnique);
                     }
                 });
@@ -86,6 +86,9 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
 
     @Override
     public void onSaveClicked() {
+
+        if(!isNameValid())
+            return;
 
         if (productId == null) {
             product = new DevUnit();
@@ -135,21 +138,24 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         view.name().setValue("");
         view.info().setValue("");
         view.state().setVisible(false);
-        view.save().setEnabled(false);
+//        view.save().setEnabled(false);
     }
 
     private void fillView(DevUnit devUnit) {
         view.name().setValue(devUnit.getName());
         view.info().setValue(devUnit.getInfo());
         view.state().setVisible(true);
-        view.save().setEnabled(true);
+//        view.save().setEnabled(true);
 
         view.setStateBtnText(devUnit.isActiveUnit() ? lang.productToArchive() : lang.productFromArchive());
     }
 
     private void resetValidationStatus(){
         view.setNameStatus(NameStatus.NONE);
-        view.nameValidator().setValid(true);
+    }
+
+    private boolean isNameValid(){
+        return view.nameValidator().isValid();
     }
 
     @Inject

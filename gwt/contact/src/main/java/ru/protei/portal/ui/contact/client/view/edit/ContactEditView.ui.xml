@@ -3,6 +3,7 @@
              xmlns:single="urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.single"
              xmlns:dict="urn:import:ru.protei.portal.ui.common.client.widget.selector.dict"
              xmlns:companyselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.company'
+             xmlns:validablefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'
 >
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
@@ -13,28 +14,28 @@
                         <h3><ui:text from="{lang.personalData}" /></h3>
 
                         <div>
-                            <label class="required">
+                            <label>
                                 <ui:text from="{lang.company}"/>
                             </label>
                             <div class="panelField">
-                               <companyselector:CompanySelector ui:field="company" />
+                               <companyselector:CompanySelector ui:field="company" validation="true"/>
                             </div>
                         </div>
 
                         <div>
-                            <label class="required">
+                            <label>
                                 <ui:text from="{lang.lastName}"/>
                             </label>
                             <div class="panelField">
-                                <g:TextBox ui:field="lastName" styleName="inputField"/>
+                                <validablefield:ValidableTextBox ui:field="lastName" styleName="inputField" notNull="true"/>
                             </div>
                         </div>
                         <div>
-                            <label class="required">
+                            <label >
                                 <ui:text from="{lang.firstName}"/>
                             </label>
                             <div class="panelField">
-                                <g:TextBox ui:field="firstName" styleName="inputField"/>
+                                <validablefield:ValidableTextBox ui:field="firstName" styleName="inputField" notNull="true"/>
                             </div>
                         </div>
                         <div>

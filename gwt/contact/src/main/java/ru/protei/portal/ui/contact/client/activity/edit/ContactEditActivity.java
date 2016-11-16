@@ -58,7 +58,6 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
 
     @Override
     public void onSaveClicked() {
-        //
         if (!validate ()) {
             return;
         }
@@ -84,8 +83,8 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
     private Person applyChanges () {
         contact.setGender(view.gender().getValue());
         contact.setCompanyId(view.company().getValue().getId());
-        contact.setFirstName(view.firstName().getText());
-        contact.setLastName(view.lastName().getText());
+        contact.setFirstName(view.firstName().getValue());
+        contact.setLastName(view.lastName().getValue());
         contact.setSecondName(view.secondName().getText());
         contact.setDisplayName(view.displayName().getText());
         contact.setDisplayShortName(view.shortName().getText());
@@ -109,18 +108,9 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
     }
 
     private boolean validate() {
-        if (view.company().getValue() == null) {
-            return fireErrorMessage(lang.errorCompanyRequired());
-        }
-
-        if (view.firstName().getText().isEmpty()) {
-            return fireErrorMessage(lang.errorFirstNameRequired());
-        }
-
-        if (view.lastName().getText().isEmpty()) {
-            return fireErrorMessage(lang.errorLastNameRequired());
-        }
-        return true;
+        return view.companyValidator().isValid() &&
+                view.firstNameValidator().isValid() &&
+                view.lastNameValidator().isValid();
     }
 
     @Override
@@ -144,8 +134,8 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
 //        }
 
         view.gender().setValue(person.getGender());
-        view.firstName().setText(person.getFirstName());
-        view.lastName().setText(person.getLastName());
+        view.firstName().setValue(person.getFirstName());
+        view.lastName().setValue(person.getLastName());
         view.secondName().setText(person.getSecondName());
         view.displayName().setText(person.getDisplayName());
         view.shortName().setText(person.getDisplayShortName());
