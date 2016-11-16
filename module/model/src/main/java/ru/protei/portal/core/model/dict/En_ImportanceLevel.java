@@ -26,4 +26,12 @@ public enum En_ImportanceLevel  {
     public String getCode() {
         return code;
     }
+
+    public static En_ImportanceLevel find (int id) {
+        for (En_ImportanceLevel il : En_ImportanceLevel.values())
+            if (il.id == id)
+                return il;
+
+        return null;
+    }
 }

@@ -705,18 +705,59 @@ td.info {
   margin-bottom: 10px;
 }
 
-
-
-
-
-
-
-
-.main-header .logo { font-size: 24px; text-align: left; };
-.main-header .logo .logo-lg {padding-left: 15px;};
-
-.sidebar-collapse .main-header .logo .logo-mini {
-  display: block;
-  font-size: 18px; text-align: center;
+/* Importance level */
+.CRITICAL {
+  color: #d84d4d;
 }
 
+.IMPORTANT {
+  color: orange;
+}
+
+.BASIC {
+  color: #5481c1;
+}
+
+.COSMETIC {
+  color: #ced2d7;
+}
+/****************/
+
+/* Status */
+.CREATED {
+  color: #d84d4d;
+}
+
+.OPENED {
+  color: royalBlue;
+}
+
+.ACTIVE {
+  color: blue;
+}
+
+.DONE {
+  color: green;
+}
+
+.TEST_LOCAL {
+  color: maroon;
+}
+
+.TEST_CUST {
+  color: maroon;
+}
+
+.VERIFIED {
+  color: black;
+}
+/****************/
+
+.icon-importance {
+  font-size: 1.11em !important;
+  vertical-align: 0;
+}
+.icon-status {
+  font-size: 1.22em !important;
+  vertical-align: 0;
+}

@@ -57,11 +57,11 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
     }
 
     private void fillView( CaseObject value ) {
-        view.setLocal( value.getLocal() );
+        view.setPrivateIssue( value.isPrivateCase() );
         view.setHeader( value.getCaseNumber() == null ? "" : lang.issueHeader( value.getCaseNumber().toString() ) );
         view.setCreationDate( value.getCreated() == null ? "" : format.format( value.getCreated() ) );
-        view.setState( Long.toString( value.getStateId() ) );
-        view.setCriticality( Integer.toString( value.getImpLevel() ) );
+        view.setState( value.getStateId() );
+        view.setCriticality( value.getImpLevel() );
         view.setProduct( value.getProduct() == null ? "" : value.getProduct().getName() );
         view.setCompany( value.getInitiatorCompany() == null ? "" : value.getInitiatorCompany().getCname() );
         view.setContact( value.getInitiator() == null ? "" : value.getInitiator().getDisplayName() );
