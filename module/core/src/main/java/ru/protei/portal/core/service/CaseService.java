@@ -16,5 +16,6 @@ public interface CaseService {
     CoreResponse<List<CaseObject>> caseObjectList( CaseQuery query );
     CoreResponse<CaseObject> getCaseObject( long id );
     CoreResponse<CaseObject> saveCaseObject( CaseObject p );
+    CoreResponse<CaseObject> updateCaseObject( CaseObject p );
     CoreResponse<List<En_CaseState>> getStateList(En_CaseType caseType);
 }

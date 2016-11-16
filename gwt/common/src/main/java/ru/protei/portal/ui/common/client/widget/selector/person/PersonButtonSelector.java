@@ -3,7 +3,7 @@ package ru.protei.portal.ui.common.client.widget.selector.person;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.events.PersonEvents;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 
@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Селектор сотрудников любой компании
  */
-public class PersonButtonSelector extends ButtonSelector<Person> {
+public class PersonButtonSelector extends ButtonSelector<EntityOption> {
 
     @Event
     public void onPersonListChanged( PersonEvents.ChangePersonModel event ) {
@@ -26,13 +26,26 @@ public class PersonButtonSelector extends ButtonSelector<Person> {
         setSearchAutoFocus( true );
     }
 
-    public void fillOptions(List<Person> persons){
+    @Override
+    public void setValue(EntityOption value) {
+        if(personModel.isPushing()){
+            deferred = value;
+        }else
+            super.setValue(value);
+    }
+
+
+    public void fillOptions(List<EntityOption> persons){
         clearOptions();
 
-        if(defaultValue != null)
-            addOption( defaultValue , null );
+        if(defaultValue != null) {
+            addOption(defaultValue, null);
+        }
 
-        persons.forEach(option -> addOption(option.getDisplayShortName(), option));
+        persons.forEach(person -> addOption(person.getDisplayText(), person));
+
+        super.setValue(deferred);
+        deferred = null;
     }
 
     public void setDefaultValue( String value ) {
@@ -57,5 +70,6 @@ public class PersonButtonSelector extends ButtonSelector<Person> {
 
     private Company company;
     private String defaultValue;
+    EntityOption deferred;
 
 }

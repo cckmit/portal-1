@@ -39,9 +39,22 @@ public class Company implements Serializable,EntityOptionSupport {
     @JdbcColumn(name = "created")
     private Date created;
 
+    public static Company fromEntityOption(EntityOption entityOption){
+        if(entityOption == null)
+            return null;
+
+        Company company = new Company();
+        company.setCname(entityOption.getDisplayText());
+        company.setId(entityOption.getId());
+        return company;
+    }
 
     public Company() {
         contactInfo = new ContactInfo();
+    }
+
+    public Company(Long id) {
+        this.id = id;
     }
 
 

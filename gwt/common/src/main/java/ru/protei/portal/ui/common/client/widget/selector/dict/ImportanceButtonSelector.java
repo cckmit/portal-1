@@ -18,6 +18,10 @@ public class ImportanceButtonSelector extends ButtonSelector<En_ImportanceLevel>
         addOption(lang.getImportanceName(En_ImportanceLevel.COSMETIC), En_ImportanceLevel.COSMETIC);
     }
 
+    public void setDefaultValue( String value ) {
+        addOption( value , null );
+    }
+
     @Inject
     En_CaseImportanceLang lang;
 

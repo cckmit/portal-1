@@ -77,19 +77,19 @@ public abstract class ContactTableActivity implements AbstractContactTableActivi
 
     @Override
     public void onEditClicked(Person value ) {
-        fireEvent( ContactEvents.Edit.byId( value.getId() ) );
+        fireEvent(ContactEvents.Edit.byId(value.getId()));
     }
 
 
     @Override
     public void onCreateClick() {
-        fireEvent(ContactEvents.Edit.newItem( view.company().getValue() ));
+        fireEvent(ContactEvents.Edit.newItem(view.company().getValue()));
     }
 
     @Override
     public void onFilterChanged() {
         ContactQuery query = makeQuery( null );
-        requestContacts( query );
+        requestContacts(query);
     }
 
     private void requestContacts( ContactQuery query ) {
@@ -102,17 +102,17 @@ public abstract class ContactTableActivity implements AbstractContactTableActivi
         animation.closeDetails();
 
 
-        contactService.getContacts(query, new RequestCallback< List< Person > >() {
-                    @Override
-                    public void onError(Throwable throwable) {
-                        fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
-                    }
+        contactService.getContacts(query, new RequestCallback<List<Person>>() {
+            @Override
+            public void onError(Throwable throwable) {
+                fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
+            }
 
-                    @Override
-                    public void onSuccess(List<Person> persons) {
-                        fillViewHandler = taskService.startPeriodicTask( persons, p -> view.addRecord(p), 50, 50 );
-                    }
-                });
+            @Override
+            public void onSuccess(List<Person> persons) {
+                fillViewHandler = taskService.startPeriodicTask(persons, p -> view.addRecord(p), 50, 50);
+            }
+        });
     }
 
     private void showPreview ( Person value ) {
@@ -121,7 +121,7 @@ public abstract class ContactTableActivity implements AbstractContactTableActivi
             animation.closeDetails();
         } else {
             animation.showDetails();
-            fireEvent( new ContactEvents.ShowPreview( view.getPreviewContainer(), value ) );
+            fireEvent(new ContactEvents.ShowPreview(view.getPreviewContainer(), value));
         }
     }
 

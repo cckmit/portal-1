@@ -40,8 +40,18 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    public CaseObject saveIssue( CaseObject p ) {
-        return null;
+    public Boolean saveIssue( CaseObject caseObject ) throws RequestFailedException{
+        log.debug( "saveIssue(): case={}", caseObject );
+
+        CoreResponse< CaseObject > response;
+        if ( caseObject.getId() == null )
+            response = caseService.saveCaseObject(caseObject);
+        else
+            response = caseService.updateCaseObject(caseObject);
+
+        log.debug( "saveIssue(): response.isOk()={}", response.isOk() );
+        if ( response.isError() ) throw new RequestFailedException(response.getStatus());
+        return response.getData() != null;
     }
 
     @Override

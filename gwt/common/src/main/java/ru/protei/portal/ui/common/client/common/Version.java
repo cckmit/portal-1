@@ -29,9 +29,10 @@ package ru.protei.portal.ui.common.client.common;
  * 4.0.15.13 - sprint-8-task-10 Дополнительные селекторы (статус, критичность, продукты, сотрудники, контакты)
  * 4.0.15.14 - sprint-8-task-9-2 внесены изменения в отображение статуса и критичности обращения
  * 4.0.15.15 - sprint-8-task-6 Проблемы с вёрсткой таблицы и карточки контактных лиц (и обращениях), fix style bugs
+ * 4.0.16.15 - sprint-8-task-5 IssueEdit (frontend)
  */
 public class Version {
     public static String getVersion() {
-        return "4.0.15.15";
+        return "4.0.16.15";
     }
 }

@@ -6,6 +6,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.query.ProductQuery;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.ProductEvents;
 import ru.protei.portal.ui.common.client.service.ProductServiceAsync;
@@ -30,13 +31,13 @@ public abstract class ProductModel implements Activity {
         refreshOptions();
     }
 
-    public void subscribe( ModelSelector<DevUnit> selector ) {
+    public void subscribe( ModelSelector<EntityOption> selector ) {
         subscribers.add( selector );
         selector.fillOptions( list );
     }
 
     private void notifySubscribers() {
-        for ( ModelSelector<DevUnit> selector : subscribers ) {
+        for ( ModelSelector<EntityOption> selector : subscribers ) {
             selector.fillOptions( list );
             selector.refreshValue();
         }
@@ -54,7 +55,9 @@ public abstract class ProductModel implements Activity {
             @Override
             public void onSuccess(List<DevUnit> groups) {
                 list.clear();
-                list.addAll(groups);
+                groups.forEach(devUnit ->
+                    list.add(EntityOption.fromProduct(devUnit))
+                );
 
                 notifySubscribers();
             }
@@ -64,7 +67,7 @@ public abstract class ProductModel implements Activity {
     @Inject
     ProductServiceAsync productService;
 
-    private List< DevUnit > list = new ArrayList<>();
+    private List< EntityOption > list = new ArrayList<>();
 
-    List< ModelSelector<DevUnit> > subscribers = new ArrayList<>();
+    List< ModelSelector<EntityOption> > subscribers = new ArrayList<>();
 }

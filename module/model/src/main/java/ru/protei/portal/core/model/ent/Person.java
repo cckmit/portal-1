@@ -1,9 +1,9 @@
 package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_Gender;
+import ru.protei.portal.core.model.struct.ContactInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.EntityOptionSupport;
-import ru.protei.portal.core.model.struct.ContactInfo;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
@@ -84,6 +84,16 @@ public class Person implements Serializable, EntityOptionSupport {
     @JdbcColumn(name = "contactInfo", converterType = ConverterType.JSON)
     private ContactInfo contactInfo;
 
+
+    public static Person fromEntityOption(EntityOption entityOption){
+        if(entityOption == null)
+            return null;
+
+        Person person = new Person();
+        person.setId(entityOption.getId());
+        person.setDisplayShortName(entityOption.getDisplayText());
+        return person;
+    }
 
     public Person () {
         this.contactInfo = new ContactInfo();

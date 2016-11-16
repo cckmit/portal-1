@@ -2,15 +2,15 @@ package ru.protei.portal.ui.contact.client.factory;
 
 import com.google.gwt.inject.client.AbstractGinModule;
 import com.google.inject.Singleton;
-import ru.protei.portal.ui.contact.client.activity.preview.AbstractContactPreviewView;
-import ru.protei.portal.ui.contact.client.activity.preview.ContactPreviewActivity;
 import ru.protei.portal.ui.contact.client.activity.edit.AbstractContactEditView;
 import ru.protei.portal.ui.contact.client.activity.edit.ContactEditActivity;
+import ru.protei.portal.ui.contact.client.activity.page.ContactPage;
+import ru.protei.portal.ui.contact.client.activity.preview.AbstractContactPreviewView;
+import ru.protei.portal.ui.contact.client.activity.preview.ContactPreviewActivity;
 import ru.protei.portal.ui.contact.client.activity.table.AbstractContactTableView;
 import ru.protei.portal.ui.contact.client.activity.table.ContactTableActivity;
-import ru.protei.portal.ui.contact.client.view.preview.ContactPreviewView;
-import ru.protei.portal.ui.contact.client.activity.page.ContactPage;
 import ru.protei.portal.ui.contact.client.view.edit.ContactEditView;
+import ru.protei.portal.ui.contact.client.view.preview.ContactPreviewView;
 import ru.protei.portal.ui.contact.client.view.table.ContactTableView;
 
 

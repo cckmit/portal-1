@@ -52,6 +52,11 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
+    public CoreResponse< CaseObject > updateCaseObject( CaseObject p ) {
+        return new CoreResponse<CaseObject>().success( p );
+    }
+
+    @Override
     public CoreResponse<List<En_CaseState>> getStateList(En_CaseType caseType) {
         List<En_CaseState> states = caseStateMatrixDAO.getStatesByCaseType(caseType);
 

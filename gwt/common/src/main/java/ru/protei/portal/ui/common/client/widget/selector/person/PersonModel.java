@@ -7,9 +7,11 @@ import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.query.ContactQuery;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.service.ContactServiceAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -18,12 +20,13 @@ import java.util.function.Consumer;
  */
 public abstract class PersonModel implements Activity {
 
-    public void requestPersonList(Company company, Consumer<List<Person>> fillOptionsAction){
+    public void requestPersonList(Company company, Consumer<List<EntityOption>> fillOptionsAction){
         ContactQuery query = new ContactQuery();
         query.setCompanyId(company.getId());
         query.setSortDir(En_SortDir.ASC);
         query.setSortField(En_SortField.comp_name);
 
+        isPushing = true;
         contactService.getContacts(
                 query,
                 new RequestCallback<List<Person>>() {
@@ -32,14 +35,23 @@ public abstract class PersonModel implements Activity {
                     }
 
                     @Override
-                    public void onSuccess(List<Person> options) {
-                        fillOptionsAction.accept(options);
+                    public void onSuccess(List<Person> persons) {
+                        List<EntityOption> entityOptions = new ArrayList<>(persons.size());
+                        persons.forEach(person -> entityOptions.add(EntityOption.fromPerson(person)));
+                        fillOptionsAction.accept(entityOptions);
+                        isPushing = false;
                     }
                 }
         );
     }
 
 
+    public boolean isPushing(){
+        return isPushing;
+    }
+
     @Inject
     ContactServiceAsync contactService;
+
+    private boolean isPushing;
 }

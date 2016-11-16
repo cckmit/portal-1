@@ -403,6 +403,10 @@ label.required:after {
   box-sizing: border-box;
 }
 
+[class*='col-'] [class*='col-']{
+  padding: 0;
+}
+
 .panelField .label{
   padding: 0 12px;
   background: #a9b4bb;
@@ -512,7 +516,8 @@ label.bordered:after{
   box-shadow: 0 2px 8px -2px #bdbdbd inset;
 }
 
-.inputField.error{
+.inputField.error,
+.button.error{
   border: 1px solid #f54646;
 }
 
@@ -700,6 +705,18 @@ td.info {
   top: 5px;
 }
 
+
+/* issue editing */
+
+.checkbox.no-space{
+  white-space: nowrap;
+}
+
+[class*='col-'].right-sticking{
+  float: right;
+}
+
+/****************/
 
 .filter {
   margin-bottom: 10px;

@@ -1,7 +1,7 @@
 package ru.protei.portal.ui.common.client.widget.selector.person;
 
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 
@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Селектор сотрудников домашней компании
  */
-public class EmployeeButtonSelector extends ButtonSelector<Person> implements ModelSelector<Person> {
+public class EmployeeButtonSelector extends ButtonSelector<EntityOption> implements ModelSelector<EntityOption> {
 
     @Inject
     public void init( EmployeeModel employeeModel ) {
@@ -20,13 +20,15 @@ public class EmployeeButtonSelector extends ButtonSelector<Person> implements Mo
     }
 
     @Override
-    public void fillOptions(List<Person> persons){
+    public void fillOptions(List<EntityOption> persons){
         clearOptions();
 
-        if(defaultValue != null)
-            addOption( defaultValue , null );
+        if(defaultValue != null) {
+            addOption(defaultValue, null);
+            setValue(null);
+        }
 
-        persons.forEach(option -> addOption(option.getDisplayShortName(), option));
+        persons.forEach(option -> addOption(option.getDisplayText(), option));
     }
 
     public void setDefaultValue( String value ) {

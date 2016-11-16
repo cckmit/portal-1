@@ -19,6 +19,17 @@ public enum En_ImportanceLevel  {
     private final String code;
 
 
+    public static En_ImportanceLevel getById(Integer id) {
+        if(id == null)
+            return null;
+
+        for (En_ImportanceLevel imp : En_ImportanceLevel.values())
+            if (imp.id == id)
+                return imp;
+
+        return null;
+    }
+
     public int getId() {
         return id;
     }

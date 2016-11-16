@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.issue.client.activity.table;
 
-import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -58,12 +57,14 @@ public abstract class IssueTableActivity implements AbstractIssueTableActivity, 
 
     @Override
     public void onEditClicked(CaseObject value ) {
+        fireEvent(new IssueEvents.Edit(value.getId(), null));
 //        fireEvent(IssueEvents.Edit.byId(value.getId()));
     }
 
     @Override
     public void onCreateClick() {
-//        fireEvent(IssueEvents.Edit.newItem(view.company().getValue()));
+        fireEvent(new IssueEvents.Edit());
+        //fireEvent(IssueEvents.Edit.newItem(view.company().getValue()));
     }
 
     @Override
