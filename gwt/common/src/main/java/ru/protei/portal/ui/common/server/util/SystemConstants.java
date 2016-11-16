@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.crm.server.util;
+package ru.protei.portal.ui.common.server.util;
 
 /**
  * C

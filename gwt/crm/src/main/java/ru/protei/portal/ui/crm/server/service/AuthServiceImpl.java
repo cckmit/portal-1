@@ -6,10 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
+import ru.protei.portal.ui.common.server.service.SessionService;
+import ru.protei.portal.ui.common.server.util.SystemConstants;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.crm.client.service.AuthService;
-import ru.protei.portal.ui.crm.server.util.SystemConstants;
 
 import javax.servlet.http.HttpServletRequest;
 

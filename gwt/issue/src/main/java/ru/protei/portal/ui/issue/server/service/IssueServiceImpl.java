@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.service.CaseService;
+import ru.protei.portal.ui.common.server.service.SessionService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.issue.client.service.IssueService;
 
@@ -48,8 +49,7 @@ public class IssueServiceImpl implements IssueService {
         CoreResponse< CaseObject > response;
         if ( caseObject.getId() == null ) {
             caseObject.setTypeId(En_CaseType.CRM_SUPPORT.getId());
-//            caseObject.setCreatorId(getCurrentPerson().getId());
-            caseObject.setCreatorId(1L);
+            caseObject.setCreatorId(getCurrentPerson().getId());
 
             response = caseService.saveCaseObject(caseObject);
         }else
@@ -77,15 +77,14 @@ public class IssueServiceImpl implements IssueService {
     }
 
     private Person getCurrentPerson(){
-        return null;
-//        return sessionService.getUserSessionDescriptor(request).getPerson();
+        return sessionService.getUserSessionDescriptor(request).getPerson();
     }
 
     @Autowired
     CaseService caseService;
 
-//    @Autowired
-//    SessionService sessionService;
+    @Autowired
+    SessionService sessionService;
 
     @Autowired
     HttpServletRequest request;

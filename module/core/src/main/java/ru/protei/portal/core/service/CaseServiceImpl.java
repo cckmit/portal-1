@@ -73,7 +73,7 @@ public class CaseServiceImpl implements CaseService {
         caseObject.setModified(new Date());
         boolean isUpdated = caseObjectDAO.merge(caseObject);
 
-        if (isUpdated)
+        if (!isUpdated)
             return new CoreResponse().error(En_ResultStatus.NOT_UPDATED);
 
         return new CoreResponse<CaseObject>().success( caseObject );

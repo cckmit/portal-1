@@ -1,8 +1,8 @@
-package ru.protei.portal.ui.crm.server.service;
+package ru.protei.portal.ui.common.server.service;
 
 import org.springframework.stereotype.Component;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
-import ru.protei.portal.ui.crm.server.util.SystemConstants;
+import ru.protei.portal.ui.common.server.util.SystemConstants;
 
 import javax.servlet.http.HttpServletRequest;
 
