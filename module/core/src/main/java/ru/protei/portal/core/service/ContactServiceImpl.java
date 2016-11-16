@@ -36,16 +36,6 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Override
-    public CoreResponse<List<Person>> employeeList() {
-        List<Person> list = personDAO.getEmployeesAll();
-
-        if ( list == null )
-            new CoreResponse<List<Person>>().error(En_ResultStatus.GET_DATA_ERROR);
-
-        return new CoreResponse<List<Person>>().success(list);
-    }
-
-    @Override
     public CoreResponse<Person> getContact(long id) {
         Person person = personDAO.getContact(id);
 

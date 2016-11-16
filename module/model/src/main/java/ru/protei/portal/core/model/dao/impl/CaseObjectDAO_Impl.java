@@ -28,6 +28,19 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
     }
 
     @Override
+    public Long insertCase(CaseObject object) {
+
+        En_CaseType type = object.getCaseType();
+
+        Long caseNumber = getMaxValue("CASENO", Long.class, "case_type=?", type.getId()) + 1;
+
+        object.setCaseNumber(caseNumber);
+        object.setExtId(type.makeGUID(caseNumber));
+
+        return persist(object);
+    }
+
+    @Override
     public List< CaseObject > getCases( CaseQuery query ) {
         StringBuilder conditions = new StringBuilder( "1=1" );
 

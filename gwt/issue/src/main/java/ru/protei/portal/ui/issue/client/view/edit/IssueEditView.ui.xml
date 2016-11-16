@@ -64,7 +64,7 @@
                             <ui:text from="{lang.issueInitiator}"/>
                         </label>
                         <div class="panelField">
-                            <person:PersonButtonSelector ui:field="initiator"/>
+                            <person:ContactButtonSelector ui:field="initiator"/>
                         </div>
                     </div>
 

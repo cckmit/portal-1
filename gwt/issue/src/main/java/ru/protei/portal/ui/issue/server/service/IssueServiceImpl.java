@@ -8,11 +8,14 @@ import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.CaseObject;
+import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.service.CaseService;
+import ru.protei.portal.ui.common.server.service.SessionService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.issue.client.service.IssueService;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -44,9 +47,12 @@ public class IssueServiceImpl implements IssueService {
         log.debug( "saveIssue(): case={}", caseObject );
 
         CoreResponse< CaseObject > response;
-        if ( caseObject.getId() == null )
+        if ( caseObject.getId() == null ) {
+            caseObject.setTypeId(En_CaseType.CRM_SUPPORT.getId());
+            caseObject.setCreatorId(getCurrentPerson().getId());
+
             response = caseService.saveCaseObject(caseObject);
-        else
+        }else
             response = caseService.updateCaseObject(caseObject);
 
         log.debug( "saveIssue(): response.isOk()={}", response.isOk() );
@@ -70,8 +76,18 @@ public class IssueServiceImpl implements IssueService {
         return result.getData();
     }
 
+    private Person getCurrentPerson(){
+        return sessionService.getUserSessionDescriptor(request).getPerson();
+    }
+
     @Autowired
     CaseService caseService;
+
+    @Autowired
+    SessionService sessionService;
+
+    @Autowired
+    HttpServletRequest request;
 
     private static final Logger log = LoggerFactory.getLogger( "web" );
 

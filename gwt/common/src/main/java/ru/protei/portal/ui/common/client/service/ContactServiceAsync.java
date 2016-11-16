@@ -22,9 +22,4 @@ public interface ContactServiceAsync {
 
     void saveContact (Person p, AsyncCallback<Person> callback);
 
-    /**
-     * Получение списка контактов домашней компании
-     * @return список контактов
-     */
-    void getEmployees(AsyncCallback<List<Person>> async);
 }

@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.crm.server.service;
+package ru.protei.portal.ui.common.server.service;
 
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 

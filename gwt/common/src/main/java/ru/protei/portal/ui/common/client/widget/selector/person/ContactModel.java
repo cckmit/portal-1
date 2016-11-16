@@ -18,7 +18,7 @@ import java.util.function.Consumer;
 /**
  * Модель сотрудников любой компании
  */
-public abstract class PersonModel implements Activity {
+public abstract class ContactModel implements Activity {
 
     public void requestPersonList(Company company, Consumer<List<EntityOption>> fillOptionsAction){
         ContactQuery query = new ContactQuery();

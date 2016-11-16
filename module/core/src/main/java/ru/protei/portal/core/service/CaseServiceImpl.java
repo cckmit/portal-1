@@ -13,6 +13,7 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.query.CaseQuery;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -47,13 +48,34 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
-    public CoreResponse< CaseObject > saveCaseObject( CaseObject p ) {
-        return new CoreResponse<CaseObject>().success( p );
+    public CoreResponse< CaseObject > saveCaseObject( CaseObject caseObject ) {
+        if (caseObject == null)
+            return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
+
+        Date now = new Date();
+        caseObject.setCreated(now);
+        caseObject.setModified(now);
+
+        Long caseId = caseObjectDAO.insertCase(caseObject);
+
+        if (caseId == null)
+            return new CoreResponse().error(En_ResultStatus.NOT_CREATED);
+
+        return new CoreResponse<CaseObject>().success( caseObject );
     }
 
     @Override
-    public CoreResponse< CaseObject > updateCaseObject( CaseObject p ) {
-        return new CoreResponse<CaseObject>().success( p );
+    public CoreResponse< CaseObject > updateCaseObject( CaseObject caseObject ) {
+        if (caseObject == null)
+            return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
+
+        caseObject.setModified(new Date());
+        boolean isUpdated = caseObjectDAO.merge(caseObject);
+
+        if (!isUpdated)
+            return new CoreResponse().error(En_ResultStatus.NOT_UPDATED);
+
+        return new CoreResponse<CaseObject>().success( caseObject );
     }
 
     @Override

@@ -6,15 +6,18 @@ import ru.protei.portal.core.model.dao.CompanyDAO;
 import ru.protei.portal.core.model.dao.CompanyGroupHomeDAO;
 import ru.protei.portal.core.model.dao.PersonAbsenceDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
+import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.PersonAbsence;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.view.EmployeeDetailView;
 import ru.protei.portal.core.model.view.WorkerView;
-import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.winter.jdbc.JdbcSort;
 
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import java.util.stream.Collectors;
 
 
@@ -60,10 +63,6 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .distinct()
                 .collect(Collectors.toList());
 
-//        TreeSet<Long> ids = new TreeSet<>();
-//        for(PersonAbsence pa: personAbsences)
-//            ids.add(pa.getCreatorId());
-
         HashMap<Long,String> creators = new HashMap<>();
 
         for (Person p : personDAO.partialGetListByKeys(ids, "displayShortName")){
@@ -93,21 +92,15 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
 
-//    public String getCurrentMissingEmployeeIDs() {
-//        List<PersonAbsence> currentAbsences = absenceDAO.getCurrentAbsences(null);
-//
-//        StringBuilder IDs = new StringBuilder();
-//        IDs.append("[");
-//
-//        for(int i = 0; i < currentAbsences.size(); i++){
-//            if(i>0)
-//                IDs.append(",");
-//            IDs.append(currentAbsences.get(i).getPersonId());
-//        }
-//
-//        IDs.append("]");
-//        return IDs.toString();
-//    }
+    @Override
+    public CoreResponse<List<Person>> employeeList() {
+        List<Person> list = personDAO.getEmployeesAll();
+
+        if ( list == null )
+            new CoreResponse<List<Person>>().error(En_ResultStatus.GET_DATA_ERROR);
+
+        return new CoreResponse<List<Person>>().success(list);
+    }
 
 
     @Override
