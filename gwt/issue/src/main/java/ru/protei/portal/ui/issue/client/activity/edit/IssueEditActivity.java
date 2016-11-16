@@ -57,9 +57,9 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             return;
         }
 
-        fillIssueObject(tempIssue);
+        fillIssueObject(issue);
 
-        issueService.saveIssue(tempIssue, new RequestCallback<Boolean>() {
+        issueService.saveIssue(issue, new RequestCallback<Boolean>() {
             @Override
             public void onError(Throwable throwable) {}
 
@@ -91,8 +91,8 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     }
 
     private void initialView(CaseObject issue){
-        tempIssue = issue;
-        fillView(tempIssue);
+        this.issue = issue;
+        fillView(this.issue);
         resetValidation();
         resetState();
     }
@@ -174,7 +174,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     Lang lang;
 
     private AppEvents.InitDetails initDetails;
-    private CaseObject tempIssue;
+    private CaseObject issue;
 
 
 }
