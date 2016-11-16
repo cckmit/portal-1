@@ -21,12 +21,6 @@ public interface ContactService extends RemoteService {
      */
     List< Person > getContacts (ContactQuery query) throws RequestFailedException;
 
-    /**
-     * Получение списка контактов домашней компании
-     * @return список контактов
-     */
-    List< Person > getEmployees () throws RequestFailedException;
-
     Person getContact (long id) throws RequestFailedException;
 
     Person saveContact (Person p) throws RequestFailedException;

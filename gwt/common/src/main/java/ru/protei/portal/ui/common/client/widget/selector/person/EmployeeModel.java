@@ -7,7 +7,7 @@ import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.PersonEvents;
-import ru.protei.portal.ui.common.client.service.ContactServiceAsync;
+import ru.protei.portal.ui.common.client.service.EmployeeServiceAsync;
 import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
@@ -43,7 +43,7 @@ public abstract class EmployeeModel implements Activity {
 
     private void refreshOptions() {
 
-        contactService.getEmployees(new RequestCallback<List<Person>>() {
+        employeeService.getEmployees(new RequestCallback<List<Person>>() {
             @Override
             public void onError(Throwable throwable) {
             }
@@ -59,7 +59,7 @@ public abstract class EmployeeModel implements Activity {
     }
 
     @Inject
-    ContactServiceAsync contactService;
+    EmployeeServiceAsync employeeService;
 
     private List< EntityOption > list = new ArrayList<>();
 

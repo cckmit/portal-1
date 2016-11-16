@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Селектор сотрудников любой компании
  */
-public class PersonButtonSelector extends ButtonSelector<EntityOption> {
+public class ContactButtonSelector extends ButtonSelector<EntityOption> {
 
     @Event
     public void onPersonListChanged( PersonEvents.ChangePersonModel event ) {
@@ -28,7 +28,7 @@ public class PersonButtonSelector extends ButtonSelector<EntityOption> {
 
     @Override
     public void setValue(EntityOption value) {
-        if(personModel.isPushing()){
+        if(contactModel.isPushing()){
             deferred = value;
         }else
             super.setValue(value);
@@ -62,11 +62,11 @@ public class PersonButtonSelector extends ButtonSelector<EntityOption> {
     }
 
     private void updatePersons(){
-        personModel.requestPersonList(company, this::fillOptions);
+        contactModel.requestPersonList(company, this::fillOptions);
     }
 
     @Inject
-    PersonModel personModel;
+    ContactModel contactModel;
 
     private Company company;
     private String defaultValue;

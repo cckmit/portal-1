@@ -35,18 +35,6 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Override
-    public List<Person> getEmployees() throws RequestFailedException {
-        log.debug( "getEmployees():");
-
-        CoreResponse<List<Person>> response = contactService.employeeList();
-
-        if (response.isError()) {
-            throw new RequestFailedException( response.getStatus() );
-        }
-        return response.getData();
-    }
-
-    @Override
     public Person getContact(long id) throws RequestFailedException {
         log.debug("get contact, id: {}", id);
 

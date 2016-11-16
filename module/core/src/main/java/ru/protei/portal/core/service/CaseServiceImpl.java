@@ -57,7 +57,6 @@ public class CaseServiceImpl implements CaseService {
         caseObject.setModified(now);
 
         Long caseId = caseObjectDAO.insertCase(caseObject);
-        caseObject.setId(caseId);
 
         if (caseId == null)
             return new CoreResponse().error(En_ResultStatus.NOT_CREATED);
