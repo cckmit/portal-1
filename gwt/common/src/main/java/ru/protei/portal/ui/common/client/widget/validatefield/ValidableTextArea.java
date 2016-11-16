@@ -3,9 +3,6 @@ package ru.protei.portal.ui.common.client.widget.validatefield;
 
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.TextAreaElement;
-import com.google.gwt.regexp.shared.RegExp;
-import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.ui.TextArea;
 
 /**
  * TextArea c возможностью валидации
@@ -14,7 +11,7 @@ public class ValidableTextArea extends ValidableTextBoxBase{
 
     public ValidableTextArea(){
         super(Document.get().createTextAreaElement());
-        this.setStyleName("gwt-TextArea");
+//        this.setStyleName("gwt-TextArea");
     }
 
     public int getCharacterWidth() {

@@ -5,6 +5,7 @@ import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 import java.util.Date;
 
@@ -14,8 +15,8 @@ import java.util.Date;
 public interface AbstractContactEditView extends IsWidget {
     void setActivity( AbstractContactEditActivity activity );
 
-    HasText firstName();
-    HasText lastName();
+    HasValue<String> firstName();
+    HasValue<String> lastName();
     HasText secondName();
 
     HasText displayName();
@@ -48,4 +49,10 @@ public interface AbstractContactEditView extends IsWidget {
     HasValue<EntityOption> company();
 
     HasValue<En_Gender> gender ();
+
+    HasValidable companyValidator();
+
+    HasValidable firstNameValidator();
+
+    HasValidable lastNameValidator();
 }

@@ -9,7 +9,7 @@
             <div class="body">
                 <div class="grid grid-indent">
                     <div class="col-xs-12 col-lg-4">
-                        <label class="required">
+                        <label>
                             <ui:text from="{lang.companyName}"/>
                         </label>
                         <div class="panelField verifiable">
@@ -34,13 +34,13 @@
                         </div>
                     </div>
                     <div class="col-xs-12 col-lg-6">
-                        <label class="required">
+                        <label>
                             <ui:text from="{lang.companyActualAddress}"/>
                         </label>
                         <validablefield:ValidableTextArea ui:field="actualAddress" styleName="inputField description" notNull="true"/>
                     </div>
                     <div class="col-xs-12 col-lg-6">
-                        <label class="required">
+                        <label>
                             <ui:text from="{lang.companyLegalAddress}"/>
                         </label>
                         <validablefield:ValidableTextArea ui:field="legalAddress" styleName="inputField description" notNull="true"/>

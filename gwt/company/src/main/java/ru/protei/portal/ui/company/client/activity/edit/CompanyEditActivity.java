@@ -75,7 +75,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
     @Override
     public void onChangeCompanyName() {
-        String value = view.companyName().getText().trim();
+        String value = view.companyName().getValue().trim();
 
         //isCompanyNameExists не принимает пустые строки!
         if ( value.isEmpty() ){
@@ -98,25 +98,13 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
     }
 
     private boolean validateFieldsAndGetResult(){
-        boolean result = true;
-
-        if(!view.companyNameValidator().isValid())
-            view.companyNameValidator().setValid(result = false);
-
-        if(!view.actualAddressValidator().isValid())
-            view.actualAddressValidator().setValid(result = false);
-
-        if(!view.legalAddressValidator().isValid())
-            view.legalAddressValidator().setValid(result = false);
-
-        return result;
+        return view.companyNameValidator().isValid() &&
+                view.actualAddressValidator().isValid() &&
+                view.legalAddressValidator().isValid();
     }
 
     private void resetValidationStatus(){
         view.setCompanyNameStatus(NameStatus.NONE);
-        view.companyNameValidator().setValid(true);
-        view.actualAddressValidator().setValid(true);
-        view.legalAddressValidator().setValid(true);
     }
 
     private void initialView(Company company){
@@ -139,9 +127,9 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
     private void fillView(Company company){
         PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(company.getContactInfo());
-        view.companyName().setText(company.getCname());
-        view.actualAddress().setText(infoFacade.getFactAddress());
-        view.legalAddress().setText(infoFacade.getLegalAddress());
+        view.companyName().setValue(company.getCname());
+        view.actualAddress().setValue(infoFacade.getFactAddress());
+        view.legalAddress().setValue(infoFacade.getLegalAddress());
 
         view.comment().setText(company.getInfo());
         view.companyCategory().setValue(company.getCategory());
@@ -152,12 +140,12 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
 
     private void fillCompany(Company company){
-        company.setCname(view.companyName().getText());
+        company.setCname(view.companyName().getValue());
 
         PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(company.getContactInfo());
 
-        infoFacade.setLegalAddress(view.legalAddress().getText());
-        infoFacade.setFactAddress(view.actualAddress().getText());
+        infoFacade.setLegalAddress(view.legalAddress().getValue());
+        infoFacade.setFactAddress(view.actualAddress().getValue());
         company.setInfo(view.comment().getText());
         company.setCategory(view.companyCategory().getValue());
         company.setCompanyGroup(view.companyGroup().getValue());

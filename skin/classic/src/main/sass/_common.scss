@@ -516,12 +516,10 @@ label.bordered:after{
   box-shadow: 0 2px 8px -2px #bdbdbd inset;
 }
 
-.inputField.error,
-.button.error{
+.inputField.required,
+.button.required{
   border: 1px solid #f54646;
 }
-
-
 
 /*  auto-add-value-comment widget */
 
