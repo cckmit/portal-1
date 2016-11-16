@@ -123,8 +123,8 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
 
             @Override
             public void onSuccess(DevUnit devUnit) {
-                fireEvent(new AppEvents.InitPanelName(product.getName()));
                 product = devUnit;
+                fireEvent(new AppEvents.InitPanelName(product.getName()));
                 fillView(product);
                 resetValidationStatus();
             }
