@@ -6,7 +6,9 @@ import ru.protei.portal.core.model.dao.CompanyGroupHomeDAO;
 import ru.protei.portal.core.model.dao.MigrationEntryDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dao.UserLoginDAO;
-import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.dict.En_AdminState;
+import ru.protei.portal.core.model.dict.En_AuthType;
+import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
@@ -20,8 +22,6 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import static ru.protei.portal.core.model.helper.HelperFunc.nvlt;
 
 /**
  * Created by michael on 04.04.16.

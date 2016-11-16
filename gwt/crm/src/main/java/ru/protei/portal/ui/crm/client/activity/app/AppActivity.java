@@ -56,11 +56,16 @@ public abstract class AppActivity
         History.newItem( initialToken );
     }
 
-    @Event
+    /**
+     *  Здесь дыра!
+     *  Можно войти без авторизации и получить доступ ко всем сущностям
+     */
+
+/*    @Event
     public void onShowApp( AppEvents.Show event ) {
         init.parent.clear();
         init.parent.add(view.asWidget());
-    }
+    }*/
 
     @Event
     public void onInitPanelName(AppEvents.InitPanelName event) {}

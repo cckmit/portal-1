@@ -9,19 +9,17 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 public class TableAnimation {
 
     public void showDetails() {
-        tableContainer.removeStyleName( "col-sm-12" );
-        tableContainer.addStyleName( "col-sm-8 col-xs-7" );
+        tableContainer.removeStyleName( "col-xs-12" );
+        tableContainer.addStyleName( "col-xs-8" );
         detailsContainer.removeStyleName( "no-width" );
-        detailsContainer.addStyleName( "col-sm-4 col-xs-5" );
+        detailsContainer.addStyleName( "col-xs-4" );
     }
 
     public void closeDetails() {
         detailsContainer.clear();
-        tableContainer.removeStyleName( "col-sm-8" );
-        tableContainer.removeStyleName( "col-xs-7" );
-        tableContainer.addStyleName( "col-sm-12" );
-        detailsContainer.removeStyleName( "col-sm-4" );
-        detailsContainer.removeStyleName( "col-xs-5" );
+        tableContainer.removeStyleName( "col-xs-8" );
+        tableContainer.addStyleName( "col-xs-12" );
+        detailsContainer.removeStyleName( "col-xs-4" );
         detailsContainer.addStyleName( "no-width" );
     }
 

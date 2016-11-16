@@ -598,14 +598,14 @@ label.bordered:after{
   opacity: 0;
 }
 
-.table-container {
+.global-table-container {
   -webkit-transition: all 0.5s;
   -moz-transition: all 0.5s;
   -o-transition: all 0.5s;
   transition: all 0.5s;
   // временное решение
-  height: calc(100% - 59px - 30px);
-  overflow-y: auto;
+  height: calc(100% - 95px);
+  overflow-x: auto;
 }
 
 .preview-container {
@@ -699,3 +699,24 @@ td.info {
   right: 10px;
   top: 5px;
 }
+
+
+.filter {
+  margin-bottom: 10px;
+}
+
+
+
+
+
+
+
+
+.main-header .logo { font-size: 24px; text-align: left; };
+.main-header .logo .logo-lg {padding-left: 15px;};
+
+.sidebar-collapse .main-header .logo .logo-mini {
+  display: block;
+  font-size: 18px; text-align: center;
+}
+

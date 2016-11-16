@@ -5,30 +5,33 @@
              xmlns:table="urn:import:ru.brainworm.factory.widget.table.client">
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
     <g:HTMLPanel styleName="main-content">
-        <g:HTMLPanel ui:field="filter" styleName="controlButtons">
-            <div class="buttons_group">
+        <g:HTMLPanel ui:field="filter" styleName="filter grid">
+            <div class="col-xs-12 col-md-3">
                 <companyselector:CompanySelector ui:field="company"/>
+            </div>
+            <div class="col-xs-12 col-md-2">
                 <g:CheckBox ui:field="showFired" styleName="checkbox" text="{lang.contactShowFired}"/>
             </div>
-            <div class="buttons_group">
+            <div class="col-xs-12 col-md-4">
                 <ui:text from="{lang.sortBy}"/>
                 <sortfieldselector:SortFieldSelector ui:field="sortField" type="CONTACT"/>
                 <div class="button empty whiteC switcher">
                     <g:ToggleButton ui:field="sortDir" styleName="sorting_button"/>
                 </div>
             </div>
-            <div class="buttons_group">
+            <div class="col-xs-12 col-md-1">
                 <g:Button ui:field="create" styleName="button blueC" text="{lang.buttonCreate}"/>
             </div>
-            <div class="rightSide local-search">
+            <div class="rightSide pull-right local-search col-xs-12 col-md-2">
                 <span class="icon local-search-icon"></span>
                 <g:TextBox ui:field="search" styleName="inputField"/>
             </div>
         </g:HTMLPanel>
         <div class="grid">
-            <g:HTMLPanel ui:field="tableContainer" styleName="table-container col-sm-12">
-                <table:TableWidget ui:field="table" styleName="table-hover"/>
+            <g:HTMLPanel ui:field="tableContainer" styleName="global-table-container col-xs-12">
+                    <table:TableWidget ui:field="table" styleName="table-hover"/>
             </g:HTMLPanel>
             <g:HTMLPanel ui:field="previewContainer" styleName="preview-container no-width"/>
         </div>
-    </g:HTMLPanel></ui:UiBinder>
+    </g:HTMLPanel>
+</ui:UiBinder>

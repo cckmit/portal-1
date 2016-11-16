@@ -58,7 +58,7 @@ public class EmployeeDetailView {
         this.jid = infoFacade.getJabber();
         this.ip = p.getIpAddress() != null ? new String[] {p.getIpAddress()} : null;
         this.email = infoFacade.getEmail();
-        this.icq = infoFacade.getEmail();
+        this.icq = infoFacade.getIcq();
         this.fax = infoFacade.getFax();
         return this;
     }

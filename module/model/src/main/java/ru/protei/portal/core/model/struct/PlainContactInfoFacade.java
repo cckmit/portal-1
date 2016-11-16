@@ -3,12 +3,10 @@ package ru.protei.portal.core.model.struct;
 import ru.protei.portal.core.model.dict.En_ContactDataAccess;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
 
-import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static ru.protei.portal.core.model.helper.HelperFunc.isNotEmpty;
-import static ru.protei.portal.core.model.helper.HelperFunc.nvl;
 
 /**
  * Created by Mike on 09.11.2016.

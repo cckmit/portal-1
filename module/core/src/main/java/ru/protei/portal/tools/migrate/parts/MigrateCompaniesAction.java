@@ -4,12 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.core.model.dao.CompanyDAO;
 import ru.protei.portal.core.model.dao.CompanyGroupHomeDAO;
 import ru.protei.portal.core.model.dao.MigrationEntryDAO;
-import ru.protei.portal.core.model.dict.En_ContactDataAccess;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanyCategory;
 import ru.protei.portal.core.model.ent.CompanyHomeGroupItem;
-import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.tools.migrate.tools.MigrateAction;
 import ru.protei.portal.tools.migrate.tools.MigrateUtils;
 

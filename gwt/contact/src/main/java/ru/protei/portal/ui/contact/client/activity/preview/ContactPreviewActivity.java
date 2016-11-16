@@ -5,7 +5,6 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.ui.common.client.events.AppEvents;
@@ -14,8 +13,6 @@ import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ContactServiceAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
-
-import java.util.stream.Collectors;
 
 /**
  * Активность превью контакта
@@ -40,8 +37,7 @@ public abstract class ContactPreviewActivity implements Activity, AbstractContac
         this.contactId = event.contact.getId();
 
         fillView( event.contact );
-        view.fullScreen().setVisible( true );
-        view.preview().setStyleName( "preview" );
+        view.showFullScreen( false );
     }
 
     @Event
@@ -52,8 +48,7 @@ public abstract class ContactPreviewActivity implements Activity, AbstractContac
         this.contactId = event.contactId;
 
         fillView( contactId );
-        view.fullScreen().setVisible( false );
-        view.preview().addStyleName( "col-xs-12 col-lg-6" );
+        view.showFullScreen( true );
     }
 
     @Override

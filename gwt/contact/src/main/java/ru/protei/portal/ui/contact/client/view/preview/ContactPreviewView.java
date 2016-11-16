@@ -36,10 +36,10 @@ public class ContactPreviewView extends Composite implements AbstractContactPrev
     public void setSecondName(String value) { this.secondName.setInnerText( value ); }
 
     @Override
-    public void setDisplayName(String value) { this.secondName.setInnerText( value ); }
+    public void setDisplayName(String value) { this.displayName.setInnerText( value ); }
 
     @Override
-    public void setShortName(String value) { this.secondName.setInnerText( value ); }
+    public void setShortName(String value) { this.shortName.setInnerText( value ); }
 
     @Override
     public void setGender(String value) { this.gender.setInnerText( value ); }
@@ -72,7 +72,14 @@ public class ContactPreviewView extends Composite implements AbstractContactPrev
     public void setInfo(String value) { this.info.setInnerText( value ); }
 
     @Override
-    public HasVisibility fullScreen () { return fullScreen; }
+    public void showFullScreen ( boolean value ) {
+
+        fullScreen.setVisible( !value );
+        if (value)
+            preview.addStyleName( "col-xs-12 col-lg-6" );
+        else
+            preview.setStyleName( "preview" );
+    }
 
     @Override
     public HTMLPanel preview () { return preview; }

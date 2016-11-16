@@ -33,7 +33,7 @@ public class ProductListView extends Composite implements AbstractProductListVie
 
     @Override
     public HasWidgets getItemsContainer() {
-        return productContainer;
+        return childContainer;
     }
 
     @Override
@@ -45,7 +45,7 @@ public class ProductListView extends Composite implements AbstractProductListVie
     }
 
     @Override
-    public HasValue<En_SortField> sortField() { return sortFields; }
+    public HasValue<En_SortField> sortField() { return sortField; }
 
     @Override
     public HasValue<Boolean> sortDir() { return sortDir; }
@@ -65,7 +65,7 @@ public class ProductListView extends Composite implements AbstractProductListVie
         changeTimer.schedule(300);
     }
 
-    @UiHandler( "sortFields" )
+    @UiHandler( "sortField" )
     public void onSortFieldChanged( ValueChangeEvent<En_SortField> event ) {
         if ( activity != null ) {
             activity.onFilterChanged();
@@ -86,7 +86,7 @@ public class ProductListView extends Composite implements AbstractProductListVie
        }
     }
 
-    @UiHandler( "productContainer" )
+    @UiHandler( "childContainer" )
     public void onAddClicked( AddEvent event ) {
         if ( activity != null ) {
             activity.onCreateClicked();
@@ -113,12 +113,12 @@ public class ProductListView extends Composite implements AbstractProductListVie
     @UiField
     TextBox search;
     @UiField
-    PlateList productContainer;
+    PlateList childContainer;
     @UiField
     CheckBox showDeprecated;
     @Inject
     @UiField(provided = true)
-    SortFieldSelector sortFields;
+    SortFieldSelector sortField;
     @UiField
     ToggleButton sortDir;
     @Inject

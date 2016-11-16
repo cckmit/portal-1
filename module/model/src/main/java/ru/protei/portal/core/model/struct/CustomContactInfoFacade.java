@@ -1,15 +1,9 @@
 package ru.protei.portal.core.model.struct;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import ru.protei.portal.core.model.dict.En_ContactDataAccess;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
-import ru.protei.portal.core.model.dict.En_PhoneType;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 /**
  * Created by Mike on 09.11.2016.
