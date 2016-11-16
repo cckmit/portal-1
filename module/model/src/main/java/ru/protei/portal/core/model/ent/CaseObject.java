@@ -85,13 +85,13 @@ public class CaseObject implements Serializable {
     @JdbcColumn(name = "EMAILS")
     private String emails;
 
-    @Column(name = "creator_info")
+    @JdbcColumn(name = "creator_info")
     private String creatorInfo;
 
-    @Column(name = "deleted")
+    @JdbcColumn(name = "deleted")
     private boolean deleted;
 
-    @Column(name = "private_flag")
+    @JdbcColumn(name = "private_flag")
     private boolean privateCase;
 
 
