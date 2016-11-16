@@ -1,15 +1,18 @@
 package ru.protei.portal.ui.issue.client.activity.preview;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.IssueEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.lang.En_CaseImportanceLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.issue.client.service.IssueServiceAsync;
@@ -57,11 +60,11 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
     }
 
     private void fillView( CaseObject value ) {
-        view.setLocal( value.getLocal() );
+        view.setPrivateIssue( value.isPrivateCase() );
         view.setHeader( value.getCaseNumber() == null ? "" : lang.issueHeader( value.getCaseNumber().toString() ) );
         view.setCreationDate( value.getCreated() == null ? "" : format.format( value.getCreated() ) );
-        view.setState( Long.toString( value.getStateId() ) );
-        view.setCriticality( Integer.toString( value.getImpLevel() ) );
+        view.setState( value.getStateId() );
+        view.setCriticality( value.getImpLevel() );
         view.setProduct( value.getProduct() == null ? "" : value.getProduct().getName() );
         view.setCompany( value.getInitiatorCompany() == null ? "" : value.getInitiatorCompany().getCname() );
         view.setContact( value.getInitiator() == null ? "" : value.getInitiator().getDisplayName() );

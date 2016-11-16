@@ -4,11 +4,11 @@
     <g:HTMLPanel styleName="grid">
         <g:HTMLPanel ui:field="preview" styleName="preview">
             <div class="col-xs-12">
-                <g:Anchor ui:field="fullScreen" styleName="fa fa-4 fa-external-link pull-right" href="#"/>
+                <g:Anchor ui:field="fullScreen" styleName="fa fa-lg fa-external-link pull-right" href="#"/>
             </div>
 
             <fieldset class="header col-xs-12 col-lg-5">
-                <legend><i ui:field="local" class="fa fa-unlock-alt"></i> <lable ui:field="header"></lable></legend>
+                <legend><i ui:field="privateIssue" class="fa fa-unlock-alt"></i> <lable ui:field="header"></lable></legend>
                 <div class="col-xs-12">
                     <label class="col-xs-5 col-md-5"><ui:text from="{lang.issueCreationDate}"/></label>
                     <span class="col-xs-7 col-md-7" ui:field="creationDate"></span>
@@ -22,11 +22,17 @@
                 <legend><ui:text from="{lang.issueCurrentStateHeader}"/></legend>
                 <div class="col-xs-12">
                     <label class="col-xs-5 col-md-5"><ui:text from="{lang.issueCriticality}"/></label>
-                    <span class="col-xs-7 col-md-7" ui:field="criticality"></span><!--i class="fa fa-exclamation-triangle" style="color:red;"></i-->
+                    <span class="col-xs-7 col-md-7">
+                        <i ui:field="iconCriticality"></i>
+                        <span ui:field="criticality"></span>
+                    </span>
                 </div>
                 <div class="col-xs-12">
                     <label class="col-xs-5 col-md-5"><ui:text from="{lang.issueState}"/></label>
-                    <span class="col-xs-7 col-md-7" ui:field="state"></span>
+                    <span class="col-xs-7 col-md-7">
+                        <i ui:field="iconState"></i>
+                        <span ui:field="state"></span>
+                    </span>
                 </div>
             </fieldset>
             <fieldset class="header col-xs-12 col-lg-5">
