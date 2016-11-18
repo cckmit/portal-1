@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by turik on 28.10.16.
+ * Модель селектора компаний
  */
 public abstract class CompanyModel implements Activity {
 

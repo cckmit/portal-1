@@ -1,7 +1,6 @@
 package ru.protei.portal.ui.issue.client.view.filter;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -11,6 +10,8 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.dict.En_CaseState;
+import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -20,10 +21,10 @@ import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterActivity;
 import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterView;
-import ru.protei.portal.ui.issue.client.activity.preview.AbstractIssuePreviewActivity;
-import ru.protei.portal.ui.issue.client.activity.table.AbstractIssueTableActivity;
-import ru.protei.portal.ui.issue.client.activity.table.AbstractIssueTableView;
-import ru.protei.portal.ui.issue.client.view.table.IssueTableView;
+import ru.protei.portal.ui.issue.client.widget.btngroup.ImportanceBtnGroup;
+import ru.protei.portal.ui.issue.client.widget.buttonselector.IssueStatesButtonSelector;
+
+import java.util.Set;
 
 /**
  * Представление фильтра обращений
@@ -34,6 +35,9 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         initWidget( ourUiBinder.createAndBindUi( this ) );
         search.getElement().setPropertyString( "placeholder", lang.search() );
         sortField.setType( ModuleType.ISSUE );
+        state.setHasNullValue( true );
+        state.setDefaultValue( lang.issueState() );
+        state.setValidation( false );
     }
 
     @Override
@@ -45,6 +49,17 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     public HasValue<EntityOption> company() {
         return company;
     }
+
+    @Override
+    public HasValue<EntityOption> product() {
+        return product;
+    }
+
+    @Override
+    public HasValue< Set <En_ImportanceLevel> > importance() { return importance; }
+
+    @Override
+    public HasValue<En_CaseState> state () { return state; }
 
     @Override
     public HasValue<En_SortField> sortField() {
@@ -64,13 +79,23 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     @Override
     public void resetFilter() {
         company.setValue( null );
+        product.setValue( null );
+        importance.setValue(null);
+        state.setValue( null );
         sortField.setValue( En_SortField.creation_date );
         sortDir.setValue( true );
         search.setText( "" );
     }
 
-    @UiHandler( "company" )
-    public void onCompanySelected( ValueChangeEvent<EntityOption> event ) {
+    @UiHandler( {"company", "product"} )
+    public void onAnySelected( ValueChangeEvent<EntityOption> event ) {
+        if ( activity != null ) {
+            activity.onFilterChanged();
+        }
+    }
+
+    @UiHandler( "importance" )
+    public void onImportanceSelected( ValueChangeEvent<Set<En_ImportanceLevel>> event ) {
         if ( activity != null ) {
             activity.onFilterChanged();
         }
@@ -119,6 +144,14 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     @Inject
     @UiField ( provided = true )
     ProductButtonSelector product;
+
+    @Inject
+    @UiField ( provided = true )
+    IssueStatesButtonSelector state;
+
+    @Inject
+    @UiField( provided = true )
+    ImportanceBtnGroup importance;
 
     @Inject
     @UiField( provided = true )

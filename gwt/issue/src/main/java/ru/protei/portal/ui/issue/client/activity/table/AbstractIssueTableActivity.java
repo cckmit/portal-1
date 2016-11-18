@@ -10,5 +10,5 @@ import ru.protei.portal.ui.common.client.columns.EditClickColumn;
 public interface AbstractIssueTableActivity extends ClickColumn.Handler< CaseObject >, EditClickColumn.EditHandler< CaseObject > {
 
     void onEditClicked( CaseObject value );
-    void onCreateClick();
+    void onCreateClicked();
 }

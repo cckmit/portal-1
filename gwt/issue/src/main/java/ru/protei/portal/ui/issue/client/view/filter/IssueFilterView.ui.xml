@@ -2,7 +2,10 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:companyselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.company'
              xmlns:productselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.product'
-             xmlns:sortfieldselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.sortfield'>
+             xmlns:sortfieldselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.sortfield'
+             xmlns:importance='urn:import:ru.protei.portal.ui.issue.client.widget.btngroup'
+             xmlns:state='urn:import:ru.protei.portal.ui.issue.client.widget.buttonselector'>
+
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel styleName="filter grid">
@@ -22,6 +25,12 @@
         </div>
         <div class="col-xs-12">
             <productselector:ProductButtonSelector ui:field="product"/>
+        </div>
+        <div class="col-xs-12">
+            <importance:ImportanceBtnGroup ui:field="importance"/>
+        </div>
+        <div class="col-xs-12">
+        <state:IssueStatesButtonSelector ui:field="state" validation="true"/>
         </div>
 
     </g:HTMLPanel>

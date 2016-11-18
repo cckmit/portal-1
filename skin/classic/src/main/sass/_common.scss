@@ -601,6 +601,10 @@ label.bordered:after{
   opacity: 0;
 }
 
+.no-display {
+  display: none;
+}
+
 .global-table-container {
   -webkit-transition: all 0.5s;
   -moz-transition: all 0.5s;
@@ -625,7 +629,16 @@ label.bordered:after{
   -o-transition: all 0.5s;
   transition: all 0.5s;
   right: 0;
+
+  .filter {
+    margin-left: 10px;
+    padding: 15px 20px;
+    background: white;
+    display: inline-block;
+  }
 }
+
+
 
 /************************/
 
@@ -723,10 +736,6 @@ td.info {
 }
 
 /****************/
-
-.filter {
-  padding-left: 10px;
-}
 
 /* Importance level */
 .CRITICAL {

@@ -2,6 +2,7 @@ package ru.protei.portal.ui.common.client.widget.selector.product;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 
@@ -14,26 +15,28 @@ public class ProductButtonSelector extends ButtonSelector<EntityOption> implemen
 
     @Inject
     public void init( ProductModel productModel) {
-        productModel.subscribe(this);
+        productModel.subscribe( this );
         setSearchEnabled( true );
         setSearchAutoFocus( true );
     }
 
-    public void fillOptions( List< EntityOption > products) {
+    public void fillOptions( List< EntityOption > options) {
         clearOptions();
 
-        if(defaultValue != null)
-            addOption( defaultValue , null );
-
-        for ( EntityOption product : products) {
-            addOption( product.getDisplayText(), product);
+        if ( hasAnyValue ) {
+            addOption( lang.product(), null );
         }
+
+        options.forEach(option -> addOption(option.getDisplayText(),option));
+     }
+
+    public void setHasAnyValue( boolean hasAnyValue ) {
+        this.hasAnyValue = hasAnyValue;
     }
 
-    public void setDefaultValue( String value ) {
-        this.defaultValue = value;
-    }
+    @Inject
+    Lang lang;
 
-    private String defaultValue = null;
+    private boolean hasAnyValue = true;
 
 }

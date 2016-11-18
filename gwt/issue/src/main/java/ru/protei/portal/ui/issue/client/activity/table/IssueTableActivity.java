@@ -67,7 +67,7 @@ public abstract class IssueTableActivity implements AbstractIssueTableActivity, 
     }
 
     @Override
-    public void onCreateClick() {
+    public void onCreateClicked() {
         fireEvent(new IssueEvents.Edit());
         //fireEvent(IssueEvents.Edit.newItem(view.company().getValue()));
     }
@@ -108,7 +108,7 @@ public abstract class IssueTableActivity implements AbstractIssueTableActivity, 
 
     private CaseQuery getQuery() {
         return new CaseQuery(
-                En_CaseType.CRM_SUPPORT, filterView.company().getValue(), filterView.searchPattern().getValue(),
+                En_CaseType.CRM_SUPPORT, filterView.company().getValue(), filterView.product().getValue(), filterView.searchPattern().getValue(),
                 filterView.sortField().getValue(), filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC
         );
     }

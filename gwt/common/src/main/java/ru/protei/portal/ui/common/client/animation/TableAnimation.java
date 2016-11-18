@@ -10,10 +10,10 @@ public class TableAnimation {
 
     public void showDetails() {
         tableContainer.removeStyleName( "col-xs-9" );
-        tableContainer.addStyleName( "col-xs-4" );
+        tableContainer.addStyleName( "col-xs-5" );
 
         detailsContainer.removeStyleName( "no-width" );
-        detailsContainer.addStyleName( "col-xs-8" );
+        detailsContainer.addStyleName( "col-xs-7" );
 
         filterContainer.removeStyleName( "col-xs-3" );
         filterContainer.addStyleName( "no-width" );
@@ -22,10 +22,10 @@ public class TableAnimation {
     public void closeDetails() {
         detailsContainer.clear();
 
-        tableContainer.removeStyleName( "col-xs-4" );
+        tableContainer.removeStyleName( "col-xs-5" );
         tableContainer.addStyleName( "col-xs-9" );
 
-        detailsContainer.removeStyleName( "col-xs-8" );
+        detailsContainer.removeStyleName( "col-xs-7" );
         detailsContainer.addStyleName( "no-width" );
 
         filterContainer.removeStyleName( "no-width" );

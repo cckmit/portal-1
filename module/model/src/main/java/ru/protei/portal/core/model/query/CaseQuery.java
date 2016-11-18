@@ -11,18 +11,20 @@ import ru.protei.portal.core.model.view.EntityOption;
 public class CaseQuery extends BaseQuery {
 
     private Long companyId;
+    private Long productId;
     private En_CaseType type;
 
     public CaseQuery() {};
 
-    public CaseQuery( En_CaseType type, EntityOption company, String searchString, En_SortField sortField, En_SortDir sortDir ) {
-        this (type, company == null ? null : company.getId(), searchString, sortField, sortDir);
+    public CaseQuery( En_CaseType type, EntityOption company, EntityOption product, String searchString, En_SortField sortField, En_SortDir sortDir ) {
+        this (type, company == null ? null : company.getId(), product == null ? null : product.getId(), searchString, sortField, sortDir);
     }
 
-    public CaseQuery( En_CaseType type, Long companyId, String searchString, En_SortField sortField, En_SortDir sortDir ) {
+    public CaseQuery( En_CaseType type, Long companyId, Long productId, String searchString, En_SortField sortField, En_SortDir sortDir ) {
         super(searchString, sortField, sortDir);
         this.type = type;
         this.companyId = companyId;
+        this.productId = productId;
         this.limit = 1000;
     }
 
@@ -33,6 +35,12 @@ public class CaseQuery extends BaseQuery {
     public void setCompanyId(Long companyId) {
         this.companyId = companyId;
     }
+
+    public Long getProductId() {
+        return productId;
+    }
+
+    public void setProductId(Long productId) { this.productId = productId; }
 
     public En_CaseType getType() {
         return type;
