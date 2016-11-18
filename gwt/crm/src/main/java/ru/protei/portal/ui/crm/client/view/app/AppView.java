@@ -94,10 +94,6 @@ public class AppView extends Composite
 
     @UiField
     Anchor toggleButton;
-
-    @UiField
-    Anchor create;
-
     @UiField
     NavSearchBox search;
     @UiField

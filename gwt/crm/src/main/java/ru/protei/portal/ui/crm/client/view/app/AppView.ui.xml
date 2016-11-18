@@ -24,18 +24,7 @@
                     <span class="sr-only">Toggle navigation</span>
                 </g:Anchor>
 
-                <!-- action-bar -->
-                <ul class="nav navbar-nav navbar-left" style="display:none">
-                    <!-- сюда добавлять кнопки с действиями -->
-                    <li>
-                        <g:Anchor ui:field="create" href="#">
-                            <i class="fa fa-lg fa-plus"></i>
-                            <ui:text from="{lang.buttonCreate}"/>
-                        </g:Anchor>
-                    </li>
-                </ul>
-
-                <g:HTMLPanel ui:field="actionBarContainer"/>
+                <g:HTMLPanel ui:field="actionBarContainer" tag="ul" styleName="nav navbar-nav navbar-left"/>
 
                 <ul class="nav navbar-nav navbar-right">
                     <navsearch:NavSearchBox ui:field="search"/>

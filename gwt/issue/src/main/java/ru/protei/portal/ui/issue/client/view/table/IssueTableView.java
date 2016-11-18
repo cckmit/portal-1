@@ -86,11 +86,6 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
         table.clearRows();
     }
 
-//    @UiHandler("create")
-    public void onCreateClick (ClickEvent event) {
-        activity.onCreateClick();
-    }
-
     private void initTable () {
         editClickColumn = new EditClickColumn< CaseObject>( lang ) {};
         //editClickColumn.setColumnProvider( columnProvider );
@@ -193,11 +188,6 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
         table.addColumn( creationDate.header, creationDate.values );
         table.addColumn( manager.header, manager.values );
     }
-
-
-
-//    @UiField
-//    Button create;
 
     @UiField
     TableWidget table;

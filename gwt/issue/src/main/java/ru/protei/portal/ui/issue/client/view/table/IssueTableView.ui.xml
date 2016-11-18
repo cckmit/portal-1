@@ -3,11 +3,6 @@
              xmlns:table="urn:import:ru.brainworm.factory.widget.table.client">
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
     <g:HTMLPanel styleName="grid">
-        <!-- кнопка создания отсюда уйдет в navbar -->
-<!--        <div class="col-xs-12 col-md-1">
-            <g:Button ui:field="create" styleName="button blueC" text="{lang.buttonCreate}"/>
-        </div>-->
-
         <g:HTMLPanel ui:field="tableContainer" styleName="global-table-container col-xs-9">
             <table:TableWidget ui:field="table" styleName="table-hover"/>
         </g:HTMLPanel>

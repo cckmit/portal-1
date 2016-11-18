@@ -14,7 +14,7 @@ public class UiConstants {
         public static final String ISSUE = "fa fa-tasks";
     }
 
-    public static interface TabIdentity {
-        public static final String ISSUE = "issue";
+    public static interface ActionBarIcons {
+        public static final String CREATE = "fa fa-plus";
     }
 }
