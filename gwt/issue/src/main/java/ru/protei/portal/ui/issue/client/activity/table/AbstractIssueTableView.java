@@ -16,12 +16,9 @@ public interface AbstractIssueTableView extends IsWidget {
 
     void setActivity( AbstractIssueTableActivity activity );
     void setAnimation ( TableAnimation animation );
-    HasValue<EntityOption> company();
-    HasValue< En_SortField > sortField();
-    HasValue< Boolean > sortDir();
-    HasValue< String > searchPattern();
-    void resetFilter();
+
     void clearRecords();
     void addRecord( CaseObject issue );
     HasWidgets getPreviewContainer ();
+    HasWidgets getFilterContainer ();
 }

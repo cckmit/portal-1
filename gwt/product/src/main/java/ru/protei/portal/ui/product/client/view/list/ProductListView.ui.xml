@@ -5,7 +5,7 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="main-content">
+    <g:HTMLPanel>
         <div class="filter grid">
             <div class="col-xs-12 col-md-5">
                 <g:CheckBox ui:field="showDeprecated" styleName="checkbox" text="{lang.productShowDeprecated}"/>

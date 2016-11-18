@@ -15,6 +15,8 @@ import ru.protei.portal.ui.common.client.events.IssueEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
+import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterActivity;
+import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterView;
 import ru.protei.portal.ui.issue.client.service.IssueServiceAsync;
 
 import java.util.List;
@@ -22,17 +24,20 @@ import java.util.List;
 /**
  * Активность таблицы обращений
  */
-public abstract class IssueTableActivity implements AbstractIssueTableActivity, Activity {
+public abstract class IssueTableActivity implements AbstractIssueTableActivity, AbstractIssueFilterActivity, Activity {
 
     @PostConstruct
     public void onInit() {
         view.setActivity( this );
         view.setAnimation( animation );
+
+        filterView.setActivity( this );
+        view.getFilterContainer().add( filterView.asWidget() );
     }
 
     @Event
     public void onAuthSuccess (AuthEvents.Success event) {
-        view.resetFilter();
+        filterView.resetFilter();
     }
 
     @Event
@@ -103,8 +108,8 @@ public abstract class IssueTableActivity implements AbstractIssueTableActivity, 
 
     private CaseQuery getQuery() {
         return new CaseQuery(
-                En_CaseType.CRM_SUPPORT, view.company().getValue(), view.searchPattern().getValue(),
-                view.sortField().getValue(), view.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC
+                En_CaseType.CRM_SUPPORT, filterView.company().getValue(), filterView.searchPattern().getValue(),
+                filterView.sortField().getValue(), filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC
         );
     }
 
@@ -113,6 +118,8 @@ public abstract class IssueTableActivity implements AbstractIssueTableActivity, 
 
     @Inject
     AbstractIssueTableView view;
+    @Inject
+    AbstractIssueFilterView filterView;
 
     @Inject
     IssueServiceAsync issueService;

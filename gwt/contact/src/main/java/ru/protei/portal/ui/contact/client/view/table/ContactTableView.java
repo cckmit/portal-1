@@ -57,7 +57,7 @@ public class ContactTableView extends Composite implements AbstractContactTableV
     
     @Override
     public void setAnimation ( TableAnimation animation ) {
-        animation.setContainers( tableContainer, previewContainer );
+        animation.setContainers( tableContainer, previewContainer, null );
     }
 
     @Override

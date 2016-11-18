@@ -24,7 +24,16 @@
                     <span class="sr-only">Toggle navigation</span>
                 </g:Anchor>
 
-
+                <!-- action-bar -->
+                <ul class="nav navbar-nav navbar-left">
+                    <!-- сюда добавлять кнопки с действиями -->
+                    <li>
+                        <g:Anchor ui:field="create" href="#">
+                            <i class="fa fa-lg fa-plus"></i>
+                            <ui:text from="{lang.buttonCreate}"/>
+                        </g:Anchor>
+                    </li>
+                </ul>
 
                 <ul class="nav navbar-nav navbar-right">
                     <navsearch:NavSearchBox ui:field="search"/>

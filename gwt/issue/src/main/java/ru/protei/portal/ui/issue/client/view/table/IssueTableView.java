@@ -41,8 +41,6 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
         initTable();
-        search.getElement().setPropertyString( "placeholder", lang.search() );
-        sortField.setType( ModuleType.ISSUE );
     }
 
     @Override
@@ -67,39 +65,16 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
     
     @Override
     public void setAnimation ( TableAnimation animation ) {
-        animation.setContainers( tableContainer, previewContainer );
+        animation.setContainers( tableContainer, previewContainer, filterContainer );
     }
 
     @Override
     public HasWidgets getPreviewContainer () { return previewContainer; }
+
+    @Override
+    public HasWidgets getFilterContainer () { return filterContainer; }
     
-    @Override
-    public HasValue<EntityOption> company() {
-        return company;
-    }
 
-    @Override
-    public HasValue<En_SortField> sortField() {
-        return sortField;
-    }
-
-    @Override
-    public HasValue<Boolean> sortDir() {
-        return sortDir;
-    }
-
-    @Override
-    public HasValue<String> searchPattern() {
-        return search;
-    }
-
-    @Override
-    public void resetFilter() {
-        company.setValue( null );
-        sortField.setValue( En_SortField.creation_date );
-        sortDir.setValue( true );
-        search.setText( "" );
-    }
 
     @Override
     public void addRecord( CaseObject issue ) {
@@ -111,42 +86,9 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
         table.clearRows();
     }
 
-    @UiHandler( "company" )
-    public void onCompanySelected( ValueChangeEvent< EntityOption > event ) {
-        if ( activity != null ) {
-            activity.onFilterChanged();
-        }
-    }
-
-    @UiHandler("create")
+//    @UiHandler("create")
     public void onCreateClick (ClickEvent event) {
         activity.onCreateClick();
-    }
-
-    @UiHandler( "sortField" )
-    public void onSortFieldSelected( ValueChangeEvent< En_SortField > event ) {
-        if ( activity != null ) {
-            activity.onFilterChanged();
-        }
-    }
-
-    @UiHandler("sortDir")
-    public void onSortDirClicked( ClickEvent event ) {
-
-        if (sortDir.getValue())
-            sortDir.removeStyleName( "active" );
-        else
-            sortDir.addStyleName( "active" );
-
-        if ( activity != null ) {
-            activity.onFilterChanged();
-        }
-    }
-
-    @UiHandler( "search" )
-    public void onKeyUpSearch( KeyUpEvent event ) {
-        timer.cancel();
-        timer.schedule( 300 );
     }
 
     private void initTable () {
@@ -252,22 +194,10 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
         table.addColumn( manager.header, manager.values );
     }
 
-    @Inject
-    @UiField ( provided = true )
-    CompanySelector company;
 
-    @Inject
-    @UiField( provided = true )
-    SortFieldSelector sortField;
 
-    @UiField
-    ToggleButton sortDir;
-
-    @UiField
-    Button create;
-
-    @UiField
-    TextBox search;
+//    @UiField
+//    Button create;
 
     @UiField
     TableWidget table;
@@ -276,6 +206,8 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
     HTMLPanel tableContainer;
     @UiField
     HTMLPanel previewContainer;
+    @UiField
+    HTMLPanel filterContainer;
 
     @Inject
     @UiField
@@ -283,15 +215,6 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
 
     @Inject
     DateFormatter dateFormatter;
-
-    Timer timer = new Timer() {
-        @Override
-        public void run() {
-            if ( activity != null ) {
-                activity.onFilterChanged();
-            }
-        }
-    };
 
     ClickColumnProvider<CaseObject> columnProvider = new ClickColumnProvider<>();
     SelectionColumn< CaseObject  > selectionColumn = new SelectionColumn<>();
@@ -305,6 +228,6 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
 
     AbstractIssueTableActivity activity;
 
-    private static ContactTableViewUiBinder ourUiBinder = GWT.create( ContactTableViewUiBinder.class );
-    interface ContactTableViewUiBinder extends UiBinder< HTMLPanel, IssueTableView > {}
+    private static IssueTableViewUiBinder ourUiBinder = GWT.create( IssueTableViewUiBinder.class );
+    interface IssueTableViewUiBinder extends UiBinder< HTMLPanel, IssueTableView > {}
 }
