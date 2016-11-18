@@ -4,6 +4,7 @@ import ru.protei.portal.core.model.dao.DevUnitDAO;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.ent.DevUnit;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.winter.jdbc.JdbcSort;
 
 import java.util.List;
@@ -26,9 +27,9 @@ public class DevUnitDAO_Impl extends PortalBaseJdbcDAO<DevUnit> implements DevUn
     @Override
     public List<DevUnit> getUnitsByCondition(En_DevUnitType type, En_DevUnitState state, String searchString, JdbcSort sort) {
         return state == null ?
-                getListByCondition("UTYPE_ID=? and UNIT_NAME like ?", sort, type.getId(), searchString)
+                getListByCondition("UTYPE_ID=? and UNIT_NAME like ?", sort, type.getId(), HelperFunc.makeLikeArg(searchString))
                 :
-                getListByCondition("UTYPE_ID=? and UNIT_NAME like ? and UNIT_STATE=?", sort, type.getId(), searchString,state.getId());
+                getListByCondition("UTYPE_ID=? and UNIT_NAME like ? and UNIT_STATE=?", sort, type.getId(), HelperFunc.makeLikeArg(searchString),state.getId());
     }
 
     @Override
