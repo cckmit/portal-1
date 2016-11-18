@@ -54,6 +54,11 @@ public class AppView extends Composite
         return notifyContainer;
     }
 
+    @Override
+    public HasWidgets getActionBarContainer() {
+        return actionBarContainer;
+    }
+
     @UiHandler("logout")
     public void onLogoutClicked(ClickEvent event) {
         event.preventDefault();
@@ -111,6 +116,8 @@ public class AppView extends Composite
     AnchorElement role;
     @UiField
     HTMLPanel menuContainer;
+    @UiField
+    HTMLPanel actionBarContainer;
 
     AbstractAppActivity activity;
 

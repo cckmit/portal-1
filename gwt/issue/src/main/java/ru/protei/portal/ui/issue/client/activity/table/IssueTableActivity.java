@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.issue.client.activity.table;
 
+import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -18,6 +19,8 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterActivity;
 import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterView;
 import ru.protei.portal.ui.issue.client.service.IssueServiceAsync;
+import ru.protei.winter.web.common.client.events.HeaderEvents;
+import ru.protei.winter.web.common.client.events.SectionEvents;
 
 import java.util.List;
 
@@ -47,7 +50,18 @@ public abstract class IssueTableActivity implements AbstractIssueTableActivity, 
         initDetails.parent.clear();
         initDetails.parent.add( view.asWidget() );
 
+        fireEvent( new HeaderEvents.Clear() );
+        fireEvent( new HeaderEvents.Add( "Создать", "fa fa-plus" ) );
         requestIssues();
+    }
+
+    @Event
+    public void onCreateClicked( SectionEvents.Clicked event ) {
+        if ( !"Создать".equals( event.identity ) ) {
+            return;
+        }
+
+        Window.alert("Create clicked ( issue )");
     }
 
     @Event

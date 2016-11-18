@@ -9,6 +9,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.winter.web.common.client.events.HeaderEvents;
 import ru.protei.winter.web.common.client.events.MenuEvents;
 
 /**
@@ -22,6 +23,8 @@ public abstract class AppActivity
         view.setActivity(this);
 
         fireEvent( new MenuEvents.Init( view.getMenuContainer() ) );
+        fireEvent( new HeaderEvents.Init( view.getActionBarContainer() ) );
+        fireEvent( new HeaderEvents.Show() );
     }
 
     @Event
