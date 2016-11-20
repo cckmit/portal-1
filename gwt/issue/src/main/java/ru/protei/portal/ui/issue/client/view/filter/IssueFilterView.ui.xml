@@ -8,34 +8,33 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="filter">
-        <div class="local-search col-xs-12">
-            <span class="icon local-search-icon"></span>
-            <g:TextBox ui:field="search" styleName="inputField"/>
+    <g:HTMLPanel styleName="filter panel fixed">
+        <div class="body">
+            <div class="local-search col-xs-12">
+                <span class="icon local-search-icon"></span>
+                <g:TextBox ui:field="search" styleName="inputField"/>
+            </div>
+            <div class="col-xs-10">
+                <sortfieldselector:SortFieldSelector ui:field="sortField" type="CONTACT" />
+            </div>
+            <div class="col-xs-2" style="margin-top:25px">
+                <g:ToggleButton ui:field="sortDir" styleName="pull-right button empty whiteC switcher sorting_button"/>
+            </div>
+            <div class="col-xs-12">
+                <companyselector:CompanySelector ui:field="company"/>
+            </div>
+            <div class="col-xs-12">
+                <productselector:ProductButtonSelector ui:field="product"/>
+            </div>
+            <div class="col-xs-12">
+                <importance:ImportanceButtonSelector ui:field="importance"/>
+            </div>
+            <div class="col-xs-12">
+                <state:IssueStatesButtonSelector ui:field="state"/>
+            </div>
         </div>
-        <div class="col-xs-12">
-            <ui:text from="{lang.sortBy}"/>
-            <sortfieldselector:SortFieldSelector ui:field="sortField" type="CONTACT"/>
-            <g:ToggleButton ui:field="sortDir" styleName="button empty whiteC switcher sorting_button"/>
-        </div>
-        <div class="col-xs-12">
-            <companyselector:CompanySelector ui:field="company"/>
-        </div>
-        <div class="col-xs-12">
-            <productselector:ProductButtonSelector ui:field="product"/>
-        </div>
-<!--        <div class="col-xs-12">
-            <importance:ImportanceBtnGroup ui:field="importance"/>
-        </div>-->
-        <div class="col-xs-12">
-            <importance:ImportanceButtonSelector ui:field="importance"/>
-        </div>
-        <div class="col-xs-12">
-            <state:IssueStatesButtonSelector ui:field="state"/>
-        </div>
-        <div class="pull-right">
+        <div class="footer">
             <g:Button ui:field="resetBtn" styleName="button greenC" text="{lang.buttonReset}"/>
         </div>
-
     </g:HTMLPanel>
 </ui:UiBinder>

@@ -88,6 +88,7 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         product.setValue( null );
         importance.setValue(null);
         state.setValue( null );
+        sortField.setHeader( lang.sortBy() );
         sortField.setValue( En_SortField.creation_date );
         sortDir.setValue( true );
         search.setText( "" );

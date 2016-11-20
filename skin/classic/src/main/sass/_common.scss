@@ -171,10 +171,11 @@
 
 .button-selector {
   display: inline-block;
+  width: 100%;
 }
 
 .button-selector .button {
-  min-width: 250px;
+  min-width: 100%;
   text-align: left;
   position: relative;
   margin-right: 24px;
@@ -358,6 +359,7 @@ body {
 
 .panel .body {
   padding: 14px;
+  display: inline-block;
 }
 
 .panel .footer {
@@ -631,15 +633,10 @@ label.bordered:after{
   right: 0;
 
   .filter {
-    position:fixed;
     margin-left: 10px;
-    padding: 10px;
+    padding: 10px 0;
     background: white;
     display: inline-block;
-
-    div {
-      margin: 5px 0;
-    }
   }
 }
 
@@ -711,6 +708,10 @@ label.bordered:after{
 
 .pull-left {
   float: left !important;
+}
+
+.fixed {
+  position: fixed;
 }
 
 td.info {
