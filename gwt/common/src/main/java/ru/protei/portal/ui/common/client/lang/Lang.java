@@ -249,4 +249,6 @@ public interface Lang extends Messages {
     String comments ();
 
     String product ();
+
+    String buttonReset();
 }

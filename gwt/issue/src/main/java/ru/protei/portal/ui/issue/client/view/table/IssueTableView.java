@@ -111,7 +111,7 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
 
             @Override
             public void fillColumnValue( Element element, CaseObject caseObject ) {
-                element.setInnerText( caseObject == null ? "" : "продукт" );
+                element.setInnerText( caseObject == null ? "" : caseObject.getProduct().getName() );
             }
         };
         //product.setColumnProvider( columnProvider );

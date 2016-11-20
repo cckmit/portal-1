@@ -174,7 +174,7 @@
 }
 
 .button-selector .button {
-  width: 250px;
+  min-width: 250px;
   text-align: left;
   position: relative;
   margin-right: 24px;
@@ -631,10 +631,15 @@ label.bordered:after{
   right: 0;
 
   .filter {
+    position:fixed;
     margin-left: 10px;
-    padding: 15px 20px;
+    padding: 10px;
     background: white;
     display: inline-block;
+
+    div {
+      margin: 5px 0;
+    }
   }
 }
 

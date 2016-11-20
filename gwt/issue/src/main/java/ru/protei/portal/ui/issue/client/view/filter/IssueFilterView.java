@@ -16,12 +16,12 @@ import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
+import ru.protei.portal.ui.common.client.widget.selector.dict.ImportanceButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.ProductButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterActivity;
 import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterView;
-import ru.protei.portal.ui.issue.client.widget.btngroup.ImportanceBtnGroup;
 import ru.protei.portal.ui.issue.client.widget.buttonselector.IssueStatesButtonSelector;
 
 import java.util.Set;
@@ -37,7 +37,9 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         sortField.setType( ModuleType.ISSUE );
         state.setHasNullValue( true );
         state.setDefaultValue( lang.issueState() );
-        state.setValidation( false );
+
+        importance.setHasNullValue( true );
+        importance.setDefaultValue( lang.issueImportance() );
     }
 
     @Override
@@ -56,10 +58,14 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     }
 
     @Override
-    public HasValue< Set <En_ImportanceLevel> > importance() { return importance; }
+    public HasValue<En_CaseState> state() {
+        return state;
+    }
 
     @Override
-    public HasValue<En_CaseState> state () { return state; }
+    public HasValue<En_ImportanceLevel> importance() {
+        return importance;
+    }
 
     @Override
     public HasValue<En_SortField> sortField() {
@@ -87,6 +93,14 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         search.setText( "" );
     }
 
+    @UiHandler( "resetBtn" )
+    public void onResetClicked ( ClickEvent event ) {
+        if ( activity != null ) {
+            resetFilter();
+            activity.onFilterChanged();
+        }
+    }
+
     @UiHandler( {"company", "product"} )
     public void onAnySelected( ValueChangeEvent<EntityOption> event ) {
         if ( activity != null ) {
@@ -94,12 +108,19 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         }
     }
 
-    @UiHandler( "importance" )
+/*    @UiHandler( "importance" )
     public void onImportanceSelected( ValueChangeEvent<Set<En_ImportanceLevel>> event ) {
         if ( activity != null ) {
             activity.onFilterChanged();
         }
     }
+
+    @UiHandler( "state" )
+    public void onStateSelected( ValueChangeEvent<Set<En_CaseState>> event ) {
+        if ( activity != null ) {
+            activity.onFilterChanged();
+        }
+    }*/
 
     @UiHandler( "sortField" )
     public void onSortFieldSelected( ValueChangeEvent< En_SortField > event ) {
@@ -150,8 +171,8 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     IssueStatesButtonSelector state;
 
     @Inject
-    @UiField( provided = true )
-    ImportanceBtnGroup importance;
+    @UiField(provided = true)
+    ImportanceButtonSelector importance;
 
     @Inject
     @UiField( provided = true )
@@ -163,9 +184,13 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     @UiField
     TextBox search;
 
+    @UiField
+    Button resetBtn;
+
     @Inject
     @UiField
     Lang lang;
+
 
     AbstractIssueFilterActivity activity;
 

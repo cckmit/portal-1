@@ -20,7 +20,7 @@ public interface AbstractIssueFilterView extends IsWidget {
     HasValue<EntityOption> product();
 
     HasValue<En_CaseState> state();
-    HasValue<Set<En_ImportanceLevel>> importance();
+    HasValue<En_ImportanceLevel> importance();
 
     HasValue<En_SortField> sortField();
     HasValue< Boolean > sortDir();
