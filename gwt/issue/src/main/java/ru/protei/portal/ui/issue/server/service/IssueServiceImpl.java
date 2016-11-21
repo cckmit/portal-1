@@ -26,7 +26,8 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public List< CaseObject > getIssues( CaseQuery query ) throws RequestFailedException {
-        log.debug( "getIssues(): companyId={} | productId={} | searchPattern={} | sortField={} | sortDir={} | caseService={}", query.getCompanyId(),  query.getProductId(), query.getSearchString(), query.getSortField(), query.getSortDir(), caseService );
+        log.debug( "getIssues(): companyId={} | productId={} | searchPattern={} | state={} | importance={} | sortField={} | sortDir={} | caseService={}",
+                query.getCompanyId(),  query.getProductId(), query.getSearchString(), query.getStateId(), query.getImportanceId(), query.getSortField(), query.getSortDir(), caseService );
         CoreResponse<List<CaseObject>> response = caseService.caseObjectList( query );
         if (response.isError()) {
             throw new RequestFailedException( response.getStatus() );

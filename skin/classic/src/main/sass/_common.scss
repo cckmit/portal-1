@@ -359,7 +359,6 @@ body {
 
 .panel .body {
   padding: 14px;
-  display: inline-block;
 }
 
 .panel .footer {
@@ -632,11 +631,14 @@ label.bordered:after{
   transition: all 0.5s;
   right: 0;
 
-  .filter {
+  .panel {
     margin-left: 10px;
     padding: 10px 0;
     background: white;
-    display: inline-block;
+
+    .body {
+      display: inline-block;
+    }
   }
 }
 
@@ -742,6 +744,10 @@ td.info {
 }
 
 /****************/
+
+.filter {
+  margin-bottom: 10px;
+}
 
 /* Importance level */
 .CRITICAL {

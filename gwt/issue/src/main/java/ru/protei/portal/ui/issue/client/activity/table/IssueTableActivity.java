@@ -47,6 +47,7 @@ public abstract class IssueTableActivity implements AbstractIssueTableActivity, 
         initDetails.parent.clear();
         initDetails.parent.add( view.asWidget() );
 
+        fireEvent( new ActionBarEvents.Clear() );
         fireEvent( new ActionBarEvents.Add( CREATE_ACTION, UiConstants.ActionBarIcons.CREATE ) );
 
         requestIssues();
@@ -112,8 +113,10 @@ public abstract class IssueTableActivity implements AbstractIssueTableActivity, 
     }
 
     private CaseQuery getQuery() {
-        return new CaseQuery(
-                En_CaseType.CRM_SUPPORT, filterView.company().getValue(), filterView.product().getValue(), filterView.searchPattern().getValue(),
+        return new CaseQuery( En_CaseType.CRM_SUPPORT,
+                filterView.company().getValue(), filterView.product().getValue(),
+                filterView.searchPattern().getValue(),
+                filterView.state().getValue(), filterView.importance().getValue(),
                 filterView.sortField().getValue(), filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC
         );
     }

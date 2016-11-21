@@ -8,8 +8,5 @@ import ru.protei.portal.ui.common.client.columns.EditClickColumn;
  * Активность таблицы контактов
  */
 public interface AbstractContactTableActivity extends ClickColumn.Handler< Person >, EditClickColumn.EditHandler< Person > {
-
-    void onFilterChanged();
-    void onEditClicked(Person value );
-    void onCreateClick ();
+    void onEditClicked( Person value );
 }

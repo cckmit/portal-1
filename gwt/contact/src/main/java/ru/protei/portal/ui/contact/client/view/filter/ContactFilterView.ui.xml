@@ -1,10 +1,7 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:companyselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.company'
-             xmlns:productselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.product'
-             xmlns:sortfieldselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.sortfield'
-             xmlns:importance='urn:import:ru.protei.portal.ui.common.client.widget.selector.dict'
-             xmlns:state='urn:import:ru.protei.portal.ui.issue.client.widget.buttonselector'>
+             xmlns:sortfieldselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.sortfield'>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
@@ -15,7 +12,7 @@
                 <g:TextBox ui:field="search" styleName="inputField"/>
             </div>
             <div class="col-xs-10">
-                <sortfieldselector:SortFieldSelector ui:field="sortField" type="CONTACT" />
+                <sortfieldselector:SortFieldSelector ui:field="sortField" type="CONTACT"/>
             </div>
             <div class="col-xs-2" style="margin-top:25px">
                 <g:ToggleButton ui:field="sortDir" styleName="pull-right button empty whiteC switcher sorting_button"/>
@@ -23,14 +20,8 @@
             <div class="col-xs-12">
                 <companyselector:CompanySelector ui:field="company"/>
             </div>
-            <div class="col-xs-12">
-                <productselector:ProductButtonSelector ui:field="product"/>
-            </div>
-            <div class="col-xs-12">
-                <importance:ImportanceButtonSelector ui:field="importance"/>
-            </div>
-            <div class="col-xs-12">
-                <state:IssueStatesButtonSelector ui:field="state"/>
+            <div class="col-xs-12 pull-left" style="margin-top:10px;">
+                <g:CheckBox ui:field="showFired" styleName="checkbox" text="{lang.contactShowFired}"/>
             </div>
         </div>
         <div class="footer">

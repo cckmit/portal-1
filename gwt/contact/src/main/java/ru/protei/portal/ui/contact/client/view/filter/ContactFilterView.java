@@ -1,6 +1,7 @@
-package ru.protei.portal.ui.issue.client.view.filter;
+package ru.protei.portal.ui.contact.client.view.filter;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -20,31 +21,23 @@ import ru.protei.portal.ui.common.client.widget.selector.dict.ImportanceButtonSe
 import ru.protei.portal.ui.common.client.widget.selector.product.ProductButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
-import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterActivity;
-import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterView;
-import ru.protei.portal.ui.issue.client.widget.buttonselector.IssueStatesButtonSelector;
-
-import java.util.Set;
+import ru.protei.portal.ui.contact.client.activity.filter.AbstractContactFilterActivity;
+import ru.protei.portal.ui.contact.client.activity.filter.AbstractContactFilterView;
 
 /**
- * Представление фильтра обращений
+ * Представление фильтра контактов
  */
-public class IssueFilterView extends Composite implements AbstractIssueFilterView {
+public class ContactFilterView  extends Composite implements AbstractContactFilterView {
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
         search.getElement().setPropertyString( "placeholder", lang.search() );
-        sortField.setType( ModuleType.ISSUE );
+        sortField.setType( ModuleType.CONTACT );
         sortField.setHeader( lang.sortBy() );
-        state.setHasNullValue( true );
-        state.setDefaultValue( lang.issueState() );
-
-        importance.setHasNullValue( true );
-        importance.setDefaultValue( lang.issueImportance() );
     }
 
     @Override
-    public void setActivity( AbstractIssueFilterActivity activity ) {
+    public void setActivity( AbstractContactFilterActivity activity ) {
         this.activity = activity;
     }
 
@@ -54,18 +47,8 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     }
 
     @Override
-    public HasValue<EntityOption> product() {
-        return product;
-    }
-
-    @Override
-    public HasValue<En_CaseState> state() {
-        return state;
-    }
-
-    @Override
-    public HasValue<En_ImportanceLevel> importance() {
-        return importance;
+    public HasValue<Boolean> showFired() {
+        return showFired;
     }
 
     @Override
@@ -86,10 +69,8 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     @Override
     public void resetFilter() {
         company.setValue( null );
-        product.setValue( null );
-        importance.setValue(null);
-        state.setValue( null );
-        sortField.setValue( En_SortField.creation_date );
+        showFired.setValue( false );
+        sortField.setValue( En_SortField.person_full_name );
         sortDir.setValue( true );
         search.setText( "" );
     }
@@ -102,22 +83,15 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         }
     }
 
-    @UiHandler( {"company", "product"} )
-    public void onAnySelected( ValueChangeEvent<EntityOption> event ) {
+    @UiHandler( "company" )
+    public void onCompanySelected( ValueChangeEvent<EntityOption> event ) {
         if ( activity != null ) {
             activity.onFilterChanged();
         }
     }
 
-    @UiHandler( "importance" )
-    public void onImportanceSelected( ValueChangeEvent<En_ImportanceLevel> event ) {
-        if ( activity != null ) {
-            activity.onFilterChanged();
-        }
-    }
-
-    @UiHandler( "state" )
-    public void onStateSelected( ValueChangeEvent<En_CaseState> event ) {
+    @UiHandler( "showFired" )
+    public void onShowFireClicked( ClickEvent event ) {
         if ( activity != null ) {
             activity.onFilterChanged();
         }
@@ -162,17 +136,8 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     @UiField( provided = true )
     CompanySelector company;
 
-    @Inject
-    @UiField ( provided = true )
-    ProductButtonSelector product;
-
-    @Inject
-    @UiField ( provided = true )
-    IssueStatesButtonSelector state;
-
-    @Inject
-    @UiField(provided = true)
-    ImportanceButtonSelector importance;
+    @UiField
+    CheckBox showFired;
 
     @Inject
     @UiField( provided = true )
@@ -192,9 +157,9 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     Lang lang;
 
 
-    AbstractIssueFilterActivity activity;
+    AbstractContactFilterActivity activity;
 
-    private static IssueFilterView.IssueFilterViewUiBinder ourUiBinder = GWT.create( IssueFilterView.IssueFilterViewUiBinder.class );
-    interface IssueFilterViewUiBinder extends UiBinder<HTMLPanel, IssueFilterView > {}
+    private static ContactFilterView.ContactFilterViewUiBinder ourUiBinder = GWT.create( ContactFilterView.ContactFilterViewUiBinder.class );
+    interface ContactFilterViewUiBinder extends UiBinder<HTMLPanel, ContactFilterView > {}
 
 }

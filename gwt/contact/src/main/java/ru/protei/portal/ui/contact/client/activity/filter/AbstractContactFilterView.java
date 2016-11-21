@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.issue.client.activity.filter;
+package ru.protei.portal.ui.contact.client.activity.filter;
 
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -8,16 +8,14 @@ import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.view.EntityOption;
 
 /**
- * Абстракция вида фильтра обращений
+ * Абстракция вида фильтра контактов
  */
-public interface AbstractIssueFilterView extends IsWidget {
+public interface AbstractContactFilterView extends IsWidget {
 
-    void setActivity( AbstractIssueFilterActivity activity );
+    void setActivity( AbstractContactFilterActivity activity );
 
     HasValue<EntityOption> company();
-    HasValue<EntityOption> product();
-    HasValue<En_CaseState> state();
-    HasValue<En_ImportanceLevel> importance();
+    HasValue<Boolean> showFired();
     HasValue<En_SortField> sortField();
     HasValue< Boolean > sortDir();
     HasValue< String > searchPattern();

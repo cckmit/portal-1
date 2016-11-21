@@ -8,6 +8,5 @@ import ru.protei.portal.ui.common.client.columns.EditClickColumn;
  * Активность таблицы контактов
  */
 public interface AbstractIssueTableActivity extends ClickColumn.Handler< CaseObject >, EditClickColumn.EditHandler< CaseObject > {
-
     void onEditClicked( CaseObject value );
 }
