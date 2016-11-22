@@ -27,6 +27,7 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
         return numberToIdMap;
     }
 
+
     @Override
     public Long insertCase(CaseObject object) {
 
@@ -42,20 +43,22 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
 
     @Override
     public List< CaseObject > getCases( CaseQuery query ) {
-        StringBuilder conditions = new StringBuilder( "1=1" );
+        return listByQuery(query);
 
-        ArrayList args = new ArrayList();
-
-        if ( query.getType() != null ) {
-            conditions.append( " and case_type=?" );
-            args.add( query.getType().getId() );
-        }
-
-        if ( query.getCompanyId() != null ) {
-            conditions.append( " and initiator_company=?" );
-            args.add( query.getCompanyId() );
-        }
-
-        return getListByCondition( conditions.toString(), args, query.offset, query.limit, TypeConverters.createSort( query ) ).getResults();
+//        StringBuilder conditions = new StringBuilder( "1=1" );
+//
+//        ArrayList args = new ArrayList();
+//
+//        if ( query.getType() != null ) {
+//            conditions.append( " and case_type=?" );
+//            args.add( query.getType().getId() );
+//        }
+//
+//        if ( query.getCompanyId() != null ) {
+//            conditions.append( " and initiator_company=?" );
+//            args.add( query.getCompanyId() );
+//        }
+//
+//        return getListByCondition( conditions.toString(), args, query.offset, query.limit, TypeConverters.createSort( query ) ).getResults();
     }
 }

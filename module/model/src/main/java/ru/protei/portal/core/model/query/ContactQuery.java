@@ -2,7 +2,11 @@ package ru.protei.portal.core.model.query;
 
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.view.EntityOption;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Mike on 02.11.2016.
@@ -41,5 +45,30 @@ public class ContactQuery extends BaseQuery {
 
     public void setFired(Boolean fired) {
         this.fired = fired;
+    }
+
+    @Override
+    public SqlCondition sqlCondition() {
+        return new SqlCondition().build((condition, args) -> {
+            condition.append("company_id not in (select companyId from company_group_home)");
+
+            if (companyId != null) {
+                condition.append(" and company_id = ?");
+                args.add(companyId);
+            }
+
+            if (fired != null) {
+                condition.append(" and isfired=?");
+                args.add(fired ? 1 : 0);
+            }
+
+            if (HelperFunc.isLikeRequired(searchString)) {
+                condition.append(" and (displayName like ? or contactInfo like ?)");
+                String likeArg = HelperFunc.makeLikeArg(searchString, true);
+
+                args.add(likeArg);
+                args.add(likeArg);
+            }
+        });
     }
 }

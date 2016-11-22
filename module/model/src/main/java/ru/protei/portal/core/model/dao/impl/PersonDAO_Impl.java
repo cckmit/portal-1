@@ -100,38 +100,10 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
 
     @Override
     public List<Person> getContacts(ContactQuery query) {
-
         if (query.getCompanyId() != null && homeGroupCache.exists(entity -> entity.getCompanyId().equals(query.getCompanyId())))
             return Collections.emptyList();
 
-        StringBuilder filter = new StringBuilder("1=1");
-        List<Object> args = new ArrayList<>();
-
-        if (query.getCompanyId() != null) {
-            filter.append(" and company_id = ?");
-            args.add(query.getCompanyId());
-        }
-        else {
-            StringBuilder hgc =  buildHomeCompanyFilter (true);
-            if (hgc.length() > 0) {
-                filter.append(" and ").append(hgc);
-            }
-        }
-
-        if (query.getFired() != null) {
-            filter.append(" and isfired=?");
-            args.add(query.getFired() ? 1 : 0);
-        }
-
-        if (query.getSearchString() != null && !query.getSearchString().trim().isEmpty()) {
-            filter.append(" and ( displayName like ? or phone_work like ? or phone_home like ? or phone_mobile like ? )");
-            String likeArg = HelperFunc.makeLikeArg(query.getSearchString(), true);
-            args.add(likeArg);
-            args.add(likeArg);
-            args.add(likeArg);
-            args.add(likeArg);
-        }
-        return getListByCondition(filter.toString(),args,query.offset,query.limit,TypeConverters.createSort(query)).getResults();
+        return listByQuery(query);
     }
 
     @Override

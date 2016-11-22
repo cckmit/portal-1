@@ -8,9 +8,6 @@ import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.query.ProductQuery;
-import ru.protei.portal.core.model.helper.HelperFunc;
-import ru.protei.portal.core.utils.TypeConverters;
-import ru.protei.winter.jdbc.JdbcSort;
 
 import java.util.Date;
 import java.util.List;
@@ -31,11 +28,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public CoreResponse<List<DevUnit>> list(ProductQuery query) {
 
-        String condition = HelperFunc.makeLikeArg(query.getSearchString(), true);
-
-        JdbcSort sort = TypeConverters.createSort(query);
-
-        return new CoreResponse<List<DevUnit>>().success(devUnitDAO.getUnitsByCondition(En_DevUnitType.PRODUCT, query.getState(), condition.trim(), sort));
+        return new CoreResponse<List<DevUnit>>().success(devUnitDAO.listByQuery(query));
     }
 
     @Override
@@ -101,7 +94,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     private boolean checkUniqueProduct (String name, Long excludeId) {
-        DevUnit product = devUnitDAO.checkExistsProductByName(name);
+        DevUnit product = devUnitDAO.checkExistsByName(En_DevUnitType.PRODUCT, name);
 
         return product == null || product.getId().equals(excludeId);
     }
@@ -110,4 +103,9 @@ public class ProductServiceImpl implements ProductService {
         return new CoreResponse<T>().error(En_ResultStatus.INTERNAL_ERROR);
     }
 
+
+    @Override
+    public CoreResponse<Long> count(ProductQuery query) {
+        return new CoreResponse<Long>().success(devUnitDAO.count(query));
+    }
 }

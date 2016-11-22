@@ -87,4 +87,10 @@ public class ContactServiceImpl implements ContactService {
 
         return new CoreResponse<Person>().error(En_ResultStatus.INTERNAL_ERROR);
     }
+
+
+    @Override
+    public CoreResponse<Long> count(ContactQuery query) {
+        return new CoreResponse<Long>().success(personDAO.count(query));
+    }
 }

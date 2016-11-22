@@ -11,6 +11,8 @@ import java.util.List;
  */
 public interface ContactService {
 
+    CoreResponse<Long> count(ContactQuery query);
+
     CoreResponse<List<Person>> contactList(ContactQuery query);
     CoreResponse<Person> getContact (long id);
     CoreResponse<Person> saveContact (Person p);

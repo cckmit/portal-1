@@ -11,6 +11,8 @@ import java.util.List;
  */
 public interface ProductService {
 
+    CoreResponse<Long> count(ProductQuery query);
+
     CoreResponse<List<DevUnit>> list(ProductQuery query);
 
     CoreResponse<DevUnit> getProductById(Long id);

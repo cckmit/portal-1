@@ -4,7 +4,7 @@ import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanyCategory;
 import ru.protei.portal.core.model.ent.CompanyGroup;
-import ru.protei.portal.core.model.query.BaseQuery;
+import ru.protei.portal.core.model.query.CompanyGroupQuery;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 
@@ -14,12 +14,14 @@ import java.util.List;
  * Created by michael on 27.09.16.
  */
 public interface CompanyService {
+    CoreResponse<Long> countCompanies (CompanyQuery query);
+    CoreResponse<Long> countGroups (CompanyGroupQuery query);
 
     CoreResponse<List<EntityOption>> companyOptionList ();
 
     CoreResponse<List<Company>> companyList(CompanyQuery query);
 
-    CoreResponse<List<CompanyGroup>> groupList (BaseQuery query);
+    CoreResponse<List<CompanyGroup>> groupList (CompanyGroupQuery query);
 
     CoreResponse<List<CompanyCategory>> categoryList ();
 

@@ -69,7 +69,7 @@ public class ProductServiceTest {
         String name = "Billing";
 
 
-        DevUnit product = ctx.getBean(DevUnitDAO.class).checkExistsProductByName(name);
+        DevUnit product = ctx.getBean(DevUnitDAO.class).checkExistsByName(En_DevUnitType.PRODUCT, name);
         Assert.assertNull(product);
 
         System.out.println(" product with " + name + " is not exist | product " + product);
@@ -84,7 +84,7 @@ public class ProductServiceTest {
 
         name = "OMS3456";
 
-        product = ctx.getBean(DevUnitDAO.class).checkExistsProductByName(name);
+        product = ctx.getBean(DevUnitDAO.class).checkExistsByName(En_DevUnitType.PRODUCT, name);
         Assert.assertNull(product);
 
         System.out.println(" product with " + name + " is not exist");

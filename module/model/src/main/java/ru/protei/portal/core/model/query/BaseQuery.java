@@ -8,7 +8,7 @@ import java.io.Serializable;
 /**
  * Created by michael on 12.10.16.
  */
-public class BaseQuery implements Serializable{
+public abstract class BaseQuery implements Serializable, DataQuery {
 
     public String searchString;
     public En_SortField sortField;
@@ -30,24 +30,29 @@ public class BaseQuery implements Serializable{
         return this;
     }
 
-    public BaseQuery useSort (En_SortField sortField, En_SortDir sortDir) {
+    @Override
+    public BaseQuery useSort(En_SortField sortField, En_SortDir sortDir) {
         this.sortDir = sortDir;
         this.sortField = sortField;
         return this;
     }
 
+    @Override
     public int getLimit() {
         return limit;
     }
 
+    @Override
     public void setLimit(int limit) {
         this.limit = limit;
     }
 
+    @Override
     public int getOffset() {
         return offset;
     }
 
+    @Override
     public void setOffset(int offset) {
         this.offset = offset;
     }
@@ -60,19 +65,25 @@ public class BaseQuery implements Serializable{
         this.searchString = searchString;
     }
 
+    @Override
     public En_SortField getSortField() {
         return sortField;
     }
 
+    @Override
     public void setSortField(En_SortField sortField) {
         this.sortField = sortField;
     }
 
+    @Override
     public En_SortDir getSortDir() {
         return sortDir;
     }
 
+    @Override
     public void setSortDir(En_SortDir sortDir) {
         this.sortDir = sortDir;
     }
+
+
 }

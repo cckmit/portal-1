@@ -12,6 +12,7 @@ import java.util.List;
  * Сервис управления обращениями
  */
 public interface CaseService {
+    CoreResponse<Long> count( CaseQuery query );
 
     CoreResponse<List<CaseObject>> caseObjectList( CaseQuery query );
     CoreResponse<CaseObject> getCaseObject( long id );

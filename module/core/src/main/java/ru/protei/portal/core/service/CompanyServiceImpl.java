@@ -13,7 +13,7 @@ import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanyCategory;
 import ru.protei.portal.core.model.ent.CompanyGroup;
 import ru.protei.portal.core.model.helper.HelperFunc;
-import ru.protei.portal.core.model.query.BaseQuery;
+import ru.protei.portal.core.model.query.CompanyGroupQuery;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -30,15 +30,12 @@ import java.util.stream.Collectors;
  */
 public class CompanyServiceImpl implements CompanyService {
 
-
     @Autowired
     CompanyDAO companyDAO;
 
     @Autowired
     CompanyGroupDAO companyGroupDAO;
 
-//    @Autowired
-//    CompanyGroupItemDAO companyGroupItemDAO;
 
     @Autowired
     CompanyCategoryDAO companyCategoryDAO;
@@ -46,37 +43,12 @@ public class CompanyServiceImpl implements CompanyService {
      * caches
      */
 
-//    EntityCache<Company> companyCache;
-//    EntityCache<CompanyGroup> companyGroupCache;
-//    EntityCache<CompanyGroupItem> companyGroupItemCache;
-//
-//    private Map<Long,List<CompanyGroup>> company2group;
 
     /**
      * it will be called after auto-injection
      */
     @PostConstruct
     protected void init() {
-//        companyCache = new EntityCache<Company>(companyDAO, TimeUnit.MINUTES.toMillis(10));
-//        companyGroupCache = new EntityCache<CompanyGroup>(companyGroupDAO, TimeUnit.MINUTES.toMillis(10));
-
-        // it maps company-id to its groups list (where that company is a member)
-//        company2group = new HashMap<>();
-
-//        companyGroupItemCache = new EntityCache<CompanyGroupItem>(companyGroupItemDAO, TimeUnit.MINUTES.toMillis(10), new EntityCache.OnRebuild<CompanyGroupItem>() {
-//            @Override
-//            public void onCacheRebuild(Map<Long, CompanyGroupItem> map) {
-//                company2group.clear();
-//                for (CompanyGroupItem link : map.values()) {
-//                    List<CompanyGroup> groups = company2group.get(link.getCompanyId());
-//                    if (groups == null) {
-//                        groups = new ArrayList<>(1);
-//                        company2group.put(link.getCompanyId(), groups);
-//                    }
-//                    groups.add(companyGroupCache.get(link.getGroupId()));
-//                }
-//            }
-//        });
     }
 
     /**
@@ -84,10 +56,17 @@ public class CompanyServiceImpl implements CompanyService {
      */
     @PreDestroy
     protected void destroy () {
-//        companyCache.destroy();
-//        companyGroupCache.destroy();
-//        companyGroupItemCache.destroy();
-//        company2group.clear();
+    }
+
+
+    @Override
+    public CoreResponse<Long> countCompanies(CompanyQuery query) {
+        return new CoreResponse<Long>().success(companyDAO.count(query));
+    }
+
+    @Override
+    public CoreResponse<Long> countGroups(CompanyGroupQuery query) {
+        return new CoreResponse<Long>().success(companyGroupDAO.count(query));
     }
 
 
@@ -108,7 +87,6 @@ public class CompanyServiceImpl implements CompanyService {
         group.setName(name);
 
         if (companyGroupDAO.persist(group) != null) {
-//            companyGroupCache.putIfNotExists(group);
             return new CoreResponse<CompanyGroup>().success(group);
         }
 
@@ -119,34 +97,6 @@ public class CompanyServiceImpl implements CompanyService {
         return new CoreResponse<T>().error(En_ResultStatus.INTERNAL_ERROR);
     }
 
-//    @Override
-//    public CoreResponse<CompanyGroupItem> addCompanyToGroup(Long groupId, Long companyId) {
-//
-//        CompanyGroupItem link = new CompanyGroupItem();
-//        link.setCompanyId(companyId);
-//        link.setGroupId(groupId);
-//        if (companyGroupItemDAO.persist(link) != null) {
-//            companyGroupItemCache.putIfNotExists(link);
-//            return new CoreResponse<CompanyGroupItem>().success(link);
-//        }
-//
-//        return createUndefinedError();
-//    }
-//
-//    @Override
-//    public CoreResponse<CompanyGroupItem> delCompanyFromGroup(Long groupId, Long companyId) {
-//        CompanyGroupItem link = companyGroupItemDAO.getByCondition("company_id=? and group_id=?", companyId, groupId);
-//        if (link != null) {
-//            companyGroupItemDAO.remove(link);
-//            companyGroupItemCache.remove(link);
-//            return new CoreResponse<CompanyGroupItem>().success(link);
-//        }
-//
-//        return createUndefinedError();
-//    }
-
-
-
     @Override
     public CoreResponse<List<Company>> companyList(CompanyQuery query) {
         return new CoreResponse<List<Company>> ()
@@ -154,7 +104,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public CoreResponse<List<CompanyGroup>> groupList(BaseQuery query) {
+    public CoreResponse<List<CompanyGroup>> groupList(CompanyGroupQuery query) {
         return new CoreResponse<List<CompanyGroup>>().success(
                 companyGroupDAO.getListByQuery(query)
         );
@@ -220,23 +170,6 @@ public class CompanyServiceImpl implements CompanyService {
         return new CoreResponse<Boolean>().success(checkGroupExists(name, excludeId));
     }
 
-//    /**
-//     * company-group search
-//     */
-//    private static class CompanyGroupSearchSelector implements EntitySelector<CompanyGroup> {
-//
-//        private String expr;
-//
-//        public CompanyGroupSearchSelector(String expr) {
-//            this.expr = expr == null || expr.trim().isEmpty() ? null : expr.toLowerCase().replace("%","");
-//        }
-//
-//        @Override
-//        public boolean matches(CompanyGroup group) {
-//            return expr == null || group.getName().toLowerCase().contains(expr)
-//                        || group.getInfo().toLowerCase().contains(expr);
-//        }
-//    }
 
     @Transactional
     private Company createCompanyImpl(Company company, CompanyGroup group) throws Exception {
@@ -244,8 +177,6 @@ public class CompanyServiceImpl implements CompanyService {
         if (!isValidCompany(company) || companyDAO.persist(company) == null) {
             throw new Exception();
         }
-
-//        linkGroup(company, group);
 
         return company;
     }
@@ -257,12 +188,6 @@ public class CompanyServiceImpl implements CompanyService {
 
         if (!isValidCompany(company) || !companyDAO.merge(company))
             throw new Exception();
-
-//        companyGroupItemDAO.getCompanyToGroupLinks(company.getId(), null).forEach(link -> {
-//            companyGroupItemDAO.remove(link);
-//            companyGroupItemCache.remove(link);
-//        });
-//        linkGroup(company, group);
 
         return company;
     }
@@ -288,36 +213,7 @@ public class CompanyServiceImpl implements CompanyService {
                 !checkGroupExists(group.getName(), group.getId());
     }
 
-//    private void linkGroup(Company company, CompanyGroup group) throws Exception {
-//
-//        if (group == null) {
-//            return;
-//        }
-//
-//        if (!isValidGroup(group)) {
-//            throw new Exception();
-//        }
-//
-//        if (group.getId() == null && companyGroupDAO.persist(group) == null) {
-//            throw new Exception();
-//        }
-//
-//        companyGroupCache.putIfNotExists(group);
-//
-//        linkCompanyToGroup(company.getId(), group.getId());
-//    }
 
-//    private void linkCompanyToGroup(Long companyId, Long groupId) throws Exception {
-//
-//        CompanyGroupItem link = new CompanyGroupItem();
-//        link.setCompanyId(companyId);
-//        link.setGroupId(groupId);
-//
-//        if (companyGroupItemDAO.persist(link) == null)
-//            throw new Exception();
-//
-//        companyGroupItemCache.putIfNotExists(link);
-//    };
 
     private boolean checkCompanyExists (String name, Long excludeId) {
 

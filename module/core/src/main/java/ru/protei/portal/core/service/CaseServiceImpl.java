@@ -87,4 +87,10 @@ public class CaseServiceImpl implements CaseService {
 
         return new CoreResponse<List<En_CaseState>>().success(states);
     }
+
+
+    @Override
+    public CoreResponse<Long> count(CaseQuery query) {
+        return null;
+    }
 }

@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.dao;
 
+import ru.protei.portal.core.model.query.DataQuery;
 import ru.protei.winter.jdbc.JdbcDAO;
 import ru.protei.winter.jdbc.JdbcSort;
 
@@ -74,4 +75,19 @@ public interface PortalBaseDAO<T> extends JdbcDAO<Long,T> {
      * @return
      */
     T plainGet (Long id);
+
+    /**
+     * Возвращает количество записей для запроса query
+     * @param query
+     * @return
+     */
+    Long count (DataQuery query);
+
+
+    /**
+     * Возвращает список для запроса query
+     * @param query
+     * @return
+     */
+    List<T> listByQuery (DataQuery query);
 }

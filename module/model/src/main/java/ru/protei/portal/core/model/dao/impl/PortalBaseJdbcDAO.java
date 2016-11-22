@@ -1,7 +1,11 @@
 package ru.protei.portal.core.model.dao.impl;
 
 import ru.protei.portal.core.model.dao.PortalBaseDAO;
+import ru.protei.portal.core.model.query.DataQuery;
+import ru.protei.portal.core.model.query.SqlCondition;
+import ru.protei.portal.core.utils.TypeConverters;
 import ru.protei.winter.jdbc.JdbcBaseDAO;
+import ru.protei.winter.jdbc.JdbcQueryParameters;
 import ru.protei.winter.jdbc.JdbcSort;
 import ru.protei.winter.jdbc.column.JdbcObjectColumn;
 
@@ -43,6 +47,38 @@ public abstract class PortalBaseJdbcDAO<T> extends JdbcBaseDAO<Long,T> implement
         else {
             return merge(entity);
         }
+    }
+
+    @Override
+    public Long count(DataQuery query) {
+        StringBuilder sql = new StringBuilder("select count(*) from ").append(getTableName());
+
+        SqlCondition whereCondition = query != null ? query.sqlCondition() : new SqlCondition();
+
+        if (!whereCondition.condition.isEmpty()) {
+            sql.append(" where ").append(whereCondition.condition);
+        }
+
+        return jdbcTemplate.queryForObject(sql.toString(), Long.class, whereCondition.args.toArray());
+    }
+
+
+    @Override
+    public List<T> listByQuery(DataQuery query) {
+        SqlCondition where = query.sqlCondition();
+
+//        JdbcQueryParameters parameters = new JdbcQueryParameters();
+//        if (where.isConditionDefined())
+//            parameters.withCondition(where.condition, where.args);
+//
+//        parameters.withOffset(query.getOffset());
+//        parameters.withLimit(query.getLimit());
+//        parameters.withSort(TypeConverters.createSort( query ));
+//        parameters.on
+//        return getList(parameters);
+
+        return getListByCondition(where.isConditionDefined() ? where.condition : "1=1", where.args,
+                query.getOffset(), query.getLimit(), TypeConverters.createSort( query )).getResults();
     }
 
     public <V> V getMaxValue (String field, Class<V> type, String cond, Object...args) {

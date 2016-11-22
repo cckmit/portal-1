@@ -12,12 +12,12 @@ import java.util.List;
  */
 public interface DevUnitDAO extends PortalBaseDAO<DevUnit> {
 
-    public List<DevUnit> getProductsByCondition(String searchExpression, JdbcSort sort);
+//    public List<DevUnit> getProductsByCondition(String searchExpression, JdbcSort sort);
+//
+//    public List<DevUnit> getComponentsByCondition(String searchExpression, JdbcSort sort);
+//
+//    public List<DevUnit> getUnitsByCondition(En_DevUnitType type, En_DevUnitState state,  String searchExpression, JdbcSort sort);
 
-    public List<DevUnit> getComponentsByCondition(String searchExpression, JdbcSort sort);
-
-    public List<DevUnit> getUnitsByCondition(En_DevUnitType type, En_DevUnitState state,  String searchExpression, JdbcSort sort);
-
-    public DevUnit checkExistsProductByName(String name);
+    public DevUnit checkExistsByName(En_DevUnitType type, String name);
 
 }

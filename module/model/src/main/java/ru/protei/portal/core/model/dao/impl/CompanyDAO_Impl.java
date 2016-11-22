@@ -17,20 +17,22 @@ public class CompanyDAO_Impl extends PortalBaseJdbcDAO<Company> implements Compa
 
     @Override
     public List<Company> getListByQuery(CompanyQuery query) {
-        StringBuilder condition = new StringBuilder("cname like ?");
-        List<Object> args = new ArrayList<Object>(1);
-        args.add(HelperFunc.makeLikeArg(query.getSearchString(), true));
+        return listByQuery(query);
 
-        if (query.getGroupId() != null && query.getGroupId() > 0) {
-            condition.append(" and groupId = ?");
-            args.add(query.getGroupId());
-        }
-
-        if (query.getCategoryIds() != null && !query.getCategoryIds().isEmpty()) {
-            condition.append(" and category_id in (" + query.getCategoryIds().stream().map(Object::toString).collect(Collectors.joining(",")) + ")");
-        }
-
-        return getListByCondition(condition.toString(),TypeConverters.createSort(query), args);
+//        StringBuilder condition = new StringBuilder("cname like ?");
+//        List<Object> args = new ArrayList<Object>(1);
+//        args.add(HelperFunc.makeLikeArg(query.getSearchString(), true));
+//
+//        if (query.getGroupId() != null && query.getGroupId() > 0) {
+//            condition.append(" and groupId = ?");
+//            args.add(query.getGroupId());
+//        }
+//
+//        if (query.getCategoryIds() != null && !query.getCategoryIds().isEmpty()) {
+//            condition.append(" and category_id in (" + query.getCategoryIds().stream().map(Object::toString).collect(Collectors.joining(",")) + ")");
+//        }
+//
+//        return getListByCondition(condition.toString(),TypeConverters.createSort(query), args);
     }
 
     @Override

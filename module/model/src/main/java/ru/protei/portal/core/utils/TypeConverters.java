@@ -1,7 +1,7 @@
 package ru.protei.portal.core.utils;
 
 import ru.protei.portal.core.model.dict.En_SortDir;
-import ru.protei.portal.core.model.query.BaseQuery;
+import ru.protei.portal.core.model.query.DataQuery;
 import ru.protei.winter.jdbc.JdbcSort;
 
 /**
@@ -20,7 +20,7 @@ public class TypeConverters {
         return En_SortDir.parse(value) == En_SortDir.DESC ? JdbcSort.Direction.DESC : JdbcSort.Direction.ASC;
     }
 
-    public static JdbcSort createSort (BaseQuery query) {
+    public static JdbcSort createSort (DataQuery query) {
         return  query.getSortField() == null ? null :
                 new JdbcSort(toWinter(query.getSortDir(), JdbcSort.Direction.ASC), query.getSortField().getFieldName());
     }
