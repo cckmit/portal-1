@@ -24,8 +24,6 @@ import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterActiv
 import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterView;
 import ru.protei.portal.ui.issue.client.widget.buttonselector.IssueStatesButtonSelector;
 
-import java.util.Set;
-
 /**
  * Представление фильтра обращений
  */
@@ -35,7 +33,6 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         initWidget( ourUiBinder.createAndBindUi( this ) );
         search.getElement().setPropertyString( "placeholder", lang.search() );
         sortField.setType( ModuleType.ISSUE );
-        sortField.setHeader( lang.sortBy() );
         state.setHasNullValue( true );
         state.setDefaultValue( lang.issueState() );
 

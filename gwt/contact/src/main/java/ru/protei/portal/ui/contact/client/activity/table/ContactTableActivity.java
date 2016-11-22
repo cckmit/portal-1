@@ -48,8 +48,7 @@ public abstract class ContactTableActivity implements AbstractContactTableActivi
         initDetails.parent.clear();
         initDetails.parent.add( view.asWidget() );
 
-        fireEvent( new ActionBarEvents.Clear() );
-        fireEvent( new ActionBarEvents.Add( CREATE_ACTION, UiConstants.ActionBarIcons.CREATE ) );
+        fireEvent( new ActionBarEvents.Add( CREATE_ACTION, UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.CONTACT ) );
 
         view.showElements();
         isShowTable = false;
@@ -61,7 +60,11 @@ public abstract class ContactTableActivity implements AbstractContactTableActivi
 
     @Event
     public void onCreateClicked( SectionEvents.Clicked event ) {
-        if ( !CREATE_ACTION.equals( event.identity ) ) {
+/*        if ( !CREATE_ACTION.equals( event.identity ) ) {
+            return;
+        }*/
+
+        if ( !UiConstants.ActionBarIdentity.CONTACT.equals( event.identity ) ) {
             return;
         }
 

@@ -24,7 +24,7 @@ public abstract class ActionBarActivity
 
     @Event
     public void onShowSectionItem( ActionBarEvents.Add event ){
-        addSection( event.header, event.icon );
+        addSection( event.header, event.icon, event.identity );
     }
 
     @Event
@@ -43,14 +43,14 @@ public abstract class ActionBarActivity
         fireEvent(new ActionBarEvents.Clicked(identity));
     }
 
-    private void addSection( String header, String icon ) {
+    private void addSection( String header, String icon, String identity ) {
         AbstractSectionItemView itemView = factory.get();
         itemView.setActivity( this );
         itemView.setText( header );
         itemView.setIcon( icon );
 
         init.parent.add( itemView.asWidget() );
-        itemViewToIdentity.put(itemView, header);
+        itemViewToIdentity.put(itemView, identity);
     }
 
 

@@ -21,13 +21,15 @@ public class ActionBarEvents {
      * Добавить кнопку
      */
     public static class Add {
-        public Add( String header, String icon ) {
+        public Add( String header, String icon, String identity ) {
             this.header = header;
             this.icon = icon;
+            this.identity = identity == null ? header : identity;
         }
 
         public String header;
         public String icon;
+        public String identity;
     }
 
     /**

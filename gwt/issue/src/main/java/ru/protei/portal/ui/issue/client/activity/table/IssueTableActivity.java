@@ -47,15 +47,18 @@ public abstract class IssueTableActivity implements AbstractIssueTableActivity, 
         initDetails.parent.clear();
         initDetails.parent.add( view.asWidget() );
 
-        fireEvent( new ActionBarEvents.Clear() );
-        fireEvent( new ActionBarEvents.Add( CREATE_ACTION, UiConstants.ActionBarIcons.CREATE ) );
+        fireEvent( new ActionBarEvents.Add( CREATE_ACTION, UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.ISSUE ) );
 
         requestIssues();
     }
 
     @Event
     public void onCreateClicked( SectionEvents.Clicked event ) {
-        if ( !CREATE_ACTION.equals( event.identity ) ) {
+/*        if ( !CREATE_ACTION.equals( event.identity ) ) {
+            return;
+        }*/
+
+        if ( !UiConstants.ActionBarIdentity.ISSUE.equals( event.identity ) ) {
             return;
         }
 

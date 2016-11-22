@@ -192,6 +192,26 @@
   overflow: hidden;
 }
 
+.control-group {
+  display: table;
+  width: 100%;
+
+  .button-selector {
+    display: table-cell;
+    width: 100%;
+
+    .button {
+      margin-right:0;
+    }
+  }
+
+  .sorting_button {
+    display: table-cell;
+    width: 1%;
+    vertical-align: bottom;
+  }
+}
+
 .dropdown-menu {
   position: absolute;
   top: 100%;

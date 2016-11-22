@@ -11,11 +11,12 @@
                 <span class="icon local-search-icon"></span>
                 <g:TextBox ui:field="search" styleName="inputField"/>
             </div>
-            <div class="col-xs-10">
-                <sortfieldselector:SortFieldSelector ui:field="sortField" type="CONTACT"/>
-            </div>
-            <div class="col-xs-2" style="margin-top:25px">
-                <g:ToggleButton ui:field="sortDir" styleName="pull-right button empty whiteC switcher sorting_button"/>
+            <div class="col-xs-12">
+                <ui:text from="{lang.sortBy}"/>
+                <div class="control-group">
+                    <sortfieldselector:SortFieldSelector ui:field="sortField" type="CONTACT"/>
+                    <g:ToggleButton ui:field="sortDir" styleName="button empty whiteC switcher sorting_button"/>
+                </div>
             </div>
             <div class="col-xs-12">
                 <companyselector:CompanySelector ui:field="company"/>

@@ -16,7 +16,7 @@ public class TableAnimation {
         detailsContainer.addStyleName( "col-xs-7" );
 
         filterContainer.removeStyleName( "col-xs-3" );
-        filterContainer.addStyleName( "no-width" );
+        filterContainer.addStyleName( "no-display" );
     }
 
     public void closeDetails() {
@@ -28,7 +28,7 @@ public class TableAnimation {
         detailsContainer.removeStyleName( "col-xs-7" );
         detailsContainer.addStyleName( "no-width" );
 
-        filterContainer.removeStyleName( "no-width" );
+        filterContainer.removeStyleName( "no-display" );
         filterContainer.addStyleName( "col-xs-3" );
     }
 
