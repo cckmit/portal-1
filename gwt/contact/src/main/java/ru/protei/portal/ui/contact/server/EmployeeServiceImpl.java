@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.service.EmployeeService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
@@ -30,7 +31,19 @@ public class EmployeeServiceImpl implements EmployeeService{
         return response.getData();
     }
 
+    @Override
+    public List<EntityOption> getEmployeeOptionList() throws RequestFailedException {
+        log.debug( "getEmployeeOptionList()" );
 
+        CoreResponse< List< EntityOption > > result = employeeService.employeeOptionList();
+
+        log.debug( "result status: {}, data-amount: {}", result.getStatus(), result.isOk() ? result.getDataAmountTotal() : 0 );
+
+        if ( result.isError() )
+            throw new RequestFailedException( result.getStatus() );
+
+        return result.getData();
+    }
 
     @Autowired
     ru.protei.portal.core.service.EmployeeService employeeService;

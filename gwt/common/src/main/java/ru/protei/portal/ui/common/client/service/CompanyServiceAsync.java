@@ -63,12 +63,11 @@ public interface CompanyServiceAsync {
      * @param id
      * @param callback
      */
-    void getCompanyById (long id, AsyncCallback<Company> callback);
-
+    void getCompany( long id, AsyncCallback< Company > callback );
 
     /**
      * Получение списка сокращенного представления компании (name,id)
      * @param callback
      */
-    void companyOptionList (AsyncCallback<List<EntityOption>> callback);
+    void getCompanyOptionList( AsyncCallback< List< EntityOption > > callback );
 }

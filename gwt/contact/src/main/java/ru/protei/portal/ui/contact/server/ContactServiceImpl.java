@@ -9,6 +9,7 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.ContactQuery;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.service.ContactService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
@@ -64,6 +65,21 @@ public class ContactServiceImpl implements ContactService {
         }
 
         throw new RequestFailedException(response.getStatus());
+    }
+
+    @Override
+    public List< EntityOption > getContactOptionList( long companyId ) throws RequestFailedException {
+
+        log.debug( "getContactOptionList(): companyId={}", companyId );
+
+        CoreResponse< List< EntityOption > > result = contactService.contactOptionList( companyId );
+
+        log.debug( "result status: {}, data-amount: {}", result.getStatus(), result.isOk() ? result.getDataAmountTotal() : 0 );
+
+        if ( result.isError() )
+            throw new RequestFailedException( result.getStatus() );
+
+        return result.getData();
     }
 
     @Autowired

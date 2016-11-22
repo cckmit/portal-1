@@ -6,6 +6,8 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.CompanyEvents;
+import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CompanyServiceAsync;
 import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
@@ -14,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by turik on 28.10.16.
+ * Модель селектора компаний
  */
 public abstract class CompanyModel implements Activity {
 
@@ -42,23 +44,27 @@ public abstract class CompanyModel implements Activity {
 
     private void refreshOptions() {
 
-        companyService.companyOptionList(new RequestCallback< List< EntityOption > >() {
+        companyService.getCompanyOptionList( new RequestCallback<List<EntityOption>>() {
             @Override
             public void onError( Throwable throwable ) {
+                fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
             }
 
             @Override
-            public void onSuccess( List< EntityOption > options ) {
+            public void onSuccess( List<EntityOption> options ) {
                 list.clear();
                 list.addAll( options );
 
                 notifySubscribers();
             }
-        });
+        } );
     }
 
     @Inject
     CompanyServiceAsync companyService;
+
+    @Inject
+    Lang lang;
 
     private List< EntityOption > list = new ArrayList<>();
 

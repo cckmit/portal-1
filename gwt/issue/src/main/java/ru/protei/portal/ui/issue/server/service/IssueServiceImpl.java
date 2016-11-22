@@ -66,7 +66,7 @@ public class IssueServiceImpl implements IssueService {
 
         log.debug( "getStatesByCaseType: caseType={} ", type );
 
-        CoreResponse< List<En_CaseState> > result = caseService.getStateList(type);
+        CoreResponse< List<En_CaseState> > result = caseService.stateList( type );
 
         log.debug("result status: {}, data-amount: {}", result.getStatus(), result.isOk() ? result.getDataAmountTotal() : 0);
 

@@ -6,7 +6,9 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
+import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.PersonEvents;
+import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.EmployeeServiceAsync;
 import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
@@ -29,7 +31,7 @@ public abstract class EmployeeModel implements Activity {
         refreshOptions();
     }
 
-    public void subscribe( ModelSelector<EntityOption> selector ) {
+    public void subscribe( ModelSelector< EntityOption > selector ) {
         subscribers.add( selector );
         selector.fillOptions( list );
     }
@@ -43,23 +45,26 @@ public abstract class EmployeeModel implements Activity {
 
     private void refreshOptions() {
 
-        employeeService.getEmployees(new RequestCallback<List<Person>>() {
+        employeeService.getEmployeeOptionList( new RequestCallback< List< EntityOption > >() {
             @Override
-            public void onError(Throwable throwable) {
+            public void onError( Throwable throwable ) {
+                fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
             }
 
             @Override
-            public void onSuccess(List<Person> persons) {
+            public void onSuccess( List< EntityOption > options ) {
                 list.clear();
-                persons.forEach(person -> list.add(EntityOption.fromPerson(person)));
-
+                list.addAll( options );
                 notifySubscribers();
             }
-        });
+        } );
     }
 
     @Inject
     EmployeeServiceAsync employeeService;
+
+    @Inject
+    Lang lang;
 
     private List< EntityOption > list = new ArrayList<>();
 
