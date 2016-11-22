@@ -50,20 +50,20 @@ public class ContactQuery extends BaseQuery {
     @Override
     public SqlCondition sqlCondition() {
         return new SqlCondition().build((condition, args) -> {
-            condition.append("company_id not in (select companyId from company_group_home)");
+            condition.append("Person.company_id not in (select companyId from company_group_home)");
 
             if (companyId != null) {
-                condition.append(" and company_id = ?");
+                condition.append(" and Person.company_id = ?");
                 args.add(companyId);
             }
 
             if (fired != null) {
-                condition.append(" and isfired=?");
+                condition.append(" and Person.isfired=?");
                 args.add(fired ? 1 : 0);
             }
 
             if (HelperFunc.isLikeRequired(searchString)) {
-                condition.append(" and (displayName like ? or contactInfo like ?)");
+                condition.append(" and (Person.displayName like ? or Person.contactInfo like ?)");
                 String likeArg = HelperFunc.makeLikeArg(searchString, true);
 
                 args.add(likeArg);
