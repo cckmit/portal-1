@@ -8,7 +8,7 @@ import java.io.Serializable;
 /**
  * Created by michael on 12.10.16.
  */
-public abstract class BaseQuery implements Serializable, DataQuery {
+public class BaseQuery implements Serializable, DataQuery {
 
     public String searchString;
     public En_SortField sortField;
@@ -86,4 +86,8 @@ public abstract class BaseQuery implements Serializable, DataQuery {
     }
 
 
+    @Override
+    public SqlCondition sqlCondition() {
+        throw new NoSuchMethodError("you have to implement me :)");
+    }
 }
