@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.query.ProductQuery;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.service.ProductService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
@@ -19,41 +20,41 @@ import java.util.List;
 public class ProductServiceImpl implements ProductService {
 
     @Override
-    public List<DevUnit> getProductList(ProductQuery productQuery) throws RequestFailedException {
+    public List< DevUnit > getProductList( ProductQuery productQuery ) throws RequestFailedException {
 
-        log.info (" getProductList: search={} | showDeprecated={} | sortField={} | order={}",
-                productQuery.getSearchString(), productQuery.getState(), productQuery.getSortField(), productQuery.getSortDir());
+        log.debug( "getProductList(): search={} | showDeprecated={} | sortField={} | order={}",
+                productQuery.getSearchString(), productQuery.getState(), productQuery.getSortField(), productQuery.getSortDir() );
 
-        CoreResponse<List<DevUnit>> result = productService.list(productQuery);
+        CoreResponse < List< DevUnit > > result = productService.productList( productQuery );
 
-        if (result.isError())
-            throw new RequestFailedException(result.getStatus());
+        if ( result.isError() )
+            throw new RequestFailedException( result.getStatus() );
 
         return result.getData();
 
    }
 
     @Override
-    public DevUnit getProductById(Long productId) throws RequestFailedException {
+    public DevUnit getProduct( Long productId ) throws RequestFailedException {
 
-        log.info(" getProductById: id={}", productId);
+        log.debug( "getProduct(): id={}", productId );
 
-        CoreResponse<DevUnit> response = productService.getProductById(productId);
+        CoreResponse< DevUnit > response = productService.getProduct( productId );
 
-        if (response.isError())
+        if ( response.isError() )
             throw new RequestFailedException( response.getStatus() );
 
-        log.info(" getProductById: id={}", response.getData());
+        log.debug( "getProduct(): id={}", response.getData() );
 
         return response.getData();
     }
 
     @Override
-    public Boolean saveProduct (DevUnit product) throws RequestFailedException {
+    public Boolean saveProduct( DevUnit product ) throws RequestFailedException {
 
-        log.info(" saveProduct: product={}", product);
+        log.debug( "saveProduct(): product={}", product );
 
-        if (!isNameUnique(product.getName(), product.getId()))
+        if ( !isNameUnique( product.getName(), product.getId() ) )
             throw new RequestFailedException ();
 
         CoreResponse response = product.getId() == null ?
@@ -62,35 +63,47 @@ public class ProductServiceImpl implements ProductService {
         if ( response.isError() )
             throw new RequestFailedException( response.getStatus() );
 
-        log.info(" saveProduct: response.getData()={}", response.getData() );
+        log.debug( "saveProduct(): response.getData()={}", response.getData() );
 
         return response.getData() != null;
     }
 
 
     @Override
-    public boolean isNameUnique(String name, Long excludeId) throws RequestFailedException {
+    public boolean isNameUnique( String name, Long excludeId ) throws RequestFailedException {
 
-        log.info(" isNameUnique: name={}", name);
+        log.debug( "isNameUnique(): name={}", name );
 
-        if (name == null || name.isEmpty())
+        if ( name == null || name.isEmpty() )
             throw new RequestFailedException ();
 
-        CoreResponse<Boolean> response = productService.checkUniqueProductByName(name, excludeId);
+        CoreResponse< Boolean > response = productService.checkUniqueProductByName( name, excludeId );
 
-        if (response.isError())
-            throw new RequestFailedException(response.getStatus());
+        if ( response.isError() )
+            throw new RequestFailedException( response.getStatus() );
 
-        log.info(" isNameUnique: response={}", response.getData());
+        log.debug( "isNameUnique(): response={}", response.getData() );
 
         return response.getData();
     }
 
+    @Override
+    public List< EntityOption > getProductOptionList() throws RequestFailedException {
+
+        log.debug( "getProductOptionList()" );
+
+        CoreResponse< List< EntityOption > > result = productService.productOptionList();
+
+        log.debug( "result status: {}, data-amount: {}", result.getStatus(), result.isOk() ? result.getDataAmountTotal() : 0 );
+
+        if ( result.isError() )
+            throw new RequestFailedException( result.getStatus() );
+
+        return result.getData();
+    }
 
     @Autowired
     ru.protei.portal.core.service.ProductService productService;
-
-    private ProductQuery productQuery;
 
     private static final Logger log = LoggerFactory.getLogger( "web" );
 }

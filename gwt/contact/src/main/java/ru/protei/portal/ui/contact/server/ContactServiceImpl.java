@@ -9,6 +9,7 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.ContactQuery;
+import ru.protei.portal.core.model.view.ContactShortView;
 import ru.protei.portal.ui.common.client.service.ContactService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
@@ -21,12 +22,12 @@ import java.util.List;
 public class ContactServiceImpl implements ContactService {
 
     @Override
-    public List<Person> getContacts(ContactQuery contactQuery) throws RequestFailedException {
+    public List<Person> getContacts(ContactQuery query ) throws RequestFailedException {
 
         log.debug( "getContacts(): searchPattern={} | companyId={} | isFired={} | sortField={} | sortDir={}",
-                contactQuery.getSearchString(), contactQuery.getCompanyId(), contactQuery.getFired(), contactQuery.getSortField(), contactQuery.getSortDir() );
+                query.getSearchString(), query.getCompanyId(), query.getFired(), query.getSortField(), query.getSortDir() );
 
-        CoreResponse<List<Person>> response = contactService.contactList(contactQuery);
+        CoreResponse<List<Person>> response = contactService.contactList( query );
 
         if (response.isError()) {
             throw new RequestFailedException( response.getStatus() );
@@ -69,6 +70,21 @@ public class ContactServiceImpl implements ContactService {
     @Override
     public Long getContactsCount( ContactQuery query ) throws RequestFailedException {
         return 300L;
+    }
+
+    public List<ContactShortView> getContactViewList( ContactQuery query ) throws RequestFailedException {
+
+        log.debug( "getContactViewList(): searchPattern={} | companyId={} | isFired={} | sortField={} | sortDir={}",
+                query.getSearchString(), query.getCompanyId(), query.getFired(), query.getSortField(), query.getSortDir() );
+
+        CoreResponse< List< ContactShortView > > result = contactService.contactShortViewList( query );
+
+        log.debug( "result status: {}, data-amount: {}", result.getStatus(), result.isOk() ? result.getDataAmountTotal() : 0 );
+
+        if ( result.isError() )
+            throw new RequestFailedException( result.getStatus() );
+
+        return result.getData();
     }
 
     @Autowired

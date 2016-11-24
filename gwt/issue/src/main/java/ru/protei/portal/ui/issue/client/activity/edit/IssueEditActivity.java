@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.view.ContactShortView;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.IssueEvents;
@@ -110,7 +111,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         Company initiatorCompany = issue.getInitiatorCompany();
         view.company().setValue(EntityOption.fromCompany(initiatorCompany));
         view.changeCompany(initiatorCompany);
-        view.initiator().setValue(EntityOption.fromPerson(issue.getInitiator()));
+        view.initiator().setValue( ContactShortView.fromPerson( issue.getInitiator() ));
 
         view.product().setValue(EntityOption.fromProduct(issue.getProduct()));
         view.manager().setValue(EntityOption.fromPerson(issue.getManager()));
@@ -125,7 +126,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         issue.setImpLevel(view.importance().getValue().getId());
 
         issue.setInitiatorCompany(Company.fromEntityOption(view.company().getValue()));
-        issue.setInitiator(Person.fromEntityOption(view.initiator().getValue()));
+        issue.setInitiator(Person.fromContactShortView(view.initiator().getValue()));
 
         issue.setProduct(DevUnit.fromEntityOption(view.product().getValue()));
         issue.setManager(Person.fromEntityOption(view.manager().getValue()));

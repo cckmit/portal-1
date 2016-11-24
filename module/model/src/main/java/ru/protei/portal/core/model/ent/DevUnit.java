@@ -3,6 +3,7 @@ package ru.protei.portal.core.model.ent;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.EntityOptionSupport;
 import ru.protei.winter.jdbc.annotations.IdInsertMode;
 import ru.protei.winter.jdbc.annotations.JdbcColumn;
 import ru.protei.winter.jdbc.annotations.JdbcEntity;
@@ -15,7 +16,7 @@ import java.util.Date;
  * Created by michael on 23.05.16.
  */
 @JdbcEntity(table = "dev_unit")
-public class DevUnit implements Serializable {
+public class DevUnit implements Serializable, EntityOptionSupport {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -148,6 +149,11 @@ public class DevUnit implements Serializable {
 
     public En_DevUnitType getType () {
         return En_DevUnitType.forId(this.typeId);
+    }
+
+    @Override
+    public EntityOption toEntityOption() {
+        return new EntityOption(this.name, this.id);
     }
 
     @Override

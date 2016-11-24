@@ -17,7 +17,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Реализация сервиса управления контактами
+ * Реализация сервиса управления обращениями
  */
 public class CaseServiceImpl implements CaseService {
 
@@ -79,7 +79,7 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
-    public CoreResponse<List<En_CaseState>> getStateList(En_CaseType caseType) {
+    public CoreResponse<List<En_CaseState>> stateList( En_CaseType caseType ) {
         List<En_CaseState> states = caseStateMatrixDAO.getStatesByCaseType(caseType);
 
         if ( states == null )

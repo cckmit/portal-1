@@ -6,17 +6,20 @@ import ru.protei.portal.core.model.dao.DevUnitDAO;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.utils.TypeConverters;
 import ru.protei.winter.jdbc.JdbcSort;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
- * Created by michael on 27.09.16.
+ * Реализация сервиса управления продуктами
  */
 public class ProductServiceImpl implements ProductService {
 
@@ -29,17 +32,39 @@ public class ProductServiceImpl implements ProductService {
     DevUnitDAO devUnitDAO;
 
     @Override
-    public CoreResponse<List<DevUnit>> list(ProductQuery query) {
+    public CoreResponse<List<EntityOption>> productOptionList() {
+
+        ProductQuery query = new ProductQuery();
+        String condition = HelperFunc.makeLikeArg(query.getSearchString(), true);
+        JdbcSort sort = TypeConverters.createSort(query);
+
+        List<DevUnit> list = devUnitDAO.getUnitsByCondition(En_DevUnitType.PRODUCT, En_DevUnitState.ACTIVE, condition, sort);
+
+        if (list == null)
+            new CoreResponse<List<EntityOption>>().error(En_ResultStatus.GET_DATA_ERROR);
+
+        List<EntityOption> result = list.stream().map(DevUnit::toEntityOption).collect(Collectors.toList());
+
+        return new CoreResponse<List<EntityOption>>().success(result,result.size());
+    }
+
+    @Override
+    public CoreResponse<List<DevUnit>> productList(ProductQuery query) {
 
         String condition = HelperFunc.makeLikeArg(query.getSearchString(), true);
 
         JdbcSort sort = TypeConverters.createSort(query);
 
-        return new CoreResponse<List<DevUnit>>().success(devUnitDAO.getUnitsByCondition(En_DevUnitType.PRODUCT, query.getState(), condition.trim(), sort));
+        List<DevUnit> list = devUnitDAO.getUnitsByCondition(En_DevUnitType.PRODUCT, query.getState(), condition.trim(), sort);
+
+        if (list == null)
+            new CoreResponse<List<DevUnit>>().error(En_ResultStatus.GET_DATA_ERROR);
+
+        return new CoreResponse<List<DevUnit>>().success(list);
     }
 
     @Override
-    public CoreResponse<DevUnit> getProductById(Long id) {
+    public CoreResponse<DevUnit> getProduct(Long id) {
 
         if (id == null)
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);

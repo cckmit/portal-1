@@ -25,20 +25,6 @@ import java.util.List;
 public class CompanyServiceImpl implements CompanyService {
 
     @Override
-    public List<EntityOption> companyOptionList() throws RequestFailedException {
-        log.debug( "get company option list" );
-
-        CoreResponse< List<EntityOption> > result = companyService.companyOptionList();
-
-        log.debug("result status: {}, data-amount: {}", result.getStatus(), result.isOk() ? result.getDataAmountTotal() : 0);
-
-        if (result.isError())
-            throw new RequestFailedException(result.getStatus());
-
-        return result.getData();
-    }
-
-    @Override
     public List< Company > getCompanies( CompanyQuery companyQuery) throws RequestFailedException {
 
         List< Long > categoryIds = companyQuery.getCategoryIds();
@@ -73,7 +59,7 @@ public class CompanyServiceImpl implements CompanyService {
     @Override
     public List<CompanyCategory> getCompanyCategories() throws RequestFailedException {
 
-        log.debug( "getCompanyCategories" );
+        log.debug( "getCompanyCategories()" );
 
         CoreResponse< List<CompanyCategory> > result = companyService.categoryList();
 
@@ -134,16 +120,31 @@ public class CompanyServiceImpl implements CompanyService {
 
 
     @Override
-    public Company getCompanyById(long id) throws RequestFailedException {
-        log.debug( "getCompanyById: id={}", id );
+    public Company getCompany( long id ) throws RequestFailedException {
+        log.debug( "getCompany(): id={}", id );
 
-        CoreResponse<Company> response = companyService.getCompanyById(id);
+        CoreResponse<Company> response = companyService.getCompany( id );
 
-        log.debug( "getCompanyById: response.isOk()={} | response.getData()", response.isOk(), response.getData() );
+        log.debug( "getCompany(): response.isOk()={} | response.getData()", response.isOk(), response.getData() );
 
         if ( response.isError() ) throw new RequestFailedException(response.getStatus());
 
         return response.getData();
+    }
+
+    @Override
+    public List< EntityOption > getCompanyOptionList() throws RequestFailedException {
+
+        log.debug( "getCompanyOptionList()" );
+
+        CoreResponse< List< EntityOption > > result = companyService.companyOptionList();
+
+        log.debug( "result status: {}, data-amount: {}", result.getStatus(), result.isOk() ? result.getDataAmountTotal() : 0 );
+
+        if ( result.isError() )
+            throw new RequestFailedException( result.getStatus() );
+
+        return result.getData();
     }
 
     @Autowired
