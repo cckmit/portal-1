@@ -34,7 +34,7 @@ public class CaseServiceImpl implements CaseService {
         List<CaseObject> list = caseObjectDAO.getCases( query );
 
         if ( list == null )
-            new CoreResponse<List<CaseObject>>().error(En_ResultStatus.GET_DATA_ERROR);
+            return new CoreResponse<List<CaseObject>>().error(En_ResultStatus.GET_DATA_ERROR);
 
         return new CoreResponse<List<CaseObject>>().success(list);
     }
@@ -82,8 +82,8 @@ public class CaseServiceImpl implements CaseService {
     public CoreResponse<List<En_CaseState>> stateList( En_CaseType caseType ) {
         List<En_CaseState> states = caseStateMatrixDAO.getStatesByCaseType(caseType);
 
-        if ( states == null )
-            new CoreResponse<List<En_CaseState>>().error(En_ResultStatus.GET_DATA_ERROR);
+        if (states == null)
+            return new CoreResponse<List<En_CaseState>>().error(En_ResultStatus.GET_DATA_ERROR);
 
         return new CoreResponse<List<En_CaseState>>().success(states);
     }
@@ -91,6 +91,11 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     public CoreResponse<Long> count(CaseQuery query) {
-        return null;
+        Long count = caseObjectDAO.count(query);
+
+        if (count == null)
+            return new CoreResponse<Long>().error(En_ResultStatus.GET_DATA_ERROR);
+
+        return new CoreResponse<Long>().success(count);
     }
 }

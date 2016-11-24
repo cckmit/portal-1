@@ -13,7 +13,6 @@ import java.util.List;
  */
 public interface CaseService {
     CoreResponse<Long> count( CaseQuery query );
-
     CoreResponse<List<CaseObject>> caseObjectList(CaseQuery query);
     CoreResponse<CaseObject> getCaseObject(long id);
     CoreResponse<CaseObject> saveCaseObject(CaseObject p);
