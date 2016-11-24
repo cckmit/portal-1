@@ -6,7 +6,6 @@ import ru.protei.portal.core.model.dao.DevUnitDAO;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.core.model.helper.HelperFunc;
@@ -35,10 +34,7 @@ public class ProductServiceImpl implements ProductService {
     public CoreResponse<List<EntityOption>> productOptionList() {
 
         ProductQuery query = new ProductQuery();
-        String condition = HelperFunc.makeLikeArg(query.getSearchString(), true);
-        JdbcSort sort = TypeConverters.createSort(query);
-
-        List<DevUnit> list = devUnitDAO.getUnitsByCondition(En_DevUnitType.PRODUCT, En_DevUnitState.ACTIVE, condition, sort);
+        List<DevUnit> list = devUnitDAO.listByQuery(query);
 
         if (list == null)
             new CoreResponse<List<EntityOption>>().error(En_ResultStatus.GET_DATA_ERROR);
@@ -51,11 +47,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public CoreResponse<List<DevUnit>> productList(ProductQuery query) {
 
-        String condition = HelperFunc.makeLikeArg(query.getSearchString(), true);
-
-        JdbcSort sort = TypeConverters.createSort(query);
-
-        List<DevUnit> list = devUnitDAO.getUnitsByCondition(En_DevUnitType.PRODUCT, query.getState(), condition.trim(), sort);
+        List<DevUnit> list = devUnitDAO.listByQuery(query);
 
         if (list == null)
             new CoreResponse<List<DevUnit>>().error(En_ResultStatus.GET_DATA_ERROR);
@@ -126,7 +118,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     private boolean checkUniqueProduct (String name, Long excludeId) {
-        DevUnit product = devUnitDAO.checkExistsProductByName(name);
+        DevUnit product = devUnitDAO.checkExistsByName(En_DevUnitType.PRODUCT, name);
 
         return product == null || product.getId().equals(excludeId);
     }
@@ -135,4 +127,9 @@ public class ProductServiceImpl implements ProductService {
         return new CoreResponse<T>().error(En_ResultStatus.INTERNAL_ERROR);
     }
 
+
+    @Override
+    public CoreResponse<Long> count(ProductQuery query) {
+        return new CoreResponse<Long>().success(devUnitDAO.count(query));
+    }
 }

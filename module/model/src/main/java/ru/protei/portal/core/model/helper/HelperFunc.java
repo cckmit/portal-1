@@ -36,6 +36,9 @@ public class HelperFunc {
         return null;
     }
 
+    public static boolean isLikeRequired (String arg) {
+        return isNotEmpty(arg) && !arg.equals("%");
+    }
 
     public static String makeLikeArg (String arg) {
         return makeLikeArg (arg, false);

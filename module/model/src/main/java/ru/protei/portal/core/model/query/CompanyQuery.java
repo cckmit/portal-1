@@ -2,8 +2,11 @@ package ru.protei.portal.core.model.query;
 
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.helper.HelperFunc;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by michael on 12.10.16.
@@ -44,3 +47,4 @@ public class CompanyQuery extends BaseQuery {
         this.categoryIds = categoryIds;
     };
 }
+

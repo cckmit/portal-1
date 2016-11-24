@@ -1,8 +1,10 @@
 package ru.protei.portal.core.model.query;
 
 import ru.protei.portal.core.model.dict.En_DevUnitState;
+import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.helper.HelperFunc;
 
 /**
  * Created by michael on 12.10.16.
@@ -16,6 +18,10 @@ public class ProductQuery extends BaseQuery {
         sortDir = En_SortDir.ASC;
     }
 
+    public ProductQuery(String searchString, En_SortField sortField, En_SortDir sortDir) {
+        super(searchString, sortField, sortDir);
+    }
+
     public En_DevUnitState getState() {
         return state;
     }
@@ -23,4 +29,5 @@ public class ProductQuery extends BaseQuery {
     public void setState(En_DevUnitState state) {
         this.state = state;
     }
+
 }
