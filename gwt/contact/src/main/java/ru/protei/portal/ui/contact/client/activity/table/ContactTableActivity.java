@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.contact.client.activity.table;
 
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -9,7 +10,6 @@ import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.query.ContactQuery;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
-import ru.protei.portal.ui.common.client.common.PeriodicTaskService;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.ContactEvents;
@@ -40,32 +40,30 @@ public abstract class ContactTableActivity implements AbstractContactTableActivi
     public void onShow( ContactEvents.Show event ) {
 
         this.fireEvent( new AppEvents.InitPanelName( lang.contacts() ) );
-        initDetails.parent.clear();
-        initDetails.parent.add( view.asWidget() );
+        init.parent.clear();
+        init.parent.add( view.asWidget() );
         view.showElements();
         isShowTable = false;
 
-        ContactQuery query = makeQuery( null );
-
-        requestContacts( query );
+        query = makeQuery( null );
+        requestTotalCount();
     }
 
     @Event
     public void onShowTable( ContactEvents.ShowTable event ) {
-
         event.parent.clear();
         event.parent.add( view.asWidget() );
         view.hideElements();
         isShowTable = true;
 
-        ContactQuery query = makeQuery( event.companyId );
+        query = makeQuery( event.companyId );
 
-        requestContacts( query );
+        requestTotalCount();
     }
 
     @Event
     public void onInitDetails( AppEvents.InitDetails initDetails ) {
-        this.initDetails = initDetails;
+        this.init = initDetails;
     }
 
     @Override
@@ -88,29 +86,42 @@ public abstract class ContactTableActivity implements AbstractContactTableActivi
 
     @Override
     public void onFilterChanged() {
-        ContactQuery query = makeQuery( null );
-        requestContacts(query);
+        query = makeQuery( null );
+        requestTotalCount();
     }
 
-    private void requestContacts( ContactQuery query ) {
+    @Override
+    public void loadData( int offset, int limit, AsyncCallback<List<Person>> asyncCallback ) {
+        query.setOffset( offset );
+        query.setLimit( limit );
 
-        if ( fillViewHandler != null ) {
-            fillViewHandler.cancel();
-        }
+        contactService.getContacts( query, new RequestCallback<List<Person>>() {
+            @Override
+            public void onError( Throwable throwable ) {
+                fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
+                asyncCallback.onFailure( throwable );
+            }
 
+            @Override
+            public void onSuccess( List<Person> persons ) {
+                asyncCallback.onSuccess( persons );
+            }
+        } );
+    }
+
+    private void requestTotalCount() {
         view.clearRecords();
         animation.closeDetails();
 
-
-        contactService.getContacts(query, new RequestCallback<List<Person>>() {
+        contactService.getContactsCount(query, new RequestCallback<Long>() {
             @Override
             public void onError(Throwable throwable) {
                 fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
             }
 
             @Override
-            public void onSuccess(List<Person> persons) {
-                fillViewHandler = taskService.startPeriodicTask(persons, p -> view.addRecord(p), 50, 50);
+            public void onSuccess(Long count) {
+                view.setRecordCount( count );
             }
         });
     }
@@ -149,12 +160,8 @@ public abstract class ContactTableActivity implements AbstractContactTableActivi
     @Inject
     TableAnimation animation;
 
-    @Inject
-    PeriodicTaskService taskService;
-
-    PeriodicTaskService.PeriodicTaskHandler fillViewHandler;
-
     private boolean isShowTable = false;
 
-    private AppEvents.InitDetails initDetails;
+    private AppEvents.InitDetails init;
+    private ContactQuery query;
 }

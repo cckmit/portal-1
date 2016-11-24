@@ -594,6 +594,28 @@ label.bordered:after{
   background-color: #ddd;
 }
 
+.contacts {
+  table {
+    tbody {
+      tr {
+        height: 70px;
+      }
+    }
+    .company {
+      width: 15%;
+    }
+    .position {
+      width: 15%;
+    }
+    .phone {
+      width: 15%;
+    }
+    .email {
+      width: 10%;
+    }
+  }
+}
+
 /* table expandable width */
 
 .no-width {

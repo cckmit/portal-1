@@ -66,6 +66,11 @@ public class ContactServiceImpl implements ContactService {
         throw new RequestFailedException(response.getStatus());
     }
 
+    @Override
+    public Long getContactsCount( ContactQuery query ) throws RequestFailedException {
+        return 300L;
+    }
+
     @Autowired
     ru.protei.portal.core.service.ContactService contactService;
 

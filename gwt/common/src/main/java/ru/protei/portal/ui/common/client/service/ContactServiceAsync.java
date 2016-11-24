@@ -22,4 +22,5 @@ public interface ContactServiceAsync {
 
     void saveContact (Person p, AsyncCallback<Person> callback);
 
+    void getContactsCount( ContactQuery query, AsyncCallback<Long> async );
 }
