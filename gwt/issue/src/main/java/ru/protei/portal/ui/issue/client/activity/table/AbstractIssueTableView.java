@@ -24,4 +24,6 @@ public interface AbstractIssueTableView extends IsWidget {
     void clearRecords();
     void addRecord( CaseObject issue );
     HasWidgets getPreviewContainer ();
+
+    void setIssuesCount( Long issuesCount );
 }

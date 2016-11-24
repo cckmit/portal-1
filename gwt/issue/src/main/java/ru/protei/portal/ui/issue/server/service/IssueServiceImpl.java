@@ -61,6 +61,11 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
+    public long getIssuesCount( CaseQuery query ) {
+        return 1000;
+    }
+
+    @Override
     public List<En_CaseState> getStateList() throws RequestFailedException {
         En_CaseType type = En_CaseType.CRM_SUPPORT;
 

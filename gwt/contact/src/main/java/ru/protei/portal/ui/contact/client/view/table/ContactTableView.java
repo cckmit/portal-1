@@ -257,6 +257,7 @@ public class ContactTableView extends Composite implements AbstractContactTableV
             @Override
             public void fillSeparatorValue( Element element, int i ) {
                 element.setInnerText( "Страница "+ (i+1) );
+                element.addClassName( "separator" );
             }
         } );
         table.addStyleName( "contacts" );

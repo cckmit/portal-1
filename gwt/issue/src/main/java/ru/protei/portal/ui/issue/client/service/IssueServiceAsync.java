@@ -4,6 +4,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.List;
 
@@ -23,4 +24,6 @@ public interface IssueServiceAsync {
      * @return список статусов
      */
     void getStateList(AsyncCallback<List<En_CaseState>> async);
+
+    void getIssuesCount( CaseQuery query, AsyncCallback<Long> callback );
 }

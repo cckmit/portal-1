@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.issue.client.activity.table;
 
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -42,7 +43,7 @@ public abstract class IssueTableActivity implements AbstractIssueTableActivity, 
         initDetails.parent.clear();
         initDetails.parent.add( view.asWidget() );
 
-        requestIssues();
+        requestIssuesCount();
     }
 
     @Event
@@ -69,24 +70,42 @@ public abstract class IssueTableActivity implements AbstractIssueTableActivity, 
 
     @Override
     public void onFilterChanged() {
-        requestIssues();
+        requestIssuesCount();
     }
 
-    private void requestIssues() {
+    @Override
+    public void loadData( int offset, int limit, AsyncCallback<List<CaseObject>> asyncCallback ) {
+        CaseQuery query = getQuery();
+        query.setOffset( offset );
+        query.setLimit( limit );
+
+        issueService.getIssues( query, new RequestCallback<List<CaseObject>>() {
+            @Override
+            public void onError( Throwable throwable ) {
+                fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
+                asyncCallback.onFailure( throwable );
+            }
+
+            @Override
+            public void onSuccess( List<CaseObject> caseObjects ) {
+                asyncCallback.onSuccess( caseObjects );
+            }
+        } );
+    }
+
+    private void requestIssuesCount() {
         view.clearRecords();
         animation.closeDetails();
 
-        issueService.getIssues( getQuery(), new RequestCallback< List< CaseObject > >() {
+        issueService.getIssuesCount( getQuery(), new RequestCallback< Long >() {
                 @Override
                 public void onError( Throwable throwable ) {
                     fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
                 }
 
                 @Override
-                public void onSuccess( List< CaseObject > issues ) {
-                    issues.forEach( ( issue ) -> {
-                        view.addRecord( issue );
-                    } );
+                public void onSuccess( Long issuesCount ) {
+                    view.setIssuesCount( issuesCount );
                 }
             } );
     }
