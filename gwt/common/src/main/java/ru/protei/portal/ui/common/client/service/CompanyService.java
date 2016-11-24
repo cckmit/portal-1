@@ -61,19 +61,16 @@ public interface CompanyService extends RemoteService {
      */
     Boolean isGroupNameExists ( String name, Long excludeId ) throws RequestFailedException;
 
-
     /**
      * Получение компании
      * @param id идентификатор компании
      * @return Company
      */
-    Company getCompanyById ( long id ) throws RequestFailedException;
-
+    Company getCompany( long id ) throws RequestFailedException;
 
     /**
      * Получение списка сокращенного представления компании (name,id)
      * @return
      */
-    List<EntityOption> companyOptionList () throws RequestFailedException;
-
+    List< EntityOption > getCompanyOptionList() throws RequestFailedException;
 }

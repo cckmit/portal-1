@@ -120,18 +120,19 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
 
     private void requestProduct(Long productId) {
 
-        productService.getProductById(productId, new RequestCallback<DevUnit>() {
+        productService.getProduct( productId, new RequestCallback<DevUnit>() {
             @Override
-            public void onError(Throwable throwable) {}
+            public void onError( Throwable throwable ) {
+            }
 
             @Override
-            public void onSuccess(DevUnit devUnit) {
+            public void onSuccess( DevUnit devUnit ) {
                 product = devUnit;
-                fireEvent(new AppEvents.InitPanelName(product.getName()));
-                fillView(product);
+                fireEvent( new AppEvents.InitPanelName( product.getName() ) );
+                fillView( product );
                 resetValidationStatus();
             }
-        });
+        } );
     }
 
     private void resetView () {

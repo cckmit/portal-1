@@ -64,7 +64,7 @@ public class CompanyServiceTest {
             Assert.assertNotNull(resp.getData());
 
             CompanyGroup testGroup = resp.getData();
-            Company proteiCompany = service.getCompanyById(1L).getData();
+            Company proteiCompany = service.getCompany( 1L ).getData();
 
             service.updateCompany(proteiCompany, testGroup);
 
@@ -75,7 +75,7 @@ public class CompanyServiceTest {
 //            Assert.assertTrue(linkResult.isOk());
 //            Assert.assertNotNull(linkResult.getData());
 
-            proteiCompany = service.getCompanyById(1L).getData();
+            proteiCompany = service.getCompany( 1L ).getData();
 
             Assert.assertNotNull(proteiCompany.getCompanyGroup());
 //            Assert.assertTrue(proteiCompany.getGroups().size() > 0);
@@ -128,7 +128,7 @@ public class CompanyServiceTest {
                 Assert.assertEquals(dupCompany.getId(), company.getId());
             }
 
-            response = service.getCompanyById(company.getId());
+            response = service.getCompany( company.getId() );
             Assert.assertNotNull(response.getData());
 
             company.setCname("Моя тестовая компания");

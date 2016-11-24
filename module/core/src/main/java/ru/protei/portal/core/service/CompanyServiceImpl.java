@@ -24,9 +24,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
 /**
- * Created by michael on 27.09.16.
+ * Реализация сервиса управления компаниями
  */
 public class CompanyServiceImpl implements CompanyService {
 
@@ -93,8 +92,12 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Override
     public CoreResponse<List<EntityOption>> companyOptionList() {
-        List<EntityOption> result = companyDAO.getListByQuery(new CompanyQuery("", En_SortField.comp_name, En_SortDir.ASC))
-                .stream().map(Company::toEntityOption).collect(Collectors.toList());
+        List<Company> list = companyDAO.getListByQuery(new CompanyQuery("", En_SortField.comp_name, En_SortDir.ASC));
+
+        if (list == null)
+            new CoreResponse<List<EntityOption>>().error(En_ResultStatus.GET_DATA_ERROR);
+
+        List<EntityOption> result = list.stream().map(Company::toEntityOption).collect(Collectors.toList());
 
         return new CoreResponse<List<EntityOption>>().success(result,result.size());
     }
@@ -149,8 +152,13 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Override
     public CoreResponse<List<Company>> companyList(CompanyQuery query) {
-        return new CoreResponse<List<Company>> ()
-                .success(companyDAO.getListByQuery (query));
+
+        List<Company> list = companyDAO.getListByQuery(query);
+
+        if (list == null)
+            new CoreResponse<List<Company>>().error(En_ResultStatus.GET_DATA_ERROR);
+
+        return new CoreResponse<List<Company>>().success(list);
     }
 
     @Override
@@ -166,7 +174,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public CoreResponse<Company> getCompanyById(Long id) {
+    public CoreResponse<Company> getCompany( Long id ) {
 
         if (id == null) {
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);

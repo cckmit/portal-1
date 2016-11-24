@@ -114,15 +114,16 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
     }
 
     private void requestCompany(Long id){
-        companyService.getCompanyById(id, new RequestCallback<Company>() {
+        companyService.getCompany( id, new RequestCallback<Company>() {
             @Override
-            public void onError(Throwable throwable) {}
+            public void onError( Throwable throwable ) {
+            }
 
             @Override
-            public void onSuccess(Company company) {
-                initialView(company);
+            public void onSuccess( Company company ) {
+                initialView( company );
             }
-        });
+        } );
     }
 
     private void fillView(Company company){

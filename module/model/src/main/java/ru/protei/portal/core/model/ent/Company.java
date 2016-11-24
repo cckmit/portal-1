@@ -12,7 +12,7 @@ import java.util.Date;
  * @author michael
  */
 @JdbcEntity(table = "Company")
-public class Company implements Serializable,EntityOptionSupport {
+public class Company implements Serializable, EntityOptionSupport {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;

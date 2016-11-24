@@ -8,12 +8,17 @@ import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.dict.En_SortDir;
+import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.ContactQuery;
+import ru.protei.portal.core.model.view.ContactShortView;
+import ru.protei.portal.core.model.view.EntityOption;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Реализация сервиса управления контактами
@@ -26,10 +31,22 @@ public class ContactServiceImpl implements ContactService {
     PersonDAO personDAO;
 
     @Override
+    public CoreResponse<List<ContactShortView>> contactShortViewList(ContactQuery query) {
+        List<Person> list = personDAO.getContacts(query);
+
+        if (list == null)
+            new CoreResponse<List<ContactShortView>>().error(En_ResultStatus.GET_DATA_ERROR);
+
+        List<ContactShortView> result = list.stream().map(Person::toContactShortView).collect(Collectors.toList());
+
+        return new CoreResponse<List<ContactShortView>>().success(result,result.size());
+    }
+
+    @Override
     public CoreResponse<List<Person>> contactList(ContactQuery query) {
         List<Person> list = personDAO.getContacts(query);
 
-        if ( list == null )
+        if (list == null)
             new CoreResponse<List<Person>>().error(En_ResultStatus.GET_DATA_ERROR);
 
         return new CoreResponse<List<Person>>().success(list);
