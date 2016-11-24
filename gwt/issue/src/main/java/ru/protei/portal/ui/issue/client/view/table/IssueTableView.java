@@ -16,6 +16,7 @@ import ru.brainworm.factory.widget.table.client.helper.SelectionColumn;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
@@ -182,7 +183,8 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
 
             @Override
             public void fillColumnValue( Element element, CaseObject caseObject ) {
-                element.setInnerText( caseObject == null ? "" : "продукт" );
+                DevUnit product = caseObject == null ? null : caseObject.getProduct();
+                element.setInnerText( product == null ? "" : product.getName() );
             }
         };
         //product.setColumnProvider( columnProvider );
