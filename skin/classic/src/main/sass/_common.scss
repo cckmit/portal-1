@@ -189,6 +189,7 @@
 .button-selector span {
   display: block;
   overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .dropdown-menu {
@@ -582,7 +583,7 @@ label.bordered:after{
 .table > tfoot > tr > td {
   padding: 8px;
   line-height: 1.42857143;
-  vertical-align: top;
+  vertical-align: middle;
   border-top: 1px solid #ddd;
 }
 
@@ -591,6 +592,9 @@ label.bordered:after{
   border-bottom: 2px solid #ddd;
   text-align: left;
   border-top: 0;
+  text-transform: uppercase;
+  word-spacing: 0.15em;
+  font-size: 14px;
 }
 
 .table-hover .table > tbody > tr:hover {
@@ -628,6 +632,8 @@ label.bordered:after{
     tbody {
       tr {
         height: 70px;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
     }
     .product {
@@ -636,13 +642,14 @@ label.bordered:after{
     .contacts {
       width: 15%;
     }
+    .manager {
+      width: 15%;
+    }
     .info {
     }
     .creation {
-      width: 5%;
-    }
-    .manager {
       width: 10%;
+      white-space: nowrap;
     }
   }
 }
@@ -828,4 +835,16 @@ td.info {
 .icon-status {
   font-size: 1.22em !important;
   vertical-align: 0;
+}
+
+.text-semibold {
+  font-weight: 600;
+}
+
+.text-semimuted {
+  color: #b6b6b6;
+}
+
+.text-muted {
+  color: #afb9c3;
 }

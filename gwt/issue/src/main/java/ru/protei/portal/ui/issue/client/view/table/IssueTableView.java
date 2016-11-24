@@ -1,18 +1,21 @@
 package ru.protei.portal.ui.issue.client.view.table;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.brainworm.factory.widget.table.client.helper.SelectionColumn;
+import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Company;
@@ -23,6 +26,7 @@ import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
+import ru.protei.portal.ui.common.client.lang.En_CaseImportanceLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
@@ -157,7 +161,6 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
 
     private void initTable () {
         editClickColumn = new EditClickColumn< CaseObject>( lang ) {};
-        //editClickColumn.setColumnProvider( columnProvider );
 
         issueNumber = new ClickColumn< CaseObject >() {
             @Override
@@ -168,10 +171,17 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
 
             @Override
             public void fillColumnValue( Element element, CaseObject caseObject ) {
-                element.setInnerText( caseObject == null ? "" : caseObject.getCaseNumber().toString() );
+                com.google.gwt.dom.client.Element div = DOM.createDiv();
+                com.google.gwt.dom.client.Element i = DOM.createElement("i");
+                i.setClassName( "fa fa-2x fa-flag " + En_ImportanceLevel.find( caseObject.getImpLevel() ) );
+                div.appendChild( i );
+                com.google.gwt.dom.client.Element divNumber = DOM.createDiv();
+                divNumber.setInnerText( caseObject == null ? "" : caseObject.getCaseNumber().toString() );
+                divNumber.getStyle().setFontSize( 20, Style.Unit.PX );
+                div.appendChild( divNumber );
+                element.appendChild( div );
             }
         };
-        //issueNumber.setColumnProvider( columnProvider );
 
         product = new ClickColumn< CaseObject >() {
             @Override
@@ -182,10 +192,9 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
 
             @Override
             public void fillColumnValue( Element element, CaseObject caseObject ) {
-                element.setInnerText( caseObject == null ? "" : "продукт" );
+                element.setInnerText( caseObject == null ? "" : caseObject.getProduct() == null ? "" : caseObject.getProduct().getName() );
             }
         };
-        //product.setColumnProvider( columnProvider );
 
         contacts = new ClickColumn< CaseObject >() {
             @Override
@@ -196,17 +205,48 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
 
             @Override
             public void fillColumnValue( Element element, CaseObject caseObject ) {
+
                 Company company = caseObject == null ? null : caseObject.getInitiatorCompany();
-                String companyName = company == null ? "" : company.getCname();
+
+                com.google.gwt.dom.client.Element companyElement= DOM.createDiv();
+                companyElement.setClassName( "text-semibold" );
+                companyElement.setInnerText( company == null ? "" : company.getCname() + ": " );
+                element.appendChild( companyElement );
 
                 Person initiator = caseObject == null ? null : caseObject.getInitiator();
-                String initiatorName = initiator == null ? "" : initiator.getDisplayName();
 
-                String separator = companyName.isEmpty() ? "" : ":\n";
-                element.setInnerText( companyName+separator+initiatorName );
+                com.google.gwt.dom.client.Element initiatorElement = DOM.createDiv();
+                //initiatorElement.setClassName( "text-semimuted" );
+                initiatorElement.setInnerText( initiator == null ? "" : initiator.getDisplayName() );
+                element.appendChild( initiatorElement );
             }
         };
-        //contacts.setColumnProvider( columnProvider );
+
+        manager = new ClickColumn< CaseObject >() {
+            @Override
+            protected void fillColumnHeader( Element element ) {
+                element.setInnerText( lang.issueManager() );
+                element.addClassName( "manager" );
+            }
+
+            @Override
+            public void fillColumnValue( Element element, CaseObject caseObject ) {
+
+                Company company = caseObject == null ? null : caseObject.getManager() == null ? null : caseObject.getManager().getCompany();
+
+                com.google.gwt.dom.client.Element companyElement= DOM.createDiv();
+                companyElement.setClassName( "text-semibold" );
+                companyElement.setInnerText( company == null ? "" : company.getCname() + ": " );
+                element.appendChild( companyElement );
+
+                Person manager = caseObject == null ? null : caseObject.getManager();
+
+                com.google.gwt.dom.client.Element managerElement = DOM.createDiv();
+                //managerElement.setClassName( "text-semimuted" );
+                managerElement.setInnerText( manager == null ? "" : manager.getDisplayName() );
+                element.appendChild( managerElement );
+            }
+        };
 
         info = new ClickColumn< CaseObject >() {
             @Override
@@ -222,11 +262,11 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
                 element.setInnerText( info );
             }
         };
-        //info.setColumnProvider( columnProvider );
 
         creationDate = new ClickColumn< CaseObject >() {
             @Override
             protected void fillColumnHeader( Element element ) {
+                element.getStyle().setWhiteSpace( Style.WhiteSpace.NOWRAP );
                 element.setInnerText( lang.issueCreationDate() );
                 element.addClassName( "creation" );
             }
@@ -234,34 +274,28 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
             @Override
             public void fillColumnValue( Element element, CaseObject caseObject ) {
                 Date created = caseObject == null ? null : caseObject.getCreated();
-                element.setInnerText( created == null ? "" : dateFormatter.formatDateOnly( created ) );
+                if ( created == null ) {
+                    element.setInnerText( "" );
+                } else {
+                    element.setClassName( "text-semimuted" );
+                    com.google.gwt.dom.client.Element i = DOM.createElement("i");
+                    i.setClassName( "fa fa-clock-o" );
+                    element.appendChild( i );
+                    com.google.gwt.dom.client.Element span = DOM.createSpan();
+                    span.setInnerText( " " + dateFormatter.formatDateOnly( created ) );
+                    element.appendChild( span );
+                }
             }
         };
-        //creationDate.setColumnProvider( columnProvider );
-
-        manager = new ClickColumn< CaseObject >() {
-            @Override
-            protected void fillColumnHeader( Element element ) {
-                element.setInnerText( lang.issueManager() );
-                element.addClassName( "manager" );
-            }
-
-            @Override
-            public void fillColumnValue( Element element, CaseObject caseObject ) {
-                Person manager = caseObject == null ? null : caseObject.getManager();
-                element.setInnerText( manager == null ? "" : manager.getDisplayName() );
-            }
-        };
-        //manager.setColumnProvider( columnProvider );
 
         table.addColumn( selectionColumn.header, selectionColumn.values );
         table.addColumn( editClickColumn.header, editClickColumn.values );
         table.addColumn( issueNumber.header, issueNumber.values );
         table.addColumn( product.header, product.values );
         table.addColumn( contacts.header, contacts.values );
+        table.addColumn( manager.header, manager.values );
         table.addColumn( info.header, info.values );
         table.addColumn( creationDate.header, creationDate.values );
-        table.addColumn( manager.header, manager.values );
 
         table.setSeparatorProvider( ( element, i ) -> {
             element.setInnerText( "Страница "+ (i+1) );
