@@ -46,27 +46,5 @@ public class CompanyQuery extends BaseQuery {
     public void setCategoryIds(List<Long> categoryIds) {
         this.categoryIds = categoryIds;
     };
-
-
-    @Override
-    public SqlCondition sqlCondition() {
-        return new SqlCondition().build((condition, args) -> {
-            condition.append("cname like ?");
-            args.add(HelperFunc.makeLikeArg(searchString, true));
-
-            if (groupId != null && groupId > 0) {
-                condition.append(" and groupId = ?");
-                args.add(groupId);
-            }
-
-            if (categoryIds != null && !categoryIds.isEmpty()) {
-                condition.append(" and category_id in (")
-                .append(
-                    getCategoryIds().stream().map(Object::toString).collect(Collectors.joining(","))
-                )
-                .append(")");
-            }
-        });
-    }
 }
 

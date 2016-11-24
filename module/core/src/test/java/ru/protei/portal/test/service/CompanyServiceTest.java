@@ -52,40 +52,35 @@ public class CompanyServiceTest {
     }
 
 
-    @Test
-    public void testCompanyGroups () {
-
-        try {
-            CompanyService service = ctx.getBean(CompanyService.class);
-
-            CoreResponse<CompanyGroup> resp = service.createGroup("Test-Group", "A group for test");
-
-            Assert.assertTrue(resp.isOk());
-            Assert.assertNotNull(resp.getData());
-
-            CompanyGroup testGroup = resp.getData();
-            Company proteiCompany = service.getCompanyById(1L).getData();
-
-            service.updateCompany(proteiCompany, testGroup);
-
-            Assert.assertNotNull(proteiCompany);
-
-//            CoreResponse<CompanyGroupItem> linkResult = service.addCompanyToGroup(testGroup.getId(), proteiCompany.getId());
+//    @Test
+//    public void testCompanyGroups () {
 //
-//            Assert.assertTrue(linkResult.isOk());
-//            Assert.assertNotNull(linkResult.getData());
-
-            proteiCompany = service.getCompanyById(1L).getData();
-
-            Assert.assertNotNull(proteiCompany.getCompanyGroup());
-//            Assert.assertTrue(proteiCompany.getGroups().size() > 0);
-
-            System.out.println(proteiCompany.getCompanyGroup().getName());
-        }
-        finally {
-            ctx.getBean(CompanyGroupItemDAO.class).removeByCondition("company_id=?", 1L);
-        }
-    }
+//        try {
+//            CompanyService service = ctx.getBean(CompanyService.class);
+//
+//            CoreResponse<CompanyGroup> resp = service.createGroup("Test-Group", "A group for test");
+//
+//            Assert.assertTrue(resp.isOk());
+//            Assert.assertNotNull(resp.getData());
+//
+//            CompanyGroup testGroup = resp.getData();
+//            Company proteiCompany = service.getCompanyById(1L).getData();
+//
+//            service.updateCompany(proteiCompany, testGroup);
+//
+//            Assert.assertNotNull(proteiCompany);
+//
+//            proteiCompany = service.getCompanyById(1L).getData();
+//
+//            Assert.assertNotNull(proteiCompany.getCompanyGroup());
+//
+//            System.out.println(proteiCompany.getCompanyGroup().getName());
+//        }
+//        finally {
+//
+//            ctx.getBean(CompanyGroupItemDAO.class).removeByCondition("company_id=?", 1L);
+//        }
+//    }
 
     @Test
     public void testCompanies () {

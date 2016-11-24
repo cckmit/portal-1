@@ -30,21 +30,4 @@ public class ProductQuery extends BaseQuery {
         this.state = state;
     }
 
-    @Override
-    public SqlCondition sqlCondition() {
-        return new SqlCondition().build((condition, args) -> {
-            condition.append("UTYPE_ID=?");
-            args.add(En_DevUnitType.PRODUCT.getId());
-
-            if (HelperFunc.isLikeRequired(searchString)) {
-                condition.append(" and UNIT_NAME like ?");
-                args.add(HelperFunc.makeLikeArg(searchString));
-            }
-
-            if (state != null) {
-                condition.append(" and UNIT_STATE=?");
-                args.add(state.getId());
-            }
-        });
-    }
 }

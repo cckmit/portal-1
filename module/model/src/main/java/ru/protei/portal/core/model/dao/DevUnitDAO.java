@@ -1,8 +1,12 @@
 package ru.protei.portal.core.model.dao;
 
+import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.ent.DevUnit;
+import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.query.ProductQuery;
+import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.winter.jdbc.JdbcSort;
 
 import java.util.List;
@@ -12,12 +16,9 @@ import java.util.List;
  */
 public interface DevUnitDAO extends PortalBaseDAO<DevUnit> {
 
-//    public List<DevUnit> getProductsByCondition(String searchExpression, JdbcSort sort);
-//
-//    public List<DevUnit> getComponentsByCondition(String searchExpression, JdbcSort sort);
-//
-//    public List<DevUnit> getUnitsByCondition(En_DevUnitType type, En_DevUnitState state,  String searchExpression, JdbcSort sort);
+    DevUnit checkExistsByName(En_DevUnitType type, String name);
 
-    public DevUnit checkExistsByName(En_DevUnitType type, String name);
 
+    @SqlConditionBuilder
+    SqlCondition createProductSqlCondition(ProductQuery query);
 }

@@ -1,6 +1,7 @@
 package ru.protei.portal.core.model.dao.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.CompanyGroupHomeDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dict.En_SortField;
@@ -8,6 +9,7 @@ import ru.protei.portal.core.model.ent.CompanyHomeGroupItem;
 import ru.protei.portal.core.model.ent.Person;
 
 import ru.protei.portal.core.model.query.ContactQuery;
+import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.utils.EntityCache;
 import ru.protei.portal.core.utils.EntitySelector;
 import ru.protei.portal.core.model.helper.HelperFunc;
@@ -112,4 +114,36 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
 
         return ifPersonIsEmployee(p) ? null : p;
     }
+
+
+    /**
+     * Query Condition builders
+     */
+
+    @Override
+    @SqlConditionBuilder
+    public SqlCondition createContactSqlCondition(ContactQuery query) {
+        return new SqlCondition().build((condition, args) -> {
+            condition.append("Person.company_id not in (select companyId from company_group_home)");
+
+            if (query.getCompanyId() != null) {
+                condition.append(" and Person.company_id = ?");
+                args.add(query.getCompanyId());
+            }
+
+            if (query.getFired() != null) {
+                condition.append(" and Person.isfired=?");
+                args.add(query.getFired() ? 1 : 0);
+            }
+
+            if (HelperFunc.isLikeRequired(query.getSearchString())) {
+                condition.append(" and (Person.displayName like ? or Person.contactInfo like ?)");
+                String likeArg = HelperFunc.makeLikeArg(query.getSearchString(), true);
+
+                args.add(likeArg);
+                args.add(likeArg);
+            }
+        });
+    }
+
 }

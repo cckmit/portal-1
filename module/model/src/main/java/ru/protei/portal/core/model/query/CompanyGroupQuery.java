@@ -16,13 +16,4 @@ public class CompanyGroupQuery extends BaseQuery {
         super(searchString, sortField, sortDir);
     }
 
-    @Override
-    public SqlCondition sqlCondition() {
-        return  new SqlCondition().build((condition, args) -> {
-            if (HelperFunc.isLikeRequired(searchString)) {
-                condition.append("group_name like ?");
-                args.add(HelperFunc.makeLikeArg(searchString));
-            }
-        });
-    }
 }

@@ -1,9 +1,13 @@
 package ru.protei.portal.core.model.dao;
 
+import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CompanyQuery;
+import ru.protei.portal.core.model.query.SqlCondition;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by michael on 01.04.16.
@@ -14,4 +18,7 @@ public interface CompanyDAO extends PortalBaseDAO<Company> {
 
     Company getCompanyByName( String name );
 
+
+    @SqlConditionBuilder
+    SqlCondition createSqlCondition(CompanyQuery query);
 }

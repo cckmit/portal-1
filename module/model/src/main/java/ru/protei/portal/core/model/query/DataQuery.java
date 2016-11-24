@@ -25,6 +25,4 @@ public interface DataQuery {
     En_SortDir getSortDir();
 
     void setSortDir(En_SortDir sortDir);
-
-    SqlCondition sqlCondition();
 }

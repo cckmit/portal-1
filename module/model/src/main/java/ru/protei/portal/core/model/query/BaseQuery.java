@@ -85,9 +85,4 @@ public class BaseQuery implements Serializable, DataQuery {
         this.sortDir = sortDir;
     }
 
-
-    @Override
-    public SqlCondition sqlCondition() {
-        throw new NoSuchMethodError("you have to implement me :)");
-    }
 }

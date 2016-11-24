@@ -43,22 +43,4 @@ public class CaseQuery extends BaseQuery {
     public void setType( En_CaseType type ) {
         this.type = type;
     }
-
-
-    @Override
-    public SqlCondition sqlCondition() {
-        return new SqlCondition().build((condition, args) -> {
-            condition.append("1=1");
-
-            if ( type != null ) {
-                condition.append( " and case_type=?" );
-                args.add( type.getId() );
-            }
-
-            if ( companyId != null ) {
-                condition.append( " and initiator_company=?" );
-                args.add( companyId );
-            }
-        });
-    }
 }

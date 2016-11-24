@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.dao.impl;
 
+import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.PortalBaseDAO;
 import ru.protei.portal.core.model.query.DataQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
@@ -10,9 +11,8 @@ import ru.protei.winter.jdbc.JdbcSort;
 import ru.protei.winter.jdbc.column.JdbcObjectColumn;
 
 import java.lang.reflect.Field;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.lang.reflect.Method;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -22,13 +22,98 @@ public abstract class PortalBaseJdbcDAO<T> extends JdbcBaseDAO<Long,T> implement
 
     public static final Object[] EMPTY_ARG_SET = new Object[]{};
 
-//    @Autowired
-//    List<JdbcObjectColumn<T>> pojoColumns;
+
+    /**
+     * реализация логики QueryConditionBuilder через вызов метода
+     */
+    class QueryConditionBuilderMethod implements QueryConditionBuilder {
+        private Method method;
+
+        public QueryConditionBuilderMethod(Method method) {
+            this.method = method;
+        }
+
+        @Override
+        public SqlCondition buildCondition(DataQuery query) {
+            try {
+                return (SqlCondition) method.invoke(PortalBaseJdbcDAO.this, query);
+            }
+            catch (Throwable e) {
+                throw new RuntimeException("sql condition builder, method invocation error", e);
+            }
+        }
+    }
+
     protected String[] pojoColumns;
+
+    /**
+     * Соответствие между классом Query и логикой формирования условия запроса
+     */
+    protected Map<Class<? extends DataQuery>, QueryConditionBuilder> queryBuilders;
+
 
     public PortalBaseJdbcDAO () {
         super();
+        queryBuilders = new HashMap<>();
+        registerConditionBuilderMethods();
     }
+
+    private void registerConditionBuilderMethods () {
+        Arrays.stream(this.getClass().getMethods())
+                .filter(
+                        method -> method.isAnnotationPresent(SqlConditionBuilder.class)
+                        && SqlCondition.class.isAssignableFrom(method.getReturnType())
+                        && method.getParameterCount() == 1
+                        && DataQuery.class.isAssignableFrom(method.getParameterTypes()[0])
+                )
+                .forEach(method -> registerConditionBuilder((Class<DataQuery>)method.getParameterTypes()[0], new QueryConditionBuilderMethod(method)));
+    }
+
+    @Override
+    public <Q extends DataQuery> void registerConditionBuilder (Class<Q> queryType, QueryConditionBuilder<Q> builder) {
+        this.queryBuilders.put(queryType, builder);
+    }
+
+    @Override
+    public SqlCondition createSqlCondition(DataQuery query) {
+        QueryConditionBuilder<DataQuery> builder = queryBuilders.get(query.getClass());
+        if (builder == null)
+            throw new NoConditionBuilderDefinedException(this, query.getClass());
+
+        return builder.buildCondition(query);
+    }
+
+    @Override
+    public Long count(DataQuery query) {
+        StringBuilder sql = new StringBuilder("select count(*) from ").append(getTableName());
+
+        SqlCondition whereCondition = createSqlCondition(query);
+
+        if (!whereCondition.condition.isEmpty()) {
+            sql.append(" where ").append(whereCondition.condition);
+        }
+
+        return jdbcTemplate.queryForObject(sql.toString(), Long.class, whereCondition.args.toArray());
+    }
+
+
+    @Override
+    public List<T> listByQuery(DataQuery query) {
+        SqlCondition where = createSqlCondition(query);
+
+        JdbcQueryParameters parameters = new JdbcQueryParameters();
+        if (where.isConditionDefined())
+            parameters.withCondition(where.condition, where.args);
+
+        parameters.withOffset(query.getOffset());
+        parameters.withLimit(query.getLimit());
+        parameters.withSort(TypeConverters.createSort( query ));
+        return getList(parameters);
+
+//        return getListByCondition(where.isConditionDefined() ? where.condition : "1=1", where.args,
+//                query.getOffset(), query.getLimit(), TypeConverters.createSort( query )).getResults();
+    }
+
 
     public Long getMaxId () {
         return getMaxValue(getIdColumnName(), Long.class, null, (Object[])null);
@@ -49,37 +134,6 @@ public abstract class PortalBaseJdbcDAO<T> extends JdbcBaseDAO<Long,T> implement
         }
     }
 
-    @Override
-    public Long count(DataQuery query) {
-        StringBuilder sql = new StringBuilder("select count(*) from ").append(getTableName());
-
-        SqlCondition whereCondition = query != null ? query.sqlCondition() : new SqlCondition();
-
-        if (!whereCondition.condition.isEmpty()) {
-            sql.append(" where ").append(whereCondition.condition);
-        }
-
-        return jdbcTemplate.queryForObject(sql.toString(), Long.class, whereCondition.args.toArray());
-    }
-
-
-    @Override
-    public List<T> listByQuery(DataQuery query) {
-        SqlCondition where = query.sqlCondition();
-
-//        JdbcQueryParameters parameters = new JdbcQueryParameters();
-//        if (where.isConditionDefined())
-//            parameters.withCondition(where.condition, where.args);
-//
-//        parameters.withOffset(query.getOffset());
-//        parameters.withLimit(query.getLimit());
-//        parameters.withSort(TypeConverters.createSort( query ));
-//        parameters.on
-//        return getList(parameters);
-
-        return getListByCondition(where.isConditionDefined() ? where.condition : "1=1", where.args,
-                query.getOffset(), query.getLimit(), TypeConverters.createSort( query )).getResults();
-    }
 
     public <V> V getMaxValue (String field, Class<V> type, String cond, Object...args) {
 

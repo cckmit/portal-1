@@ -10,7 +10,7 @@ import java.util.List;
  */
 public class SqlCondition {
 
-    interface SqlConditionBuilder {
+    public interface Builder {
         void build (StringBuilder condition, List<Object> args);
     }
 
@@ -26,7 +26,7 @@ public class SqlCondition {
         args = new ArrayList();
     }
 
-    public SqlCondition build (SqlConditionBuilder builder) {
+    public SqlCondition build (Builder builder) {
         StringBuilder sql = new StringBuilder();
         args.clear();
 
