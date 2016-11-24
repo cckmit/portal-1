@@ -68,6 +68,11 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Override
+    public Long getContactsCount( ContactQuery query ) throws RequestFailedException {
+        log.debug( "getContactsCount(): query={}", query );
+        return contactService.count( query ).getData();
+    }
+
     public List<ContactShortView> getContactViewList( ContactQuery query ) throws RequestFailedException {
 
         log.debug( "getContactViewList(): searchPattern={} | companyId={} | isFired={} | sortField={} | sortDir={}",

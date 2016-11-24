@@ -12,7 +12,7 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.AbstractColumn;
-import ru.brainworm.factory.widget.table.client.TableWidget;
+import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.brainworm.factory.widget.table.client.helper.SelectionColumn;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Person;
@@ -53,6 +53,7 @@ public class ContactTableView extends Composite implements AbstractContactTableV
             clickColumn.setHandler( activity );
             clickColumn.setColumnProvider( columnProvider );
         });
+        table.setLoadHandler( activity );
     }
     
     @Override
@@ -110,13 +111,13 @@ public class ContactTableView extends Composite implements AbstractContactTableV
     }
 
     @Override
-    public void addRecord( Person person ) {
-        table.addRow( person );
+    public void clearRecords() {
+        table.clearRows();
     }
 
     @Override
-    public void clearRecords() {
-        table.clearRows();
+    public void setRecordCount( Long count ) {
+        table.setTotalRecords( count.intValue() );
     }
 
     @UiHandler( "company" )
@@ -172,6 +173,7 @@ public class ContactTableView extends Composite implements AbstractContactTableV
             @Override
             protected void fillColumnHeader( Element element ) {
                 element.setInnerText( lang.contactFullName() );
+                element.addClassName( "person" );
             }
 
             @Override
@@ -185,6 +187,7 @@ public class ContactTableView extends Composite implements AbstractContactTableV
             @Override
             protected void fillColumnHeader( Element element ) {
                 element.setInnerText( lang.company() );
+                element.addClassName( "company" );
             }
 
             @Override
@@ -198,6 +201,7 @@ public class ContactTableView extends Composite implements AbstractContactTableV
             @Override
             protected void fillColumnHeader( Element element ) {
                 element.setInnerText( lang.contactPosition() );
+                element.addClassName( "position" );
             }
 
             @Override
@@ -212,6 +216,7 @@ public class ContactTableView extends Composite implements AbstractContactTableV
             @Override
             protected void fillColumnHeader( Element element ) {
                 element.setInnerText( lang.phone() );
+                element.addClassName( "phone" );
             }
 
             @Override
@@ -228,6 +233,7 @@ public class ContactTableView extends Composite implements AbstractContactTableV
             @Override
             protected void fillColumnHeader( Element element ) {
                 element.setInnerText( lang.email() );
+                element.addClassName( "email" );
             }
 
             @Override
@@ -246,6 +252,15 @@ public class ContactTableView extends Composite implements AbstractContactTableV
         table.addColumn( position.header, position.values );
         table.addColumn( phone.header, phone.values );
         table.addColumn( email.header, email.values );
+
+        table.setSeparatorProvider( new InfiniteTableWidget.SeparatorProvider() {
+            @Override
+            public void fillSeparatorValue( Element element, int i ) {
+                element.setInnerText( "Страница "+ (i+1) );
+                element.addClassName( "separator" );
+            }
+        } );
+        table.addStyleName( "contacts" );
     }
 
     @Inject
@@ -269,7 +284,7 @@ public class ContactTableView extends Composite implements AbstractContactTableV
     TextBox search;
 
     @UiField
-    TableWidget table;
+    InfiniteTableWidget<Person> table;
 
     @UiField
     HTMLPanel tableContainer;

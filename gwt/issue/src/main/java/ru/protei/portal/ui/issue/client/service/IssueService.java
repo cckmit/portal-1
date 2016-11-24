@@ -26,4 +26,6 @@ public interface IssueService extends RemoteService {
      * @return список статусов
      */
     List<En_CaseState> getStateList() throws RequestFailedException;
+
+    long getIssuesCount( CaseQuery query );
 }

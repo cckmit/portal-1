@@ -4,7 +4,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.query.ContactQuery;
 import ru.protei.portal.core.model.view.ContactShortView;
-import ru.protei.portal.core.model.view.EntityOption;
 
 import java.util.List;
 
@@ -23,6 +22,8 @@ public interface ContactServiceAsync {
     void getContact ( long id, AsyncCallback<Person> callback );
 
     void saveContact ( Person p, AsyncCallback<Person> callback );
+
+    void getContactsCount( ContactQuery query, AsyncCallback<Long> async );
 
     /**
      * Получение списка сокращенного представления контакта

@@ -4,7 +4,6 @@ import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_SortField;
-import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 
@@ -25,6 +24,7 @@ public interface AbstractContactTableView extends IsWidget {
     void hideElements();
     void showElements();
     void clearRecords();
-    void addRecord( Person person );
     HasWidgets getPreviewContainer ();
+
+    void setRecordCount( Long count );
 }

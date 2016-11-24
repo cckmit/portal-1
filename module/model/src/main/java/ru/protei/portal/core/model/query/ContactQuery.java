@@ -2,11 +2,7 @@ package ru.protei.portal.core.model.query;
 
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
-import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.view.EntityOption;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Mike on 02.11.2016.
@@ -47,4 +43,11 @@ public class ContactQuery extends BaseQuery {
         this.fired = fired;
     }
 
+    @Override
+    public String toString() {
+        return "ContactQuery{" +
+                "companyId=" + companyId +
+                ", fired=" + fired +
+                '}';
+    }
 }

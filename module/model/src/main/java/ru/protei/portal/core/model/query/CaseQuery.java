@@ -5,8 +5,6 @@ import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.view.EntityOption;
 
-import java.util.ArrayList;
-
 /**
  * Created by Mike on 02.11.2016.
  */
@@ -42,5 +40,13 @@ public class CaseQuery extends BaseQuery {
 
     public void setType( En_CaseType type ) {
         this.type = type;
+    }
+
+    @Override
+    public String toString() {
+        return "CaseQuery{" +
+                "companyId=" + companyId +
+                ", type=" + type +
+                '}';
     }
 }

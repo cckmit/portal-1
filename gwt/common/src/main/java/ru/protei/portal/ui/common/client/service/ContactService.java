@@ -27,6 +27,8 @@ public interface ContactService extends RemoteService {
 
     Person saveContact ( Person p ) throws RequestFailedException;
 
+    Long getContactsCount( ContactQuery query ) throws RequestFailedException;
+
     /**
      * Получение списка сокращенного представления контакта
      * @param query запрос

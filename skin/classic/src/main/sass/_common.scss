@@ -565,6 +565,13 @@ label.bordered:after{
   max-width: 100%;
   margin-bottom: 20px;
   background-color: white/*#f6f7f8*/;
+
+  .separator {
+    text-align: center;
+    background-color: #dee4e5;
+    color: black;
+    vertical-align: bottom;
+  }
 }
 
 .table > thead > tr > th,
@@ -592,6 +599,52 @@ label.bordered:after{
 
 .table > tbody > tr.selected, tr.selected:hover {
   background-color: #ddd;
+}
+
+.contacts {
+  table {
+    tbody {
+      tr {
+        height: 70px;
+      }
+    }
+    .company {
+      width: 15%;
+    }
+    .position {
+      width: 15%;
+    }
+    .phone {
+      width: 15%;
+    }
+    .email {
+      width: 10%;
+    }
+  }
+}
+
+.issues {
+  table {
+    tbody {
+      tr {
+        height: 70px;
+      }
+    }
+    .product {
+      width: 10%;
+    }
+    .contacts {
+      width: 15%;
+    }
+    .info {
+    }
+    .creation {
+      width: 5%;
+    }
+    .manager {
+      width: 10%;
+    }
+  }
 }
 
 /* table expandable width */

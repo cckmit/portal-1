@@ -29,7 +29,7 @@
         </g:HTMLPanel>
         <div class="grid">
             <g:HTMLPanel ui:field="tableContainer" styleName="global-table-container col-xs-12">
-                    <table:TableWidget ui:field="table" styleName="table-hover"/>
+                    <table:InfiniteTableWidget ui:field="table" styleName="table-hover contacts"/>
             </g:HTMLPanel>
             <g:HTMLPanel ui:field="previewContainer" styleName="preview-container no-width"/>
         </div>

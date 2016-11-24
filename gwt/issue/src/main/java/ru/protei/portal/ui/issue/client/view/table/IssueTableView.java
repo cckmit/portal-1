@@ -11,7 +11,7 @@ import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import ru.brainworm.factory.widget.table.client.TableWidget;
+import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.brainworm.factory.widget.table.client.helper.SelectionColumn;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.CaseObject;
@@ -63,6 +63,7 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
         creationDate.setColumnProvider( columnProvider );
         manager.setHandler( activity );
         manager.setColumnProvider( columnProvider );
+        table.setLoadHandler( activity );
     }
     
     @Override
@@ -111,6 +112,11 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
         table.clearRows();
     }
 
+    @Override
+    public void setIssuesCount( Long issuesCount ) {
+        table.setTotalRecords( issuesCount.intValue() );
+    }
+
     @UiHandler( "company" )
     public void onCompanySelected( ValueChangeEvent< EntityOption > event ) {
         if ( activity != null ) {
@@ -157,6 +163,7 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
             @Override
             protected void fillColumnHeader( Element element ) {
                 element.setInnerText( lang.issueNumber() );
+                element.addClassName( "number" );
             }
 
             @Override
@@ -170,6 +177,7 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
             @Override
             protected void fillColumnHeader( Element element ) {
                 element.setInnerText( lang.issueProduct() );
+                element.addClassName( "product" );
             }
 
             @Override
@@ -183,6 +191,7 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
             @Override
             protected void fillColumnHeader( Element element ) {
                 element.setInnerText( lang.issueContacts() );
+                element.addClassName( "contacts" );
             }
 
             @Override
@@ -203,6 +212,7 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
             @Override
             protected void fillColumnHeader( Element element ) {
                 element.setInnerText( lang.issueInfo() );
+                element.addClassName( "info" );
             }
 
             @Override
@@ -218,6 +228,7 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
             @Override
             protected void fillColumnHeader( Element element ) {
                 element.setInnerText( lang.issueCreationDate() );
+                element.addClassName( "creation" );
             }
 
             @Override
@@ -232,6 +243,7 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
             @Override
             protected void fillColumnHeader( Element element ) {
                 element.setInnerText( lang.issueManager() );
+                element.addClassName( "manager" );
             }
 
             @Override
@@ -250,6 +262,11 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
         table.addColumn( info.header, info.values );
         table.addColumn( creationDate.header, creationDate.values );
         table.addColumn( manager.header, manager.values );
+
+        table.setSeparatorProvider( ( element, i ) -> {
+            element.setInnerText( "Страница "+ (i+1) );
+            element.addClassName( "separator" );
+        } );
     }
 
     @Inject
@@ -270,7 +287,7 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
     TextBox search;
 
     @UiField
-    TableWidget table;
+    InfiniteTableWidget<CaseObject> table;
 
     @UiField
     HTMLPanel tableContainer;
