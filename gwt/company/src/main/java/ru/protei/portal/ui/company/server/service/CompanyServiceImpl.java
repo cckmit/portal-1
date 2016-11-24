@@ -10,7 +10,7 @@ import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanyCategory;
 import ru.protei.portal.core.model.ent.CompanyGroup;
-import ru.protei.portal.core.model.query.BaseQuery;
+import ru.protei.portal.core.model.query.CompanyGroupQuery;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.service.CompanyService;
@@ -46,7 +46,7 @@ public class CompanyServiceImpl implements CompanyService {
 
         log.debug("getCompanyGroups: searchPattern={}", searchPattern);
 
-        BaseQuery query = new BaseQuery( searchPattern, En_SortField.group_name, En_SortDir.ASC );
+        CompanyGroupQuery query = new CompanyGroupQuery( searchPattern, En_SortField.group_name, En_SortDir.ASC );
 
         CoreResponse< List<CompanyGroup> > result = companyService.groupList(query);
 

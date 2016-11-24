@@ -1,9 +1,11 @@
 package ru.protei.portal.core.model.dao.impl;
 
+import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.CompanyDAO;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.utils.TypeConverters;
 
 import java.util.ArrayList;
@@ -17,24 +19,34 @@ public class CompanyDAO_Impl extends PortalBaseJdbcDAO<Company> implements Compa
 
     @Override
     public List<Company> getListByQuery(CompanyQuery query) {
-        StringBuilder condition = new StringBuilder("cname like ?");
-        List<Object> args = new ArrayList<Object>(1);
-        args.add(HelperFunc.makeLikeArg(query.getSearchString(), true));
-
-        if (query.getGroupId() != null && query.getGroupId() > 0) {
-            condition.append(" and groupId = ?");
-            args.add(query.getGroupId());
-        }
-
-        if (query.getCategoryIds() != null && !query.getCategoryIds().isEmpty()) {
-            condition.append(" and category_id in (" + query.getCategoryIds().stream().map(Object::toString).collect(Collectors.joining(",")) + ")");
-        }
-
-        return getListByCondition(condition.toString(),TypeConverters.createSort(query), args);
+        return listByQuery(query);
     }
 
     @Override
     public Company getCompanyByName( String name ) {
         return getByCondition(" cname=? ", name);
     }
+
+
+    @SqlConditionBuilder
+    public SqlCondition createSqlCondition(CompanyQuery query) {
+        return new SqlCondition().build((condition, args) -> {
+            condition.append("cname like ?");
+            args.add(HelperFunc.makeLikeArg(query.getSearchString(), true));
+
+            if (query.getGroupId() != null && query.getGroupId()> 0) {
+                condition.append(" and groupId = ?");
+                args.add(query.getGroupId());
+            }
+
+            if (query.getCategoryIds() != null && !query.getCategoryIds().isEmpty()) {
+                condition.append(" and category_id in (")
+                        .append(
+                                query.getCategoryIds().stream().map(Object::toString).collect(Collectors.joining(","))
+                        )
+                        .append(")");
+            }
+        });
+    }
+
 }

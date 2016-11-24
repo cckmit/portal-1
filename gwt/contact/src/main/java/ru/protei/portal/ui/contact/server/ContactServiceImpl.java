@@ -69,7 +69,8 @@ public class ContactServiceImpl implements ContactService {
 
     @Override
     public Long getContactsCount( ContactQuery query ) throws RequestFailedException {
-        return 300L;
+        log.debug( "getContactsCount(): query={}", query );
+        return contactService.count( query ).getData();
     }
 
     public List<ContactShortView> getContactViewList( ContactQuery query ) throws RequestFailedException {

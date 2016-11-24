@@ -1,5 +1,7 @@
 package ru.protei.portal.core.model.dao;
 
+import ru.protei.portal.core.model.query.DataQuery;
+import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.winter.jdbc.JdbcDAO;
 import ru.protei.winter.jdbc.JdbcSort;
 
@@ -9,6 +11,22 @@ import java.util.List;
  * Created by michael on 25.05.16.
  */
 public interface PortalBaseDAO<T> extends JdbcDAO<Long,T> {
+
+    /**
+     * интерфейс к логике создания выражения where (SqlCondition) по структуре запроса query
+     */
+    interface QueryConditionBuilder<Q extends DataQuery> {
+        SqlCondition buildCondition (Q query);
+    }
+
+    /**
+     * класс исключения для случая, когда не найдена реализация логики создания условия SqlCondition для типа queryType
+     */
+    class NoConditionBuilderDefinedException extends RuntimeException {
+        public NoConditionBuilderDefinedException (PortalBaseDAO dao, Class<? extends DataQuery> queryType) {
+            super("DAO " + dao.getClass().getName() + " has not registered implementation for the query type " + queryType.getName());
+        }
+    }
 
     /**
      * @return Возвращает максимальное значение ключа для записей в таблице. если таблица пустая, то null
@@ -74,4 +92,45 @@ public interface PortalBaseDAO<T> extends JdbcDAO<Long,T> {
      * @return
      */
     T plainGet (Long id);
+
+
+    /**
+     * Метод регистрирует для типа запроса queryType логигу builder, которая будет использована для построения
+     * условия SqlCondition
+     * @param queryType
+     * @param builder
+     */
+    <Q extends DataQuery> void registerConditionBuilder (Class<Q> queryType, QueryConditionBuilder<Q> builder);
+
+
+    /**
+     * Метод возвращает SqlCondition для запроса query.
+     *
+     * Если для query нет подходящей логики формирования SqlCondition, то будет выброшено исключение NoConditionBuilderDefinedException
+     *
+     * @param query
+     * @return
+     */
+    SqlCondition createSqlCondition (DataQuery query);
+
+    /**
+     * Возвращает количество записей для запроса query
+     *
+     * Реализация получает QueryConditionBuilder
+     *
+     * @param query
+     * @return
+     */
+    Long count (DataQuery query);
+
+
+    /**
+     * Возвращает список для запроса query.
+     * Реализация конкретного DAO должна содержать метод или набор методов
+     * помеченных аннотацией QueryConditionBuilder, принимающих в качестве аргумента конкретный тип Query
+     * и возвращающих объект SqlCondition
+     * @param query
+     * @return
+     */
+    List<T> listByQuery (DataQuery query);
 }

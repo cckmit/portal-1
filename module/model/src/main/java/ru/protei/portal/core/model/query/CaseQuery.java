@@ -41,4 +41,12 @@ public class CaseQuery extends BaseQuery {
     public void setType( En_CaseType type ) {
         this.type = type;
     }
+
+    @Override
+    public String toString() {
+        return "CaseQuery{" +
+                "companyId=" + companyId +
+                ", type=" + type +
+                '}';
+    }
 }

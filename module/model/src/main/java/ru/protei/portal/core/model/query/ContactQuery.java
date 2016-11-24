@@ -42,4 +42,12 @@ public class ContactQuery extends BaseQuery {
     public void setFired(Boolean fired) {
         this.fired = fired;
     }
+
+    @Override
+    public String toString() {
+        return "ContactQuery{" +
+                "companyId=" + companyId +
+                ", fired=" + fired +
+                '}';
+    }
 }

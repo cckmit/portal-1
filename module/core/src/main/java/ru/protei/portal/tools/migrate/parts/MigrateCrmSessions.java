@@ -5,7 +5,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_SortDir;
+import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.CaseObject;
+import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.tools.migrate.tools.MigrateAction;
 import ru.protei.portal.tools.migrate.tools.MigrateUtils;
 import ru.protei.winter.jdbc.JdbcSort;
@@ -51,7 +54,8 @@ public class MigrateCrmSessions implements MigrateAction {
 
         final Map<Long, Long> productIdMap = new HashMap<>();
 
-        devUnitDAO.getProductsByCondition ("", new JdbcSort(JdbcSort.Direction.ASC,"id"))
+
+        devUnitDAO.listByQuery (new ProductQuery("", En_SortField.id, En_SortDir.ASC))
                 .forEach(record -> productIdMap.put(record.getOldId(),record.getId()));
 
 

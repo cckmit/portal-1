@@ -62,7 +62,8 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public long getIssuesCount( CaseQuery query ) {
-        return 1000;
+        log.debug( "getIssuesCount(): query={}", query );
+        return caseService.count( query ).getData();
     }
 
     @Override
