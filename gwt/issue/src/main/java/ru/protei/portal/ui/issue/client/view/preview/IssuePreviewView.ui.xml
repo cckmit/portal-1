@@ -4,30 +4,28 @@
     <g:HTMLPanel styleName="grid">
         <g:HTMLPanel ui:field="preview" styleName="preview">
             <div class="col-xs-12">
+                <i ui:field="privateIssue" class="fa fa-lg fa-unlock-alt pull-left"/>
                 <g:Anchor ui:field="fullScreen" styleName="fa fa-lg fa-external-link pull-right" href="#"/>
             </div>
 
             <fieldset class="header">
-                <legend><i ui:field="privateIssue" class="fa fa-unlock-alt"></i> <lable ui:field="header"></lable></legend>
-                <div class="col-xs-12">
+                <legend><lable ui:field="header"/></legend>
+                <div class="col-xs-6">
                     <label class="col-xs-5 col-md-5"><ui:text from="{lang.issueCreationDate}"/></label>
                     <span class="col-xs-7 col-md-7" ui:field="creationDate"></span>
                 </div>
-                <div class="col-xs-12">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.issueProduct}"/></label>
-                    <span class="col-xs-7 col-md-7" ui:field="product"></span>
-                </div>
-            </fieldset>
-            <fieldset class="header">
-                <legend><ui:text from="{lang.issueCurrentStateHeader}"/></legend>
-                <div class="col-xs-12">
+                <div class="col-xs-6">
                     <label class="col-xs-5 col-md-5"><ui:text from="{lang.issueCriticality}"/></label>
                     <span class="col-xs-7 col-md-7">
                         <i ui:field="iconCriticality"></i>
                         <span ui:field="criticality"></span>
                     </span>
                 </div>
-                <div class="col-xs-12">
+                <div class="col-xs-6">
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.issueProduct}"/></label>
+                    <span class="col-xs-7 col-md-7" ui:field="product"></span>
+                </div>
+                <div class="col-xs-6">
                     <label class="col-xs-5 col-md-5"><ui:text from="{lang.issueState}"/></label>
                     <span class="col-xs-7 col-md-7">
                         <i ui:field="iconState"></i>
@@ -37,19 +35,25 @@
             </fieldset>
             <fieldset class="header">
                 <legend><ui:text from="{lang.issueContactHeader}"/></legend>
-                <div class="col-xs-12">
-                    <label class="col-xs-5 col-md-5" ui:field="company"></label>
-                    <span class="col-xs-7 col-md-7" ui:field="contact"></span>
+                <div class="col-xs-6">
+                    <label class="col-xs-12 col-md-12" ui:field="company"></label>
+                    <span class="col-xs-12 col-md-12" ui:field="contact"></span>
                 </div>
-                <div class="col-xs-12">
-                    <label class="col-xs-5 col-md-5" ui:field="ourCompany"></label>
-                    <span class="col-xs-7 col-md-7" ui:field="manager"></span>
+                <div class="col-xs-6">
+                    <label class="col-xs-12 col-md-12" ui:field="ourCompany"></label>
+                    <span class="col-xs-12 col-md-12" ui:field="manager"></span>
                 </div>
             </fieldset>
             <fieldset class="header">
                 <legend><ui:text from="{lang.issueInfoHeader}"/></legend>
                 <div class="col-xs-12">
                     <span class="col-xs-12 col-md-12 pre-formatted-info" ui:field="info"></span>
+                </div>
+            </fieldset>
+            <fieldset class="header">
+                <legend><ui:text from="{lang.comments}"/></legend>
+                <div ui:field="commentsList" class="col-xs-12">
+                    <span class="col-xs-12 col-md-12 pre-formatted-info">тут будут коммантарии</span>
                 </div>
             </fieldset>
         </g:HTMLPanel>

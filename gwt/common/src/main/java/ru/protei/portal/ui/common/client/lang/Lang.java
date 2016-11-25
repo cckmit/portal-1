@@ -246,4 +246,11 @@ public interface Lang extends Messages {
     String basicImportance();
     String cosmeticImportance();
 
+    String comments ();
+
+    String product ();
+
+    String buttonReset();
+
+    String selectContactCompany ();
 }

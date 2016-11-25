@@ -14,9 +14,9 @@ import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.platelist.PlateList;
 import ru.protei.portal.ui.common.client.widget.platelist.events.AddEvent;
+import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.product.client.activity.list.AbstractProductListActivity;
 import ru.protei.portal.ui.product.client.activity.list.AbstractProductListView;
-import ru.protei.portal.ui.product.client.widgets.sortfieldselector.SortFieldSelector;
 
 /**
  * Вид списка продуктов

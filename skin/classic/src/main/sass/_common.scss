@@ -62,6 +62,20 @@
 }
 
 
+/**   SORT BUTTON   **/
+.button.empty {
+  padding: 0;
+  min-width: 30px;
+  text-align: center;
+  color: #84909e;
+}
+.button.empty.selected {
+  width: 17px;
+}
+.button.empty.selected:after {
+  margin-left: 0;
+}
+
 .sorting_button:before {
   content: "\e98b";
   vertical-align: middle;
@@ -70,6 +84,9 @@
   content: "\e968";
   vertical-align: middle;
 }
+
+/**   SORT BUTTON END  **/
+
 
 .checkbox {
   padding-left: 20px;
@@ -171,10 +188,11 @@
 
 .button-selector {
   display: inline-block;
+  width: 100%;
 }
 
 .button-selector .button {
-  width: 250px;
+  min-width: 100%;
   text-align: left;
   position: relative;
   margin-right: 24px;
@@ -189,6 +207,26 @@
 .button-selector span {
   display: block;
   overflow: hidden;
+}
+
+.control-group {
+  display: table;
+  width: 100%;
+
+  .button-selector {
+    display: table-cell;
+    width: 100%;
+
+    .button {
+      margin-right:0;
+    }
+  }
+
+  .sorting_button {
+    display: table-cell;
+    width: 1%;
+    vertical-align: bottom;
+  }
 }
 
 .dropdown-menu {
@@ -654,6 +692,10 @@ label.bordered:after{
   opacity: 0;
 }
 
+.no-display {
+  display: none;
+}
+
 .global-table-container {
   -webkit-transition: all 0.5s;
   -moz-transition: all 0.5s;
@@ -671,6 +713,35 @@ label.bordered:after{
   transition: all 0.5s;
   right: 0;
 }
+
+.filter-container {
+  -webkit-transition: all 0.5s;
+  -moz-transition: all 0.5s;
+  -o-transition: all 0.5s;
+  transition: all 0.5s;
+  right: 0;
+
+  .panel {
+    margin-left: 10px;
+    padding: 10px 0;
+    background: white;
+
+    .body {
+      display: inline-block;
+
+      p {
+        margin: 10px 0;
+      }
+
+      .buttons_group  [class*='col-'] {
+        display: block;
+        padding-top: 5px;
+      }
+    }
+  }
+}
+
+
 
 /************************/
 
@@ -738,6 +809,10 @@ label.bordered:after{
 
 .pull-left {
   float: left !important;
+}
+
+.fixed {
+  position: fixed;
 }
 
 td.info {

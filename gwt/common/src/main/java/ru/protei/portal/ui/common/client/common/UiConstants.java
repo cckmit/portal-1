@@ -14,4 +14,14 @@ public class UiConstants {
         public static final String ISSUE = "fa fa-tasks";
     }
 
+    public static interface ActionBarIcons {
+        public static final String CREATE = "fa fa-plus";
+    }
+
+    public static interface ActionBarIdentity {
+        public static final String CONTACT = "contact";
+        public static final String ISSUE = "issue";
+        public static final String COMPANY = "company";
+        public static final String PRODUCT = "product";
+    }
 }

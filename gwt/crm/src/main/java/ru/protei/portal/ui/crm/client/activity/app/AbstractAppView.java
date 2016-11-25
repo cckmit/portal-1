@@ -16,4 +16,6 @@ public interface AbstractAppView extends IsWidget {
     HasWidgets getMenuContainer();
 
     HasWidgets getNotifyContainer();
+
+    HasWidgets getActionBarContainer();
 }

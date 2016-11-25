@@ -10,30 +10,36 @@ import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.query.ContactQuery;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
-import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.AuthEvents;
-import ru.protei.portal.ui.common.client.events.ContactEvents;
-import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.common.UiConstants;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ContactServiceAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
+import ru.protei.portal.ui.contact.client.activity.filter.AbstractContactFilterActivity;
+import ru.protei.portal.ui.contact.client.activity.filter.AbstractContactFilterView;
+import ru.protei.winter.web.common.client.events.SectionEvents;
 
 import java.util.List;
 
 /**
  * Активность таблицы контактов
  */
-public abstract class ContactTableActivity implements AbstractContactTableActivity, Activity {
+public abstract class ContactTableActivity implements AbstractContactTableActivity, AbstractContactFilterActivity, Activity {
 
     @PostConstruct
     public void onInit() {
+        CREATE_ACTION = lang.buttonCreate();
+
         view.setActivity( this );
-        view.setAnimation ( animation );
+        view.setAnimation( animation );
+
+        filterView.setActivity( this );
+        view.getFilterContainer().add( filterView.asWidget() );
     }
 
     @Event
     public void onAuthSuccess (AuthEvents.Success event) {
-        view.resetFilter();
+        filterView.resetFilter();
     }
 
     @Event
@@ -42,11 +48,23 @@ public abstract class ContactTableActivity implements AbstractContactTableActivi
         this.fireEvent( new AppEvents.InitPanelName( lang.contacts() ) );
         init.parent.clear();
         init.parent.add( view.asWidget() );
+
+        fireEvent( new ActionBarEvents.Add( CREATE_ACTION, UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.CONTACT ) );
+
         view.showElements();
         isShowTable = false;
 
         query = makeQuery( null );
         requestTotalCount();
+    }
+
+    @Event
+    public void onCreateClicked( SectionEvents.Clicked event ) {
+        if ( !UiConstants.ActionBarIdentity.CONTACT.equals( event.identity ) ) {
+            return;
+        }
+
+        fireEvent(new ContactEvents.Edit().newItem(filterView.company().getValue()));
     }
 
     @Event
@@ -76,12 +94,6 @@ public abstract class ContactTableActivity implements AbstractContactTableActivi
     @Override
     public void onEditClicked(Person value ) {
         fireEvent(ContactEvents.Edit.byId(value.getId()));
-    }
-
-
-    @Override
-    public void onCreateClick() {
-        fireEvent(ContactEvents.Edit.newItem(view.company().getValue()));
     }
 
     @Override
@@ -140,10 +152,10 @@ public abstract class ContactTableActivity implements AbstractContactTableActivi
         if ( companyId != null ) {
             return new ContactQuery( companyId, null, null, En_SortField.person_full_name, En_SortDir.ASC);
         }
-        return new ContactQuery( view.company().getValue(),
-                view.showFired().getValue() ? null : view.showFired().getValue(),
-                view.searchPattern().getValue(), view.sortField().getValue(),
-                view.sortDir().getValue()? En_SortDir.ASC: En_SortDir.DESC );
+        return new ContactQuery( filterView.company().getValue(),
+                filterView.showFired().getValue() ? null : filterView.showFired().getValue(),
+                filterView.searchPattern().getValue(), filterView.sortField().getValue(),
+                filterView.sortDir().getValue()? En_SortDir.ASC: En_SortDir.DESC );
 
     };
 
@@ -153,6 +165,8 @@ public abstract class ContactTableActivity implements AbstractContactTableActivi
 
     @Inject
     AbstractContactTableView view;
+    @Inject
+    AbstractContactFilterView filterView;
 
     @Inject
     ContactServiceAsync contactService;
@@ -164,4 +178,7 @@ public abstract class ContactTableActivity implements AbstractContactTableActivi
 
     private AppEvents.InitDetails init;
     private ContactQuery query;
+
+    private static String CREATE_ACTION;
+    private AppEvents.InitDetails initDetails;
 }

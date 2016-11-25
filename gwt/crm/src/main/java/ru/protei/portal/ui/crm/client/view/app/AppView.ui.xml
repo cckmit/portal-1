@@ -24,7 +24,7 @@
                     <span class="sr-only">Toggle navigation</span>
                 </g:Anchor>
 
-
+                <g:HTMLPanel ui:field="actionBarContainer" tag="ul" styleName="nav navbar-nav navbar-left"/>
 
                 <ul class="nav navbar-nav navbar-right">
                     <navsearch:NavSearchBox ui:field="search"/>

@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.common.client.widget.togglebtngroup;
+package ru.protei.portal.ui.common.client.widget.togglebtn.group;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -6,12 +6,13 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasValue;
-import com.google.gwt.user.client.ui.ToggleButton;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import ru.protei.portal.ui.common.client.widget.togglebtn.item.ToggleButton;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -77,17 +78,61 @@ public class ToggleBtnGroup< T >
         ValueChangeEvent.fire( this, selected );
     }
 
-    public void addBtn( String text, T value ) {
+    public void addBtn( String caption, T value ) {
+        addBtn( caption, value, "button whiteC switcher" );
+    }
+
+    public void addBtn( String caption, T value, String style) {
         ToggleButton itemView = itemFactory.get();
-        if ( text != null ) {
-            itemView.setText( text );
+        if ( caption != null ) {
+            itemView.setCaption( caption );
         }
-        itemView.setStyleName( "button whiteC switcher" );
+        if ( style != null ) {
+            itemView.setStyleName( style );
+        }
+        else {
+            itemView.setStyleName( "button whiteC switcher" );
+        }
         itemView.addValueChangeHandler( this );
         root.add( itemView.asWidget() );
 
         itemViewToModel.put( itemView, value );
     }
+
+/*    public void addBtnWithIcon( String iconStyle, T value, String text) {
+        ToggleButton itemView = itemFactory.get();
+        if ( iconStyle != null ) {
+            itemView.setIcon( iconStyle );
+        }
+        if ( text != null ) {
+            itemView.setText( text );
+        }
+        itemView.addValueChangeHandler( this );
+        root.add( itemView.asWidget() );
+
+        itemViewToModel.put( itemView, value );
+    }*/
+
+    public void addBtnWithIcon( String iconStyle, String buttonStyle, String text, String style, T value ) {
+        ToggleButton itemView = itemFactory.get();
+        if ( iconStyle != null ) {
+            itemView.setIcon( iconStyle );
+        }
+        if ( buttonStyle != null ) {
+            itemView.setButtonStyle( buttonStyle );
+        }
+        if ( style != null ) {
+            itemView.setStyleName( style );
+        }
+        if (text != null) {
+            itemView.setText( text );
+        }
+        itemView.addValueChangeHandler( this );
+        root.add( itemView.asWidget() );
+
+        itemViewToModel.put( itemView, value );
+    }
+
 
     public void clear() {
         itemViewToModel.clear();

@@ -3,7 +3,7 @@
              xmlns:company='urn:import:ru.protei.portal.ui.common.client.widget.selector.company'
              xmlns:product='urn:import:ru.protei.portal.ui.common.client.widget.selector.product'
              xmlns:importance='urn:import:ru.protei.portal.ui.common.client.widget.selector.dict'
-             xmlns:state='urn:import:ru.protei.portal.ui.issue.client.widget.buttonselector'
+             xmlns:state='urn:import:ru.protei.portal.ui.issue.client.widget.state.buttonselector'
              xmlns:person='urn:import:ru.protei.portal.ui.common.client.widget.selector.person'
              xmlns:validablefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'>
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />

@@ -12,7 +12,5 @@ public interface AbstractContactTableActivity
         extends ClickColumn.Handler< Person >, EditClickColumn.EditHandler< Person >,
         InfiniteLoadHandler< Person >
 {
-    void onFilterChanged();
     void onEditClicked(Person value );
-    void onCreateClick ();
 }
