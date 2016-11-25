@@ -122,9 +122,9 @@ public class AuthServiceImpl implements AuthService {
 
         if (login.isLDAP_Auth()) {
             // check by LDAP
-            En_ResultStatus status = ldapAuthProvider.checkAuth(ulogin, pwd);
-            if (status != En_ResultStatus.OK)
-                return new CoreResponse().error(status);
+//            En_ResultStatus status = ldapAuthProvider.checkAuth(ulogin, pwd);
+//            if (status != En_ResultStatus.OK)
+//                return new CoreResponse().error(status);
 
         } else {
             // check MD5

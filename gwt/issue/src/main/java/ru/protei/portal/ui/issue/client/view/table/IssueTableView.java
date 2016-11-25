@@ -168,7 +168,7 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
 
             @Override
             public void fillColumnValue( Element element, CaseObject caseObject ) {
-                element.setInnerText( caseObject == null ? "" : caseObject.getCaseNumber().toString() );
+                element.setInnerText( "<div>"+caseObject == null ? "" : caseObject.getCaseNumber().toString()+"</div>" );
             }
         };
         //issueNumber.setColumnProvider( columnProvider );
@@ -182,7 +182,7 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
 
             @Override
             public void fillColumnValue( Element element, CaseObject caseObject ) {
-                element.setInnerText( caseObject == null ? "" : "продукт" );
+                element.setInnerHTML( "<div>"+caseObject == null ? "" : "продукт"+"</div>" );
             }
         };
         //product.setColumnProvider( columnProvider );
@@ -203,7 +203,7 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
                 String initiatorName = initiator == null ? "" : initiator.getDisplayName();
 
                 String separator = companyName.isEmpty() ? "" : ":\n";
-                element.setInnerText( companyName+separator+initiatorName );
+                element.setInnerHTML( "<div>"+companyName+separator+initiatorName+"</div>" );
             }
         };
         //contacts.setColumnProvider( columnProvider );
@@ -219,7 +219,7 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
             public void fillColumnValue( Element element, CaseObject caseObject ) {
                 String info = caseObject == null ? "" : caseObject.getInfo();
                 element.addClassName( "info" );
-                element.setInnerText( info );
+                element.setInnerHTML( "<div>"+info+"</div>" );
             }
         };
         //info.setColumnProvider( columnProvider );
@@ -234,7 +234,7 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
             @Override
             public void fillColumnValue( Element element, CaseObject caseObject ) {
                 Date created = caseObject == null ? null : caseObject.getCreated();
-                element.setInnerText( created == null ? "" : dateFormatter.formatDateOnly( created ) );
+                element.setInnerHTML( "<div>"+created == null ? "" : dateFormatter.formatDateOnly( created )+"</div>" );
             }
         };
         //creationDate.setColumnProvider( columnProvider );
@@ -249,7 +249,7 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
             @Override
             public void fillColumnValue( Element element, CaseObject caseObject ) {
                 Person manager = caseObject == null ? null : caseObject.getManager();
-                element.setInnerText( manager == null ? "" : manager.getDisplayName() );
+                element.setInnerHTML( "<div>"+manager == null ? "" : manager.getDisplayName()+"</div>" );
             }
         };
         //manager.setColumnProvider( columnProvider );
@@ -264,7 +264,7 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
         table.addColumn( manager.header, manager.values );
 
         table.setSeparatorProvider( ( element, i ) -> {
-            element.setInnerText( "Страница "+ (i+1) );
+            element.setInnerHTML( "Страница "+ (i+1) );
             element.addClassName( "separator" );
         } );
     }
