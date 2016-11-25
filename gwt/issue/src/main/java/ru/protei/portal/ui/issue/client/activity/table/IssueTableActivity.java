@@ -4,7 +4,9 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.query.CaseQuery;
@@ -19,6 +21,7 @@ import ru.protei.portal.ui.issue.client.service.IssueServiceAsync;
 import ru.protei.winter.web.common.client.events.SectionEvents;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Активность таблицы обращений
@@ -116,12 +119,26 @@ public abstract class IssueTableActivity implements AbstractIssueTableActivity, 
     }
 
     private CaseQuery getQuery() {
-        return new CaseQuery( En_CaseType.CRM_SUPPORT,
-                filterView.company().getValue(), filterView.product().getValue(),
-                filterView.searchPattern().getValue(),
-                filterView.state().getValue(), filterView.importance().getValue(),
-                filterView.sortField().getValue(), filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC
-        );
+        CaseQuery query = new CaseQuery(En_CaseType.CRM_SUPPORT, filterView.searchPattern().getValue(), filterView.sortField().getValue(), filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC );
+
+        query.setCompanyId( filterView.company().getValue() == null? null : filterView.company().getValue().getId() );
+        query.setProductId( filterView.product().getValue() == null? null : filterView.product().getValue().getId() );
+
+        if(filterView.states().getValue() != null)
+            query.setStateIds(
+                    filterView.states().getValue()
+                            .stream()
+                            .map( En_CaseState::getId )
+                            .collect( Collectors.toList() ));
+
+        if(filterView.importances().getValue() != null)
+            query.setImportanceIds(
+                    filterView.importances().getValue()
+                            .stream()
+                            .map( En_ImportanceLevel::getId )
+                            .collect( Collectors.toList() ));
+
+        return query;
     }
 
     @Inject

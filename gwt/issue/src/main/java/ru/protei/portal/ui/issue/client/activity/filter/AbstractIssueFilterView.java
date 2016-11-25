@@ -7,6 +7,8 @@ import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.view.EntityOption;
 
+import java.util.Set;
+
 /**
  * Абстракция вида фильтра обращений
  */
@@ -16,8 +18,8 @@ public interface AbstractIssueFilterView extends IsWidget {
 
     HasValue<EntityOption> company();
     HasValue<EntityOption> product();
-    HasValue<En_CaseState> state();
-    HasValue<En_ImportanceLevel> importance();
+    HasValue<Set<En_CaseState>> states();
+    HasValue<Set<En_ImportanceLevel>> importances();
     HasValue<En_SortField> sortField();
     HasValue< Boolean > sortDir();
     HasValue< String > searchPattern();

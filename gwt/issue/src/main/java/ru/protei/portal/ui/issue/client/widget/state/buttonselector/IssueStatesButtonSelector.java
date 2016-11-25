@@ -1,11 +1,11 @@
-package ru.protei.portal.ui.issue.client.widget.buttonselector;
+package ru.protei.portal.ui.issue.client.widget.state.buttonselector;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
 import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
-import ru.protei.portal.ui.issue.client.widget.StateModel;
+import ru.protei.portal.ui.issue.client.widget.state.StateModel;
 
 import java.util.List;
 

@@ -15,11 +15,11 @@
                 <ui:text from="{lang.sortBy}"/>
                 <div class="control-group">
                     <sortfieldselector:SortFieldSelector ui:field="sortField" type="CONTACT"/>
-                    <g:ToggleButton ui:field="sortDir" styleName="button empty whiteC switcher sorting_button"/>
+                    <g:ToggleButton ui:field="sortDir" styleName="button empty whiteC sorting_button"/>
                 </div>
             </div>
             <div class="col-xs-12">
-                <companyselector:CompanySelector ui:field="company"/>
+                <companyselector:CompanySelector ui:field="company" header="{lang.company}"/>
             </div>
             <div class="col-xs-12 pull-left" style="margin-top:10px;">
                 <g:CheckBox ui:field="showFired" styleName="checkbox" text="{lang.contactShowFired}"/>

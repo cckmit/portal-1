@@ -60,10 +60,6 @@ public abstract class ContactTableActivity implements AbstractContactTableActivi
 
     @Event
     public void onCreateClicked( SectionEvents.Clicked event ) {
-/*        if ( !CREATE_ACTION.equals( event.identity ) ) {
-            return;
-        }*/
-
         if ( !UiConstants.ActionBarIdentity.CONTACT.equals( event.identity ) ) {
             return;
         }

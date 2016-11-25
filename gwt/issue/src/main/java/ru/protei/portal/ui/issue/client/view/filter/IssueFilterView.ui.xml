@@ -3,8 +3,8 @@
              xmlns:companyselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.company'
              xmlns:productselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.product'
              xmlns:sortfieldselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.sortfield'
-             xmlns:importance='urn:import:ru.protei.portal.ui.common.client.widget.selector.dict'
-             xmlns:state='urn:import:ru.protei.portal.ui.issue.client.widget.buttonselector'>
+             xmlns:importance='urn:import:ru.protei.portal.ui.issue.client.widget.importance.btngroup'
+             xmlns:state='urn:import:ru.protei.portal.ui.issue.client.widget.state.btngroup'>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
@@ -18,20 +18,22 @@
                 <ui:text from="{lang.sortBy}"/>
                 <div class="control-group">
                     <sortfieldselector:SortFieldSelector ui:field="sortField" type="ISSUE" />
-                    <g:ToggleButton ui:field="sortDir" styleName="button empty whiteC switcher sorting_button"/>
+                    <g:ToggleButton ui:field="sortDir" styleName="button empty whiteC sorting_button"/>
                 </div>
             </div>
             <div class="col-xs-12">
-                <companyselector:CompanySelector ui:field="company"/>
+                <companyselector:CompanySelector ui:field="company" header="{lang.company}"/>
             </div>
             <div class="col-xs-12">
-                <productselector:ProductButtonSelector ui:field="product"/>
+                <productselector:ProductButtonSelector ui:field="product" header="{lang.product}"/>
             </div>
             <div class="col-xs-12">
-                <importance:ImportanceButtonSelector ui:field="importance"/>
+                <p><ui:text from="{lang.issueImportance}"/></p>
+                <importance:ImportanceBtnGroup ui:field="importance"/>
             </div>
             <div class="col-xs-12">
-                <state:IssueStatesButtonSelector ui:field="state"/>
+                <p><ui:text from="{lang.issueState}"/></p>
+                <state:IssueStatesBtnGroup ui:field="state"/>
             </div>
         </div>
         <div class="footer">

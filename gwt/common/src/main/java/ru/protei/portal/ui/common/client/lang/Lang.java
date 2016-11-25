@@ -251,4 +251,6 @@ public interface Lang extends Messages {
     String product ();
 
     String buttonReset();
+
+    String selectContactCompany ();
 }

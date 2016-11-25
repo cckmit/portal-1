@@ -1,0 +1,13 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+
+    <g:HTMLPanel ui:field="root">
+        <g:HTMLPanel ui:field="button"  >
+            <g:CheckBox ui:field="value" styleName="hide"/>
+            <i ui:field="icon" class="hide"/>
+            <span ui:field="caption"/>
+        </g:HTMLPanel>
+        <span ui:field="text"/>
+    </g:HTMLPanel>
+
+</ui:UiBinder>

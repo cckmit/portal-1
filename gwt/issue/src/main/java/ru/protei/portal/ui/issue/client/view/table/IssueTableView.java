@@ -4,8 +4,9 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.TableWidget;
 import ru.brainworm.factory.widget.table.client.helper.SelectionColumn;
@@ -131,7 +132,7 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
 
             @Override
             public void fillColumnValue( Element element, CaseObject caseObject ) {
-                element.setInnerText( caseObject == null ? "" : caseObject.getProduct().getName() );
+                element.setInnerText( caseObject == null || caseObject.getProduct() == null ? "не указан" : caseObject.getProduct().getName() );
             }
         };
         //product.setColumnProvider( columnProvider );
@@ -193,7 +194,7 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
 
             @Override
             public void fillColumnValue( Element element, CaseObject caseObject ) {
-                Person manager = caseObject == null ? null : caseObject.getManager();
+                Person manager = caseObject == null || caseObject.getManager() == null ? null : caseObject.getManager();
                 element.setInnerText( manager == null ? "" : manager.getDisplayName() );
             }
         };

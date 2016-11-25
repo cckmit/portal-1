@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Created by michael on 19.05.16.
@@ -62,14 +63,12 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
             args.add( query.getProductId() );
         }
 
-        if ( query.getStateId() != null ) {
-            conditions.append( " and state=?" );
-            args.add( query.getStateId() );
+        if ( query.getStateIds() != null && !query.getStateIds().isEmpty()) {
+            conditions.append(" and state in (" + query.getStateIds().stream().map(Object::toString).collect( Collectors.joining(",")) + ")");
         }
 
-        if ( query.getImportanceId() != null ) {
-            conditions.append( " and importance=?" );
-            args.add( query.getImportanceId() );
+        if ( query.getImportanceIds() != null && !query.getImportanceIds().isEmpty() ) {
+            conditions.append(" and importance in (" + query.getImportanceIds().stream().map(Object::toString).collect( Collectors.joining(",")) + ")");
         }
 
         if (query.getSearchString() != null && !query.getSearchString().trim().isEmpty()) {

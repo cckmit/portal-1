@@ -22,7 +22,7 @@ import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditActivity;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditView;
-import ru.protei.portal.ui.issue.client.widget.buttonselector.IssueStatesButtonSelector;
+import ru.protei.portal.ui.issue.client.widget.state.buttonselector.IssueStatesButtonSelector;
 
 /**
  * Вид создания и редактирования обращения
@@ -35,8 +35,8 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         state.setDefaultValue(lang.selectIssueState());
         importance.setDefaultValue(lang.selectIssueImportance());
         initiator.setDefaultValue(lang.selectIssueInitiator());
-//        company.setHasAnyValue( true );
-//        product.setHasAnyValue( true );
+        company.setDefaultValue( lang.selectIssueCompany() );
+        product.setDefaultValue( lang.selectIssueCompany() );
         manager.setDefaultValue(lang.selectIssueManager());
     }
 
@@ -192,7 +192,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @Inject
     @UiField
     Lang lang;
-
 
     private AbstractIssueEditActivity activity;
 

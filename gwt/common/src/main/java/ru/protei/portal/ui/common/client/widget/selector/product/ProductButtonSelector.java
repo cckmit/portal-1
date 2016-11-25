@@ -23,20 +23,21 @@ public class ProductButtonSelector extends ButtonSelector<EntityOption> implemen
     public void fillOptions( List< EntityOption > options) {
         clearOptions();
 
-        if ( hasAnyValue ) {
-            addOption( lang.product(), null );
+        if(defaultValue != null) {
+            addOption(defaultValue, null);
+            setValue(null);
         }
 
         options.forEach(option -> addOption(option.getDisplayText(),option));
      }
 
-    public void setHasAnyValue( boolean hasAnyValue ) {
-        this.hasAnyValue = hasAnyValue;
+    public void setDefaultValue( String value ) {
+        this.defaultValue = value;
     }
 
     @Inject
     Lang lang;
 
-    private boolean hasAnyValue = true;
+    private String defaultValue = null;
 
 }

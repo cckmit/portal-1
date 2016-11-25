@@ -62,6 +62,20 @@
 }
 
 
+/**   SORT BUTTON   **/
+.button.empty {
+  padding: 0;
+  min-width: 30px;
+  text-align: center;
+  color: #84909e;
+}
+.button.empty.selected {
+  width: 17px;
+}
+.button.empty.selected:after {
+  margin-left: 0;
+}
+
 .sorting_button:before {
   content: "\e98b";
   vertical-align: middle;
@@ -70,6 +84,9 @@
   content: "\e968";
   vertical-align: middle;
 }
+
+/**   SORT BUTTON END  **/
+
 
 .checkbox {
   padding-left: 20px;
@@ -658,6 +675,15 @@ label.bordered:after{
 
     .body {
       display: inline-block;
+
+      p {
+        margin: 10px 0;
+      }
+
+      .buttons_group  [class*='col-'] {
+        display: block;
+        padding-top: 5px;
+      }
     }
   }
 }
