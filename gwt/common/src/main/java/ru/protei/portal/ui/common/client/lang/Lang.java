@@ -169,6 +169,7 @@ public interface Lang extends Messages {
     String personalData ();
     String contactInfo ();
     String advPersonalData ();
+    String mobilePhone ();
     String workPhone ();
     String personalPhone ();
     String workEmail ();

@@ -33,7 +33,17 @@ public enum En_ContactItemType implements Serializable {
 
     SOCIAL_NET;
 
+    private String name;
+
     En_ContactItemType() {
 
+    }
+
+    public String getName(){
+        return name == null? name(): name;
+    }
+
+    public void setName(String name){
+        this.name = name;
     }
 }

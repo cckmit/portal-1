@@ -5,25 +5,42 @@ import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.ui.common.client.common.NameStatus;
-import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.CompanyEvents;
-import ru.protei.portal.ui.common.client.events.ContactEvents;
-import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CompanyServiceAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Активность создания и редактирования компании
  */
 public abstract class CompanyEditActivity implements AbstractCompanyEditActivity, Activity {
 
+    public CompanyEditActivity(){
+        ALLOWED_PHONE_TYPES = new ArrayList<>(3);
+        ALLOWED_EMAIL_TYPES = new ArrayList<>(1);
+    }
+
     @PostConstruct
     public void onInit() {
         view.setActivity( this );
+
+        En_ContactItemType.MOBILE_PHONE.setName(lang.mobilePhone());
+        En_ContactItemType.GENERAL_PHONE.setName(lang.personalPhone());
+        En_ContactItemType.FAX.setName(lang.fax());
+        En_ContactItemType.EMAIL.setName(lang.email());
+
+        ALLOWED_PHONE_TYPES.add(En_ContactItemType.MOBILE_PHONE);
+        ALLOWED_PHONE_TYPES.add(En_ContactItemType.GENERAL_PHONE);
+        ALLOWED_PHONE_TYPES.add(En_ContactItemType.FAX);
+
+        ALLOWED_EMAIL_TYPES.add(En_ContactItemType.EMAIL);
     }
 
     @Event
@@ -137,6 +154,9 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         view.companyGroup().setValue(company.getCompanyGroup());
 
         view.webSite().setText(infoFacade.getWebSite());
+
+        fireEvent(new ContactItemEvents.ShowList(view.phonesContainer(), company.getContactInfo().getItems(), ALLOWED_PHONE_TYPES));
+        fireEvent(new ContactItemEvents.ShowList(view.emailsContainer(), company.getContactInfo().getItems(), ALLOWED_EMAIL_TYPES));
     }
 
 
@@ -165,4 +185,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
     private Company tempCompany;
 
     private AppEvents.InitDetails initDetails;
+
+    private final List<En_ContactItemType> ALLOWED_PHONE_TYPES;
+    private final List<En_ContactItemType> ALLOWED_EMAIL_TYPES;
 }

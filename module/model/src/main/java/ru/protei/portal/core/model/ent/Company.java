@@ -54,6 +54,7 @@ public class Company implements Serializable, EntityOptionSupport {
     }
 
     public Company(Long id) {
+        this();
         this.id = id;
     }
 
