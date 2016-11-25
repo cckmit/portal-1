@@ -111,7 +111,7 @@ public class ContactTableView extends Composite implements AbstractContactTableV
 
             @Override
             public void fillColumnValue ( Element element, Person person ) {
-                element.setInnerText( person == null || person.getCompany() == null ? "" : person.getCompany().getCname() );
+                element.setInnerText( person == null || person.getCompany() == null ? "" : person.getCompany().getCname() + "(" +person.getCompanyId()+")" );
             }
         };
         columns.add( company );

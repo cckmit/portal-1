@@ -2,7 +2,7 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:table="urn:import:ru.brainworm.factory.widget.table.client">
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
-    <g:HTMLPanel styleName="main-content grid">
+    <g:HTMLPanel styleName="grid">
         <g:HTMLPanel ui:field="tableContainer" styleName="global-table-container col-xs-9">
             <table:InfiniteTableWidget ui:field="table" styleName="table-hover issues"/>
         </g:HTMLPanel>

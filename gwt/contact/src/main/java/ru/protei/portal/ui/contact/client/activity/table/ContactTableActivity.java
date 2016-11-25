@@ -180,5 +180,4 @@ public abstract class ContactTableActivity implements AbstractContactTableActivi
     private ContactQuery query;
 
     private static String CREATE_ACTION;
-    private AppEvents.InitDetails initDetails;
 }
