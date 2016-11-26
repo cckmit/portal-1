@@ -73,12 +73,22 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
                 args.add( query.getProductId() );
             }
 
-            if ( query.getStateIds() != null && !query.getStateIds().isEmpty()) {
+            if ( query.getStateIds() != null && !query.getStateIds().isEmpty() ) {
                 condition.append(" and state in (" + query.getStateIds().stream().map(Object::toString).collect( Collectors.joining(",")) + ")");
             }
 
             if ( query.getImportanceIds() != null && !query.getImportanceIds().isEmpty() ) {
                 condition.append(" and importance in (" + query.getImportanceIds().stream().map(Object::toString).collect( Collectors.joining(",")) + ")");
+            }
+
+            if ( query.getFrom() != null ) {
+                condition.append( " and created >= ?" );
+                args.add( query.getFrom() );
+            }
+
+            if ( query.getTo() != null ) {
+                condition.append( " and created < ?" );
+                args.add( query.getTo() );
             }
 
             if (query.getSearchString() != null && !query.getSearchString().trim().isEmpty()) {

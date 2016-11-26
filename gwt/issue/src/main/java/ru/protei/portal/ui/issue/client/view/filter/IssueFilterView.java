@@ -4,12 +4,16 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.brainworm.factory.core.datetimepicker.client.view.input.range.RangePicker;
+import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
+import ru.brainworm.factory.core.datetimepicker.shared.dto.PickerType;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_SortField;
@@ -37,6 +41,7 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         sortField.setType( ModuleType.ISSUE );
         company.setDefaultValue( lang.selectIssueCompany() );
         product.setDefaultValue( lang.selectIssueProduct() );
+        dateRange.setPlaceholder( lang.selectDate() );
    }
 
     @Override
@@ -61,6 +66,9 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     public HasValue< Set <En_ImportanceLevel> > importances() { return importance; }
 
     @Override
+    public HasValue<DateInterval> dateRange() { return dateRange; }
+
+    @Override
     public HasValue<En_SortField> sortField() { return sortField; }
 
     @Override
@@ -79,6 +87,7 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         product.setValue( null );
         importance.setValue(null);
         state.setValue( null );
+        dateRange.setValue( null );
         sortField.setValue( En_SortField.creation_date );
         sortDir.setValue( true );
         search.setText( "" );
@@ -112,6 +121,14 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
             activity.onFilterChanged();
         }
     }
+
+    @UiHandler( "dateRange" )
+    public void onDateRangeChanged( ValueChangeEvent<DateInterval> event ) {
+        if ( activity != null ) {
+            activity.onFilterChanged();
+        }
+    }
+
 
     @UiHandler( "sortField" )
     public void onSortFieldSelected( ValueChangeEvent< En_SortField > event ) {
@@ -163,6 +180,10 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     @Inject
     @UiField( provided = true )
     ImportanceBtnGroup importance;
+
+    @Inject
+    @UiField(provided = true)
+    RangePicker dateRange;
 
     @Inject
     @UiField( provided = true )
