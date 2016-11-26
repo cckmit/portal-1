@@ -5,11 +5,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.CaseStateMatrixDAO;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.query.CaseQuery;
 
@@ -28,6 +30,9 @@ public class CaseServiceImpl implements CaseService {
 
     @Autowired
     CaseStateMatrixDAO caseStateMatrixDAO;
+
+    @Autowired
+    CaseCommentDAO caseCommentDAO;
 
     @Override
     public CoreResponse<List<CaseObject>> caseObjectList(CaseQuery query) {
@@ -86,6 +91,16 @@ public class CaseServiceImpl implements CaseService {
             return new CoreResponse<List<En_CaseState>>().error(En_ResultStatus.GET_DATA_ERROR);
 
         return new CoreResponse<List<En_CaseState>>().success(states);
+    }
+
+    @Override
+    public CoreResponse<List<CaseComment>> getCaseCommentList( long caseId ) {
+        List<CaseComment> list = caseCommentDAO.getCaseComments( caseId );
+
+        if ( list == null )
+            return new CoreResponse<List<CaseComment>>().error(En_ResultStatus.GET_DATA_ERROR);
+
+        return new CoreResponse<List<CaseComment>>().success(list);
     }
 
 
