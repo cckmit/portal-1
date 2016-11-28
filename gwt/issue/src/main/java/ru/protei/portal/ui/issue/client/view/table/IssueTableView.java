@@ -17,6 +17,7 @@ import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.helper.HTMLHelper;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
@@ -168,7 +169,9 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
 
             @Override
             public void fillColumnValue( Element element, CaseObject caseObject ) {
-                element.setInnerText( "<div>"+caseObject == null ? "" : caseObject.getCaseNumber().toString()+"</div>" );
+                element.setInnerHTML( HTMLHelper.wrapDiv(
+                        caseObject == null ? "" : caseObject.getCaseNumber().toString()
+                ));
             }
         };
         //issueNumber.setColumnProvider( columnProvider );
@@ -182,7 +185,11 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
 
             @Override
             public void fillColumnValue( Element element, CaseObject caseObject ) {
-                element.setInnerHTML( "<div>"+caseObject == null ? "" : "продукт"+"</div>" );
+
+                element.setInnerHTML(HTMLHelper.wrapDiv(
+                        caseObject == null || caseObject.getProduct() == null ? "" : caseObject.getProduct().getName()
+                ));
+
             }
         };
         //product.setColumnProvider( columnProvider );
@@ -203,7 +210,7 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
                 String initiatorName = initiator == null ? "" : initiator.getDisplayName();
 
                 String separator = companyName.isEmpty() ? "" : ":\n";
-                element.setInnerHTML( "<div>"+companyName+separator+initiatorName+"</div>" );
+                element.setInnerHTML( HTMLHelper.wrapDiv(companyName+separator+initiatorName));
             }
         };
         //contacts.setColumnProvider( columnProvider );
@@ -219,7 +226,7 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
             public void fillColumnValue( Element element, CaseObject caseObject ) {
                 String info = caseObject == null ? "" : caseObject.getInfo();
                 element.addClassName( "info" );
-                element.setInnerHTML( "<div>"+info+"</div>" );
+                element.setInnerHTML( HTMLHelper.wrapDiv(info) );
             }
         };
         //info.setColumnProvider( columnProvider );
@@ -234,7 +241,7 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
             @Override
             public void fillColumnValue( Element element, CaseObject caseObject ) {
                 Date created = caseObject == null ? null : caseObject.getCreated();
-                element.setInnerHTML( "<div>"+created == null ? "" : dateFormatter.formatDateOnly( created )+"</div>" );
+                element.setInnerHTML( HTMLHelper.wrapDiv(created == null ? "" : dateFormatter.formatDateOnly( created )));
             }
         };
         //creationDate.setColumnProvider( columnProvider );
@@ -249,7 +256,7 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
             @Override
             public void fillColumnValue( Element element, CaseObject caseObject ) {
                 Person manager = caseObject == null ? null : caseObject.getManager();
-                element.setInnerHTML( "<div>"+manager == null ? "" : manager.getDisplayName()+"</div>" );
+                element.setInnerHTML( HTMLHelper.wrapDiv(manager == null ? "" : manager.getDisplayName()) );
             }
         };
         //manager.setColumnProvider( columnProvider );
@@ -264,7 +271,7 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
         table.addColumn( manager.header, manager.values );
 
         table.setSeparatorProvider( ( element, i ) -> {
-            element.setInnerHTML( "Страница "+ (i+1) );
+            element.setInnerHTML( lang.dataPageNumber(i+1) );
             element.addClassName( "separator" );
         } );
     }

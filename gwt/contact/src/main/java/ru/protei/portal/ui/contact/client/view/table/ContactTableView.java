@@ -7,6 +7,7 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
@@ -16,6 +17,7 @@ import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.brainworm.factory.widget.table.client.helper.SelectionColumn;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.helper.HTMLHelper;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
@@ -178,7 +180,9 @@ public class ContactTableView extends Composite implements AbstractContactTableV
 
             @Override
             public void fillColumnValue ( Element element, Person person ) {
-                element.setInnerText( person == null ? "" : person.getDisplayName() );
+                element.setInnerHTML (HTMLHelper.wrapDiv(
+                        person == null ? "" : person.getDisplayName()
+                ));
             }
         };
         columns.add( displayName );
@@ -192,7 +196,9 @@ public class ContactTableView extends Composite implements AbstractContactTableV
 
             @Override
             public void fillColumnValue ( Element element, Person person ) {
-                element.setInnerText( person == null || person.getCompany() == null ? "" : person.getCompany().getCname() );
+                element.setInnerHTML (HTMLHelper.wrapDiv (
+                        person == null || person.getCompany() == null ? "" : person.getCompany().getCname()
+                ));
             }
         };
         columns.add( company );
@@ -206,7 +212,10 @@ public class ContactTableView extends Composite implements AbstractContactTableV
 
             @Override
             public void fillColumnValue ( Element element, Person person ) {
-                element.setInnerText( person == null ? "" : person.getPosition() );
+
+                element.setInnerHTML( HTMLHelper.wrapDiv(
+                        person == null || person.getPosition() == null ? "" : person.getPosition()
+                ));
 
             }
         };
@@ -222,9 +231,11 @@ public class ContactTableView extends Composite implements AbstractContactTableV
             @Override
             public void fillColumnValue( Element element, Person person ) {
                 PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(person.getContactInfo());
-                element.appendChild( ContactColumnBuilder.make().add( null, infoFacade.getWorkPhone() )
+                element.appendChild( DOM.createDiv().appendChild(
+                        ContactColumnBuilder.make().add( null, infoFacade.getWorkPhone() )
                         .add(null, infoFacade.getMobilePhone() )
-                        .add( null, infoFacade.getHomePhone()).toElement() );
+                        .add( null, infoFacade.getHomePhone()).toElement()
+                ));
             }
         };
         columns.add( phone );
@@ -239,8 +250,10 @@ public class ContactTableView extends Composite implements AbstractContactTableV
             @Override
             public void fillColumnValue( Element element, Person person ) {
                 PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(person.getContactInfo() );
-                element.appendChild( ContactColumnBuilder.make().add( null, infoFacade.getEmail() )
-                        .add( null, infoFacade.getEmail_own() ).toElement() );
+                element.appendChild( DOM.createDiv().appendChild(
+                        ContactColumnBuilder.make().add( null, infoFacade.getEmail() )
+                        .add( null, infoFacade.getEmail_own() ).toElement()
+                ));
             }
         };
         columns.add( email );
@@ -260,7 +273,7 @@ public class ContactTableView extends Composite implements AbstractContactTableV
                 element.addClassName( "separator" );
             }
         } );
-        table.addStyleName( "contacts" );
+//        table.addStyleName( "contacts" );
     }
 
     @Inject

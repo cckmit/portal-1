@@ -246,4 +246,5 @@ public interface Lang extends Messages {
     String basicImportance();
     String cosmeticImportance();
 
+    String dataPageNumber (int page);
 }
