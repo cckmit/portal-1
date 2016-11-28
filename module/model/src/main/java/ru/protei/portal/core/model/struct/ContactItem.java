@@ -26,6 +26,12 @@ public class ContactItem implements Serializable {
     @JsonProperty("t")
     private En_ContactItemType itemType;
 
+    public ContactItem (String value, String comment, En_ContactItemType type) {
+        this.value = value;
+        this.comment = comment;
+        this.itemType = type;
+    }
+
     public ContactItem () {
         this.accessType = En_ContactDataAccess.PUBLIC;
         this.itemType = En_ContactItemType.UNDEFINED;
@@ -78,6 +84,11 @@ public class ContactItem implements Serializable {
     public ContactItem modify (String value, String comment) {
         this.value = value;
         this.comment = comment;
+        return this;
+    }
+
+    public ContactItem modify (En_ContactItemType type) {
+        this.itemType = type;
         return this;
     }
 

@@ -1,5 +1,7 @@
 package ru.protei.portal.core.model.dict;
 
+import ru.protei.portal.core.model.dict.lang.ContactItemLang;
+
 import java.io.Serializable;
 
 /**
@@ -9,31 +11,93 @@ public enum En_ContactItemType implements Serializable {
     /**
      * используется для заполнения в default-конструкторе, в UI не используется
      */
-    UNDEFINED,
+    UNDEFINED {
+        @Override
+        public String getMessage(ContactItemLang lang) {
+            return "-";
+        }
+    },
 
-    EMAIL,
+    EMAIL{
+        @Override
+        public String getMessage(ContactItemLang lang) {
+            return lang.contactEmail();
+        }
+    },
     /**
      * адрес
      */
-    ADDRESS,
+    ADDRESS{
+        @Override
+        public String getMessage(ContactItemLang lang) {
+            return lang.contactActualAddress();
+        }
+    },
     /**
      * De-Jure == LEGAL
      */
-    ADDRESS_LEGAL,
+    ADDRESS_LEGAL{
+        @Override
+        public String getMessage(ContactItemLang lang) {
+            return lang.contactLegalAddress();
+        }
+    },
 
-    FAX,
-    MOBILE_PHONE,
-    GENERAL_PHONE,
+    FAX{
+        @Override
+        public String getMessage(ContactItemLang lang) {
+            return lang.contactFax();
+        }
+    },
+    MOBILE_PHONE{
+        @Override
+        public String getMessage(ContactItemLang lang) {
+            return lang.contactMobilePhone();
+        }
+    },
+    GENERAL_PHONE{
+        @Override
+        public String getMessage(ContactItemLang lang) {
+            return lang.contactPersonalPhone();
+        }
+    },
 
-    ICQ,
-    JABBER,
-    SKYPE,
+    ICQ{
+        @Override
+        public String getMessage(ContactItemLang lang) {
+            return lang.contactIcq();
+        }
+    },
+    JABBER{
+        @Override
+        public String getMessage(ContactItemLang lang) {
+            return lang.contactJabber();
+        }
+    },
+    SKYPE{
+        @Override
+        public String getMessage(ContactItemLang lang) {
+            return lang.contactSkype();
+        }
+    },
 
-    WEB_SITE,
+    WEB_SITE{
+        @Override
+        public String getMessage(ContactItemLang lang) {
+            return lang.contactWebSite();
+        }
+    },
 
-    SOCIAL_NET;
+    SOCIAL_NET{
+        @Override
+        public String getMessage(ContactItemLang lang) {
+            return lang.contactSocialNet();
+        }
+    };
 
-    En_ContactItemType() {
 
-    }
+    En_ContactItemType() {}
+
+    public abstract String getMessage(ContactItemLang lang);
+
 }

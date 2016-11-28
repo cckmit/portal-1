@@ -36,9 +36,10 @@ package ru.protei.portal.ui.common.client.common;
  * 4.0.20.15 - sprint-10-task-13 - Реализация работы с комментариями в обращениях на back
  * 4.0.20.16 - sprint-10-task-13 - Реализация работы с комментариями в обращениях на back (create/update)
  * 4.0.20.17 - sprint-10-task-7 - Фильтры в обращениях - добавить фильтрацию по диапазону дат ( range picker ) с предустановленными промежутками + фильтрация по менеджеру
+ * 4.0.21.17 - sprint-10-task-9 - Трансформация ValueComment в ContactItem, доработка виджета
  */
 public class Version {
     public static String getVersion() {
-        return "4.0.20.17";
+        return "4.0.21.17";
     }
 }
