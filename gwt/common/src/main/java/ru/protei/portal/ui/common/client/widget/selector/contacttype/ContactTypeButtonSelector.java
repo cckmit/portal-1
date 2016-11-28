@@ -1,6 +1,8 @@
 package ru.protei.portal.ui.common.client.widget.selector.contacttype;
 
+import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
+import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 
 import java.util.List;
@@ -18,7 +20,7 @@ public class ContactTypeButtonSelector extends ButtonSelector<En_ContactItemType
             setValue(null);
         }
 
-        items.forEach(option -> addOption(option.getName(), option));
+        items.forEach(option -> addOption(option.getMessage(lang), option));
     }
 
     public void setDefaultValue( String value ) {
@@ -27,4 +29,6 @@ public class ContactTypeButtonSelector extends ButtonSelector<En_ContactItemType
 
     private String defaultValue = null;
 
+    @Inject
+    Lang lang;
 }

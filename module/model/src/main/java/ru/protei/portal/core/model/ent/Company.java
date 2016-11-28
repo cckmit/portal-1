@@ -43,18 +43,17 @@ public class Company implements Serializable, EntityOptionSupport {
         if(entityOption == null)
             return null;
 
-        Company company = new Company();
+        Company company = new Company(entityOption.getId());
         company.setCname(entityOption.getDisplayText());
-        company.setId(entityOption.getId());
         return company;
     }
 
     public Company() {
-        contactInfo = new ContactInfo();
+        this(null);
     }
 
     public Company(Long id) {
-        this();
+        this.contactInfo = new ContactInfo();
         this.id = id;
     }
 

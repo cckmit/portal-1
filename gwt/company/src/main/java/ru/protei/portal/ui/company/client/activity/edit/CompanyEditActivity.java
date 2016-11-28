@@ -31,11 +31,6 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
     public void onInit() {
         view.setActivity( this );
 
-        En_ContactItemType.MOBILE_PHONE.setName(lang.mobilePhone());
-        En_ContactItemType.GENERAL_PHONE.setName(lang.personalPhone());
-        En_ContactItemType.FAX.setName(lang.fax());
-        En_ContactItemType.EMAIL.setName(lang.email());
-
         ALLOWED_PHONE_TYPES.add(En_ContactItemType.MOBILE_PHONE);
         ALLOWED_PHONE_TYPES.add(En_ContactItemType.GENERAL_PHONE);
         ALLOWED_PHONE_TYPES.add(En_ContactItemType.FAX);
