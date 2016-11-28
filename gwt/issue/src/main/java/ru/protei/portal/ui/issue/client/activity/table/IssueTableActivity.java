@@ -139,6 +139,7 @@ public abstract class IssueTableActivity implements AbstractIssueTableActivity, 
 
         query.setCompanyId( filterView.company().getValue() == null? null : filterView.company().getValue().getId() );
         query.setProductId( filterView.product().getValue() == null? null : filterView.product().getValue().getId() );
+        query.setManagerId( filterView.manager().getValue() == null? null : filterView.manager().getValue().getId() );
 
         if(filterView.states().getValue() != null)
             query.setStateIds(

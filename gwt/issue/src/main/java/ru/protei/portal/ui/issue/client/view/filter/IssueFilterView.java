@@ -4,7 +4,6 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -13,13 +12,13 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.range.RangePicker;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
-import ru.brainworm.factory.core.datetimepicker.shared.dto.PickerType;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
+import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.ProductButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
@@ -41,6 +40,7 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         sortField.setType( ModuleType.ISSUE );
         company.setDefaultValue( lang.selectIssueCompany() );
         product.setDefaultValue( lang.selectIssueProduct() );
+        manager.setDefaultValue( lang.selectIssueManager() );
         dateRange.setPlaceholder( lang.selectDate() );
    }
 
@@ -58,6 +58,9 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     public HasValue<EntityOption> product() {
         return product;
     }
+
+    @Override
+    public HasValue<EntityOption> manager () { return manager; }
 
     @Override
     public HasValue< Set <En_CaseState > > states() { return state; }
@@ -85,6 +88,7 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     public void resetFilter() {
         company.setValue( null );
         product.setValue( null );
+        manager.setValue( null );
         importance.setValue(null);
         state.setValue( null );
         dateRange.setValue( null );
@@ -101,7 +105,7 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         }
     }
 
-    @UiHandler( {"company", "product"} )
+    @UiHandler( {"company", "product", "manager"} )
     public void onAnySelected( ValueChangeEvent<EntityOption> event ) {
         if ( activity != null ) {
             activity.onFilterChanged();
@@ -172,6 +176,10 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     @Inject
     @UiField ( provided = true )
     ProductButtonSelector product;
+
+    @Inject
+    @UiField ( provided = true )
+    EmployeeButtonSelector manager;
 
     @Inject
     @UiField ( provided = true )

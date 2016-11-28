@@ -19,6 +19,7 @@ public interface AbstractIssueFilterView extends IsWidget {
 
     HasValue<EntityOption> company();
     HasValue<EntityOption> product();
+    HasValue<EntityOption> manager();
     HasValue<Set<En_CaseState>> states();
     HasValue<Set<En_ImportanceLevel>> importances();
     HasValue<DateInterval> dateRange ();

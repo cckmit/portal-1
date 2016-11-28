@@ -53,15 +53,15 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
         return new SqlCondition().build((condition, args) -> {
             condition.append("1=1");
 
-        if ( query.getType() != null ) {
-            condition.append( " and case_type=?" );
-            args.add( query.getType().getId() );
-        }
+            if ( query.getType() != null ) {
+                condition.append( " and case_type=?" );
+                args.add( query.getType().getId() );
+            }
 
-        if ( query.getCompanyId() != null ) {
-            condition.append( " and initiator_company=?" );
-            args.add( query.getCompanyId() );
-        }
+            if ( query.getCompanyId() != null ) {
+                condition.append( " and initiator_company=?" );
+                args.add( query.getCompanyId() );
+            }
 
             if ( query.getCompanyId() != null ) {
                 condition.append( " and initiator_company=?" );
@@ -71,6 +71,11 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
             if ( query.getProductId() != null ) {
                 condition.append( " and product_id=?" );
                 args.add( query.getProductId() );
+            }
+
+            if ( query.getManagerId() != null ) {
+                condition.append( " and manager=?" );
+                args.add( query.getManagerId() );
             }
 
             if ( query.getStateIds() != null && !query.getStateIds().isEmpty() ) {

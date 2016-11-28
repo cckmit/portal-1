@@ -2,6 +2,7 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:companyselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.company'
              xmlns:productselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.product'
+             xmlns:person='urn:import:ru.protei.portal.ui.common.client.widget.selector.person'
              xmlns:sortfieldselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.sortfield'
              xmlns:importance='urn:import:ru.protei.portal.ui.issue.client.widget.importance.btngroup'
              xmlns:state='urn:import:ru.protei.portal.ui.issue.client.widget.state.btngroup'
@@ -23,10 +24,13 @@
                 </div>
             </div>
             <div class="col-xs-12">
-                <companyselector:CompanySelector ui:field="company" header="{lang.company}"/>
+                <companyselector:CompanySelector ui:field="company" header="{lang.issueCompany}"/>
             </div>
             <div class="col-xs-12">
-                <productselector:ProductButtonSelector ui:field="product" header="{lang.product}"/>
+                <productselector:ProductButtonSelector ui:field="product" header="{lang.issueProduct}"/>
+            </div>
+            <div class="col-xs-12">
+                <person:EmployeeButtonSelector ui:field="manager" header="{lang.issueManager}"/>
             </div>
             <div class="col-xs-12">
                 <p><ui:text from="{lang.issueImportance}"/></p>
