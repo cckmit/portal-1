@@ -53,15 +53,10 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
         return new SqlCondition().build((condition, args) -> {
             condition.append("1=1");
 
-        if ( query.getType() != null ) {
-            condition.append( " and case_type=?" );
-            args.add( query.getType().getId() );
-        }
-
-        if ( query.getCompanyId() != null ) {
-            condition.append( " and initiator_company=?" );
-            args.add( query.getCompanyId() );
-        }
+            if ( query.getType() != null ) {
+                condition.append( " and case_type=?" );
+                args.add( query.getType().getId() );
+            }
 
             if ( query.getCompanyId() != null ) {
                 condition.append( " and initiator_company=?" );
@@ -73,12 +68,27 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
                 args.add( query.getProductId() );
             }
 
-            if ( query.getStateIds() != null && !query.getStateIds().isEmpty()) {
+            if ( query.getManagerId() != null ) {
+                condition.append( " and manager=?" );
+                args.add( query.getManagerId() );
+            }
+
+            if ( query.getStateIds() != null && !query.getStateIds().isEmpty() ) {
                 condition.append(" and state in (" + query.getStateIds().stream().map(Object::toString).collect( Collectors.joining(",")) + ")");
             }
 
             if ( query.getImportanceIds() != null && !query.getImportanceIds().isEmpty() ) {
                 condition.append(" and importance in (" + query.getImportanceIds().stream().map(Object::toString).collect( Collectors.joining(",")) + ")");
+            }
+
+            if ( query.getFrom() != null ) {
+                condition.append( " and case_object.created >= ?" );
+                args.add( query.getFrom() );
+            }
+
+            if ( query.getTo() != null ) {
+                condition.append( " and case_object.created < ?" );
+                args.add( query.getTo() );
             }
 
             if (query.getSearchString() != null && !query.getSearchString().trim().isEmpty()) {

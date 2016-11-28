@@ -4,6 +4,7 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -13,9 +14,13 @@ public class CaseQuery extends BaseQuery {
 
     private Long companyId;
     private Long productId;
+    private Long managerId;
     private En_CaseType type;
     private List<Integer> stateIds;
     private List<Integer> importanceIds;
+
+    private Date from;
+    private Date to;
 
     public CaseQuery() {};
 
@@ -57,14 +62,29 @@ public class CaseQuery extends BaseQuery {
 
     public void setImportanceIds(List<Integer> importanceIds) { this.importanceIds = importanceIds; }
 
+    public Date getFrom() { return from; }
+
+    public void setFrom( Date from ) { this.from = from; }
+
+    public Date getTo() { return to; }
+
+    public void setTo( Date to ) { this.to = to; }
+
+    public Long getManagerId () { return managerId; }
+
+    public void setManagerId ( Long managerId ) { this.managerId = managerId; }
+
     @Override
     public String toString () {
         return "CaseQuery{" +
                 "companyId=" + companyId +
                 ", productId=" + productId +
+                ", managerId=" + managerId +
                 ", type=" + type +
                 ", stateIds=" + stateIds +
                 ", importanceIds=" + importanceIds +
+                ", from=" + from +
+                ", to=" + to +
                 '}';
     }
 }

@@ -2,6 +2,7 @@ package ru.protei.portal.ui.issue.client.activity.table;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
+import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
@@ -138,6 +139,7 @@ public abstract class IssueTableActivity implements AbstractIssueTableActivity, 
 
         query.setCompanyId( filterView.company().getValue() == null? null : filterView.company().getValue().getId() );
         query.setProductId( filterView.product().getValue() == null? null : filterView.product().getValue().getId() );
+        query.setManagerId( filterView.manager().getValue() == null? null : filterView.manager().getValue().getId() );
 
         if(filterView.states().getValue() != null)
             query.setStateIds(
@@ -152,6 +154,13 @@ public abstract class IssueTableActivity implements AbstractIssueTableActivity, 
                             .stream()
                             .map( En_ImportanceLevel::getId )
                             .collect( Collectors.toList() ));
+
+        DateInterval interval = filterView.dateRange().getValue();
+
+        if(interval != null) {
+            query.setFrom( interval == null ? null : interval.from );
+            query.setTo( interval == null ? null : interval.to );
+        }
 
         return query;
     }

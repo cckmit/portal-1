@@ -253,4 +253,6 @@ public interface Lang extends Messages {
     String buttonReset();
 
     String selectContactCompany ();
+
+    String selectDate();
 }
