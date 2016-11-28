@@ -33,9 +33,10 @@ package ru.protei.portal.ui.common.client.common;
  * 4.0.17.15 - sprint-8-task-11 IssueEdit (backend)
  * 4.0.18.15 - sprint-8-task-14 замена звёздочек на красные рамки
  * 4.0.19.15 - sprint-9-task-3 Фильтры в обращениях - стили отображения статусов и критичности
+ * 4.0.20.15 - sprint-10-task-13 - Реализация работы с комментариями в обращениях на back
  */
 public class Version {
     public static String getVersion() {
-        return "4.0.19.15";
+        return "4.0.20.15";
     }
 }
