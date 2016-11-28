@@ -38,7 +38,7 @@
             </div>
             <div class="col-xs-12">
                 <p><ui:text from="{lang.created}"/></p>
-                <range:RangePicker ui:field="dateRange" type="DATE" formatValue="dd.MM.yyyy"/>
+                <range:RangePicker ui:field="dateRange" type="DATETIME" formatValue="dd.MM.yyyy HH:mm"/>
             </div>
         </div>
         <div class="footer">

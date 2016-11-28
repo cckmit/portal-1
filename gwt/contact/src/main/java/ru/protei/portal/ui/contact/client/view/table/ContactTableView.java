@@ -76,6 +76,7 @@ public class ContactTableView extends Composite implements AbstractContactTableV
 
     @Override
     public void clearRecords() {
+        table.clearCache();
         table.clearRows();
     }
 
