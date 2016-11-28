@@ -82,12 +82,12 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
             }
 
             if ( query.getFrom() != null ) {
-                condition.append( " and created >= ?" );
+                condition.append( " and case_object.created >= ?" );
                 args.add( query.getFrom() );
             }
 
             if ( query.getTo() != null ) {
-                condition.append( " and created < ?" );
+                condition.append( " and case_object.created < ?" );
                 args.add( query.getTo() );
             }
 
