@@ -103,6 +103,35 @@ public class CaseServiceImpl implements CaseService {
         return new CoreResponse<List<CaseComment>>().success(list);
     }
 
+    @Override
+    public CoreResponse<CaseComment> saveCaseComment ( CaseComment caseComment ) {
+        if (caseComment == null || caseComment.getCaseId() == null)
+            return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
+
+        Date now = new Date();
+        caseComment.setCreated(now);
+
+        Long commentId = caseCommentDAO.persist(caseComment);
+
+        if (commentId == null)
+            return new CoreResponse().error(En_ResultStatus.NOT_CREATED);
+
+        return new CoreResponse<CaseComment>().success( caseComment );
+    }
+
+    @Override
+    public CoreResponse<CaseComment> updateCaseComment ( CaseComment caseComment ) {
+        if (caseComment == null || caseComment.getId() == null)
+            return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
+
+        boolean isUpdated = caseCommentDAO.merge(caseComment);
+
+        if (!isUpdated)
+            return new CoreResponse().error(En_ResultStatus.NOT_UPDATED);
+
+        return new CoreResponse<CaseComment>().success( caseComment );
+    }
+
 
     @Override
     public CoreResponse<Long> count(CaseQuery query) {
