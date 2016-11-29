@@ -231,7 +231,7 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
         table.addColumn( creationDate.header, creationDate.values );
         table.addColumn( manager.header, manager.values );
 
-        table.setSeparatorProvider( ( element, i ) -> {
+        table.setSeparatorProvider( ( element, i, tableWidget ) -> {
             element.setInnerHTML( lang.dataPageNumber(i+1) );
             element.addClassName( "separator" );
         } );
