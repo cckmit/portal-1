@@ -125,4 +125,20 @@ public class CaseComment {
     public void setOldId(Long oldId) {
         this.oldId = oldId;
     }
+
+    @Override
+    public String toString() {
+        return "CaseComment{" +
+                "id=" + id +
+                ", created=" + created +
+                ", clientIp='" + clientIp + '\'' +
+                ", caseId=" + caseId +
+                ", authorId=" + authorId +
+                ", caseStateId=" + caseStateId +
+                ", replyTo=" + replyTo +
+                ", vroomId=" + vroomId +
+                ", text='" + text + '\'' +
+                ", oldId=" + oldId +
+                '}';
+    }
 }

@@ -29,15 +29,19 @@ public class ContactColumn extends ClickColumn< CaseObject > {
     public void fillColumnValue( Element cell, CaseObject value ) {
         cell.addClassName( "contacts" );
 
+        com.google.gwt.dom.client.Element divElement = DOM.createDiv();
+
         Company company = value == null ? null : value.getInitiatorCompany();
         com.google.gwt.dom.client.Element companyElement= DOM.createLabel();
         companyElement.setInnerText( company == null ? "" : company.getCname() );
-        cell.appendChild( companyElement );
+        divElement.appendChild( companyElement );
 
         Person initiator = value == null ? null : value.getInitiator();
-        com.google.gwt.dom.client.Element initiatorElement = DOM.createDiv();
+        com.google.gwt.dom.client.Element initiatorElement = DOM.createElement( "p" );
         initiatorElement.setInnerText( initiator == null ? "" : initiator.getDisplayName() );
-        cell.appendChild( initiatorElement );
+        divElement.appendChild( initiatorElement );
+
+        cell.appendChild( divElement );
     }
 
     Lang lang;

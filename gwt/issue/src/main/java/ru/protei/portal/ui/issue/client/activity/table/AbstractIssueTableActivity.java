@@ -12,8 +12,5 @@ public interface AbstractIssueTableActivity
         extends ClickColumn.Handler< CaseObject >, EditClickColumn.EditHandler< CaseObject >,
         InfiniteLoadHandler<CaseObject>
 {
-
-    void onFilterChanged();
     void onEditClicked( CaseObject value );
-    void onCreateClick();
 }

@@ -31,16 +31,15 @@ public class InfoColumn extends ClickColumn< CaseObject >{
     public void fillColumnValue( Element cell, CaseObject value ) {
         cell.addClassName( "info" );
 
+        com.google.gwt.dom.client.Element divElement = DOM.createDiv();
+
         com.google.gwt.dom.client.Element productElement = DOM.createLabel();
         productElement.setInnerText( value == null ? "" : value.getProduct() == null ? "" : value.getProduct().getName() );
-        cell.appendChild( productElement );
+        divElement.appendChild( productElement );
 
         Date created = value == null ? null : value.getCreated();
-        if ( created == null ) {
-            cell.setInnerText( "" );
-        } else {
-
-            com.google.gwt.dom.client.Element groupElement = DOM.createDiv();
+        if ( created != null ) {
+            com.google.gwt.dom.client.Element groupElement = DOM.createElement( "p" );
             groupElement.addClassName( "text-semimuted" );
 
             com.google.gwt.dom.client.Element i = DOM.createElement( "i" );
@@ -51,12 +50,14 @@ public class InfoColumn extends ClickColumn< CaseObject >{
             createdElement.setInnerText( " " + dateFormatter.formatDateTime( created ) );
             groupElement.appendChild( createdElement );
 
-            cell.appendChild( groupElement );
+            divElement.appendChild( groupElement );
         }
 
-        com.google.gwt.dom.client.Element infoElement = DOM.createDiv();
+        com.google.gwt.dom.client.Element infoElement = DOM.createElement( "p" );
         infoElement.setInnerText( value == null ? "" : value.getInfo() );
-        cell.appendChild( infoElement );
+        divElement.appendChild( infoElement );
+
+        cell.appendChild( divElement );
     }
 
     Lang lang;

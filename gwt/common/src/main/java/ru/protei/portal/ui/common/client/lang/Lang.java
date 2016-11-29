@@ -1,11 +1,12 @@
 package ru.protei.portal.ui.common.client.lang;
 
 import com.google.gwt.i18n.client.Messages;
+import ru.protei.portal.core.model.dict.lang.ContactItemLang;
 
 /**
  * Интерфейс со строковыми константами
  */
-public interface Lang extends Messages {
+public interface Lang extends Messages, ContactItemLang {
     String buttonLogout();
 
     String buttonLogin();
@@ -76,8 +77,6 @@ public interface Lang extends Messages {
 
     String errAsteriskRequired();
 
-    String email();
-
     String errLoginOrPwd();
 
     String msgOK();
@@ -134,8 +133,6 @@ public interface Lang extends Messages {
 
     String contactDepartment();
 
-    String fax();
-
     String address();
     
     String productDescription();
@@ -170,11 +167,22 @@ public interface Lang extends Messages {
     String contactInfo ();
     String advPersonalData ();
     String workPhone ();
-    String personalPhone ();
     String workEmail ();
     String personalEmail ();
     String primaryFax ();
     String secondaryFax ();
+
+    String contactFax();
+    String contactMobilePhone();
+    String contactPersonalPhone();
+    String contactEmail();
+    String contactActualAddress();
+    String contactLegalAddress();
+    String contactIcq();
+    String contactJabber();
+    String contactSkype();
+    String contactWebSite();
+    String contactSocialNet();
 
     String workAddress ();
     String homeAddress ();
@@ -246,4 +254,19 @@ public interface Lang extends Messages {
     String basicImportance();
     String cosmeticImportance();
 
+    String comments ();
+
+    String product ();
+
+    String buttonReset();
+
+    String selectContactCompany ();
+
+    String selectDate();
+
+    String email();
+    String personalPhone();
+
+    String separatorText( int page, int pageCount );
+    String dataPageNumber (int page);
 }

@@ -93,12 +93,19 @@ public class BatchInsertTask {
 
             while (rs.next()) {
                 records_handled++;
+                T object = adapter.createEntity(Tm_SqlHelper.fetchRowAsMap(rs));
+                /**
+                 * logic reports that we have to stop
+                 */
+                if (object == null)
+                    break;
+
                 /**
                  * records sorted by ID, so just store the last one
                  */
                 migrationEntry.setLastId(rs.getLong(this.idFieldName));
 
-                insertBatchSet.add(adapter.createEntity(Tm_SqlHelper.fetchRowAsMap(rs)));
+                insertBatchSet.add(object);
 
                 Timestamp ts = rs.getTimestamp(lastUpdateFieldName);
                 if (ts != null) {

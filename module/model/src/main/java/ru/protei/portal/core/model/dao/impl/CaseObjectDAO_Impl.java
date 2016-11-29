@@ -4,14 +4,12 @@ import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.CaseObject;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
-import ru.protei.portal.core.utils.TypeConverters;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by michael on 19.05.16.
@@ -19,12 +17,10 @@ import java.util.Map;
 public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements CaseObjectDAO {
 
     public Map<Long,Long> getNumberToIdMap (En_CaseType caseType) {
-
         Map<Long, Long> numberToIdMap = new HashMap<>();
 
-        for (CaseObject o : this.getListByCondition("CASE_TYPE=?", caseType.getId())) {
-            numberToIdMap.put(o.getCaseNumber(), o.getId());
-        }
+        partialGetListByCondition("CASE_TYPE=?", Collections.singletonList(caseType.getId()),"id","CASENO")
+                .forEach(o -> numberToIdMap.put(o.getCaseNumber(), o.getId()));
 
         return numberToIdMap;
     }
@@ -48,9 +44,8 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
         return listByQuery(query);
     }
 
-
     @SqlConditionBuilder
-    public SqlCondition caseQueryCondition (CaseQuery query) {
+    public SqlCondition caseQueryCondition ( CaseQuery query) {
         return new SqlCondition().build((condition, args) -> {
             condition.append("1=1");
 
@@ -63,7 +58,42 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
                 condition.append( " and initiator_company=?" );
                 args.add( query.getCompanyId() );
             }
+
+            if ( query.getProductId() != null ) {
+                condition.append( " and product_id=?" );
+                args.add( query.getProductId() );
+            }
+
+            if ( query.getManagerId() != null ) {
+                condition.append( " and manager=?" );
+                args.add( query.getManagerId() );
+            }
+
+            if ( query.getStateIds() != null && !query.getStateIds().isEmpty() ) {
+                condition.append(" and state in (" + query.getStateIds().stream().map(Object::toString).collect( Collectors.joining(",")) + ")");
+            }
+
+            if ( query.getImportanceIds() != null && !query.getImportanceIds().isEmpty() ) {
+                condition.append(" and importance in (" + query.getImportanceIds().stream().map(Object::toString).collect( Collectors.joining(",")) + ")");
+            }
+
+            if ( query.getFrom() != null ) {
+                condition.append( " and case_object.created >= ?" );
+                args.add( query.getFrom() );
+            }
+
+            if ( query.getTo() != null ) {
+                condition.append( " and case_object.created < ?" );
+                args.add( query.getTo() );
+            }
+
+            if (query.getSearchString() != null && !query.getSearchString().trim().isEmpty()) {
+                condition.append( " and ( case_name like ? or case_object.info like ?)" );
+                String likeArg = HelperFunc.makeLikeArg(query.getSearchString(), true);
+                args.add(likeArg);
+                args.add(likeArg);
+            }
+
         });
     }
-
 }
