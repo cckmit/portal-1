@@ -18,6 +18,7 @@ import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
 import ru.protei.portal.ui.common.client.common.ContactColumnBuilder;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.separator.Separator;
 import ru.protei.portal.ui.contact.client.activity.table.AbstractContactTableActivity;
 import ru.protei.portal.ui.contact.client.activity.table.AbstractContactTableView;
 
@@ -173,18 +174,8 @@ public class ContactTableView extends Composite implements AbstractContactTableV
         table.addColumn( phone.header, phone.values );
         table.addColumn( email.header, email.values );
 
-        table.setSeparatorProvider( new InfiniteTableWidget.SeparatorProvider() {
-            @Override
-            public void fillSeparatorValue( Element element, int i ) {
-                element.setInnerText( "Страница "+ (i+1) );
-                element.addClassName( "separator" );
-            }
-        } );
-        table.addStyleName( "contacts" );
+        table.setSeparatorProvider( separator );
     }
-
-
-
 
     @UiField
     InfiniteTableWidget<Person> table;
@@ -199,6 +190,9 @@ public class ContactTableView extends Composite implements AbstractContactTableV
     @Inject
     @UiField
     Lang lang;
+
+    @Inject
+    Separator separator;
 
     AbstractColumn hideColumn;
     ClickColumnProvider<Person> columnProvider = new ClickColumnProvider<>();

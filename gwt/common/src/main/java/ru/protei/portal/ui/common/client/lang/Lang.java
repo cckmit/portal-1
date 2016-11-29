@@ -266,4 +266,6 @@ public interface Lang extends Messages, ContactItemLang {
 
     String email();
     String personalPhone();
+
+    String separatorText( int page, int pageCount );
 }
