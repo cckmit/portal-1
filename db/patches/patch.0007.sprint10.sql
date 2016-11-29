@@ -1,0 +1,1 @@
+alter table Case_Comment MODIFY COLUMN CSTATE_ID int;

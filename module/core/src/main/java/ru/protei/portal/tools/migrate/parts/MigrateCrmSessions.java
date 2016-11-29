@@ -7,11 +7,12 @@ import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
+import ru.protei.portal.core.model.ent.MigrationEntry;
 import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.tools.migrate.tools.MigrateAction;
 import ru.protei.portal.tools.migrate.tools.MigrateUtils;
-import ru.protei.winter.jdbc.JdbcSort;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -25,10 +26,16 @@ import java.util.Map;
 public class MigrateCrmSessions implements MigrateAction {
 
 
+    public static final String CRM_SESSION_MIGRATION_ID = "CRM.Session";
+    public static final String CRM_SESSION_COMMENT_MIGRATION_ID = "CRM.SessionComment";
+
     private static Logger logger = LoggerFactory.getLogger(MigrateCrmSessions.class);
 
     @Autowired
-    CaseObjectDAO dao;
+    CaseObjectDAO caseObjectDAO;
+
+    @Autowired
+    CaseCommentDAO caseCommentDAO;
 
     @Autowired
     private CaseStateMatrixDAO stateMatrixDAO;
@@ -59,8 +66,9 @@ public class MigrateCrmSessions implements MigrateAction {
                 .forEach(record -> productIdMap.put(record.getOldId(),record.getId()));
 
 
-        MigrateUtils.runDefaultMigration (sourceConnection, "CRM.Session", "CRM.tm_session",
-                migrateDAO, dao,
+
+        MigrateUtils.runDefaultMigration (sourceConnection, CRM_SESSION_MIGRATION_ID, "CRM.tm_session",
+                migrateDAO, caseObjectDAO,
                 row -> {
                     CaseObject obj = new CaseObject();
                     obj.setId(null);
@@ -120,6 +128,49 @@ public class MigrateCrmSessions implements MigrateAction {
 
                     return obj;
                 });
+
+
+        /**
+         *
+         * в принципе, можно сделать объединение в одну мапу, потому что в старом CRM эти записи в одной таблице и не пересекаются по ID
+         */
+        Map<Long,Long> crmSupportIdMap = caseObjectDAO.getNumberToIdMap(En_CaseType.CRM_SUPPORT);
+        Map<Long,Long> crmMarketIdMap = caseObjectDAO.getNumberToIdMap(En_CaseType.CRM_MARKET);
+
+
+        new BatchInsertTask(migrateDAO, CRM_SESSION_COMMENT_MIGRATION_ID)
+                .forQuery("select com.*, s.nCategoryID from CRM.Tm_SessionComment com join CRM.Tm_Session s on (s.nID=com.nSessionID) where com.nID > ? order by com.nID", "nID", "dtLastUpdate")
+                .process(sourceConnection, caseCommentDAO, new BaseBatchProcess<>(), from -> {
+                    CaseComment comment = new CaseComment();
+
+                    if (((Number)MigrateUtils.nvl(from.get("nCategoryID"), 8)).intValue() == 8) {
+                        comment.setCaseId(crmSupportIdMap.get(from.get("nSessionID")));
+                        comment.setCaseStateId(supportStatusMap.get(from.get("nStatusID")));
+                    }
+                    else {
+                        comment.setCaseId(crmMarketIdMap.get(from.get("nSessionID")));
+                        comment.setCaseStateId(marketStatusMap.get(from.get("nStatusID")));
+                    }
+
+
+                    if (comment.getCaseId() == null) {
+                        logger.debug("case object not found, crm.session.id={}, comment.id = {}", from.get("nSessionID"), from.get("nID"));
+
+                        /**
+                         * we need to stop this migration batch
+                         */
+                        return null;
+                    }
+
+                    comment.setCreated((Date)from.get("dtCreation"));
+                    comment.setClientIp((String)from.get("strClientIP"));
+                    comment.setAuthorId((Long)from.get("nCreatorID"));
+                    comment.setText((String)from.get("strComment"));
+                    comment.setOldId((Long) from.get("nID"));
+
+                    return comment;
+                })
+                .dumpStats();
 
     }
 }

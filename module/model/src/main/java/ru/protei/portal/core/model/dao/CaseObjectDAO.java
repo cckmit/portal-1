@@ -13,7 +13,7 @@ import java.util.Map;
  * Created by michael on 19.05.16.
  */
 public interface CaseObjectDAO extends PortalBaseDAO<CaseObject> {
-    public Map<Long,Long> getNumberToIdMap (En_CaseType caseType);
+    Map<Long,Long> getNumberToIdMap (En_CaseType caseType);
 
     List<CaseObject> getCases( CaseQuery query );
 
