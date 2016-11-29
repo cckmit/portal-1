@@ -14,6 +14,7 @@ import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
@@ -21,6 +22,7 @@ import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.separator.Separator;
 import ru.protei.portal.ui.issue.client.activity.table.AbstractIssueTableActivity;
 import ru.protei.portal.ui.issue.client.activity.table.AbstractIssueTableView;
 
@@ -134,7 +136,8 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
 
             @Override
             public void fillColumnValue( Element element, CaseObject caseObject ) {
-                element.setInnerText( caseObject == null || caseObject.getProduct() == null ? "не указан" : caseObject.getProduct().getName() );
+                DevUnit product = caseObject == null ? null : caseObject.getProduct();
+                element.setInnerText( product == null ? "" : product.getName() );
             }
         };
         //product.setColumnProvider( columnProvider );
@@ -217,10 +220,7 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
         table.addColumn( creationDate.header, creationDate.values );
         table.addColumn( manager.header, manager.values );
 
-        table.setSeparatorProvider( ( element, i ) -> {
-            element.setInnerText( "Страница "+ (i+1) );
-            element.addClassName( "separator" );
-        } );
+        table.setSeparatorProvider( separator );
     }
 
 
@@ -240,6 +240,9 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
 
     @Inject
     DateFormatter dateFormatter;
+
+    @Inject
+    Separator separator;
 
     ClickColumnProvider<CaseObject> columnProvider = new ClickColumnProvider<>();
     SelectionColumn< CaseObject  > selectionColumn = new SelectionColumn<>();
