@@ -594,7 +594,6 @@ label.bordered:after{
   border-top: 0;
   text-transform: uppercase;
   word-spacing: 0.15em;
-  font-size: 14px;
 }
 
 .table-hover .table > tbody > tr:hover {
@@ -635,9 +634,21 @@ label.bordered:after{
         overflow: hidden;
         text-overflow: ellipsis;
       }
+      tr > td > label {
+        font-weight: 600;
+        line-height: inherit;
+        vertical-align: inherit;
+      }
+      tr > td > div {
+        font-size: 85%;
+      }
     }
-    .product {
+    .number {
       width: 10%;
+      text-align: center;
+      .number-size {
+        font-size: 22px;
+      }
     }
     .contacts {
       width: 15%;
@@ -646,10 +657,6 @@ label.bordered:after{
       width: 15%;
     }
     .info {
-    }
-    .creation {
-      width: 10%;
-      white-space: nowrap;
     }
   }
 }
@@ -794,7 +801,7 @@ td.info {
 }
 
 .COSMETIC {
-  color: #ced2d7;
+  color: gray;
 }
 /****************/
 
@@ -815,26 +822,18 @@ td.info {
   color: green;
 }
 
-.TEST_LOCAL {
-  color: maroon;
-}
-
+.TEST_LOCAL,
 .TEST_CUST {
   color: maroon;
 }
 
 .VERIFIED {
-  color: black;
+  color: #202020;
 }
 /****************/
 
-.icon-importance {
-  font-size: 1.11em !important;
-  vertical-align: 0;
-}
-.icon-status {
-  font-size: 1.22em !important;
-  vertical-align: 0;
+.none-vertical-align {
+  vertical-align: 0 !important;
 }
 
 .text-semibold {
@@ -845,6 +844,44 @@ td.info {
   color: #b6b6b6;
 }
 
-.text-muted {
-  color: #afb9c3;
+.small {
+  font-size: 85% !important;
+}
+
+.label {
+  display: inline;
+  padding: .2em .6em .3em;
+  font-size: 75%;
+  font-weight: bold;
+  line-height: 1;
+  color: #fff;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  border-radius: .25em;
+}
+
+.label-CREATED {
+  background-color: #d84d4d;
+}
+
+.label-OPENED {
+  background-color: royalBlue;
+}
+
+.label-ACTIVE {
+  background-color: blue;
+}
+
+.label-DONE {
+  background-color: green;
+}
+
+.label-TEST_LOCAL,
+.label-TEST_CUST {
+  background-color: maroon;
+}
+
+.label-VERIFIED {
+  background-color: #202020;
 }

@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.issue.client.view.preview;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.dom.client.SpanElement;
@@ -14,6 +15,7 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
+import ru.protei.portal.ui.common.client.common.CriticalityStyleBuilder;
 import ru.protei.portal.ui.common.client.lang.En_CaseImportanceLang;
 import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -58,14 +60,15 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     @Override
     public void setState( long value ) {
         En_CaseState caseState = En_CaseState.getById( value );
-        this.iconState.setClassName( "icon-status fa fa-circle-o " + caseState.toString() );
+        this.state.setClassName( "small label label-" + En_CaseState.getById( value ).toString() );
         this.state.setInnerText( caseStateLang.getStateName( caseState ) );
     }
 
     @Override
     public void setCriticality( int value ) {
         En_ImportanceLevel importanceLevel = En_ImportanceLevel.find( value );
-        this.iconCriticality.setClassName( "icon-importance fa fa-exclamation-triangle " + importanceLevel.toString() );
+        this.iconCriticality.setClassName( "importance importance-lg none-vertical-align " + importanceLevel.toString() );
+        CriticalityStyleBuilder.make().addClassName( this.iconCriticality, En_ImportanceLevel.find( value ) );
         this.criticality.setInnerText( caseImportanceLang.getImportanceName( importanceLevel ) );
     }
 
@@ -131,9 +134,7 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     @UiField
     SpanElement product;
     @UiField
-    Element iconState;
-    @UiField
-    SpanElement state;
+    DivElement state;
     @UiField
     Element iconCriticality;
     @UiField

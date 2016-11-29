@@ -16,5 +16,14 @@ public class DateFormatter {
         return format.format( date );
     }
 
-    DateTimeFormat format = DateTimeFormat.getFormat( "yyyy-MM-dd" );
+    public String formatDateTime( Date date ) {
+        if ( date == null ) {
+            return "";
+        }
+
+        return dateTimeFormat.format( date );
+    }
+
+    DateTimeFormat format = DateTimeFormat.getFormat( "dd.MM.yyyy" );
+    DateTimeFormat dateTimeFormat = DateTimeFormat.getFormat( "dd.MM.yyyy hh:mm" );
 }

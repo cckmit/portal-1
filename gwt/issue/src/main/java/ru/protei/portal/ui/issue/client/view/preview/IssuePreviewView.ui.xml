@@ -30,8 +30,7 @@
                 <div class="col-xs-12">
                     <label class="col-xs-5 col-md-5"><ui:text from="{lang.issueState}"/></label>
                     <span class="col-xs-7 col-md-7">
-                        <i ui:field="iconState"></i>
-                        <span ui:field="state"></span>
+                        <div ui:field="state"></div>
                     </span>
                 </div>
             </fieldset>
