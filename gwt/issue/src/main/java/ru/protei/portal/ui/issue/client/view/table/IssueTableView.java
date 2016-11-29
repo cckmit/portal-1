@@ -16,6 +16,8 @@ import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.helper.HTMLHelper;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
@@ -95,7 +97,9 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
 
             @Override
             public void fillColumnValue( Element element, CaseObject caseObject ) {
-                element.setInnerText( caseObject == null ? "" : caseObject.getCaseNumber().toString() );
+                element.setInnerHTML( HTMLHelper.wrapDiv(
+                        caseObject == null ? "" : caseObject.getCaseNumber().toString()
+                ));
             }
         };
         //issueNumber.setColumnProvider( columnProvider );
@@ -109,7 +113,9 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
 
             @Override
             public void fillColumnValue( Element element, CaseObject caseObject ) {
-                element.setInnerText( caseObject == null ? "" : En_CaseState.getById(caseObject.getStateId()).getName() );
+                element.setInnerHTML(HTMLHelper.wrapDiv(
+                        caseObject == null ? "" : En_CaseState.getById(caseObject.getStateId()).getName()
+                ));
                 element.addClassName( En_CaseState.getById(caseObject.getStateId()).toString() );
             }
         };
@@ -122,7 +128,9 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
 
             @Override
             public void fillColumnValue( Element element, CaseObject caseObject ) {
-                element.setInnerText( caseObject == null ? "" : En_ImportanceLevel.getById(caseObject.getImpLevel()).getCode() );
+                element.setInnerHTML(HTMLHelper.wrapDiv(
+                        caseObject == null ? "" : En_ImportanceLevel.getById(caseObject.getImpLevel()).getCode()
+                ));
                 element.addClassName( En_ImportanceLevel.getById(caseObject.getImpLevel()).toString() );
             }
         };
@@ -136,8 +144,11 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
 
             @Override
             public void fillColumnValue( Element element, CaseObject caseObject ) {
-                DevUnit product = caseObject == null ? null : caseObject.getProduct();
-                element.setInnerText( product == null ? "" : product.getName() );
+
+                element.setInnerHTML(HTMLHelper.wrapDiv(
+                        caseObject == null || caseObject.getProduct() == null ? "" : caseObject.getProduct().getName()
+                ));
+
             }
         };
         //product.setColumnProvider( columnProvider );
@@ -158,7 +169,7 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
                 String initiatorName = initiator == null ? "" : initiator.getDisplayName();
 
                 String separator = companyName.isEmpty() ? "" : ":\n";
-                element.setInnerText( companyName+separator+initiatorName );
+                element.setInnerHTML( HTMLHelper.wrapDiv(companyName+separator+initiatorName));
             }
         };
         //contacts.setColumnProvider( columnProvider );
@@ -174,7 +185,7 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
             public void fillColumnValue( Element element, CaseObject caseObject ) {
                 String info = caseObject == null ? "" : caseObject.getInfo();
                 element.addClassName( "info" );
-                element.setInnerText( info );
+                element.setInnerHTML( HTMLHelper.wrapDiv(info) );
             }
         };
         //info.setColumnProvider( columnProvider );
@@ -189,7 +200,7 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
             @Override
             public void fillColumnValue( Element element, CaseObject caseObject ) {
                 Date created = caseObject == null ? null : caseObject.getCreated();
-                element.setInnerText( created == null ? "" : dateFormatter.formatDateOnly( created ) );
+                element.setInnerHTML( HTMLHelper.wrapDiv(created == null ? "" : dateFormatter.formatDateOnly( created )));
             }
         };
         //creationDate.setColumnProvider( columnProvider );
@@ -203,8 +214,8 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
 
             @Override
             public void fillColumnValue( Element element, CaseObject caseObject ) {
-                Person manager = caseObject == null || caseObject.getManager() == null ? null : caseObject.getManager();
-                element.setInnerText( manager == null ? "" : manager.getDisplayName() );
+                Person manager = caseObject == null ? null : caseObject.getManager();
+                element.setInnerHTML( HTMLHelper.wrapDiv(manager == null ? "" : manager.getDisplayName()) );
             }
         };
         //manager.setColumnProvider( columnProvider );
@@ -220,7 +231,10 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
         table.addColumn( creationDate.header, creationDate.values );
         table.addColumn( manager.header, manager.values );
 
-        table.setSeparatorProvider( separator );
+        table.setSeparatorProvider( ( element, i ) -> {
+            element.setInnerHTML( lang.dataPageNumber(i+1) );
+            element.addClassName( "separator" );
+        } );
     }
 
 
@@ -241,8 +255,6 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
     @Inject
     DateFormatter dateFormatter;
 
-    @Inject
-    Separator separator;
 
     ClickColumnProvider<CaseObject> columnProvider = new ClickColumnProvider<>();
     SelectionColumn< CaseObject  > selectionColumn = new SelectionColumn<>();

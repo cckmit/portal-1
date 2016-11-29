@@ -635,9 +635,20 @@ label.bordered:after{
   table {
     tbody {
       tr {
-        height: 70px;
+        td {
+          height: 70px;
+
+          div {
+            height: 70px;
+            max-height: 70px;
+            white-space: pre-line;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+        }
       }
     }
+
     .company {
       width: 15%;
     }
@@ -657,7 +668,17 @@ label.bordered:after{
   table {
     tbody {
       tr {
-        height: 70px;
+        td {
+          height: 70px;
+
+          div {
+            height: 70px;
+            max-height: 70px;
+            white-space: pre-line;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+        }
       }
     }
     .product {

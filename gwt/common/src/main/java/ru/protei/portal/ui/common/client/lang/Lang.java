@@ -268,4 +268,5 @@ public interface Lang extends Messages, ContactItemLang {
     String personalPhone();
 
     String separatorText( int page, int pageCount );
+    String dataPageNumber (int page);
 }
