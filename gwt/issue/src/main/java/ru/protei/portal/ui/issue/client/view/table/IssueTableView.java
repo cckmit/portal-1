@@ -14,6 +14,7 @@ import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
@@ -134,7 +135,8 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
 
             @Override
             public void fillColumnValue( Element element, CaseObject caseObject ) {
-                element.setInnerText( caseObject == null || caseObject.getProduct() == null ? "не указан" : caseObject.getProduct().getName() );
+                DevUnit product = caseObject == null ? null : caseObject.getProduct();
+                element.setInnerText( product == null ? "" : product.getName() );
             }
         };
         //product.setColumnProvider( columnProvider );
