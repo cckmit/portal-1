@@ -16,6 +16,7 @@ import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.pager.Pager;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterActivity;
 import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterView;
@@ -110,6 +111,7 @@ public abstract class IssueTableActivity implements AbstractIssueTableActivity, 
     private void requestIssuesCount() {
         view.clearRecords();
         animation.closeDetails();
+        initDetails.parent.add( pager.asWidget() );
 
         issueService.getIssuesCount( getQuery(), new RequestCallback< Long >() {
                 @Override
@@ -178,6 +180,9 @@ public abstract class IssueTableActivity implements AbstractIssueTableActivity, 
 
     @Inject
     TableAnimation animation;
+
+    @Inject
+    Pager pager;
 
     private static String CREATE_ACTION;
     private AppEvents.InitDetails initDetails;

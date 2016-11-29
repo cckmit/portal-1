@@ -1,0 +1,21 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+    <g:HTMLPanel styleName="table-pager">
+        <div class="pull-left"></div>
+        <div class="pull-left">
+            <i class="fa fa-fast-backward"></i>
+        </div>
+        <!--<div class="pull-left">-->
+        <!--<i class="fa fa-backward"></i>-->
+        <!--</div>-->
+        <div ui:field="label" class="pull-left">
+            Страница 1 из 193 (Записи 1-29)
+        </div>
+        <!--<div class="pull-left">-->
+        <!--<i class="fa fa-forward"></i>-->
+        <!--</div>-->
+        <div class="pull-left">
+            <i class="fa fa-fast-forward"></i>
+        </div>
+    </g:HTMLPanel>
+</ui:UiBinder>
