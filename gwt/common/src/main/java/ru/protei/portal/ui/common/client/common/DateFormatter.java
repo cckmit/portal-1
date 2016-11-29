@@ -21,9 +21,9 @@ public class DateFormatter {
             return "";
         }
 
-        return formatDateTime.format( date );
+        return dateTimeFormat.format( date );
     }
 
-    DateTimeFormat format = DateTimeFormat.getFormat( "yyyy-MM-dd" );
-    DateTimeFormat formatDateTime = DateTimeFormat.getFormat( "dd.MM.yyyy HH:mm" );
+    DateTimeFormat format = DateTimeFormat.getFormat( "dd.MM.yyyy" );
+    DateTimeFormat dateTimeFormat = DateTimeFormat.getFormat( "dd.MM.yyyy hh:mm" );
 }

@@ -188,10 +188,10 @@ public class ContactTableView extends Composite implements AbstractContactTableV
         table.addColumn( phone.header, phone.values );
         table.addColumn( email.header, email.values );
 
-        table.setSeparatorProvider(  (element, i, tableWidget ) -> {
-                element.setInnerHTML( lang.dataPageNumber(i+1) );
-                element.addClassName( "separator" );
-        });
+        table.setSeparatorProvider(  ( element, i, tableWidget ) -> {
+            element.setInnerHTML( lang.dataPageNumber(i+1) );
+            element.addClassName( "separator" );
+        }  );
     }
 
     @UiField
