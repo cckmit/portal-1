@@ -49,6 +49,7 @@ public class ContactTableView extends Composite implements AbstractContactTableV
             clickColumn.setColumnProvider( columnProvider );
         });
         table.setLoadHandler( activity );
+        table.setPagerListener( activity );
     }
     
     @Override
@@ -87,6 +88,21 @@ public class ContactTableView extends Composite implements AbstractContactTableV
     @Override
     public void setRecordCount( Long count ) {
         table.setTotalRecords( count.intValue() );
+    }
+
+    @Override
+    public int getPageSize() {
+        return table.getPageSize();
+    }
+
+    @Override
+    public int getPageCount() {
+        return table.getPageCount();
+    }
+
+    @Override
+    public void scrollTo( int page ) {
+        table.scrollToPage( page );
     }
 
     private void initTable () {
@@ -187,11 +203,6 @@ public class ContactTableView extends Composite implements AbstractContactTableV
         table.addColumn( position.header, position.values );
         table.addColumn( phone.header, phone.values );
         table.addColumn( email.header, email.values );
-
-        table.setSeparatorProvider(  ( element, i, tableWidget ) -> {
-            element.setInnerHTML( lang.dataPageNumber(i+1) );
-            element.addClassName( "separator" );
-        }  );
     }
 
     @UiField
@@ -207,6 +218,9 @@ public class ContactTableView extends Composite implements AbstractContactTableV
     @Inject
     @UiField
     Lang lang;
+
+    @Inject
+    Separator separator;
 
 
     AbstractColumn hideColumn;
