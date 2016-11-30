@@ -1,9 +1,9 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'>
 
-    <g:HTMLPanel styleName="button-selector" ui:field="inputContainer">
+    <g:HTMLPanel styleName="btn-selector" ui:field="inputContainer">
         <label ui:field="label"/>
-        <g:Button ui:field="button" styleName="button whiteC">
+        <g:Button ui:field="button" styleName="btn btn-white">
             <span ui:field="text"></span>
             <span class="caret"></span>
         </g:Button>

@@ -3,3 +3,53 @@
 @import "plate-list";
 @import "preview";
 @import "app";
+@import "button";
+@import "form";
+
+
+
+/**** RANGE PICKER ****/
+.date .form-control {
+  @extend .input-field;
+}
+
+.date .btn-default {
+  @extend .btn-white;
+}
+
+.input-group {
+  position: relative;
+  display: table;
+  border-collapse: separate;
+}
+
+.input-group[class*="col-"] {
+  float: none;
+  padding-right: 0;
+  padding-left: 0;
+}
+
+.input-group .form-control {
+  width: 100%;
+  margin-bottom: 0;
+}
+
+.input-group-btn,
+.input-group .form-control {
+  display: table-cell;
+}
+
+.input-group-btn {
+  width: 1%;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.input-group-btn {
+  position: relative;
+  white-space: nowrap;
+}
+
+.input-group-btn .btn {
+  margin-right: -1px;
+}

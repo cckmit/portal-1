@@ -27,7 +27,7 @@
                                 <ui:text from="{lang.lastName}"/>
                             </label>
                             <div class="panelField">
-                                <validablefield:ValidableTextBox ui:field="lastName" styleName="inputField" notNull="true"/>
+                                <validablefield:ValidableTextBox ui:field="lastName" styleName="input-field" notNull="true"/>
                             </div>
                         </div>
                         <div>
@@ -35,7 +35,7 @@
                                 <ui:text from="{lang.firstName}"/>
                             </label>
                             <div class="panelField">
-                                <validablefield:ValidableTextBox ui:field="firstName" styleName="inputField" notNull="true"/>
+                                <validablefield:ValidableTextBox ui:field="firstName" styleName="input-field" notNull="true"/>
                             </div>
                         </div>
                         <div>
@@ -43,7 +43,7 @@
                                 <ui:text from="{lang.secondName}"/>
                             </label>
                             <div class="panelField">
-                                <g:TextBox ui:field="secondName" styleName="inputField"/>
+                                <g:TextBox ui:field="secondName" styleName="input-field"/>
                             </div>
                         </div>
                         <div>
@@ -51,7 +51,7 @@
                                 <ui:text from="{lang.displayName}"/>
                             </label>
                             <div class="panelField">
-                                <g:TextBox ui:field="displayName" styleName="inputField"/>
+                                <g:TextBox ui:field="displayName" styleName="input-field"/>
                             </div>
                         </div>
 
@@ -60,7 +60,7 @@
                                 <ui:text from="{lang.displayShortName}"/>
                             </label>
                             <div class="panelField">
-                                <g:TextBox ui:field="shortName" styleName="inputField"/>
+                                <g:TextBox ui:field="shortName" styleName="input-field"/>
                             </div>
                         </div>
 
@@ -87,7 +87,7 @@
                                 <ui:text from="{lang.comment}"/>
                             </label>
                             <div class="panelField">
-                                <g:TextArea ui:field="personInfo" styleName="inputField description"></g:TextArea>
+                                <g:TextArea ui:field="personInfo" styleName="input-field description"></g:TextArea>
                             </div>
                         </div>
                     </div>
@@ -99,7 +99,7 @@
                                     <ui:text from="{lang.workEmail}"/>
                                 </label>
                                 <div class="panelField">
-                                    <g:TextBox ui:field="workEmail" styleName="inputField"/>
+                                    <g:TextBox ui:field="workEmail" styleName="input-field"/>
                                 </div>
                             </div>
                             <div>
@@ -107,7 +107,7 @@
                                     <ui:text from="{lang.personalEmail}"/>
                                 </label>
                                 <div class="panelField">
-                                    <g:TextBox ui:field="personalEmail" styleName="inputField"/>
+                                    <g:TextBox ui:field="personalEmail" styleName="input-field"/>
                                 </div>
                             </div>
                             <div>
@@ -115,7 +115,7 @@
                                     <ui:text from="{lang.workPhone}"/>
                                 </label>
                                 <div class="panelField">
-                                    <g:TextBox ui:field="workPhone" styleName="inputField"/>
+                                    <g:TextBox ui:field="workPhone" styleName="input-field"/>
                                 </div>
                             </div>
                             <div>
@@ -123,7 +123,7 @@
                                     <ui:text from="{lang.personalPhone}"/>
                                 </label>
                                 <div class="panelField">
-                                    <g:TextBox ui:field="homePhone" styleName="inputField"/>
+                                    <g:TextBox ui:field="homePhone" styleName="input-field"/>
                                 </div>
                             </div>
 
@@ -132,7 +132,7 @@
                                     <ui:text from="{lang.workAddress}"/>
                                 </label>
                                 <div class="panelField">
-                                    <g:TextArea ui:field="workAddress" styleName="inputField description"></g:TextArea>
+                                    <g:TextArea ui:field="workAddress" styleName="input-field description"></g:TextArea>
                                 </div>
                             </div>
                         </div>
@@ -143,7 +143,7 @@
                                     <ui:text from="{lang.primaryFax}"/>
                                 </label>
                                 <div class="panelField">
-                                    <g:TextBox ui:field="workFax" styleName="inputField"/>
+                                    <g:TextBox ui:field="workFax" styleName="input-field"/>
                                 </div>
                             </div>
 
@@ -152,7 +152,7 @@
                                     <ui:text from="{lang.secondaryFax}"/>
                                 </label>
                                 <div class="panelField">
-                                    <g:TextBox ui:field="homeFax" styleName="inputField"/>
+                                    <g:TextBox ui:field="homeFax" styleName="input-field"/>
                                 </div>
                             </div>
 
@@ -161,7 +161,7 @@
                                     <ui:text from="{lang.homeAddress}"/>
                                 </label>
                                 <div class="panelField">
-                                    <g:TextArea ui:field="homeAddress" styleName="inputField description"></g:TextArea>
+                                    <g:TextArea ui:field="homeAddress" styleName="input-field description"></g:TextArea>
                                 </div>
                             </div>
                         </div>
@@ -173,7 +173,7 @@
                                 <ui:text from="{lang.contactPosition}"/>
                             </label>
                             <div class="panelField">
-                                <g:TextArea ui:field="displayPosition" styleName="inputField description"></g:TextArea>
+                                <g:TextArea ui:field="displayPosition" styleName="input-field description"></g:TextArea>
                             </div>
                         </div>
                         <div>
@@ -181,15 +181,15 @@
                                 <ui:text from="{lang.department}"/>
                             </label>
                             <div class="panelField">
-                                <g:TextArea ui:field="displayDepartment" styleName="inputField description"></g:TextArea>
+                                <g:TextArea ui:field="displayDepartment" styleName="input-field description"></g:TextArea>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="footer">
-                <g:Button ui:field="saveButton" styleName="button greenC" text="{lang.buttonSave}"/>
-                <g:Button ui:field="cancelButton" styleName="button whiteC close_button" text="{lang.buttonCancel}"/>
+                <g:Button ui:field="saveButton" styleName="btn btn-success" text="{lang.buttonSave}"/>
+                <g:Button ui:field="cancelButton" styleName="btn btn-white close_btn" text="{lang.buttonCancel}"/>
             </div>
     </g:HTMLPanel>
 </ui:UiBinder>

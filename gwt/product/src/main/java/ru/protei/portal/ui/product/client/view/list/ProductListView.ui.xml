@@ -14,12 +14,12 @@
                 <ui:text from="{lang.sortBy}"/>
                 <div class="control-group">
                     <sortfield:SortFieldSelector ui:field="sortField" type="PRODUCT"/>
-                    <g:ToggleButton ui:field="sortDir" styleName="button empty whiteC sorting_button"/>
+                    <g:ToggleButton ui:field="sortDir" styleName="btn empty btn-white sorting_button"/>
                 </div>
             </div>
             <div class="rightSide pull-right local-search col-xs-12 col-md-2">
                 <span class="icon local-search-icon"></span>
-                <g:TextBox ui:field="search" styleName="inputField"/>
+                <g:TextBox ui:field="search" styleName="input-field"/>
             </div>
         </div>
 

@@ -7,26 +7,26 @@
 
     <g:HTMLPanel styleName="panel fixed">
         <div class="body">
-            <div class="local-search col-xs-12">
+            <div class="form-group local-search col-xs-12">
                 <span class="icon local-search-icon"></span>
-                <g:TextBox ui:field="search" styleName="inputField"/>
+                <g:TextBox ui:field="search" styleName="input-field"/>
             </div>
-            <div class="col-xs-12">
-                <ui:text from="{lang.sortBy}"/>
+            <div class="form-group  col-xs-12">
+                <label><ui:text from="{lang.sortBy}"/></label>
                 <div class="control-group">
                     <sortfieldselector:SortFieldSelector ui:field="sortField" type="CONTACT"/>
-                    <g:ToggleButton ui:field="sortDir" styleName="button empty whiteC sorting_button"/>
+                    <g:ToggleButton ui:field="sortDir" styleName="btn btn-white sorting_button"/>
                 </div>
             </div>
-            <div class="col-xs-12">
+            <div class="form-group col-xs-12">
                 <companyselector:CompanySelector ui:field="company" header="{lang.company}"/>
             </div>
-            <div class="col-xs-12 pull-left" style="margin-top:10px;">
+            <div class="form-group col-xs-12">
                 <g:CheckBox ui:field="showFired" styleName="checkbox" text="{lang.contactShowFired}"/>
             </div>
         </div>
         <div class="footer">
-            <g:Button ui:field="resetBtn" styleName="button greenC" text="{lang.buttonReset}"/>
+            <g:Button ui:field="resetBtn" styleName="btn btn-success" text="{lang.buttonReset}"/>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>

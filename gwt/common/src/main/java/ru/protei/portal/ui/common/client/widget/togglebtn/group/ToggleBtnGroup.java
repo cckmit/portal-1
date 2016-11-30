@@ -79,7 +79,7 @@ public class ToggleBtnGroup< T >
     }
 
     public void addBtn( String caption, T value ) {
-        addBtn( caption, value, "button whiteC switcher" );
+        addBtn( caption, value, "btn btn-white switcher" );
     }
 
     public void addBtn( String caption, T value, String style) {
@@ -91,7 +91,7 @@ public class ToggleBtnGroup< T >
             itemView.setStyleName( style );
         }
         else {
-            itemView.setStyleName( "button whiteC switcher" );
+            itemView.setStyleName( "button btn-white switcher" );
         }
         itemView.addValueChangeHandler( this );
         root.add( itemView.asWidget() );

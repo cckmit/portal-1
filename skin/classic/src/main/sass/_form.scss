@@ -1,0 +1,30 @@
+/* input implementation */
+.form-group {
+  margin-bottom: 10px;
+
+  label {
+    font-weight: 600;
+  }
+}
+
+input[type='text'].input-field,
+textarea.input-field {
+  height: 30px;
+  max-height: 30px;
+  padding: 0px 10px;
+  line-height: 30px;
+  box-sizing: border-box;
+  color: #314157;
+  vertical-align: top;
+  border: 1px solid;
+  border-color: #ced2d7 #c5cad0 #ced2d7;
+  width: 100%;
+  -webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;
+  -o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+  transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+
+  &:focus {
+    outline: 0;
+    border-color: #008080;
+  }
+}

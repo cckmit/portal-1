@@ -4,8 +4,8 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel styleName="autoadd-vc-item">
-        <g:TextBox ui:field="value" styleName="inputField autoadd-vc-item-v"/>
+        <g:TextBox ui:field="value" styleName="input-field autoadd-vc-item-v"/>
         <contactType:ContactTypeButtonSelector ui:field="type"/>
-        <g:TextBox ui:field="comment" styleName="inputField autoadd-vc-item-c"/>
+        <g:TextBox ui:field="comment" styleName="input-field autoadd-vc-item-c"/>
     </g:HTMLPanel>
 </ui:UiBinder>
