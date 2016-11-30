@@ -8,6 +8,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -67,7 +68,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
         fillCompany(tempCompany);
 
-        companyService.saveCompany(tempCompany, view.companyGroup().getValue(), new RequestCallback<Boolean>() {
+        companyService.saveCompany(tempCompany, new RequestCallback<Boolean>() {
             @Override
             public void onError(Throwable throwable) {}
 
@@ -146,7 +147,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
         view.comment().setText(company.getInfo());
         view.companyCategory().setValue(company.getCategory());
-        view.companyGroup().setValue(company.getCompanyGroup());
+        view.companyGroup().setValue( EntityOption.fromCompanyGroup( company.getCompanyGroup() ));
 
         view.webSite().setText(infoFacade.getWebSite());
 
@@ -164,7 +165,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         infoFacade.setFactAddress(view.actualAddress().getValue());
         company.setInfo(view.comment().getText());
         company.setCategory(view.companyCategory().getValue());
-        company.setCompanyGroup(view.companyGroup().getValue());
+        company.setGroupId( view.companyGroup().getValue().getId() );
         infoFacade.setWebSite(view.webSite().getText());
     }
 

@@ -70,18 +70,18 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public Boolean saveCompany( Company company, CompanyGroup group ) throws RequestFailedException {
+    public Boolean saveCompany( Company company ) throws RequestFailedException {
 
-        log.debug( "saveCompany(): company={} | group={}", company, group );
+        log.debug( "saveCompany(): company={}", company );
         if (isCompanyNameExists(company.getCname(), company.getId()))
             throw new RequestFailedException();
         
         CoreResponse< Company > response;
 
         if ( company.getId() == null )
-            response = companyService.createCompany( company, group );
+            response = companyService.createCompany( company );
         else
-            response = companyService.updateCompany( company, group );
+            response = companyService.updateCompany( company );
 
         log.debug( "saveCompany(): response.isOk()={}", response.isOk() );
 
@@ -138,6 +138,21 @@ public class CompanyServiceImpl implements CompanyService {
         log.debug( "getCompanyOptionList()" );
 
         CoreResponse< List< EntityOption > > result = companyService.companyOptionList();
+
+        log.debug( "result status: {}, data-amount: {}", result.getStatus(), result.isOk() ? result.getDataAmountTotal() : 0 );
+
+        if ( result.isError() )
+            throw new RequestFailedException( result.getStatus() );
+
+        return result.getData();
+    }
+
+    @Override
+    public List< EntityOption > getGroupOptionList() throws RequestFailedException {
+
+        log.debug( "getGroupOptionList()" );
+
+        CoreResponse< List< EntityOption > > result = companyService.groupOptionList();
 
         log.debug( "result status: {}, data-amount: {}", result.getStatus(), result.isOk() ? result.getDataAmountTotal() : 0 );
 

@@ -7,14 +7,14 @@ import java.io.Serializable;
 /**
  * Сокращенное представление контакта
  */
-public class ContactShortView implements Serializable {
+public class PersonShortView implements Serializable {
     private Long id;
     private String displayShortName;
     private boolean isFired;
 
-    public ContactShortView() {}
+    public PersonShortView() {}
 
-    public ContactShortView( String displayShortName, Long id, boolean isFired ) {
+    public PersonShortView( String displayShortName, Long id, boolean isFired ) {
         this.displayShortName = displayShortName;
         this.id = id;
         this.isFired = isFired;
@@ -46,8 +46,8 @@ public class ContactShortView implements Serializable {
 
     @Override
     public boolean equals( Object obj ) {
-        if (obj instanceof ContactShortView) {
-            Long oid = ((ContactShortView)obj).getId();
+        if (obj instanceof PersonShortView) {
+            Long oid = ((PersonShortView)obj).getId();
             return this.id == null ? oid == null : oid != null && this.id.equals(oid);
         }
 
@@ -59,10 +59,9 @@ public class ContactShortView implements Serializable {
         return id != null ? id.hashCode() : 0;
     }
 
-    public static ContactShortView fromPerson( Person person ){
+    public static PersonShortView fromPerson( Person person ){
         if(person == null)
             return null;
-        return new ContactShortView( person.getDisplayShortName(), person.getId(), person.isFired() );
+        return new PersonShortView( person.getDisplayShortName(), person.getId(), person.isFired() );
     }
-
 }

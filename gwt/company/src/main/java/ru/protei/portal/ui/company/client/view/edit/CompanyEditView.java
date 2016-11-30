@@ -12,6 +12,7 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.CompanyCategory;
 import ru.protei.portal.core.model.ent.CompanyGroup;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
@@ -84,7 +85,7 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     }
 
     @Override
-    public HasValue<CompanyGroup> companyGroup() {
+    public HasValue<EntityOption> companyGroup() {
         return companyGroup;
     }
 

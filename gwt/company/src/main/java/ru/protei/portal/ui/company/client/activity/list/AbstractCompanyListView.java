@@ -6,6 +6,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.CompanyCategory;
 import ru.protei.portal.core.model.ent.CompanyGroup;
+import ru.protei.portal.core.model.view.EntityOption;
 
 import java.util.Set;
 
@@ -17,7 +18,7 @@ public interface AbstractCompanyListView extends IsWidget {
     void setActivity( AbstractCompanyListActivity activity );
     HasWidgets getChildContainer();
     HasValue< String > searchPattern();
-    HasValue< CompanyGroup > group();
+    HasValue< EntityOption > group();
     HasValue< Set< CompanyCategory > > categories();
     HasValue< En_SortField > sortField();
     HasValue< Boolean > sortDir();

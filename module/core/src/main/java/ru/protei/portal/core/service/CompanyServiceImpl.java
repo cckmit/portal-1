@@ -112,6 +112,18 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
+    public CoreResponse<List<EntityOption>> groupOptionList() {
+        List<CompanyGroup> list = companyGroupDAO.getListByQuery(new CompanyGroupQuery(null, En_SortField.group_name, En_SortDir.ASC));
+
+        if (list == null)
+            new CoreResponse<List<EntityOption>>().error(En_ResultStatus.GET_DATA_ERROR);
+
+        List<EntityOption> result = list.stream().map(CompanyGroup::toEntityOption).collect(Collectors.toList());
+
+        return new CoreResponse<List<EntityOption>>().success(result,result.size());
+    }
+
+    @Override
     public CoreResponse<List<CompanyGroup>> groupList(CompanyGroupQuery query) {
         return new CoreResponse<List<CompanyGroup>>().success(
                 companyGroupDAO.getListByQuery(query)
@@ -140,10 +152,10 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public CoreResponse<Company> createCompany(Company company, CompanyGroup group) {
+    public CoreResponse<Company> createCompany(Company company) {
 
         try {
-            return new CoreResponse<Company>().success(createCompanyImpl(company, group));
+            return new CoreResponse<Company>().success(createCompanyImpl(company));
         }
         catch (Exception e) {
             return new CoreResponse().error(En_ResultStatus.NOT_CREATED);
@@ -151,10 +163,10 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public CoreResponse<Company> updateCompany(Company company, CompanyGroup group) {
+    public CoreResponse<Company> updateCompany(Company company) {
 
         try {
-            return new CoreResponse<Company>().success(updateCompanyImpl(company, group));
+            return new CoreResponse<Company>().success(updateCompanyImpl(company));
         } catch (Exception e) {
             return new CoreResponse().error(En_ResultStatus.NOT_UPDATED);
         }
@@ -180,7 +192,7 @@ public class CompanyServiceImpl implements CompanyService {
 
 
     @Transactional
-    private Company createCompanyImpl(Company company, CompanyGroup group) throws Exception {
+    private Company createCompanyImpl(Company company) throws Exception {
 
         if (!isValidCompany(company) || companyDAO.persist(company) == null) {
             throw new Exception();
@@ -190,9 +202,9 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Transactional
-    private Company updateCompanyImpl(Company company, CompanyGroup group) throws Exception {
+    private Company updateCompanyImpl(Company company) throws Exception {
 
-        company.setCompanyGroup(group);
+        //company.setCompanyGroup(group);
 
         if (!isValidCompany(company) || !companyDAO.merge(company))
             throw new Exception();

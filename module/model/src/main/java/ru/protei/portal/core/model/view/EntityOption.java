@@ -1,6 +1,7 @@
 package ru.protei.portal.core.model.view;
 
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.ent.CompanyGroup;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.ent.Person;
 
@@ -60,15 +61,10 @@ public class EntityOption implements Serializable {
         return new EntityOption(company.getCname(), company.getId());
     }
 
-    public static EntityOption fromProduct(DevUnit product){
-        if(product == null)
+    public static EntityOption fromCompanyGroup(CompanyGroup group){
+        if(group == null)
             return null;
-        return new EntityOption(product.getName(), product.getId());
+        return new EntityOption(group.getName(), group.getId());
     }
 
-    public static EntityOption fromPerson(Person person){
-        if(person == null)
-            return null;
-        return new EntityOption(person.getDisplayShortName(), person.getId());
-    }
 }

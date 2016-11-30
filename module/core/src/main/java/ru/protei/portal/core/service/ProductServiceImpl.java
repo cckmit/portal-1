@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.core.utils.TypeConverters;
 import ru.protei.winter.jdbc.JdbcSort;
 
@@ -31,17 +32,16 @@ public class ProductServiceImpl implements ProductService {
     DevUnitDAO devUnitDAO;
 
     @Override
-    public CoreResponse<List<EntityOption>> productOptionList() {
+    public CoreResponse<List<ProductShortView>> shortViewList(ProductQuery query) {
 
-        ProductQuery query = new ProductQuery();
         List<DevUnit> list = devUnitDAO.listByQuery(query);
 
         if (list == null)
-            new CoreResponse<List<EntityOption>>().error(En_ResultStatus.GET_DATA_ERROR);
+            new CoreResponse<List<ProductShortView>>().error(En_ResultStatus.GET_DATA_ERROR);
 
-        List<EntityOption> result = list.stream().map(DevUnit::toEntityOption).collect(Collectors.toList());
+        List<ProductShortView> result = list.stream().map(DevUnit::toProductShortView).collect(Collectors.toList());
 
-        return new CoreResponse<List<EntityOption>>().success(result,result.size());
+        return new CoreResponse<List<ProductShortView>>().success(result,result.size());
     }
 
     @Override

@@ -19,11 +19,12 @@ public interface CompanyService {
 
     CoreResponse<List<EntityOption>> companyOptionList();
     CoreResponse<List<Company>> companyList(CompanyQuery query);
+    CoreResponse<List<EntityOption>> groupOptionList();
     CoreResponse<List<CompanyGroup>> groupList(CompanyGroupQuery query);
     CoreResponse<List<CompanyCategory>> categoryList();
     CoreResponse<Company> getCompany(Long id);
-    CoreResponse<Company> createCompany(Company company, CompanyGroup group);
-    CoreResponse<Company> updateCompany(Company company, CompanyGroup group);
+    CoreResponse<Company> createCompany(Company company);
+    CoreResponse<Company> updateCompany(Company company);
     CoreResponse<Boolean> isCompanyNameExists(String name, Long excludeId);
     CoreResponse<Boolean> isGroupNameExists(String name, Long excludeId);
     /**

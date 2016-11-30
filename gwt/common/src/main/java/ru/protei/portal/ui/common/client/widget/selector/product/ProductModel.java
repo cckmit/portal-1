@@ -3,10 +3,10 @@ package ru.protei.portal.ui.common.client.widget.selector.product;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
-import ru.protei.portal.core.model.dict.En_DevUnitState;
-import ru.protei.portal.core.model.ent.DevUnit;
+import ru.protei.portal.core.model.dict.En_SortDir;
+import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.query.ProductQuery;
-import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.ProductEvents;
@@ -33,13 +33,13 @@ public abstract class ProductModel implements Activity {
         refreshOptions();
     }
 
-    public void subscribe( ModelSelector< EntityOption > selector ) {
+    public void subscribe( ModelSelector< ProductShortView > selector ) {
         subscribers.add( selector );
         selector.fillOptions( list );
     }
 
     private void notifySubscribers() {
-        for ( ModelSelector< EntityOption > selector : subscribers ) {
+        for ( ModelSelector< ProductShortView > selector : subscribers ) {
             selector.fillOptions( list );
             selector.refreshValue();
         }
@@ -47,14 +47,15 @@ public abstract class ProductModel implements Activity {
 
     private void refreshOptions() {
 
-        productService.getProductOptionList( new RequestCallback< List< EntityOption > >() {
+        productService.getProductViewList( new ProductQuery( null, null, En_SortField.prod_name, En_SortDir.ASC ),
+                new RequestCallback<List<ProductShortView>>() {
             @Override
             public void onError( Throwable throwable ) {
-                fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
+                fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
             }
 
             @Override
-            public void onSuccess( List< EntityOption > options ) {
+            public void onSuccess( List<ProductShortView> options ) {
                 list.clear();
                 list.addAll( options );
 
@@ -69,7 +70,7 @@ public abstract class ProductModel implements Activity {
     @Inject
     Lang lang;
 
-    private List< EntityOption > list = new ArrayList<>();
+    private List< ProductShortView > list = new ArrayList<>();
 
-    List< ModelSelector< EntityOption > > subscribers = new ArrayList<>();
+    List< ModelSelector< ProductShortView > > subscribers = new ArrayList<>();
 }
