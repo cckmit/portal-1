@@ -79,10 +79,10 @@ public class ToggleBtnGroup< T >
     }
 
     public void addBtn( String caption, T value ) {
-        addBtn( caption, value, "btn btn-white switcher" );
+        addBtn( null, caption, value, "button btn-white switcher" );
     }
 
-    public void addBtn( String caption, T value, String style) {
+    public void addBtn( String buttonStyle, String caption, T value, String style ) {
         ToggleButton itemView = itemFactory.get();
         if ( caption != null ) {
             itemView.setCaption( caption );
@@ -90,30 +90,17 @@ public class ToggleBtnGroup< T >
         if ( style != null ) {
             itemView.setStyleName( style );
         }
-        else {
-            itemView.setStyleName( "button btn-white switcher" );
+        else if ( buttonStyle != null ) {
+            itemView.setButtonStyle( buttonStyle );
         }
+
         itemView.addValueChangeHandler( this );
         root.add( itemView.asWidget() );
 
         itemViewToModel.put( itemView, value );
     }
 
-/*    public void addBtnWithIcon( String iconStyle, T value, String text) {
-        ToggleButton itemView = itemFactory.get();
-        if ( iconStyle != null ) {
-            itemView.setIcon( iconStyle );
-        }
-        if ( text != null ) {
-            itemView.setText( text );
-        }
-        itemView.addValueChangeHandler( this );
-        root.add( itemView.asWidget() );
-
-        itemViewToModel.put( itemView, value );
-    }*/
-
-    public void addBtnWithIcon( String iconStyle, String buttonStyle, String text, String style, T value ) {
+    public void addBtnWithIcon( String iconStyle, String buttonStyle, String caption, String style, T value ) {
         ToggleButton itemView = itemFactory.get();
         if ( iconStyle != null ) {
             itemView.setIcon( iconStyle );
@@ -124,15 +111,14 @@ public class ToggleBtnGroup< T >
         if ( style != null ) {
             itemView.setStyleName( style );
         }
-        if (text != null) {
-            itemView.setText( text );
+        if ( caption != null ) {
+            itemView.setCaption( caption );
         }
         itemView.addValueChangeHandler( this );
         root.add( itemView.asWidget() );
 
         itemViewToModel.put( itemView, value );
     }
-
 
     public void clear() {
         itemViewToModel.clear();

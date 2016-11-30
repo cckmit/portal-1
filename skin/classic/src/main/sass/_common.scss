@@ -605,6 +605,32 @@ label.bordered:after{
   background-color: #ddd;
 }
 
+.table-pager {
+  position: fixed;
+  bottom: 0px;
+  height: 30px;
+  background-color: gray;
+  left: 0px;
+  width: 100%;
+  z-index: 100;
+}
+
+.sidebar-collapse .table-pager > div:first-child {
+  margin-left: 65px;
+  margin-right: 0px;
+}
+
+.table-pager > div:first-child {
+  margin-left: 255px;
+  margin-right: 0px;
+}
+.table-pager > div {
+  margin-left: 5px;
+  margin-right: 5px;
+  color: white;
+  margin-top: 6px;
+}
+
 .contacts {
   table {
     tbody {
@@ -846,48 +872,48 @@ td.info {
   margin-bottom: 10px;
 }
 
-/* Importance level */
+/**** IMPORTANCE LEVEL ****/
 .CRITICAL {
-  color: #d84d4d;
+  color: #d84d4d !important;
 }
 
 .IMPORTANT {
-  color: orange;
+  color: orange !important;
 }
 
 .BASIC {
-  color: #5481c1;
+  color: #5481c1 !important;
 }
 
 .COSMETIC {
-  color: gray;
+  color: gray !important;
 }
 /****************/
 
-/* Status */
+/**** STATES ****/
 .CREATED {
-  color: #d84d4d;
+  color: #d84d4d !important;
 }
 
 .OPENED {
-  color: royalBlue;
+  color: royalBlue !important;
 }
 
 .ACTIVE {
-  color: blue;
+  color: blue !important;
 }
 
 .DONE {
-  color: green;
+  color: green !important;
 }
 
 .TEST_LOCAL,
 .TEST_CUST {
-  color: maroon;
+  color: maroon !important;
 }
 
 .VERIFIED {
-  color: #202020;
+  color: #202020 !important;
 }
 /****************/
 
@@ -943,4 +969,12 @@ td.info {
 
 .label-VERIFIED {
   background-color: #202020;
+}
+
+.width-xs {
+  min-width: 100px;
+}
+
+.text-center {
+  text-align: center;
 }

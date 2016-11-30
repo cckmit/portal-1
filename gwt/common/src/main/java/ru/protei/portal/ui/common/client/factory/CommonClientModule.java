@@ -9,11 +9,13 @@ import ru.protei.portal.ui.common.client.activity.contactitem.ContactItemActivit
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
 import ru.protei.portal.ui.common.client.activity.notify.AbstractNotifyView;
 import ru.protei.portal.ui.common.client.activity.notify.NotifyActivity;
+import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.view.contactitem.item.ContactItemView;
 import ru.protei.portal.ui.common.client.view.contactitem.list.ContactItemListView;
 import ru.protei.portal.ui.common.client.view.dialogdetails.DialogDetailsView;
 import ru.protei.portal.ui.common.client.view.notify.NotifyView;
+import ru.protei.portal.ui.common.client.view.view.PagerView;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.winter.web.common.client.activity.section.AbstractSectionItemView;
@@ -41,8 +43,9 @@ public class CommonClientModule extends AbstractGinModule {
 
         bind( DateFormatter.class ).in( Singleton.class );
 
-        requestStaticInjection( RequestCallback.class );
+        bind( AbstractPagerView.class ).to( PagerView.class );
 
+        requestStaticInjection( RequestCallback.class );
     }
 }
 

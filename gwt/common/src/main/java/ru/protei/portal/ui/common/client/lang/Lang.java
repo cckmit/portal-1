@@ -269,4 +269,6 @@ public interface Lang extends Messages, ContactItemLang {
 
     String separatorText( int page, int pageCount );
     String dataPageNumber (int page);
+
+    String pagerLabel( int currentPage, int totalPages, int pageSize );
 }
