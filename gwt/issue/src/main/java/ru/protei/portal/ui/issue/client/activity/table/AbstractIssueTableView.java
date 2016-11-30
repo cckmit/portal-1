@@ -16,4 +16,10 @@ public interface AbstractIssueTableView extends IsWidget {
     HasWidgets getFilterContainer ();
 
     void setIssuesCount( Long issuesCount );
+
+    int getPageSize();
+
+    int getPageCount();
+
+    void scrollTo( int page );
 }

@@ -50,6 +50,7 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
         manager.setHandler( activity );
         manager.setColumnProvider( columnProvider );
         table.setLoadHandler( activity );
+        table.setPagerListener( activity );
     }
     
     @Override
@@ -74,6 +75,21 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
         table.setTotalRecords( issuesCount.intValue() );
     }
 
+    @Override
+    public int getPageSize() {
+        return table.getPageSize();
+    }
+
+    @Override
+    public int getPageCount() {
+        return table.getPageCount();
+    }
+
+    @Override
+    public void scrollTo( int page ) {
+        table.scrollToPage( page );
+    }
+
     private void initTable () {
         editClickColumn = new EditClickColumn< CaseObject>( lang ) {};
         issueNumber = new NumberColumn( lang, caseStateLang );
@@ -87,8 +103,7 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
         table.addColumn( info.header, info.values );
         table.addColumn( contact.header, contact.values );
         table.addColumn( manager.header, manager.values );
-
-        table.setSeparatorProvider( separator );
+//        table.setSeparatorProvider( separator );
     }
 
 
