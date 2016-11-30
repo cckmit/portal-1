@@ -31,4 +31,20 @@ public class CriticalityStyleBuilder {
 
         return element;
     };
+
+    public String getClassName ( En_ImportanceLevel importanceLevel ) {
+
+        switch ( importanceLevel ) {
+            case COSMETIC:
+                return "icon-cosmetic";
+            case BASIC:
+                return "icon-basic";
+            case IMPORTANT:
+                return "icon-important";
+            case CRITICAL:
+                return "icon-critical";
+        }
+        return "";
+    };
+
 }

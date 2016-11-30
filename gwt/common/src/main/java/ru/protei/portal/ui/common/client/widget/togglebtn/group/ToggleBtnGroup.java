@@ -99,6 +99,23 @@ public class ToggleBtnGroup< T >
         itemViewToModel.put( itemView, value );
     }
 
+    public void addBtn( String buttonStyle, String caption, T value, String style) {
+        ToggleButton itemView = itemFactory.get();
+        if ( caption != null ) {
+            itemView.setCaption( caption );
+        }
+        if ( style != null ) {
+            itemView.setStyleName( style );
+        }
+        if ( buttonStyle != null ) {
+            itemView.setButtonStyle( buttonStyle );
+        }
+        itemView.addValueChangeHandler( this );
+        root.add( itemView.asWidget() );
+
+        itemViewToModel.put( itemView, value );
+    }
+
 /*    public void addBtnWithIcon( String iconStyle, T value, String text) {
         ToggleButton itemView = itemFactory.get();
         if ( iconStyle != null ) {

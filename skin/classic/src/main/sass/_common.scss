@@ -880,7 +880,7 @@ td.info {
   margin-bottom: 10px;
 }
 
-/* Importance level */
+/**** IMPORTANCE LEVEL ****/
 .CRITICAL {
   color: #d84d4d;
 }
@@ -898,30 +898,30 @@ td.info {
 }
 /****************/
 
-/* Status */
+/**** STATES ****/
 .CREATED {
-  color: #d84d4d;
+  color: #d84d4d !important;
 }
 
 .OPENED {
-  color: royalBlue;
+  color: royalBlue !important;
 }
 
 .ACTIVE {
-  color: blue;
+  color: blue !important;
 }
 
 .DONE {
-  color: green;
+  color: green !important;
 }
 
 .TEST_LOCAL,
 .TEST_CUST {
-  color: maroon;
+  color: maroon !important;
 }
 
 .VERIFIED {
-  color: #202020;
+  color: #202020 !important;
 }
 /****************/
 
@@ -1087,4 +1087,12 @@ td.info {
 .input-group-btn > .btn:hover,
 .input-group-btn > .btn:active {
   z-index: 2;
+}
+
+.width-xs {
+  min-width: 100px;
+}
+
+.text-center {
+  text-align: center;
 }

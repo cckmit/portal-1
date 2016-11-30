@@ -22,12 +22,10 @@ public class IssueStatesBtnGroup  extends ToggleBtnGroup<En_CaseState> implement
     @Override
     public void fillOptions( List< En_CaseState > states ) {
         clear();
-        states.forEach( state -> addBtnWithIcon(
-                "icon-status fa fa-circle-o " + state.toString(),
-                "button empty whiteC",
+        states.forEach( state -> addBtn( "width-xs text-center button whiteC " + state.toString(),
                 lang.getStateName( state ),
-                "col-xs-12 col-sm-6 col-md-4",
-                state ) );
+                state,
+                "col-xs-12 col-sm-6 col-md-4" ) );
     }
 
     @Inject
