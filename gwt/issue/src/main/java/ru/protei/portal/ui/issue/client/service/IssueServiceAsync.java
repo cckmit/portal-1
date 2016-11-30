@@ -2,6 +2,7 @@ package ru.protei.portal.ui.issue.client.service;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import ru.protei.portal.core.model.dict.En_CaseState;
+import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
@@ -26,4 +27,6 @@ public interface IssueServiceAsync {
     void getStateList(AsyncCallback<List<En_CaseState>> async);
 
     void getIssuesCount( CaseQuery query, AsyncCallback<Long> callback );
+
+    void getIssueComments( Long caseId, AsyncCallback<List<CaseComment>> async );
 }

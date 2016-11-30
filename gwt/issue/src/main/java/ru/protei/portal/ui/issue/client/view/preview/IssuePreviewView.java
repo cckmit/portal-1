@@ -9,9 +9,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.Anchor;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
@@ -112,6 +110,11 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
         }
     }
 
+    @Override
+    public HasWidgets getCommentsContainer() {
+        return commentsContainer;
+    }
+
     @UiHandler( "fullScreen" )
     public void onFullScreenClicked ( ClickEvent event) {
         event.preventDefault();
@@ -155,6 +158,8 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     @Inject
     @UiField
     Lang lang;
+    @UiField
+    HTMLPanel commentsContainer;
 
     @Inject
     En_CaseImportanceLang caseImportanceLang;

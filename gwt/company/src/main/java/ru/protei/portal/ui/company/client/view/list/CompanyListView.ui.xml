@@ -3,9 +3,11 @@
              xmlns:companycategory='urn:import:ru.protei.portal.ui.company.client.widget.category.btngroup'
              xmlns:sortfield='urn:import:ru.protei.portal.ui.common.client.widget.selector.sortfield'
              xmlns:companygroup='urn:import:ru.protei.portal.ui.company.client.widget.group.buttonselector'
-             xmlns:platelist="urn:import:ru.protei.portal.ui.common.client.widget.platelist">
+             xmlns:platelist="urn:import:ru.protei.portal.ui.common.client.widget.platelist"
+             xmlns:item="urn:import:ru.protei.portal.ui.common.client.widget.togglebtn.item">
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
-    <g:HTMLPanel>
+
+    <g:HTMLPanel styleName="main-content">
         <div class="filter grid grid-ident">
             <div class="form-group col-xs-12 col-md-3">
                 <companycategory:CategoryBtnGroup ui:field="categories"/>
@@ -14,10 +16,10 @@
                 <companygroup:GroupButtonSelector ui:field="group"/>
             </div>
             <div class="form-group col-xs-12 col-md-5">
-                <label><ui:text from="{lang.sortBy}"/></label>
+                <!--<label><ui:text from="{lang.sortBy}"/></label>-->
                 <div class="control-group">
                     <sortfield:SortFieldSelector ui:field="sortField" type="COMPANY"/>
-                    <g:ToggleButton ui:field="sortDir" styleName="btn empty btn-white sorting_button"/>
+                    <item:ToggleButton ui:field="sortDir" facetEnabled="true" styleName="btn btn-white sort-dir-btn"/>
                 </div>
             </div>
             <div class="form-group col-xs-12 col-md-2 local-search">

@@ -17,6 +17,8 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.platelist.PlateList;
 import ru.protei.portal.ui.common.client.widget.platelist.events.AddEvent;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
+import ru.protei.portal.ui.common.client.widget.togglebtn.item.*;
+import ru.protei.portal.ui.common.client.widget.togglebtn.item.ToggleButton;
 import ru.protei.portal.ui.company.client.activity.list.AbstractCompanyListActivity;
 import ru.protei.portal.ui.company.client.activity.list.AbstractCompanyListView;
 import ru.protei.portal.ui.company.client.widget.category.btngroup.CategoryBtnGroup;
@@ -101,13 +103,7 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
     }
 
     @UiHandler("sortDir")
-    public void onDirectionClicked( ClickEvent event ) {
-
-        if (sortDir.getValue())
-            sortDir.removeStyleName( "active" );
-        else
-            sortDir.addStyleName( "active" );
-
+    public void onDirectionClicked( ValueChangeEvent<Boolean> event ) {
         if ( activity != null ) {
             activity.onFilterChanged();
         }
@@ -132,9 +128,6 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
     @UiField
     PlateList childContainer;
 
-    @UiField
-    ToggleButton sortDir;
-
     @Inject
     @UiField( provided = true )
     SortFieldSelector sortField;
@@ -150,6 +143,8 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
     @Inject
     @UiField
     Lang lang;
+    @UiField
+    ToggleButton sortDir;
 
     Timer timer = new Timer() {
         @Override

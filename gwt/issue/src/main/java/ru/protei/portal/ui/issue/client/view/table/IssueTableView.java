@@ -95,7 +95,7 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
         issueNumber = new NumberColumn( lang, caseStateLang );
         contact = new ContactColumn( lang );
         manager = new ManagerColumn( lang );
-        info = new InfoColumn( lang, dateFormatter );
+        info = new InfoColumn( lang );
 
         table.addColumn( selectionColumn.header, selectionColumn.values );
         table.addColumn( editClickColumn.header, editClickColumn.values );
@@ -123,9 +123,6 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
 
     @Inject
     En_CaseStateLang caseStateLang;
-
-    @Inject
-    DateFormatter dateFormatter;
 
     @Inject
     Separator separator;

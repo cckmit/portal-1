@@ -1,0 +1,12 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+    <g:HTMLPanel tag="li" styleName="right">
+
+        <g:Label styleName="date-time" ui:field="date"></g:Label>
+
+        <g:Anchor href="#" ui:field="owner" styleName="name"/>
+        <a href="javascript:;" class="image"><img alt="" src="./images/user-icon-m.png"></img></a>
+
+        <g:Label ui:field="text" styleName="message"></g:Label>
+    </g:HTMLPanel>
+</ui:UiBinder>

@@ -81,15 +81,15 @@ body {
   margin-left: 0;
 }
 
-.sorting_button:before {
+
+/**   SORT BUTTON **/
+.sort-dir-btn .btn-up {
   content: "\e98b";
-  vertical-align: middle;
-}
-.sorting_button.active:before {
-  content: "\e968";
-  vertical-align: middle;
 }
 
+.sort-dir-btn .btn-down {
+  content: "\e968";
+}
 /**   SORT BUTTON END  **/
 
 
@@ -278,7 +278,7 @@ body {
 
 .local-search .local-search-icon {
   position: absolute;
-  top: 8px;
+  top: 10px;
   right: 8px;
   font-weight: 600;
 }
@@ -361,19 +361,6 @@ body {
   //background: #F3F1F4 none !important;
 }
 
-
-/**
-   PANEL for create/edit pages
-*/
-
-.panel .body {
-  padding: 14px;
-}
-
-.panel .footer {
-  text-align: right;
-  padding: 0 14px 14px 14px;
-}
 
 label {
   vertical-align : top;

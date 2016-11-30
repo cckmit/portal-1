@@ -22,9 +22,24 @@ textarea.input-field {
   -webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;
   -o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
   transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+  font-size: 12px;
 
   &:focus {
     outline: 0;
     border-color: #008080;
   }
+}
+
+
+
+/**
+   PANEL for create/edit pages
+*/
+.panel .body {
+  padding: 15px;
+}
+
+.panel .footer {
+  text-align: right;
+  padding: 0 15px 15px 15px;
 }

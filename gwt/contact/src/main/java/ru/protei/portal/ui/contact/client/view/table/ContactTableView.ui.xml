@@ -2,11 +2,13 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:table="urn:import:ru.brainworm.factory.widget.table.client">
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
-    <g:HTMLPanel styleName="grid">
+    <g:HTMLPanel styleName="main-content">
+        <div class="grid">
             <g:HTMLPanel ui:field="tableContainer" styleName="global-table-container">
-                    <table:InfiniteTableWidget ui:field="table" styleName="table-hover contacts"/>
+                <table:InfiniteTableWidget ui:field="table" styleName="table-hover contacts"/>
             </g:HTMLPanel>
             <g:HTMLPanel ui:field="previewContainer" styleName="preview-container no-width"/>
             <g:HTMLPanel ui:field="filterContainer" styleName="filter-container col-xs-3"/>
-    </g:HTMLPanel>
+        </div>
+       </g:HTMLPanel>
 </ui:UiBinder>
