@@ -3,7 +3,9 @@
     <g:HTMLPanel styleName="table-pager">
         <div class="pull-left"></div>
         <div class="pull-left">
-            <i class="fa fa-fast-backward"></i>
+            <g:Anchor ui:field="fastBackward">
+                <i class="fa fa-fast-backward"></i>
+            </g:Anchor>
         </div>
         <!--<div class="pull-left">-->
         <!--<i class="fa fa-backward"></i>-->
@@ -15,7 +17,9 @@
         <!--<i class="fa fa-forward"></i>-->
         <!--</div>-->
         <div class="pull-left">
-            <i class="fa fa-fast-forward"></i>
+            <g:Anchor ui:field="fastForward">
+                <i class="fa fa-fast-forward"></i>
+            </g:Anchor>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>

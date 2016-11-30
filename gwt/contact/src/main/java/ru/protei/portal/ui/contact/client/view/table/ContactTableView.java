@@ -3,6 +3,8 @@ package ru.protei.portal.ui.contact.client.view.table;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
@@ -11,6 +13,7 @@ import ru.brainworm.factory.widget.table.client.AbstractColumn;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.brainworm.factory.widget.table.client.helper.SelectionColumn;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.helper.HTMLHelper;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
@@ -18,6 +21,7 @@ import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
 import ru.protei.portal.ui.common.client.common.ContactColumnBuilder;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.separator.Separator;
 import ru.protei.portal.ui.contact.client.activity.table.AbstractContactTableActivity;
 import ru.protei.portal.ui.contact.client.activity.table.AbstractContactTableView;
 
@@ -45,6 +49,7 @@ public class ContactTableView extends Composite implements AbstractContactTableV
             clickColumn.setColumnProvider( columnProvider );
         });
         table.setLoadHandler( activity );
+        table.setPagerListener( activity );
     }
     
     @Override
@@ -85,6 +90,21 @@ public class ContactTableView extends Composite implements AbstractContactTableV
         table.setTotalRecords( count.intValue() );
     }
 
+    @Override
+    public int getPageSize() {
+        return table.getPageSize();
+    }
+
+    @Override
+    public int getPageCount() {
+        return table.getPageCount();
+    }
+
+    @Override
+    public void scrollTo( int page ) {
+        table.scrollToPage( page );
+    }
+
     private void initTable () {
 
         editClickColumn = new EditClickColumn<Person>( lang ) {};
@@ -98,7 +118,9 @@ public class ContactTableView extends Composite implements AbstractContactTableV
 
             @Override
             public void fillColumnValue ( Element element, Person person ) {
-                element.setInnerText( person == null ? "" : person.getDisplayName() );
+                element.setInnerHTML (HTMLHelper.wrapDiv(
+                        person == null ? "" : person.getDisplayName()
+                ));
             }
         };
         columns.add( displayName );
@@ -112,7 +134,9 @@ public class ContactTableView extends Composite implements AbstractContactTableV
 
             @Override
             public void fillColumnValue ( Element element, Person person ) {
-                element.setInnerText( person == null || person.getCompany() == null ? "" : person.getCompany().getCname() + "(" +person.getCompanyId()+")" );
+                element.setInnerHTML (HTMLHelper.wrapDiv (
+                        person == null || person.getCompany() == null ? "" : person.getCompany().getCname()
+                ));
             }
         };
         columns.add( company );
@@ -126,7 +150,10 @@ public class ContactTableView extends Composite implements AbstractContactTableV
 
             @Override
             public void fillColumnValue ( Element element, Person person ) {
-                element.setInnerText( person == null ? "" : person.getPosition() );
+
+                element.setInnerHTML( HTMLHelper.wrapDiv(
+                        person == null || person.getPosition() == null ? "" : person.getPosition()
+                ));
 
             }
         };
@@ -142,9 +169,11 @@ public class ContactTableView extends Composite implements AbstractContactTableV
             @Override
             public void fillColumnValue( Element element, Person person ) {
                 PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(person.getContactInfo());
-                element.appendChild( ContactColumnBuilder.make().add( null, infoFacade.getWorkPhone() )
+                element.appendChild( DOM.createDiv().appendChild(
+                        ContactColumnBuilder.make().add( null, infoFacade.getWorkPhone() )
                         .add(null, infoFacade.getMobilePhone() )
-                        .add( null, infoFacade.getHomePhone()).toElement() );
+                        .add( null, infoFacade.getHomePhone()).toElement()
+                ));
             }
         };
         columns.add( phone );
@@ -159,8 +188,10 @@ public class ContactTableView extends Composite implements AbstractContactTableV
             @Override
             public void fillColumnValue( Element element, Person person ) {
                 PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(person.getContactInfo() );
-                element.appendChild( ContactColumnBuilder.make().add( null, infoFacade.getEmail() )
-                        .add( null, infoFacade.getEmail_own() ).toElement() );
+                element.appendChild( DOM.createDiv().appendChild(
+                        ContactColumnBuilder.make().add( null, infoFacade.getEmail() )
+                        .add( null, infoFacade.getEmail_own() ).toElement()
+                ));
             }
         };
         columns.add( email );
@@ -172,19 +203,7 @@ public class ContactTableView extends Composite implements AbstractContactTableV
         table.addColumn( position.header, position.values );
         table.addColumn( phone.header, phone.values );
         table.addColumn( email.header, email.values );
-
-        table.setSeparatorProvider( new InfiniteTableWidget.SeparatorProvider() {
-            @Override
-            public void fillSeparatorValue( Element element, int i ) {
-                element.setInnerText( "Страница "+ (i+1) );
-                element.addClassName( "separator" );
-            }
-        } );
-        table.addStyleName( "contacts" );
     }
-
-
-
 
     @UiField
     InfiniteTableWidget<Person> table;
@@ -199,6 +218,10 @@ public class ContactTableView extends Composite implements AbstractContactTableV
     @Inject
     @UiField
     Lang lang;
+
+    @Inject
+    Separator separator;
+
 
     AbstractColumn hideColumn;
     ClickColumnProvider<Person> columnProvider = new ClickColumnProvider<>();

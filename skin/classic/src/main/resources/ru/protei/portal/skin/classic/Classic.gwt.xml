@@ -6,6 +6,7 @@
     <stylesheet src="css/animate.css"/>
     <stylesheet src="css/modal.css"/>
     <stylesheet src="css/font-awesome.min.css"/>
+    <stylesheet src="css/importance.css"/>
 
     <source path='client'/>
     <source path='shared'/>

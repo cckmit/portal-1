@@ -9,11 +9,13 @@ import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.query.ContactQuery;
+import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ContactServiceAsync;
+import ru.protei.portal.ui.common.client.view.view.PagerView;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.contact.client.activity.filter.AbstractContactFilterActivity;
 import ru.protei.portal.ui.contact.client.activity.filter.AbstractContactFilterView;
@@ -24,7 +26,10 @@ import java.util.List;
 /**
  * Активность таблицы контактов
  */
-public abstract class ContactTableActivity implements AbstractContactTableActivity, AbstractContactFilterActivity, Activity {
+public abstract class ContactTableActivity
+        implements AbstractContactTableActivity, AbstractContactFilterActivity,
+        AbstractPagerActivity, Activity
+{
 
     @PostConstruct
     public void onInit() {
@@ -35,6 +40,9 @@ public abstract class ContactTableActivity implements AbstractContactTableActivi
 
         filterView.setActivity( this );
         view.getFilterContainer().add( filterView.asWidget() );
+
+        pagerView.setPageSize( view.getPageSize() );
+        pagerView.setActivity( this );
     }
 
     @Event
@@ -48,6 +56,7 @@ public abstract class ContactTableActivity implements AbstractContactTableActivi
         this.fireEvent( new AppEvents.InitPanelName( lang.contacts() ) );
         init.parent.clear();
         init.parent.add( view.asWidget() );
+        init.parent.add( pagerView.asWidget() );
 
         fireEvent( new ActionBarEvents.Add( CREATE_ACTION, UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.CONTACT ) );
 
@@ -121,6 +130,21 @@ public abstract class ContactTableActivity implements AbstractContactTableActivi
         } );
     }
 
+    @Override
+    public void onPageChanged( int page ) {
+        pagerView.setCurrentPage( page+1 );
+    }
+
+    @Override
+    public void onFirstClicked() {
+        view.scrollTo( 0 );
+    }
+
+    @Override
+    public void onLastClicked() {
+        view.scrollTo( view.getPageCount()-1 );
+    }
+
     private void requestTotalCount() {
         view.clearRecords();
         animation.closeDetails();
@@ -134,6 +158,7 @@ public abstract class ContactTableActivity implements AbstractContactTableActivi
             @Override
             public void onSuccess(Long count) {
                 view.setRecordCount( count );
+                pagerView.setTotalPages( view.getPageCount() );
             }
         });
     }
@@ -173,6 +198,9 @@ public abstract class ContactTableActivity implements AbstractContactTableActivi
 
     @Inject
     TableAnimation animation;
+
+    @Inject
+    PagerView pagerView;
 
     private boolean isShowTable = false;
 

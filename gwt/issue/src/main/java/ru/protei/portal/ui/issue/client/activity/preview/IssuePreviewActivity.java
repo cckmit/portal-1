@@ -1,12 +1,12 @@
 package ru.protei.portal.ui.issue.client.activity.preview;
 
-import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.IssueEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
@@ -59,7 +59,7 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
     private void fillView( CaseObject value ) {
         view.setPrivateIssue( value.isPrivateCase() );
         view.setHeader( value.getCaseNumber() == null ? "" : lang.issueHeader( value.getCaseNumber().toString() ) );
-        view.setCreationDate( value.getCreated() == null ? "" : format.format( value.getCreated() ) );
+        view.setCreationDate( value.getCreated() == null ? "" : dateFormatter.formatDateTime( value.getCreated() ) );
         view.setState( value.getStateId() );
         view.setCriticality( value.getImpLevel() );
         view.setProduct( value.getProduct() == null ? "" : value.getProduct().getName() );
@@ -101,7 +101,8 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
     @Inject
     IssueServiceAsync issueService;
 
-    DateTimeFormat format = DateTimeFormat.getFormat("dd.MM.yyyy hh:mm");
+    @Inject
+    DateFormatter dateFormatter;
 
     private Long issueId;
 
