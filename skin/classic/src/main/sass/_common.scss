@@ -882,19 +882,19 @@ td.info {
 
 /**** IMPORTANCE LEVEL ****/
 .CRITICAL {
-  color: #d84d4d;
+  color: #d84d4d !important;
 }
 
 .IMPORTANT {
-  color: orange;
+  color: orange !important;
 }
 
 .BASIC {
-  color: #5481c1;
+  color: #5481c1 !important;
 }
 
 .COSMETIC {
-  color: gray;
+  color: gray !important;
 }
 /****************/
 
