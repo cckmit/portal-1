@@ -1,9 +1,8 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'>
     <g:HTMLPanel styleName="table-pager">
-        <div class="pull-left"></div>
         <div class="pull-left">
-            <g:Anchor ui:field="fastBackward">
+            <g:Anchor ui:field="fastBackward" href="#">
                 <i class="fa fa-fast-backward"></i>
             </g:Anchor>
         </div>
@@ -17,7 +16,7 @@
         <!--<i class="fa fa-forward"></i>-->
         <!--</div>-->
         <div class="pull-left">
-            <g:Anchor ui:field="fastForward">
+            <g:Anchor ui:field="fastForward" href="#">
                 <i class="fa fa-fast-forward"></i>
             </g:Anchor>
         </div>

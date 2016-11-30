@@ -644,6 +644,11 @@ label.bordered:after{
   z-index: 100;
 }
 
+.sidebar-collapse .table-pager > div:first-child {
+  margin-left: 65px;
+  margin-right: 0px;
+}
+
 .table-pager > div:first-child {
   margin-left: 255px;
   margin-right: 0px;

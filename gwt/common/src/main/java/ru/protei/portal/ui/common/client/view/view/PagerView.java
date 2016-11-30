@@ -16,25 +16,29 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 /**
  * Created by shagaleev on 29/11/16.
  */
-public class PagerView extends Composite {
+public class PagerView extends Composite implements ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView {
     public PagerView() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
     }
 
+    @Override
     public void setActivity( AbstractPagerActivity activity ) {
         this.activity = activity;
     }
 
+    @Override
     public void setPageSize( int value ) {
         pageSize = value;
         updateLabel();
     }
 
+    @Override
     public void setCurrentPage( int value ) {
         currentPage = value;
         updateLabel();
     }
 
+    @Override
     public void setTotalPages( int value ) {
         totalPages = value;
         updateLabel();
@@ -42,11 +46,13 @@ public class PagerView extends Composite {
 
     @UiHandler("fastBackward")
     public void onFastBackawardClicked( ClickEvent event ) {
+        event.preventDefault();
         activity.onFirstClicked();
     }
 
     @UiHandler( "fastForward" )
     public void onFastForwardClicked( ClickEvent event ) {
+        event.preventDefault();
         activity.onLastClicked();
     }
 
