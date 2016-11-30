@@ -20,11 +20,10 @@
                     <g:ToggleButton ui:field="sortDir" styleName="btn empty btn-white sorting_button"/>
                 </div>
             </div>
-        <div class="form-group col-xs-12 col-md-1 local-search">
-            <span class="icon local-search-icon"></span>
-            <g:TextBox ui:field="search" styleName="input-field"/>
-        </div>
-
+            <div class="form-group col-xs-12 col-md-2 local-search">
+                <span class="icon local-search-icon"></span>
+                <g:TextBox ui:field="search" styleName="input-field"/>
+            </div>
         </div>
         <platelist:PlateList ui:field="childContainer"
                              styleName="plate-list"

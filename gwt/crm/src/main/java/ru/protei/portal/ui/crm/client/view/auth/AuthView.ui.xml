@@ -14,11 +14,11 @@
                                 <div class="signInForm">
                                     <div class="user">
                                         <div class="btn empty grayC"><span class="icon-user"></span></div>
-                                        <g:TextBox ui:field="login" styleName="input-field sticky"/>
+                                        <g:TextBox ui:field="login" styleName="input-field"/>
                                     </div>
                                     <div class="password">
                                         <div class="btn empty grayC"><span class="icon-lock"></span></div>
-                                        <g:PasswordTextBox ui:field="password" styleName="input-field sticky"/>
+                                        <g:PasswordTextBox ui:field="password" styleName="input-field"/>
                                     </div>
                                     <label class="submitBlock hideSource">
                                         <g:Button ui:field="loginButton" text="{lang.buttonLogin}" styleName="btn blueC"/>
