@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.widget.selector.button;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -10,6 +11,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasEnabled;
+import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
@@ -23,8 +25,10 @@ public class ButtonSelector<T> extends Selector<T> implements HasValidable, HasE
     }
 
     @Override
-    public void fillSelectorView(String selectedValue) {
-        text.setInnerText(selectedValue == null ? "" : selectedValue);
+    public void fillSelectorView(DisplayOption selectedValue) {
+        text.setInnerText(selectedValue == null ? "" : selectedValue.getName() == null ? "" : selectedValue.getName());
+        text.setClassName(selectedValue == null ? "" : selectedValue.getStyle() == null ? "" : selectedValue.getStyle());
+        icon.setClassName(selectedValue == null ? "" : selectedValue.getIcon() == null ? "" : selectedValue.getIcon());
     }
 
     @Override
@@ -94,6 +98,8 @@ public class ButtonSelector<T> extends Selector<T> implements HasValidable, HasE
     LabelElement label;
     @UiField
     SpanElement text;
+    @UiField
+    Element icon;
 
     private boolean isValidable;
     private static final String REQUIRED_STYLE_NAME ="required";
