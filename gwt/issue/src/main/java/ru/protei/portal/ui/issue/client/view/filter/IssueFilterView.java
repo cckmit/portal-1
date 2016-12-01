@@ -38,6 +38,7 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         initWidget( ourUiBinder.createAndBindUi( this ) );
         search.getElement().setPropertyString( "placeholder", lang.search() );
         sortField.setType( ModuleType.ISSUE );
+        sortDir.setValue( false );
         company.setDefaultValue( lang.selectIssueCompany() );
         product.setDefaultValue( lang.selectIssueProduct() );
         manager.setDefaultValue( lang.selectIssueManager() );
@@ -93,7 +94,7 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         state.setValue( null );
         dateRange.setValue( null );
         sortField.setValue( En_SortField.creation_date );
-        sortDir.setValue( true );
+        sortDir.setValue( false );
         search.setText( "" );
     }
 

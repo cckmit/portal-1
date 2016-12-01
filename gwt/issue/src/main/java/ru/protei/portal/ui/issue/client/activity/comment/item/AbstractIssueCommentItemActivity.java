@@ -5,4 +5,9 @@ package ru.protei.portal.ui.issue.client.activity.comment.item;
  */
 public interface AbstractIssueCommentItemActivity {
 
+    void onRemoveClicked( AbstractIssueCommentItemView itemView );
+
+    void onEditClicked( AbstractIssueCommentItemView itemView );
+
+    void onReplyClicked( AbstractIssueCommentItemView itemView );
 }

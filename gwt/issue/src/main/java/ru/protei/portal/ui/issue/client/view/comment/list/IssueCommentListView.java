@@ -1,17 +1,17 @@
 package ru.protei.portal.ui.issue.client.view.comment.list;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
-import ru.protei.portal.core.model.ent.CaseComment;
-import ru.protei.portal.ui.common.client.widget.autoaddvaluecomment.item.AutoAddVCItem;
+import com.google.inject.Inject;
+import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.issue.client.activity.comment.list.AbstractIssueCommentListActivity;
 import ru.protei.portal.ui.issue.client.activity.comment.list.AbstractIssueCommentListView;
-import ru.protei.portal.ui.issue.client.view.comment.item.IssueCommentItemView;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Контейнер для комментариев
@@ -21,8 +21,11 @@ public class IssueCommentListView
         implements AbstractIssueCommentListView {
 
 
-    public IssueCommentListView() {
+    @Inject
+    public IssueCommentListView( Lang lang ) {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+
+        comment.getElement().setAttribute( "placeholder", lang.commentAddMessagePlaceholder() );
     }
 
     @Override
@@ -35,14 +38,37 @@ public class IssueCommentListView
         return commentsContainer;
     }
 
+    @Override
+    public HasValue< String > message() {
+        return comment;
+    }
+
+    @UiHandler( "send" )
+    public void onSendClicked( ClickEvent event ) {
+        if ( activity != null ) {
+            activity.onSendClicked();
+        }
+    }
+
+    @UiHandler( "send" )
+    public void onEditLastMessage( KeyUpEvent event ) {
+        if ( event.getNativeKeyCode() != KeyCodes.KEY_UP ) {
+            return;
+        }
+
+        if ( activity != null ) {
+            activity.onEditLastMessage();
+        }
+    }
+
     @UiField
     HTMLPanel root;
     @UiField
-    TextBox addComment;
+    TextArea comment;
     @UiField
     HTMLPanel commentsContainer;
     @UiField
-    Button apply;
+    Button send;
 
     private AbstractIssueCommentListActivity activity;
 

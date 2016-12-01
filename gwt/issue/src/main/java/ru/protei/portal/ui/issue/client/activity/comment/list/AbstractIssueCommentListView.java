@@ -16,4 +16,6 @@ public interface AbstractIssueCommentListView extends IsWidget {
     void setActivity( AbstractIssueCommentListActivity activity );
 
     HasWidgets getCommentsContainer();
+
+    HasValue<String> message();
 }

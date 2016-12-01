@@ -17,8 +17,6 @@ import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.issue.client.service.IssueService;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -80,6 +78,33 @@ public class IssueServiceImpl implements IssueService {
         log.debug( "getIssueComments(): caseId={}", caseId );
 
         CoreResponse<List<CaseComment>> response = caseService.getCaseCommentList( caseId );
+        if (response.isError()) {
+            throw new RequestFailedException( response.getStatus() );
+        }
+
+        return response.getData();
+    }
+
+    @Override
+    public void removeIssueComment( CaseComment value ) throws RequestFailedException {
+        log.debug( "removeIssueComment(): value={}", value );
+
+        CoreResponse<List<CaseComment>> response = caseService.removeCaseComment( value );
+        if (response.isError()) {
+            throw new RequestFailedException( response.getStatus() );
+        }
+    }
+
+    @Override
+    public CaseComment editIssueComment( CaseComment value ) throws RequestFailedException {
+        log.debug( "editIssueComment(): value={}", value );
+
+        CoreResponse<CaseComment> response;
+        if ( value.getId() == null ) {
+            response = caseService.addCaseComment( value );
+        } else {
+            response = caseService.updateCaseComment( value );
+        }
         if (response.isError()) {
             throw new RequestFailedException( response.getStatus() );
         }

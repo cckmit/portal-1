@@ -2,28 +2,25 @@ package ru.protei.portal.ui.issue.client.activity.comment.list;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.dict.En_CaseState;
-import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.view.ContactShortView;
-import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.ui.common.client.events.AppEvents;
+import ru.protei.portal.ui.common.client.common.DateFormatter;
+import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.IssueEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.issue.client.activity.comment.item.AbstractIssueCommentItemActivity;
 import ru.protei.portal.ui.issue.client.activity.comment.item.AbstractIssueCommentItemView;
-import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditActivity;
-import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditView;
 import ru.protei.portal.ui.issue.client.service.IssueServiceAsync;
+import ru.protei.portal.ui.issue.client.util.IssueCommentUtils;
 
+import java.util.HashMap;
 import java.util.List;
-import java.util.function.Consumer;
+import java.util.Map;
 
 /**
  * Активность списка комментариев
@@ -39,6 +36,11 @@ public abstract class IssueCommentListActivity
     }
 
     @Event
+    public void onAuthSuccess( AuthEvents.Success event ) {
+        this.profile = event.profile;
+    }
+
+    @Event
     public void onShow( IssueEvents.ShowComments event ) {
         this.show = event;
 
@@ -46,6 +48,94 @@ public abstract class IssueCommentListActivity
         event.parent.add(view.asWidget());
 
         requestData( event.caseId );
+    }
+
+    @Override
+    public void onRemoveClicked( AbstractIssueCommentItemView itemView ) {
+        CaseComment value = itemViewToModel.get( itemView );
+
+        if ( value == null || !IssueCommentUtils.isEnableEdit( value ) ) {
+            fireEvent( new NotifyEvents.Show( lang.errEditIssueCommentNotAllowed(), NotifyEvents.NotifyType.ERROR ) );
+            return;
+        }
+
+        issueService.removeIssueComment( value, new RequestCallback<Void>() {
+            @Override
+            public void onError( Throwable throwable ) {
+                fireEvent( new NotifyEvents.Show( lang.errRemoveIssueComment(), NotifyEvents.NotifyType.ERROR ) );
+            }
+
+            @Override
+            public void onSuccess( Void result ) {
+                view.getCommentsContainer().remove( itemView.asWidget() );
+            }
+        });
+    }
+
+    @Override
+    public void onEditClicked( AbstractIssueCommentItemView itemView ) {
+        CaseComment value = itemViewToModel.get( itemView );
+
+        if ( value == null || !IssueCommentUtils.isEnableEdit( value ) ) {
+            fireEvent( new NotifyEvents.Show( lang.errEditIssueCommentNotAllowed(), NotifyEvents.NotifyType.ERROR ) );
+            return;
+        }
+
+        this.comment = value;
+        String editedMessage = value.getText();
+        IssueCommentUtils.quoteMessage( editedMessage );
+
+        view.message().setValue( editedMessage );
+    }
+
+    @Override
+    public void onReplyClicked( AbstractIssueCommentItemView itemView ) {
+        CaseComment value = itemViewToModel.get( itemView );
+        if ( value == null ) {
+            return;
+        }
+
+        this.comment = null;
+        String quotedMessage = value.getText();
+        IssueCommentUtils.quoteMessage( quotedMessage );
+
+        view.message().setValue( quotedMessage );
+    }
+
+    @Override
+    public void onSendClicked() {
+        if ( comment == null ) {
+            initCaseCommentByUser();
+        }
+        boolean isEdit = comment.getId() != null;
+
+        comment.setText( view.message().getValue() );
+        issueService.editIssueComment( comment, new RequestCallback<CaseComment>() {
+            @Override
+            public void onError( Throwable throwable ) {
+                fireEvent( new NotifyEvents.Show( lang.errEditIssueComment(), NotifyEvents.NotifyType.ERROR ) );
+            }
+
+            @Override
+            public void onSuccess( CaseComment comment ) {
+                lastUserComment = comment;
+                comment = null;
+
+                AbstractIssueCommentItemView itemView = makeCommentView( comment );
+                view.getCommentsContainer().add( itemView.asWidget() );
+
+                view.message().setValue( null );
+            }
+        } );
+    }
+
+    @Override
+    public void onEditLastMessage() {
+        if ( lastUserComment == null ) {
+            return;
+        }
+
+        view.message().setValue( lastUserComment.getText() );
     }
 
     private void requestData( Long id ) {
@@ -63,13 +153,35 @@ public abstract class IssueCommentListActivity
     }
 
     private void fillView( List<CaseComment> comments ){
-        for ( CaseComment comment : comments ) {
-            AbstractIssueCommentItemView itemView = issueProvider.get();
-            itemView.setActivity( this );
-            itemView.setValue( comment );
+        itemViewToModel.clear();
+        view.getCommentsContainer().clear();
 
+        for ( CaseComment value : comments ) {
+            AbstractIssueCommentItemView itemView = makeCommentView( value );
             view.getCommentsContainer().add( itemView.asWidget() );
         }
+    }
+
+    private AbstractIssueCommentItemView makeCommentView( CaseComment value ) {
+        AbstractIssueCommentItemView itemView = issueProvider.get();
+        itemView.setActivity( this );
+        itemView.setDate( DateFormatter.formatDateTime( value.getCreated() ) );
+        itemView.setOwner( String.valueOf( value.getAuthor().getLastName() + " " + value.getAuthor().getFirstName() ) );
+        itemView.setMessage( value.getText() );
+
+        itemView.enabledEdit( IssueCommentUtils.isEnableEdit( value ) );
+        if ( value.getAuthorId().equals( profile.getId() ) ) {
+            itemView.setMine();
+        }
+        itemViewToModel.put( itemView, value );
+
+        return itemView;
+    }
+
+    private void initCaseCommentByUser() {
+        comment = new CaseComment();
+        comment.setAuthorId( profile.getId() );
+        comment.setCaseId( show.caseId );
     }
 
     @Inject
@@ -81,5 +193,10 @@ public abstract class IssueCommentListActivity
     @Inject
     Provider<AbstractIssueCommentItemView> issueProvider;
 
+    private CaseComment comment;
+    private CaseComment lastUserComment = null;
+
+    private Profile profile;
     private IssueEvents.ShowComments show;
+    private Map<AbstractIssueCommentItemView, CaseComment> itemViewToModel = new HashMap<>();
 }

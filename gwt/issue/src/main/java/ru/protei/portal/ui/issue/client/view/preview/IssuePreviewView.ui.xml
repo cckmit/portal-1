@@ -50,13 +50,9 @@
                     <span class="col-xs-12 col-md-12 pre-formatted-info" ui:field="info"></span>
                 </div>
             </fieldset>
-            <fieldset class="header">
-                <legend><ui:text from="{lang.comments}"/></legend>
-                <div ui:field="commentsList" class="col-xs-12">
-                    <g:HTMLPanel ui:field="commentsContainer" styleName="col-xs-12 col-md-12 pre-formatted-info"/>
-                </div>
-            </fieldset>
 
+            <legend><ui:text from="{lang.comments}"/></legend>
+            <g:HTMLPanel ui:field="commentsContainer" styleName="col-xs-12 col-md-12"/>
         </g:HTMLPanel>
     </g:HTMLPanel>
 </ui:UiBinder>

@@ -10,5 +10,13 @@ public interface AbstractIssueCommentItemView extends IsWidget {
 
     void setActivity( AbstractIssueCommentItemActivity activity );
 
-    void setValue( CaseComment value );
+    void setDate( String value );
+
+    void setOwner( String value );
+
+    void setMessage( String value );
+
+    void setMine();
+
+    void enabledEdit( boolean isEnabled );
 }

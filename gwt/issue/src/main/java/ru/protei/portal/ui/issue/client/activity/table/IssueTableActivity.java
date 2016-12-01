@@ -161,9 +161,9 @@ public abstract class IssueTableActivity
     private CaseQuery getQuery() {
         CaseQuery query = new CaseQuery(En_CaseType.CRM_SUPPORT, filterView.searchPattern().getValue(), filterView.sortField().getValue(), filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC );
 
-        query.setCompanyId( filterView.company().getValue() == null? null : filterView.company().getValue().getId() );
-        query.setProductId( filterView.product().getValue() == null? null : filterView.product().getValue().getId() );
-        query.setManagerId( filterView.manager().getValue() == null? null : filterView.manager().getValue().getId() );
+        query.setCompanyId( filterView.company().getValue() == null ? null : filterView.company().getValue().getId() );
+        query.setProductId( filterView.product().getValue() == null ? null : filterView.product().getValue().getId() );
+        query.setManagerId( filterView.manager().getValue() == null ? null : filterView.manager().getValue().getId() );
 
         if(filterView.states().getValue() != null)
             query.setStateIds(
@@ -182,8 +182,8 @@ public abstract class IssueTableActivity
         DateInterval interval = filterView.dateRange().getValue();
 
         if(interval != null) {
-            query.setFrom( interval == null ? null : interval.from );
-            query.setTo( interval == null ? null : interval.to );
+            query.setFrom( interval.from );
+            query.setTo( interval.to );
         }
 
         return query;

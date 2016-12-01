@@ -5,4 +5,7 @@ package ru.protei.portal.ui.issue.client.activity.comment.list;
  */
 public interface AbstractIssueCommentListActivity {
 
+    void onSendClicked();
+
+    void onEditLastMessage();
 }

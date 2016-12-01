@@ -30,5 +30,23 @@ public interface IssueService extends RemoteService {
 
     long getIssuesCount( CaseQuery query ) throws RequestFailedException;
 
+    /**
+     * Получение списка комментариев по обращению
+     * @param caseId
+     */
     List<CaseComment> getIssueComments( Long caseId ) throws RequestFailedException;
+
+    /**
+     * Удаление комментария обращения
+     *
+     * @param value
+     */
+    void removeIssueComment( CaseComment value ) throws RequestFailedException;
+
+    /**
+     * Редактирование комментария обращения
+     *
+     * @param value
+     */
+    CaseComment editIssueComment( CaseComment value ) throws RequestFailedException;
 }

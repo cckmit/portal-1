@@ -152,9 +152,6 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     SpanElement manager;
     @UiField
     SpanElement info;
-    @UiField
-    DivElement commentsList;
-
     @Inject
     @UiField
     Lang lang;

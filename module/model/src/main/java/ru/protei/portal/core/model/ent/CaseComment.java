@@ -1,9 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.winter.jdbc.annotations.IdInsertMode;
-import ru.protei.winter.jdbc.annotations.JdbcColumn;
-import ru.protei.winter.jdbc.annotations.JdbcEntity;
-import ru.protei.winter.jdbc.annotations.JdbcId;
+import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -26,8 +23,8 @@ public class CaseComment implements Serializable{
     @JdbcColumn(name="CASE_ID")
     private Long caseId;
 
-    @JdbcColumn(name="AUTHOR_ID")
-    private Long authorId;
+    @JdbcJoinedObject(localColumn = "AUTHOR_ID", remoteColumn = "id")
+    private Person author;
 
     @JdbcColumn(name="CSTATE_ID")
     private Long caseStateId;
@@ -79,12 +76,23 @@ public class CaseComment implements Serializable{
         this.caseId = caseId;
     }
 
+    public Person getAuthor() {
+        return author;
+    }
+
+    public void setAuthor( Person author ) {
+        this.author = author;
+    }
+
     public Long getAuthorId() {
-        return authorId;
+        return author == null ? null : author.getId();
     }
 
     public void setAuthorId(Long authorId) {
-        this.authorId = authorId;
+        if ( author == null ) {
+            author = new Person();
+        }
+        this.author.setId( authorId );
     }
 
     public Long getCaseStateId() {
@@ -134,7 +142,7 @@ public class CaseComment implements Serializable{
                 ", created=" + created +
                 ", clientIp='" + clientIp + '\'' +
                 ", caseId=" + caseId +
-                ", authorId=" + authorId +
+                ", authorId=" + author +
                 ", caseStateId=" + caseStateId +
                 ", replyTo=" + replyTo +
                 ", vroomId=" + vroomId +
