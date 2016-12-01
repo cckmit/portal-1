@@ -17,25 +17,25 @@ public class CaseComment implements Serializable{
     @JdbcColumn(name="created")
     private Date created;
 
-    @JdbcColumn(name="CLIENT_IP")
+    @JdbcColumn(name="client_ip")
     private String clientIp;
 
-    @JdbcColumn(name="CASE_ID")
+    @JdbcColumn(name="case_id")
     private Long caseId;
 
-    @JdbcJoinedObject(localColumn = "AUTHOR_ID", remoteColumn = "id")
+    @JdbcJoinedObject(localColumn = "author_id", remoteColumn = "id", updateLocalColumn = true )
     private Person author;
 
-    @JdbcColumn(name="CSTATE_ID")
+    @JdbcColumn(name="cstate_id")
     private Long caseStateId;
 
-    @JdbcColumn(name="REPLY_TO")
+    @JdbcColumn(name="reply_to")
     private Long replyTo;
 
-    @JdbcColumn(name="VROOM")
+    @JdbcColumn(name="vroom")
     private Long vroomId;
 
-    @JdbcColumn(name="COMMENT_TEXT")
+    @JdbcColumn(name="comment_text")
     private String text;
 
     @JdbcColumn(name="old_id")

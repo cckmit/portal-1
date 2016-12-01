@@ -7,6 +7,7 @@
     <stylesheet src="css/modal.css"/>
     <stylesheet src="css/font-awesome.min.css"/>
     <stylesheet src="css/importance.css"/>
+    <stylesheet src="css/summernote.css"/>
 
     <source path='client'/>
     <source path='shared'/>

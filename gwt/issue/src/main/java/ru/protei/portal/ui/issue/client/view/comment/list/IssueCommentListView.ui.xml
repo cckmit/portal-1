@@ -1,5 +1,6 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
-             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:editor="urn:import:ru.protei.winter.web.summernote.client.widget.editor">
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
     <g:HTMLPanel ui:field="root" styleName="panel">
@@ -8,6 +9,7 @@
         </div>
         <div class="panel-footer">
             <div class="chats-footer input-group">
+                <!--<editor:SummernoteWidget ui:field="comment"></editor:SummernoteWidget>-->
                 <g:TextArea ui:field="comment" styleName="input-field"/>
                 <span class="input-group-btn">
                     <g:Button styleName="btn btn-success" ui:field="send" text="{lang.commentSendMessage}"/>

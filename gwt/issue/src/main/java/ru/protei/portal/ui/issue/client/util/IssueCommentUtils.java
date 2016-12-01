@@ -9,9 +9,12 @@ import java.util.Date;
  */
 public class IssueCommentUtils {
 
-    // todo : check owner
-    public static boolean isEnableEdit( CaseComment value ) {
+    public static boolean isEnableEdit( CaseComment value, Long personId ) {
         if ( value == null || value.getCreated() == null ) {
+            return false;
+        }
+
+        if ( !personId.equals( value.getAuthorId() ) ) {
             return false;
         }
 
@@ -19,8 +22,8 @@ public class IssueCommentUtils {
         return now.getTime() + EDIT_PERIOD <= value.getCreated().getTime();
     }
 
-    public static void quoteMessage( String quotedMessage ) {
-        quotedMessage = "< " + quotedMessage;
+    public static String quoteMessage( String quotedMessage ) {
+        return "< " + quotedMessage;
     }
 
     private static final long EDIT_PERIOD = 300000;

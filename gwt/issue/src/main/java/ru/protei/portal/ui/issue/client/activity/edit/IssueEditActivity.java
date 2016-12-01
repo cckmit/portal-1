@@ -115,6 +115,8 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
         view.product().setValue(EntityOption.fromProduct(issue.getProduct()));
         view.manager().setValue(EntityOption.fromPerson(issue.getManager()));
+
+        fireEvent( new IssueEvents.ShowComments( view.getCommentsContainer(), issue.getId() ) );
     }
 
     private void fillIssueObject(CaseObject issue){

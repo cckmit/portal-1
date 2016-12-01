@@ -1,9 +1,6 @@
 package ru.protei.portal.ui.issue.client.activity.edit;
 
-import com.google.gwt.user.client.ui.HasEnabled;
-import com.google.gwt.user.client.ui.HasText;
-import com.google.gwt.user.client.ui.HasValue;
-import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.Company;
@@ -39,4 +36,5 @@ public interface AbstractIssueEditView extends IsWidget {
 
     void changeCompany(Company company);
 
+    HasWidgets getCommentsContainer();
 }

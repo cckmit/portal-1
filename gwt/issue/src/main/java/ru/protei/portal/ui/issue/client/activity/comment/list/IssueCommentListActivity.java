@@ -83,9 +83,8 @@ public abstract class IssueCommentListActivity
 
         this.comment = value;
         String editedMessage = value.getText();
-        IssueCommentUtils.quoteMessage( editedMessage );
 
-        view.message().setValue( editedMessage );
+        view.message().setValue( IssueCommentUtils.quoteMessage( editedMessage ) );
     }
 
     @Override

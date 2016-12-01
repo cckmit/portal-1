@@ -28,7 +28,7 @@ public class Person implements Serializable, EntityOptionSupport, ContactShortVi
     @JdbcColumn(name="company_id")
     private Long companyId;
 
-    @JdbcJoinedObject (localColumn = "company_id", remoteColumn = "id", updateLocalColumn = false)
+    @JdbcJoinedObject (localColumn = "company_id", remoteColumn = "id" )
     private Company company;
 
     @JdbcColumn(name = "displayPosition")
