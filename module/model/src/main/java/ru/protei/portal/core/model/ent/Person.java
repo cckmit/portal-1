@@ -2,8 +2,8 @@ package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.struct.ContactInfo;
-import ru.protei.portal.core.model.view.ContactShortView;
-import ru.protei.portal.core.model.view.ContactShortViewSupport;
+import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.core.model.view.PersonShortViewSupport;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.EntityOptionSupport;
 import ru.protei.winter.jdbc.annotations.*;
@@ -15,7 +15,7 @@ import java.util.Date;
  * Created by michael on 30.03.16.
  */
 @JdbcEntity(table = "Person")
-public class Person implements Serializable, EntityOptionSupport, ContactShortViewSupport {
+public class Person implements Serializable, PersonShortViewSupport {
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
 
@@ -86,25 +86,14 @@ public class Person implements Serializable, EntityOptionSupport, ContactShortVi
     @JdbcColumn(name = "contactInfo", converterType = ConverterType.JSON)
     private ContactInfo contactInfo;
 
-
-    public static Person fromEntityOption(EntityOption entityOption){
-        if(entityOption == null)
+    public static Person fromPersonShortView( PersonShortView personShortView ){
+        if(personShortView == null)
             return null;
 
         Person person = new Person();
-        person.setId(entityOption.getId());
-        person.setDisplayShortName(entityOption.getDisplayText());
-        return person;
-    }
-
-    public static Person fromContactShortView(ContactShortView contactShortView){
-        if(contactShortView == null)
-            return null;
-
-        Person person = new Person();
-        person.setId(contactShortView.getId());
-        person.setDisplayShortName(contactShortView.getDisplayShortName());
-        person.setFired(contactShortView.isFired());
+        person.setId( personShortView.getId());
+        person.setDisplayShortName( personShortView.getDisplayShortName());
+        person.setFired( personShortView.isFired());
         return person;
     }
 
@@ -298,12 +287,7 @@ public class Person implements Serializable, EntityOptionSupport, ContactShortVi
     }
 
     @Override
-    public EntityOption toEntityOption() {
-        return new EntityOption(this.displayShortName, this.getId());
-    }
-
-    @Override
-    public ContactShortView toContactShortView() {
-        return new ContactShortView(this.displayShortName, this.getId(), this.isFired);
+    public PersonShortView toPersonShortView() {
+        return new PersonShortView(this.displayShortName, this.getId(), this.isFired);
     }
 }

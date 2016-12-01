@@ -22,6 +22,11 @@ public class ProductQuery extends BaseQuery {
         super(searchString, sortField, sortDir);
     }
 
+    public ProductQuery(En_DevUnitState state, String searchString, En_SortField sortField, En_SortDir sortDir) {
+        super(searchString, sortField, sortDir);
+        this.state = state;
+    }
+
     public En_DevUnitState getState() {
         return state;
     }

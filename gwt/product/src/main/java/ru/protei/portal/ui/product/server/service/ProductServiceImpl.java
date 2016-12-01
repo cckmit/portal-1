@@ -8,6 +8,7 @@ import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.service.ProductService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
@@ -88,11 +89,12 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List< EntityOption > getProductOptionList() throws RequestFailedException {
+    public List<ProductShortView> getProductViewList( ProductQuery query ) throws RequestFailedException {
 
-        log.debug( "getProductOptionList()" );
+        log.debug( "getProductViewList(): searchPattern={} | showDeprecated={} | sortField={} | sortDir={}",
+                query.getSearchString(), query.getState(), query.getSortField(), query.getSortDir() );
 
-        CoreResponse< List< EntityOption > > result = productService.productOptionList();
+        CoreResponse< List<ProductShortView> > result = productService.shortViewList( query );
 
         log.debug( "result status: {}, data-amount: {}", result.getStatus(), result.isOk() ? result.getDataAmountTotal() : 0 );
 

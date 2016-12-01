@@ -80,12 +80,14 @@ public abstract class ContactTableActivity
     public void onShowTable( ContactEvents.ShowTable event ) {
         event.parent.clear();
         event.parent.add( view.asWidget() );
-        view.hideElements();
+
         isShowTable = true;
 
         query = makeQuery( event.companyId );
 
         requestTotalCount();
+
+        view.hideElements();
     }
 
     @Event

@@ -35,6 +35,10 @@ public class SelectorItem
         text.setInnerText( name );
     }
 
+    public void setStyle( String style ) {
+        anchor.setStyleName( style );
+    }
+
     public void setIcon( String className ) {
         icon.setClassName( className );
     }

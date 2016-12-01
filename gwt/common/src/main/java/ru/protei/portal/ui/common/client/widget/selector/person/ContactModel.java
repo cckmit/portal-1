@@ -6,7 +6,7 @@ import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.query.ContactQuery;
-import ru.protei.portal.core.model.view.ContactShortView;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ContactServiceAsync;
@@ -20,17 +20,17 @@ import java.util.function.Consumer;
  */
 public abstract class ContactModel implements Activity {
 
-    public void requestPersonList( Company company, Boolean fired, Consumer< List< ContactShortView > > fillOptionsAction ){
+    public void requestPersonList( Company company, Boolean fired, Consumer< List<PersonShortView> > fillOptionsAction ){
         isPushing = true;
         ContactQuery query = new ContactQuery( company.getId(), fired, null, En_SortField.person_full_name, En_SortDir.ASC );
-        contactService.getContactViewList( query, new RequestCallback< List< ContactShortView > >() {
+        contactService.getContactViewList( query, new RequestCallback< List<PersonShortView> >() {
             @Override
             public void onError( Throwable throwable ) {
                 fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
             }
 
             @Override
-            public void onSuccess( List<ContactShortView> options ) {
+            public void onSuccess( List<PersonShortView> options ) {
                 fillOptionsAction.accept( options );
                 isPushing = false;
             }

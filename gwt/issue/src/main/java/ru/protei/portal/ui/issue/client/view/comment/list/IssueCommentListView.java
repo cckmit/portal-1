@@ -12,7 +12,6 @@ import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.issue.client.activity.comment.list.AbstractIssueCommentListActivity;
 import ru.protei.portal.ui.issue.client.activity.comment.list.AbstractIssueCommentListView;
-import ru.protei.winter.web.summernote.client.widget.editor.SummernoteWidget;
 
 /**
  * Контейнер для комментариев

@@ -32,18 +32,11 @@ public interface CompanyService extends RemoteService {
     List<CompanyGroup> getCompanyGroups( String searchPattern ) throws RequestFailedException;
 
     /**
-     * Получение списка категорий компаний
-     * @return список категорий
-     */
-    List<CompanyCategory> getCompanyCategories() throws RequestFailedException;
-
-    /**
      * Сохранение компании ( создание + изменение )
      * @param company компания
-     * @param group группа
      * @return результат сохранения
      */
-    Boolean saveCompany ( Company company, CompanyGroup group ) throws RequestFailedException;
+    Boolean saveCompany ( Company company ) throws RequestFailedException;
 
     /**
      * Проверка уникальности названия компании
@@ -73,4 +66,16 @@ public interface CompanyService extends RemoteService {
      * @return
      */
     List< EntityOption > getCompanyOptionList() throws RequestFailedException;
+
+    /**
+     * Получение списка сокращенного представления группы компаний (name,id)
+     * @return
+     */
+    List< EntityOption > getGroupOptionList() throws RequestFailedException;
+
+    /**
+     * Получение списка сокращенного представления катогирии компаний (name,id)
+     * @return
+     */
+    List< EntityOption > getCategoryOptionList() throws RequestFailedException;
 }

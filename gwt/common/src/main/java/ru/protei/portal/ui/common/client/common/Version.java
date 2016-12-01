@@ -38,9 +38,10 @@ package ru.protei.portal.ui.common.client.common;
  * 4.0.20.17 - sprint-10-task-7 - Фильтры в обращениях - добавить фильтрацию по диапазону дат ( range picker ) с предустановленными промежутками + фильтрация по менеджеру
  * 4.0.21.17 - sprint-10-task-9 - Трансформация ValueComment в ContactItem, доработка виджета
  * 4.0.21.18 - sprint-9-task-7 - Рефакторинг таблицы обращений
+ * 4.0.21.19 - sprint-10-task-11 - Замена списков для селекторов на EntityOption и ShortView
  */
 public class Version {
     public static String getVersion() {
-        return "4.0.21.18";
+        return "4.0.21.19";
     }
 }

@@ -54,7 +54,7 @@ public abstract class IssueCommentListActivity
     public void onRemoveClicked( AbstractIssueCommentItemView itemView ) {
         CaseComment value = itemViewToModel.get( itemView );
 
-        if ( value == null || !IssueCommentUtils.isEnableEdit( value ) ) {
+        if ( value == null || !IssueCommentUtils.isEnableEdit( value, profile.getId() ) ) {
             fireEvent( new NotifyEvents.Show( lang.errEditIssueCommentNotAllowed(), NotifyEvents.NotifyType.ERROR ) );
             return;
         }
@@ -76,7 +76,7 @@ public abstract class IssueCommentListActivity
     public void onEditClicked( AbstractIssueCommentItemView itemView ) {
         CaseComment value = itemViewToModel.get( itemView );
 
-        if ( value == null || !IssueCommentUtils.isEnableEdit( value ) ) {
+        if ( value == null || !IssueCommentUtils.isEnableEdit( value, profile.getId() ) ) {
             fireEvent( new NotifyEvents.Show( lang.errEditIssueCommentNotAllowed(), NotifyEvents.NotifyType.ERROR ) );
             return;
         }
@@ -168,7 +168,7 @@ public abstract class IssueCommentListActivity
         itemView.setOwner( String.valueOf( value.getAuthor().getLastName() + " " + value.getAuthor().getFirstName() ) );
         itemView.setMessage( value.getText() );
 
-        itemView.enabledEdit( IssueCommentUtils.isEnableEdit( value ) );
+        itemView.enabledEdit( IssueCommentUtils.isEnableEdit( value, profile.getId() ) );
         if ( value.getAuthorId().equals( profile.getId() ) ) {
             itemView.setMine();
         }

@@ -6,6 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.query.ContactQuery;
+import ru.protei.portal.core.model.query.EmployeeQuery;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.service.EmployeeService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
@@ -31,11 +34,12 @@ public class EmployeeServiceImpl implements EmployeeService{
         return response.getData();
     }
 
-    @Override
-    public List<EntityOption> getEmployeeOptionList() throws RequestFailedException {
-        log.debug( "getEmployeeOptionList()" );
+    public List<PersonShortView> getEmployeeViewList( EmployeeQuery query ) throws RequestFailedException {
 
-        CoreResponse< List< EntityOption > > result = employeeService.employeeOptionList();
+        log.debug( "getEmployeeViewList(): searchPattern={} | companyId={} | isFired={} | sortField={} | sortDir={}",
+                query.getSearchString(), query.getFired(), query.getSortField(), query.getSortDir() );
+
+        CoreResponse< List<PersonShortView> > result = employeeService.shortViewList( query );
 
         log.debug( "result status: {}, data-amount: {}", result.getStatus(), result.isOk() ? result.getDataAmountTotal() : 0 );
 

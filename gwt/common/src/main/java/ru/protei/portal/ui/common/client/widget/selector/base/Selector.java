@@ -97,6 +97,25 @@ public abstract class Selector<T>
         popup.getChildContainer().add(itemView.asWidget());
     }
 
+    public void addOption( String name, String style, String icon, T value ) {
+        SelectorItem itemView = itemFactory.get();
+        itemView.setName( name );
+        itemView.setStyle( style );
+        itemView.setIcon( icon );
+        itemView.addClickHandler( this );
+        itemViewToModel.put(itemView, value);
+        itemToViewModel.put(value, itemView);
+        if ( value == null ) {
+            nullItemName = name;
+            nullItemView = itemView;
+        }
+        else {
+            itemToNameModel.put( value, name );
+        }
+
+        popup.getChildContainer().add(itemView.asWidget());
+    }
+
     public void clearOptions() {
         popup.getChildContainer().clear();
 
