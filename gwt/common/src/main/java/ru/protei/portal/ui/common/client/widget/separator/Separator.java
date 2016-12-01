@@ -11,7 +11,8 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 public class Separator implements InfiniteTableWidget.SeparatorProvider {
     @Override
     public void fillSeparatorValue( Element element, int page, InfiniteTableWidget table ) {
-        element.setInnerText( lang.separatorText( page, table.getPageCount() ) );
+        element.setClassName( "separator" );
+        element.setInnerText( lang.separatorText( page+1, table.getPageCount() ) );
     }
 
     @Inject

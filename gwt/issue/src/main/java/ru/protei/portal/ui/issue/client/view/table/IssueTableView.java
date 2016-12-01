@@ -3,7 +3,9 @@ package ru.protei.portal.ui.issue.client.view.table;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.brainworm.factory.widget.table.client.helper.SelectionColumn;
@@ -14,12 +16,14 @@ import ru.protei.portal.ui.common.client.columns.EditClickColumn;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.separator.Separator;
 import ru.protei.portal.ui.issue.client.activity.table.AbstractIssueTableActivity;
 import ru.protei.portal.ui.issue.client.activity.table.AbstractIssueTableView;
 import ru.protei.portal.ui.issue.client.view.table.columns.ContactColumn;
 import ru.protei.portal.ui.issue.client.view.table.columns.InfoColumn;
 import ru.protei.portal.ui.issue.client.view.table.columns.ManagerColumn;
 import ru.protei.portal.ui.issue.client.view.table.columns.NumberColumn;
+
 
 /**
  * Представление таблицы обращений
@@ -46,6 +50,7 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
         manager.setHandler( activity );
         manager.setColumnProvider( columnProvider );
         table.setLoadHandler( activity );
+        table.setPagerListener( activity );
     }
     
     @Override
@@ -70,6 +75,21 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
         table.setTotalRecords( issuesCount.intValue() );
     }
 
+    @Override
+    public int getPageSize() {
+        return table.getPageSize();
+    }
+
+    @Override
+    public int getPageCount() {
+        return table.getPageCount();
+    }
+
+    @Override
+    public void scrollTo( int page ) {
+        table.scrollToPage( page );
+    }
+
     private void initTable () {
         editClickColumn = new EditClickColumn< CaseObject>( lang ) {};
         issueNumber = new NumberColumn( lang, caseStateLang );
@@ -83,11 +103,7 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
         table.addColumn( info.header, info.values );
         table.addColumn( contact.header, contact.values );
         table.addColumn( manager.header, manager.values );
-
-        table.setSeparatorProvider( ( element, i, tableWidget ) -> {
-            element.setInnerHTML( lang.dataPageNumber(i+1) );
-            element.addClassName( "separator" );
-        } );
+//        table.setSeparatorProvider( separator );
     }
 
     @UiField
@@ -109,6 +125,9 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
 
     @Inject
     DateFormatter dateFormatter;
+
+    @Inject
+    Separator separator;
 
     ClickColumnProvider<CaseObject> columnProvider = new ClickColumnProvider<>();
     SelectionColumn< CaseObject  > selectionColumn = new SelectionColumn<>();

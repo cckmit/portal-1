@@ -12,6 +12,8 @@ import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
+import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
@@ -28,7 +30,9 @@ import java.util.stream.Collectors;
 /**
  * Активность таблицы обращений
  */
-public abstract class IssueTableActivity implements AbstractIssueTableActivity, AbstractIssueFilterActivity, Activity {
+public abstract class IssueTableActivity
+        implements AbstractIssueTableActivity, AbstractIssueFilterActivity,
+        AbstractPagerActivity, Activity {
 
     @PostConstruct
     public void onInit() {
@@ -39,6 +43,9 @@ public abstract class IssueTableActivity implements AbstractIssueTableActivity, 
 
         filterView.setActivity( this );
         view.getFilterContainer().add( filterView.asWidget() );
+
+        pagerView.setPageSize( view.getPageSize() );
+        pagerView.setActivity( this );
     }
 
     @Event
@@ -52,6 +59,7 @@ public abstract class IssueTableActivity implements AbstractIssueTableActivity, 
         this.fireEvent( new AppEvents.InitPanelName( lang.issues() ) );
         initDetails.parent.clear();
         initDetails.parent.add( view.asWidget() );
+        initDetails.parent.add( pagerView.asWidget() );
 
         fireEvent( new ActionBarEvents.Add( CREATE_ACTION, UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.ISSUE ) );
 
@@ -107,6 +115,21 @@ public abstract class IssueTableActivity implements AbstractIssueTableActivity, 
         } );
     }
 
+    @Override
+    public void onPageChanged( int page ) {
+        pagerView.setCurrentPage( page+1 );
+    }
+
+    @Override
+    public void onFirstClicked() {
+        view.scrollTo( 0 );
+    }
+
+    @Override
+    public void onLastClicked() {
+        view.scrollTo( view.getPageCount()-1 );
+    }
+
     private void requestIssuesCount() {
         view.clearRecords();
         animation.closeDetails();
@@ -120,6 +143,7 @@ public abstract class IssueTableActivity implements AbstractIssueTableActivity, 
                 @Override
                 public void onSuccess( Long issuesCount ) {
                     view.setIssuesCount( issuesCount );
+                    pagerView.setTotalPages( view.getPageCount() );
                 }
             } );
     }
@@ -178,6 +202,9 @@ public abstract class IssueTableActivity implements AbstractIssueTableActivity, 
 
     @Inject
     TableAnimation animation;
+
+    @Inject
+    AbstractPagerView pagerView;
 
     private static String CREATE_ACTION;
     private AppEvents.InitDetails initDetails;
