@@ -8,7 +8,6 @@ import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.core.model.ent.CompanyCategory;
 import ru.protei.portal.core.model.ent.CompanyGroup;
 import ru.protei.portal.core.model.query.CompanyGroupQuery;
 import ru.protei.portal.core.model.query.CompanyQuery;
@@ -49,19 +48,6 @@ public class CompanyServiceImpl implements CompanyService {
         CompanyGroupQuery query = new CompanyGroupQuery( searchPattern, En_SortField.group_name, En_SortDir.ASC );
 
         CoreResponse< List<CompanyGroup> > result = companyService.groupList(query);
-
-        if (result.isError())
-            throw new RequestFailedException(result.getStatus());
-
-        return result.getData();
-    }
-
-    @Override
-    public List<CompanyCategory> getCompanyCategories() throws RequestFailedException {
-
-        log.debug( "getCompanyCategories()" );
-
-        CoreResponse< List<CompanyCategory> > result = companyService.categoryList();
 
         if (result.isError())
             throw new RequestFailedException(result.getStatus());
@@ -153,6 +139,21 @@ public class CompanyServiceImpl implements CompanyService {
         log.debug( "getGroupOptionList()" );
 
         CoreResponse< List< EntityOption > > result = companyService.groupOptionList();
+
+        log.debug( "result status: {}, data-amount: {}", result.getStatus(), result.isOk() ? result.getDataAmountTotal() : 0 );
+
+        if ( result.isError() )
+            throw new RequestFailedException( result.getStatus() );
+
+        return result.getData();
+    }
+
+    @Override
+    public List< EntityOption > getCategoryOptionList() throws RequestFailedException {
+
+        log.debug( "getCategoryOptionList()" );
+
+        CoreResponse< List< EntityOption > > result = companyService.categoryOptionList();
 
         log.debug( "result status: {}, data-amount: {}", result.getStatus(), result.isOk() ? result.getDataAmountTotal() : 0 );
 

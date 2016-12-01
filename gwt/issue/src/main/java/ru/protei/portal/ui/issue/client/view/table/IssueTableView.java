@@ -9,7 +9,6 @@ import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.brainworm.factory.widget.table.client.helper.SelectionColumn;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
-import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
@@ -21,9 +20,6 @@ import ru.protei.portal.ui.issue.client.view.table.columns.ContactColumn;
 import ru.protei.portal.ui.issue.client.view.table.columns.InfoColumn;
 import ru.protei.portal.ui.issue.client.view.table.columns.ManagerColumn;
 import ru.protei.portal.ui.issue.client.view.table.columns.NumberColumn;
-
-import java.util.Date;
-
 
 /**
  * Представление таблицы обращений
@@ -93,7 +89,6 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
             element.addClassName( "separator" );
         } );
     }
-
 
     @UiField
     InfiniteTableWidget<CaseObject> table;

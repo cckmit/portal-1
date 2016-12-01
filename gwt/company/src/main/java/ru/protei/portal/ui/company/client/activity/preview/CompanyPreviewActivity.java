@@ -35,6 +35,8 @@ public abstract class CompanyPreviewActivity
             view.setGroupVisible( false );
         }
 
+        view.setGroupCompany( value.getCompanyGroup() == null ? "" : value.getCompanyGroup().getName() );
+
         PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(value.getContactInfo());
 
         view.setPhone( infoFacade.getWorkPhone() );

@@ -11,8 +11,6 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_SortField;
-import ru.protei.portal.core.model.ent.CompanyCategory;
-import ru.protei.portal.core.model.ent.CompanyGroup;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.platelist.PlateList;
@@ -62,7 +60,7 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
     }
 
     @Override
-    public HasValue< Set < CompanyCategory > > categories() {
+    public HasValue< Set < EntityOption > > categories() {
         return categories;
     }
 
@@ -81,14 +79,14 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
     }
 
     @UiHandler( "categories" )
-    public void onCompanyCategorySelected( ValueChangeEvent< Set< CompanyCategory> > event ) {
+    public void onCompanyCategorySelected( ValueChangeEvent< Set< EntityOption> > event ) {
         if ( activity != null ) {
             activity.onFilterChanged();
         }
     }
 
     @UiHandler( "group" )
-    public void onCompanyGroupSelected( ValueChangeEvent< CompanyGroup > event ) {
+    public void onCompanyGroupSelected( ValueChangeEvent< EntityOption > event ) {
         if ( activity != null ) {
             activity.onFilterChanged();
         }

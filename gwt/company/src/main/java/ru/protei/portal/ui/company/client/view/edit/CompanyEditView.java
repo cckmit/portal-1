@@ -10,8 +10,6 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.ent.CompanyCategory;
-import ru.protei.portal.core.model.ent.CompanyGroup;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -90,7 +88,7 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     }
 
     @Override
-    public HasValue<CompanyCategory> companyCategory() {
+    public HasValue<EntityOption> companyCategory() {
         return companyCategory;
     }
 

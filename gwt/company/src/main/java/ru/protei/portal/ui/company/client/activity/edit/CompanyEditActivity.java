@@ -7,6 +7,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.ent.CompanyCategory;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.common.NameStatus;
@@ -146,15 +147,14 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         view.legalAddress().setValue(infoFacade.getLegalAddress());
 
         view.comment().setText(company.getInfo());
-        view.companyCategory().setValue(company.getCategory());
-        view.companyGroup().setValue( EntityOption.fromCompanyGroup( company.getCompanyGroup() ));
+        view.companyCategory().setValue(EntityOption.fromCompanyCategory( company.getCategory()));
+        view.companyGroup().setValue(EntityOption.fromCompanyGroup(company.getCompanyGroup()));
 
         view.webSite().setText(infoFacade.getWebSite());
 
         fireEvent(new ContactItemEvents.ShowList(view.phonesContainer(), company.getContactInfo().getItems(), ALLOWED_PHONE_TYPES));
         fireEvent(new ContactItemEvents.ShowList(view.emailsContainer(), company.getContactInfo().getItems(), ALLOWED_EMAIL_TYPES));
     }
-
 
     private void fillCompany(Company company){
         company.setCname(view.companyName().getValue());
@@ -164,8 +164,8 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         infoFacade.setLegalAddress(view.legalAddress().getValue());
         infoFacade.setFactAddress(view.actualAddress().getValue());
         company.setInfo(view.comment().getText());
-        company.setCategory(view.companyCategory().getValue());
-        company.setGroupId( view.companyGroup().getValue().getId() );
+        company.setCategory(CompanyCategory.fromEntityOption(view.companyCategory().getValue()));
+        company.setGroupId(view.companyGroup().getValue().getId());
         infoFacade.setWebSite(view.webSite().getText());
     }
 

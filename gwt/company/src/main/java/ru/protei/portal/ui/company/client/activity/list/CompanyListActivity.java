@@ -12,6 +12,7 @@ import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanyCategory;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.animation.PlateListAnimation;
 import ru.protei.portal.ui.common.client.common.PeriodicTaskService;
 import ru.protei.portal.ui.common.client.events.AppEvents;
@@ -113,7 +114,7 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
             query.setCategoryIds(
                     view.categories().getValue()
                     .stream()
-                    .map( CompanyCategory::getId )
+                    .map( EntityOption::getId )
                     .collect( Collectors.toList() ));
 
         if(view.group().getValue() != null)

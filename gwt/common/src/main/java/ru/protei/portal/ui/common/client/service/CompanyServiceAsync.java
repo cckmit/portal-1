@@ -29,12 +29,6 @@ public interface CompanyServiceAsync {
     void getCompanyGroups( String searchPattern, AsyncCallback<List < CompanyGroup > > async );
 
     /**
-     * Получение списка категорий компаний
-     * @return список категорий
-     */
-    void getCompanyCategories( AsyncCallback<List <CompanyCategory> > async  );
-
-    /**
      * Сохранение компании ( создание + изменение )
      * @param company компания
      * @return результат сохранения
@@ -75,4 +69,10 @@ public interface CompanyServiceAsync {
      * @param callback
      */
     void getGroupOptionList( AsyncCallback< List< EntityOption > > callback );
+
+    /**
+     * Получение списка сокращенного представления категории компаний (name,id)
+     * @param callback
+     */
+    void getCategoryOptionList( AsyncCallback< List< EntityOption > > callback );
 }

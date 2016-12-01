@@ -114,7 +114,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         view.changeCompany(initiatorCompany);
         view.initiator().setValue(PersonShortView.fromPerson(issue.getInitiator()));
 
-        view.product().setValue( ProductShortView.fromProduct(issue.getProduct()));
+        view.product().setValue(ProductShortView.fromProduct(issue.getProduct()));
         view.manager().setValue(PersonShortView.fromPerson(issue.getManager()));
     }
 
