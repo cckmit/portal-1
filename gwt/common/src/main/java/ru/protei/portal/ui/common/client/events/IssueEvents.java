@@ -23,9 +23,13 @@ public class IssueEvents {
     public static class ShowCustom {
 
         public CaseQuery query;
-        public ShowCustom (CaseQuery query) {
-            if(query.getType() != En_CaseType.CRM_SUPPORT)
+        public HasWidgets parent;
+        public ShowCustom (CaseQuery query, HasWidgets parent) {
+            if(query == null || parent == null || query.getType() != En_CaseType.CRM_SUPPORT)
                 throw new IllegalArgumentException("query type must be for CRM_SUPPORT");
+
+            this.query = query;
+            this.parent = parent;
         }
 
     }

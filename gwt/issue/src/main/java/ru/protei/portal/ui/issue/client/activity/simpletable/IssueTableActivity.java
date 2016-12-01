@@ -6,7 +6,6 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.query.CaseQuery;
-import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.IssueEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -30,17 +29,20 @@ public abstract class IssueTableActivity implements AbstractIssueTableActivity, 
     public void onShow( IssueEvents.ShowCustom event ) {
 
         //this.fireEvent( new AppEvents.InitPanelName( lang.dashboard() ) );
-        initDetails.parent.clear();
-        initDetails.parent.add( view.asWidget() );
+//        initDetails.parent.clear();
+//        initDetails.parent.add( view.asWidget() );
+
+        event.parent.clear();
+        event.parent.add(view.asWidget());
 
         view.clearRecords();
         requestIssues(event.query);
     }
 
-    @Event
-    public void onInitDetails( AppEvents.InitDetails initDetails ) {
-        this.initDetails = initDetails;
-    }
+//    @Event
+//    public void onInitDetails( AppEvents.InitDetails initDetails ) {
+//        this.initDetails = initDetails;
+//    }
 
     @Override
     public void onItemClicked( CaseObject value ) {
@@ -119,6 +121,6 @@ public abstract class IssueTableActivity implements AbstractIssueTableActivity, 
     @Inject
     IssueServiceAsync issueService;
 
-    private AppEvents.InitDetails initDetails;
+//    private AppEvents.InitDetails initDetails;
 
 }

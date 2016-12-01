@@ -1,0 +1,8 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+    <g:HTMLPanel styleName="grid">
+        <g:HTMLPanel ui:field="activeRecordsContainer" styleName="col-xs-12 col-lg-6"/>
+        <g:HTMLPanel ui:field="newRecordsContainer" styleName="col-xs-12 col-lg-6"/>
+        <g:HTMLPanel ui:field="completedRecordsContainer" styleName="col-xs-12"/>
+    </g:HTMLPanel>
+</ui:UiBinder>
