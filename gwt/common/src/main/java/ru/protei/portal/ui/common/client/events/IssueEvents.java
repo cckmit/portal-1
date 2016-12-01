@@ -3,7 +3,9 @@ package ru.protei.portal.ui.common.client.events;
 import com.google.gwt.user.client.ui.HasWidgets;
 import ru.brainworm.factory.context.client.annotation.Name;
 import ru.brainworm.factory.context.client.annotation.Url;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.CaseObject;
+import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 
 /**
@@ -15,6 +17,16 @@ public class IssueEvents {
     public static class Show {
 
         public Show () {}
+
+    }
+
+    public static class ShowCustom {
+
+        public CaseQuery query;
+        public ShowCustom (CaseQuery query) {
+            if(query.getType() != En_CaseType.CRM_SUPPORT)
+                throw new IllegalArgumentException("query type must be for CRM_SUPPORT");
+        }
 
     }
 

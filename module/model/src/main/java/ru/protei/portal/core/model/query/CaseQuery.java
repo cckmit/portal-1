@@ -1,11 +1,13 @@
 package ru.protei.portal.core.model.query;
 
+import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by Mike on 02.11.2016.
@@ -57,6 +59,11 @@ public class CaseQuery extends BaseQuery {
     }
 
     public void setStateIds(List<Integer> stateIds) { this.stateIds = stateIds; }
+
+    public void setStates(List<En_CaseState> states) {
+        List<Integer> stateIds = states.stream().map(En_CaseState::getId).collect(Collectors.toList());
+        this.setStateIds(stateIds);
+    }
 
     public List<Integer> getImportanceIds() { return importanceIds; }
 
