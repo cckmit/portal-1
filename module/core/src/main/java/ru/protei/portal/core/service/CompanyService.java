@@ -2,7 +2,6 @@ package ru.protei.portal.core.service;
 
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.core.model.ent.CompanyCategory;
 import ru.protei.portal.core.model.ent.CompanyGroup;
 import ru.protei.portal.core.model.query.CompanyGroupQuery;
 import ru.protei.portal.core.model.query.CompanyQuery;
@@ -19,11 +18,12 @@ public interface CompanyService {
 
     CoreResponse<List<EntityOption>> companyOptionList();
     CoreResponse<List<Company>> companyList(CompanyQuery query);
+    CoreResponse<List<EntityOption>> groupOptionList();
     CoreResponse<List<CompanyGroup>> groupList(CompanyGroupQuery query);
-    CoreResponse<List<CompanyCategory>> categoryList();
+    CoreResponse<List<EntityOption>> categoryOptionList();
     CoreResponse<Company> getCompany(Long id);
-    CoreResponse<Company> createCompany(Company company, CompanyGroup group);
-    CoreResponse<Company> updateCompany(Company company, CompanyGroup group);
+    CoreResponse<Company> createCompany(Company company);
+    CoreResponse<Company> updateCompany(Company company);
     CoreResponse<Boolean> isCompanyNameExists(String name, Long excludeId);
     CoreResponse<Boolean> isGroupNameExists(String name, Long excludeId);
     /**

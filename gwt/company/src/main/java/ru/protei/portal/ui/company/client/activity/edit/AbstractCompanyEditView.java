@@ -4,8 +4,7 @@ import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
-import ru.protei.portal.core.model.ent.CompanyCategory;
-import ru.protei.portal.core.model.ent.CompanyGroup;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
@@ -27,8 +26,8 @@ public interface AbstractCompanyEditView extends IsWidget {
 
     HasText webSite();
     HasText comment();
-    HasValue<CompanyGroup> companyGroup();
-    HasValue<CompanyCategory> companyCategory();
+    HasValue<EntityOption> companyGroup();
+    HasValue<EntityOption> companyCategory();
 
     HasWidgets phonesContainer();
     HasWidgets emailsContainer();

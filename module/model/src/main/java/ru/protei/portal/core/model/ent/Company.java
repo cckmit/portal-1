@@ -26,7 +26,6 @@ public class Company implements Serializable, EntityOptionSupport {
     @JdbcJoinedObject(localColumn = "groupId", remoteColumn = "id", updateLocalColumn = false)
     CompanyGroup companyGroup;
 
-
     @JdbcColumn(name = "cname")
     private String cname;
 
@@ -57,11 +56,9 @@ public class Company implements Serializable, EntityOptionSupport {
         this.id = id;
     }
 
-
     public String getCname() {
         return this.cname;
     }
-
 
     public Long getId() {
         return this.id;
@@ -90,7 +87,6 @@ public class Company implements Serializable, EntityOptionSupport {
     public void setCname( String cname) {
         this.cname = cname;
     }
-
 
     public void setId(Long id) {
         this.id = id;
@@ -124,16 +120,10 @@ public class Company implements Serializable, EntityOptionSupport {
         return companyGroup;
     }
 
-    public void setCompanyGroup(CompanyGroup companyGroup) {
-        this.companyGroup = companyGroup;
-        this.groupId = companyGroup == null ? null : companyGroup.getId();
-    }
-
     @Override
     public int hashCode() {
         return this.id == null ? -1 : this.id.intValue();
     }
-
 
     @Override
     public EntityOption toEntityOption() {
