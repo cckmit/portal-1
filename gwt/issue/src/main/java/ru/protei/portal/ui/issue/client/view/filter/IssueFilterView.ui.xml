@@ -33,15 +33,15 @@
                 <person:EmployeeButtonSelector ui:field="manager" header="{lang.issueManager}"/>
             </div>
             <div class="col-xs-12">
-                <p><ui:text from="{lang.issueImportance}"/></p>
+                <label><ui:text from="{lang.issueImportance}"/></label>
                 <importance:ImportanceBtnGroup ui:field="importance"/>
             </div>
             <div class="col-xs-12">
-                <p><ui:text from="{lang.issueState}"/></p>
+                <label><ui:text from="{lang.issueState}"/></label>
                 <state:IssueStatesBtnGroup ui:field="state"/>
             </div>
             <div class="col-xs-12">
-                <p><ui:text from="{lang.created}"/></p>
+                <label><ui:text from="{lang.created}"/></label>
                 <range:RangePicker ui:field="dateRange" type="DATETIME" formatValue="dd.MM.yyyy HH:mm"/>
             </div>
         </div>

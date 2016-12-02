@@ -35,7 +35,7 @@ public class NumberColumn extends ClickColumn< CaseObject > {
         com.google.gwt.dom.client.Element divElement = DOM.createDiv();
 
         com.google.gwt.dom.client.Element i = DOM.createElement( "i" );
-        i.addClassName( "importance importance-lg " + En_ImportanceLevel.find( value.getImpLevel() ) );
+        i.addClassName( "importance importance-lg " + En_ImportanceLevel.find( value.getImpLevel() ).toString().toLowerCase() );
         CriticalityStyleBuilder.make().addClassName( i, En_ImportanceLevel.find( value.getImpLevel() ) );
         divElement.appendChild( i );
 
@@ -45,7 +45,7 @@ public class NumberColumn extends ClickColumn< CaseObject > {
         divElement.appendChild( numberElement );
 
         com.google.gwt.dom.client.Element stateElement = DOM.createElement( "p" );
-        stateElement.addClassName( "label label-" + En_CaseState.getById( value.getStateId() ).toString() );
+        stateElement.addClassName( "label label-" + En_CaseState.getById( value.getStateId() ).toString().toLowerCase() );
         stateElement.setInnerText( caseStateLang.getStateName( En_CaseState.getById( value.getStateId() ) ) );
         divElement.appendChild( stateElement );
 
