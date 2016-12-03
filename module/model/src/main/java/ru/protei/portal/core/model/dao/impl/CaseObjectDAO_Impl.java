@@ -88,8 +88,9 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
             }
 
             if (query.getSearchString() != null && !query.getSearchString().trim().isEmpty()) {
-                condition.append( " and ( case_name like ? or case_object.info like ?)" );
+                condition.append( " and ( caseno like ? or case_name like ? or case_object.info like ?)" );
                 String likeArg = HelperFunc.makeLikeArg(query.getSearchString(), true);
+                args.add(likeArg);
                 args.add(likeArg);
                 args.add(likeArg);
             }
