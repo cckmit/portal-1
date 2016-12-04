@@ -23,7 +23,10 @@ public class CategoryBtnGroup extends ToggleBtnGroup< EntityOption > implements 
         clear();
 
         for ( EntityOption option : options ) {
-            addBtn( option.getDisplayText(), option );
+            addBtn( "button whiteC ",
+                    option.getDisplayText(),
+                    option,
+                    "col-xs-12 col-sm-6 col-md-4" );
         }
     }
 }

@@ -9,20 +9,20 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_SortDir;
-import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.ui.common.client.animation.PlateListAnimation;
 import ru.protei.portal.ui.common.client.common.PeriodicTaskService;
-import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.AuthEvents;
-import ru.protei.portal.ui.common.client.events.NotifyEvents;
-import ru.protei.portal.ui.common.client.events.ProductEvents;
+import ru.protei.portal.ui.common.client.common.UiConstants;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ProductServiceAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
+import ru.protei.portal.ui.product.client.activity.filter.AbstractProductFilterActivity;
+import ru.protei.portal.ui.product.client.activity.filter.AbstractProductFilterView;
 import ru.protei.portal.ui.product.client.activity.item.AbstractProductItemActivity;
 import ru.protei.portal.ui.product.client.activity.item.AbstractProductItemView;
+import ru.protei.winter.web.common.client.events.SectionEvents;
 
 import java.util.HashMap;
 import java.util.List;
@@ -32,23 +32,41 @@ import java.util.function.Consumer;
 /**
  * Активность списка продуктов
  */
-public abstract class ProductListActivity implements AbstractProductListActivity, AbstractProductItemActivity, Activity {
+public abstract class ProductListActivity implements AbstractProductListActivity, AbstractProductItemActivity, AbstractProductFilterActivity, Activity {
 
     @PostConstruct
-    public void onInit() { view.setActivity(this); }
+    public void onInit() {
+        CREATE_ACTION = lang.buttonCreate();
 
-    @Event
-    public void onAuthorize (AuthEvents.Success event) {
-        resetFilter();
+        view.setActivity(this);
+        filterView.setActivity( this );
+        view.getFilterContainer().add( filterView.asWidget() );
     }
 
     @Event
-    public void onShow (ProductEvents.Show event) {
+    public void onAuthSuccess (AuthEvents.Success event) {
+        filterView.resetFilter();
+    }
+
+    @Event
+    public void onShow( ProductEvents.Show event ) {
         this.fireEvent(new AppEvents.InitPanelName(lang.products()));
         init.parent.clear();
         init.parent.add(view.asWidget());
 
+        fireEvent( new ActionBarEvents.Add( CREATE_ACTION, UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.PRODUCT ) );
+
+        query = makeQuery();
         requestProducts();
+    }
+
+    @Event
+    public void onCreateClicked( SectionEvents.Clicked event ) {
+        if ( !UiConstants.ActionBarIdentity.PRODUCT.equals( event.identity ) ) {
+            return;
+        }
+
+        fireEvent(new ProductEvents.Edit(null));
     }
 
     @Event
@@ -61,12 +79,12 @@ public abstract class ProductListActivity implements AbstractProductListActivity
 
     @Override
     public void onEditClicked( AbstractProductItemView itemView ) {
-        fireEvent( new ProductEvents.Edit( modelToView.get( itemView ).getId()  ) );
+        fireEvent( new ProductEvents.Edit( itemViewToModel.get( itemView ).getId()  ) );
     }
 
     @Override
     public void onPreviewClicked( AbstractProductItemView itemView ) {
-        DevUnit value = modelToView.get( itemView );
+        DevUnit value = itemViewToModel.get( itemView );
         if ( value == null ) {
             return;
         }
@@ -82,6 +100,7 @@ public abstract class ProductListActivity implements AbstractProductListActivity
 
     @Override
     public void onFilterChanged() {
+        query = makeQuery();
         requestProducts();
     }
 
@@ -91,14 +110,8 @@ public abstract class ProductListActivity implements AbstractProductListActivity
             fillViewHandler.cancel();
         }
 
-        view.getItemsContainer().clear();
-        modelToView.clear();
-
-        ProductQuery query = new ProductQuery();
-        query.setSearchString(view.searchPattern().getValue());
-        query.setState(view.showDeprecated().getValue() ? null : En_DevUnitState.ACTIVE);
-        query.setSortField(view.sortField().getValue());
-        query.setSortDir(view.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
+        view.getChildContainer().clear();
+        itemViewToModel.clear();
 
         productService.getProductList(query,
                 new RequestCallback<List<DevUnit>>() {
@@ -114,9 +127,19 @@ public abstract class ProductListActivity implements AbstractProductListActivity
                 });
     }
 
-    private AbstractProductItemView makeItemView (DevUnit product)
+    private ProductQuery makeQuery() {
+        query = new ProductQuery();
+        query.setSearchString(filterView.searchPattern().getValue());
+        query.setState(filterView.showDeprecated().getValue() ? null : En_DevUnitState.ACTIVE);
+        query.setSortField(filterView.sortField().getValue());
+        query.setSortDir(filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
+
+        return query;
+    };
+
+    private AbstractProductItemView makeView ( DevUnit product )
     {
-        AbstractProductItemView itemView = provider.get();
+        AbstractProductItemView itemView = factory.get();
         itemView.setName(product.getName());
         itemView.setDeprecated(product.getStateId() > 1);
         itemView.setActivity(this);
@@ -124,39 +147,38 @@ public abstract class ProductListActivity implements AbstractProductListActivity
         return itemView;
     }
 
-    private void resetFilter() {
-        view.searchPattern().setValue("");
-        view.showDeprecated().setValue(false);
-        view.sortField().setValue(En_SortField.prod_name);
-        view.sortDir().setValue(true);
-    }
-
-    Consumer<DevUnit> fillViewer = new Consumer<DevUnit> () {
-
+     Consumer<DevUnit> fillViewer = new Consumer<DevUnit> () {
         @Override
         public void accept( DevUnit product ) {
-            AbstractProductItemView itemView = makeItemView(product);
+            AbstractProductItemView itemView = makeView(product);
 
-            modelToView.put( itemView, product );
-            view.getItemsContainer().add( itemView.asWidget() );
+            itemViewToModel.put( itemView, product );
+            view.getChildContainer().add( itemView.asWidget() );
         }
     };
 
     @Inject
     AbstractProductListView view;
     @Inject
+    AbstractProductFilterView filterView;
+    @Inject
     Lang lang;
 
     @Inject
-    Provider<AbstractProductItemView> provider;
+    Provider<AbstractProductItemView> factory;
+
     @Inject
     ProductServiceAsync productService;
     @Inject
     PlateListAnimation animation;
+
     @Inject
     PeriodicTaskService taskService;
     PeriodicTaskService.PeriodicTaskHandler fillViewHandler;
 
-    private Map<AbstractProductItemView, DevUnit > modelToView = new HashMap<AbstractProductItemView, DevUnit>();
+    private Map<AbstractProductItemView, DevUnit > itemViewToModel = new HashMap<AbstractProductItemView, DevUnit>();
     private AppEvents.InitDetails init;
+    private ProductQuery query;
+
+    private static String CREATE_ACTION;
 }
