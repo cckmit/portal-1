@@ -39,9 +39,10 @@ package ru.protei.portal.ui.common.client.common;
  * 4.0.21.17 - sprint-10-task-9 - Трансформация ValueComment в ContactItem, доработка виджета
  * 4.0.21.18 - sprint-9-task-7 - Рефакторинг таблицы обращений
  * 4.0.21.19 - sprint-10-task-11 - Замена списков для селекторов на EntityOption и ShortView
+ * 4.0.21.20 - m1-t-7 - виджет телефонов - изменить порядок (тип,номер,коммент) + наименования (в селекторе убрать слово телефон)
  */
 public class Version {
     public static String getVersion() {
-        return "4.0.21.19";
+        return "4.0.21.20";
     }
 }
