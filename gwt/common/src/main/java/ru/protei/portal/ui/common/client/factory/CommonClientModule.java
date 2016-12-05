@@ -11,6 +11,7 @@ import ru.protei.portal.ui.common.client.activity.notify.AbstractNotifyView;
 import ru.protei.portal.ui.common.client.activity.notify.NotifyActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
+import ru.protei.portal.ui.common.client.common.IssueStates;
 import ru.protei.portal.ui.common.client.view.contactitem.item.ContactItemView;
 import ru.protei.portal.ui.common.client.view.contactitem.list.ContactItemListView;
 import ru.protei.portal.ui.common.client.view.dialogdetails.DialogDetailsView;
@@ -45,7 +46,10 @@ public class CommonClientModule extends AbstractGinModule {
 
         bind( AbstractPagerView.class ).to( PagerView.class );
 
-        requestStaticInjection( RequestCallback.class );
+        bind( IssueStates.class ).asEagerSingleton();
+
+        requestStaticInjection(RequestCallback.class);
+
     }
 }
 

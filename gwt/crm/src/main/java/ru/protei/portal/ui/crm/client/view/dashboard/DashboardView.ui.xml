@@ -1,8 +1,25 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'>
-    <g:HTMLPanel styleName="grid">
-        <g:HTMLPanel ui:field="activeRecordsContainer" styleName="col-xs-12 col-lg-6"/>
-        <g:HTMLPanel ui:field="newRecordsContainer" styleName="col-xs-12 col-lg-6"/>
-        <g:HTMLPanel ui:field="completedRecordsContainer" styleName="col-xs-12"/>
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+
+    <g:HTMLPanel styleName="dashboard grid">
+        <section class="active-records col-xs-12 col-lg-6">
+            <label class="dashboard-section-name">
+                <ui:text from="{lang.activeIssues}"/>
+            </label>
+            <g:HTMLPanel ui:field="activeRecordsContainer"/>
+        </section>
+        <section class="new-records col-xs-12 col-lg-6">
+            <label class="dashboard-section-name">
+                <ui:text from="{lang.newIssues}"/>
+            </label>
+            <g:HTMLPanel ui:field="newRecordsContainer"/>
+        </section>
+        <section class="completed-records col-xs-12">
+            <label class="dashboard-section-name">
+                <ui:text from="{lang.inactiveIssues}"/>
+            </label>
+            <g:HTMLPanel ui:field="inactiveRecordsContainer"/>
+        </section>
     </g:HTMLPanel>
 </ui:UiBinder>

@@ -11,9 +11,9 @@ import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.service.CaseService;
+import ru.protei.portal.ui.common.client.service.IssueService;
 import ru.protei.portal.ui.common.server.service.SessionService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
-import ru.protei.portal.ui.issue.client.service.IssueService;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;

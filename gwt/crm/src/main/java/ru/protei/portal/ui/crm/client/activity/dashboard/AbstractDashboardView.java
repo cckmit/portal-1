@@ -10,6 +10,6 @@ public interface AbstractDashboardView extends IsWidget {
 
     HasWidgets getActiveRecordsContainer();
     HasWidgets getNewRecordsContainer();
-    HasWidgets getCompletedRecordsContainer();
+    HasWidgets getInactiveRecordsContainer();
 
 }

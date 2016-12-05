@@ -27,8 +27,8 @@ public class DashboardView extends Composite implements AbstractDashboardView{
     }
 
     @Override
-    public HasWidgets getCompletedRecordsContainer() {
-        return completedRecordsContainer;
+    public HasWidgets getInactiveRecordsContainer() {
+        return inactiveRecordsContainer;
     }
 
     @UiField
@@ -36,7 +36,7 @@ public class DashboardView extends Composite implements AbstractDashboardView{
     @UiField
     HTMLPanel newRecordsContainer;
     @UiField
-    HTMLPanel completedRecordsContainer;
+    HTMLPanel inactiveRecordsContainer;
 
     interface DashboardViewUiBinder extends UiBinder<HTMLPanel, DashboardView> {}
     private static DashboardViewUiBinder ourUiBinder = GWT.create(DashboardViewUiBinder.class);

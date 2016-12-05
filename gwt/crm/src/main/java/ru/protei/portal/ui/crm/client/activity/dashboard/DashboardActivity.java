@@ -1,7 +1,6 @@
 package ru.protei.portal.ui.crm.client.activity.dashboard;
 
 import com.google.inject.Inject;
-import org.springframework.beans.factory.annotation.Autowired;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.En_CaseState;
@@ -9,16 +8,14 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.ui.common.client.common.IssueStates;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.IssueEvents;
-import ru.protei.portal.ui.common.server.service.SessionService;
-import ru.protei.portal.ui.common.shared.model.RequestCallback;
+import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.crm.client.events.DashboardEvents;
-import ru.protei.portal.ui.issue.client.service.IssueServiceAsync;
 
-import javax.servlet.http.HttpServletRequest;
-import java.util.List;
+import java.util.Collections;
 
 /**
  * Created by bondarenko on 01.12.16.
@@ -27,7 +24,7 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
 
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
-        onShow(null);
+        profile = event.profile;
     }
 
     @Event
@@ -35,10 +32,9 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
         initDetails.parent.clear();
         initDetails.parent.add( view.asWidget() );
 
-        generateActiveRecords();
-//        fireEvent(new IssueEvents.ShowCustom(generateNewRecordsQuery(), view.getNewRecordsContainer()));
-//        fireEvent(new IssueEvents.ShowCustom(generateCompletedRecordsQuery(), view.getCompletedRecordsContainer()));
-
+        fireEvent(new IssueEvents.ShowCustom(generateActiveRecordsQuery(), view.getActiveRecordsContainer()));
+        fireEvent(new IssueEvents.ShowCustom(generateNewRecordsQuery(), view.getNewRecordsContainer()));
+        fireEvent(new IssueEvents.ShowCustom(generateInactiveRecordsQuery(), view.getInactiveRecordsContainer()));
     }
 
     @Event
@@ -47,35 +43,29 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
     }
 
 
-    private void generateActiveRecords(){
+    private CaseQuery generateActiveRecordsQuery(){
         CaseQuery query = new CaseQuery(En_CaseType.CRM_SUPPORT, null, En_SortField.creation_date, En_SortDir.DESC);
-        query.setManagerId(sessionService.getUserSessionDescriptor(request).getPerson().getId());
+        query.setManagerId(profile.getId());
+        query.setStates(issueStates.getActiveStates());
+        query.setLimit(ISSUE_LIMIT);
 
-        issueService.getStateList(new RequestCallback<List<En_CaseState>>() {
-            @Override
-            public void onError(Throwable throwable) {
-            }
-
-            @Override
-            public void onSuccess(List<En_CaseState> en_caseStates) {
-                en_caseStates.remove(En_CaseState.DONE);
-                en_caseStates.remove(En_CaseState.TEST_CUST);
-                en_caseStates.remove(En_CaseState.VERIFIED);
-
-                query.setStates(en_caseStates);
-
-                fireEvent(new IssueEvents.ShowCustom(query, view.getActiveRecordsContainer()));
-
-            }
-        });
+        return query;
     }
 
     private CaseQuery generateNewRecordsQuery(){
-        return null;
+        CaseQuery query = new CaseQuery(En_CaseType.CRM_SUPPORT, null, En_SortField.creation_date, En_SortDir.ASC);
+        query.setStates(Collections.singletonList(En_CaseState.CREATED));
+        query.setLimit(ISSUE_LIMIT);
+
+        return query;
     }
 
-    private CaseQuery generateCompletedRecordsQuery(){
-        return null;
+    private CaseQuery generateInactiveRecordsQuery(){
+        CaseQuery query = new CaseQuery(En_CaseType.CRM_SUPPORT, null, En_SortField.last_update, En_SortDir.ASC);
+        query.setStates(issueStates.getInactiveStates());
+        query.setLimit(ISSUE_LIMIT);
+
+        return query;
     }
 
 
@@ -84,13 +74,9 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
     AbstractDashboardView view;
 
     @Inject
-    IssueServiceAsync issueService;
-
-    @Autowired
-    SessionService sessionService;
-
-    @Autowired
-    HttpServletRequest request;
+    IssueStates issueStates;
 
     private AppEvents.InitDetails initDetails;
+    private Profile profile;
+    private final int ISSUE_LIMIT = 12;
 }

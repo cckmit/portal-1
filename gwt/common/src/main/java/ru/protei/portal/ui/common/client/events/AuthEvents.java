@@ -35,4 +35,8 @@ public class AuthEvents {
 
         public Profile profile;
     }
+
+    public static class Ready {
+
+    }
 }

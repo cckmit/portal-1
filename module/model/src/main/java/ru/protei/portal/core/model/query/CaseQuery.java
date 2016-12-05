@@ -24,7 +24,7 @@ public class CaseQuery extends BaseQuery {
     private Date from;
     private Date to;
 
-    public CaseQuery() {};
+    public CaseQuery() {}
 
     public CaseQuery( En_CaseType type, String searchString, En_SortField sortField, En_SortDir sortDir ) {
         super(searchString, sortField, sortDir);

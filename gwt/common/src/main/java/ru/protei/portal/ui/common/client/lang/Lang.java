@@ -271,4 +271,8 @@ public interface Lang extends Messages, ContactItemLang {
     String dataPageNumber (int page);
 
     String pagerLabel( int currentPage, int totalPages, int pageSize );
+
+    String activeIssues();
+    String newIssues();
+    String inactiveIssues();
 }

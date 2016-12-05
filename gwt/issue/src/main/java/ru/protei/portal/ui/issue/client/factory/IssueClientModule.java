@@ -35,7 +35,7 @@ public class IssueClientModule extends AbstractGinModule {
 
         bind( AbstractIssueFilterView.class ).to( IssueFilterView.class ).in( Singleton.class );
 
-        bind(ru.protei.portal.ui.issue.client.activity.simpletable.IssueTableActivity.class);
+        bind(ru.protei.portal.ui.issue.client.activity.simpletable.IssueTableActivity.class).asEagerSingleton();
         bind(ru.protei.portal.ui.issue.client.activity.simpletable.AbstractIssueTableView.class).to(
                 ru.protei.portal.ui.issue.client.view.simpletable.IssueTableView.class
         );

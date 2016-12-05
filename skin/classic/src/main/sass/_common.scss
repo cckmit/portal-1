@@ -1122,3 +1122,84 @@ td.info {
 .text-center {
   text-align: center;
 }
+
+/**** Dashboard ****/
+
+.dashboard .table th {
+  border-bottom: 1px solid #dee4e5;
+  font-size: 9px;
+  color: #989898;
+  background: #f1f1f1;
+}
+
+.dashboard .col-lg-6 {
+  padding-right: 7px;
+  margin-top: 0 !important;
+}
+.dashboard .col-lg-6 + .col-lg-6 {
+  padding-left: 7px;
+}
+
+.dashboard section > div{
+  background: white;
+  height: 464px;
+}
+
+.dashboard .col-xs-12:not(:first-child){
+  margin-top: 14px;
+}
+.dashboard [class *= "col-"]{
+  //height: 464px;
+  box-sizing: border-box;
+}
+
+.dashboard .global-table-container{
+  background: white;
+  height: 100%;
+}
+
+.dashboard .issues table .number .number-size {
+  font-size: 18px;
+}
+
+.dashboard .table{
+  margin-bottom: 0;
+}
+
+.dashboard .info > div{
+  max-height: 70px;
+  white-space: normal;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  position: relative;
+}
+
+.dashboard .info label{
+  display: inline-block;
+}
+.dashboard .text-semimuted {
+  position: absolute;
+  top: 1px;
+  right: 0;
+}
+
+.dashboard-section-name {
+  position: absolute;
+  right: 0;
+  left: 0;
+  background: rgb(171, 171, 171);
+  padding-left: 14px;
+  font-weight: bold;
+  font-size: 14px;
+  color: white;
+  overflow: hidden;
+  transition-duration: 0.2s;
+  line-height: 28px;
+  height: 28px;
+}
+.dashboard section:hover .dashboard-section-name{
+  opacity: 0;
+  height: 0;
+}
+/****************/
+

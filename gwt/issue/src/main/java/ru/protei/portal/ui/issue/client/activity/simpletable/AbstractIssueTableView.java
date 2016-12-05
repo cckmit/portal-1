@@ -11,7 +11,6 @@ import java.util.List;
 public interface AbstractIssueTableView  extends IsWidget {
 
     void setActivity( AbstractIssueTableActivity activity );
-    void clearRecords();
     void putRecords(List<CaseObject> cases);
 
 }

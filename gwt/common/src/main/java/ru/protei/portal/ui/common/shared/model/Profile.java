@@ -15,6 +15,8 @@ public class Profile implements Serializable {
 
     private String name;
 
+    private Long id;
+
     public UserRole getRole() {
         return role;
     }
@@ -39,4 +41,11 @@ public class Profile implements Serializable {
         this.name = name;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 }

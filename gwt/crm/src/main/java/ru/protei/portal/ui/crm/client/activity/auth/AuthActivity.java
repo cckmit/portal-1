@@ -3,12 +3,14 @@ package ru.protei.portal.ui.crm.client.activity.auth;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
+import ru.protei.portal.ui.common.client.common.Initialization;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
+import ru.protei.portal.ui.crm.client.events.DashboardEvents;
 import ru.protei.portal.ui.crm.client.service.AuthServiceAsync;
 
 /**
@@ -42,6 +44,13 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
         } );
     }
 
+    @Override
+    public void completeTask(Initialization.PreparatoryTask task) {
+        task.complete();
+        if(PreparatoryTask.isCompleted())
+            run();
+    }
+
     public void onLoginClicked() {
         authService.authentificate( view.getUserName(), view.getPassword(), new RequestCallback< Profile >() {
             @Override
@@ -53,7 +62,7 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
             public void onSuccess( Profile profile ) {
                 view.hideError();
                 fireEvent(new AuthEvents.Success(profile ) );
-                fireEvent(new NotifyEvents.Show(lang.msgHello(), NotifyEvents.NotifyType.SUCCESS));
+                run();
             }
         } );
     }
@@ -87,6 +96,13 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
 
         view.setFocus();
     }
+
+    private void run(){
+//        fireEvent( new AuthEvents.Ready( ) );
+        fireEvent(new NotifyEvents.Show(lang.msgHello(), NotifyEvents.NotifyType.SUCCESS));
+        fireEvent(new DashboardEvents.Show());
+    }
+
 
     @Inject
     AbstractAuthView view;
