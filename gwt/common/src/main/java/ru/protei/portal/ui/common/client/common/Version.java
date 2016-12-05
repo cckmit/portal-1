@@ -41,9 +41,10 @@ package ru.protei.portal.ui.common.client.common;
  * 4.0.21.19 - sprint-10-task-11 - Замена списков для селекторов на EntityOption и ShortView
  * 4.0.21.20 - m1-t-7 - виджет телефонов - изменить порядок (тип,номер,коммент) + наименования (в селекторе убрать слово телефон)
  *             m1-t-6 - кнопки "сбросить" в фильтрах сделать серыми
+ * 4.0.21.21 - m1-t-10 - поиск по номеру в фильтре обращений
  */
 public class Version {
     public static String getVersion() {
-        return "4.0.21.20";
+        return "4.0.21.21";
     }
 }
