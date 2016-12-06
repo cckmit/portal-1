@@ -205,7 +205,7 @@
 }
 
 .button-selector span {
-  display: block;
+  display: inline;
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -260,12 +260,14 @@
   white-space: normal;
 }
 
+.not-active,
 .dropdown-menu ul > li > a.not-active {
   color: #b6b6b6;
-  i.ban {
-    color: #ff8579;
-  }
 }
+i.ban {
+  color: #ff8579;
+}
+
 
 .dropdown-menu ul {
   list-style: none;

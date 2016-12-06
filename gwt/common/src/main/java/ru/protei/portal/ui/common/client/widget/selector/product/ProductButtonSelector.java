@@ -5,6 +5,7 @@ import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 
@@ -30,9 +31,10 @@ public class ProductButtonSelector extends ButtonSelector<ProductShortView> impl
             setValue(null);
         }
 
-        products.forEach(product -> addOption(product.getName(),
-                En_DevUnitState.DEPRECATED.getId() == product.getStateId() ? "not-active" : "" ,
-                En_DevUnitState.DEPRECATED.getId() == product.getStateId() ? "fa fa-ban ban" : "" ,
+        products.forEach(product -> addOption(new DisplayOption(
+                        product.getName(),
+                        En_DevUnitState.DEPRECATED.getId() == product.getStateId() ? "not-active" : "" ,
+                        En_DevUnitState.DEPRECATED.getId() == product.getStateId() ? "fa fa-ban ban" : ""),
                 product));
      }
 
