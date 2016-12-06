@@ -275,4 +275,6 @@ public interface Lang extends Messages, ContactItemLang {
     String activeIssues();
     String newIssues();
     String inactiveIssues();
+
+    String dashboard();
 }

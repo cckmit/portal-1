@@ -3,7 +3,6 @@ package ru.protei.portal.ui.crm.client.activity.auth;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
-import ru.protei.portal.ui.common.client.common.Initialization;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
@@ -42,13 +41,6 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
                 fireEvent( new AuthEvents.Show() );
             }
         } );
-    }
-
-    @Override
-    public void completeTask(Initialization.PreparatoryTask task) {
-        task.complete();
-        if(PreparatoryTask.isCompleted())
-            run();
     }
 
     public void onLoginClicked() {

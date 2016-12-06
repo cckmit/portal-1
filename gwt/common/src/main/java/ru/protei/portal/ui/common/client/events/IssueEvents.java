@@ -20,16 +20,28 @@ public class IssueEvents {
 
     }
 
+    /**
+     * Показать обращения с выбранными фильтрами и контейнером
+     */
     public static class ShowCustom {
 
         public CaseQuery query;
         public HasWidgets parent;
+        public Runnable afterRequestAction;
         public ShowCustom (CaseQuery query, HasWidgets parent) {
             if(query == null || parent == null || query.getType() != En_CaseType.CRM_SUPPORT)
                 throw new IllegalArgumentException("query type must be for CRM_SUPPORT");
 
             this.query = query;
             this.parent = parent;
+        }
+
+        /**
+         * @param afterRequestAction Операция, которая будет выполнена после всех работ
+         */
+        public ShowCustom (CaseQuery query, HasWidgets parent, Runnable afterRequestAction) {
+            this(query, parent);
+            this.afterRequestAction = afterRequestAction;
         }
 
     }

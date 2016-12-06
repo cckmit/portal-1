@@ -8,7 +8,10 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -64,9 +67,13 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
                 args.add( query.getProductId() );
             }
 
-            if ( query.getManagerId() != null ) {
-                condition.append( " and manager=?" );
-                args.add( query.getManagerId() );
+            if ( query.getManagerId() != null) {
+                if(query.getManagerId() > 0) {
+                    condition.append(" and manager=?");
+                    args.add(query.getManagerId());
+                }else{
+                    condition.append( " and manager is null" );
+                }
             }
 
             if ( query.getStateIds() != null && !query.getStateIds().isEmpty() ) {

@@ -8,6 +8,7 @@ import ru.protei.portal.ui.crm.client.activity.auth.AbstractAuthView;
 import ru.protei.portal.ui.crm.client.activity.auth.AuthActivity;
 import ru.protei.portal.ui.crm.client.activity.dashboard.AbstractDashboardView;
 import ru.protei.portal.ui.crm.client.activity.dashboard.DashboardActivity;
+import ru.protei.portal.ui.crm.client.activity.page.DashboardPage;
 import ru.protei.portal.ui.crm.client.view.app.AppView;
 import ru.protei.portal.ui.crm.client.view.auth.AuthView;
 import ru.protei.portal.ui.crm.client.view.dashboard.DashboardView;
@@ -27,5 +28,7 @@ public class ClientModule extends AbstractGinModule {
 
         bind( DashboardActivity.class ).asEagerSingleton();
         bind( AbstractDashboardView.class ).to( DashboardView.class ).in(Singleton.class);
+
+        bind( DashboardPage.class ).asEagerSingleton();
     }
 }

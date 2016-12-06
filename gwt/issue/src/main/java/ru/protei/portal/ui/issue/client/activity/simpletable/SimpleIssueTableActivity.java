@@ -17,16 +17,16 @@ import java.util.List;
 /**
  * Created by bondarenko on 01.12.16.
  */
-public abstract class IssueTableActivity implements AbstractIssueTableActivity, Activity {
+public abstract class SimpleIssueTableActivity implements AbstractSimpleIssueTableActivity, Activity {
 
     @Event
     public void onShow( IssueEvents.ShowCustom event ) {
-        AbstractIssueTableView table = createTableView();
+        AbstractSimpleIssueTableView table = createTableView();
 
         event.parent.clear();
         event.parent.add(table.asWidget());
 
-        requestIssues(event.query, table);
+        requestIssues(event.query, table, event.afterRequestAction);
     }
 
     @Override
@@ -34,7 +34,7 @@ public abstract class IssueTableActivity implements AbstractIssueTableActivity, 
         fireEvent(new IssueEvents.Edit(value.getId(), null));
     }
 
-    public void requestIssues(CaseQuery query, AbstractIssueTableView tableView) {
+    public void requestIssues(CaseQuery query, AbstractSimpleIssueTableView tableView, Runnable thanAction) {
         issueService.getIssues( query, new RequestCallback<List<CaseObject>>() {
             @Override
             public void onError( Throwable throwable ) {
@@ -44,12 +44,14 @@ public abstract class IssueTableActivity implements AbstractIssueTableActivity, 
             @Override
             public void onSuccess( List<CaseObject> caseObjects ) {
                 tableView.putRecords(caseObjects);
+                if(thanAction != null)
+                    thanAction.run();
             }
         } );
     }
 
-    private AbstractIssueTableView createTableView(){
-        AbstractIssueTableView table = tableProvider.get();
+    private AbstractSimpleIssueTableView createTableView(){
+        AbstractSimpleIssueTableView table = tableProvider.get();
         table.setActivity(this);
         return table;
     }
@@ -61,6 +63,6 @@ public abstract class IssueTableActivity implements AbstractIssueTableActivity, 
     IssueServiceAsync issueService;
 
     @Inject
-    Provider<AbstractIssueTableView> tableProvider;
+    Provider<AbstractSimpleIssueTableView> tableProvider;
 
 }

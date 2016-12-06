@@ -8,9 +8,9 @@ import java.util.List;
 /**
  * Created by bondarenko on 01.12.16.
  */
-public interface AbstractIssueTableView  extends IsWidget {
+public interface AbstractSimpleIssueTableView extends IsWidget {
 
-    void setActivity( AbstractIssueTableActivity activity );
+    void setActivity( AbstractSimpleIssueTableActivity activity );
     void putRecords(List<CaseObject> cases);
 
 }

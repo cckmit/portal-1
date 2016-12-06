@@ -7,7 +7,7 @@ import ru.brainworm.factory.context.client.annotation.Url;
  */
 public class DashboardEvents {
 
-    @Url( value = "", primary = true )
+    @Url( value = "dashboard", primary = true )
     public static class Show {
 
         public Show () {}

@@ -12,10 +12,10 @@ import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.issue.client.activity.simpletable.AbstractIssueTableActivity;
-import ru.protei.portal.ui.issue.client.activity.simpletable.AbstractIssueTableView;
+import ru.protei.portal.ui.issue.client.activity.simpletable.AbstractSimpleIssueTableActivity;
+import ru.protei.portal.ui.issue.client.activity.simpletable.AbstractSimpleIssueTableView;
+import ru.protei.portal.ui.issue.client.view.simpletable.columns.ContactColumn;
 import ru.protei.portal.ui.issue.client.view.simpletable.columns.ManagerColumn;
-import ru.protei.portal.ui.issue.client.view.table.columns.ContactColumn;
 import ru.protei.portal.ui.issue.client.view.table.columns.InfoColumn;
 import ru.protei.portal.ui.issue.client.view.table.columns.NumberColumn;
 
@@ -24,7 +24,7 @@ import java.util.List;
 /**
  * Представление таблицы обращений
  */
-public class IssueTableView extends Composite implements AbstractIssueTableView {
+public class SimpleIssueTableView extends Composite implements AbstractSimpleIssueTableView {
 
     @Inject
     public void onInit() {
@@ -38,7 +38,7 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
     }
 
     @Override
-    public void setActivity(AbstractIssueTableActivity activity) {
+    public void setActivity(AbstractSimpleIssueTableActivity activity) {
         this.activity = activity;
         issueNumber.setHandler( activity );
         issueNumber.setColumnProvider( columnProvider );
@@ -67,7 +67,7 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
     ManagerColumn manager;
     InfoColumn info;
 
-    AbstractIssueTableActivity activity;
+    AbstractSimpleIssueTableActivity activity;
 
     @UiField
     HTMLPanel tableContainer;
@@ -82,6 +82,6 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
     @UiField
     Lang lang;
 
-    interface IssueTableViewUiBinder extends UiBinder<HTMLPanel, IssueTableView> {}
+    interface IssueTableViewUiBinder extends UiBinder<HTMLPanel, SimpleIssueTableView> {}
     private static IssueTableViewUiBinder ourUiBinder = GWT.create(IssueTableViewUiBinder.class);
 }

@@ -6,6 +6,6 @@ import ru.protei.portal.ui.common.client.columns.ClickColumn;
 /**
  * Активность таблицы контактов
  */
-public interface AbstractIssueTableActivity extends ClickColumn.Handler<CaseObject>{
+public interface AbstractSimpleIssueTableActivity extends ClickColumn.Handler<CaseObject>{
 
 }
