@@ -14,9 +14,7 @@ import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.crm.client.events.DashboardEvents;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Set;
+import java.util.*;
 import java.util.function.LongConsumer;
 import java.util.stream.Collectors;
 
@@ -144,8 +142,12 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
 
     private CaseQuery generateInactiveRecordsQuery(){
         CaseQuery query = new CaseQuery(En_CaseType.CRM_SUPPORT, null, En_SortField.last_update, En_SortDir.ASC);
-        query.setStates(issueStates.getInactiveStates());
-        query.setLimit(20);
+        query.setManagerId(profile.getId());
+
+        List<En_CaseState> inactiveStates = new ArrayList<>(issueStates.getInactiveStates());
+        inactiveStates.remove(En_CaseState.VERIFIED);
+
+        query.setStates(inactiveStates);
 
         return query;
     }

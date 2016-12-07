@@ -1,7 +1,6 @@
 package ru.protei.portal.ui.common.client.events;
 
 import com.google.gwt.user.client.ui.HasWidgets;
-import ru.brainworm.factory.context.client.annotation.Url;
 
 /**
  * Событие для App
@@ -23,14 +22,6 @@ public class AppEvents {
      */
     public static class Logout {
         public Logout() { }
-    }
-
-    /**
-     *   Отобразить App
-     */
-    @Url( value = "app", primary = true )
-    public static class Show {
-        public Show(){}
     }
 
     /**

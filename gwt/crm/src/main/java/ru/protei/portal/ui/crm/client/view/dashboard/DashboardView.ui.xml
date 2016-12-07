@@ -6,30 +6,30 @@
     <g:HTMLPanel styleName="dashboard grid">
         <section class="dashboard-active-records col-sm-12 col-lg-6">
             <label class="dashboard-section-name">
-                <ui:text from="{lang.activeIssues}"/>
+                <ui:text from="{lang.activeRecords}"/>
+                <span ui:field="activeRecordsCount" class="dashboard-total-count"/>
                 <div class="rightSide">
                     <importance:CustomImportanceBtnGroup ui:field="activeRecordsImportance"/>
-                    <span ui:field="activeRecordsCount" class="dashboard-total-count"/>
                 </div>
             </label>
             <g:HTMLPanel ui:field="activeRecordsContainer" styleName="dashboard-records-table"/>
         </section>
         <section class="dashboard-new-records col-sm-12 col-lg-6">
             <label class="dashboard-section-name">
-                <ui:text from="{lang.newIssues}"/>
+                <ui:text from="{lang.newRecords}"/>
+                <span ui:field="newRecordsCount" class="dashboard-total-count"/>
                 <div class="rightSide">
                     <importance:CustomImportanceBtnGroup ui:field="newRecordsImportance"/>
-                    <span ui:field="newRecordsCount" class="dashboard-total-count"/>
                 </div>
             </label>
             <g:HTMLPanel ui:field="newRecordsContainer" styleName="dashboard-records-table"/>
         </section>
         <section class="dashboard-completed-records col-sm-12">
             <label class="dashboard-section-name">
-                <ui:text from="{lang.inactiveIssues}"/>
+                <ui:text from="{lang.inactiveRecords}"/>
+                <span ui:field="inactiveRecordsCount" class="dashboard-total-count"/>
                 <div class="rightSide">
                     <importance:CustomImportanceBtnGroup ui:field="inactiveRecordsImportance"/>
-                    <span ui:field="inactiveRecordsCount" class="dashboard-total-count"/>
                 </div>
             </label>
             <div ui:field="inactiveRecordsLoader" class="Loader"/>

@@ -44,16 +44,6 @@ public abstract class AppActivity
 
         view.setUsername( event.profile.getName(), event.profile.getRole().getCaRoleName() );
 
-        if ( initialToken.isEmpty() ) {
-            fireEvent( new AppEvents.Show() );
-            return;
-        }
-
-        if (initialToken.equals( History.getToken() )) {
-            fireEvent( new AppEvents.Show() );
-            return;
-        }
-
         History.newItem( initialToken );
     }
 

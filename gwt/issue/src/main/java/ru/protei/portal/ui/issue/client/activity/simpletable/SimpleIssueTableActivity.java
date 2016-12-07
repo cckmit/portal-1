@@ -13,6 +13,7 @@ import ru.protei.portal.ui.common.client.service.IssueServiceAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.List;
+import java.util.function.LongConsumer;
 
 /**
  * Created by bondarenko on 01.12.16.
@@ -48,6 +49,22 @@ public abstract class SimpleIssueTableActivity implements AbstractSimpleIssueTab
                     thanAction.run();
             }
         } );
+    }
+
+    private void initTable(CaseQuery query, LongConsumer issueCountSetter, IssueEvents.ShowCustom event){
+        issueService.getIssuesCount(query, new RequestCallback<Long>() {
+            @Override
+            public void onError(Throwable throwable) {
+
+            }
+
+            @Override
+            public void onSuccess(Long aLong) {
+                issueCountSetter.accept(aLong);
+            }
+        });
+
+        fireEvent(event);
     }
 
     private AbstractSimpleIssueTableView createTableView(){
