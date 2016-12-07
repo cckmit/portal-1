@@ -27,7 +27,7 @@ import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSele
 import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterActivity;
 import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterView;
 import ru.protei.portal.ui.issue.client.widget.importance.btngroup.ImportanceBtnGroup;
-import ru.protei.portal.ui.issue.client.widget.state.btngroup.IssueStatesBtnGroup;
+import ru.protei.portal.ui.issue.client.widget.state.option.IssueStatesOptionList;
 
 import java.util.Set;
 
@@ -200,7 +200,7 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
 
     @Inject
     @UiField ( provided = true )
-    IssueStatesBtnGroup state;
+    IssueStatesOptionList state;
 
     @Inject
     @UiField( provided = true )

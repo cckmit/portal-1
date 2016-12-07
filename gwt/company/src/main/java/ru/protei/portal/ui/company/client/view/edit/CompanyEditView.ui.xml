@@ -45,8 +45,8 @@
                         <label>
                             <ui:text from="{lang.companyWebSite}"/>
                         </label>
-                        <div class="panelField">
-                            <span class="label">http://</span>
+                        <div class="input-group">
+                            <span class="input-group-addon">http://</span>
                             <g:TextBox ui:field="webSite" styleName="input-field"/>
                         </div>
                     </div>

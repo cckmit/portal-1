@@ -9,18 +9,14 @@
 
 
 /**** RANGE PICKER ****/
-.date .form-control {
-  @extend .input-field;
-}
+.date {
+  .form-control {
+    @extend .input-field;
+  }
 
-.date .btn-default {
-  @extend .btn-white;
-}
-
-.input-group {
-  position: relative;
-  display: table;
-  border-collapse: separate;
+  .btn-default {
+    @extend .btn-white;
+  }
 }
 
 .input-group[class*="col-"] {
@@ -29,27 +25,44 @@
   padding-left: 0;
 }
 
-.input-group .form-control {
-  width: 100%;
-  margin-bottom: 0;
-}
-
-.input-group-btn,
-.input-group .form-control {
-  display: table-cell;
-}
-
-.input-group-btn {
-  width: 1%;
-  white-space: nowrap;
-  vertical-align: middle;
-}
-
-.input-group-btn {
+.input-group {
   position: relative;
-  white-space: nowrap;
-}
+  display: table;
+  border-collapse: separate;
 
-.input-group-btn .btn {
-  margin-right: -1px;
+  .form-control,
+  .input-field {
+    width: 100%;
+    margin-bottom: 0;
+  }
+
+  .input-group-btn,
+  .input-group-addon,
+  .form-control,
+  .input-field {
+    display: table-cell;
+  }
+
+  .input-group-btn,
+  .input-group-addon {
+    width: 1%;
+    white-space: nowrap;
+    vertical-align: middle;
+    position: relative;
+  }
+
+  .input-group-btn .btn {
+    border-left: 0;
+  }
+
+  .input-group-addon {
+    padding: 6px 12px;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1;
+    text-align: center;
+    background-color: #eee;
+    border: 1px solid #ccc;
+    border-right: 0;
+  }
 }

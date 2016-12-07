@@ -110,7 +110,7 @@ body {
   -webkit-transition: .3s ease-in-out;
   background-color: #ffffff;
   border-radius: 1px;
-  border: 1px solid rgba(120, 130, 140, 0.13);
+  border: 1px solid #ced2d7;
   content: "";
   display: inline-block;
   height: 17px;
@@ -515,49 +515,34 @@ label.bordered:after{
   margin: 0;
 }
 
-.gwt-TextBox{
-  width: 100%;
-  line-height: 20px;
-  box-sizing: border-box;
-  padding: 3px 20px;
-  background: rgb(247, 248, 250);
-  border-bottom: 1px solid #ced2d7;
-  box-shadow: 0 2px 8px -2px #bdbdbd inset;
-}
-
-.inputField.required,
-.button.required{
-  border: 1px solid #f54646;
+.input-field.required,
+.btn.required{
+  border: 1px solid #f54646 !important;
 }
 
 /*  auto-add-value-comment widget */
-
-.autoadd-vc-group{
+.autoadd-vc-group {
   width: 100%;
+
+  .autoadd-vc-item + .autoadd-vc-item{
+    margin-top: 7px;
+  }
+
+  .autoadd-vc-item {
+    display: flex;
+
+    .autoadd-vc-item-v,
+    .autoadd-vc-item-c,
+    .btn-selector {
+      width: 100%;
+    }
+
+    .autoadd-vc-item-v,
+    .btn-selector {
+      margin-right: 7px;
+    }
+  }
 }
-
-.autoadd-vc-item{
-  display: flex;
-}
-
-.autoadd-vc-item + .autoadd-vc-item{
-  margin-top: 7px;
-}
-
-//.autoadd-vc-item .inputField{
-//  margin-right: 7px;
-//}
-
-// value input field style
-.autoadd-vc-item-v{
-  margin-right: 7px;
-}
-
-// comment input field style
-.autoadd-vc-item-c{
-  width: 100%;
-}
-
 /************************/
 
 
@@ -950,30 +935,49 @@ td.info {
 }
 
 /*** LABELS OF STATES ***/
-.label-created {
+.label-created,
+.option-created .option-name{
   background-color: #ef5350;
 }
 
-.label-opened {
+.label-opened,
+.option-opened .option-name{
   background-color: #42a5f5;
 }
 
-.label-active {
+.label-active,
+.option-active .option-name{
   background-color: #00bcd4;
 }
 
-.label-done {
+.label-done,
+.option-done .option-name{
   background-color: #4caf50;
 }
 
 .label-test_local,
-.label-test_cust {
+.label-test_cust,
+.option-test_local .option-name,
+.option-test_cust .option-name{
   background-color: #906094;
 }
 
-.label-verified {
+.label-verified,
+.option-verified .option-name{
   background-color: #607D8B;
 }
+
+.option-name {
+  display: inline-block;
+  padding: .2em .6em .3em;
+  font-weight: bold;
+  color: #fff;
+  white-space: nowrap;
+  border-radius: .25em;
+  font-size: 76%;
+}
+
+  /****************/
 
 .width-xs {
   min-width: 100px;
@@ -983,49 +987,11 @@ td.info {
   text-align: center;
 }
 
-/****************/
-
-
-/*** BUTTONS OF STATES ***/
-.button-created {
-  background-color: #ef5350;
-  border-color: #ef5350;
-  color: #ffffff;
-}
-
-.button-opened {
-  background-color: #42a5f5;
-  border-color: #42a5f5;
-  color: #ffffff;
-}
-
-.button-active {
-  background-color: #00bcd4;
-  border-color: #00bcd4;
-  color: #ffffff;
-}
-
-.button-done {
-  background-color: #4caf50;
-  border-color: #4caf50;
-  color: #ffffff;
-}
-
-.button-test_local,
-.button-test_cust {
-  background-color: #906094;
-  border-color: #906094;
-  color: #ffffff;
-}
-
-.button-verified {
-  background-color: #607D8B;
-  border-color: #607D8B;
-  color: #ffffff;
-}
-/****************/
-
 .filter-container .panel .body .buttons_group {
   width: 100%;
   margin-top: -5px;
+}
+
+.bold {
+  font-weight: bold;
 }

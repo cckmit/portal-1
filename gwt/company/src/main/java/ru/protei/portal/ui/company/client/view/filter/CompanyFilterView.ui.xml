@@ -11,7 +11,7 @@
                 <g:TextBox ui:field="search" styleName="input-field"/>
             </div>
             <div class="form-group col-xs-12">
-                <ui:text from="{lang.sortBy}"/>
+                <label><ui:text from="{lang.sortBy}"/></label>
                 <div class="control-group">
                     <sortfieldselector:SortFieldSelector ui:field="sortField" type="COMPANY"/>
                     <g:ToggleButton ui:field="sortDir" styleName="btn btn-white sorting_button"/>
