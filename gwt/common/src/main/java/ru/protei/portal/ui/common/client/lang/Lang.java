@@ -281,4 +281,6 @@ public interface Lang extends Messages, ContactItemLang {
     String errRemoveIssueComment();
 
     String errEditIssueComment();
+
+    String selectCompanyGroup();
 }

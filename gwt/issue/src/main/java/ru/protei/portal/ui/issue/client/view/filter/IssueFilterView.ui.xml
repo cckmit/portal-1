@@ -53,7 +53,7 @@
             </div>
         </div>
         <div class="footer">
-            <g:Button ui:field="resetBtn" styleName="btn btn-success" text="{lang.buttonReset}"/>
+            <g:Button ui:field="resetBtn" styleName="btn btn-white" text="{lang.buttonReset}"/>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>

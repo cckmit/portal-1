@@ -1,8 +1,8 @@
 package ru.protei.portal.ui.common.client.widget.selector.person;
 
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 
@@ -29,9 +29,10 @@ public class EmployeeButtonSelector extends ButtonSelector<PersonShortView> impl
             setValue(null);
         }
 
-        persons.forEach(person -> addOption(person.getDisplayShortName(),
-                person.isFired() ? "not-active" : "" ,
-                person.isFired() ? "fa fa-ban ban" : "" ,
+        persons.forEach(person -> addOption(new DisplayOption(
+                        person.getDisplayShortName(),
+                        person.isFired() ? "not-active" : "",
+                        person.isFired() ? "fa fa-ban ban" : ""),
                 person));
     }
 
