@@ -103,12 +103,6 @@ public class CompanyFilterView extends Composite implements AbstractCompanyFilte
 
     @UiHandler("sortDir")
     public void onSortDirClicked( ClickEvent event ) {
-
-        if (sortDir.getValue())
-            sortDir.removeStyleName( "active" );
-        else
-            sortDir.addStyleName( "active" );
-
         if ( activity != null ) {
             activity.onFilterChanged();
         }

@@ -204,9 +204,26 @@ body {
     }
   }
 
-  .sorting_button {
-    display: table-cell;
-    width: 1%;
+}
+
+.btn.sorting_button {
+  display: table-cell;
+  width: 1%;
+  padding: 0;
+  min-width: 30px;
+  border-left: 0;
+  height: 28px;
+
+  &.btn-down:after,
+  &.btn-up-hovering:after{
+    font: normal normal normal 14px/1 FontAwesome;
+    content: "\f160";
+  }
+
+  &.btn-up:after,
+  &.btn-down-hovering:after{
+    font: normal normal normal 14px/1 FontAwesome;
+    content: "\f161";
   }
 }
 
