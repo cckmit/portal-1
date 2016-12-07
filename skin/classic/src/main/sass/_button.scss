@@ -16,8 +16,8 @@
   background-image: none;
   border: 1px solid transparent;
   white-space: nowrap;
-  height: 30px;
   font-size: 12px;
+  line-height: 1.42857143;
 
   &[disabled] {
     cursor: not-allowed;
@@ -43,40 +43,48 @@
   }
 }
 
-.btn i {
-  font-size: 14px;
-  margin-right: 2px;
+.btn-group,
+.btn-group-vertical {
+  position: relative;
   display: inline-block;
-  min-width: 10px
+  vertical-align: middle;
+  > .btn {
+    position: relative;
+    float: left;
+    &:hover,
+    &:focus,
+    &:active,
+    &.active {
+      z-index: 2;
+    }
+  }
 }
 
-.btn-lg {
-  padding: 12px 14px;
-  font-size: 15px;
-  font-weight: 300
+.btn-group {
+  .btn + .btn,
+  .btn + .btn-group,
+  .btn-group + .btn,
+  .btn-group + .btn-group {
+    margin-left: -1px;
+  }
 }
 
-.btn-lg i {
-  font-size: 18px
+.btn-group-justified {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: separate;
+  > .btn,
+  > .btn-group {
+    float: none;
+    display: table-cell;
+    width: 1%;
+  }
+  > .btn-group .btn {
+    width: 100%;
+  }
 }
 
-.btn-sm {
-  padding: 4px 7px;
-  font-size: 12px
-}
-
-.btn-sm i {
-  font-size: 14px
-}
-
-.btn-xs {
-  padding: 2px 6px;
-  font-size: 11px
-}
-
-.btn-xs i {
-  font-size: 12px
-}
 
 .btn-selector {
   .btn {
@@ -91,6 +99,10 @@
       position: absolute;
     }
   }
+}
+
+.btn-without-border {
+  border: transparent;
 }
 
 .btn-white {

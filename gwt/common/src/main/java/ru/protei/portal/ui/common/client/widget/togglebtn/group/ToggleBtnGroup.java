@@ -79,19 +79,16 @@ public class ToggleBtnGroup< T >
     }
 
     public void addBtn( String caption, T value ) {
-        addBtn( caption, value, null, "button btn-white switcher" );
+        addBtn( caption, value, "btn btn-white" );
     }
 
-    public void addBtn( String caption, T value, String style, String buttonStyle ) {
+    public void addBtn( String caption, T value, String buttonStyle ) {
         ToggleButton itemView = itemFactory.get();
         if ( caption != null ) {
             itemView.setText( caption );
         }
-        if ( style != null ) {
-            itemView.setStyleName( style );
-        }
-        else if ( buttonStyle != null ) {
-            itemView.setButtonStyle( buttonStyle );
+        if ( buttonStyle != null ) {
+            itemView.setStyleName( buttonStyle );
         }
 
         itemView.addValueChangeHandler( this );
@@ -100,16 +97,13 @@ public class ToggleBtnGroup< T >
         itemViewToModel.put( itemView, value );
     }
 
-    public void addBtnWithIcon( String iconStyle, String buttonStyle, String caption, String style, T value ) {
+    public void addBtnWithIcon( String iconStyle, String buttonStyle, String caption, T value ) {
         ToggleButton itemView = itemFactory.get();
         if ( iconStyle != null ) {
             itemView.setIcon( iconStyle );
         }
         if ( buttonStyle != null ) {
-            itemView.setButtonStyle( buttonStyle );
-        }
-        if ( style != null ) {
-            itemView.setStyleName( style );
+            itemView.setStyleName( buttonStyle );
         }
         if ( caption != null ) {
             itemView.setText( caption );

@@ -21,9 +21,8 @@ public class ImportanceBtnGroup extends ToggleBtnGroup<En_ImportanceLevel> {
 
         for ( En_ImportanceLevel type : En_ImportanceLevel.values() ) {
             addBtnWithIcon( "importance importance-lg " + CriticalityStyleBuilder.make().getClassName( type ),
-                    "button empty whiteC " + type.toString().toLowerCase(),
+                    "btn btn-white btn-without-border" + type.toString().toLowerCase(),
                     null,
-                    "col-xs-12 col-md-3",
                     type );
         }
     }

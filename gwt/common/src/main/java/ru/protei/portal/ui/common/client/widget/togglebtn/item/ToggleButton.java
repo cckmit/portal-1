@@ -49,15 +49,11 @@ public class ToggleButton
     }
 
     public void setTitle( String value ) {
-        this.root.setTitle( value );
+        this.button.setTitle( value );
     }
 
     public void setIcon( String iconName ) {
         this.icon.setClassName( iconName );
-    }
-
-    public void setButtonStyle( String style ) {
-        this.button.setStyleName( style );
     }
 
     @Override
@@ -108,8 +104,6 @@ public class ToggleButton
     Element icon;
     @UiField
     HTMLPanel button;
-    @UiField
-    HTMLPanel root;
 
     HandlerRegistration reg;
 

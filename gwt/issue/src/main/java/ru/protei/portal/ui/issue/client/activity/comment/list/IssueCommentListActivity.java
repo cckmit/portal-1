@@ -165,7 +165,7 @@ public abstract class IssueCommentListActivity
         AbstractIssueCommentItemView itemView = issueProvider.get();
         itemView.setActivity( this );
         itemView.setDate( DateFormatter.formatDateTime( value.getCreated() ) );
-        itemView.setOwner( String.valueOf( value.getAuthor().getLastName() + " " + value.getAuthor().getFirstName() ) );
+        itemView.setOwner( value.getAuthor() == null ? "Unknown" : value.getAuthor().getDisplayName() );
         itemView.setMessage( value.getText() );
 
         itemView.enabledEdit( IssueCommentUtils.isEnableEdit( value, profile.getId() ) );
