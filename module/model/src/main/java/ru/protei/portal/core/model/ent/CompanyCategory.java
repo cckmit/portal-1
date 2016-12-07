@@ -1,5 +1,7 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.EntityOptionSupport;
 import ru.protei.winter.jdbc.annotations.IdInsertMode;
 import ru.protei.winter.jdbc.annotations.JdbcColumn;
 import ru.protei.winter.jdbc.annotations.JdbcEntity;
@@ -12,7 +14,7 @@ import java.util.Date;
  * Created by turik on 13.10.16.
  */
 @JdbcEntity(table = "company_category")
-public class CompanyCategory implements Serializable {
+public class CompanyCategory implements Serializable, EntityOptionSupport {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -23,8 +25,16 @@ public class CompanyCategory implements Serializable {
     @JdbcColumn(name = "category_name")
     private String name;
 
-    public CompanyCategory() {
+    public static CompanyCategory fromEntityOption(EntityOption entityOption){
+        if(entityOption == null)
+            return null;
+
+        CompanyCategory category = new CompanyCategory(entityOption.getId());
+        category.setName(entityOption.getDisplayText());
+        return category;
     }
+
+    public CompanyCategory() {}
 
     public CompanyCategory (long id) {
         this.id = id;
@@ -54,4 +64,8 @@ public class CompanyCategory implements Serializable {
         this.name = name;
     }
 
+    @Override
+    public EntityOption toEntityOption() {
+        return new EntityOption(this.name, this.id);
+    }
 }

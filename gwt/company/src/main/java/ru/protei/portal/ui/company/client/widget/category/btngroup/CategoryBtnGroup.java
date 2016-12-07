@@ -1,7 +1,7 @@
 package ru.protei.portal.ui.company.client.widget.category.btngroup;
 
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.ent.CompanyCategory;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
 import ru.protei.portal.ui.common.client.widget.togglebtn.group.ToggleBtnGroup;
 import ru.protei.portal.ui.company.client.widget.category.CategoryModel;
@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * Created by turik on 13.10.16.
  */
-public class CategoryBtnGroup extends ToggleBtnGroup< CompanyCategory > implements ModelSelector< CompanyCategory > {
+public class CategoryBtnGroup extends ToggleBtnGroup< EntityOption > implements ModelSelector< EntityOption > {
 
     @Inject
     public void init( CategoryModel categoryModel) {
@@ -19,11 +19,14 @@ public class CategoryBtnGroup extends ToggleBtnGroup< CompanyCategory > implemen
     }
 
     @Override
-    public void fillOptions( List< CompanyCategory > categories ) {
+    public void fillOptions( List< EntityOption > options ) {
         clear();
 
-        for ( CompanyCategory category : categories ) {
-            addBtn( category.getName(), category );
+        for ( EntityOption option : options ) {
+            addBtn( "button whiteC ",
+                    option.getDisplayText(),
+                    option,
+                    "col-xs-12 col-sm-6 col-md-4" );
         }
     }
 }

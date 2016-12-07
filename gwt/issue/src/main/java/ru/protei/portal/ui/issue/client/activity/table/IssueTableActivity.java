@@ -1,5 +1,7 @@
 package ru.protei.portal.ui.issue.client.activity.table;
 
+import com.google.gwt.regexp.shared.MatchResult;
+import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
@@ -159,7 +161,26 @@ public abstract class IssueTableActivity
     }
 
     private CaseQuery getQuery() {
-        CaseQuery query = new CaseQuery(En_CaseType.CRM_SUPPORT, filterView.searchPattern().getValue(), filterView.sortField().getValue(), filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC );
+        CaseQuery query = new CaseQuery();
+        query.setType( En_CaseType.CRM_SUPPORT );
+        query.setSortField( filterView.sortField().getValue() );
+        query.setSortDir( filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC );
+
+        String value = filterView.searchPattern().getValue();
+
+        if (value == null || value.isEmpty()) {
+            query.setSearchString( null );
+        }
+        else {
+            MatchResult result = caseNoPattern.exec( value );
+
+            if (result != null && result.getGroup(0).equals( value )) {
+                query.setCaseNo( Long.parseLong( value ) );
+            }
+            else {
+                query.setSearchString( value );
+            }
+        }
 
         query.setCompanyId( filterView.company().getValue() == null? null : filterView.company().getValue().getId() );
         query.setProductId( filterView.product().getValue() == null? null : filterView.product().getValue().getId() );
@@ -208,4 +229,6 @@ public abstract class IssueTableActivity
 
     private static String CREATE_ACTION;
     private AppEvents.InitDetails initDetails;
+
+    private final RegExp caseNoPattern = RegExp.compile("\\d+");
 }

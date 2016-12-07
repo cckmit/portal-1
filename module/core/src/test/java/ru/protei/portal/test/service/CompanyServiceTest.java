@@ -86,7 +86,6 @@ public class CompanyServiceTest {
     public void testCompanies () {
 
         Long companyId = null;
-        Long groupId = null;
 
         try {
 
@@ -106,15 +105,14 @@ public class CompanyServiceTest {
 
             CompanyGroup group = ctx.getBean(CompanyGroupDAO.class).get(new Long(1));
 
-            CoreResponse<Company> response = service.createCompany(company, group);
+            company.setGroupId( group.getId() );
+
+            CoreResponse<Company> response = service.createCompany(company);
             Assert.assertTrue(response.isOk());
             Assert.assertNotNull(response.getData());
 
             System.out.println(company.getId());
 
-            CompanyGroup newGroup = new CompanyGroup();
-            newGroup.setCreated(new Date());
-            newGroup.setName("Моя тестовая группа");
 
             dupCompany = ctx.getBean(CompanyDAO.class).getCompanyByName(company.getCname());
             if (company.getId() == null) {
@@ -127,24 +125,20 @@ public class CompanyServiceTest {
             Assert.assertNotNull(response.getData());
 
             company.setCname("Моя тестовая компания");
-            response =  service.updateCompany(company, newGroup);
+            response =  service.updateCompany(company);
             Assert.assertTrue(response.isOk());
             Assert.assertNotNull(response.getData());
 
             companyId = company.getId();
-            groupId = newGroup.getId();
 
         } finally {
-            if (companyId != null && groupId != null) {
+            if (companyId != null) {
                 ctx.getBean(CompanyGroupItemDAO.class).getCompanyToGroupLinks(companyId, null).forEach(item -> {
                     ctx.getBean(CompanyGroupItemDAO.class).remove(item);
                 });
             }
             if (companyId != null)
                 ctx.getBean(CompanyDAO.class).removeByCondition("id=?", companyId);
-            if (groupId != null)
-                ctx.getBean(CompanyGroupDAO.class).removeByCondition("id=?", groupId);
-
         }
     }
 }

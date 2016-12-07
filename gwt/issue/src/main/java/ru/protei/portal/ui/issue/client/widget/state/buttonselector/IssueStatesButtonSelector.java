@@ -37,5 +37,4 @@ public class IssueStatesButtonSelector extends ButtonSelector<En_CaseState> impl
 
     @Inject
     En_CaseStateLang lang;
-
 }

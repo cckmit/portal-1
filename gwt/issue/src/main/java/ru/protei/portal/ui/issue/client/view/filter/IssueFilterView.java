@@ -16,6 +16,8 @@ import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
@@ -55,12 +57,12 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     }
 
     @Override
-    public HasValue<EntityOption> product() {
+    public HasValue<ProductShortView> product() {
         return product;
     }
 
     @Override
-    public HasValue<EntityOption> manager () { return manager; }
+    public HasValue<PersonShortView> manager () { return manager; }
 
     @Override
     public HasValue< Set <En_CaseState > > states() { return state; }
@@ -93,7 +95,7 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         state.setValue( null );
         dateRange.setValue( null );
         sortField.setValue( En_SortField.creation_date );
-        sortDir.setValue( true );
+        sortDir.setValue( false );
         search.setText( "" );
     }
 
@@ -105,8 +107,22 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         }
     }
 
-    @UiHandler( {"company", "product", "manager"} )
-    public void onAnySelected( ValueChangeEvent<EntityOption> event ) {
+    @UiHandler( "company" )
+    public void onCompanySelected( ValueChangeEvent<EntityOption> event ) {
+        if ( activity != null ) {
+            activity.onFilterChanged();
+        }
+    }
+
+    @UiHandler( "product" )
+    public void onProductSelected( ValueChangeEvent<ProductShortView> event ) {
+        if ( activity != null ) {
+            activity.onFilterChanged();
+        }
+    }
+
+    @UiHandler( "manager" )
+    public void onManagerSelected( ValueChangeEvent<PersonShortView> event ) {
         if ( activity != null ) {
             activity.onFilterChanged();
         }
