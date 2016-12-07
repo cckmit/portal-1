@@ -44,16 +44,8 @@ public class ToggleButton
         return value.getValue();
     }
 
-    public void setFacetEnabled( boolean enable ) {
-        this.facetEnabled = enable;
-    }
-
     public void setText( String value ) {
         this.text.setInnerText( value );
-    }
-
-    public void setCaption( String value ) {
-        this.caption.setInnerText( value );
     }
 
     public void setTitle( String value ) {
@@ -101,10 +93,10 @@ public class ToggleButton
 
     private void setActive( Boolean value ) {
         if ( value ) {
-            button.addStyleName( facetEnabled ? "btn-down" : "active" );
+            button.addStyleName( "active" );
         }
         else {
-            button.removeStyleName( facetEnabled ? "btn-up" : "active" );
+            button.removeStyleName( "active" );
         }
     }
 
@@ -115,13 +107,10 @@ public class ToggleButton
     @UiField
     Element icon;
     @UiField
-    SpanElement caption;
-    @UiField
     HTMLPanel button;
     @UiField
     HTMLPanel root;
 
-    boolean facetEnabled = false;
     HandlerRegistration reg;
 
     interface ToggleButtonUiBinder extends UiBinder<HTMLPanel, ToggleButton > {}
