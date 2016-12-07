@@ -26,7 +26,7 @@ public class ContactColumnBuilder {
             root.appendChild( div );
         }
         return this;
-    };
+    }
 
     public Element toElement() {
         return root;

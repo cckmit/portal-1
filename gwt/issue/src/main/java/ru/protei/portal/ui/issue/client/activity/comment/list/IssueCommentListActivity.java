@@ -5,6 +5,7 @@ import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
@@ -15,6 +16,7 @@ import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.issue.client.activity.comment.item.AbstractIssueCommentItemActivity;
 import ru.protei.portal.ui.issue.client.activity.comment.item.AbstractIssueCommentItemView;
+import ru.protei.portal.ui.issue.client.activity.comment.label.AbstractIssueCommentLabelView;
 import ru.protei.portal.ui.issue.client.service.IssueServiceAsync;
 import ru.protei.portal.ui.issue.client.util.IssueCommentUtils;
 
@@ -156,8 +158,13 @@ public abstract class IssueCommentListActivity
         view.getCommentsContainer().clear();
 
         for ( CaseComment value : comments ) {
-            AbstractIssueCommentItemView itemView = makeCommentView( value );
-            view.getCommentsContainer().add( itemView.asWidget() );
+            if ( value.getCaseStateId() != null ) {
+                AbstractIssueCommentLabelView labelView = makeLabelView( value );
+                view.getCommentsContainer().add( labelView.asWidget() );
+            } else {
+                AbstractIssueCommentItemView itemView = makeCommentView( value );
+                view.getCommentsContainer().add( itemView.asWidget() );
+            }
         }
     }
 
@@ -177,6 +184,16 @@ public abstract class IssueCommentListActivity
         return itemView;
     }
 
+    private AbstractIssueCommentLabelView makeLabelView( CaseComment value ) {
+        AbstractIssueCommentLabelView labelView = issueLabelProvider.get();
+        En_CaseState caseState = En_CaseState.getById( value.getCaseStateId() );
+        labelView.setDate( DateFormatter.formatDateTime( value.getCreated() ) );
+        labelView.setOwner( value.getAuthor() == null ? "Unknown" : value.getAuthor().getDisplayName()  );
+        labelView.setStatus( caseState );
+
+        return labelView;
+    }
+
     private void initCaseCommentByUser() {
         comment = new CaseComment();
         comment.setAuthorId( profile.getId() );
@@ -191,6 +208,8 @@ public abstract class IssueCommentListActivity
     AbstractIssueCommentListView view;
     @Inject
     Provider<AbstractIssueCommentItemView> issueProvider;
+    @Inject
+    Provider<AbstractIssueCommentLabelView> issueLabelProvider;
 
     private CaseComment comment;
     private CaseComment lastUserComment = null;

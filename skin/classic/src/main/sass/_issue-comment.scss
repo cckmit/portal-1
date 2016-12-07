@@ -44,8 +44,8 @@
 
 .chats .image {
   float: left;
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
   -webkit-border-radius: 4px;
   -moz-border-radius: 4px;
   border-radius: 4px;
@@ -57,7 +57,7 @@
 }
 
 .chats .image + .message {
-  margin-left: 75px
+  margin-left: 60px
 }
 
 .chats .message {
@@ -151,4 +151,8 @@
   padding: 15px;
   margin: 0 -15px -15px -15px;
   background: rgba(0, 128, 128, 0.1);
+
+  .input-field {
+    min-height: 100px;
+  }
 }

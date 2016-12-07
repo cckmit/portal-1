@@ -957,9 +957,19 @@ td.info {
   background-color: #ef5350;
 }
 
+.case-created {
+  color: #ef5350;
+  font-weight: bold;
+}
+
 .label-opened,
 .option-opened .option-name{
   background-color: #42a5f5;
+}
+
+.case-opened {
+  color: #42a5f5;
+  font-weight: bold;
 }
 
 .label-active,
@@ -967,9 +977,19 @@ td.info {
   background-color: #00bcd4;
 }
 
+.case-active {
+  color: #00bcd4;
+  font-weight: bold;
+}
+
 .label-done,
 .option-done .option-name{
   background-color: #4caf50;
+}
+
+.case-done {
+  color: #4caf50;
+  font-weight: bold;
 }
 
 .label-test_local,
@@ -979,10 +999,22 @@ td.info {
   background-color: #906094;
 }
 
+.case-test_local,
+.case-test_cust {
+  color: #906094;
+  font-weight: bold;
+}
+
 .label-verified,
 .option-verified .option-name{
   background-color: #607D8B;
 }
+
+.case-verified {
+  color: #607D8B;
+  font-weight: bold;
+}
+
 
 .option-name {
   display: inline-block;
