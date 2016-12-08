@@ -6,7 +6,6 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasValue;
@@ -27,6 +26,7 @@ public class ToggleBtnGroup< T >
 
     public ToggleBtnGroup() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+        selected = new HashSet<>();
     }
 
     @Override
@@ -41,9 +41,8 @@ public class ToggleBtnGroup< T >
 
     @Override
     public void setValue( Set< T > values, boolean fireEvents ) {
-        selected = values;
-        if ( selected == null ) {
-            selected = new HashSet<T>();
+        if ( values != null ) {
+            selected = values;
         }
 
         for (Map.Entry<ToggleButton, T> entry : itemViewToModel.entrySet()) {

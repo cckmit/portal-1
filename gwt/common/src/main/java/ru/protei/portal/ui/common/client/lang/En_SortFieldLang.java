@@ -23,6 +23,8 @@ public class En_SortFieldLang {
                 return lang.contactFullName();
             case person_position:
                 return lang.contactPosition();
+            case issue_number:
+                return lang.issueNumber();
             default:
                 return lang.unknownField();
         }

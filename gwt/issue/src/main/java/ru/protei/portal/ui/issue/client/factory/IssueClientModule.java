@@ -12,6 +12,8 @@ import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterView;
 import ru.protei.portal.ui.issue.client.activity.page.IssuePage;
 import ru.protei.portal.ui.issue.client.activity.preview.AbstractIssuePreviewView;
 import ru.protei.portal.ui.issue.client.activity.preview.IssuePreviewActivity;
+import ru.protei.portal.ui.issue.client.activity.simpletable.AbstractSimpleIssueTableView;
+import ru.protei.portal.ui.issue.client.activity.simpletable.SimpleIssueTableActivity;
 import ru.protei.portal.ui.issue.client.activity.table.AbstractIssueTableView;
 import ru.protei.portal.ui.issue.client.activity.table.IssueTableActivity;
 import ru.protei.portal.ui.issue.client.view.comment.item.IssueCommentItemView;
@@ -20,6 +22,7 @@ import ru.protei.portal.ui.issue.client.view.comment.list.IssueCommentListView;
 import ru.protei.portal.ui.issue.client.view.edit.IssueEditView;
 import ru.protei.portal.ui.issue.client.view.filter.IssueFilterView;
 import ru.protei.portal.ui.issue.client.view.preview.IssuePreviewView;
+import ru.protei.portal.ui.issue.client.view.simpletable.SimpleIssueTableView;
 import ru.protei.portal.ui.issue.client.view.table.IssueTableView;
 
 
@@ -41,6 +44,9 @@ public class IssueClientModule extends AbstractGinModule {
         bind( AbstractIssueEditView.class ).to( IssueEditView.class );
 
         bind( AbstractIssueFilterView.class ).to( IssueFilterView.class ).in( Singleton.class );
+
+        bind(SimpleIssueTableActivity.class).asEagerSingleton();
+        bind(AbstractSimpleIssueTableView.class).to(SimpleIssueTableView.class);
 
         bind( IssueCommentListActivity.class ).asEagerSingleton();
         bind( AbstractIssueCommentListView.class ).to( IssueCommentListView.class ).in( Singleton.class );

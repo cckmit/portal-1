@@ -76,8 +76,6 @@
                     <label><ui:text from="{lang.comments}"/></label>
                     <g:HTMLPanel ui:field="commentsContainer"/>
                 </div>
-
-
             </div>
         </div>
         <div class="footer">

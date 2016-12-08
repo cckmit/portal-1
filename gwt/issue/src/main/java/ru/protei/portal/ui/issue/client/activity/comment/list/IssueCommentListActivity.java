@@ -12,12 +12,12 @@ import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.IssueEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.IssueServiceAsync;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.issue.client.activity.comment.item.AbstractIssueCommentItemActivity;
 import ru.protei.portal.ui.issue.client.activity.comment.item.AbstractIssueCommentItemView;
 import ru.protei.portal.ui.issue.client.activity.comment.label.AbstractIssueCommentLabelView;
-import ru.protei.portal.ui.issue.client.service.IssueServiceAsync;
 import ru.protei.portal.ui.issue.client.util.IssueCommentUtils;
 
 import java.util.HashMap;
@@ -48,6 +48,8 @@ public abstract class IssueCommentListActivity
 
         event.parent.clear();
         event.parent.add(view.asWidget());
+
+        view.getCommentsContainer().clear();
 
         requestData( event.caseId );
     }

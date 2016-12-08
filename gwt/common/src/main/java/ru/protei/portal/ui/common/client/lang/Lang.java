@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.common.client.lang;
 
-import com.google.gwt.dom.client.Node;
 import com.google.gwt.i18n.client.Messages;
 import ru.protei.portal.core.model.dict.lang.ContactItemLang;
 
@@ -284,6 +283,12 @@ public interface Lang extends Messages, ContactItemLang {
     String errEditIssueComment();
 
     String selectCompanyGroup();
+
+    String activeIssues();
+    String newIssues();
+    String inactiveIssues();
+
+    String dashboard();
 
     String issueCommentChangeStatusTo();
 }

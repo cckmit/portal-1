@@ -53,6 +53,7 @@ public class InfoColumn extends ClickColumn< CaseObject >{
         }
 
         com.google.gwt.dom.client.Element infoElement = DOM.createElement( "p" );
+        infoElement.addClassName( "issue-description" );
         infoElement.setInnerText( value == null ? "" : value.getInfo() );
         divElement.appendChild( infoElement );
 
