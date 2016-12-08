@@ -1073,6 +1073,10 @@ a {
   border-left: 0;
   height: 28px;
 
+  .btn-down {
+    background-color: teal;
+  }
+
   &.btn-down:after,
   &.btn-up-hovering:after{
     font-family: "Ionicons";

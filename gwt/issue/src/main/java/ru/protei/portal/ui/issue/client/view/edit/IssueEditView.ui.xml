@@ -17,7 +17,7 @@
                     <label><ui:text from="{lang.issueName}"/></label>
                     <div class="input-group">
                         <div class="input-group-btn">
-                            <g:ToggleButton ui:field="local" styleName="btn btn-success private-btn"/>
+                            <g:ToggleButton ui:field="local" styleName="btn btn-danger private-btn"/>
                         </div>
                         <validablefield:ValidableTextBox ui:field="name" styleName="input-field" notNull="true"/>
                     </div>
