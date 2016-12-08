@@ -20,10 +20,10 @@ public class ImportanceBtnGroup extends ToggleBtnGroup<En_ImportanceLevel> {
         clear();
 
         for ( En_ImportanceLevel type : En_ImportanceLevel.values() ) {
-            addBtnWithIcon( "importance importance-lg " + CriticalityStyleBuilder.make().getClassName( type ) + " " + type.toString(),
-                    "width-xs text-center button whiteC " + type.toString(),
-                    lang.getImportanceName( type ),
-                    "col-xs-12 col-sm-6",
+            addBtnWithIcon( "importance importance-lg " + CriticalityStyleBuilder.make().getClassName( type ),
+                    "button empty whiteC " + type.toString().toLowerCase(),
+                    null,
+                    "col-xs-12 col-md-3",
                     type );
         }
     }

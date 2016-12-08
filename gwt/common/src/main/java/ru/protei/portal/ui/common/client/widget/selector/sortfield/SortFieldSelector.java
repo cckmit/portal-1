@@ -34,6 +34,8 @@ public class SortFieldSelector extends ButtonSelector< En_SortField > {
                 addOption( lang.company(), En_SortField.comp_name );
             case ISSUE:
                 addOption( sortFieldLang.getName( En_SortField.creation_date ), En_SortField.creation_date );
+                addOption( sortFieldLang.getName( En_SortField.last_update ), En_SortField.last_update );
+                addOption( sortFieldLang.getName( En_SortField.issue_number ), En_SortField.issue_number );
                 break;
         }
     }

@@ -11,8 +11,9 @@ import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.PersonAbsence;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.view.EmployeeDetailView;
-import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.WorkerView;
 import ru.protei.winter.jdbc.JdbcSort;
 
@@ -42,7 +43,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public EmployeeDetailView getEmployeeAbsences(Long id, Long tFrom, Long tTill, Boolean isFull) {
 
-        Person p = personDAO.getEmployeeById(id);
+        Person p = personDAO.getEmployee( id );
         if (p == null) {
             return null;
         }
@@ -80,7 +81,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     public EmployeeDetailView getEmployeeProfile(Long id){
 
-        Person p = personDAO.getEmployeeById(id);
+        Person p = personDAO.getEmployee( id );
         if (p == null) {
             return null;
         }
@@ -93,15 +94,15 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public CoreResponse<List<EntityOption>> employeeOptionList() {
-        List<Person> list = personDAO.getEmployeesAll();
+    public CoreResponse<List<PersonShortView>> shortViewList(EmployeeQuery query) {
+        List<Person> list = personDAO.getEmployees(query);
 
         if (list == null)
-            new CoreResponse<List<EntityOption>>().error(En_ResultStatus.GET_DATA_ERROR);
+            new CoreResponse<List<PersonShortView>>().error(En_ResultStatus.GET_DATA_ERROR);
 
-        List<EntityOption> result = list.stream().map(Person::toEntityOption).collect(Collectors.toList());
+        List<PersonShortView> result = list.stream().map(Person::toPersonShortView).collect(Collectors.toList());
 
-        return new CoreResponse<List<EntityOption>>().success(result,result.size());
+        return new CoreResponse<List<PersonShortView>>().success(result,result.size());
     }
 
     @Override

@@ -38,20 +38,20 @@ public abstract class Selector<T>
     }
 
 //    public void findAndSelectValue (Predicate<T> predicate, boolean fireEvents) {
-//        setValue(itemToNameModel.keySet().stream().filter(predicate).findFirst().orElse(null), fireEvents);
+//        setValue(itemToDisplayOptionModel.keySet().stream().filter(predicate).findFirst().orElse(null), fireEvents);
 //    }
 
     @Override
     public void setValue( T value, boolean fireEvents ) {
-        if ( value == null && !hasNullValue && !itemToNameModel.isEmpty() ) {
-            value = itemToNameModel.entrySet().iterator().next().getKey();
+        if ( value == null && !hasNullValue && !itemToDisplayOptionModel.isEmpty() ) {
+            value = itemToDisplayOptionModel.entrySet().iterator().next().getKey();
             fireEvents = true;
         }
 
-        if ( value == null || !itemToNameModel.containsKey( value ) ) {
-            fillSelectorView( nullItemName );
+        if ( value == null || !itemToDisplayOptionModel.containsKey( value ) ) {
+            fillSelectorView( nullItemOption );
         } else {
-            fillSelectorView( itemToNameModel.get( value ) );
+            fillSelectorView( itemToDisplayOptionModel.get( value ) );
         }
 
         selectedOption = value;
@@ -87,11 +87,31 @@ public abstract class Selector<T>
         itemViewToModel.put(itemView, value);
         itemToViewModel.put(value, itemView);
         if ( value == null ) {
-            nullItemName = name;
+            nullItemOption = new DisplayOption( name );
             nullItemView = itemView;
         }
         else {
-            itemToNameModel.put( value, name );
+            itemToDisplayOptionModel.put( value, new DisplayOption( name ) );
+        }
+
+        popup.getChildContainer().add(itemView.asWidget());
+    }
+
+    public void addOption( DisplayOption option, T value ) {
+        SelectorItem itemView = itemFactory.get();
+        itemView.setName( option.getName() );
+        itemView.setStyle( option.getStyle() );
+        itemView.setIcon( option.getIcon() );
+        itemView.addClickHandler( this );
+        itemViewToModel.put(itemView, value);
+        itemToViewModel.put(value, itemView);
+        if ( value == null ) {
+            nullItemOption = option;
+            nullItemView = itemView;
+        }
+        else {
+
+            itemToDisplayOptionModel.put( value, option );
         }
 
         popup.getChildContainer().add(itemView.asWidget());
@@ -101,10 +121,10 @@ public abstract class Selector<T>
         popup.getChildContainer().clear();
 
         itemToViewModel.clear();
-        itemToNameModel.clear();
+        itemToDisplayOptionModel.clear();
         itemViewToModel.clear();
 
-        nullItemName = null;
+        nullItemOption = null;
         nullItemView = null;
     }
 
@@ -115,9 +135,9 @@ public abstract class Selector<T>
             return;
         }
 
-        String name = value != null ? itemToNameModel.get( value ) : nullItemName;
+        DisplayOption option = value != null ? itemToDisplayOptionModel.get( value ) : nullItemOption;
         selectedOption = value;
-        fillSelectorView( name );
+        fillSelectorView( option );
 
         popup.hide();
         ValueChangeEvent.fire( this, value );
@@ -143,8 +163,8 @@ public abstract class Selector<T>
             popup.getChildContainer().add( nullItemView );
         }
 
-        for ( Map.Entry< T, String > entry : itemToNameModel.entrySet() ) {
-            String entryText = entry.getValue().toLowerCase();
+        for ( Map.Entry< T, DisplayOption> entry : itemToDisplayOptionModel.entrySet() ) {
+            String entryText = entry.getValue().getName().toLowerCase();
             if ( searchText.isEmpty() || entryText.contains(searchText) ) {
                 SelectorItem itemView = itemToViewModel.get( entry.getKey() );
                 if ( itemView != null ) {
@@ -180,11 +200,8 @@ public abstract class Selector<T>
         return addHandler( handler, SelectorChangeValEvent.getType() );
     }
 
-    public abstract void fillSelectorView( String selectedValue );
+    public abstract void fillSelectorView( DisplayOption selectedValue );
 
-    public void setLimitView( Integer limit ) {
-        limitView = limit;
-    }
     @Override
     protected void onLoad() {
         scrollRegistration = Window.addWindowScrollHandler( this );
@@ -227,7 +244,7 @@ public abstract class Selector<T>
     @Inject
     Provider<SelectorItem> itemFactory;
 
-    protected String nullItemName = null;
+    protected DisplayOption nullItemOption;
     protected boolean hasNullValue = true;
 
     private boolean searchEnabled = false;
@@ -237,9 +254,7 @@ public abstract class Selector<T>
     private SelectorItem nullItemView;
     private HandlerRegistration scrollRegistration;
 
-    private Integer limitView = null;
-
-    private Map<SelectorItem, T> itemViewToModel = new HashMap< SelectorItem, T >();
-    private Map<T, SelectorItem> itemToViewModel = new HashMap< T, SelectorItem >();
-    private Map<T, String> itemToNameModel = new HashMap< T, String >();
+    private Map<SelectorItem, T> itemViewToModel = new HashMap<>();
+    private Map<T, SelectorItem> itemToViewModel = new HashMap<>();
+    private Map<T, DisplayOption> itemToDisplayOptionModel = new HashMap<>();
 }

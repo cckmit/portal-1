@@ -1,0 +1,32 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:sortfieldselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.sortfield'
+             xmlns:companycategory='urn:import:ru.protei.portal.ui.company.client.widget.category.btngroup'
+             xmlns:companygroup='urn:import:ru.protei.portal.ui.company.client.widget.group.buttonselector'>
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+    <g:HTMLPanel styleName="panel fixed">
+        <div class="body">
+            <div class="local-search col-xs-12">
+                <span class="icon local-search-icon"></span>
+                <g:TextBox ui:field="search" styleName="inputField"/>
+            </div>
+            <div class="col-xs-12">
+                <ui:text from="{lang.sortBy}"/>
+                <div class="control-group">
+                    <sortfieldselector:SortFieldSelector ui:field="sortField" type="COMPANY"/>
+                    <g:ToggleButton ui:field="sortDir" styleName="button empty whiteC sorting_button"/>
+                </div>
+            </div>
+            <div class="col-xs-12">
+                <companygroup:GroupButtonSelector ui:field="group" header="{lang.companyGroup}"/>
+            </div>
+            <div class="col-xs-12">
+                <label><ui:text from="{lang.companyCategory}"/></label>
+                <companycategory:CategoryBtnGroup ui:field="categories"/>
+            </div>
+        </div>
+        <div class="footer">
+            <g:Button ui:field="resetBtn" styleName="button whiteC" text="{lang.buttonReset}"/>
+        </div>
+    </g:HTMLPanel>
+</ui:UiBinder>

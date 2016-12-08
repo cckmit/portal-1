@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
  */
 public class CaseQuery extends BaseQuery {
 
+    private Long caseNo;
     private Long companyId;
     private Long productId;
     private Long managerId;
@@ -31,6 +32,10 @@ public class CaseQuery extends BaseQuery {
         this.type = type;
         this.limit = 1000;
     }
+
+    public Long getCaseNo () { return caseNo; }
+
+    public void setCaseNo ( Long caseNo ) { this.caseNo = caseNo; }
 
     public Long getCompanyId() {
         return companyId;

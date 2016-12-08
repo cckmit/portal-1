@@ -1,8 +1,8 @@
 package ru.protei.portal.core.model.view;
 
 import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.core.model.ent.DevUnit;
-import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.ent.CompanyCategory;
+import ru.protei.portal.core.model.ent.CompanyGroup;
 
 import java.io.Serializable;
 
@@ -53,22 +53,21 @@ public class EntityOption implements Serializable {
         return false;
     }
 
-
     public static EntityOption fromCompany(Company company){
         if(company == null)
             return null;
         return new EntityOption(company.getCname(), company.getId());
     }
 
-    public static EntityOption fromProduct(DevUnit product){
-        if(product == null)
+    public static EntityOption fromCompanyGroup(CompanyGroup group){
+        if(group == null)
             return null;
-        return new EntityOption(product.getName(), product.getId());
+        return new EntityOption(group.getName(), group.getId());
     }
 
-    public static EntityOption fromPerson(Person person){
-        if(person == null)
+    public static EntityOption fromCompanyCategory(CompanyCategory category){
+        if(category == null)
             return null;
-        return new EntityOption(person.getDisplayShortName(), person.getId());
+        return new EntityOption(category.getName(), category.getId());
     }
 }

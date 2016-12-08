@@ -2,7 +2,6 @@ package ru.protei.portal.ui.common.client.service;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.core.model.ent.CompanyCategory;
 import ru.protei.portal.core.model.ent.CompanyGroup;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -29,18 +28,11 @@ public interface CompanyServiceAsync {
     void getCompanyGroups( String searchPattern, AsyncCallback<List < CompanyGroup > > async );
 
     /**
-     * Получение списка категорий компаний
-     * @return список категорий
-     */
-    void getCompanyCategories( AsyncCallback<List <CompanyCategory> > async  );
-
-    /**
      * Сохранение компании ( создание + изменение )
      * @param company компания
-     * @param group группа
      * @return результат сохранения
      */
-    void saveCompany ( Company company, CompanyGroup group, AsyncCallback< Boolean > async );
+    void saveCompany ( Company company, AsyncCallback< Boolean > async );
 
     /**
      * Проверка уникальности названия компании
@@ -70,4 +62,16 @@ public interface CompanyServiceAsync {
      * @param callback
      */
     void getCompanyOptionList( AsyncCallback< List< EntityOption > > callback );
+
+    /**
+     * Получение списка сокращенного представления группы компаний (name,id)
+     * @param callback
+     */
+    void getGroupOptionList( AsyncCallback< List< EntityOption > > callback );
+
+    /**
+     * Получение списка сокращенного представления категории компаний (name,id)
+     * @param callback
+     */
+    void getCategoryOptionList( AsyncCallback< List< EntityOption > > callback );
 }

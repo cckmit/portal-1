@@ -57,8 +57,6 @@ public abstract class StateModel implements Activity {
                 }
             }
         );
-
-
     }
 
     @Inject

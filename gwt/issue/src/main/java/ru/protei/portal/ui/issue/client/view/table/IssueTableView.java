@@ -106,7 +106,6 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
 //        table.setSeparatorProvider( separator );
     }
 
-
     @UiField
     InfiniteTableWidget<CaseObject> table;
 

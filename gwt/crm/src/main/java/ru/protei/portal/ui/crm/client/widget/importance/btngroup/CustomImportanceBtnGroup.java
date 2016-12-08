@@ -20,7 +20,7 @@ public class CustomImportanceBtnGroup extends ToggleBtnGroup<En_ImportanceLevel>
         clear();
 
         for ( En_ImportanceLevel type : En_ImportanceLevel.values() )
-            addBtnWithIcon( iconClassName +" "+ CriticalityStyleBuilder.make().getClassName( type ) +" "+ type.toString(),
+            addBtnWithIcon( iconClassName +" "+ CriticalityStyleBuilder.make().getClassName( type ) +" "+ type.toString().toLowerCase(),
                     buttonClassName,
                     showCaption? lang.getImportanceName( type ): null,
                     outerClassName,

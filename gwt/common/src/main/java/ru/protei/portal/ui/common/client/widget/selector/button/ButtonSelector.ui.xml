@@ -4,6 +4,7 @@
     <g:HTMLPanel styleName="button-selector" ui:field="inputContainer">
         <label ui:field="label"/>
         <g:Button ui:field="button" styleName="button whiteC">
+            <i ui:field="icon"/>
             <span ui:field="text"></span>
             <span class="caret"></span>
         </g:Button>

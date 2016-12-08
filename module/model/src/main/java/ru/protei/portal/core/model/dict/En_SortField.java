@@ -48,7 +48,12 @@ public enum En_SortField {
     /**
      * person position
      */
-    person_position ("displayPosition")
+    person_position ("displayPosition"),
+
+    /**
+     * issue number
+     */
+    issue_number ("caseno")
     ;
 
     private String fieldName;

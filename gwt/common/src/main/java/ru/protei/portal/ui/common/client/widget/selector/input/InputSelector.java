@@ -8,11 +8,12 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Button;
 import com.google.inject.Inject;
+import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 
 import java.util.HashMap;
@@ -33,9 +34,9 @@ public class InputSelector<T> extends Selector<T> {
     }
 
     @Override
-    public void fillSelectorView(String selectedValue) {
+    public void fillSelectorView(DisplayOption selectedValue) {
         selectedValue = selectedValue == null ? nullOptionText : selectedValue;
-        searchField.setValue(selectedValue);
+        searchField.setValue(selectedValue.getName());
         prevCaughtOption = initialOptions.get(selectedValue);
         setButtonState(false);
     }
@@ -45,7 +46,7 @@ public class InputSelector<T> extends Selector<T> {
     }
 
     public void setNullOption(String key){
-        nullOptionText = key;
+        nullOptionText = new DisplayOption( key );
     }
 
     public void addOption( String name, T value ) {
@@ -140,7 +141,7 @@ public class InputSelector<T> extends Selector<T> {
     protected Map<String, T> initialOptions = new HashMap< >();
     T prevCaughtOption = null;
     String prevInputText = "";
-    String nullOptionText = "";
+    DisplayOption nullOptionText = new DisplayOption( "" );
 
     private static inputSelectorUiBinder ourUiBinder = GWT.create(inputSelectorUiBinder.class);
     interface inputSelectorUiBinder extends UiBinder<HTMLPanel, InputSelector> {}

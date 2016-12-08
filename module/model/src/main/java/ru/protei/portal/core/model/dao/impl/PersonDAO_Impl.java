@@ -7,17 +7,15 @@ import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.CompanyHomeGroupItem;
 import ru.protei.portal.core.model.ent.Person;
-
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.ContactQuery;
+import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.utils.EntityCache;
 import ru.protei.portal.core.utils.EntitySelector;
-import ru.protei.portal.core.model.helper.HelperFunc;
-import ru.protei.portal.core.utils.TypeConverters;
 import ru.protei.winter.jdbc.JdbcSort;
 
 import javax.annotation.PostConstruct;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -40,7 +38,7 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
 
 
     @Override
-    public Person getEmployeeById(long id) {
+    public Person getEmployee( long id ) {
         final Person person = get(id);
 
         return person != null && ifPersonIsEmployee(person) ? person : null;
@@ -71,6 +69,12 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
         expr.append(" and displayPosition is not null");
 
         return getListByCondition(expr.toString(), new JdbcSort(JdbcSort.Direction.ASC, En_SortField.person_full_name.getFieldName()));
+    }
+
+    @Override
+    public List<Person> getEmployees(EmployeeQuery query) {
+
+        return listByQuery( query );
     }
 
     private StringBuilder buildHomeCompanyFilter() {
@@ -146,4 +150,24 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
         });
     }
 
+    @Override
+    @SqlConditionBuilder
+    public SqlCondition createEmployeeSqlCondition(EmployeeQuery query) {
+        return new SqlCondition().build((condition, args) -> {
+            condition.append("Person.company_id in (select companyId from company_group_home)");
+
+            if (query.getFired() != null) {
+                condition.append(" and Person.isfired=?");
+                args.add(query.getFired() ? 1 : 0);
+            }
+
+            if (HelperFunc.isLikeRequired(query.getSearchString())) {
+                condition.append(" and (Person.displayName like ? or Person.contactInfo like ?)");
+                String likeArg = HelperFunc.makeLikeArg(query.getSearchString(), true);
+
+                args.add(likeArg);
+                args.add(likeArg);
+            }
+        });
+    }
 }

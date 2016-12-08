@@ -3,7 +3,7 @@ package ru.protei.portal.ui.common.client.widget.selector.person;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.core.model.view.ContactShortView;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.events.PersonEvents;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 
@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Селектор сотрудников любой компании
  */
-public class ContactButtonSelector extends ButtonSelector< ContactShortView > {
+public class ContactButtonSelector extends ButtonSelector<PersonShortView> {
 
     @Event
     public void onPersonListChanged( PersonEvents.ChangePersonModel event ) {
@@ -27,7 +27,7 @@ public class ContactButtonSelector extends ButtonSelector< ContactShortView > {
     }
 
     @Override
-    public void setValue( ContactShortView value ) {
+    public void setValue( PersonShortView value ) {
         if( contactModel.isPushing() ){
             deferred = value;
         }else
@@ -35,7 +35,7 @@ public class ContactButtonSelector extends ButtonSelector< ContactShortView > {
     }
 
 
-    public void fillOptions( List< ContactShortView > persons ){
+    public void fillOptions( List<PersonShortView> persons ){
         clearOptions();
 
         if( defaultValue != null ) {
@@ -70,7 +70,7 @@ public class ContactButtonSelector extends ButtonSelector< ContactShortView > {
     @Inject
     ContactModel contactModel;
 
-    ContactShortView deferred;
+    PersonShortView deferred;
 
     private Company company;
     private String defaultValue;

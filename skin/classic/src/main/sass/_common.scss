@@ -205,7 +205,7 @@
 }
 
 .button-selector span {
-  display: block;
+  display: inline;
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -260,6 +260,15 @@
   white-space: normal;
 }
 
+.not-active,
+.dropdown-menu ul > li > a.not-active {
+  color: #b6b6b6;
+}
+i.ban {
+  color: #ff8579;
+}
+
+
 .dropdown-menu ul {
   list-style: none;
   padding: 0px;
@@ -273,6 +282,13 @@
   background-color: #f5f5f5;
 }
 
+.dropdown-menu ul > li > a.not-active:focus,
+.dropdown-menu ul > li > a.not-active:hover {
+  color: #A2A2A2;
+  i.ban {
+    color: #EB7777;
+  }
+}
 
 .dropdown-menu ul > li:not(:first-child ) {
   border-top: 1px solid #e9edee;
@@ -907,45 +923,47 @@ td.info {
 }
 
 /**** IMPORTANCE LEVEL ****/
-.CRITICAL{
-  color: #d84d4d !important;
-}
-.IMPORTANT{
-  color: #ec9900 !important;
-}
-.BASIC{
-  color: #5481c1 !important;
-}
-.COSMETIC{
-  color: #7b7b7b !important;
+.critical {
+  color: #ef5350 !important;
 }
 
+.important {
+  color: #ffa726 !important;
+}
+
+.basic {
+  color: #42a5f5 !important;
+}
+
+.cosmetic {
+  color: #607D8B !important;
+}
 /****************/
 
 /**** STATES ****/
-.CREATED {
-  color: #d84d4d !important;
+.state-created {
+  color: #ef5350 !important;
 }
 
-.OPENED {
-  color: royalBlue !important;
+.state-opened {
+  color: #42a5f5 !important;
 }
 
-.ACTIVE {
-  color: blue !important;
+.state-active {
+  color: #00bcd4 !important;
 }
 
-.DONE {
-  color: green !important;
+.state-done {
+  color: #4caf50 !important;
 }
 
-.TEST_LOCAL,
-.TEST_CUST {
-  color: maroon !important;
+.state-test_local,
+.state-test_cust {
+  color: #906094 !important;
 }
 
-.VERIFIED {
-  color: #202020 !important;
+.state-verified {
+  color: #607D8B !important;
 }
 /****************/
 
@@ -978,33 +996,34 @@ td.info {
   border-radius: .25em;
 }
 
-.label-CREATED {
-  background-color: #d84d4d;
+/*** LABELS OF STATES ***/
+.label-created {
+  background-color: #ef5350;
 }
 
-.label-OPENED {
-  background-color: royalBlue;
+.label-opened {
+  background-color: #42a5f5;
 }
 
-.label-ACTIVE {
-  background-color: blue;
+.label-active {
+  background-color: #00bcd4;
 }
 
-.label-DONE {
-  background-color: green;
+.label-done {
+  background-color: #4caf50;
 }
 
-.label-TEST_LOCAL,
-.label-TEST_CUST {
-  background-color: maroon;
+.label-test_local,
+.label-test_cust {
+  background-color: #906094;
 }
 
-.label-VERIFIED {
-  background-color: #202020;
+.label-verified {
+  background-color: #607D8B;
 }
+/****************/
 
 /**** RANGE PICKER ****/
-
 .form-control {
   display: block;
   width: 100%;
@@ -1120,6 +1139,51 @@ td.info {
 .text-center {
   text-align: center;
 }
+
+/*** BUTTONS OF STATES ***/
+.button-created {
+  background-color: #ef5350;
+  border-color: #ef5350;
+  color: #ffffff;
+}
+
+.button-opened {
+  background-color: #42a5f5;
+  border-color: #42a5f5;
+  color: #ffffff;
+}
+
+.button-active {
+  background-color: #00bcd4;
+  border-color: #00bcd4;
+  color: #ffffff;
+}
+
+.button-done {
+  background-color: #4caf50;
+  border-color: #4caf50;
+  color: #ffffff;
+}
+
+.button-test_local,
+.button-test_cust {
+  background-color: #906094;
+  border-color: #906094;
+  color: #ffffff;
+}
+
+.button-verified {
+  background-color: #607D8B;
+  border-color: #607D8B;
+  color: #ffffff;
+}
+/****************/
+
+.filter-container .panel .body .buttons_group {
+  width: 100%;
+  margin-top: -5px;
+}
+
 
 /**** Dashboard ****/
 
@@ -1286,4 +1350,3 @@ td.info {
 
 
 /****************/
-

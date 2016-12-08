@@ -11,8 +11,9 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.core.model.view.ContactShortView;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.dict.ImportanceButtonSelector;
@@ -37,7 +38,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         importance.setDefaultValue(lang.selectIssueImportance());
         initiator.setDefaultValue(lang.selectIssueInitiator());
         company.setDefaultValue(lang.selectIssueCompany());
-        product.setDefaultValue(lang.selectIssueCompany());
+        product.setDefaultValue(lang.selectIssueProduct());
         manager.setDefaultValue(lang.selectIssueManager());
     }
 
@@ -72,17 +73,17 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
-    public HasValue<ContactShortView> initiator() {
+    public HasValue<PersonShortView> initiator() {
         return initiator;
     }
 
     @Override
-    public HasValue<EntityOption> manager() {
+    public HasValue<PersonShortView> manager() {
         return manager;
     }
 
     @Override
-    public HasValue<EntityOption> product() {
+    public HasValue<ProductShortView> product() {
         return product;
     }
 

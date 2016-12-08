@@ -7,6 +7,8 @@ import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.core.model.view.ProductShortView;
 
 import java.util.Set;
 
@@ -18,8 +20,8 @@ public interface AbstractIssueFilterView extends IsWidget {
     void setActivity( AbstractIssueFilterActivity activity );
 
     HasValue<EntityOption> company();
-    HasValue<EntityOption> product();
-    HasValue<EntityOption> manager();
+    HasValue<ProductShortView> product();
+    HasValue<PersonShortView> manager();
     HasValue<Set<En_CaseState>> states();
     HasValue<Set<En_ImportanceLevel>> importances();
     HasValue<DateInterval> dateRange ();

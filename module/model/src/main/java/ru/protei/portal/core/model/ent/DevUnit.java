@@ -3,7 +3,8 @@ package ru.protei.portal.core.model.ent;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.core.model.view.EntityOptionSupport;
+import ru.protei.portal.core.model.view.ProductShortView;
+import ru.protei.portal.core.model.view.ProductShortViewSupport;
 import ru.protei.winter.jdbc.annotations.IdInsertMode;
 import ru.protei.winter.jdbc.annotations.JdbcColumn;
 import ru.protei.winter.jdbc.annotations.JdbcEntity;
@@ -16,7 +17,7 @@ import java.util.Date;
  * Created by michael on 23.05.16.
  */
 @JdbcEntity(table = "dev_unit")
-public class DevUnit implements Serializable, EntityOptionSupport {
+public class DevUnit implements Serializable, ProductShortViewSupport {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -44,6 +45,17 @@ public class DevUnit implements Serializable, EntityOptionSupport {
 
     @JdbcColumn(name = "old_id")
     private Long oldId;
+
+    public static DevUnit fromProductShortView(ProductShortView productShortView){
+        if(productShortView == null)
+            return null;
+
+        DevUnit product = new DevUnit();
+        product.setId(productShortView.getId());
+        product.setName(productShortView.getName());
+        product.setStateId(productShortView.getStateId());
+        return product;
+    }
 
     public static DevUnit fromEntityOption(EntityOption entityOption){
         if(entityOption == null)
@@ -152,8 +164,8 @@ public class DevUnit implements Serializable, EntityOptionSupport {
     }
 
     @Override
-    public EntityOption toEntityOption() {
-        return new EntityOption(this.name, this.id);
+    public ProductShortView toProductShortView() {
+        return new ProductShortView(this.id, this.name, this.stateId);
     }
 
     @Override

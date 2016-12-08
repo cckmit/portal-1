@@ -1,7 +1,6 @@
 package ru.protei.portal.core.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.CompanyCategoryDAO;
 import ru.protei.portal.core.model.dao.CompanyDAO;
@@ -112,6 +111,18 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
+    public CoreResponse<List<EntityOption>> groupOptionList() {
+        List<CompanyGroup> list = companyGroupDAO.getListByQuery(new CompanyGroupQuery(null, En_SortField.group_name, En_SortDir.ASC));
+
+        if (list == null)
+            new CoreResponse<List<EntityOption>>().error(En_ResultStatus.GET_DATA_ERROR);
+
+        List<EntityOption> result = list.stream().map(CompanyGroup::toEntityOption).collect(Collectors.toList());
+
+        return new CoreResponse<List<EntityOption>>().success(result,result.size());
+    }
+
+    @Override
     public CoreResponse<List<CompanyGroup>> groupList(CompanyGroupQuery query) {
         return new CoreResponse<List<CompanyGroup>>().success(
                 companyGroupDAO.getListByQuery(query)
@@ -119,8 +130,15 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public CoreResponse<List<CompanyCategory>> categoryList() {
-        return new CoreResponse<List<CompanyCategory>>().success(companyCategoryDAO.getAll());
+    public CoreResponse<List<EntityOption>> categoryOptionList() {
+        List<CompanyCategory> list = companyCategoryDAO.getAll();
+
+        if (list == null)
+            new CoreResponse<List<EntityOption>>().error(En_ResultStatus.GET_DATA_ERROR);
+
+        List<EntityOption> result = list.stream().map(CompanyCategory::toEntityOption).collect(Collectors.toList());
+
+        return new CoreResponse<List<EntityOption>>().success(result,result.size());
     }
 
     @Override
@@ -140,24 +158,35 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public CoreResponse<Company> createCompany(Company company, CompanyGroup group) {
+    public CoreResponse<Company> createCompany(Company company) {
 
-        try {
-            return new CoreResponse<Company>().success(createCompanyImpl(company, group));
+        if (!isValidCompany(company)) {
+            return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
         }
-        catch (Exception e) {
+
+        company.setCreated(new Date());
+        Long companyId = companyDAO.persist(company);
+
+        if (companyId == null) {
             return new CoreResponse().error(En_ResultStatus.NOT_CREATED);
         }
+
+        return new CoreResponse<Company>().success(company);
     }
 
     @Override
-    public CoreResponse<Company> updateCompany(Company company, CompanyGroup group) {
+    public CoreResponse<Company> updateCompany(Company company) {
 
-        try {
-            return new CoreResponse<Company>().success(updateCompanyImpl(company, group));
-        } catch (Exception e) {
-            return new CoreResponse().error(En_ResultStatus.NOT_UPDATED);
+        if (!isValidCompany(company)) {
+            return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
         }
+
+        Boolean result = companyDAO.merge(company);
+
+        if ( !result )
+            new CoreResponse().error(En_ResultStatus.NOT_UPDATED);
+
+        return new CoreResponse<Company>().success(company);
     }
 
     @Override
@@ -176,28 +205,6 @@ public class CompanyServiceImpl implements CompanyService {
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
 
         return new CoreResponse<Boolean>().success(checkGroupExists(name, excludeId));
-    }
-
-
-    @Transactional
-    private Company createCompanyImpl(Company company, CompanyGroup group) throws Exception {
-
-        if (!isValidCompany(company) || companyDAO.persist(company) == null) {
-            throw new Exception();
-        }
-
-        return company;
-    }
-
-    @Transactional
-    private Company updateCompanyImpl(Company company, CompanyGroup group) throws Exception {
-
-        company.setCompanyGroup(group);
-
-        if (!isValidCompany(company) || !companyDAO.merge(company))
-            throw new Exception();
-
-        return company;
     }
 
     private boolean isValidCompany(Company company) {

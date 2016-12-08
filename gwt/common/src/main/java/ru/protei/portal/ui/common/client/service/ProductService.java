@@ -4,7 +4,7 @@ import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.query.ProductQuery;
-import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
 import java.util.List;
@@ -24,8 +24,9 @@ public interface ProductService extends RemoteService {
     boolean isNameUnique(String name, Long exceptId) throws RequestFailedException;
 
     /**
-     * Получение списка сокращенного представления продукта (name,id)
+     * Получение списка сокращенного представления продукта
+     * @param query запрос
      * @return
      */
-    List<EntityOption> getProductOptionList() throws RequestFailedException;
+    List<ProductShortView> getProductViewList( ProductQuery query ) throws RequestFailedException;
 }
