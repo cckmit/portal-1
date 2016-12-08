@@ -49,7 +49,7 @@ public abstract class IssueCommentListActivity
         event.parent.clear();
         event.parent.add(view.asWidget());
 
-        view.getCommentsContainer().clear();
+        resetView();
 
         requestData( event.caseId );
     }
@@ -123,11 +123,10 @@ public abstract class IssueCommentListActivity
             public void onSuccess( CaseComment comment ) {
                 lastUserComment = comment;
                 comment = null;
+                view.message().setValue( null );
 
                 AbstractIssueCommentItemView itemView = makeCommentView( comment );
                 view.getCommentsContainer().add( itemView.asWidget() );
-
-                view.message().setValue( null );
             }
         } );
     }
@@ -200,6 +199,11 @@ public abstract class IssueCommentListActivity
         comment = new CaseComment();
         comment.setAuthorId( profile.getId() );
         comment.setCaseId( show.caseId );
+    }
+
+    private void resetView() {
+        view.getCommentsContainer().clear();
+        view.message().setValue( null );
     }
 
     @Inject
