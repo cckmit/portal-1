@@ -94,9 +94,9 @@ body {
 
 
 .checkbox {
-  //padding-left: 20px;
   display: inline-block;
   vertical-align: middle;
+  padding-left: 3px;
 }
 
 .checkbox label {
@@ -643,7 +643,7 @@ label.bordered:after{
         td {
           height: 70px;
 
-          div {
+          > div {
             height: 70px;
             max-height: 70px;
             white-space: pre-line;
@@ -655,16 +655,7 @@ label.bordered:after{
     }
 
     .company {
-      width: 15%;
-    }
-    .position {
-      width: 15%;
-    }
-    .phone {
-      width: 15%;
-    }
-    .email {
-      width: 10%;
+      width: 40%;
     }
   }
 }
@@ -1043,4 +1034,33 @@ td.info {
 
 .bold {
   font-weight: bold;
+}
+
+a {
+  color: teal;
+
+  &:hover {
+    color: #004040;
+  }
+}
+
+
+.contact-record {
+  line-height: 25px;
+
+  label {
+    font-size: 0.9em;
+    color: #797979;
+  }
+
+  i {
+    padding-right: 7px;
+    font-size: 1.2em;
+    color: #365c92;
+  }
+}
+
+.contact-position {
+  font-size: 0.9em;
+  color: #8b8b8b;
 }
