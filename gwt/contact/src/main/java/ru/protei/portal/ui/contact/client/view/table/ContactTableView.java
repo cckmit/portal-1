@@ -130,8 +130,8 @@ public class ContactTableView extends Composite implements AbstractContactTableV
                         .add( "ion-android-phone-portrait", infoFacade.getHomePhone() )
                         .toElement() );
 
-                root.appendChild( ContactColumnBuilder.make().add( "ion-ios-email", infoFacade.getEmail() )
-                        .add( "ion-ios-email", infoFacade.getEmail_own() )
+                root.appendChild( ContactColumnBuilder.make().add( "ion-android-mail", infoFacade.getEmail() )
+                        .add( "ion-android-mail", infoFacade.getEmail_own() )
                         .toElement() );
             }
         };

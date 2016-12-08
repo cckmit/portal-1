@@ -166,7 +166,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     TextArea description;
 
     @UiField
-    CheckBox local;
+    ToggleButton local;
 
     @Inject
     @UiField(provided = true)

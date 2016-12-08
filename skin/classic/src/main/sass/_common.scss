@@ -1064,3 +1064,26 @@ a {
   font-size: 0.9em;
   color: #8b8b8b;
 }
+
+
+
+.btn.private-btn {
+  padding: 0;
+  min-width: 30px;
+  border-left: 0;
+  height: 28px;
+
+  &.btn-down:after,
+  &.btn-up-hovering:after{
+    font-family: "Ionicons";
+    content: "\f200";
+    font-size: 1.6em;
+  }
+
+  &.btn-up:after,
+  &.btn-down-hovering:after{
+    font-family: "Ionicons";
+    content: "\f254";
+    font-size: 1.6em;
+  }
+}
