@@ -7,23 +7,23 @@
     <g:HTMLPanel styleName="panel">
         <div class="body">
             <div class="grid">
-                <div class="col-xs-12">
+                <div class="form-group col-xs-12">
                     <label><ui:text from="{lang.productName}"/></label>
                     <div class="panelField verifiable">
                         <i ui:field="verifiableIcon"></i>
-                        <validablefield:ValidableTextBox ui:field="name" styleName="inputField" notNull="true"/>
+                        <validablefield:ValidableTextBox ui:field="name" styleName="input-field" notNull="true"/>
                     </div>
                 </div>
-                <div class="col-xs-12">
+                <div class="form-group col-xs-12">
                     <label><ui:text from="{lang.description}"/></label>
-                    <g:TextArea ui:field="info" styleName="inputField description" />
+                    <g:TextArea ui:field="info" styleName="input-field description" />
                 </div>
             </div>
         </div>
         <div class="footer">
-            <g:Button ui:field="stateBtn" styleName="button redC" text="{lang.productToArchive}"></g:Button>
-            <g:Button ui:field="saveBtn" styleName="button greenC" text="{lang.buttonSave}"></g:Button>
-            <g:Button ui:field="cancelBtn" styleName="button whiteC" text="{lang.buttonCancel}"></g:Button>
+            <g:Button ui:field="stateBtn" styleName="btn" text="{lang.productToArchive}"></g:Button>
+            <g:Button ui:field="saveBtn" styleName="btn btn-success" text="{lang.buttonSave}"></g:Button>
+            <g:Button ui:field="cancelBtn" styleName="btn btn-white" text="{lang.buttonCancel}"></g:Button>
         </div>
     </g:HTMLPanel>
 

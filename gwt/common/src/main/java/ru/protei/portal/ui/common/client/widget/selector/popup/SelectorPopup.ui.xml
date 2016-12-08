@@ -3,7 +3,7 @@
 
     <g:HTMLPanel styleName="dropdown-menu" ui:field="root" >
         <div class="dropdown-searchbox hide" ui:field="searchContainer">
-            <g:TextBox ui:field="search" />
+            <g:TextBox ui:field="search" styleName="input-field"/>
         </div>
         <g:HTMLPanel ui:field="childContainer" tag="ul"/>
     </g:HTMLPanel>

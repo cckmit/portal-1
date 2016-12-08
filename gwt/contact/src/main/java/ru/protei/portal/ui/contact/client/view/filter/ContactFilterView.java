@@ -101,12 +101,6 @@ public class ContactFilterView  extends Composite implements AbstractContactFilt
 
     @UiHandler("sortDir")
     public void onSortDirClicked( ClickEvent event ) {
-
-        if (sortDir.getValue())
-            sortDir.removeStyleName( "active" );
-        else
-            sortDir.addStyleName( "active" );
-
         if ( activity != null ) {
             activity.onFilterChanged();
         }

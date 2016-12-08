@@ -132,6 +132,11 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         initiator.updateCompany(company);
     }
 
+    @Override
+    public HasWidgets getCommentsContainer() {
+        return commentsContainer;
+    }
+
     @UiHandler("company")
     public void onChangeCompany(ValueChangeEvent<EntityOption> event){
         Company company = Company.fromEntityOption(event.getValue());
@@ -161,7 +166,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     TextArea description;
 
     @UiField
-    CheckBox local;
+    ToggleButton local;
 
     @Inject
     @UiField(provided = true)
@@ -194,6 +199,8 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @Inject
     @UiField
     Lang lang;
+    @UiField
+    HTMLPanel commentsContainer;
 
 
     private AbstractIssueEditActivity activity;

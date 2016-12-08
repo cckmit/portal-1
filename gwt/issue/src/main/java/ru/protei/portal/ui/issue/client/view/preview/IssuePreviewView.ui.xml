@@ -1,5 +1,6 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
-             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:list="urn:import:ru.protei.portal.ui.issue.client.widget.comments.list">
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
     <g:HTMLPanel styleName="grid">
         <g:HTMLPanel ui:field="preview" styleName="preview">
@@ -49,12 +50,9 @@
                     <span class="col-xs-12 col-md-12 pre-formatted-info" ui:field="info"></span>
                 </div>
             </fieldset>
-            <fieldset class="header">
-                <legend><ui:text from="{lang.comments}"/></legend>
-                <div ui:field="commentsList" class="col-xs-12">
-                    <span class="col-xs-12 col-md-12 pre-formatted-info">тут будут коммантарии</span>
-                </div>
-            </fieldset>
+
+            <legend><ui:text from="{lang.comments}"/></legend>
+            <g:HTMLPanel ui:field="commentsContainer" styleName="col-xs-12 col-md-12"/>
         </g:HTMLPanel>
     </g:HTMLPanel>
 </ui:UiBinder>

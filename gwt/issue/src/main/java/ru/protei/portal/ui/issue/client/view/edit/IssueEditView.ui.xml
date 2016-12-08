@@ -12,87 +12,77 @@
 
         <div class="body">
             <div class="grid grid-indent">
-                <div class="col-xs-12 col-lg-6">
-                    <label>
-                        <ui:text from="{lang.issueName}"/>
-                    </label>
-                    <div class="panelField verifiable">
-                        <i ui:field="verifiableIcon"/>
-                        <validablefield:ValidableTextBox ui:field="name" styleName="inputField" notNull="true"/>
-                        <g:CheckBox ui:field="local" styleName="checkbox no-space" text="{lang.issuePrivate}"/>
+
+                <div class="form-group  col-xs-12">
+                    <label><ui:text from="{lang.issueName}"/></label>
+                    <div class="input-group">
+                        <div class="input-group-btn">
+                            <g:ToggleButton ui:field="local" styleName="btn btn-danger private-btn"/>
+                        </div>
+                        <validablefield:ValidableTextBox ui:field="name" styleName="input-field" notNull="true"/>
                     </div>
                 </div>
+            </div>
+            <div class="grid grid-indent">
+                <div class="form-group col-xs-6">
+                    <label>
+                        <ui:text from="{lang.issueState}"/>
+                    </label>
+                    <state:IssueStatesButtonSelector ui:field="state" validation="true"/>
+                </div>
+                <div class="form-group col-xs-6">
+                    <label>
+                        <ui:text from="{lang.issueImportance}"/>
+                    </label>
+                    <importance:ImportanceButtonSelector ui:field="importance" validation="true"/>
+                </div>
 
-                <div class="col-xs-12 col-lg-6 right-sticking">
+                <div class="form-group col-xs-3">
+                    <label>
+                        <ui:text from="{lang.issueCompany}"/>
+                    </label>
+                    <company:CompanySelector ui:field="company" validation="true"/>
+                </div>
+                <div class="form-group col-xs-3">
+                    <label>
+                        <ui:text from="{lang.issueInitiator}"/>
+                    </label>
+                    <person:ContactButtonSelector ui:field="initiator"/>
+                </div>
+
+                <div class="form-group col-xs-3">
+                    <label>
+                        <ui:text from="{lang.issueProduct}"/>
+                    </label>
+                    <product:ProductButtonSelector ui:field="product" validation="true"/>
+                </div>
+
+                <div class="form-group col-xs-3">
+                    <label>
+                        <ui:text from="{lang.issueManager}"/>
+                    </label>
+                    <person:EmployeeButtonSelector ui:field="manager" validation="true"/>
+                </div>
+
+                <div class="form-group col-xs-12">
                     <label>
                         <ui:text from="{lang.description}"/>
                     </label>
-                    <div class="panelField">
-                        <g:TextArea ui:field="description" styleName="inputField description" />
-                    </div>
+                    <g:TextArea ui:field="description" styleName="input-field description" />
                 </div>
 
-                <div class="col-xs-12 col-lg-6">
-                    <div class="col-xs-12 col-lg-6">
-                        <label>
-                            <ui:text from="{lang.issueState}"/>
-                        </label>
-                        <div class="panelField">
-                            <state:IssueStatesButtonSelector ui:field="state" validation="true"/>
-                        </div>
-                    </div>
-                    <div class="col-xs-12 col-lg-6">
-                        <label>
-                            <ui:text from="{lang.issueImportance}"/>
-                        </label>
-                        <div class="panelField">
-                            <importance:ImportanceButtonSelector ui:field="importance" validation="true"/>
-                        </div>
-                    </div>
 
-
-                    <div class="col-xs-12 col-lg-6">
-                        <label>
-                            <ui:text from="{lang.issueCompany}"/>
-                        </label>
-                        <div class="panelField">
-                            <company:CompanySelector ui:field="company" validation="true"/>
-                        </div>
-                    </div>
-                    <div class="col-xs-12 col-lg-6">
-                        <label>
-                            <ui:text from="{lang.issueInitiator}"/>
-                        </label>
-                        <div class="panelField">
-                            <person:ContactButtonSelector ui:field="initiator"/>
-                        </div>
-                    </div>
-
-                    <div class="col-xs-12 col-lg-6">
-                        <label>
-                            <ui:text from="{lang.issueProduct}"/>
-                        </label>
-                        <div class="panelField">
-                            <product:ProductButtonSelector ui:field="product" validation="true"/>
-                        </div>
-                    </div>
-
-                    <div class="col-xs-12 col-lg-6">
-                        <label>
-                            <ui:text from="{lang.issueManager}"/>
-                        </label>
-                        <div class="panelField">
-                            <person:EmployeeButtonSelector ui:field="manager" validation="true"/>
-                        </div>
-                    </div>
+                <div class="form-group form-group col-xs-12">
+                    <label><ui:text from="{lang.comments}"/></label>
+                    <g:HTMLPanel ui:field="commentsContainer"/>
                 </div>
 
 
             </div>
         </div>
         <div class="footer">
-            <g:Button ui:field="saveButton" styleName="button greenC" text="{lang.buttonSave}"/>
-            <g:Button ui:field="cancelButton" styleName="button whiteC close_button" text="{lang.buttonCancel}"/>
+            <g:Button ui:field="saveButton" styleName="btn btn-success" text="{lang.buttonSave}"/>
+            <g:Button ui:field="cancelButton" styleName="btn btn-white close_button" text="{lang.buttonCancel}"/>
         </div>
 
     </g:HTMLPanel>

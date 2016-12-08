@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
@@ -13,6 +14,8 @@ import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.issue.client.service.IssueServiceAsync;
+
+import java.util.List;
 
 /**
  * Активность превью обращения
@@ -59,7 +62,7 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
     private void fillView( CaseObject value ) {
         view.setPrivateIssue( value.isPrivateCase() );
         view.setHeader( value.getCaseNumber() == null ? "" : lang.issueHeader( value.getCaseNumber().toString() ) );
-        view.setCreationDate( value.getCreated() == null ? "" : dateFormatter.formatDateTime( value.getCreated() ) );
+        view.setCreationDate( value.getCreated() == null ? "" : DateFormatter.formatDateTime( value.getCreated() ) );
         view.setState( value.getStateId() );
         view.setCriticality( value.getImpLevel() );
         view.setProduct( value.getProduct() == null ? "" : value.getProduct().getName() );
@@ -69,6 +72,8 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
         view.setOurCompany( ourCompany == null ? "" : ourCompany.getCname() );
         view.setManager( value.getManager() == null ? "" : value.getManager().getDisplayName() );
         view.setInfo( value.getInfo() == null ? "" : value.getInfo() );
+
+        fireEvent( new IssueEvents.ShowComments( view.getCommentsContainer(), value.getId() ) );
     }
 
     private void fillView( Long id ) {
@@ -100,9 +105,6 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
 
     @Inject
     IssueServiceAsync issueService;
-
-    @Inject
-    DateFormatter dateFormatter;
 
     private Long issueId;
 

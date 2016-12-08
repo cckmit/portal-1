@@ -95,14 +95,14 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
         issueNumber = new NumberColumn( lang, caseStateLang );
         contact = new ContactColumn( lang );
         manager = new ManagerColumn( lang );
-        info = new InfoColumn( lang, dateFormatter );
+        info = new InfoColumn( lang );
 
         table.addColumn( selectionColumn.header, selectionColumn.values );
-        table.addColumn( editClickColumn.header, editClickColumn.values );
         table.addColumn( issueNumber.header, issueNumber.values );
         table.addColumn( info.header, info.values );
         table.addColumn( contact.header, contact.values );
         table.addColumn( manager.header, manager.values );
+        table.addColumn( editClickColumn.header, editClickColumn.values );
 //        table.setSeparatorProvider( separator );
     }
 
@@ -122,9 +122,6 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
 
     @Inject
     En_CaseStateLang caseStateLang;
-
-    @Inject
-    DateFormatter dateFormatter;
 
     @Inject
     Separator separator;

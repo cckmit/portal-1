@@ -1,17 +1,15 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.winter.jdbc.annotations.IdInsertMode;
-import ru.protei.winter.jdbc.annotations.JdbcColumn;
-import ru.protei.winter.jdbc.annotations.JdbcEntity;
-import ru.protei.winter.jdbc.annotations.JdbcId;
+import ru.protei.winter.jdbc.annotations.*;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Created by michael on 19.05.16.
  */
 @JdbcEntity(table = "case_comment")
-public class CaseComment {
+public class CaseComment implements Serializable{
 
     @JdbcId(name="id" , idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -19,25 +17,25 @@ public class CaseComment {
     @JdbcColumn(name="created")
     private Date created;
 
-    @JdbcColumn(name="CLIENT_IP")
+    @JdbcColumn(name="client_ip")
     private String clientIp;
 
-    @JdbcColumn(name="CASE_ID")
+    @JdbcColumn(name="case_id")
     private Long caseId;
 
-    @JdbcColumn(name="AUTHOR_ID")
-    private Long authorId;
+    @JdbcJoinedObject(localColumn = "author_id", remoteColumn = "id", updateLocalColumn = true )
+    private Person author;
 
-    @JdbcColumn(name="CSTATE_ID")
+    @JdbcColumn(name="cstate_id")
     private Long caseStateId;
 
-    @JdbcColumn(name="REPLY_TO")
+    @JdbcColumn(name="reply_to")
     private Long replyTo;
 
-    @JdbcColumn(name="VROOM")
+    @JdbcColumn(name="vroom")
     private Long vroomId;
 
-    @JdbcColumn(name="COMMENT_TEXT")
+    @JdbcColumn(name="comment_text")
     private String text;
 
     @JdbcColumn(name="old_id")
@@ -78,12 +76,23 @@ public class CaseComment {
         this.caseId = caseId;
     }
 
+    public Person getAuthor() {
+        return author;
+    }
+
+    public void setAuthor( Person author ) {
+        this.author = author;
+    }
+
     public Long getAuthorId() {
-        return authorId;
+        return author == null ? null : author.getId();
     }
 
     public void setAuthorId(Long authorId) {
-        this.authorId = authorId;
+        if ( author == null ) {
+            author = new Person();
+        }
+        this.author.setId( authorId );
     }
 
     public Long getCaseStateId() {
@@ -133,7 +142,7 @@ public class CaseComment {
                 ", created=" + created +
                 ", clientIp='" + clientIp + '\'' +
                 ", caseId=" + caseId +
-                ", authorId=" + authorId +
+                ", authorId=" + author +
                 ", caseStateId=" + caseStateId +
                 ", replyTo=" + replyTo +
                 ", vroomId=" + vroomId +

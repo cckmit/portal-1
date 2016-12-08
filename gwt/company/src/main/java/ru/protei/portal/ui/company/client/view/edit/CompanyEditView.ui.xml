@@ -8,68 +8,65 @@
     <g:HTMLPanel styleName="panel">
             <div class="body">
                 <div class="grid grid-indent">
-                    <div class="col-xs-12 col-lg-4">
+                    <div class="form-group col-xs-12 col-lg-4">
                         <label>
                             <ui:text from="{lang.companyName}"/>
                         </label>
                         <div class="panelField verifiable">
                             <i ui:field="verifiableIcon"/>
-                            <validablefield:ValidableTextBox ui:field="companyName" styleName="inputField" notNull="true"/>
+                            <validablefield:ValidableTextBox ui:field="companyName" styleName="input-field" notNull="true"/>
                         </div>
                     </div>
-                    <div class="col-xs-12 col-lg-4">
+                    <div class="form-group col-xs-12 col-lg-4">
                         <label>
                             <ui:text from="{lang.companyCategory}"/>
                         </label>
-                        <div class="panelField">
-                            <companycategory:CategoryButtonSelector ui:field="companyCategory"/>
-                        </div>
+                        <companycategory:CategoryButtonSelector ui:field="companyCategory"/>
                     </div>
-                    <div class="col-xs-12 col-lg-4">
+                    <div class="form-group col-xs-12 col-lg-4">
                         <label>
                             <ui:text from="{lang.companyGroupLabel}"/>
                         </label>
-                        <div class="panelField">
-                            <companygroup:GroupButtonSelector ui:field="companyGroup"/>
-                        </div>
+                        <companygroup:GroupButtonSelector ui:field="companyGroup"/>
                     </div>
-                    <div class="col-xs-12 col-lg-6">
+                    <div class="form-group col-xs-12 col-lg-6">
                         <label>
                             <ui:text from="{lang.companyActualAddress}"/>
                         </label>
-                        <validablefield:ValidableTextArea ui:field="actualAddress" styleName="inputField description" notNull="true"/>
+                        <validablefield:ValidableTextArea ui:field="actualAddress" styleName="input-field description" notNull="true"/>
                     </div>
-                    <div class="col-xs-12 col-lg-6">
+                    <div class="form-group col-xs-12 col-lg-6">
                         <label>
                             <ui:text from="{lang.companyLegalAddress}"/>
                         </label>
-                        <validablefield:ValidableTextArea ui:field="legalAddress" styleName="inputField description" notNull="true"/>
+                        <validablefield:ValidableTextArea ui:field="legalAddress" styleName="input-field description" notNull="true"/>
                     </div>
-                    <div class="col-xs-12">
+                    <div class="form-group col-xs-12">
                         <label>
                             <ui:text from="{lang.companyWebSite}"/>
                         </label>
-                        <div class="panelField"><span class="label">http://</span>
-                            <g:TextBox ui:field="webSite" styleName="inputField"/>
+                        <div class="input-group">
+                            <span class="input-group-addon">http://</span>
+                            <g:TextBox ui:field="webSite" styleName="input-field"/>
                         </div>
                     </div>
-                    <div class="col-xs-12 col-lg-6">
+                    <div class="form-group col-xs-12 col-lg-6">
                         <label>
                             <ui:text from="{lang.phone}"/>
                         </label>
                         <g:HTMLPanel ui:field="phonesContainer" styleName="panelField phone"/>
                     </div>
-                    <div class="col-xs-12 col-lg-6">
+                    <div class="form-group col-xs-12 col-lg-6">
                         <label>Email</label>
                         <g:HTMLPanel ui:field="emailsContainer" styleName="panelField"/>
                     </div>
-                    <div class="col-xs-12">
+                    <div class="form-group col-xs-12">
                         <label>
                             <ui:text from="{lang.comment}"/>
                         </label>
-                        <g:TextArea ui:field="comment" styleName="inputField description"/>
+                        <g:TextArea ui:field="comment" styleName="input-field description"/>
                     </div>
-                    <div class="col-xs-12">
+                    <div class="form-group col-xs-12">
                         <label class="bordered">
                             <ui:text from="{lang.contacts}"/>
                         </label>
@@ -78,8 +75,8 @@
                 </div>
             </div>
             <div class="footer">
-                <g:Button ui:field="saveButton" styleName="button greenC" text="{lang.buttonSave}"/>
-                <g:Button ui:field="cancelButton" styleName="button whiteC close_button" text="{lang.buttonCancel}"/>
+                <g:Button ui:field="saveButton" styleName="btn btn-success" text="{lang.buttonSave}"/>
+                <g:Button ui:field="cancelButton" styleName="btn btn-white" text="{lang.buttonCancel}"/>
             </div>
     </g:HTMLPanel>
 </ui:UiBinder>

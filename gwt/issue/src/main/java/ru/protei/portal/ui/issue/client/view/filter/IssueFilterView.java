@@ -27,7 +27,7 @@ import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSele
 import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterActivity;
 import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterView;
 import ru.protei.portal.ui.issue.client.widget.importance.btngroup.ImportanceBtnGroup;
-import ru.protei.portal.ui.issue.client.widget.state.btngroup.IssueStatesBtnGroup;
+import ru.protei.portal.ui.issue.client.widget.state.option.IssueStatesOptionList;
 
 import java.util.Set;
 
@@ -40,6 +40,7 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         initWidget( ourUiBinder.createAndBindUi( this ) );
         search.getElement().setPropertyString( "placeholder", lang.search() );
         sortField.setType( ModuleType.ISSUE );
+        sortDir.setValue( false );
         company.setDefaultValue( lang.selectIssueCompany() );
         product.setDefaultValue( lang.selectIssueProduct() );
         manager.setDefaultValue( lang.selectIssueManager() );
@@ -95,7 +96,7 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         state.setValue( null );
         dateRange.setValue( null );
         sortField.setValue( En_SortField.creation_date );
-        sortDir.setValue( true );
+        sortDir.setValue( false );
         search.setText( "" );
     }
 
@@ -159,12 +160,6 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
 
     @UiHandler("sortDir")
     public void onSortDirClicked( ClickEvent event ) {
-
-        if (sortDir.getValue())
-            sortDir.removeStyleName( "active" );
-        else
-            sortDir.addStyleName( "active" );
-
         if ( activity != null ) {
             activity.onFilterChanged();
         }
@@ -199,7 +194,7 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
 
     @Inject
     @UiField ( provided = true )
-    IssueStatesBtnGroup state;
+    IssueStatesOptionList state;
 
     @Inject
     @UiField( provided = true )

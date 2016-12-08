@@ -11,8 +11,8 @@ import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.IssueEvents;
@@ -100,7 +100,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             }
         });
     }
-
     private void fillView(CaseObject issue){
         view.name().setValue(issue.getName());
         view.isLocal().setValue(issue.isPrivateCase());
@@ -112,9 +111,9 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         Company initiatorCompany = issue.getInitiatorCompany();
         view.company().setValue(EntityOption.fromCompany(initiatorCompany));
         view.changeCompany(initiatorCompany);
-        view.initiator().setValue(PersonShortView.fromPerson(issue.getInitiator()));
+        view.initiator().setValue( PersonShortView.fromPerson(issue.getInitiator()));
 
-        view.product().setValue(ProductShortView.fromProduct(issue.getProduct()));
+        view.product().setValue( ProductShortView.fromProduct(issue.getProduct()));
         view.manager().setValue(PersonShortView.fromPerson(issue.getManager()));
     }
 
@@ -132,7 +131,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         issue.setProduct(DevUnit.fromProductShortView(view.product().getValue()));
         issue.setManager(Person.fromPersonShortView( view.manager().getValue()));
     }
-
 
     private boolean validateFieldsAndGetResult(){
         return view.nameValidator().isValid() &&

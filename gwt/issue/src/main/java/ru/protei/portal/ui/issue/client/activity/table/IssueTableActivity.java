@@ -182,9 +182,9 @@ public abstract class IssueTableActivity
             }
         }
 
-        query.setCompanyId( filterView.company().getValue() == null? null : filterView.company().getValue().getId() );
-        query.setProductId( filterView.product().getValue() == null? null : filterView.product().getValue().getId() );
-        query.setManagerId( filterView.manager().getValue() == null? null : filterView.manager().getValue().getId() );
+        query.setCompanyId( filterView.company().getValue() == null ? null : filterView.company().getValue().getId() );
+        query.setProductId( filterView.product().getValue() == null ? null : filterView.product().getValue().getId() );
+        query.setManagerId( filterView.manager().getValue() == null ? null : filterView.manager().getValue().getId() );
 
         if(filterView.states().getValue() != null)
             query.setStateIds(
@@ -203,8 +203,8 @@ public abstract class IssueTableActivity
         DateInterval interval = filterView.dateRange().getValue();
 
         if(interval != null) {
-            query.setFrom( interval == null ? null : interval.from );
-            query.setTo( interval == null ? null : interval.to );
+            query.setFrom( interval.from );
+            query.setTo( interval.to );
         }
 
         return query;

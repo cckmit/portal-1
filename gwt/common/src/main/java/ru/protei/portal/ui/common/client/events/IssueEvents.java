@@ -81,5 +81,19 @@ public class IssueEvents {
      * Добавление / изменение / удаление обращений
      */
     public static class ChangeModel {}
+
+    /**
+     * Показать комментарии
+     */
+    public static class ShowComments {
+        public ShowComments( HasWidgets parent, Long caseId ) {
+            this.parent = parent;
+            this.caseId = caseId;
+        }
+
+        public Long caseId;
+        public HasWidgets parent;
+
+    }
 }
 
