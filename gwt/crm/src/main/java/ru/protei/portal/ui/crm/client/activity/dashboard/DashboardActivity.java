@@ -3,16 +3,20 @@ package ru.protei.portal.ui.crm.client.activity.dashboard;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
+import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.ui.common.client.common.IssueStates;
+import ru.protei.portal.ui.common.client.common.UiConstants;
+import ru.protei.portal.ui.common.client.events.ActionBarEvents;
 import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.AuthEvents;
+import ru.protei.portal.ui.common.client.events.DashboardEvents;
 import ru.protei.portal.ui.common.client.events.IssueEvents;
+import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.IssueServiceAsync;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
-import ru.protei.portal.ui.crm.client.events.DashboardEvents;
+import ru.protei.winter.web.common.client.events.SectionEvents;
 
 import java.util.*;
 import java.util.function.LongConsumer;
@@ -23,43 +27,53 @@ import java.util.stream.Collectors;
  */
 public abstract class DashboardActivity implements AbstractDashboardActivity, Activity{
 
-    @Inject
+    @PostConstruct
     public void onInit(){
         view.setActivity(this);
-
-        Set<En_ImportanceLevel> importanceLevels = Arrays.stream(En_ImportanceLevel.values()).collect(Collectors.toSet());
-        view.getActiveRecordsImportance().setValue(importanceLevels);
-        view.getNewRecordsImportance().setValue(importanceLevels);
-        view.getInactiveRecordsImportance().setValue(importanceLevels);
     }
 
     @Event
-    public void onAuthSuccess( AuthEvents.Success event ) {
-        profile = event.profile;
+    public void onInitDetails( AppEvents.InitDetails initDetails ) {
+        this.initDetails = initDetails;
+    }
 
+    @Event
+    public void onDashboardInit( DashboardEvents.Init event ) {
+        profile = event.profile;
         activeRecordsQuery = generateActiveRecordsQuery();
         newRecordsQuery = generateNewRecordsQuery();
         inactiveRecordsQuery = generateInactiveRecordsQuery();
+        reset();
     }
 
     @Event
-    public void onChangeIssues( IssueEvents.ChangeModel event ) {
-        onShow(null);
+    public void onCreateClicked( SectionEvents.Clicked event ) {
+        if ( !UiConstants.ActionBarIdentity.DASHBOARD.equals( event.identity ) ) {
+            return;
+        }
+
+        fireEvent(new IssueEvents.Edit());
     }
+
 
     @Event
     public void onShow( DashboardEvents.Show event ) {
         initDetails.parent.clear();
         initDetails.parent.add( view.asWidget() );
 
+        fireEvent( new ActionBarEvents.Add( lang.buttonCreate(), UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.DASHBOARD ) );
+
         initActiveRecords();
         initNewRecords();
         initInactiveRecords();
+
     }
 
     @Event
-    public void onInitDetails( AppEvents.InitDetails initDetails ) {
-        this.initDetails = initDetails;
+    public void onChangeIssues( IssueEvents.ChangeModel event ) {
+        initActiveRecords();
+        initNewRecords();
+        initInactiveRecords();
     }
 
     @Override
@@ -78,6 +92,12 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
     public void updateInactiveRecordsImportance(Set<En_ImportanceLevel> importanceLevels) {
         updateRecordsImportance(inactiveRecordsQuery, importanceLevels);
         initInactiveRecords();
+    }
+
+    private void reset(){
+        view.getActiveRecordsImportance().setValue(importanceLevels);
+        view.getNewRecordsImportance().setValue(importanceLevels);
+        view.getInactiveRecordsImportance().setValue(importanceLevels);
     }
 
     private void updateRecordsImportance(CaseQuery query, Set<En_ImportanceLevel> importanceLevels){
@@ -161,10 +181,17 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
     @Inject
     IssueServiceAsync issueService;
 
+    @Inject
+    Lang lang;
+
+//    @Inject
+//    DashboardPage page;
+
     private AppEvents.InitDetails initDetails;
     private Profile profile;
 
     private CaseQuery activeRecordsQuery;
     private CaseQuery newRecordsQuery;
     private CaseQuery inactiveRecordsQuery;
+    private Set<En_ImportanceLevel> importanceLevels = Arrays.stream(En_ImportanceLevel.values()).collect(Collectors.toSet());
 }

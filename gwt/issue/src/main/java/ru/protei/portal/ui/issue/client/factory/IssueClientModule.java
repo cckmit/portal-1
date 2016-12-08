@@ -32,7 +32,7 @@ public class IssueClientModule extends AbstractGinModule {
 
         bind( IssuePreviewActivity.class ).asEagerSingleton();
         bind( AbstractIssuePreviewView.class ).to( IssuePreviewView.class ).in( Singleton.class );
-        
+
         bind( IssueEditActivity.class ).asEagerSingleton();
         bind( AbstractIssueEditView.class ).to( IssueEditView.class );
 

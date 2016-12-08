@@ -20,6 +20,7 @@ public class ClientModule extends AbstractGinModule {
 
     @Override
     protected void configure() {
+        bind( DashboardPage.class ).asEagerSingleton();
         bind( AppActivity.class ).asEagerSingleton();
         bind( AbstractAppView.class ).to( AppView.class ).in( Singleton.class );
 
@@ -28,7 +29,5 @@ public class ClientModule extends AbstractGinModule {
 
         bind( DashboardActivity.class ).asEagerSingleton();
         bind( AbstractDashboardView.class ).to( DashboardView.class ).in(Singleton.class);
-
-        bind( DashboardPage.class ).asEagerSingleton();
     }
 }

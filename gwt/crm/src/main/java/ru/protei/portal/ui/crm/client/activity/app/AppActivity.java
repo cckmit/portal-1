@@ -6,10 +6,8 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.ui.common.client.events.ActionBarEvents;
-import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.AuthEvents;
-import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.common.UiConstants;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.winter.web.common.client.events.MenuEvents;
 
 /**
@@ -43,6 +41,11 @@ public abstract class AppActivity
         init.parent.add( view.asWidget() );
 
         view.setUsername( event.profile.getName(), event.profile.getRole().getCaRoleName() );
+
+        fireEvent(new DashboardEvents.Init(event.profile));
+        if(initialToken == null || initialToken.isEmpty() || initialToken.equals(UiConstants.LOGIN_PAGE)){
+            initialToken = UiConstants.INITIAL_PAGE;
+        }
 
         History.newItem( initialToken );
     }

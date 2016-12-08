@@ -67,9 +67,9 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
             @Override
             public void onSuccess(Boolean aBoolean) {
-                fireEvent(new IssueEvents.Show());
-                fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                 fireEvent(new IssueEvents.ChangeModel());
+                fireEvent(new Back());
+                fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
             }
         });
     }
