@@ -1,39 +1,16 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
-             xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:importance='urn:import:ru.protei.portal.ui.crm.client.widget.importance.btngroup'>
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel styleName="dashboard grid">
         <section class="dashboard-active-records col-sm-12 col-lg-6">
-            <label class="dashboard-section-name">
-                <ui:text from="{lang.activeRecords}"/>
-                <span ui:field="activeRecordsCount" class="dashboard-total-count"/>
-                <div class="rightSide">
-                    <importance:CustomImportanceBtnGroup ui:field="activeRecordsImportance"/>
-                </div>
-            </label>
-            <g:HTMLPanel ui:field="activeRecordsContainer" styleName="dashboard-records-table"/>
+            <g:HTMLPanel ui:field="activeRecordsContainer"/>
         </section>
         <section class="dashboard-new-records col-sm-12 col-lg-6">
-            <label class="dashboard-section-name">
-                <ui:text from="{lang.newRecords}"/>
-                <span ui:field="newRecordsCount" class="dashboard-total-count"/>
-                <div class="rightSide">
-                    <importance:CustomImportanceBtnGroup ui:field="newRecordsImportance"/>
-                </div>
-            </label>
-            <g:HTMLPanel ui:field="newRecordsContainer" styleName="dashboard-records-table"/>
+            <g:HTMLPanel ui:field="newRecordsContainer"/>
         </section>
         <section class="dashboard-completed-records col-sm-12">
-            <label class="dashboard-section-name">
-                <ui:text from="{lang.inactiveRecords}"/>
-                <span ui:field="inactiveRecordsCount" class="dashboard-total-count"/>
-                <div class="rightSide">
-                    <importance:CustomImportanceBtnGroup ui:field="inactiveRecordsImportance"/>
-                </div>
-            </label>
-            <div ui:field="inactiveRecordsLoader" class="Loader"/>
-            <g:HTMLPanel ui:field="inactiveRecordsContainer" styleName="dashboard-records-table"/>
+            <g:HTMLPanel ui:field="inactiveRecordsContainer"/>
         </section>
     </g:HTMLPanel>
 </ui:UiBinder>

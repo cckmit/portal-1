@@ -1194,7 +1194,8 @@ td.info {
   background: #eceeee;
 }
 
-.dashboard section > .dashboard-records-table{
+//.dashboard section > .dashboard-records-table{
+.dashboard section > .global-table-container{
   background: white;
   height: 376px;
 }
@@ -1332,8 +1333,7 @@ td.info {
   );
 }
 
-.dashboard-active-records .manager,
-.dashboard-new-records .manager {
+.dashboard .manager {
   display: none;
 }
 

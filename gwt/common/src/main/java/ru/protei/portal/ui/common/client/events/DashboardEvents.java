@@ -1,6 +1,8 @@
 package ru.protei.portal.ui.common.client.events;
 
+import com.google.gwt.user.client.ui.HasWidgets;
 import ru.brainworm.factory.context.client.annotation.Url;
+import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.ui.common.shared.model.Profile;
 
 /**
@@ -22,6 +24,26 @@ public class DashboardEvents {
         public Profile profile;
         public Init(Profile profile){
             this.profile = profile;
+        }
+
+    }
+
+    public static class ShowTableBlock{
+
+        public CaseQuery query;
+        public HasWidgets parent;
+        public boolean isLoaderShow;
+        public ShowTableBlock (CaseQuery query, HasWidgets parent) {
+            if(query == null || parent == null)
+                throw new NullPointerException("query or parent is nullable");
+
+            this.query = query;
+            this.parent = parent;
+        }
+
+        public ShowTableBlock (CaseQuery query, HasWidgets parent, boolean showLoader) {
+            this(query, parent);
+            isLoaderShow = showLoader;
         }
 
     }

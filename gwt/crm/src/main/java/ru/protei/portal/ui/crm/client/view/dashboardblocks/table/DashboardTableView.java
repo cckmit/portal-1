@@ -1,35 +1,50 @@
-package ru.protei.portal.ui.issue.client.view.simpletable;
+package ru.protei.portal.ui.crm.client.view.dashboardblocks.table;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.SpanElement;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.HasValue;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.TableWidget;
+import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.issue.client.activity.simpletable.AbstractSimpleIssueTableActivity;
-import ru.protei.portal.ui.issue.client.activity.simpletable.AbstractSimpleIssueTableView;
-import ru.protei.portal.ui.issue.client.view.simpletable.columns.ContactColumn;
-import ru.protei.portal.ui.issue.client.view.simpletable.columns.ManagerColumn;
+import ru.protei.portal.ui.crm.client.activity.dashboardblocks.table.AbstractDashboardTableActivity;
+import ru.protei.portal.ui.crm.client.activity.dashboardblocks.table.AbstractDashboardTableView;
+import ru.protei.portal.ui.crm.client.view.dashboardblocks.table.columns.ContactColumn;
+import ru.protei.portal.ui.crm.client.view.dashboardblocks.table.columns.ManagerColumn;
+import ru.protei.portal.ui.crm.client.widget.importance.btngroup.CustomImportanceBtnGroup;
 import ru.protei.portal.ui.issue.client.view.table.columns.InfoColumn;
 import ru.protei.portal.ui.issue.client.view.table.columns.NumberColumn;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Представление таблицы обращений
  */
-public class SimpleIssueTableView extends Composite implements AbstractSimpleIssueTableView {
+public class DashboardTableView extends Composite implements AbstractDashboardTableView {
 
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
         initTable();
+        importance.init(
+                "importance importance-lg",
+                "dashboard-importance-filter-btn",
+                false,
+                null
+        );
     }
 
     @Override
@@ -38,7 +53,7 @@ public class SimpleIssueTableView extends Composite implements AbstractSimpleIss
     }
 
     @Override
-    public void setActivity(AbstractSimpleIssueTableActivity activity) {
+    public void setActivity(AbstractDashboardTableActivity activity) {
         this.activity = activity;
         issueNumber.setHandler( activity );
         issueNumber.setColumnProvider( columnProvider );
@@ -48,6 +63,34 @@ public class SimpleIssueTableView extends Composite implements AbstractSimpleIss
         info.setColumnProvider( columnProvider );
         manager.setHandler( activity );
         manager.setColumnProvider( columnProvider );
+    }
+
+    @Override
+    public void setSectionName(String name) {
+        sectionName.setInnerText(name);
+    }
+
+    @Override
+    public void setRecordsCount(int number) {
+        count.setInnerText(String.valueOf(number));
+    }
+
+    @Override
+    public void showLoader(boolean isShow){
+        if(isShow)
+            loader.addClassName("active");
+        else
+            loader.removeClassName("active");
+    }
+
+    @Override
+    public HasValue<Set<En_ImportanceLevel>> getImportance() {
+        return importance;
+    }
+
+    @UiHandler( "importance" )
+    public void onInactiveRecordsImportanceSelected( ValueChangeEvent<Set<En_ImportanceLevel>> event ) {
+        activity.updateImportance(event.getValue());
     }
 
     private void initTable () {
@@ -67,21 +110,30 @@ public class SimpleIssueTableView extends Composite implements AbstractSimpleIss
     ManagerColumn manager;
     InfoColumn info;
 
-    AbstractSimpleIssueTableActivity activity;
+    AbstractDashboardTableActivity activity;
 
-    @UiField
-    HTMLPanel tableContainer;
-    @UiField
-    TableWidget<CaseObject> table;
 
     @Inject
     DateFormatter dateFormatter;
     @Inject
     En_CaseStateLang caseStateLang;
     @Inject
-    @UiField
     Lang lang;
 
-    interface IssueTableViewUiBinder extends UiBinder<HTMLPanel, SimpleIssueTableView> {}
+    @UiField
+    Element sectionName;
+    @UiField
+    SpanElement count;
+    @Inject
+    @UiField( provided = true )
+    CustomImportanceBtnGroup importance;
+    @UiField
+    DivElement loader;
+    @UiField
+    HTMLPanel tableContainer;
+    @UiField
+    TableWidget<CaseObject> table;
+
+    interface IssueTableViewUiBinder extends UiBinder<HTMLPanel, DashboardTableView> {}
     private static IssueTableViewUiBinder ourUiBinder = GWT.create(IssueTableViewUiBinder.class);
 }
