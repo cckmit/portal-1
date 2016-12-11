@@ -4,6 +4,7 @@ package ru.protei.portal.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
@@ -105,6 +106,7 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
+    @Transactional
     public CoreResponse<CaseComment> addCaseComment( CaseComment caseComment ) {
         if ( caseComment == null )
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
@@ -117,10 +119,16 @@ public class CaseServiceImpl implements CaseService {
         if (commentId == null)
             return new CoreResponse().error(En_ResultStatus.NOT_CREATED);
 
+        boolean isCaseChanged = updateCaseModified ( caseComment.getCaseId(), caseComment.getCreated() );
+
+        if (!isCaseChanged)
+            return new CoreResponse().error(En_ResultStatus.NOT_CREATED);
+
         return new CoreResponse<CaseComment>().success( caseComment );
     }
 
     @Override
+    @Transactional
     public CoreResponse<CaseComment> updateCaseComment ( CaseComment caseComment ) {
         // todo: need check created time ( available 5 minutes ) ?
         if (caseComment == null || caseComment.getId() == null)
@@ -134,11 +142,17 @@ public class CaseServiceImpl implements CaseService {
         if (!isUpdated)
             return new CoreResponse().error(En_ResultStatus.NOT_UPDATED);
 
+        boolean isCaseChanged = updateCaseModified ( caseComment.getCaseId(), new Date() );
+
+        if (!isCaseChanged)
+            return new CoreResponse().error(En_ResultStatus.NOT_CREATED);
+
         return new CoreResponse<CaseComment>().success( caseComment );
     }
 
 
     @Override
+    @Transactional
     public CoreResponse removeCaseComment( CaseComment caseComment ) {
         // todo: need check created time ( available 5 minutes ) ?
         if (caseComment == null || caseComment.getId() == null)
@@ -151,6 +165,12 @@ public class CaseServiceImpl implements CaseService {
 
         if (!isRemoved)
             return new CoreResponse().error(En_ResultStatus.INTERNAL_ERROR);
+
+        // todo: а надо ли ?
+        boolean isCaseChanged = updateCaseModified ( caseComment.getCaseId(), new Date() );
+
+        if (!isCaseChanged)
+            return new CoreResponse().error(En_ResultStatus.NOT_CREATED);
 
         return new CoreResponse<Boolean>().success(isRemoved);
     }
@@ -165,6 +185,20 @@ public class CaseServiceImpl implements CaseService {
             return new CoreResponse<Long>().error(En_ResultStatus.GET_DATA_ERROR);
 
         return new CoreResponse<Long>().success(count);
+    }
+
+    private boolean updateCaseModified ( Long caseId,  Date modified ) {
+        if (caseId == null)
+            return false;
+
+        CaseObject caseObject = caseObjectDAO.get( caseId );
+        if (caseObject == null)
+            return false;
+
+        caseObject.setModified(modified);
+        boolean isUpdated = caseObjectDAO.merge(caseObject);
+
+        return isUpdated;
     }
 
     private boolean isChangeAvailable ( Date date ) {
