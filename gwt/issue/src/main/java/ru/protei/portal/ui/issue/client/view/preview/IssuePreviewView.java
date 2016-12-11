@@ -58,14 +58,14 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     @Override
     public void setState( long value ) {
         En_CaseState caseState = En_CaseState.getById( value );
-        this.state.setClassName( "small label label-" + En_CaseState.getById( value ).toString() );
+        this.state.setClassName( "small label label-" + caseState.toString().toLowerCase());
         this.state.setInnerText( caseStateLang.getStateName( caseState ) );
     }
 
     @Override
     public void setCriticality( int value ) {
         En_ImportanceLevel importanceLevel = En_ImportanceLevel.find( value );
-        this.iconCriticality.setClassName( "importance importance-lg none-vertical-align " + importanceLevel.toString() );
+        this.iconCriticality.setClassName( "importance importance-lg none-vertical-align " + importanceLevel.toString().toLowerCase() );
         CriticalityStyleBuilder.make().addClassName( this.iconCriticality, En_ImportanceLevel.find( value ) );
         this.criticality.setInnerText( caseImportanceLang.getImportanceName( importanceLevel ) );
     }

@@ -26,6 +26,8 @@ public class AppView extends Composite
     public AppView() {
         initWidget(ourUiBinder.createAndBindUi(this));
         initHandlers();
+        // todo temporary set invisible
+        search.setVisible( false );
     }
 
     @Override

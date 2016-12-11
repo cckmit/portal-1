@@ -66,7 +66,7 @@ public class ContactTableView extends Composite implements AbstractContactTableV
     @Override
     public void hideElements() {
         filterContainer.setVisible( false );
-        hideColumn.setVisibility( false );
+        //hideColumn.setVisibility( false );
         tableContainer.removeStyleName( "col-xs-9" );
         tableContainer.addStyleName( "col-xs-12" );
     }
@@ -74,7 +74,7 @@ public class ContactTableView extends Composite implements AbstractContactTableV
     @Override
     public void showElements() {
         filterContainer.setVisible( true );
-        hideColumn.setVisibility( true );
+        //hideColumn.setVisibility( true );
         tableContainer.removeStyleName( "col-xs-12" );
         tableContainer.addStyleName( "col-xs-9" );
     }
@@ -161,9 +161,9 @@ public class ContactTableView extends Composite implements AbstractContactTableV
         };
         columns.add( company );
 
-        hideColumn = table.addColumn( selectionColumn.header, selectionColumn.values );
-        table.addColumn( displayName.header, displayName.values );
+        //hideColumn = table.addColumn( selectionColumn.header, selectionColumn.values );
         table.addColumn( company.header, company.values );
+        table.addColumn( displayName.header, displayName.values );
         table.addColumn( editClickColumn.header, editClickColumn.values );
     }
 
