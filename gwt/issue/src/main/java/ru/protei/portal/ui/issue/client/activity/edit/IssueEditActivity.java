@@ -137,6 +137,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                 view.stateValidator().isValid() &&
                 view.importanceValidator().isValid() &&
                 view.companyValidator().isValid() &&
+                view.initiatorValidator().isValid() &&
                 view.productValidator().isValid() &&
                 view.managerValidator().isValid();
     }
