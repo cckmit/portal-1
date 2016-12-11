@@ -105,8 +105,8 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         view.isLocal().setValue(issue.isPrivateCase());
         view.description().setText(issue.getInfo());
 
-        view.state().setValue(En_CaseState.getById(issue.getStateId()));
-        view.importance().setValue(En_ImportanceLevel.getById(issue.getImpLevel()));
+        view.state().setValue(issue.getId() == null ? En_CaseState.CREATED : En_CaseState.getById(issue.getStateId()));
+        view.importance().setValue(issue.getId() == null ? En_ImportanceLevel.BASIC : En_ImportanceLevel.getById(issue.getImpLevel()));
 
         Company initiatorCompany = issue.getInitiatorCompany();
         view.company().setValue(EntityOption.fromCompany(initiatorCompany));
