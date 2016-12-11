@@ -15,6 +15,7 @@ import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.query.CaseQuery;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -125,6 +126,9 @@ public class CaseServiceImpl implements CaseService {
         if (caseComment == null || caseComment.getId() == null)
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
 
+        if (!isChangeAvailable ( caseComment.getCreated() ))
+            return new CoreResponse().error(En_ResultStatus.NOT_UPDATED);
+
         boolean isUpdated = caseCommentDAO.merge(caseComment);
 
         if (!isUpdated)
@@ -139,6 +143,9 @@ public class CaseServiceImpl implements CaseService {
         // todo: need check created time ( available 5 minutes ) ?
         if (caseComment == null || caseComment.getId() == null)
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
+
+        if (!isChangeAvailable ( caseComment.getCreated() ))
+            return new CoreResponse().error(En_ResultStatus.NOT_UPDATED);
 
         boolean isRemoved = caseCommentDAO.remove(caseComment);
 
@@ -159,4 +166,15 @@ public class CaseServiceImpl implements CaseService {
 
         return new CoreResponse<Long>().success(count);
     }
+
+    private boolean isChangeAvailable ( Date date ) {
+        Calendar c = Calendar.getInstance();
+        long current = c.getTimeInMillis();
+        c.setTime( date );
+        long checked = c.getTimeInMillis();
+
+        return current - checked > CHANGE_LIMIT_TIME;
+    }
+
+    static final long CHANGE_LIMIT_TIME = 300000;  // 5 минут
 }
