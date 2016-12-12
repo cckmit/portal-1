@@ -27,19 +27,19 @@ public class ContactPreviewView extends Composite implements AbstractContactPrev
     }
 
     @Override
-    public void setLastName(String value) { this.lastName.setInnerText( value ); }
+    public void setLastName(String value) { this.lastName.setInnerHTML( value ); }
 
     @Override
-    public void setFirstName(String value) { this.firstName.setInnerText( value ); }
+    public void setFirstName(String value) { this.firstName.setInnerHTML( value ); }
 
     @Override
-    public void setSecondName(String value) { this.secondName.setInnerText( value ); }
+    public void setSecondName(String value) { this.secondName.setInnerHTML( value ); }
 
     @Override
-    public void setDisplayName(String value) { this.displayName.setInnerText( value ); }
+    public void setDisplayName(String value) { this.displayName.setInnerHTML( value ); }
 
     @Override
-    public void setShortName(String value) { this.shortName.setInnerText( value ); }
+    public void setShortName(String value) { this.shortName.setInnerHTML( value ); }
 
     @Override
     public void setGender(String value) { this.gender.setInnerText( value ); }
@@ -48,13 +48,13 @@ public class ContactPreviewView extends Composite implements AbstractContactPrev
     public void setBirthday(String value) { this.birthday.setInnerText( value ); }
 
     @Override
-    public void setCompany ( String value ) { this.company.setInnerText( value ); }
+    public void setCompany ( String value ) { this.company.setInnerHTML( value ); }
 
     @Override
-    public void setPosition(String value) { this.position.setInnerText( value ); }
+    public void setPosition(String value) { this.position.setInnerHTML( value ); }
 
     @Override
-    public void setDepartment(String value) { this.department.setInnerText( value ); }
+    public void setDepartment(String value) { this.department.setInnerHTML( value ); }
 
     @Override
     public void setPhone(String value) { this.phone.setInnerText( value ); }
@@ -63,13 +63,13 @@ public class ContactPreviewView extends Composite implements AbstractContactPrev
     public void setEmail(String value) { this.email.setInnerText( value ); }
 
     @Override
-    public void setAddress(String value) { this.address.setInnerText( value ); }
+    public void setAddress(String value) { this.address.setInnerHTML( value ); }
 
     @Override
-    public void setHomeAddress(String value) { this.homeAddress.setInnerText( value ); }
+    public void setHomeAddress(String value) { this.homeAddress.setInnerHTML( value ); }
 
     @Override
-    public void setInfo(String value) { this.info.setInnerText( value ); }
+    public void setInfo(String value) { this.info.setInnerHTML( value ); }
 
     @Override
     public void showFullScreen ( boolean value ) {

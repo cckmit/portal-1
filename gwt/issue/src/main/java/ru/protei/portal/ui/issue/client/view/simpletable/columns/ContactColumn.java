@@ -39,7 +39,7 @@ public class ContactColumn extends ClickColumn< CaseObject > {
         Person initiator = value == null ? null : value.getInitiator();
         com.google.gwt.dom.client.Element initiatorElement = DOM.createElement( "p" );
 
-        initiatorElement.setInnerText( getInitiatorLabel(initiator) );
+        initiatorElement.setInnerHTML( getInitiatorLabel(initiator) );
 
         divElement.appendChild( initiatorElement );
 
