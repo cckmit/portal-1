@@ -153,8 +153,10 @@ public abstract class IssueTableActivity
     private void showPreview ( CaseObject value ) {
 
         if ( value == null ) {
+            view.showElements();
             animation.closeDetails();
         } else {
+            view.hideElements();
             animation.showDetails();
             fireEvent( new IssueEvents.ShowPreview( view.getPreviewContainer(), value ) );
         }

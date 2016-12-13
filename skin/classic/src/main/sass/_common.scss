@@ -606,6 +606,10 @@ label.bordered:after{
   left: 0px;
   width: 100%;
   z-index: 100;
+
+  a {
+    color : #fff;
+  }
 }
 
 .sidebar-collapse .table-pager > div:first-child {
