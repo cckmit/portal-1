@@ -14,6 +14,7 @@ import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
@@ -83,12 +84,12 @@ public abstract class IssueTableActivity
     }
 
     @Override
-    public void onItemClicked( CaseObject value ) {
-        showPreview( value );
+    public void onItemClicked( CaseShortView value ) {
+//        showPreview( value );
     }
 
     @Override
-    public void onEditClicked( CaseObject value ) {
+    public void onEditClicked( CaseShortView value ) {
         fireEvent(new IssueEvents.Edit(value.getId(), null));
     }
 
@@ -98,12 +99,12 @@ public abstract class IssueTableActivity
     }
 
     @Override
-    public void loadData( int offset, int limit, AsyncCallback<List<CaseObject>> asyncCallback ) {
+    public void loadData( int offset, int limit, AsyncCallback<List<CaseShortView>> asyncCallback ) {
         CaseQuery query = getQuery();
         query.setOffset( offset );
         query.setLimit( limit );
 
-        issueService.getIssues( query, new RequestCallback<List<CaseObject>>() {
+        issueService.getIssues( query, new RequestCallback<List<CaseShortView>>() {
             @Override
             public void onError( Throwable throwable ) {
                 fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
@@ -111,7 +112,7 @@ public abstract class IssueTableActivity
             }
 
             @Override
-            public void onSuccess( List<CaseObject> caseObjects ) {
+            public void onSuccess( List<CaseShortView> caseObjects ) {
                 asyncCallback.onSuccess( caseObjects );
             }
         } );

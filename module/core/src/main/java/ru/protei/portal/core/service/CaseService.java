@@ -6,6 +6,7 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.core.model.view.CaseShortView;
 
 import java.util.List;
 
@@ -14,7 +15,7 @@ import java.util.List;
  */
 public interface CaseService {
     CoreResponse<Long> count( CaseQuery query );
-    CoreResponse<List<CaseObject>> caseObjectList(CaseQuery query);
+    CoreResponse<List<CaseShortView>> caseObjectList( CaseQuery query);
     CoreResponse<CaseObject> getCaseObject(long id);
     CoreResponse<CaseObject> saveCaseObject(CaseObject p);
     CoreResponse<CaseObject> updateCaseObject(CaseObject p);

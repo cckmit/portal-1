@@ -3,7 +3,7 @@ package ru.protei.portal.ui.issue.client.view.table.columns;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.ent.CaseObject;
+import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -13,7 +13,7 @@ import java.util.Date;
 /**
  * Колонка "Описание"
  */
-public class InfoColumn extends ClickColumn< CaseObject >{
+public class InfoColumn extends ClickColumn<CaseShortView>{
 
     @Inject
     public InfoColumn( Lang lang, DateFormatter dateFormatter ) {
@@ -28,13 +28,13 @@ public class InfoColumn extends ClickColumn< CaseObject >{
     }
 
     @Override
-    public void fillColumnValue( Element cell, CaseObject value ) {
+    public void fillColumnValue( Element cell, CaseShortView value ) {
         cell.addClassName( "info" );
 
         com.google.gwt.dom.client.Element divElement = DOM.createDiv();
 
         com.google.gwt.dom.client.Element productElement = DOM.createLabel();
-        productElement.setInnerText( value == null ? "" : value.getProduct() == null ? "" : value.getProduct().getName() );
+        productElement.setInnerText( value == null ? "" : value.getProductName() == null ? "" : value.getProductName() );
         divElement.appendChild( productElement );
 
         Date created = value == null ? null : value.getCreated();

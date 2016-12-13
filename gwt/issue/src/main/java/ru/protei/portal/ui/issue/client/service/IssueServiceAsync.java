@@ -4,7 +4,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.query.CaseQuery;
-import ru.protei.portal.ui.common.shared.model.RequestCallback;
+import ru.protei.portal.core.model.view.CaseShortView;
 
 import java.util.List;
 
@@ -13,7 +13,7 @@ import java.util.List;
  */
 public interface IssueServiceAsync {
 
-    void getIssues( CaseQuery query, AsyncCallback< List< CaseObject > > async );
+    void getIssues( CaseQuery query, AsyncCallback< List<CaseShortView> > async );
 
     void getIssue( long id, AsyncCallback< CaseObject > callback );
 

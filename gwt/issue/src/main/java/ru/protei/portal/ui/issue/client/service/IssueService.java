@@ -5,6 +5,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
 import java.util.List;
@@ -15,7 +16,7 @@ import java.util.List;
 @RemoteServiceRelativePath( "springGwtServices/IssueService" )
 public interface IssueService extends RemoteService {
 
-    List< CaseObject > getIssues( CaseQuery query ) throws RequestFailedException;
+    List<CaseShortView> getIssues( CaseQuery query ) throws RequestFailedException;
 
     CaseObject getIssue( long id );
 
