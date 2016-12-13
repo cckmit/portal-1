@@ -122,7 +122,7 @@ public class CaseServiceImpl implements CaseService {
         boolean isCaseChanged = updateCaseModified ( caseComment.getCaseId(), caseComment.getCreated() );
 
         if (!isCaseChanged)
-            return new CoreResponse().error(En_ResultStatus.NOT_CREATED);
+            throw new RuntimeException( "failed to update case modifiedDate " );
 
         return new CoreResponse<CaseComment>().success( caseComment );
     }
@@ -130,22 +130,21 @@ public class CaseServiceImpl implements CaseService {
     @Override
     @Transactional
     public CoreResponse<CaseComment> updateCaseComment ( CaseComment caseComment ) {
-        // todo: need check created time ( available 5 minutes ) ?
         if (caseComment == null || caseComment.getId() == null)
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
 
         if (!isChangeAvailable ( caseComment.getCreated() ))
-            return new CoreResponse().error(En_ResultStatus.NOT_UPDATED);
+            return new CoreResponse().error( En_ResultStatus.NOT_UPDATED );
 
         boolean isUpdated = caseCommentDAO.merge(caseComment);
 
         if (!isUpdated)
-            return new CoreResponse().error(En_ResultStatus.NOT_UPDATED);
+            return new CoreResponse().error( En_ResultStatus.NOT_UPDATED );
 
         boolean isCaseChanged = updateCaseModified ( caseComment.getCaseId(), new Date() );
 
         if (!isCaseChanged)
-            return new CoreResponse().error(En_ResultStatus.NOT_CREATED);
+            throw new RuntimeException( "failed to update case modifiedDate " );
 
         return new CoreResponse<CaseComment>().success( caseComment );
     }
@@ -154,23 +153,23 @@ public class CaseServiceImpl implements CaseService {
     @Override
     @Transactional
     public CoreResponse removeCaseComment( CaseComment caseComment ) {
-        // todo: need check created time ( available 5 minutes ) ?
         if (caseComment == null || caseComment.getId() == null)
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
 
         if (!isChangeAvailable ( caseComment.getCreated() ))
-            return new CoreResponse().error(En_ResultStatus.NOT_UPDATED);
+            return new CoreResponse().error(En_ResultStatus.NOT_REMOVED);
+
+        long caseId = caseComment.getCaseId();
 
         boolean isRemoved = caseCommentDAO.remove(caseComment);
 
         if (!isRemoved)
-            return new CoreResponse().error(En_ResultStatus.INTERNAL_ERROR);
+            return new CoreResponse().error( En_ResultStatus.NOT_REMOVED );
 
-        // todo: а надо ли ?
-        boolean isCaseChanged = updateCaseModified ( caseComment.getCaseId(), new Date() );
+        boolean isCaseChanged = updateCaseModified ( caseId, new Date() );
 
         if (!isCaseChanged)
-            return new CoreResponse().error(En_ResultStatus.NOT_CREATED);
+            throw new RuntimeException( "failed to update case modifiedDate " );
 
         return new CoreResponse<Boolean>().success(isRemoved);
     }
@@ -207,8 +206,8 @@ public class CaseServiceImpl implements CaseService {
         c.setTime( date );
         long checked = c.getTimeInMillis();
 
-        return current - checked > CHANGE_LIMIT_TIME;
+        return current - checked < CHANGE_LIMIT_TIME;
     }
 
-    static final long CHANGE_LIMIT_TIME = 300000;  // 5 минут
+    static final long CHANGE_LIMIT_TIME = 300000;  // 5 минут  (в мсек)
 }

@@ -55,9 +55,10 @@ public class CaseServiceTest {
     }
 
     @Test
-    public void testCreateUpdateCaseComment () {
+    public void testCRUD_CaseComment () {
 
         long testCaseId = 377321;
+        String userIp = "192.168.100.156";
         long personId = 46;
 
         // create
@@ -65,6 +66,7 @@ public class CaseServiceTest {
 
         comment.setCaseId( testCaseId );
         comment.setAuthorId( personId );
+        comment.setClientIp( userIp );
         comment.setCreated( new Date() );
         comment.setText( "Unit-test - тестовый комментарий" );
 
@@ -78,22 +80,36 @@ public class CaseServiceTest {
         System.out.println( result.getData() );
 
         CoreResponse<List<CaseComment>> resultList = service.getCaseCommentList(testCaseId);
-        System.out.println(" size = " + resultList.getData().size());
+        System.out.println(" size after add = " + resultList.getData().size());
 
         // update
         comment = result.getData();
-        comment.setText( "Unit-test - тестовый комментарий (update)" );
 
-        result = service.updateCaseComment( comment );
-        Assert.assertNotNull(result);
-        Assert.assertTrue(result.isOk());
-        Assert.assertNotNull(result.getData());
+        if (comment != null) {
+            comment.setText( "Unit-test - тестовый комментарий (update)" );
 
-        System.out.println( result.getData() );
+            result = service.updateCaseComment( comment );
+            Assert.assertNotNull( result );
+            Assert.assertTrue( result.isOk() );
+            Assert.assertNotNull( result.getData() );
 
-        Assert.assertNotNull(ctx.getBean(CaseCommentDAO.class).remove(result.getData()));
-
+            System.out.println( result.getData() );
+        }
         resultList = service.getCaseCommentList(testCaseId);
-        System.out.println(" size = " + resultList.getData().size());
+        System.out.println(" size after update = " + resultList.getData().size());
+
+        // delete
+        if (comment != null) {
+            result = service.removeCaseComment( comment );
+            Assert.assertNotNull( result );
+            Assert.assertTrue( result.isOk() );
+            Assert.assertNotNull( result.getData() );
+
+            System.out.println( result.getData() );
+        }
+        resultList = service.getCaseCommentList(testCaseId);
+        System.out.println(" size after remove = " + resultList.getData().size());
+
     }
+
 }
