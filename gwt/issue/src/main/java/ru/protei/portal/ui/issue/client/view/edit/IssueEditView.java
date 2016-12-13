@@ -108,9 +108,10 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
-    public HasValidable companyValidator() {
-        return company;
-    }
+    public HasValidable companyValidator() { return company; }
+
+    @Override
+    public HasValidable initiatorValidator() { return initiator; }
 
     @Override
     public HasValidable productValidator() {
