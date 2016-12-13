@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.crm.client.activity.dashboardblocks.table;
 
-import com.google.gwt.core.client.GWT;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -47,7 +46,6 @@ public abstract class DashboardTableActivity implements AbstractDashboardTableAc
     @Override
     public void updateImportance(AbstractDashboardTableView view, Set<En_ImportanceLevel> importanceLevels) {
         DashboardTableModel model = viewToModel.get(view);
-        GWT.log(importanceLevels.toString());
 
         if(model == null)
             return;
