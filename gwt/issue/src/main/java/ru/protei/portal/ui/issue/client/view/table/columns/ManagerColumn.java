@@ -29,10 +29,10 @@ public class ManagerColumn extends ClickColumn<CaseShortView> {
 
         com.google.gwt.dom.client.Element divElement = DOM.createDiv();
 
-//        Company company = value == null ? null : value.getManager() == null ? null : value.getManager().getCompany();
-//        com.google.gwt.dom.client.Element companyElement= DOM.createLabel();
-//        companyElement.setInnerText( company == null ? "" : company.getCname() );
-//        divElement.appendChild( companyElement );
+        String company = value == null ? null : value.getManagerCompanyName();
+        com.google.gwt.dom.client.Element companyElement= DOM.createLabel();
+        companyElement.setInnerText( company == null ? "" : company );
+        divElement.appendChild( companyElement );
 
         String manager = value == null ? null : value.getManagerName();
         com.google.gwt.dom.client.Element managerElement = DOM.createElement( "p" );

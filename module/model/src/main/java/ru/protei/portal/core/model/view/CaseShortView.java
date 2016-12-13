@@ -58,8 +58,11 @@ public class CaseShortView implements Serializable {
     @JdbcJoinedColumn( table = "person", localColumn = "MANAGER", remoteColumn = "id", mappedColumn = "displayname" )
     private String managerName;
 
-//    @JdbcJoinedObject( localColumn = "MANAGER", remoteColumn = "id", updateLocalColumn = false )
-//    private Person manager;
+    @JdbcJoinedColumn( mappedColumn = "cname", joinPath = {
+            @JdbcJoinPath( table = "Person", localColumn = "MANAGER", remoteColumn = "id" ),
+            @JdbcJoinPath( table = "Company", localColumn = "company_id", remoteColumn = "id" )
+    })
+    private String managerCompanyName;
 
     public CaseShortView() {
 
@@ -190,6 +193,14 @@ public class CaseShortView implements Serializable {
         this.managerName = managerName;
     }
 
+    public String getManagerCompanyName() {
+        return managerCompanyName;
+    }
+
+    public void setManagerCompanyName( String managerCompanyName ) {
+        this.managerCompanyName = managerCompanyName;
+    }
+
     @Override
     public String toString() {
         return "CaseShortView{" +
@@ -208,6 +219,7 @@ public class CaseShortView implements Serializable {
                 ", productName='" + productName + '\'' +
                 ", managerId=" + managerId +
                 ", managerName='" + managerName + '\'' +
+                ", managerCompanyName='" + managerCompanyName + '\'' +
                 '}';
     }
 }
