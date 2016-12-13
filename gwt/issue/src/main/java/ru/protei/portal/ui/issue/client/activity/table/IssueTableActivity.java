@@ -12,7 +12,6 @@ import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_SortDir;
-import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
@@ -85,7 +84,7 @@ public abstract class IssueTableActivity
 
     @Override
     public void onItemClicked( CaseShortView value ) {
-//        showPreview( value );
+        showPreview( value );
     }
 
     @Override
@@ -151,13 +150,13 @@ public abstract class IssueTableActivity
             } );
     }
 
-    private void showPreview ( CaseObject value ) {
+    private void showPreview ( CaseShortView value ) {
 
         if ( value == null ) {
             animation.closeDetails();
         } else {
             animation.showDetails();
-            fireEvent( new IssueEvents.ShowPreview( view.getPreviewContainer(), value ) );
+            fireEvent( new IssueEvents.ShowPreview( view.getPreviewContainer(), value.getId() ) );
         }
     }
 

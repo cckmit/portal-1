@@ -3,7 +3,6 @@ package ru.protei.portal.ui.common.client.events;
 import com.google.gwt.user.client.ui.HasWidgets;
 import ru.brainworm.factory.context.client.annotation.Name;
 import ru.brainworm.factory.context.client.annotation.Url;
-import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.view.EntityOption;
 
 /**
@@ -23,14 +22,14 @@ public class IssueEvents {
      */
     public static class ShowPreview {
 
-        public ShowPreview ( HasWidgets parent, CaseObject issue )
+        public ShowPreview ( HasWidgets parent, Long issueId )
         {
             this.parent = parent;
-            this.issue = issue;
+            this.issueId = issueId;
         }
 
-        public CaseObject issue;
         public HasWidgets parent;
+        public Long issueId;
 
     }
 

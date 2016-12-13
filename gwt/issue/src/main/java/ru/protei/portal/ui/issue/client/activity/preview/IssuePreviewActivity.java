@@ -34,9 +34,9 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
         event.parent.clear();
         event.parent.add( view.asWidget() );
 
-        this.issueId = event.issue.getId();
+        this.issueId = event.issueId;
 
-        fillView( event.issue );
+        fillView( issueId );
         view.showFullScreen( false );
     }
 
