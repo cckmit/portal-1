@@ -8,8 +8,6 @@ import com.google.gwt.user.client.ui.IsWidget;
  */
 public interface AbstractDashboardView extends IsWidget {
 
-    void setActivity( AbstractDashboardActivity activity );
-
     HasWidgets getActiveRecordsContainer();
     HasWidgets getNewRecordsContainer();
     HasWidgets getInactiveRecordsContainer();

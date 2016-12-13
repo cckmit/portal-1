@@ -15,6 +15,7 @@ public interface AbstractDashboardTableView extends IsWidget {
 
     void setActivity( AbstractDashboardTableActivity activity );
     void putRecords(List<CaseObject> cases);
+    void clearRecords();
 
     void setSectionName(String name);
     void setRecordsCount(int count);

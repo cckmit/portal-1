@@ -2,7 +2,6 @@ package ru.protei.portal.ui.crm.client.view.dashboardblocks.table;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
-import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -31,7 +30,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Представление таблицы обращений
+ * Представление таблицы кейсов
  */
 public class DashboardTableView extends Composite implements AbstractDashboardTableView {
 
@@ -45,6 +44,17 @@ public class DashboardTableView extends Composite implements AbstractDashboardTa
                 false,
                 null
         );
+    }
+
+    @Override
+    public void clearRecords() {
+        table.clearRows();
+    }
+
+    @Override
+    protected void onDetach() {
+        activity.removeView(this);
+        super.onDetach();
     }
 
     @Override
@@ -90,7 +100,7 @@ public class DashboardTableView extends Composite implements AbstractDashboardTa
 
     @UiHandler( "importance" )
     public void onInactiveRecordsImportanceSelected( ValueChangeEvent<Set<En_ImportanceLevel>> event ) {
-        activity.updateImportance(event.getValue());
+        activity.updateImportance(this, event.getValue());
     }
 
     private void initTable () {
@@ -121,7 +131,7 @@ public class DashboardTableView extends Composite implements AbstractDashboardTa
     Lang lang;
 
     @UiField
-    Element sectionName;
+    SpanElement sectionName;
     @UiField
     SpanElement count;
     @Inject
@@ -134,6 +144,6 @@ public class DashboardTableView extends Composite implements AbstractDashboardTa
     @UiField
     TableWidget<CaseObject> table;
 
-    interface IssueTableViewUiBinder extends UiBinder<HTMLPanel, DashboardTableView> {}
-    private static IssueTableViewUiBinder ourUiBinder = GWT.create(IssueTableViewUiBinder.class);
+    interface CaseTableViewUiBinder extends UiBinder<HTMLPanel, DashboardTableView> {}
+    private static CaseTableViewUiBinder ourUiBinder = GWT.create(CaseTableViewUiBinder.class);
 }

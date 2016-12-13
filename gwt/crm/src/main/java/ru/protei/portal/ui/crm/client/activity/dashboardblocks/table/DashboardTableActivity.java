@@ -1,12 +1,12 @@
 package ru.protei.portal.ui.crm.client.activity.dashboardblocks.table;
 
+import com.google.gwt.core.client.GWT;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.CaseObject;
-import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.ui.common.client.events.DashboardEvents;
 import ru.protei.portal.ui.common.client.events.IssueEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
@@ -14,32 +14,29 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.IssueServiceAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Created by bondarenko on 01.12.16.
+ * Блок дашборда: таблица кейсов
  */
 public abstract class DashboardTableActivity implements AbstractDashboardTableActivity, Activity {
 
     @Event
     public void onShow( DashboardEvents.ShowTableBlock event ) {
-        AbstractDashboardTableView table = createTableView();
+        AbstractDashboardTableView view = createTableView();
 
         event.parent.clear();
-        event.parent.add(table.asWidget());
-        isLoaderShow = event.isLoaderShow;
-        query = event.query;
+        event.parent.add(view.asWidget());
 
-        view.getImportance().setValue(importanceLevels);
-        updateSection();
-    }
 
-    private void updateSection(){
-        updateRecordsCount();
-        requestRecords();
+        DashboardTableModel model = new DashboardTableModel(view, event.query, event.isLoaderShow);
+        viewToModel.put(view, model);
+
+        view.getImportance().setValue(IMPORTANCE_LEVELS);
+        view.setSectionName(event.sectionName);
+
+        updateSection(model);
     }
 
     @Override
@@ -47,8 +44,45 @@ public abstract class DashboardTableActivity implements AbstractDashboardTableAc
         fireEvent(new IssueEvents.Edit(value.getId(), null));
     }
 
-    private void requestRecords() {
-        issueService.getIssues( query, new RequestCallback<List<CaseObject>>() {
+    @Override
+    public void updateImportance(AbstractDashboardTableView view, Set<En_ImportanceLevel> importanceLevels) {
+        DashboardTableModel model = viewToModel.get(view);
+        GWT.log(importanceLevels.toString());
+
+        if(model == null)
+            return;
+
+        List<Integer> importanceIds =
+                importanceLevels
+                        .stream()
+                        .map(En_ImportanceLevel::getId)
+                        .collect(Collectors.toList());
+
+        if(model.query.getImportanceIds() != null && model.query.getImportanceIds().equals(importanceIds))
+            return;
+
+        model.query.setImportanceIds(importanceIds);
+        updateSection(model);
+    }
+
+    @Override
+    public void removeView(AbstractDashboardTableView view) {
+        viewToModel.remove(view);
+    }
+
+
+    private void updateSection(DashboardTableModel model){
+        model.view.clearRecords();
+        updateRecordsCount(model);
+        requestRecords(model);
+    }
+
+
+    private void requestRecords(DashboardTableModel model) {
+        if(model.isLoaderShow)
+            model.view.showLoader(true);
+
+        issueService.getIssues( model.query, new RequestCallback<List<CaseObject>>() {
             @Override
             public void onError( Throwable throwable ) {
                 fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
@@ -56,9 +90,9 @@ public abstract class DashboardTableActivity implements AbstractDashboardTableAc
 
             @Override
             public void onSuccess( List<CaseObject> caseObjects ) {
-                view.putRecords(caseObjects);
-                if(isLoaderShow)
-                    view.showLoader(false);
+                model.view.putRecords(caseObjects);
+                if(model.isLoaderShow)
+                    model.view.showLoader(false);
             }
         } );
     }
@@ -70,8 +104,8 @@ public abstract class DashboardTableActivity implements AbstractDashboardTableAc
         return table;
     }
 
-    private void updateRecordsCount(){
-        issueService.getIssuesCount(query, new RequestCallback<Long>() {
+    private void updateRecordsCount(DashboardTableModel model){
+        issueService.getIssuesCount(model.query, new RequestCallback<Long>() {
             @Override
             public void onError(Throwable throwable) {
 
@@ -79,22 +113,12 @@ public abstract class DashboardTableActivity implements AbstractDashboardTableAc
 
             @Override
             public void onSuccess(Long aLong) {
-                view.setRecordsCount(aLong.intValue());
+                model.view.setRecordsCount(aLong.intValue());
             }
         });
     }
 
-    @Override
-    public void updateImportance(Set<En_ImportanceLevel> importanceLevels) {
-        query.setImportanceIds(
-                importanceLevels
-                        .stream()
-                        .map(En_ImportanceLevel::getId)
-                        .collect(Collectors.toList())
-        );
 
-        updateSection();
-    }
 
     @Inject
     Lang lang;
@@ -105,11 +129,7 @@ public abstract class DashboardTableActivity implements AbstractDashboardTableAc
     @Inject
     Provider<AbstractDashboardTableView> tableProvider;
 
-    @Inject
-    AbstractDashboardTableView view;
-
-    private CaseQuery query;
-    private boolean isLoaderShow;
-    private Set<En_ImportanceLevel> importanceLevels = Arrays.stream(En_ImportanceLevel.values()).collect(Collectors.toSet());
+    private final Set<En_ImportanceLevel> IMPORTANCE_LEVELS = Arrays.stream(En_ImportanceLevel.values()).collect(Collectors.toSet());
+    private Map<AbstractDashboardTableView, DashboardTableModel> viewToModel = new HashMap<>();
 
 }

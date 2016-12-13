@@ -33,16 +33,18 @@ public class DashboardEvents {
         public CaseQuery query;
         public HasWidgets parent;
         public boolean isLoaderShow;
-        public ShowTableBlock (CaseQuery query, HasWidgets parent) {
+        public String sectionName;
+        public ShowTableBlock (CaseQuery query, HasWidgets parent, String sectionName) {
             if(query == null || parent == null)
                 throw new NullPointerException("query or parent is nullable");
 
             this.query = query;
             this.parent = parent;
+            this.sectionName = sectionName;
         }
 
-        public ShowTableBlock (CaseQuery query, HasWidgets parent, boolean showLoader) {
-            this(query, parent);
+        public ShowTableBlock (CaseQuery query, HasWidgets parent, String sectionName, boolean showLoader) {
+            this(query, parent, sectionName);
             isLoaderShow = showLoader;
         }
 

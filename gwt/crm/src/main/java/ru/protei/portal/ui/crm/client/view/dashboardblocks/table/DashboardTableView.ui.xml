@@ -5,7 +5,7 @@
 
     <g:HTMLPanel>
         <label class="dashboard-section-name">
-            <ui:text field="sectionName"/>
+            <span ui:field="sectionName"/>
             <span ui:field="count" class="dashboard-total-count"/>
             <div class="rightSide">
                 <importance:CustomImportanceBtnGroup ui:field="importance"/>

@@ -10,5 +10,6 @@ import java.util.Set;
  * Активность таблицы контактов
  */
 public interface AbstractDashboardTableActivity extends ClickColumn.Handler<CaseObject>{
-    void updateImportance(Set<En_ImportanceLevel> importanceLevels);
+    void updateImportance(AbstractDashboardTableView view, Set<En_ImportanceLevel> importanceLevels);
+    void removeView(AbstractDashboardTableView view);
 }
