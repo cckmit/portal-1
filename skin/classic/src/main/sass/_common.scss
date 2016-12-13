@@ -731,6 +731,11 @@ label.bordered:after{
   right: 0;
 }
 
+.preview-container .preview-wrapper.fixed{
+  top: 15px;
+  margin-right: 15px;
+}
+
 .filter-container {
   -webkit-transition: all 0.5s;
   -moz-transition: all 0.5s;
@@ -758,7 +763,15 @@ label.bordered:after{
   }
 }
 
+.filter-container .panel .body .buttons_group {
+  width: 100%;
+  margin-top: -5px;
+}
 
+.filter-container .panel.fixed{
+  top: 15px;
+  margin-right: 15px;
+}
 
 /************************/
 
@@ -1019,10 +1032,6 @@ td.info {
   text-align: center;
 }
 
-.filter-container .panel .body .buttons_group {
-  width: 100%;
-  margin-top: -5px;
-}
 
 .bold {
   font-weight: bold;

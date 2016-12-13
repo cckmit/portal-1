@@ -6,8 +6,11 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.inject.Inject;
+import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.contact.client.activity.preview.AbstractContactPreviewActivity;
 import ru.protei.portal.ui.contact.client.activity.preview.AbstractContactPreviewView;
@@ -19,6 +22,18 @@ public class ContactPreviewView extends Composite implements AbstractContactPrev
 
     public ContactPreviewView() {
         initWidget(ourUiBinder.createAndBindUi(this));
+    }
+
+    @Override
+    protected void onAttach() {
+        super.onAttach();
+        positioner.watch(this, FixedPositioner.NAVBAR_TOP_OFFSET);
+    }
+
+    @Override
+    protected void onDetach() {
+        super.onDetach();
+        positioner.ignore(this);
     }
 
     @Override
@@ -131,6 +146,9 @@ public class ContactPreviewView extends Composite implements AbstractContactPrev
     @Inject
     @UiField
     Lang lang;
+
+    @Inject
+    FixedPositioner positioner;
 
     AbstractContactPreviewActivity activity;
 

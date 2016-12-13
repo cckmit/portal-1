@@ -11,6 +11,7 @@ import ru.protei.portal.ui.common.client.activity.notify.AbstractNotifyView;
 import ru.protei.portal.ui.common.client.activity.notify.NotifyActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
+import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.common.IssueStates;
 import ru.protei.portal.ui.common.client.view.contactitem.item.ContactItemView;
 import ru.protei.portal.ui.common.client.view.contactitem.list.ContactItemListView;
@@ -28,6 +29,7 @@ import ru.protei.winter.web.common.client.view.section.SectionItemView;
 public class CommonClientModule extends AbstractGinModule {
     @Override
     protected void configure() {
+        bind( FixedPositioner.class ).asEagerSingleton();
         bind( ActionBarActivity.class ).asEagerSingleton();
         bind( AbstractSectionItemView.class ).to( SectionItemView.class );
 
@@ -49,6 +51,8 @@ public class CommonClientModule extends AbstractGinModule {
         bind( IssueStates.class ).asEagerSingleton();
 
         requestStaticInjection(RequestCallback.class);
+
+
 
     }
 }

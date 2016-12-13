@@ -11,6 +11,7 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.product.client.activity.filter.AbstractProductFilterActivity;
@@ -24,6 +25,18 @@ public class ProductFilterView extends Composite implements AbstractProductFilte
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
         search.getElement().setPropertyString( "placeholder", lang.search() );
+    }
+
+    @Override
+    protected void onAttach() {
+        super.onAttach();
+        positioner.watch(this, FixedPositioner.NAVBAR_TOP_OFFSET);
+    }
+
+    @Override
+    protected void onDetach() {
+        super.onDetach();
+        positioner.ignore(this);
     }
 
     @Override
@@ -120,6 +133,9 @@ public class ProductFilterView extends Composite implements AbstractProductFilte
     @Inject
     @UiField
     Lang lang;
+
+    @Inject
+    FixedPositioner positioner;
 
 
     AbstractProductFilterActivity activity;

@@ -10,7 +10,7 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="panel fixed">
+    <g:HTMLPanel styleName="panel">
         <div class="body">
             <div class="form-group local-search col-xs-12">
                 <span class="icon local-search-icon"></span>
