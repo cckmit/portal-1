@@ -56,9 +56,6 @@ public class ContactButtonSelector extends ButtonSelector<PersonShortView> {
     public void updateCompany( Company company ){
         if( company == null ) {
             clearOptions();
-            if( defaultValue != null) {
-                addOption( defaultValue, null );
-            }
             return;
         }
         this.company = company;
