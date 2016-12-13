@@ -34,21 +34,10 @@ public class ContactButtonSelector extends ButtonSelector<PersonShortView> {
             super.setValue( value );
     }
 
-    public void fillDefault( ) {
-        clearOptions();
-
-        if (defaultValue != null) {
-            addOption(defaultValue, null);
-        }
-
-        super.setValue( deferred );
-        deferred = null;
-    }
-
     public void fillOptions( List<PersonShortView> persons ){
         clearOptions();
 
-        if( defaultValue != null ) {
+        if( defaultValue != null) {
             addOption( defaultValue, null );
         }
 
@@ -66,8 +55,10 @@ public class ContactButtonSelector extends ButtonSelector<PersonShortView> {
 
     public void updateCompany( Company company ){
         if( company == null ) {
-//            clearOptions();
-            fillDefault();
+            clearOptions();
+            if( defaultValue != null) {
+                addOption( defaultValue, null );
+            }
             return;
         }
         this.company = company;
