@@ -10,7 +10,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.AbstractColumn;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.brainworm.factory.widget.table.client.helper.SelectionColumn;
-import ru.protei.portal.core.model.ent.CaseObject;
+import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
@@ -104,7 +104,7 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
     }
 
     private void initTable () {
-        editClickColumn = new EditClickColumn< CaseObject>( lang ) {};
+        editClickColumn = new EditClickColumn< CaseShortView>( lang ) {};
         issueNumber = new NumberColumn( lang, caseStateLang );
         contact = new ContactColumn( lang );
         manager = new ManagerColumn( lang );
@@ -122,7 +122,7 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
     }
 
     @UiField
-    InfiniteTableWidget<CaseObject> table;
+    InfiniteTableWidget<CaseShortView> table;
 
     @UiField
     HTMLPanel tableContainer;
@@ -141,9 +141,9 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
     @Inject
     Separator separator;
 
-    ClickColumnProvider<CaseObject> columnProvider = new ClickColumnProvider<>();
-    SelectionColumn< CaseObject  > selectionColumn = new SelectionColumn<>();
-    EditClickColumn< CaseObject > editClickColumn;
+    ClickColumnProvider<CaseShortView> columnProvider = new ClickColumnProvider<>();
+    SelectionColumn< CaseShortView > selectionColumn = new SelectionColumn<>();
+    EditClickColumn< CaseShortView > editClickColumn;
     NumberColumn issueNumber;
     ContactColumn contact;
     ManagerColumn manager;

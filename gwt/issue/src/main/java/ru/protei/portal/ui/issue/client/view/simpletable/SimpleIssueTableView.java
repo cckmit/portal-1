@@ -7,7 +7,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.TableWidget;
-import ru.protei.portal.core.model.ent.CaseObject;
+import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
@@ -33,7 +33,7 @@ public class SimpleIssueTableView extends Composite implements AbstractSimpleIss
     }
 
     @Override
-    public void putRecords(List<CaseObject> cases){
+    public void putRecords(List<CaseShortView> cases){
         cases.forEach(table::addRow);
     }
 
@@ -61,7 +61,7 @@ public class SimpleIssueTableView extends Composite implements AbstractSimpleIss
         table.addColumn( manager.header, manager.values );
     }
 
-    ClickColumnProvider<CaseObject> columnProvider = new ClickColumnProvider<>();
+    ClickColumnProvider<CaseShortView> columnProvider = new ClickColumnProvider<>();
     NumberColumn issueNumber;
     ContactColumn contact;
     ManagerColumn manager;
@@ -72,7 +72,7 @@ public class SimpleIssueTableView extends Composite implements AbstractSimpleIss
     @UiField
     HTMLPanel tableContainer;
     @UiField
-    TableWidget<CaseObject> table;
+    TableWidget<CaseShortView> table;
 
     @Inject
     DateFormatter dateFormatter;

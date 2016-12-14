@@ -54,7 +54,7 @@ public class CaseObject implements Serializable {
     @JdbcColumn(name = "INITIATOR")
     private Long initiatorId;
 
-    @JdbcJoinedObject( localColumn = "INITIATOR", remoteColumn = "id", updateLocalColumn = false )
+    @JdbcJoinedObject( localColumn = "INITIATOR", remoteColumn = "id", updateLocalColumn = false, sqlTableAlias = "PersonInitiator" )
     private Person initiator;
 
     @JdbcColumn(name = "initiator_company")

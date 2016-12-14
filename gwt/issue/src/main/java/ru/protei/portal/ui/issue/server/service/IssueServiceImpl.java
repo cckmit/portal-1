@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.ui.common.client.service.IssueService;
 import ru.protei.portal.ui.common.server.service.SessionService;
@@ -26,10 +27,10 @@ import java.util.List;
 public class IssueServiceImpl implements IssueService {
 
     @Override
-    public List< CaseObject > getIssues( CaseQuery query ) throws RequestFailedException {
+    public List<CaseShortView> getIssues( CaseQuery query ) throws RequestFailedException {
         log.debug( "getIssues(): caseNo={} | companyId={} | productId={} | managerId={} | searchPattern={} | state={} | importance={} | sortField={} | sortDir={} | caseService={}",
                 query.getCaseNo(), query.getCompanyId(), query.getProductId(), query.getManagerId(), query.getSearchString(), query.getStateIds(), query.getImportanceIds(), query.getSortField(), query.getSortDir(), caseService );
-        CoreResponse<List<CaseObject>> response = caseService.caseObjectList( query );
+        CoreResponse<List<CaseShortView>> response = caseService.caseObjectList( query );
         if (response.isError()) {
             throw new RequestFailedException( response.getStatus() );
         }

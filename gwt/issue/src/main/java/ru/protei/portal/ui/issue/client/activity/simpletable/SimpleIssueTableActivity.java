@@ -4,8 +4,8 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
-import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.ui.common.client.events.IssueEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -30,19 +30,19 @@ public abstract class SimpleIssueTableActivity implements AbstractSimpleIssueTab
     }
 
     @Override
-    public void onItemClicked( CaseObject value ) {
+    public void onItemClicked( CaseShortView value ) {
         fireEvent(new IssueEvents.Edit(value.getId(), null));
     }
 
     public void requestIssues(CaseQuery query, AbstractSimpleIssueTableView tableView, Runnable thanAction) {
-        issueService.getIssues( query, new RequestCallback<List<CaseObject>>() {
+        issueService.getIssues( query, new RequestCallback<List<CaseShortView>>() {
             @Override
             public void onError( Throwable throwable ) {
                 fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
             }
 
             @Override
-            public void onSuccess( List<CaseObject> caseObjects ) {
+            public void onSuccess( List<CaseShortView> caseObjects ) {
                 tableView.putRecords(caseObjects);
                 if(thanAction != null)
                     thanAction.run();

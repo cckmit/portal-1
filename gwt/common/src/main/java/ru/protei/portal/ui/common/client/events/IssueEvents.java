@@ -51,14 +51,14 @@ public class IssueEvents {
      */
     public static class ShowPreview {
 
-        public ShowPreview ( HasWidgets parent, CaseObject issue )
+        public ShowPreview ( HasWidgets parent, Long issueId )
         {
             this.parent = parent;
-            this.issue = issue;
+            this.issueId = issueId;
         }
 
-        public CaseObject issue;
         public HasWidgets parent;
+        public Long issueId;
 
     }
 

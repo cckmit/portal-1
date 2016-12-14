@@ -1,7 +1,7 @@
 package ru.protei.portal.ui.issue.client.activity.simpletable;
 
 import com.google.gwt.user.client.ui.IsWidget;
-import ru.protei.portal.core.model.ent.CaseObject;
+import ru.protei.portal.core.model.view.CaseShortView;
 
 import java.util.List;
 
@@ -11,6 +11,6 @@ import java.util.List;
 public interface AbstractSimpleIssueTableView extends IsWidget {
 
     void setActivity( AbstractSimpleIssueTableActivity activity );
-    void putRecords(List<CaseObject> cases);
+    void putRecords(List<CaseShortView> cases);
 
 }
