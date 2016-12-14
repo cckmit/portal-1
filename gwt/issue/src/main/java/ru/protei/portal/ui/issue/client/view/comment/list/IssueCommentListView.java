@@ -43,6 +43,11 @@ public class IssueCommentListView
         return comment;
     }
 
+    @Override
+    public void focus() {
+        comment.setFocus( true );
+    }
+
     @UiHandler( "send" )
     public void onSendClicked( ClickEvent event ) {
         if ( activity != null ) {

@@ -39,7 +39,7 @@ public class IssueCommentItemView
 
     @Override
     public void setMessage( String value ) {
-        this.message.setText( value );
+        this.message.getElement().setInnerHTML( value );
     }
 
     @Override
@@ -55,6 +55,7 @@ public class IssueCommentItemView
 
     @UiHandler( "remove" )
     public void onRemoveClicked( ClickEvent event ) {
+        event.preventDefault();
         if ( activity != null ) {
             activity.onRemoveClicked( this );
         }
@@ -62,6 +63,7 @@ public class IssueCommentItemView
 
     @UiHandler( "edit" )
     public void onEditClicked( ClickEvent event ) {
+        event.preventDefault();
         if ( activity != null ) {
             activity.onEditClicked( this );
         }
@@ -69,6 +71,7 @@ public class IssueCommentItemView
 
     @UiHandler( "reply" )
     public void onReplyClicked( ClickEvent event ) {
+        event.preventDefault();
         if ( activity != null ) {
             activity.onReplyClicked( this );
         }
