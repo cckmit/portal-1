@@ -4,6 +4,7 @@ package ru.protei.portal.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
@@ -17,6 +18,7 @@ import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseShortView;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -109,6 +111,7 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
+    @Transactional
     public CoreResponse<CaseComment> addCaseComment( CaseComment caseComment ) {
         if ( caseComment == null )
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
@@ -121,34 +124,57 @@ public class CaseServiceImpl implements CaseService {
         if (commentId == null)
             return new CoreResponse().error(En_ResultStatus.NOT_CREATED);
 
+        boolean isCaseChanged = updateCaseModified ( caseComment.getCaseId(), caseComment.getCreated() );
+
+        if (!isCaseChanged)
+            throw new RuntimeException( "failed to update case modifiedDate " );
+
         return new CoreResponse<CaseComment>().success( caseComment );
     }
 
     @Override
+    @Transactional
     public CoreResponse<CaseComment> updateCaseComment ( CaseComment caseComment ) {
-        // todo: need check created time ( available 5 minutes ) ?
         if (caseComment == null || caseComment.getId() == null)
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
+
+        if (!isChangeAvailable ( caseComment.getCreated() ))
+            return new CoreResponse().error( En_ResultStatus.NOT_UPDATED );
 
         boolean isUpdated = caseCommentDAO.merge(caseComment);
 
         if (!isUpdated)
-            return new CoreResponse().error(En_ResultStatus.NOT_UPDATED);
+            return new CoreResponse().error( En_ResultStatus.NOT_UPDATED );
+
+        boolean isCaseChanged = updateCaseModified ( caseComment.getCaseId(), new Date() );
+
+        if (!isCaseChanged)
+            throw new RuntimeException( "failed to update case modifiedDate " );
 
         return new CoreResponse<CaseComment>().success( caseComment );
     }
 
 
     @Override
+    @Transactional
     public CoreResponse removeCaseComment( CaseComment caseComment ) {
-        // todo: need check created time ( available 5 minutes ) ?
         if (caseComment == null || caseComment.getId() == null)
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
+
+        if (!isChangeAvailable ( caseComment.getCreated() ))
+            return new CoreResponse().error(En_ResultStatus.NOT_REMOVED);
+
+        long caseId = caseComment.getCaseId();
 
         boolean isRemoved = caseCommentDAO.remove(caseComment);
 
         if (!isRemoved)
-            return new CoreResponse().error(En_ResultStatus.INTERNAL_ERROR);
+            return new CoreResponse().error( En_ResultStatus.NOT_REMOVED );
+
+        boolean isCaseChanged = updateCaseModified ( caseId, new Date() );
+
+        if (!isCaseChanged)
+            throw new RuntimeException( "failed to update case modifiedDate " );
 
         return new CoreResponse<Boolean>().success(isRemoved);
     }
@@ -164,4 +190,29 @@ public class CaseServiceImpl implements CaseService {
 
         return new CoreResponse<Long>().success(count);
     }
+
+    private boolean updateCaseModified ( Long caseId,  Date modified ) {
+        if (caseId == null)
+            return false;
+
+        CaseObject caseObject = caseObjectDAO.get( caseId );
+        if (caseObject == null)
+            return false;
+
+        caseObject.setModified(modified);
+        boolean isUpdated = caseObjectDAO.merge(caseObject);
+
+        return isUpdated;
+    }
+
+    private boolean isChangeAvailable ( Date date ) {
+        Calendar c = Calendar.getInstance();
+        long current = c.getTimeInMillis();
+        c.setTime( date );
+        long checked = c.getTimeInMillis();
+
+        return current - checked < CHANGE_LIMIT_TIME;
+    }
+
+    static final long CHANGE_LIMIT_TIME = 300000;  // 5 минут  (в мсек)
 }
