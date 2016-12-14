@@ -49,6 +49,7 @@ public abstract class IssueCommentListActivity
         event.parent.clear();
         event.parent.add(view.asWidget());
 
+        view.message().setValue( null );
         view.getCommentsContainer().clear();
 
         requestData( event.caseId );
@@ -90,6 +91,7 @@ public abstract class IssueCommentListActivity
         this.lastCommentView = itemView;
         String editedMessage = value.getText();
         view.message().setValue( editedMessage );
+        view.focus();
     }
 
     @Override
@@ -102,6 +104,7 @@ public abstract class IssueCommentListActivity
         this.comment = null;
         String quotedMessage = value.getText();
         view.message().setValue( IssueCommentUtils.quoteMessage( quotedMessage ) );
+        view.focus();
     }
 
     @Override
@@ -111,7 +114,13 @@ public abstract class IssueCommentListActivity
         }
         boolean isEdit = comment.getId() != null;
 
-        comment.setText( IssueCommentUtils.prewrapMessage( view.message().getValue() ) );
+        String message = view.message().getValue();
+        if ( message == null || message.isEmpty() ) {
+            fireEvent( new NotifyEvents.Show( lang.errEditIssueCommentEmpty(), NotifyEvents.NotifyType.ERROR ) );
+            return;
+        }
+
+        comment.setText( IssueCommentUtils.prewrapMessage( message ) );
         issueService.editIssueComment( comment, new RequestCallback<CaseComment>() {
             @Override
             public void onError( Throwable throwable ) {

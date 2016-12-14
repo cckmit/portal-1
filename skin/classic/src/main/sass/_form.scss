@@ -30,11 +30,16 @@ textarea.input-field {
   }
 }
 
+textarea.input-field {
+  line-height: 1.4 !important;
+  padding: 10px;
+}
 
 
-/**
-   PANEL for create/edit pages
-*/
+
+  /**
+     PANEL for create/edit pages
+  */
 .panel .body {
   padding: 15px;
 }
