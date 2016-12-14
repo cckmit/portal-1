@@ -209,10 +209,10 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     TextArea homeAddress;
 
     @UiField
-    TextArea displayPosition;
+    TextBox displayPosition;
 
     @UiField
-    TextArea displayDepartment;
+    TextBox displayDepartment;
 
     @UiField
     TextArea personInfo;

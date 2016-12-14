@@ -7,13 +7,13 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
+import ru.brainworm.factory.widget.table.client.AbstractColumn;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.brainworm.factory.widget.table.client.helper.SelectionColumn;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
-import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.separator.Separator;
@@ -64,6 +64,19 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
     @Override
     public HasWidgets getFilterContainer () { return filterContainer; }
 
+
+    @Override
+    public void hideElements() {
+        hideContact.setVisibility( false );
+        hideManager.setVisibility( false );
+    }
+
+    @Override
+    public void showElements() {
+        hideContact.setVisibility( true );
+        hideManager.setVisibility( true );
+    }
+
     @Override
     public void clearRecords() {
         table.clearCache();
@@ -95,14 +108,16 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
         issueNumber = new NumberColumn( lang, caseStateLang );
         contact = new ContactColumn( lang );
         manager = new ManagerColumn( lang );
-        info = new InfoColumn( lang, dateFormatter );
+        info = new InfoColumn( lang );
 
-        table.addColumn( selectionColumn.header, selectionColumn.values );
-        table.addColumn( editClickColumn.header, editClickColumn.values );
+//        table.addColumn( selectionColumn.header, selectionColumn.values );
         table.addColumn( issueNumber.header, issueNumber.values );
         table.addColumn( info.header, info.values );
-        table.addColumn( contact.header, contact.values );
-        table.addColumn( manager.header, manager.values );
+//        table.addColumn( contact.header, contact.values );
+//        table.addColumn( manager.header, manager.values );
+        hideContact = table.addColumn( contact.header, contact.values );
+        hideManager = table.addColumn( manager.header, manager.values );
+        table.addColumn( editClickColumn.header, editClickColumn.values );
 //        table.setSeparatorProvider( separator );
     }
 
@@ -124,9 +139,6 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
     En_CaseStateLang caseStateLang;
 
     @Inject
-    DateFormatter dateFormatter;
-
-    @Inject
     Separator separator;
 
     ClickColumnProvider<CaseShortView> columnProvider = new ClickColumnProvider<>();
@@ -136,6 +148,9 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
     ContactColumn contact;
     ManagerColumn manager;
     InfoColumn info;
+
+    AbstractColumn hideContact;
+    AbstractColumn hideManager;
 
     AbstractIssueTableActivity activity;
 

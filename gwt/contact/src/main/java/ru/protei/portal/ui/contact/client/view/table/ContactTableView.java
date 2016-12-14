@@ -66,7 +66,7 @@ public class ContactTableView extends Composite implements AbstractContactTableV
     @Override
     public void hideElements() {
         filterContainer.setVisible( false );
-        hideColumn.setVisibility( false );
+        //hideColumn.setVisibility( false );
         tableContainer.removeStyleName( "col-xs-9" );
         tableContainer.addStyleName( "col-xs-12" );
     }
@@ -74,7 +74,7 @@ public class ContactTableView extends Composite implements AbstractContactTableV
     @Override
     public void showElements() {
         filterContainer.setVisible( true );
-        hideColumn.setVisibility( true );
+        //hideColumn.setVisibility( true );
         tableContainer.removeStyleName( "col-xs-12" );
         tableContainer.addStyleName( "col-xs-9" );
     }
@@ -113,14 +113,26 @@ public class ContactTableView extends Composite implements AbstractContactTableV
             @Override
             protected void fillColumnHeader( Element element ) {
                 element.setInnerText( lang.contactFullName() );
-                element.addClassName( "person" );
             }
 
             @Override
-            public void fillColumnValue ( Element element, Person person ) {
-                element.setInnerHTML (HTMLHelper.wrapDiv(
-                        person == null ? "" : person.getDisplayName()
-                ));
+            public void fillColumnValue ( Element cell, Person value ) {
+                Element root = DOM.createDiv();
+                cell.appendChild( root );
+
+                Element fioElement = DOM.createDiv();
+                fioElement.setInnerHTML( "<b>" + value.getDisplayName() + "<b>" );
+                root.appendChild( fioElement );
+
+                PlainContactInfoFacade infoFacade = new PlainContactInfoFacade( value.getContactInfo() );
+                root.appendChild( ContactColumnBuilder.make().add( "ion-android-call", infoFacade.getWorkPhone() )
+                        .add( "ion-android-call", infoFacade.getMobilePhone() )
+                        .add( "ion-android-phone-portrait", infoFacade.getHomePhone() )
+                        .toElement() );
+
+                root.appendChild( ContactColumnBuilder.make().add( "ion-android-mail", infoFacade.getEmail() )
+                        .add( "ion-android-mail", infoFacade.getEmail_own() )
+                        .toElement() );
             }
         };
         columns.add( displayName );
@@ -133,76 +145,26 @@ public class ContactTableView extends Composite implements AbstractContactTableV
             }
 
             @Override
-            public void fillColumnValue ( Element element, Person person ) {
-                element.setInnerHTML (HTMLHelper.wrapDiv (
-                        person == null || person.getCompany() == null ? "" : person.getCompany().getCname()
-                ));
+            public void fillColumnValue ( Element cell, Person value ) {
+                Element root = DOM.createDiv();
+                cell.appendChild( root );
+
+                Element fioElement = DOM.createDiv();
+                fioElement.setInnerHTML( "<b>" + value.getCompany().getCname() + "<b>" );
+                root.appendChild( fioElement );
+
+                Element posElement = DOM.createDiv();
+                posElement.addClassName( "contact-position" );
+                posElement.setInnerHTML( value.getPosition() );
+                root.appendChild( posElement );
             }
         };
         columns.add( company );
 
-        ClickColumn< Person > position = new ClickColumn< Person >() {
-            @Override
-            protected void fillColumnHeader( Element element ) {
-                element.setInnerText( lang.contactPosition() );
-                element.addClassName( "position" );
-            }
-
-            @Override
-            public void fillColumnValue ( Element element, Person person ) {
-
-                element.setInnerHTML( HTMLHelper.wrapDiv(
-                        person == null || person.getPosition() == null ? "" : person.getPosition()
-                ));
-
-            }
-        };
-        columns.add( position );
-
-        ClickColumn< Person > phone = new ClickColumn< Person >() {
-            @Override
-            protected void fillColumnHeader( Element element ) {
-                element.setInnerText( lang.phone() );
-                element.addClassName( "phone" );
-            }
-
-            @Override
-            public void fillColumnValue( Element element, Person person ) {
-                PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(person.getContactInfo());
-                element.appendChild( DOM.createDiv().appendChild(
-                        ContactColumnBuilder.make().add( null, infoFacade.getWorkPhone() )
-                        .add(null, infoFacade.getMobilePhone() )
-                        .add( null, infoFacade.getHomePhone()).toElement()
-                ));
-            }
-        };
-        columns.add( phone );
-
-        ClickColumn< Person > email = new ClickColumn< Person >() {
-            @Override
-            protected void fillColumnHeader( Element element ) {
-                element.setInnerText( lang.email() );
-                element.addClassName( "email" );
-            }
-
-            @Override
-            public void fillColumnValue( Element element, Person person ) {
-                PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(person.getContactInfo() );
-                element.appendChild( DOM.createDiv().appendChild(
-                        ContactColumnBuilder.make().add( null, infoFacade.getEmail() )
-                        .add( null, infoFacade.getEmail_own() ).toElement()
-                ));
-            }
-        };
-        columns.add( email );
-
-        hideColumn = table.addColumn( selectionColumn.header, selectionColumn.values );
-        table.addColumn( editClickColumn.header, editClickColumn.values );
-        table.addColumn( displayName.header, displayName.values );
+        //hideColumn = table.addColumn( selectionColumn.header, selectionColumn.values );
         table.addColumn( company.header, company.values );
-        table.addColumn( position.header, position.values );
-        table.addColumn( phone.header, phone.values );
-        table.addColumn( email.header, email.values );
+        table.addColumn( displayName.header, displayName.values );
+        table.addColumn( editClickColumn.header, editClickColumn.values );
     }
 
     @UiField
@@ -228,6 +190,7 @@ public class ContactTableView extends Composite implements AbstractContactTableV
     SelectionColumn< Person > selectionColumn = new SelectionColumn<>();
     EditClickColumn<Person > editClickColumn;
     List<ClickColumn > columns = new ArrayList<>();
+
 
     AbstractContactTableActivity activity;
 

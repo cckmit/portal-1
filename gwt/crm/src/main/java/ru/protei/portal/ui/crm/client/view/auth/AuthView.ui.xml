@@ -12,16 +12,16 @@
                             </div>
                             <div class="body">
                                 <div class="signInForm">
-                                    <div class="user">
-                                        <div class="button empty grayC"><span class="icon-user"></span></div>
-                                        <g:TextBox ui:field="login" styleName="inputField sticky"/>
+                                    <div class="user form-group">
+                                        <div class="btn empty grayC hide"><span class="icon-user"></span></div>
+                                        <g:TextBox ui:field="login" styleName="input-field"/>
                                     </div>
-                                    <div class="password">
-                                        <div class="button empty grayC"><span class="icon-lock"></span></div>
-                                        <g:PasswordTextBox ui:field="password" styleName="inputField sticky"/>
+                                    <div class="password form-group">
+                                        <div class="btn empty grayC hide"><span class="icon-lock"></span></div>
+                                        <g:PasswordTextBox ui:field="password" styleName="input-field"/>
                                     </div>
                                     <label class="submitBlock hideSource">
-                                        <g:Button ui:field="loginButton" text="{lang.buttonLogin}" styleName="button blueC"/>
+                                        <g:Button ui:field="loginButton" text="{lang.buttonLogin}" styleName="btn btn-white"/>
                                     </label>
                                 </div>
                             </div>

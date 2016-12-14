@@ -22,4 +22,7 @@ public interface AbstractIssueTableView extends IsWidget {
     int getPageCount();
 
     void scrollTo( int page );
+
+    void hideElements();
+    void showElements();
 }

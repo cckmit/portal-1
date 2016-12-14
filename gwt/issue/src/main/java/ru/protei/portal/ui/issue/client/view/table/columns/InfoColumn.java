@@ -16,9 +16,8 @@ import java.util.Date;
 public class InfoColumn extends ClickColumn<CaseShortView>{
 
     @Inject
-    public InfoColumn( Lang lang, DateFormatter dateFormatter ) {
+    public InfoColumn( Lang lang ) {
         this.lang = lang;
-        this.dateFormatter = dateFormatter;
     }
 
     @Override
@@ -47,13 +46,14 @@ public class InfoColumn extends ClickColumn<CaseShortView>{
             groupElement.appendChild( i );
 
             com.google.gwt.dom.client.Element createdElement = DOM.createSpan();
-            createdElement.setInnerText( " " + dateFormatter.formatDateTime( created ) );
+            createdElement.setInnerText( " " + DateFormatter.formatDateTime( created ) );
             groupElement.appendChild( createdElement );
 
             divElement.appendChild( groupElement );
         }
 
         com.google.gwt.dom.client.Element infoElement = DOM.createElement( "p" );
+        infoElement.addClassName( "issue-description" );
         infoElement.setInnerText( value == null ? "" : value.getInfo() );
         divElement.appendChild( infoElement );
 
@@ -61,6 +61,4 @@ public class InfoColumn extends ClickColumn<CaseShortView>{
     }
 
     Lang lang;
-
-    DateFormatter dateFormatter;
 }

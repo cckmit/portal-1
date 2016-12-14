@@ -8,7 +8,7 @@ import java.util.Date;
  * Created by shagaleev on 11/10/16.
  */
 public class DateFormatter {
-    public String formatDateOnly( Date date ) {
+    public static String formatDateOnly( Date date ) {
         if ( date == null ) {
             return "";
         }
@@ -16,7 +16,7 @@ public class DateFormatter {
         return format.format( date );
     }
 
-    public String formatDateTime( Date date ) {
+    public static String formatDateTime( Date date ) {
         if ( date == null ) {
             return "";
         }
@@ -24,6 +24,6 @@ public class DateFormatter {
         return dateTimeFormat.format( date );
     }
 
-    DateTimeFormat format = DateTimeFormat.getFormat( "dd.MM.yyyy" );
-    DateTimeFormat dateTimeFormat = DateTimeFormat.getFormat( "dd.MM.yyyy hh:mm" );
+    private static DateTimeFormat format = DateTimeFormat.getFormat( "dd.MM.yyyy" );
+    private static DateTimeFormat dateTimeFormat = DateTimeFormat.getFormat( "dd.MM.yyyy hh:mm" );
 }

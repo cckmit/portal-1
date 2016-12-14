@@ -6,7 +6,6 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasValue;
@@ -27,6 +26,7 @@ public class ToggleBtnGroup< T >
 
     public ToggleBtnGroup() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+        selected = new HashSet<>();
     }
 
     @Override
@@ -41,9 +41,8 @@ public class ToggleBtnGroup< T >
 
     @Override
     public void setValue( Set< T > values, boolean fireEvents ) {
-        selected = values;
-        if ( selected == null ) {
-            selected = new HashSet<T>();
+        if ( values != null ) {
+            selected = values;
         }
 
         for (Map.Entry<ToggleButton, T> entry : itemViewToModel.entrySet()) {
@@ -79,20 +78,16 @@ public class ToggleBtnGroup< T >
     }
 
     public void addBtn( String caption, T value ) {
-        addBtn( null, caption, value, "button whiteC switcher" );
+        addBtn( caption, value, "btn btn-white" );
     }
 
-    public void addBtn( String buttonStyle, String caption, T value, String style) {
+    public void addBtn( String caption, T value, String buttonStyle ) {
         ToggleButton itemView = itemFactory.get();
         if ( caption != null ) {
-            itemView.setCaption( caption );
+            itemView.setText( caption );
         }
-        if ( style != null ) {
-            itemView.setStyleName( style );
-        }
-
         if ( buttonStyle != null ) {
-            itemView.setButtonStyle( buttonStyle );
+            itemView.setStyleName( buttonStyle );
         }
 
         itemView.addValueChangeHandler( this );
@@ -101,19 +96,16 @@ public class ToggleBtnGroup< T >
         itemViewToModel.put( itemView, value );
     }
 
-    public void addBtnWithIcon( String iconStyle, String buttonStyle, String caption, String style, T value ) {
+    public void addBtnWithIcon( String iconStyle, String buttonStyle, String caption, T value ) {
         ToggleButton itemView = itemFactory.get();
         if ( iconStyle != null ) {
             itemView.setIcon( iconStyle );
         }
         if ( buttonStyle != null ) {
-            itemView.setButtonStyle( buttonStyle );
-        }
-        if ( style != null ) {
-            itemView.setStyleName( style );
+            itemView.setStyleName( buttonStyle );
         }
         if ( caption != null ) {
-            itemView.setCaption( caption );
+            itemView.setText( caption );
         }
         itemView.addValueChangeHandler( this );
         root.add( itemView.asWidget() );

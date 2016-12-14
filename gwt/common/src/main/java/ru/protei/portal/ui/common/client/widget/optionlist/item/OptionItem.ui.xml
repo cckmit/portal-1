@@ -1,0 +1,7 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+    <g:HTMLPanel styleName="checkbox">
+        <g:CheckBox ui:field="checkbox" styleName="checkbox"/>
+        <g:Label ui:field="name" styleName="option-name"/>
+    </g:HTMLPanel>
+</ui:UiBinder>

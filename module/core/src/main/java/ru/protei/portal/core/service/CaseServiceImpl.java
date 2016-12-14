@@ -109,8 +109,8 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
-    public CoreResponse<CaseComment> saveCaseComment ( CaseComment caseComment ) {
-        if (caseComment == null || caseComment.getCaseId() == null)
+    public CoreResponse<CaseComment> addCaseComment( CaseComment caseComment ) {
+        if ( caseComment == null )
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
 
         Date now = new Date();
@@ -126,6 +126,7 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     public CoreResponse<CaseComment> updateCaseComment ( CaseComment caseComment ) {
+        // todo: need check created time ( available 5 minutes ) ?
         if (caseComment == null || caseComment.getId() == null)
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
 
@@ -136,6 +137,22 @@ public class CaseServiceImpl implements CaseService {
 
         return new CoreResponse<CaseComment>().success( caseComment );
     }
+
+
+    @Override
+    public CoreResponse removeCaseComment( CaseComment caseComment ) {
+        // todo: need check created time ( available 5 minutes ) ?
+        if (caseComment == null || caseComment.getId() == null)
+            return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
+
+        boolean isRemoved = caseCommentDAO.remove(caseComment);
+
+        if (!isRemoved)
+            return new CoreResponse().error(En_ResultStatus.INTERNAL_ERROR);
+
+        return new CoreResponse<Boolean>().success(isRemoved);
+    }
+
 
 
     @Override

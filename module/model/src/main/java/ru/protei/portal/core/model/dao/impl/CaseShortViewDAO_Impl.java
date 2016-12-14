@@ -63,9 +63,13 @@ public class CaseShortViewDAO_Impl extends PortalBaseJdbcDAO<CaseShortView> impl
                 args.add( query.getProductId() );
             }
 
-            if ( query.getManagerId() != null ) {
-                condition.append( " and manager=?" );
-                args.add( query.getManagerId() );
+            if ( query.getManagerId() != null) {
+                if(query.getManagerId() > 0) {
+                    condition.append(" and manager=?");
+                    args.add(query.getManagerId());
+                }else{
+                    condition.append( " and manager is null" );
+                }
             }
 
             if ( query.getStateIds() != null && !query.getStateIds().isEmpty() ) {

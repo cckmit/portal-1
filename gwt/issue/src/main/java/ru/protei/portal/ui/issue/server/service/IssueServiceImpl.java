@@ -7,14 +7,15 @@ import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.service.CaseService;
+import ru.protei.portal.ui.common.client.service.IssueService;
 import ru.protei.portal.ui.common.server.service.SessionService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
-import ru.protei.portal.ui.issue.client.service.IssueService;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -37,10 +38,15 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    public CaseObject getIssue( long id ) {
+    public CaseObject getIssue( long id ) throws RequestFailedException {
         log.debug("getIssue(): id: {}", id);
         CoreResponse<CaseObject> response = caseService.getCaseObject( id );
         log.debug("getIssue(), id: {} -> {} ", id, response.isError() ? "error" : response.getData().getCaseNumber());
+
+        if (response.isError()) {
+            throw new RequestFailedException( response.getStatus() );
+        }
+
         return response.getData();
     }
 
@@ -63,9 +69,48 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    public long getIssuesCount( CaseQuery query ) {
+    public long getIssuesCount( CaseQuery query ) throws RequestFailedException {
         log.debug( "getIssuesCount(): query={}", query );
         return caseService.count( query ).getData();
+    }
+
+    @Override
+    public List<CaseComment> getIssueComments( Long caseId ) throws RequestFailedException {
+        log.debug( "getIssueComments(): caseId={}", caseId );
+
+        CoreResponse<List<CaseComment>> response = caseService.getCaseCommentList( caseId );
+        if (response.isError()) {
+            throw new RequestFailedException( response.getStatus() );
+        }
+
+        return response.getData();
+    }
+
+    @Override
+    public void removeIssueComment( CaseComment value ) throws RequestFailedException {
+        log.debug( "removeIssueComment(): value={}", value );
+
+        CoreResponse<List<CaseComment>> response = caseService.removeCaseComment( value );
+        if (response.isError()) {
+            throw new RequestFailedException( response.getStatus() );
+        }
+    }
+
+    @Override
+    public CaseComment editIssueComment( CaseComment value ) throws RequestFailedException {
+        log.debug( "editIssueComment(): value={}", value );
+
+        CoreResponse<CaseComment> response;
+        if ( value.getId() == null ) {
+            response = caseService.addCaseComment( value );
+        } else {
+            response = caseService.updateCaseComment( value );
+        }
+        if (response.isError()) {
+            throw new RequestFailedException( response.getStatus() );
+        }
+
+        return response.getData();
     }
 
     @Override

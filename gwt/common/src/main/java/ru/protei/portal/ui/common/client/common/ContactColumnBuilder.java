@@ -15,6 +15,7 @@ public class ContactColumnBuilder {
     public ContactColumnBuilder add ( String icon, String phone ) {
         if ( phone != null ) {
             Element div = DOM.createDiv();
+            div.addClassName( "contact-record" );
             if ( icon != null ) {
                 Element i = DOM.createElement("i");
                 i.setClassName( icon );
@@ -26,7 +27,7 @@ public class ContactColumnBuilder {
             root.appendChild( div );
         }
         return this;
-    };
+    }
 
     public Element toElement() {
         return root;

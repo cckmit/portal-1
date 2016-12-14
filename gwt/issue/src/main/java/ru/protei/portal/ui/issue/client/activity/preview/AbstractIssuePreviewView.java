@@ -1,6 +1,11 @@
 package ru.protei.portal.ui.issue.client.activity.preview;
 
+import com.google.gwt.user.client.ui.HasValue;
+import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
+import ru.protei.portal.core.model.ent.CaseComment;
+
+import java.util.List;
 
 /**
  * Абстракция вида превью обращения
@@ -20,5 +25,8 @@ public interface AbstractIssuePreviewView extends IsWidget {
     void setOurCompany( String value );
     void setManager( String value );
     void setInfo( String value );
+
     void showFullScreen( boolean value );
+
+    HasWidgets getCommentsContainer();
 }

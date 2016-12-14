@@ -70,7 +70,7 @@ public class CaseServiceTest {
 
         CaseService service = ctx.getBean(CaseService.class);
 
-        CoreResponse<CaseComment> result = service.saveCaseComment( comment );
+        CoreResponse<CaseComment> result = service.addCaseComment( comment );
         Assert.assertNotNull(result);
         Assert.assertTrue(result.isOk());
         Assert.assertNotNull(result.getData());

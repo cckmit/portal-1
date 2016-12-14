@@ -40,6 +40,9 @@ public class CaseShortView implements Serializable {
     @JdbcJoinedColumn( mappedColumn = "displayname", table = "Person", localColumn = "INITIATOR", remoteColumn = "ID" )
     private String initiatorName;
 
+    @JdbcJoinedColumn( table = "Person", localColumn = "INITIATOR", remoteColumn = "ID", mappedColumn = "displayShortName")
+    private String initiatorShortName;
+
     @JdbcColumn(name = "initiator_company")
     private Long initiatorCompanyId;
 
@@ -57,6 +60,9 @@ public class CaseShortView implements Serializable {
 
     @JdbcJoinedColumn( table = "person", localColumn = "MANAGER", remoteColumn = "id", mappedColumn = "displayname" )
     private String managerName;
+
+    @JdbcJoinedColumn( table = "Person", localColumn = "MANAGER", remoteColumn = "ID", mappedColumn = "displayShortName")
+    private String managerShortName;
 
     @JdbcJoinedColumn( mappedColumn = "cname", joinPath = {
             @JdbcJoinPath( table = "Person", localColumn = "MANAGER", remoteColumn = "id" ),
@@ -145,6 +151,14 @@ public class CaseShortView implements Serializable {
         this.initiatorName = initiatorName;
     }
 
+    public String getInitiatorShortName() {
+        return initiatorShortName;
+    }
+
+    public void setInitiatorShortName( String initiatorShortName ) {
+        this.initiatorShortName = initiatorShortName;
+    }
+
     public Long getInitiatorCompanyId() {
         return initiatorCompanyId;
     }
@@ -193,6 +207,14 @@ public class CaseShortView implements Serializable {
         this.managerName = managerName;
     }
 
+    public String getManagerShortName() {
+        return managerShortName;
+    }
+
+    public void setManagerShortName( String managerShortName ) {
+        this.managerShortName = managerShortName;
+    }
+
     public String getManagerCompanyName() {
         return managerCompanyName;
     }
@@ -213,12 +235,14 @@ public class CaseShortView implements Serializable {
                 ", impLevel=" + impLevel +
                 ", initiatorId=" + initiatorId +
                 ", initiatorName='" + initiatorName + '\'' +
+                ", initiatorShortName='" + initiatorShortName + '\'' +
                 ", initiatorCompanyId=" + initiatorCompanyId +
                 ", initiatorCompanyName='" + initiatorCompanyName + '\'' +
                 ", productId=" + productId +
                 ", productName='" + productName + '\'' +
                 ", managerId=" + managerId +
                 ", managerName='" + managerName + '\'' +
+                ", managerShortName='" + managerShortName + '\'' +
                 ", managerCompanyName='" + managerCompanyName + '\'' +
                 '}';
     }

@@ -4,12 +4,15 @@
              xmlns:pager="urn:import:ru.protei.portal.ui.common.client.widget.pager"
              xmlns:view="urn:import:ru.protei.portal.ui.common.client.view.view">
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
-    <g:HTMLPanel styleName="grid">
-        <g:HTMLPanel ui:field="tableContainer" styleName="global-table-container col-xs-9">
-            <table:InfiniteTableWidget ui:field="table" styleName="table-hover issues"/>
-            <view:PagerView ui:field="pager" />
-        </g:HTMLPanel>
-        <g:HTMLPanel ui:field="previewContainer" styleName="preview-container no-width"/>
-        <g:HTMLPanel ui:field="filterContainer" styleName="filter-container col-xs-3"/>
-    </g:HTMLPanel>
+    <g:HTMLPanel styleName="main-content">
+        <div class="grid">
+            <g:HTMLPanel ui:field="tableContainer" styleName="global-table-container col-xs-9">
+                <table:InfiniteTableWidget ui:field="table" styleName="table-hover issues"/>
+                <view:PagerView ui:field="pager" />
+            </g:HTMLPanel>
+            <g:HTMLPanel ui:field="previewContainer" styleName="preview-container no-width"/>
+            <g:HTMLPanel ui:field="filterContainer" styleName="filter-container col-xs-3"/>
+
+        </div>
+     </g:HTMLPanel>
 </ui:UiBinder>

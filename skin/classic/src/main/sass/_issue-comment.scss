@@ -1,0 +1,158 @@
+
+.chats {
+  margin: 0;
+  padding: 12px 15px 15px;
+  list-style: none;
+}
+
+.chats > li {
+  position: relative;
+}
+.chats > li + li {
+  margin-top: 15px
+}
+
+.chats > li:after, .chats > li:before {
+  content: '';
+  display: table;
+  clear: both
+}
+
+.chats .name {
+  color: #333;
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 600;
+  text-decoration: none
+}
+
+.chats .name .label {
+  font-size: 8px;
+  padding: 1px 4px 2px;
+  margin-left: 3px;
+  position: relative;
+  top: -1px
+}
+
+.chats .date-time {
+  font-size: 10px;
+  display: block;
+  float: right;
+  color: #999;
+  margin-top: 3px
+}
+
+.chats .image {
+  float: left;
+  width: 40px;
+  height: 40px;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  overflow: hidden
+}
+
+.chats .image img {
+  max-width: 100%
+}
+
+.chats .image + .message {
+  margin-left: 60px
+}
+
+.chats .message {
+  border: 1px solid #ccd0d4;
+  padding: 7px 12px;
+  font-size: 12px;
+  position: relative;
+  background: #fff;
+  white-space: pre-wrap;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  min-height: 20px;
+  max-height: 200px;
+}
+
+.chats .message:after, .chats .message:before {
+  content: '';
+  position: absolute;
+  top: 10px;
+  left: -14px;
+  border: 7px solid transparent;
+  border-right-color: #ccd0d4
+}
+
+.chats .message:after {
+  left: -13px;
+  border-right-color: #fff
+}
+
+.chats .right .name {
+  text-align: right
+}
+
+.chats .right .date-time {
+  float: left
+}
+
+.chats .right .image {
+  float: right
+}
+
+.chats .right .image + .message {
+  margin-right: 75px;
+  margin-left: 0
+}
+
+.chats .right .message:after, .chats .right .message:before {
+  left: auto;
+  right: -14px;
+  border-right-color: transparent;
+  border-left-color: #ccd0d4
+}
+
+.chats .right .message:after {
+  right: -13px;
+  border-left-color: #fff
+}
+
+.chats {
+  .left {
+    .options {
+      right: 110px;
+    }
+  }
+
+  .right {
+    .options {
+      left: 110px;
+    }
+  }
+  .options {
+    font-size: 12px;
+    display: block;
+    position: absolute;
+    color: #dad7d7;
+    top: 0;
+
+    a {
+      margin-right: 7px;
+      &:hover {
+        color: teal;
+      }
+    }
+  }
+
+}
+
+.chats-footer {
+  border-top: 2px solid #cecece;
+  padding: 15px;
+  margin: 0 -15px -15px -15px;
+  background: rgba(0, 128, 128, 0.1);
+
+  .input-field {
+    min-height: 100px;
+  }
+}

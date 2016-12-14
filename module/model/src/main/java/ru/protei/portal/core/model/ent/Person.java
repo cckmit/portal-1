@@ -4,8 +4,6 @@ import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.struct.ContactInfo;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.PersonShortViewSupport;
-import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.core.model.view.EntityOptionSupport;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
@@ -28,7 +26,7 @@ public class Person implements Serializable, PersonShortViewSupport {
     @JdbcColumn(name="company_id")
     private Long companyId;
 
-    @JdbcJoinedObject (localColumn = "company_id", remoteColumn = "id", updateLocalColumn = false)
+    @JdbcJoinedObject (localColumn = "company_id", remoteColumn = "id" )
     private Company company;
 
     @JdbcColumn(name = "displayPosition")

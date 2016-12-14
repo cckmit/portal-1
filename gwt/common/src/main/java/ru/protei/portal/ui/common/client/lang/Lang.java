@@ -272,5 +272,23 @@ public interface Lang extends Messages, ContactItemLang {
 
     String pagerLabel( int currentPage, int totalPages, int pageSize );
 
+    String commentSendMessage();
+
+    String commentAddMessagePlaceholder();
+
+    String errEditIssueCommentNotAllowed();
+
+    String errRemoveIssueComment();
+
+    String errEditIssueComment();
+
     String selectCompanyGroup();
+
+    String activeIssues();
+    String newIssues();
+    String inactiveIssues();
+
+    String dashboard();
+
+    String issueCommentChangeStatusTo();
 }

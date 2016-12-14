@@ -20,10 +20,10 @@ import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.IssueServiceAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterActivity;
 import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterView;
-import ru.protei.portal.ui.issue.client.service.IssueServiceAsync;
 import ru.protei.winter.web.common.client.events.SectionEvents;
 
 import java.util.List;
@@ -153,8 +153,10 @@ public abstract class IssueTableActivity
     private void showPreview ( CaseShortView value ) {
 
         if ( value == null ) {
+            view.showElements();
             animation.closeDetails();
         } else {
+            view.hideElements();
             animation.showDetails();
             fireEvent( new IssueEvents.ShowPreview( view.getPreviewContainer(), value.getId() ) );
         }
@@ -182,9 +184,9 @@ public abstract class IssueTableActivity
             }
         }
 
-        query.setCompanyId( filterView.company().getValue() == null? null : filterView.company().getValue().getId() );
-        query.setProductId( filterView.product().getValue() == null? null : filterView.product().getValue().getId() );
-        query.setManagerId( filterView.manager().getValue() == null? null : filterView.manager().getValue().getId() );
+        query.setCompanyId( filterView.company().getValue() == null ? null : filterView.company().getValue().getId() );
+        query.setProductId( filterView.product().getValue() == null ? null : filterView.product().getValue().getId() );
+        query.setManagerId( filterView.manager().getValue() == null ? null : filterView.manager().getValue().getId() );
 
         if(filterView.states().getValue() != null)
             query.setStateIds(
@@ -203,8 +205,8 @@ public abstract class IssueTableActivity
         DateInterval interval = filterView.dateRange().getValue();
 
         if(interval != null) {
-            query.setFrom( interval == null ? null : interval.from );
-            query.setTo( interval == null ? null : interval.to );
+            query.setFrom( interval.from );
+            query.setTo( interval.to );
         }
 
         return query;

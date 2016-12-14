@@ -2,6 +2,7 @@ package ru.protei.portal.ui.contact.client.activity.edit;
 
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -141,7 +142,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         view.shortName().setText(person.getDisplayShortName());
         view.birthDay().setValue(person.getBirthday());
 
-        view.personInfo().setText(person.getInfo());
+        ((IsWidget)view.personInfo()).asWidget().getElement().setInnerHTML(person.getInfo());
 
         PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(person.getContactInfo());
 

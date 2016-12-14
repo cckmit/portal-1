@@ -81,12 +81,6 @@ public class ProductFilterView extends Composite implements AbstractProductFilte
 
     @UiHandler("sortDir")
     public void onSortDirClicked( ClickEvent event ) {
-
-        if (sortDir.getValue())
-            sortDir.removeStyleName( "active" );
-        else
-            sortDir.addStyleName( "active" );
-
         if ( activity != null ) {
             activity.onFilterChanged();
         }

@@ -1,10 +1,10 @@
-package ru.protei.portal.ui.issue.client.widget.state.btngroup;
+package ru.protei.portal.ui.issue.client.widget.state.option;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
+import ru.protei.portal.ui.common.client.widget.optionlist.list.OptionList;
 import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
-import ru.protei.portal.ui.common.client.widget.togglebtn.group.ToggleBtnGroup;
 import ru.protei.portal.ui.issue.client.widget.state.StateModel;
 
 import java.util.List;
@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Селектор списка критичности обращения
  */
-public class IssueStatesBtnGroup  extends ToggleBtnGroup<En_CaseState> implements ModelSelector<En_CaseState> {
+public class IssueStatesOptionList extends OptionList<En_CaseState> implements ModelSelector<En_CaseState> {
 
     @Inject
     public void init( StateModel stateModel) {
@@ -21,12 +21,12 @@ public class IssueStatesBtnGroup  extends ToggleBtnGroup<En_CaseState> implement
 
     @Override
     public void fillOptions( List< En_CaseState > states ) {
-        clear();
-        states.forEach( state -> addBtn( "width-xs text-center button button-" + state.toString().toLowerCase(),
-                lang.getStateName( state ),
-                state,
-                "col-xs-12 col-sm-6 col-md-4" ) );
+        clearOptions();
+        states.forEach( state -> addOption( lang.getStateName( state ), state, "form-group col-xs-4 option-" + state.toString().toLowerCase() ) );
     }
+
+    @Override
+    public void refreshValue() {}
 
     @Inject
     En_CaseStateLang lang;

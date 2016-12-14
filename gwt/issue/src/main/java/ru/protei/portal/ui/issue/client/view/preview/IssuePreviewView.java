@@ -9,9 +9,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.Anchor;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
@@ -60,14 +58,14 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     @Override
     public void setState( long value ) {
         En_CaseState caseState = En_CaseState.getById( value );
-        this.state.setClassName( "small label label-" + En_CaseState.getById( value ).toString() );
+        this.state.setClassName( "small label label-" + caseState.toString().toLowerCase());
         this.state.setInnerText( caseStateLang.getStateName( caseState ) );
     }
 
     @Override
     public void setCriticality( int value ) {
         En_ImportanceLevel importanceLevel = En_ImportanceLevel.find( value );
-        this.iconCriticality.setClassName( "importance importance-lg none-vertical-align " + importanceLevel.toString() );
+        this.iconCriticality.setClassName( "importance importance-lg none-vertical-align " + importanceLevel.toString().toLowerCase() );
         CriticalityStyleBuilder.make().addClassName( this.iconCriticality, En_ImportanceLevel.find( value ) );
         this.criticality.setInnerText( caseImportanceLang.getImportanceName( importanceLevel ) );
     }
@@ -84,7 +82,7 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
 
     @Override
     public void setContact( String value ) {
-        this.contact.setInnerText( value );
+        this.contact.setInnerHTML( value );
     }
 
     @Override
@@ -110,6 +108,11 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
         } else {
             this.preview.setStyleName( "preview" );
         }
+    }
+
+    @Override
+    public HasWidgets getCommentsContainer() {
+        return commentsContainer;
     }
 
     @UiHandler( "fullScreen" )
@@ -149,12 +152,11 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     SpanElement manager;
     @UiField
     SpanElement info;
-    @UiField
-    DivElement commentsList;
-
     @Inject
     @UiField
     Lang lang;
+    @UiField
+    HTMLPanel commentsContainer;
 
     @Inject
     En_CaseImportanceLang caseImportanceLang;
