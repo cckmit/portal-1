@@ -19,11 +19,15 @@ public class IssueCommentUtils {
         }
 
         Date now = new Date();
-        return now.getTime() + EDIT_PERIOD <= value.getCreated().getTime();
+        return now.getTime() - value.getCreated().getTime() <= EDIT_PERIOD;
     }
 
-    public static String quoteMessage( String quotedMessage ) {
-        return "< " + quotedMessage;
+    public static String quoteMessage( String message ) {
+        return ">" + message + "\n";
+    }
+
+    public static String prewrapMessage( String message ) {
+        return message.replaceAll(">(.*?)(\\n|$)+", "<blockquote>$1</blockquote>");
     }
 
     private static final long EDIT_PERIOD = 300000;

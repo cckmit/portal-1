@@ -56,6 +56,7 @@ public abstract class IssueCommentListActivity
 
     @Override
     public void onRemoveClicked( AbstractIssueCommentItemView itemView ) {
+        lastCommentView = null;
         CaseComment value = itemViewToModel.get( itemView );
 
         if ( value == null || !IssueCommentUtils.isEnableEdit( value, profile.getId() ) ) {
@@ -86,9 +87,9 @@ public abstract class IssueCommentListActivity
         }
 
         this.comment = value;
+        this.lastCommentView = itemView;
         String editedMessage = value.getText();
-
-        view.message().setValue( IssueCommentUtils.quoteMessage( editedMessage ) );
+        view.message().setValue( editedMessage );
     }
 
     @Override
@@ -100,9 +101,7 @@ public abstract class IssueCommentListActivity
 
         this.comment = null;
         String quotedMessage = value.getText();
-        IssueCommentUtils.quoteMessage( quotedMessage );
-
-        view.message().setValue( quotedMessage );
+        view.message().setValue( IssueCommentUtils.quoteMessage( quotedMessage ) );
     }
 
     @Override
@@ -112,7 +111,7 @@ public abstract class IssueCommentListActivity
         }
         boolean isEdit = comment.getId() != null;
 
-        comment.setText( view.message().getValue() );
+        comment.setText( IssueCommentUtils.prewrapMessage( view.message().getValue() ) );
         issueService.editIssueComment( comment, new RequestCallback<CaseComment>() {
             @Override
             public void onError( Throwable throwable ) {
@@ -120,12 +119,16 @@ public abstract class IssueCommentListActivity
             }
 
             @Override
-            public void onSuccess( CaseComment comment ) {
-                lastUserComment = comment;
+            public void onSuccess( CaseComment value ) {
                 comment = null;
 
-                AbstractIssueCommentItemView itemView = makeCommentView( comment );
-                view.getCommentsContainer().add( itemView.asWidget() );
+                if ( isEdit ) {
+                    lastCommentView.setMessage( value.getText() );
+                } else {
+                    AbstractIssueCommentItemView itemView = makeCommentView( value );
+                    lastCommentView = itemView;
+                    view.getCommentsContainer().add( itemView.asWidget() );
+                }
 
                 view.message().setValue( null );
             }
@@ -134,11 +137,12 @@ public abstract class IssueCommentListActivity
 
     @Override
     public void onEditLastMessage() {
-        if ( lastUserComment == null ) {
+        CaseComment value = itemViewToModel.get( lastCommentView );
+        if ( value == null ) {
             return;
         }
 
-        view.message().setValue( lastUserComment.getText() );
+        view.message().setValue( value.getText() );
     }
 
     private void requestData( Long id ) {
@@ -214,7 +218,7 @@ public abstract class IssueCommentListActivity
     Provider<AbstractIssueCommentLabelView> issueLabelProvider;
 
     private CaseComment comment;
-    private CaseComment lastUserComment = null;
+    private AbstractIssueCommentItemView lastCommentView;
 
     private Profile profile;
     private IssueEvents.ShowComments show;

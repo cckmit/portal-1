@@ -129,7 +129,9 @@ public class CaseServiceImpl implements CaseService {
         if (!isCaseChanged)
             throw new RuntimeException( "failed to update case modifiedDate " );
 
-        return new CoreResponse<CaseComment>().success( caseComment );
+        CaseComment result = caseCommentDAO.get( commentId );
+
+        return new CoreResponse<CaseComment>().success( result );
     }
 
     @Override
