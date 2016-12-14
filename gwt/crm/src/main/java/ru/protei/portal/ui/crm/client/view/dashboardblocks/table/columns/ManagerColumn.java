@@ -1,11 +1,8 @@
-package ru.protei.portal.ui.issue.client.view.simpletable.columns;
+package ru.protei.portal.ui.crm.client.view.dashboardblocks.table.columns;
 
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.ent.CaseObject;
-import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.lang.Lang;

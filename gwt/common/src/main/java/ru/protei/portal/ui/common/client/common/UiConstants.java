@@ -24,5 +24,16 @@ public class UiConstants {
         public static final String ISSUE = "issue";
         public static final String COMPANY = "company";
         public static final String PRODUCT = "product";
+        public static final String DASHBOARD = "dashboard";
     }
+
+    /**
+     * from {@link ru.protei.portal.ui.common.client.events.DashboardEvents}
+     */
+    public static final String INITIAL_PAGE = "dashboard";
+
+    /**
+     * from {@link ru.protei.portal.ui.common.client.events.AuthEvents}
+     */
+    public static final String LOGIN_PAGE = "login";
 }

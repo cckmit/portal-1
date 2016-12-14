@@ -22,6 +22,7 @@ public class AuthEvents {
 
     /**
      * Событие - показать форму входа
+     * used in {@link ru.protei.portal.ui.common.client.common.UiConstants}
      */
     @Url( value = "login", primary = true)
     public static class Show {}
@@ -36,7 +37,4 @@ public class AuthEvents {
         public Profile profile;
     }
 
-    public static class Ready {
-
-    }
 }

@@ -29,6 +29,11 @@ public abstract class IssuePage
     }
 
     @Event
+    public void onEdit( IssueEvents.Edit event ) {
+        fireSelectTab();
+    }
+
+    @Event
     public void onClickSection( SectionEvents.Clicked event ) {
         if ( !ТAB.equals( event.identity ) ) {
             return;

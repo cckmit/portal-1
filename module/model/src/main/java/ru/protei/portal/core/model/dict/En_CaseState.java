@@ -52,5 +52,7 @@ public enum En_CaseState {
     private int id;
     private String name;
 
+
 }
+
 
