@@ -2,7 +2,7 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
         >
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
-    <g:HTMLPanel styleName="preview-wrapper grid">
+    <g:HTMLPanel styleName="preview-wrapper grid with-table-pager">
         <g:HTMLPanel ui:field="preview" styleName="preview">
             <div class="col-xs-12">
                 <i ui:field="privateIssue" class="fa fa-lg fa-unlock-alt pull-left"/>

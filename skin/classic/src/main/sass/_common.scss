@@ -742,6 +742,7 @@ label.bordered:after{
   -o-transition: all 0.5s;
   transition: all 0.5s;
   right: 0;
+  position: relative;
 
   .panel {
     margin-left: 10px;
@@ -771,6 +772,19 @@ label.bordered:after{
 .filter-container .panel.fixed{
   top: 15px;
   margin-right: 15px;
+}
+
+.preview-wrapper,
+.filter-container .panel{
+  overflow-y: auto;
+  box-sizing: border-box;
+  max-height: calc(100% - 30px); // 30px = top offset (15px) + bottom offset (15px)
+}
+
+// временное решение
+.preview-wrapper.with-table-pager,
+.filter-container .panel.with-table-pager{
+  max-height: calc(100% - 60px);
 }
 
 /************************/
