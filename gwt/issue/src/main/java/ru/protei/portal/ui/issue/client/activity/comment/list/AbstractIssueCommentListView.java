@@ -1,6 +1,8 @@
 package ru.protei.portal.ui.issue.client.activity.comment.list;
 
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.HasValue;
+import com.google.gwt.user.client.ui.HasWidgets;
+import com.google.gwt.user.client.ui.IsWidget;
 
 /**
  * Представление списка комментариев

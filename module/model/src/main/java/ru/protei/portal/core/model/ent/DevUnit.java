@@ -3,7 +3,6 @@ package ru.protei.portal.core.model.ent;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.core.model.view.EntityOptionSupport;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.core.model.view.ProductShortViewSupport;
 import ru.protei.winter.jdbc.annotations.IdInsertMode;

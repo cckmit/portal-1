@@ -7,18 +7,15 @@ import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.CompanyHomeGroupItem;
 import ru.protei.portal.core.model.ent.Person;
-
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.ContactQuery;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.utils.EntityCache;
 import ru.protei.portal.core.utils.EntitySelector;
-import ru.protei.portal.core.model.helper.HelperFunc;
-import ru.protei.portal.core.utils.TypeConverters;
 import ru.protei.winter.jdbc.JdbcSort;
 
 import javax.annotation.PostConstruct;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;

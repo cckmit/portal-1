@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.issue.client.view.simpletable.columns;
+package ru.protei.portal.ui.crm.client.view.dashboardblocks.table.columns;
 
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;

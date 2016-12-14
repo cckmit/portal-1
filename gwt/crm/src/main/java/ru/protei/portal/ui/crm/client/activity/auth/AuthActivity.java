@@ -9,7 +9,6 @@ import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
-import ru.protei.portal.ui.crm.client.events.DashboardEvents;
 import ru.protei.portal.ui.crm.client.service.AuthServiceAsync;
 
 /**
@@ -54,7 +53,7 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
             public void onSuccess( Profile profile ) {
                 view.hideError();
                 fireEvent(new AuthEvents.Success(profile ) );
-                run();
+                fireEvent(new NotifyEvents.Show(lang.msgHello(), NotifyEvents.NotifyType.SUCCESS));
             }
         } );
     }
@@ -87,12 +86,6 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
         init.parent.add( view.asWidget() );
 
         view.setFocus();
-    }
-
-    private void run(){
-//        fireEvent( new AuthEvents.Ready( ) );
-        fireEvent(new NotifyEvents.Show(lang.msgHello(), NotifyEvents.NotifyType.SUCCESS));
-        fireEvent(new DashboardEvents.Show());
     }
 
 

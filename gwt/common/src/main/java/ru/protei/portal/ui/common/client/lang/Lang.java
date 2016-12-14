@@ -283,10 +283,10 @@ public interface Lang extends Messages, ContactItemLang {
     String errEditIssueComment();
 
     String selectCompanyGroup();
-
-    String activeIssues();
-    String newIssues();
-    String inactiveIssues();
+    
+    String activeRecords();
+    String newRecords();
+    String inactiveRecords();
 
     String dashboard();
 
