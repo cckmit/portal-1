@@ -1,6 +1,6 @@
 ul.plate-list {
   padding: 0;
-  margin: 0;
+  margin: -7.5px;
   display: -ms-flexbox;
   -ms-flex-wrap: wrap;
   -ms-flex-direction: column;
@@ -12,7 +12,7 @@ ul.plate-list {
   .plate-list-create {
     width: 200px;
     height: 180px;
-    margin: .5vw;
+    margin: 7.5px;
     display: block;
     background: teal;
     border: 1px solid #d3d3d3;
@@ -44,7 +44,7 @@ ul.plate-list {
     flex: auto;
     width: 400px;
     height: 180px;
-    margin: .5vw;
+    margin: 7.5px;
     display: block;
     background: white;
     border: 1px solid #d3d3d3;
