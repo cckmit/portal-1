@@ -7,6 +7,7 @@ import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanyCategory;
@@ -160,13 +161,13 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
 
         PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(company.getContactInfo());
 
-        itemView.setPhone(infoFacade.getWorkPhone());
-        itemView.setEmail(infoFacade.getEmail());
+        itemView.setPhone(infoFacade.allPhonesAsString());
+        itemView.setEmail(infoFacade.allEmailsAsString());
         itemView.setWebsite(infoFacade.getWebSite() );
 
         CompanyCategory category = company.getCategory();
         if ( category != null ) {
-            itemView.setType( category.getName() );
+            itemView.setType( En_CompanyCategory.findById( category.getId() ) );
         }
         return itemView;
     }

@@ -2,6 +2,7 @@ package ru.protei.portal.ui.company.client.activity.item;
 
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
+import ru.protei.portal.core.model.dict.En_CompanyCategory;
 
 /**
  * Абстракция элемента списка компаний
@@ -18,7 +19,7 @@ public interface AbstractCompanyItemView extends IsWidget {
     /**
      * Установить тип
      */
-    void setType( String type );
+    void setType( En_CompanyCategory type );
 
     /**
      * Возвращает контейнер для превью компании

@@ -69,6 +69,36 @@ ul.plate-list {
       }
     }
 
+    &.partner,
+    &.customer,
+    &.subcontractor{
+      .header-block {
+        &:after {
+          position: absolute;
+          font-size: 6em;
+          opacity: 0.15;
+          bottom: 0px;
+          right: 20px;
+          color: teal;
+        }
+      }
+    }
+
+    &.partner .header-block:after {
+      font-family: FontAwesome, serif;
+      content: "\f2b5";
+    }
+
+    &.subcontractor .header-block:after {
+      font-family: Ionicons, serif;
+      content: "\f212";
+    }
+
+    &.customer .header-block:after {
+      font-family: Ionicons, serif;
+      content: "\f353";
+    }
+
     &:hover {
       .header-block{
         &:before {

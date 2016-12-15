@@ -10,6 +10,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
+import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.ui.company.client.activity.item.AbstractCompanyItemActivity;
 import ru.protei.portal.ui.company.client.activity.item.AbstractCompanyItemView;
 
@@ -33,8 +34,8 @@ public class CompanyItemView extends Composite implements AbstractCompanyItemVie
     }
 
     @Override
-    public void setType( String type ) {
-        this.type.setInnerText( type );
+    public void setType( En_CompanyCategory type ) {
+        root.addStyleName( type.name().toLowerCase() );
     }
 
     @Override
