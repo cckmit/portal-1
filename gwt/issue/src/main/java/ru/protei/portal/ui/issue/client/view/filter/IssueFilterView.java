@@ -18,6 +18,7 @@ import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
+import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
@@ -46,6 +47,19 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         manager.setDefaultValue( lang.selectIssueManager() );
         dateRange.setPlaceholder( lang.selectDate() );
    }
+
+
+    @Override
+    protected void onAttach() {
+        super.onAttach();
+        positioner.watch(this, FixedPositioner.NAVBAR_TOP_OFFSET);
+    }
+
+    @Override
+    protected void onDetach() {
+        super.onDetach();
+        positioner.ignore(this);
+    }
 
     @Override
     public void setActivity( AbstractIssueFilterActivity activity ) {
@@ -216,6 +230,9 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
 
     @UiField
     Button resetBtn;
+
+    @Inject
+    FixedPositioner positioner;
 
     @Inject
     @UiField

@@ -34,7 +34,8 @@ import java.util.stream.Collectors;
  */
 public abstract class IssueTableActivity
         implements AbstractIssueTableActivity, AbstractIssueFilterActivity,
-        AbstractPagerActivity, Activity {
+        AbstractPagerActivity, Activity
+{
 
     @PostConstruct
     public void onInit() {
@@ -153,10 +154,8 @@ public abstract class IssueTableActivity
     private void showPreview ( CaseShortView value ) {
 
         if ( value == null ) {
-            view.showElements();
             animation.closeDetails();
         } else {
-            view.hideElements();
             animation.showDetails();
             fireEvent( new IssueEvents.ShowPreview( view.getPreviewContainer(), value.getId() ) );
         }

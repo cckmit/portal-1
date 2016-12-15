@@ -12,6 +12,7 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
@@ -29,6 +30,18 @@ public class ContactFilterView  extends Composite implements AbstractContactFilt
         company.setDefaultValue( lang.selectContactCompany() );
         search.getElement().setPropertyString( "placeholder", lang.search() );
         sortField.setType( ModuleType.CONTACT );
+    }
+
+    @Override
+    protected void onAttach() {
+        super.onAttach();
+        positioner.watch(this, FixedPositioner.NAVBAR_TOP_OFFSET);
+    }
+
+    @Override
+    protected void onDetach() {
+        super.onDetach();
+        positioner.ignore(this);
     }
 
     @Override
@@ -144,6 +157,9 @@ public class ContactFilterView  extends Composite implements AbstractContactFilt
     @Inject
     @UiField
     Lang lang;
+
+    @Inject
+    FixedPositioner positioner;
 
 
     AbstractContactFilterActivity activity;
