@@ -47,9 +47,10 @@ package ru.protei.portal.ui.common.client.common;
  * 4.0.21.24 - m1-t-19 - мелкие замечания к внешнему виду, поддержка unicode при отображении контакта
  * 4.0.22.24 - m1-t-25 - last update case object при добавлении/изменении/удалении коммента
  * 4.0.22.25 - m1-t-24 - Исправить создание обращения
+ * 4.0.23.25 - m1-t-3 - Дашборд. доработки
  */
 public class Version {
     public static String getVersion() {
-        return "4.0.22.25";
+        return "4.0.23.25";
     }
 }

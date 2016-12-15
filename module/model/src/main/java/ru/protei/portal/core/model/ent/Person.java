@@ -4,8 +4,6 @@ import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.struct.ContactInfo;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.PersonShortViewSupport;
-import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.core.model.view.EntityOptionSupport;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;

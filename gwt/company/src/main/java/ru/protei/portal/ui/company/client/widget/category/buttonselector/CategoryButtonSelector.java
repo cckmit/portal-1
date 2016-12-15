@@ -1,7 +1,6 @@
 package ru.protei.portal.ui.company.client.widget.category.buttonselector;
 
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.ent.CompanyCategory;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;

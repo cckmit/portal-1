@@ -1,21 +1,19 @@
-package ru.protei.portal.ui.issue.client.view.simpletable.columns;
+package ru.protei.portal.ui.crm.client.view.dashboardblocks.table.columns;
 
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.ent.CaseObject;
-import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
 /**
  * Колонка "Клиент"
  */
-public class ContactColumn extends ClickColumn< CaseObject > {
+public class ContactColumn extends ClickColumn<CaseShortView> {
 
     @Inject
-    public ContactColumn(Lang lang) {
+    public ContactColumn( Lang lang ) {
         this.lang = lang;
     }
 
@@ -26,33 +24,31 @@ public class ContactColumn extends ClickColumn< CaseObject > {
     }
 
     @Override
-    public void fillColumnValue( Element cell, CaseObject value ) {
+    public void fillColumnValue( Element cell, CaseShortView value ) {
         cell.addClassName( "contacts" );
 
         com.google.gwt.dom.client.Element divElement = DOM.createDiv();
 
-        Company company = value == null ? null : value.getInitiatorCompany();
+        String company = value == null ? null : value.getInitiatorCompanyName();
         com.google.gwt.dom.client.Element companyElement= DOM.createLabel();
-        companyElement.setInnerText( company == null ? "" : company.getCname() );
+        companyElement.setInnerText( company == null ? "" : company );
         divElement.appendChild( companyElement );
 
-        Person initiator = value == null ? null : value.getInitiator();
         com.google.gwt.dom.client.Element initiatorElement = DOM.createElement( "p" );
-
-        initiatorElement.setInnerHTML( getInitiatorLabel(initiator) );
+        initiatorElement.setInnerText( getInitiatorLabel( value ) );
 
         divElement.appendChild( initiatorElement );
 
         cell.appendChild( divElement );
     }
 
-    private String getInitiatorLabel(Person initiator){
-        if(initiator == null)
+    private String getInitiatorLabel(CaseShortView value){
+        if(value == null)
             return "";
 
-        String initiatorFio = initiator.getDisplayShortName();
+        String initiatorFio = value.getInitiatorShortName();
         if(initiatorFio == null || initiatorFio.isEmpty())
-            initiatorFio = initiator.getDisplayName();
+            initiatorFio = value.getInitiatorName();
 
         return initiatorFio;
     }

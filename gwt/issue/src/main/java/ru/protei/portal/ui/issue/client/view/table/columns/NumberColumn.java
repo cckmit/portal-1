@@ -5,8 +5,7 @@ import com.google.gwt.user.client.Element;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
-import ru.protei.portal.core.model.ent.CaseObject;
-import ru.protei.portal.core.model.helper.HTMLHelper;
+import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.common.CriticalityStyleBuilder;
 import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
@@ -15,7 +14,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 /**
  * Колонка "Номер"
  */
-public class NumberColumn extends ClickColumn< CaseObject > {
+public class NumberColumn extends ClickColumn<CaseShortView> {
 
     @Inject
     public NumberColumn( Lang lang, En_CaseStateLang caseStateLang) {
@@ -29,7 +28,7 @@ public class NumberColumn extends ClickColumn< CaseObject > {
     }
 
     @Override
-    public void fillColumnValue( Element cell, CaseObject value ) {
+    public void fillColumnValue( Element cell, CaseShortView value ) {
         cell.addClassName( "number" );
 
         com.google.gwt.dom.client.Element divElement = DOM.createDiv();

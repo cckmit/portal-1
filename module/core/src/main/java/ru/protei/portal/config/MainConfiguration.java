@@ -114,6 +114,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public CaseShortViewDAO getCaseShortDAO() {
+        return new CaseShortViewDAO_Impl();
+    }
+
+    @Bean
     public UserSessionDAO getUserSessionDAO() {
         return new UserSessionDAO_Impl();
     }

@@ -6,8 +6,8 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.ActionBarEvents;
+import ru.protei.portal.ui.common.client.events.DashboardEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.crm.client.events.DashboardEvents;
 import ru.protei.winter.web.common.client.events.MenuEvents;
 import ru.protei.winter.web.common.client.events.SectionEvents;
 
@@ -34,7 +34,7 @@ public abstract class DashboardPage implements Activity {
         }
 
         fireSelectTab();
-        fireEvent( show );
+        fireEvent(show);
     }
 
     private void fireSelectTab() {

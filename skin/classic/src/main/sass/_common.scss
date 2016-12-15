@@ -1115,10 +1115,10 @@ a {
   border-bottom: 1px solid #dee4e5;
   font-size: 9px;
   color: #989898;
-  background: #f1f1f1;
+  background: #eceeee;
 }
 
-.dashboard section > .dashboard-records-table{
+.dashboard section .global-table-container{
   background: white;
   height: 376px;
 }
@@ -1171,24 +1171,25 @@ a {
   color: white;
   line-height: 28px;
   display: block;
+  overflow: hidden;
 }
 
 .dashboard-active-records .dashboard-section-name{
-  background: #4ca761;
+  background: #436eaa;
 }
 .dashboard-new-records .dashboard-section-name{
-  background: #d8a038;
+  background: #bf3f3f;
 }
 .dashboard-completed-records .dashboard-section-name{
-  background: #404d5f;
+  background: #338947;
 }
 
-.dashboard-section-name .buttons_group > div{
-  display: inline-block;
+.dashboard-importance-filter-btn + .dashboard-importance-filter-btn{
+  border-left: 1px solid #eceeee;
 }
 
-.dashboard-section-name .buttons_group > div + div{
-  margin-left: 1px;
+.dashboard-section-name .btn-group{
+  vertical-align: top;
 }
 
 .dashboard .issues table .number {
@@ -1207,11 +1208,14 @@ a {
 .dashboard-total-count{
   color: white;
   font-weight: bold;
-  padding: 0 10px;
-  min-width: 18px;
+  padding: 4px 8px;
   text-align: center;
-  background: rgba(0, 0, 0, 0.15);
+  background: rgba(0, 0, 0, 0.3);
   display: inline-block;
+  margin-left: 4px;
+  line-height: normal;
+  border-radius: 5px;
+  font-size: 10px;
 }
 
 .dashboard-section-name .rightSide{
@@ -1223,26 +1227,18 @@ a {
 .dashboard-importance-filter-btn{
   display: inline-block;
   padding: 0 8px;
-  color: rgba(255, 255, 255, 0.56);
   cursor: pointer;
+  background: #eceeee;
+  color: #c9d0d1;
+  text-shadow: 1px 1px white;
 }
 .dashboard-importance-filter-btn:hover,
 .dashboard-importance-filter-btn.active{
-  color: white;
+  background: linear-gradient(to top, #f1f1f1, #ffffff);
 }
 
-.dashboard-importance-filter-btn + .dashboard-importance-filter-btn{
-  margin-left: 1px;
-}
-
-.dashboard-active-records .dashboard-importance-filter-btn.active{
-  background: #3ec65e;
-}
-.dashboard-new-records .dashboard-importance-filter-btn.active{
-  background: #ffb120;
-}
-.dashboard-completed-records .dashboard-importance-filter-btn.active{
-  background: #4c78b7;
+.dashboard-importance-filter-btn:not(.active) .importance{
+  color: #c9d0d1 !important;
 }
 
 .dashboard .Loader{
@@ -1257,10 +1253,9 @@ a {
   );
 }
 
-.dashboard-new-records .manager {
+.dashboard .manager {
   display: none;
 }
-
 
 @media (min-width: 1400px) {
   .dashboard-active-records {

@@ -44,6 +44,10 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
 
     @Override
     public List< CaseObject > getCases( CaseQuery query ) {
+//        SqlCondition condition = caseQueryCondition( query );
+//        return partialGetListByCondition( condition.condition, condition.args, query.offset, query.limit, TypeConverters.createSort( query ),
+//                "id", "CASENO", "IMPORTANCE", "STATE", "CREATED", "INFO", "InitiatorName" ).getResults();
+
         return listByQuery(query);
     }
 

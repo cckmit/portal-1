@@ -20,10 +20,13 @@
 
 .chats .name {
   color: #333;
-  display: block;
   margin-bottom: 5px;
   font-weight: 600;
   text-decoration: none
+}
+
+.chats a.name {
+  display: block;
 }
 
 .chats .name .label {
@@ -71,7 +74,6 @@
   -moz-border-radius: 4px;
   border-radius: 4px;
   min-height: 20px;
-  max-height: 200px;
 }
 
 .chats .message:after, .chats .message:before {
@@ -133,13 +135,13 @@
     font-size: 12px;
     display: block;
     position: absolute;
-    color: #dad7d7;
     top: 0;
 
     a {
       margin-right: 7px;
+      color: #a7a5a5  !important;
       &:hover {
-        color: teal;
+        color: teal !important;
       }
     }
   }
@@ -155,4 +157,11 @@
   .input-field {
     min-height: 100px;
   }
+}
+
+blockquote {
+  margin-left: 0;
+  border-left: 2px solid #015d5d;
+  padding-left: 5px;
+  color: #015d5d;
 }
