@@ -1176,7 +1176,7 @@ a {
 }
 
 .dashboard-section-name {
-  padding-left: 14px;
+  padding-left: 15px;
   font-weight: bold;
   font-size: 12px;
   color: white;
@@ -1213,7 +1213,7 @@ a {
 }
 
 .dashboard .col-sm-12:not(:first-child){
-  margin-top: 14px;
+  margin-top: 15px;
 }
 
 .dashboard-total-count{
@@ -1270,11 +1270,11 @@ a {
 
 @media (min-width: 1400px) {
   .dashboard-active-records {
-    padding-right: 7px;
+    padding-right: 7.5px;
     margin-top: 0 !important;
   }
   .dashboard-new-records {
-    padding-left: 7px;
+    padding-left: 7.5px;
     margin-top: 0 !important;
   }
 }
