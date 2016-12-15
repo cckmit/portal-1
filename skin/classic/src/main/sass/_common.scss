@@ -83,7 +83,7 @@ body {
 
 
 .checkbox {
-  padding-left: 20px;
+  padding-left: 3px;
   display: inline-block;
   vertical-align: middle;
 }
@@ -652,6 +652,17 @@ label.bordered:after{
   }
 }
 
+.short-table-view {
+  .issues {
+    .contacts {
+      display: none;
+    }
+    .manager {
+      display: none;
+    }
+  }
+}
+
 .issues {
   table {
     tbody {
@@ -1088,8 +1099,8 @@ a {
   border-left: 0;
   height: 28px;
 
-  .btn-down {
-    background-color: teal;
+  &.btn-up {
+    background-color: teal !important;
   }
 
   &.btn-down:after,
@@ -1270,3 +1281,6 @@ a {
 
 
 /****************/
+.text-danger {
+  color: #d52020;
+}

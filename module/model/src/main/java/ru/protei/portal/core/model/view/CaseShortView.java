@@ -33,6 +33,9 @@ public class CaseShortView implements Serializable {
     @JdbcColumn(name = "IMPORTANCE")
     private Integer impLevel;
 
+    @JdbcColumn(name = "private_flag")
+    private boolean privateCase;
+
     @JdbcColumn(name = "INITIATOR")
     private Long initiatorId;
 
@@ -221,6 +224,14 @@ public class CaseShortView implements Serializable {
 
     public void setManagerCompanyName( String managerCompanyName ) {
         this.managerCompanyName = managerCompanyName;
+    }
+
+    public boolean isPrivateCase() {
+        return privateCase;
+    }
+
+    public void setPrivateCase( boolean privateCase ) {
+        this.privateCase = privateCase;
     }
 
     @Override

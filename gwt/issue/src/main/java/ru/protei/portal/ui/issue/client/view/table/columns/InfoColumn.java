@@ -1,7 +1,7 @@
 package ru.protei.portal.ui.issue.client.view.table.columns;
 
-import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.DOM;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
@@ -30,29 +30,38 @@ public class InfoColumn extends ClickColumn<CaseShortView>{
     public void fillColumnValue( Element cell, CaseShortView value ) {
         cell.addClassName( "info" );
 
-        com.google.gwt.dom.client.Element divElement = DOM.createDiv();
+        Element divElement = DOM.createDiv();
 
-        com.google.gwt.dom.client.Element productElement = DOM.createLabel();
+        if ( value.isPrivateCase() ) {
+            Element lock = DOM.createElement( "i" );
+            lock.addClassName( "fa fa-fw fa-lock text-danger" );
+            divElement.appendChild( lock );
+        }
+
+        Element productElement = DOM.createLabel();
         productElement.setInnerText( value == null ? "" : value.getProductName() == null ? "" : value.getProductName() );
+
+
+
         divElement.appendChild( productElement );
 
         Date created = value == null ? null : value.getCreated();
         if ( created != null ) {
-            com.google.gwt.dom.client.Element groupElement = DOM.createElement( "p" );
+            Element groupElement = DOM.createElement( "p" );
             groupElement.addClassName( "text-semimuted" );
 
-            com.google.gwt.dom.client.Element i = DOM.createElement( "i" );
+            Element i = DOM.createElement( "i" );
             i.addClassName( "fa fa-clock-o" );
             groupElement.appendChild( i );
 
-            com.google.gwt.dom.client.Element createdElement = DOM.createSpan();
+            Element createdElement = DOM.createSpan();
             createdElement.setInnerText( " " + DateFormatter.formatDateTime( created ) );
             groupElement.appendChild( createdElement );
 
             divElement.appendChild( groupElement );
         }
 
-        com.google.gwt.dom.client.Element infoElement = DOM.createElement( "p" );
+        Element infoElement = DOM.createElement( "p" );
         infoElement.addClassName( "issue-description" );
         infoElement.setInnerText( value == null ? "" : value.getInfo() );
         divElement.appendChild( infoElement );
