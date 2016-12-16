@@ -38,7 +38,7 @@ public enum En_SortField {
     /**
      * date of the last modification
      */
-    last_update ("last_update"),
+    last_update ("modified"),
 
     /**
      * person full name

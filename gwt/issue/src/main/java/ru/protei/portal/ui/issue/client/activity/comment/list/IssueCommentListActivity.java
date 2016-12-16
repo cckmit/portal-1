@@ -74,6 +74,7 @@ public abstract class IssueCommentListActivity
             @Override
             public void onSuccess( Void result ) {
                 view.getCommentsContainer().remove( itemView.asWidget() );
+                fireEvent( new IssueEvents.ChangeModel() );
             }
         });
     }
@@ -140,6 +141,7 @@ public abstract class IssueCommentListActivity
                 }
 
                 view.message().setValue( null );
+                fireEvent( new IssueEvents.ChangeModel() );
             }
         } );
     }

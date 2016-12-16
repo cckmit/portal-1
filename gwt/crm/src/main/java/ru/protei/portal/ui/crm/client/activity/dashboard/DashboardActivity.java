@@ -82,7 +82,7 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
 
 
     private CaseQuery generateActiveRecordsQuery(){
-        CaseQuery query = new CaseQuery(En_CaseType.CRM_SUPPORT, null, En_SortField.creation_date, En_SortDir.DESC);
+        CaseQuery query = new CaseQuery(En_CaseType.CRM_SUPPORT, null, En_SortField.last_update, En_SortDir.DESC);
         query.setManagerId(profile.getId());
         query.setStates(issueStates.getActiveStates());
 
@@ -90,7 +90,7 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
     }
 
     private CaseQuery generateNewRecordsQuery(){
-        CaseQuery query = new CaseQuery(En_CaseType.CRM_SUPPORT, null, En_SortField.creation_date, En_SortDir.ASC);
+        CaseQuery query = new CaseQuery(En_CaseType.CRM_SUPPORT, null, En_SortField.last_update, En_SortDir.DESC);
         query.setStates(Collections.singletonList(En_CaseState.CREATED));
         query.setManagerId(-1L);
 
@@ -98,7 +98,7 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
     }
 
     private CaseQuery generateInactiveRecordsQuery(){
-        CaseQuery query = new CaseQuery(En_CaseType.CRM_SUPPORT, null, En_SortField.last_update, En_SortDir.ASC);
+        CaseQuery query = new CaseQuery(En_CaseType.CRM_SUPPORT, null, En_SortField.last_update, En_SortDir.DESC);
         query.setManagerId(profile.getId());
 
         List<En_CaseState> inactiveStates = new ArrayList<>(issueStates.getInactiveStates());

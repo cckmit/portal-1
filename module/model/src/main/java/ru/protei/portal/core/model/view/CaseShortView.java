@@ -24,6 +24,9 @@ public class CaseShortView implements Serializable {
     @JdbcColumn(name = "CREATED")
     private Date created;
 
+    @JdbcColumn(name = "MODIFIED")
+    private Date modified;
+
     @JdbcColumn(name = "INFO")
     private String info;
 
@@ -234,16 +237,26 @@ public class CaseShortView implements Serializable {
         this.privateCase = privateCase;
     }
 
+    public Date getModified() {
+        return modified;
+    }
+
+    public void setModified( Date modified ) {
+        this.modified = modified;
+    }
+
     @Override
     public String toString() {
         return "CaseShortView{" +
-                "id=" + id +
+                "caseNumber=" + caseNumber +
+                ", id=" + id +
                 ", typeId=" + typeId +
-                ", caseNumber=" + caseNumber +
                 ", created=" + created +
+                ", modified=" + modified +
                 ", info='" + info + '\'' +
                 ", stateId=" + stateId +
                 ", impLevel=" + impLevel +
+                ", privateCase=" + privateCase +
                 ", initiatorId=" + initiatorId +
                 ", initiatorName='" + initiatorName + '\'' +
                 ", initiatorShortName='" + initiatorShortName + '\'' +
