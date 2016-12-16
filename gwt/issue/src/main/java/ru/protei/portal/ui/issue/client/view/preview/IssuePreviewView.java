@@ -53,12 +53,11 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     @Override
     public void setPrivateIssue( boolean privateIssue ) {
         if ( privateIssue ) {
-            this.privateIssue.removeClassName( "fa-unlock-alt" );
-            this.privateIssue.addClassName( "fa-lock" );
-        } else {
-            this.privateIssue.removeClassName( "fa-lock" );
-            this.privateIssue.addClassName( "fa-unlock-alt" );
+            this.privateIssue.setClassName( "fa fa-fw fa-lg fa-lock text-danger pull-left" );
+            return;
         }
+
+        this.privateIssue.setClassName( "fa fa-fw fa-lg fa-unlock-alt text-success pull-left"  );
     }
 
     @Override

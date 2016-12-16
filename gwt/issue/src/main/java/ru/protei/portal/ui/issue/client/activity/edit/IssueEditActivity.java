@@ -100,8 +100,10 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             }
         });
     }
-    private void fillView(CaseObject issue){
-        fireEvent( new IssueEvents.ShowComments( view.getCommentsContainer(), issue.getId() ) );
+    private void fillView(CaseObject issue) {
+        if ( issue.getId() != null ) {
+            fireEvent( new IssueEvents.ShowComments( view.getCommentsContainer(), issue.getId() ) );
+        }
 
         view.name().setValue(issue.getName());
         view.isLocal().setValue(issue.isPrivateCase());
