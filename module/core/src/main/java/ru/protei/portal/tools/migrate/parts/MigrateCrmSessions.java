@@ -3,6 +3,7 @@ package ru.protei.portal.tools.migrate.parts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import protei.sql.Tm_SqlHelper;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_SortDir;
@@ -13,11 +14,15 @@ import ru.protei.portal.core.model.ent.MigrationEntry;
 import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.tools.migrate.tools.MigrateAction;
 import ru.protei.portal.tools.migrate.tools.MigrateUtils;
+import ru.protei.winter.jdbc.JdbcDAO;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -53,6 +58,33 @@ public class MigrateCrmSessions implements MigrateAction {
         return 10;
     }
 
+
+    private Map<Long, Long> getSession2ContactMap (Connection conn, Long minId, Long maxId) {
+
+        try (PreparedStatement p = conn.prepareStatement(
+                "select nSessionID, nContactID from CRM.Tm_ContactToSession where nSessionID between ? and ?"
+        )) {
+            p.setLong(1, minId);
+            p.setLong(2, maxId);
+
+            ResultSet rs = p.executeQuery();
+
+            Map<Long,Long> result = new HashMap<>();
+
+            while (rs.next()) {
+                result.putIfAbsent(rs.getLong("nSessionID"), rs.getLong("nContactID"));
+            }
+
+            rs.close();
+
+            return result;
+        }
+        catch (SQLException e) {
+            logger.debug("",e);
+            throw new RuntimeException(e);
+        }
+    }
+
     @Override
     public void migrate(Connection sourceConnection) throws SQLException {
 
@@ -62,13 +94,41 @@ public class MigrateCrmSessions implements MigrateAction {
         final Map<Long, Long> productIdMap = new HashMap<>();
 
 
+
         devUnitDAO.listByQuery (new ProductQuery("", En_SortField.id, En_SortDir.ASC))
                 .forEach(record -> productIdMap.put(record.getOldId(),record.getId()));
 
 
+        BaseBatchProcess<CaseObject> sessionsBatchProcess = new BaseBatchProcess<CaseObject>() {
+            @Override
+            protected void processInsert(JdbcDAO<Long, CaseObject> dao, List<CaseObject> entries) {
+                Long minId = entries.stream().mapToLong(item -> item.getCaseNumber()).min().getAsLong();
+                Long maxId = entries.stream().mapToLong(item -> item.getCaseNumber()).max().getAsLong();
+
+                logger.debug("handle crm-session contacts, min-id : {}, max-id : {}", minId, maxId);
+
+                Map<Long,Long> session2contact = getSession2ContactMap(sourceConnection, minId, maxId);
+
+                logger.debug("got session2contact map, size : {}", session2contact.size());
+
+                entries.forEach(item -> {
+                    if (item.getCreatorId() == null) {
+                        item.setCreatorId((Long) MigrateUtils.nvl(session2contact.get(item.getCaseNumber()), item.getManagerId(), MigrateUtils.DEFAULT_CREATOR_ID));
+                    }
+
+                    if (item.getInitiatorId() == null) {
+                        item.setInitiatorId((Long) MigrateUtils.nvl(session2contact.get(item.getCaseNumber()), item.getManagerId(), item.getCreatorId()));
+                    }
+                });
+
+                logger.debug("crm-sessions, post-process done");
+
+                super.processInsert(dao, entries);
+            }
+        };
 
         MigrateUtils.runDefaultMigration (sourceConnection, CRM_SESSION_MIGRATION_ID, "CRM.tm_session",
-                migrateDAO, caseObjectDAO,
+                migrateDAO, caseObjectDAO, sessionsBatchProcess,
                 row -> {
                     CaseObject obj = new CaseObject();
                     obj.setId(null);
@@ -115,15 +175,6 @@ public class MigrateCrmSessions implements MigrateAction {
                         obj.setExtId(En_CaseType.CRM_MARKET.makeGUID(obj.getCaseNumber()));
                         obj.setTypeId(En_CaseType.CRM_MARKET.getId());
                         obj.setStateId(marketStatusMap.get(row.get("nStatusID")));
-                    }
-
-
-                    if (obj.getCreatorId() == null) {
-                        obj.setCreatorId((Long) MigrateUtils.nvl(obj.getManagerId(), MigrateUtils.DEFAULT_CREATOR_ID));
-                    }
-
-                    if (obj.getInitiatorId() == null) {
-                        obj.setInitiatorId((Long) MigrateUtils.nvl(obj.getManagerId(), obj.getCreatorId()));
                     }
 
                     return obj;

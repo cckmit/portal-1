@@ -30,15 +30,17 @@ public class BaseBatchProcess<T> implements BatchProcess<T> {
 
     @Override
     public final void doInsert(JdbcDAO<Long, T> dao, List<T> entries) {
-        processInsert(dao, entries);
-        afterInsert(entries);
-//        entries.clear();
+        if (entries != null && !entries.isEmpty()) {
+            processInsert(dao, entries);
+            afterInsert(entries);
+        }
     }
 
     @Override
     public final void doUpdate(JdbcDAO<Long, T> dao, List<T> entries) {
-        processUpdate(dao, entries);
-        afterUpdate(entries);
-//        entries.clear();
+        if (entries != null && !entries.isEmpty()) {
+            processUpdate(dao, entries);
+            afterUpdate(entries);
+        }
     }
 }
