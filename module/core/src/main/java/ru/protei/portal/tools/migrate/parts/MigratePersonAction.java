@@ -176,12 +176,11 @@ public class MigratePersonAction implements MigrateAction {
             x.setDisplayShortName(generateDisplayShortName(x.getFirstName(), x.getLastName(), x.getSecondName()));
 
             x.setInfo((String) row.get("strInfo"));
-            x.setDeleted(
-                    row.get("lRetired") != null &&
-                            (
-                                    ((Number) row.get("lRetired")).intValue() != 0 ||
-                                            ((Number) row.get("lDeleted")).intValue() != 0
-                            )
+
+            x.setDeleted( ((Number) row.get("lDeleted")).intValue() != 0 );
+
+            x.setFired(
+                    row.get("lRetired") != null && ((Number) row.get("lRetired")).intValue() != 0
             );
             x.setPassportInfo((String) row.get("strPassportInfo"));
             x.setGender(row.get("nSexID") == null ? En_Gender.UNDEFINED : ((Number) row.get("nSexID")).intValue() == 1 ? En_Gender.MALE : En_Gender.FEMALE);
