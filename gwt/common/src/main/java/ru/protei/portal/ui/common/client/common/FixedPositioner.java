@@ -18,11 +18,11 @@ public class FixedPositioner {
     }
 
     public void watch(Element element, int topOffset){
+        elemsToTopOffsets.put(element, topOffset);
         positionElement(element, Window.getScrollTop(), topOffset);
-        HandlerRegistration handler =
-                Window.addWindowScrollHandler(
-                        event -> positionElement(element, event.getScrollTop(), topOffset));
-        elemToHandler.put(element, handler);
+
+        if(windowScrollHandler == null)
+            windowScrollHandler = bindWindowScroll();
     }
 
     public void ignore(UIObject uiObject){
@@ -30,11 +30,13 @@ public class FixedPositioner {
     }
 
     public void ignore(Element element){
-        HandlerRegistration handler = elemToHandler.remove(element);
-        if(handler == null)
-            return;
+        elemsToTopOffsets.remove(element);
         element.removeClassName(FIX_CLASS_NAME);
-        handler.removeHandler();
+
+        if(elemsToTopOffsets.isEmpty() && windowScrollHandler != null){
+            windowScrollHandler.removeHandler();
+            windowScrollHandler = null;
+        }
     }
 
     private void positionElement(Element element, int topScroll, int topOffset){
@@ -44,7 +46,15 @@ public class FixedPositioner {
             element.removeClassName(FIX_CLASS_NAME);
     }
 
+    private HandlerRegistration bindWindowScroll(){
+        return
+            Window.addWindowScrollHandler(
+                event -> elemsToTopOffsets.forEach(
+                        (element, topOffset) -> positionElement(element, event.getScrollTop(), topOffset)));
+    }
+
     public static final int NAVBAR_TOP_OFFSET = 50;
-    private Map<Element, HandlerRegistration> elemToHandler = new HashMap<>();
+    private Map<Element, Integer> elemsToTopOffsets = new HashMap<>();
+    private HandlerRegistration windowScrollHandler;
     private final String FIX_CLASS_NAME = "fixed";
 }
