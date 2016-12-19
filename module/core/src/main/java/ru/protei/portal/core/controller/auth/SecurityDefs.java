@@ -6,6 +6,7 @@ package ru.protei.portal.core.controller.auth;
 public class SecurityDefs {
 
     public static final String AUTH_SESSION_DESC = "pctx-auth-session-data";
+    public static final String AUTH_SESSION_DESC_UI = "auth-session-data";
     public static final String APP_SESSION_ID_NAME= "portalsid";
 
     public static final String LOGIN_PAGE_URI = "/login.html";
