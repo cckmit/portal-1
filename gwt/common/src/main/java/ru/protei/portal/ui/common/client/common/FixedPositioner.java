@@ -7,48 +7,44 @@ import com.google.gwt.user.client.ui.UIObject;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Consumer;
 
 /**
  * Используется для фиксации позиционирования элементов при вертикальном скролинге страницы
  */
 public class FixedPositioner {
 
-    public FixedPositioner(){
-        elemToHandler = new HashMap<>();
+    public void watch(UIObject uiObject, int topOffset){
+        watch(uiObject.getElement(), topOffset);
     }
 
-    public void watch(UIObject element, int topOffset){
-        watch(element, topOffset, element::addStyleName, element::removeStyleName);
+    public void watch(Element element, int topOffset){
+        positionElement(element, Window.getScrollTop(), topOffset);
+        HandlerRegistration handler =
+                Window.addWindowScrollHandler(
+                        event -> positionElement(element, event.getScrollTop(), topOffset));
+        elemToHandler.put(element, handler);
     }
 
-    public void watch(Element element, Integer topOffset){
-        watch(element, topOffset, element::addClassName, element::removeClassName);
+    public void ignore(UIObject uiObject){
+        ignore(uiObject.getElement());
     }
 
-    public void ignore(Object element){
+    public void ignore(Element element){
         HandlerRegistration handler = elemToHandler.remove(element);
         if(handler == null)
             return;
+        element.removeClassName(FIX_CLASS_NAME);
         handler.removeHandler();
     }
 
-
-    private void watch(Object elem, int topOffset, Consumer<String> addClassAction, Consumer<String> removeClassAction){
-        positionElement(Window.getScrollTop(), topOffset, addClassAction, removeClassAction);
-        HandlerRegistration handler =
-                Window.addWindowScrollHandler(
-                        event -> positionElement(event.getScrollTop(), topOffset, addClassAction, removeClassAction));
-        elemToHandler.put(elem, handler);
-    }
-
-    private void positionElement(int topScroll, int topOffset, Consumer<String> addClassAction, Consumer<String> removeClassAction){
+    private void positionElement(Element element, int topScroll, int topOffset){
         if (topScroll >= topOffset)
-            addClassAction.accept("fixed");
+            element.addClassName(FIX_CLASS_NAME);
         else
-            removeClassAction.accept("fixed");
+            element.removeClassName(FIX_CLASS_NAME);
     }
 
     public static final int NAVBAR_TOP_OFFSET = 50;
-    private Map<Object, HandlerRegistration> elemToHandler;
+    private Map<Element, HandlerRegistration> elemToHandler = new HashMap<>();
+    private final String FIX_CLASS_NAME = "fixed";
 }
