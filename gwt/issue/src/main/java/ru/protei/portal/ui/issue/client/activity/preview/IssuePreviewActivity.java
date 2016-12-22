@@ -4,7 +4,6 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
@@ -14,8 +13,6 @@ import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.IssueServiceAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
-
-import java.util.List;
 
 /**
  * Активность превью обращения
@@ -40,6 +37,7 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
         this.issueId = event.issueId;
 
         fillView( issueId );
+        view.watchForScroll( true );
         view.showFullScreen( false );
     }
 
