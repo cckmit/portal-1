@@ -1,0 +1,12 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+    <g:HTMLPanel>
+
+        <g:FormPanel ui:field="form">
+            <g:FileUpload ui:field="fileUpload"/>
+
+            <g:Button ui:field="button"/>
+        </g:FormPanel>
+
+    </g:HTMLPanel>
+</ui:UiBinder>

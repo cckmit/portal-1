@@ -20,6 +20,7 @@ import ru.protei.portal.ui.common.client.widget.selector.dict.ImportanceButtonSe
 import ru.protei.portal.ui.common.client.widget.selector.person.ContactButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.ProductButtonSelector;
+import ru.protei.portal.ui.common.client.widget.uploader.FileUploader;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditActivity;
@@ -202,6 +203,10 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     Lang lang;
     @UiField
     HTMLPanel commentsContainer;
+
+    @Inject
+    @UiField
+    FileUploader uploader;
 
 
     private AbstractIssueEditActivity activity;
