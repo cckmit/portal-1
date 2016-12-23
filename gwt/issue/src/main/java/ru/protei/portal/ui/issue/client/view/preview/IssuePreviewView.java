@@ -34,15 +34,17 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     }
 
     @Override
-    protected void onAttach() {
-        super.onAttach();
-        positioner.watch(this, FixedPositioner.NAVBAR_TOP_OFFSET);
+    protected void onDetach() {
+        super.onDetach();
+        watchForScroll(false);
     }
 
     @Override
-    protected void onDetach() {
-        super.onDetach();
-        positioner.ignore(this);
+    public void watchForScroll(boolean isWatch) {
+        if(isWatch)
+            positioner.watch(this, FixedPositioner.NAVBAR_TOP_OFFSET);
+        else
+            positioner.ignore(this);
     }
 
     @Override
