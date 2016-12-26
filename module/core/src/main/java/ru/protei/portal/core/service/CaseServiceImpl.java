@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
-import ru.protei.portal.core.controller.auth.SecurityDefs;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.CaseShortViewDAO;
@@ -16,12 +15,9 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
-import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseShortView;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -140,11 +136,11 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     @Transactional
-    public CoreResponse<CaseComment> updateCaseComment ( CaseComment caseComment ) {
+    public CoreResponse<CaseComment> updateCaseComment ( CaseComment caseComment, Long personId ) {
         if (caseComment == null || caseComment.getId() == null)
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
 
-        if (!isSamePerson( caseComment.getAuthorId() ) || !isChangeAvailable ( caseComment.getCreated() ))
+        if (!personId.equals(caseComment.getAuthorId()) || !isChangeAvailable ( caseComment.getCreated() ))
             return new CoreResponse().error( En_ResultStatus.NOT_UPDATED );
 
         boolean isUpdated = caseCommentDAO.merge(caseComment);
@@ -163,11 +159,11 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     @Transactional
-    public CoreResponse removeCaseComment( CaseComment caseComment ) {
+    public CoreResponse removeCaseComment( CaseComment caseComment, Long personId ) {
         if (caseComment == null || caseComment.getId() == null)
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
 
-        if (!isSamePerson( caseComment.getAuthorId() ) || !isChangeAvailable ( caseComment.getCreated() ))
+        if (!personId.equals(caseComment.getAuthorId()) || !isChangeAvailable ( caseComment.getCreated() ))
             return new CoreResponse().error(En_ResultStatus.NOT_REMOVED);
 
         long caseId = caseComment.getCaseId();
@@ -220,25 +216,6 @@ public class CaseServiceImpl implements CaseService {
         return current - checked < CHANGE_LIMIT_TIME;
     }
 
-    private boolean isSamePerson ( Long personId ) {
-        Person person = getCurrentPerson();
-        return person != null && person.getId().equals(personId);
-    }
-
-
-    private Person getCurrentPerson(){
-        UserSessionDescriptor sd = (UserSessionDescriptor)
-                request.getSession().getAttribute(SecurityDefs.AUTH_SESSION_DESC_UI);
-
-        if(sd != null)
-            return sd.getPerson();
-        return null;
-    }
-
-
     static final long CHANGE_LIMIT_TIME = 300000;  // 5 минут  (в мсек)
-
-    @Autowired
-    HttpServletRequest request;
 
 }

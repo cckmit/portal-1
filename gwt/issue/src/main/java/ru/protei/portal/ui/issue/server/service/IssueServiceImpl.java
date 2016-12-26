@@ -90,7 +90,7 @@ public class IssueServiceImpl implements IssueService {
     public void removeIssueComment( CaseComment value ) throws RequestFailedException {
         log.debug( "removeIssueComment(): value={}", value );
 
-        CoreResponse<List<CaseComment>> response = caseService.removeCaseComment( value );
+        CoreResponse<List<CaseComment>> response = caseService.removeCaseComment( value, getCurrentPerson().getId() );
         if (response.isError()) {
             throw new RequestFailedException( response.getStatus() );
         }
@@ -104,7 +104,7 @@ public class IssueServiceImpl implements IssueService {
         if ( value.getId() == null ) {
             response = caseService.addCaseComment( value );
         } else {
-            response = caseService.updateCaseComment( value );
+            response = caseService.updateCaseComment( value, getCurrentPerson().getId() );
         }
         if (response.isError()) {
             throw new RequestFailedException( response.getStatus() );
