@@ -51,6 +51,13 @@ public class RegionServiceImpl implements RegionService {
             info.state = states[i];
             info.number = numbers[i];
 
+            if ( info.state.equals( En_RegionState.RIVAL ) ) {
+                info.details = "Сфера";
+            }
+            else if ( info.state.equals( En_RegionState.DEPLOYMENT ) ) {
+                info.details = "Сертификация";
+            }
+
             result.add( info );
         }
 

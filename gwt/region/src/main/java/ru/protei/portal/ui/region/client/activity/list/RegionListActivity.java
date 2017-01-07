@@ -12,6 +12,7 @@ import ru.protei.portal.core.model.struct.RegionInfo;
 import ru.protei.portal.ui.common.client.animation.PlateListAnimation;
 import ru.protei.portal.ui.common.client.common.PeriodicTaskService;
 import ru.protei.portal.ui.common.client.events.*;
+import ru.protei.portal.ui.common.client.lang.En_RegionStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.RegionServiceAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
@@ -124,15 +125,31 @@ public abstract class RegionListActivity
         return query;
     };
 
-    private AbstractRegionItemView makeView ( RegionInfo region )
-    {
+    private AbstractRegionItemView makeView ( RegionInfo region ) {
         AbstractRegionItemView itemView = factory.get();
         itemView.setNumber( region.number );
         itemView.setName( region.name );
-        itemView.setDetails( region.details );
+        itemView.setDetails( makeDetails( region ) );
         itemView.setActivity(this);
 
         return itemView;
+    }
+
+    private String makeDetails( RegionInfo region ) {
+        String details = stateLang.getStateName( region.state );
+        if ( region.state == null ) {
+            return details;
+        }
+
+        switch ( region.state ) {
+            case RIVAL:
+                return details+" ("+region.details+")";
+            case DEPLOYMENT:
+                return region.details;
+
+            default:
+                return details;
+        }
     }
 
      Consumer<RegionInfo> fillViewer = new Consumer<RegionInfo> () {
@@ -151,6 +168,8 @@ public abstract class RegionListActivity
     AbstractRegionFilterView filterView;
     @Inject
     Lang lang;
+    @Inject
+    En_RegionStateLang stateLang;
 
     @Inject
     Provider<AbstractRegionItemView > factory;

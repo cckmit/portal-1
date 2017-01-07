@@ -297,4 +297,20 @@ public interface Lang extends Messages, ContactItemLang {
     String errEditIssueCommentEmpty();
 
     String regions();
+
+    String regionStateUnknown();
+
+    String regionStateRival();
+
+    String regionStateTalk();
+
+    String regionStateProjecting();
+
+    String regionStateDevelopment();
+
+    String regionStateDeployment();
+
+    String regionStateSupport();
+
+    String regionStateSupportFinished();
 }
