@@ -9,13 +9,14 @@ import ru.protei.portal.ui.company.client.factory.CompanyClientModule;
 import ru.protei.portal.ui.crm.client.activity.app.AppActivity;
 import ru.protei.portal.ui.issue.client.factory.IssueClientModule;
 import ru.protei.portal.ui.product.client.factory.ProductClientModule;
+import ru.protei.portal.ui.region.client.factory.RegionClientModule;
 
 /**
  * Фабрика
  */
 @GinModules({
         ClientModule.class, CommonClientModule.class, CompanyClientModule.class, ProductClientModule.class,
-        ContactClientModule.class, IssueClientModule.class
+        ContactClientModule.class, IssueClientModule.class, RegionClientModule.class
 })
 public interface ClientFactory
         extends FactoryInjector

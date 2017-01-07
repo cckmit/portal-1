@@ -41,6 +41,7 @@
                 <module>gwt/product</module>
                 <module>gwt/contact</module>
                 <module>gwt/issue</module>
+                <module>gwt/region</module>
                 <module>gwt/crm</module>
                 <!--<module>app/crm</module>-->
             </modules>

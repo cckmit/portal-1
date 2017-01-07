@@ -295,4 +295,6 @@ public interface Lang extends Messages, ContactItemLang {
     String errNotRemoved ();
 
     String errEditIssueCommentEmpty();
+
+    String regions();
 }

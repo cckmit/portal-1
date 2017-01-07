@@ -1,0 +1,31 @@
+.header-block {
+  overflow: hidden;
+}
+
+.region-picture {
+  position: relative;
+  display: block;
+  right: 0px;
+  top: -20px;
+  opacity: 0.3;
+
+  & > i {
+    position: relative;
+    display: block;
+    top: -46px;
+    right: -290px;
+
+    font-size: 10em;
+  }
+}
+
+.status-group {
+  & > button {
+    padding: 5px 8px;
+    border-color: #ffffff;
+
+    &:hover {
+      background-color: #ffffff;
+    }
+  }
+}

@@ -19,4 +19,5 @@
        <context:component-scan base-package="ru.protei.portal.ui.contact" />
        <context:component-scan base-package="ru.protei.portal.ui.issue" />
        <context:component-scan base-package="ru.protei.portal.ui.common" />
+       <context:component-scan base-package="ru.protei.portal.ui.region" />
 </beans>
