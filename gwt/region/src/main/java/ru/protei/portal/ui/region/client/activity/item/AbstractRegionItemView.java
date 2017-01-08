@@ -17,4 +17,6 @@ public interface AbstractRegionItemView extends IsWidget {
     void setNumber( Integer number );
 
     void setDetails( String details );
+
+    void setState( String value );
 }

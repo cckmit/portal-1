@@ -131,6 +131,7 @@ public abstract class RegionListActivity
         itemView.setName( region.name );
         itemView.setDetails( makeDetails( region ) );
         itemView.setActivity(this);
+        itemView.setState( stateLang.getStateIcon( region.state ) );
 
         return itemView;
     }

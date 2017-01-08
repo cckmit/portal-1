@@ -71,6 +71,11 @@ public class RegionItemView extends Composite implements AbstractRegionItemView 
     }
 
     @Override
+    public void setState( String value ) {
+        state.setClassName( value );
+    }
+
+    @Override
     public HasWidgets getPreviewContainer() {
         return previewContainer;
     }

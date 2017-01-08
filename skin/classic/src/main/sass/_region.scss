@@ -29,3 +29,67 @@
     }
   }
 }
+
+.region-state {
+  display: inline-block;
+  font: normal normal normal 14px/1 FontAwesome;
+  font-size: inherit;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  &.unknown {
+    &:before {
+      content: "\f29c";
+    }
+  }
+
+  &.times {
+    &:before {
+      content: "\f00d";
+    }
+    color: rgb(88, 5, 5);
+  }
+
+  &.talk {
+    &:before {
+      content: "\f0e6"
+    }
+    color: #88027b;
+  }
+
+  &.projecting {
+    &:before {
+      content: "\f002"
+    }
+    color: #0e00b9;
+  }
+
+  &.development {
+    &:before {
+      content: "\f1c9"
+    }
+    color: #00a5b9;
+  }
+
+  &.deployment {
+    &:before {
+      content: "\f0a3"
+    }
+    color: #b9ae00;
+  }
+
+  &.support {
+    &:before {
+      content: "\f05d"
+    }
+    color: #1abf00;
+  }
+
+  &.support-finished {
+    &:before {
+      content: "\f017"
+    }
+    color: #bf6400;
+  }
+}

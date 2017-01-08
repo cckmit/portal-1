@@ -27,7 +27,24 @@ public class En_RegionStateLang {
         }
     }
 
+    public String getStateIcon( En_RegionState state ) {
+        if(state == null)
+            return "fa fa-unknown";
+
+        switch (state){
+            case UNKNOWN: return "region-state unknown";
+            case RIVAL: return "region-state times";
+            case TALK: return "region-state talk";
+            case PROJECTING: return "region-state projecting";
+            case DEVELOPMENT: return "region-state development";
+            case DEPLOYMENT: return "region-state deployment";
+            case SUPPORT: return "region-state support";
+            case SUPPORT_FINISHED: return "region-state support-finished";
+            default:
+                return "fa fa-unknown";
+        }
+    }
+
     @Inject
     Lang lang;
-
 }
