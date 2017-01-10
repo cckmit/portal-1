@@ -10,6 +10,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -17,6 +18,8 @@ import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSele
 import ru.protei.portal.ui.region.client.activity.filter.AbstractRegionFilterActivity;
 import ru.protei.portal.ui.region.client.activity.filter.AbstractRegionFilterView;
 import ru.protei.portal.ui.region.client.widget.state.RegionStateBtnGroup;
+
+import java.util.Set;
 
 /**
  * Представление фильтра регионов
@@ -64,6 +67,11 @@ public class RegionFilterView extends Composite implements AbstractRegionFilterV
     }
 
     @Override
+    public HasValue<Set<En_RegionState>> states() {
+        return states;
+    }
+
+    @Override
     public void resetFilter() {
         showDeprecated.setValue( false );
         sortField.setValue( En_SortField.prod_name );
@@ -87,7 +95,14 @@ public class RegionFilterView extends Composite implements AbstractRegionFilterV
     }
 
     @UiHandler( "sortField" )
-    public void onSortFieldSelected( ValueChangeEvent< En_SortField > event ) {
+    public void onSortFieldSelected( ValueChangeEvent<En_SortField> event ) {
+        if ( activity != null ) {
+            activity.onFilterChanged();
+        }
+    }
+
+    @UiHandler( "states" )
+    public void onStateSelected( ValueChangeEvent<Set<En_RegionState>> event ) {
         if ( activity != null ) {
             activity.onFilterChanged();
         }

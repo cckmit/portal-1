@@ -2,16 +2,10 @@ package ru.protei.portal.ui.region.server.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dict.En_RegionState;
-import ru.protei.portal.core.model.ent.DevUnit;
-import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.core.model.query.RegionQuery;
 import ru.protei.portal.core.model.struct.RegionInfo;
-import ru.protei.portal.core.model.view.ProductShortView;
-import ru.protei.portal.ui.common.client.service.ProductService;
 import ru.protei.portal.ui.common.client.service.RegionService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
@@ -27,7 +21,7 @@ public class RegionServiceImpl implements RegionService {
     @Override
     public List< RegionInfo > getRegionList( RegionQuery query ) throws RequestFailedException {
         log.debug( "getRegionList(): search={} | showDeprecated={} | sortField={} | order={}",
-            query.getSearchString(), query.getState(), query.getSortField(), query.getSortDir() );
+            query.getSearchString(), query.getStates(), query.getSortField(), query.getSortDir() );
 
         String[] names = new String[]{
             "Алтайский край", "Амурская область", "Архангельская область", "Астраханская область",
@@ -58,7 +52,14 @@ public class RegionServiceImpl implements RegionService {
                 info.details = "Сертификация";
             }
 
-            result.add( info );
+            if ( query.getStates() == null || query.getStates().isEmpty() ) {
+                result.add( info );
+            }
+            else {
+                if ( query.getStates().contains( info.state ) ) {
+                    result.add( info );
+                }
+            }
         }
 
         return result;

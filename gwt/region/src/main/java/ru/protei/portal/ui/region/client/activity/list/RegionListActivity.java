@@ -118,7 +118,7 @@ public abstract class RegionListActivity
     private RegionQuery makeQuery() {
         query = new RegionQuery();
         query.setSearchString(filterView.searchPattern().getValue());
-//        query.setState(filterView.showDeprecated().getValue() ? null : En_DevUnitState.ACTIVE);
+        query.setStates( filterView.states().getValue() );
         query.setSortField(filterView.sortField().getValue());
         query.setSortDir(filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
 
