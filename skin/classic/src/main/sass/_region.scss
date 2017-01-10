@@ -5,7 +5,7 @@
 .region-picture {
   position: relative;
   display: block;
-  right: 0px;
+  left: calc( 100% - 120px );
   top: -20px;
   opacity: 0.3;
 
@@ -13,20 +13,20 @@
     position: relative;
     display: block;
     top: -46px;
-    right: -290px;
+    left: 0px;
 
     font-size: 10em;
   }
 }
 
 .status-group {
-  & > button {
+  & > div.btn {
     padding: 5px 8px;
     border-color: #ffffff;
 
-    &:hover {
-      background-color: #ffffff;
-    }
+    //&:hover {
+    //  background-color: #ffffff;
+    //}
   }
 }
 

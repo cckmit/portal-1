@@ -16,6 +16,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.region.client.activity.filter.AbstractRegionFilterActivity;
 import ru.protei.portal.ui.region.client.activity.filter.AbstractRegionFilterView;
+import ru.protei.portal.ui.region.client.widget.state.RegionStateBtnGroup;
 
 /**
  * Представление фильтра регионов
@@ -133,6 +134,10 @@ public class RegionFilterView extends Composite implements AbstractRegionFilterV
     @Inject
     @UiField
     Lang lang;
+
+    @Inject
+    @UiField( provided = true )
+    RegionStateBtnGroup states;
 
     @Inject
     FixedPositioner positioner;

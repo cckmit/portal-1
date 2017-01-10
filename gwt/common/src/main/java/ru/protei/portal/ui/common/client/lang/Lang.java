@@ -313,4 +313,6 @@ public interface Lang extends Messages, ContactItemLang {
     String regionStateSupport();
 
     String regionStateSupportFinished();
+
+    String regionState();
 }
