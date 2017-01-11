@@ -5,6 +5,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.core.model.query.RegionQuery;
+import ru.protei.portal.core.model.struct.DistrictInfo;
 import ru.protei.portal.core.model.struct.RegionInfo;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
@@ -18,6 +19,8 @@ import java.util.List;
 public interface RegionService extends RemoteService {
 
     List<RegionInfo> getRegionList( RegionQuery query ) throws RequestFailedException;
+
+    List<DistrictInfo> getDistrictList();
 
 //    DevUnit getProduct( Long productId ) throws RequestFailedException;
 

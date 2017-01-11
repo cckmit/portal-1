@@ -315,4 +315,6 @@ public interface Lang extends Messages, ContactItemLang {
     String regionStateSupportFinished();
 
     String regionState();
+
+    String regionDistrict();
 }

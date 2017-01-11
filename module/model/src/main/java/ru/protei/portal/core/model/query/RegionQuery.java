@@ -13,6 +13,8 @@ public class RegionQuery extends BaseQuery {
 
     Set<En_RegionState> states;
 
+    Set<Long> districtIds;
+
     public RegionQuery() {
         sortField = En_SortField.prod_name;
         sortDir = En_SortDir.ASC;
@@ -35,4 +37,11 @@ public class RegionQuery extends BaseQuery {
         this.states = state;
     }
 
+    public Set<Long> getDistrictIds() {
+        return districtIds;
+    }
+
+    public void setDistrictIds( Set<Long> districtIds ) {
+        this.districtIds = districtIds;
+    }
 }

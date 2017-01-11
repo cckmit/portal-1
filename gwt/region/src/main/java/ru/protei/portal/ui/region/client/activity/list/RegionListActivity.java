@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * Активность списка регионов
@@ -112,13 +113,19 @@ public abstract class RegionListActivity
                 public void onSuccess( List< RegionInfo > result ) {
                     fillViewHandler = taskService.startPeriodicTask( result, fillViewer, 50, 50 );
                 }
-            } );
+            }
+        );
     }
 
     private RegionQuery makeQuery() {
         query = new RegionQuery();
         query.setSearchString(filterView.searchPattern().getValue());
         query.setStates( filterView.states().getValue() );
+        query.setDistrictIds(
+                filterView.districts().getValue().stream()
+                        .map( (district)-> district.id )
+                        .collect( Collectors.toSet() )
+        );
         query.setSortField(filterView.sortField().getValue());
         query.setSortDir(filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
 

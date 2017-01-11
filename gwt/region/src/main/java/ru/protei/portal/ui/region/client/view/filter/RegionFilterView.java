@@ -12,11 +12,13 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.struct.DistrictInfo;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.region.client.activity.filter.AbstractRegionFilterActivity;
 import ru.protei.portal.ui.region.client.activity.filter.AbstractRegionFilterView;
+import ru.protei.portal.ui.region.client.widget.district.DistrictBtnGroup;
 import ru.protei.portal.ui.region.client.widget.state.RegionStateBtnGroup;
 
 import java.util.Set;
@@ -72,6 +74,11 @@ public class RegionFilterView extends Composite implements AbstractRegionFilterV
     }
 
     @Override
+    public HasValue<Set<DistrictInfo>> districts() {
+        return districts;
+    }
+
+    @Override
     public void resetFilter() {
         showDeprecated.setValue( false );
         sortField.setValue( En_SortField.prod_name );
@@ -103,6 +110,13 @@ public class RegionFilterView extends Composite implements AbstractRegionFilterV
 
     @UiHandler( "states" )
     public void onStateSelected( ValueChangeEvent<Set<En_RegionState>> event ) {
+        if ( activity != null ) {
+            activity.onFilterChanged();
+        }
+    }
+
+    @UiHandler( "districts" )
+    public void onDistrictSelected( ValueChangeEvent<Set<DistrictInfo>> event ) {
         if ( activity != null ) {
             activity.onFilterChanged();
         }
@@ -155,12 +169,15 @@ public class RegionFilterView extends Composite implements AbstractRegionFilterV
     RegionStateBtnGroup states;
 
     @Inject
-    FixedPositioner positioner;
+    @UiField( provided = true )
+    DistrictBtnGroup districts;
 
+    @Inject
+    FixedPositioner positioner;
 
     AbstractRegionFilterActivity activity;
 
-    private static RegionFilterView.ProductFilterViewUiBinder ourUiBinder = GWT.create( RegionFilterView.ProductFilterViewUiBinder.class );
-    interface ProductFilterViewUiBinder extends UiBinder<HTMLPanel, RegionFilterView > {}
+    private static RegionFilterView.RegionFilterViewUiBinder ourUiBinder = GWT.create( RegionFilterView.RegionFilterViewUiBinder.class );
+    interface RegionFilterViewUiBinder extends UiBinder<HTMLPanel, RegionFilterView > {}
 
 }

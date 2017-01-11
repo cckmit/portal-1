@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.query.RegionQuery;
+import ru.protei.portal.core.model.struct.DistrictInfo;
 import ru.protei.portal.core.model.struct.RegionInfo;
 import ru.protei.portal.ui.common.client.service.RegionService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
@@ -60,6 +61,31 @@ public class RegionServiceImpl implements RegionService {
                     result.add( info );
                 }
             }
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<DistrictInfo> getDistrictList() {
+        String[] names = new String[] {
+                "Центральный Федеральный Округ", "Северо-Западный Федеральный Округ", "Южный Федеральный Округ",
+                "Северо-Кавказский Федеральный Округ", "Поволжский Федеральный Округ", "Уральский Федеральный Округ",
+                "Сибирский Фкдкральный Округ", "Дальневосточный Федеральный Округ", "Крымский Федеральный Округ"
+        };
+
+        String[] shortNames = new String[]{
+                "ЦФО", "СЗФО", "ЮФО", "СКФО", "ПФО", "УФО", "СФО", "ДВФО", "КФО"
+        };
+
+        List<DistrictInfo> result = new ArrayList<>();
+        for ( int i = 0; i < 9; i++ ) {
+            DistrictInfo info = new DistrictInfo();
+            info.id = new Long( i );
+            info.name = names[ i ];
+            info.shortName = shortNames[ i ];
+
+            result.add( info );
         }
 
         return result;
