@@ -317,4 +317,6 @@ public interface Lang extends Messages, ContactItemLang {
     String regionState();
 
     String regionDistrict();
+
+    String productDirection();
 }

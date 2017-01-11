@@ -5,6 +5,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.struct.DistrictInfo;
+import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 
 import java.util.Set;
 
@@ -15,7 +16,6 @@ public interface AbstractRegionFilterView extends IsWidget {
 
     void setActivity( AbstractRegionFilterActivity activity );
 
-    HasValue<Boolean> showDeprecated();
     HasValue<En_SortField> sortField();
     HasValue< Boolean > sortDir();
     HasValue< String > searchPattern();
@@ -24,4 +24,6 @@ public interface AbstractRegionFilterView extends IsWidget {
     HasValue< Set< En_RegionState > > states();
 
     HasValue< Set<DistrictInfo>> districts();
+
+    HasValue<ProductDirectionInfo> direction();
 }

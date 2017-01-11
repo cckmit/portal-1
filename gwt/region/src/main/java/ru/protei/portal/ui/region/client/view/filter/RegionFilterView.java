@@ -13,14 +13,17 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.struct.DistrictInfo;
+import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionInputSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.region.client.activity.filter.AbstractRegionFilterActivity;
 import ru.protei.portal.ui.region.client.activity.filter.AbstractRegionFilterView;
 import ru.protei.portal.ui.region.client.widget.district.DistrictBtnGroup;
 import ru.protei.portal.ui.region.client.widget.state.RegionStateBtnGroup;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -51,9 +54,6 @@ public class RegionFilterView extends Composite implements AbstractRegionFilterV
     }
 
     @Override
-    public HasValue<Boolean> showDeprecated() { return showDeprecated; }
-
-    @Override
     public HasValue<En_SortField> sortField() {
         return sortField;
     }
@@ -79,24 +79,23 @@ public class RegionFilterView extends Composite implements AbstractRegionFilterV
     }
 
     @Override
+    public HasValue<ProductDirectionInfo> direction() {
+        return direction;
+    }
+
+    @Override
     public void resetFilter() {
-        showDeprecated.setValue( false );
         sortField.setValue( En_SortField.prod_name );
         sortDir.setValue( true );
         search.setText( "" );
+        districts.setValue( new HashSet<>() );
+        states.setValue( new HashSet<>() );
     }
 
     @UiHandler( "resetBtn" )
     public void onResetClicked ( ClickEvent event ) {
         if ( activity != null ) {
             resetFilter();
-            activity.onFilterChanged();
-        }
-    }
-
-    @UiHandler( "showDeprecated" )
-    public void onShowDeprecatedClicked( ClickEvent event ) {
-        if ( activity != null ) {
             activity.onFilterChanged();
         }
     }
@@ -117,6 +116,13 @@ public class RegionFilterView extends Composite implements AbstractRegionFilterV
 
     @UiHandler( "districts" )
     public void onDistrictSelected( ValueChangeEvent<Set<DistrictInfo>> event ) {
+        if ( activity != null ) {
+            activity.onFilterChanged();
+        }
+    }
+
+    @UiHandler( "direction" )
+    public void onDirectionSelected( ValueChangeEvent<ProductDirectionInfo> event ) {
         if ( activity != null ) {
             activity.onFilterChanged();
         }
@@ -144,9 +150,6 @@ public class RegionFilterView extends Composite implements AbstractRegionFilterV
         }
     };
 
-    @UiField
-    CheckBox showDeprecated;
-
     @Inject
     @UiField( provided = true )
     SortFieldSelector sortField;
@@ -171,6 +174,10 @@ public class RegionFilterView extends Composite implements AbstractRegionFilterV
     @Inject
     @UiField( provided = true )
     DistrictBtnGroup districts;
+
+    @Inject
+    @UiField( provided = true )
+    ProductDirectionInputSelector direction;
 
     @Inject
     FixedPositioner positioner;

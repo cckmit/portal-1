@@ -15,6 +15,8 @@ public class RegionQuery extends BaseQuery {
 
     Set<Long> districtIds;
 
+    Long directionId;
+
     public RegionQuery() {
         sortField = En_SortField.prod_name;
         sortDir = En_SortDir.ASC;
@@ -43,5 +45,13 @@ public class RegionQuery extends BaseQuery {
 
     public void setDistrictIds( Set<Long> districtIds ) {
         this.districtIds = districtIds;
+    }
+
+    public Long getDirectionId() {
+        return directionId;
+    }
+
+    public void setDirectionId( Long directionId ) {
+        this.directionId = directionId;
     }
 }

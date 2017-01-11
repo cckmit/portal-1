@@ -3,7 +3,9 @@ package ru.protei.portal.ui.common.client.service;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import ru.protei.portal.core.model.ent.DevUnit;
+import ru.protei.portal.core.model.query.ProductDirectionQuery;
 import ru.protei.portal.core.model.query.ProductQuery;
+import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
@@ -29,4 +31,11 @@ public interface ProductService extends RemoteService {
      * @return
      */
     List<ProductShortView> getProductViewList( ProductQuery query ) throws RequestFailedException;
+
+    /**
+     * Получение списка продуктовых направлений
+     *
+     * @param query
+     */
+    List<ProductDirectionInfo> getProductDirectionList( ProductDirectionQuery query );
 }

@@ -6,11 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.ent.DevUnit;
+import ru.protei.portal.core.model.query.ProductDirectionQuery;
 import ru.protei.portal.core.model.query.ProductQuery;
+import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.service.ProductService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -101,6 +104,27 @@ public class ProductServiceImpl implements ProductService {
             throw new RequestFailedException( result.getStatus() );
 
         return result.getData();
+    }
+
+    @Override
+    public List<ProductDirectionInfo> getProductDirectionList( ProductDirectionQuery query ) {
+
+        log.debug( "getProductDirectionList(): query={}", query );
+
+        String[] names = new String[] {
+                "Система 112", "Call Center", "Видеонаблюдение", "Видеоаналитика"
+        };
+
+        List<ProductDirectionInfo> result = new ArrayList<>();
+        for ( int i=0; i<names.length; ++i ) {
+            ProductDirectionInfo info = new ProductDirectionInfo();
+            info.id = new Long( i );
+            info.name = names[i];
+
+            result.add( info );
+        }
+
+        return result;
     }
 
     @Autowired
