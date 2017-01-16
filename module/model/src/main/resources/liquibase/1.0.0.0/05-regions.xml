@@ -6,9 +6,9 @@
 
     <changeSet author="shagaleev" id="16-01-2017 09:38">
         <insert tableName="dev_unit_type">
-            <column name="id" value="2" />
-            <column name="unit_type" value="product_direction" />
-            <column name="info" value="Направление" />
+            <column name="ID" value="3" />
+            <column name="UNIT_TYPE" value="product_direction" />
+            <column name="UNIT_INFO" value="Направление" />
         </insert>
     </changeSet>
 
@@ -82,7 +82,7 @@
                 <constraints primaryKey="true"/>
             </column>
             <column name="CASE_ID" type="BIGINT" />
-            <column name="LOCATION_ID" type="INT" />
+            <column name="LOCATION_ID" type="BIGINT" />
         </createTable>
 
         <addForeignKeyConstraint constraintName="FK_CL_CASE" onDelete="NO ACTION" onUpdate="NO ACTION"
