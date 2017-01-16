@@ -218,9 +218,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="IMPORTANCE" type="INT"/>
-            <column name="INITIATOR" type="BIGINT">
-                <constraints nullable="false"/>
-            </column>
+            <column name="INITIATOR" type="BIGINT" />
             <column name="CREATOR" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
