@@ -10,7 +10,7 @@ import java.util.Set;
  */
 public class DistrictQuery extends BaseQuery {
     public DistrictQuery() {
-        sortField = En_SortField.prod_name;
+        sortField = En_SortField.name;
         sortDir = En_SortDir.ASC;
     }
 

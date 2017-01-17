@@ -41,7 +41,7 @@ public class Location implements Serializable {
     private String code;
 
     @JdbcColumn(name="PATH")
-    private List<Long> path;
+    private String path;
 
     public Location() {}
 
