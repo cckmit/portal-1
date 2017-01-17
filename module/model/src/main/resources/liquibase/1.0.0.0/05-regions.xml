@@ -6,9 +6,9 @@
 
     <changeSet author="shagaleev" id="16-01-2017 09:38">
         <insert tableName="dev_unit_type">
-            <column name="id" value="2" />
+            <column name="id" value="3" />
             <column name="unit_type" value="product_direction" />
-            <column name="info" value="Направление" />
+            <column name="unit_info" value="Направление" />
         </insert>
     </changeSet>
 
