@@ -53,9 +53,6 @@
             </column>
             <column name="PARENT_ID" type="BIGINT" />
             <column name="TYPE_ID" type="INT" />
-            <column name="ORDER" type="INT">
-                <constraints nullable="false"/>
-            </column>
             <column name="NAME" type="VARCHAR(256)">
                 <constraints nullable="false" />
             </column>
