@@ -13,7 +13,6 @@ import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.service.ProductService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -107,7 +106,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<ProductDirectionInfo> getProductDirectionList( ProductDirectionQuery query ) {
+    public List<ProductDirectionInfo> getProductDirectionList( ProductDirectionQuery query ) throws RequestFailedException {
 
         log.debug( "getProductDirectionList(): query={}", query );
 
@@ -115,16 +114,12 @@ public class ProductServiceImpl implements ProductService {
                 "Система 112", "Call Center", "Видеонаблюдение", "Видеоаналитика"
         };
 
-        List<ProductDirectionInfo> result = new ArrayList<>();
-        for ( int i=0; i<names.length; ++i ) {
-            ProductDirectionInfo info = new ProductDirectionInfo();
-            info.id = new Long( i );
-            info.name = names[i];
+        CoreResponse< List< ProductDirectionInfo > > result = productService.productDirectionList( query );
 
-            result.add( info );
-        }
+        if ( result.isError() )
+            throw new RequestFailedException( result.getStatus() );
 
-        return result;
+        return result.getData();
     }
 
     @Autowired

@@ -7,7 +7,6 @@ import ru.protei.portal.core.model.query.ProductDirectionQuery;
 import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.ProductShortView;
-import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.List;
 

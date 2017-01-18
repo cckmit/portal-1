@@ -5,7 +5,8 @@ package ru.protei.portal.core.model.dict;
  */
 public enum En_DevUnitType {
     COMPONENT(1),
-    PRODUCT(2);
+    PRODUCT(2),
+    DIRECTION(3);
 
     private En_DevUnitType (int typeId) {
         this.id = typeId;

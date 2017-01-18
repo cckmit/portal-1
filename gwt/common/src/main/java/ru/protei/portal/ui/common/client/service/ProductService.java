@@ -37,5 +37,5 @@ public interface ProductService extends RemoteService {
      *
      * @param query
      */
-    List<ProductDirectionInfo> getProductDirectionList( ProductDirectionQuery query );
+    List<ProductDirectionInfo> getProductDirectionList( ProductDirectionQuery query ) throws RequestFailedException;
 }
