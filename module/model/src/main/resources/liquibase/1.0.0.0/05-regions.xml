@@ -93,4 +93,47 @@
                                  baseTableName="case_location" baseColumnNames="LOCATION_ID"
                                  referencedTableName="location" referencedColumnNames="ID" />
     </changeSet>
+    
+    <changeSet id="16-01-2017-add-project-states" author="shagaleev">
+        <insert tableName="case_state">
+            <column name="ID" value="22" />
+            <column name="STATE" value="unknown" />
+            <column name="INFO" value="unknown" />
+        </insert>
+        <insert tableName="case_state">
+            <column name="ID" value="23" />
+            <column name="STATE" value="rival" />
+            <column name="INFO" value="rival" />
+        </insert>
+        <insert tableName="case_state">
+            <column name="ID" value="24" />
+            <column name="STATE" value="talk" />
+            <column name="INFO" value="talk" />
+        </insert>
+        <insert tableName="case_state">
+            <column name="ID" value="25" />
+            <column name="STATE" value="projecting" />
+            <column name="INFO" value="projecting" />
+        </insert>
+        <insert tableName="case_state">
+            <column name="ID" value="26" />
+            <column name="STATE" value="development" />
+            <column name="INFO" value="development" />
+        </insert>
+        <insert tableName="case_state">
+            <column name="ID" value="27" />
+            <column name="STATE" value="deployment" />
+            <column name="INFO" value="deployment" />
+        </insert>
+        <insert tableName="case_state">
+            <column name="ID" value="28" />
+            <column name="STATE" value="support" />
+            <column name="INFO" value="support" />
+        </insert>
+        <insert tableName="case_state">
+            <column name="ID" value="29" />
+            <column name="STATE" value="support_finished" />
+            <column name="INFO" value="support_finished" />
+        </insert>
+    </changeSet>
 </databaseChangeLog>

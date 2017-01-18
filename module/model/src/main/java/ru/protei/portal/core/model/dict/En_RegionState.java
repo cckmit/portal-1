@@ -8,37 +8,37 @@ public enum En_RegionState {
     /**
      * Состояние неизвестно
      */
-    UNKNOWN(0),
+    UNKNOWN(22),
 
     /**
      * Установлен конкурент
      */
-    RIVAL(1),
+    RIVAL(23),
 
     /**
      * Идут переговоры
      */
-    TALK(2),
+    TALK(24),
 
     /**
      * Проектирование (документы)
      */
-    PROJECTING(3),
+    PROJECTING(25),
 
     /**
      * Разработка
      */
-    DEVELOPMENT(4),
+    DEVELOPMENT(26),
 
     /**
      * Установка/настройка/сертификация
      */
-    DEPLOYMENT(5),
+    DEPLOYMENT(27),
 
     /**
      * Поддержка
      */
-    SUPPORT(6),
+    SUPPORT(28),
 
     /**
      * Поддержка закончилась
