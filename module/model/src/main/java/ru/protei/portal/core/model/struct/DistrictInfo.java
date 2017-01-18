@@ -7,6 +7,15 @@ import java.io.Serializable;
  */
 public class DistrictInfo implements Serializable {
 
+    public DistrictInfo() {
+    }
+
+    public DistrictInfo( Long id, String name, String shortName ) {
+        this.id = id;
+        this.name = name;
+        this.shortName = shortName;
+    }
+
     /**
      * Идентификатор записи о регионе
      */
@@ -21,4 +30,6 @@ public class DistrictInfo implements Serializable {
      * Аббревиатура (для фильтра)
      */
     public String shortName;
+
+
 }

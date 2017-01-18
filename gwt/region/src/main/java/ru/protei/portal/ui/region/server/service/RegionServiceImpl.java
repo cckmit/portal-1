@@ -2,11 +2,15 @@ package ru.protei.portal.ui.region.server.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dict.En_RegionState;
+import ru.protei.portal.core.model.query.DistrictQuery;
 import ru.protei.portal.core.model.query.RegionQuery;
 import ru.protei.portal.core.model.struct.DistrictInfo;
 import ru.protei.portal.core.model.struct.RegionInfo;
+import ru.protei.portal.core.service.LocationService;
 import ru.protei.portal.ui.common.client.service.RegionService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
@@ -67,29 +71,18 @@ public class RegionServiceImpl implements RegionService {
     }
 
     @Override
-    public List<DistrictInfo> getDistrictList() {
-        String[] names = new String[] {
-                "Центральный Федеральный Округ", "Северо-Западный Федеральный Округ", "Южный Федеральный Округ",
-                "Северо-Кавказский Федеральный Округ", "Поволжский Федеральный Округ", "Уральский Федеральный Округ",
-                "Сибирский Фкдкральный Округ", "Дальневосточный Федеральный Округ", "Крымский Федеральный Округ"
-        };
+    public List<DistrictInfo> getDistrictList() throws RequestFailedException {
 
-        String[] shortNames = new String[]{
-                "ЦФО", "СЗФО", "ЮФО", "СКФО", "ПФО", "УФО", "СФО", "ДВФО", "КФО"
-        };
+        CoreResponse<List<DistrictInfo>> result = locationService.districtList( new DistrictQuery() );
 
-        List<DistrictInfo> result = new ArrayList<>();
-        for ( int i = 0; i < 9; i++ ) {
-            DistrictInfo info = new DistrictInfo();
-            info.id = new Long( i );
-            info.name = names[ i ];
-            info.shortName = shortNames[ i ];
+        if ( result.isError() )
+            throw new RequestFailedException( result.getStatus() );
 
-            result.add( info );
-        }
-
-        return result;
+        return result.getData();
     }
+
+    @Autowired
+    LocationService locationService;
 
     private static final Logger log = LoggerFactory.getLogger( "web" );
 }

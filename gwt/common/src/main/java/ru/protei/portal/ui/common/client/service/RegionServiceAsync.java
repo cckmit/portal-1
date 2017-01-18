@@ -8,6 +8,7 @@ import ru.protei.portal.core.model.query.RegionQuery;
 import ru.protei.portal.core.model.struct.DistrictInfo;
 import ru.protei.portal.core.model.struct.RegionInfo;
 import ru.protei.portal.core.model.view.ProductShortView;
+import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.List;

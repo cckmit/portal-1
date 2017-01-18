@@ -5,6 +5,7 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
     <changeSet author="shagaleev" id="16-01-2017 09:38">
+        <validCheckSum>7:084199caef1c2583e8da4ce2636b037f</validCheckSum>
         <insert tableName="dev_unit_type">
             <column name="ID" value="3" />
             <column name="UNIT_TYPE" value="product_direction" />
@@ -53,9 +54,6 @@
             </column>
             <column name="PARENT_ID" type="BIGINT" />
             <column name="TYPE_ID" type="INT" />
-            <column name="ORDER" type="INT">
-                <constraints nullable="false"/>
-            </column>
             <column name="NAME" type="VARCHAR(256)">
                 <constraints nullable="false" />
             </column>
@@ -76,7 +74,7 @@
                                  referencedTableName="location_type" referencedColumnNames="ID" />
     </changeSet>
 
-    <changeSet id="16-01-2017 11:02" author="shagaleev">
+    <changeSet id="16-01-2017 11:02" author="shagaleev" runOnChange="true">
         <createTable tableName="case_location">
             <column autoIncrement="true" name="ID" type="BIGINT">
                 <constraints primaryKey="true"/>

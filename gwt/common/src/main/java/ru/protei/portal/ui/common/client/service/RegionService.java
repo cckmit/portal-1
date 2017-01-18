@@ -20,7 +20,7 @@ public interface RegionService extends RemoteService {
 
     List<RegionInfo> getRegionList( RegionQuery query ) throws RequestFailedException;
 
-    List<DistrictInfo> getDistrictList();
+    List<DistrictInfo> getDistrictList() throws RequestFailedException;
 
 //    DevUnit getProduct( Long productId ) throws RequestFailedException;
 

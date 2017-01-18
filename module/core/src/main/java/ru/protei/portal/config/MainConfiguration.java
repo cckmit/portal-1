@@ -169,6 +169,11 @@ public class MainConfiguration {
         return new CompanyCategoryDAO_Impl();
     }
 
+    @Bean
+    public LocationDAO getLocationDAO() {
+        return new LocationDAO_Impl();
+    }
+
 /**
  *
  *
@@ -199,6 +204,9 @@ public class MainConfiguration {
 
     @Bean
     public CaseService getCaseService() { return new CaseServiceImpl(); }
+
+    @Bean
+    public LocationService getLocationService() { return new LocationServiceImpl(); }
 
 
 
