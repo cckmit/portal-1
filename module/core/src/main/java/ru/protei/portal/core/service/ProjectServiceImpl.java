@@ -15,6 +15,7 @@ import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.LocationQuery;
 import ru.protei.portal.core.model.query.RegionQuery;
 import ru.protei.portal.core.model.struct.RegionInfo;
+import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,16 +33,10 @@ public class ProjectServiceImpl implements ProjectService {
     CaseObjectDAO caseObjectDAO;
 
     @Autowired
-    CaseShortViewDAO caseShortViewDAO;
-
-    @Autowired
-    CaseStateMatrixDAO caseStateMatrixDAO;
-
-    @Autowired
-    CaseCommentDAO caseCommentDAO;
-
-    @Autowired
     LocationDAO locationDAO;
+
+    @Autowired
+    JdbcManyRelationsHelper helper;
 
     @Override
     public CoreResponse<List<RegionInfo>> listByRegions( RegionQuery query ) {
@@ -68,6 +63,8 @@ public class ProjectServiceImpl implements ProjectService {
         if ( project == null ) {
             return;
         }
+
+        helper.fillAll( project );
 
         List<Location> locations = project.getLocations();
         if ( locations == null ) {
