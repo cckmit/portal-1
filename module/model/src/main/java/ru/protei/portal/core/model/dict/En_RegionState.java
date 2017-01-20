@@ -43,10 +43,20 @@ public enum En_RegionState {
     /**
      * Поддержка закончилась
      */
-    SUPPORT_FINISHED(7);
+    SUPPORT_FINISHED(29);
 
     private En_RegionState( int id ) {
         this.id = id;
+    }
+
+    public static En_RegionState forId( long stateId ) {
+        for ( En_RegionState state : values() ) {
+            if ( state.getId() == stateId ) {
+                return state;
+            }
+        }
+
+        return UNKNOWN;
     }
 
     private int id;

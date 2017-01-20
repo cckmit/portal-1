@@ -1,17 +1,15 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.portal.core.model.dict.En_DevUnitState;
-import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dict.En_LocationType;
+import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.struct.DistrictInfo;
-import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.core.model.view.ProductShortView;
-import ru.protei.portal.core.model.view.ProductShortViewSupport;
-import ru.protei.winter.jdbc.annotations.*;
+import ru.protei.portal.core.model.struct.RegionInfo;
+import ru.protei.winter.jdbc.annotations.IdInsertMode;
+import ru.protei.winter.jdbc.annotations.JdbcColumn;
+import ru.protei.winter.jdbc.annotations.JdbcEntity;
+import ru.protei.winter.jdbc.annotations.JdbcId;
 
 import java.io.Serializable;
-import java.util.Date;
-import java.util.List;
 
 /**
  * Местоположение
@@ -101,6 +99,27 @@ public class Location implements Serializable {
 
     public DistrictInfo toDistrictInfo() {
         return new DistrictInfo(this.id, this.name, this.code);
+    }
+
+    public RegionInfo toRegionInfo() {
+        RegionInfo info = new RegionInfo();
+        info.id = id;
+        info.name = name;
+        try {
+            info.number = Integer.parseInt( code );
+        }
+        catch ( NumberFormatException e ) {}
+        catch (NullPointerException e) {}
+        info.state = En_RegionState.UNKNOWN;
+        return info;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode( String code ) {
+        this.code = code;
     }
 
     @Override

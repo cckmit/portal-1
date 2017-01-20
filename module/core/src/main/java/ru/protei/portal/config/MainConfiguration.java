@@ -208,6 +208,9 @@ public class MainConfiguration {
     @Bean
     public LocationService getLocationService() { return new LocationServiceImpl(); }
 
+    @Bean
+    public ProjectService getProjectService() { return new ProjectServiceImpl(); }
+
 
 
     /** ASPECT/INTERCEPTORS **/

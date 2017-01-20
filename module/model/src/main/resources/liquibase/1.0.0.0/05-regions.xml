@@ -134,4 +134,44 @@
             <column name="INFO" value="support_finished" />
         </insert>
     </changeSet>
+    
+    <changeSet id="20-01-2017-let-old-ids-be-null-in-state-matrix" author="shagaleev">
+        <dropNotNullConstraint tableName="case_state_matrix" columnName="OLD_ID" columnDataType="INT" />
+        <dropNotNullConstraint tableName="case_state_matrix" columnName="OLD_CODE" columnDataType="VARCHAR(32)" />
+    </changeSet>
+
+    <changeSet id="20-01-2017-add-project-states-to-state-matrix" author="shagaleev">
+        <insert tableName="case_state_matrix">
+            <column name="CASE_TYPE" value="9" />
+            <column name="CASE_STATE" value="22" />
+        </insert>
+        <insert tableName="case_state_matrix">
+            <column name="CASE_TYPE" value="9" />
+            <column name="CASE_STATE" value="23" />
+        </insert>
+        <insert tableName="case_state_matrix">
+            <column name="CASE_TYPE" value="9" />
+            <column name="CASE_STATE" value="24" />
+        </insert>
+        <insert tableName="case_state_matrix">
+            <column name="CASE_TYPE" value="9" />
+            <column name="CASE_STATE" value="25" />
+        </insert>
+        <insert tableName="case_state_matrix">
+            <column name="CASE_TYPE" value="9" />
+            <column name="CASE_STATE" value="26" />
+        </insert>
+        <insert tableName="case_state_matrix">
+            <column name="CASE_TYPE" value="9" />
+            <column name="CASE_STATE" value="27" />
+        </insert>
+        <insert tableName="case_state_matrix">
+            <column name="CASE_TYPE" value="9" />
+            <column name="CASE_STATE" value="28" />
+        </insert>
+        <insert tableName="case_state_matrix">
+            <column name="CASE_TYPE" value="9" />
+            <column name="CASE_STATE" value="29" />
+        </insert>
+    </changeSet>
 </databaseChangeLog>

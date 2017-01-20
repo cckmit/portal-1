@@ -33,4 +33,44 @@ public class RegionInfo implements Serializable {
      * Номер региона
      */
     public Integer number;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId( Long id ) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName( String name ) {
+        this.name = name;
+    }
+
+    public En_RegionState getState() {
+        return state;
+    }
+
+    public void setState( En_RegionState state ) {
+        this.state = state;
+    }
+
+    public String getDetails() {
+        return details;
+    }
+
+    public void setDetails( String details ) {
+        this.details = details;
+    }
+
+    public Integer getNumber() {
+        return number;
+    }
+
+    public void setNumber( Integer number ) {
+        this.number = number;
+    }
 }

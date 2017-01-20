@@ -5,6 +5,7 @@ import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by michael on 19.05.16.
@@ -93,6 +94,8 @@ public class CaseObject implements Serializable {
     @JdbcColumn(name = "private_flag")
     private boolean privateCase;
 
+    @JdbcManyToMany(linkTable = "case_location", localLinkColumn = "CASE_ID", remoteLinkColumn = "LOCATION_ID" )
+    private List<Location> locations;
 
     public CaseObject() {
 
@@ -327,6 +330,14 @@ public class CaseObject implements Serializable {
 
     public void setCaseType (En_CaseType type) {
         this.typeId = type.getId();
+    }
+
+    public List<Location> getLocations() {
+        return locations;
+    }
+
+    public void setLocations( List<Location> locations ) {
+        this.locations = locations;
     }
 
     @Override
