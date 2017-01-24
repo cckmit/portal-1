@@ -13,7 +13,7 @@ import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Location;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.LocationQuery;
-import ru.protei.portal.core.model.query.RegionQuery;
+import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.struct.RegionInfo;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
@@ -39,7 +39,7 @@ public class ProjectServiceImpl implements ProjectService {
     JdbcManyRelationsHelper helper;
 
     @Override
-    public CoreResponse<List<RegionInfo>> listByRegions( RegionQuery query ) {
+    public CoreResponse<List<RegionInfo>> listByRegions( ProjectQuery query ) {
         LocationQuery locationQuery = new LocationQuery();
         locationQuery.setType( En_LocationType.REGION );
         List<Location> regions = locationDAO.listByQuery( locationQuery );

@@ -7,7 +7,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_SortDir;
-import ru.protei.portal.core.model.query.RegionQuery;
+import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.struct.RegionInfo;
 import ru.protei.portal.ui.common.client.animation.PlateListAnimation;
 import ru.protei.portal.ui.common.client.common.PeriodicTaskService;
@@ -117,8 +117,8 @@ public abstract class RegionListActivity
         );
     }
 
-    private RegionQuery makeQuery() {
-        query = new RegionQuery();
+    private ProjectQuery makeQuery() {
+        query = new ProjectQuery();
         query.setSearchString(filterView.searchPattern().getValue());
         query.setStates( filterView.states().getValue() );
         query.setDistrictIds(
@@ -198,5 +198,5 @@ public abstract class RegionListActivity
 
     private Map<AbstractRegionItemView, RegionInfo > itemViewToModel = new HashMap<>();
     private AppEvents.InitDetails init;
-    private RegionQuery query;
+    private ProjectQuery query;
 }

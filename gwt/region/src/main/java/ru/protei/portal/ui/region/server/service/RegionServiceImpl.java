@@ -5,16 +5,21 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.query.DistrictQuery;
-import ru.protei.portal.core.model.query.RegionQuery;
+import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.struct.DistrictInfo;
+import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.struct.RegionInfo;
 import ru.protei.portal.core.service.LocationService;
 import ru.protei.portal.core.service.ProjectService;
 import ru.protei.portal.ui.common.client.service.RegionService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Реализация сервиса управления продуктами
@@ -23,7 +28,7 @@ import java.util.List;
 public class RegionServiceImpl implements RegionService {
 
     @Override
-    public List< RegionInfo > getRegionList( RegionQuery query ) throws RequestFailedException {
+    public List< RegionInfo > getRegionList( ProjectQuery query ) throws RequestFailedException {
         log.debug( "getRegionList(): search={} | showDeprecated={} | sortField={} | order={}",
             query.getSearchString(), query.getStates(), query.getSortField(), query.getSortDir() );
 
@@ -43,6 +48,21 @@ public class RegionServiceImpl implements RegionService {
             throw new RequestFailedException( result.getStatus() );
 
         return result.getData();
+    }
+
+    @Override
+    public Map<String, List<ProjectInfo>> getProjectsByRegions( ProjectQuery query ) {
+        Map<String, List<ProjectInfo>> result = new TreeMap<>();
+        List<ProjectInfo> list = new ArrayList<>();
+        result.put( "Ставропольский край", list );
+        list.add( ProjectInfo.make( 6532L, "Разработка и настройка системы 112 для правительства ставропольского края", "Развитие проекта, поддержка", En_RegionState.SUPPORT, "Система 112", "Богомолов Д.", "Магомедова Е." ) );
+        list.add( ProjectInfo.make( 6538L, "Очередное длинное государственное название проекта", "Развитие проекта, поддержка", En_RegionState.SUPPORT, "Система оповещения", "Богомолов Д.", "Магомедова Е.", "Соломко С." ) );
+        list.add( ProjectInfo.make( 7228L, "Поставка решения обеспечивающего безопасность", "Развитие проекта, поддержка", En_RegionState.SUPPORT, "АПК БГ", "Богомолов Д.", "Магомедова Е.", "Магомедова Е." ) );
+
+        list = new ArrayList<>();
+        result.put( "Кемеровская область", list );
+        list.add( ProjectInfo.make( 2365L, "Разработка единой дежурно-диспетчерской службы города Междуреченск", "Поддержка активности", En_RegionState.TALK, "ЕДДС", "Богомолов Д.", "Магомедова Е." ) );
+        return null;
     }
 
     @Autowired

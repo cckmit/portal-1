@@ -45,7 +45,7 @@ public enum En_RegionState {
      */
     SUPPORT_FINISHED(29);
 
-    private En_RegionState( int id ) {
+    private En_RegionState( long id ) {
         this.id = id;
     }
 
@@ -59,9 +59,9 @@ public enum En_RegionState {
         return UNKNOWN;
     }
 
-    private int id;
+    private long id;
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 }

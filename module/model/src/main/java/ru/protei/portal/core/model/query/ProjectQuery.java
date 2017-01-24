@@ -9,7 +9,7 @@ import java.util.Set;
 /**
  * Запрос по регионам
  */
-public class RegionQuery extends BaseQuery {
+public class ProjectQuery extends BaseQuery {
 
     Set<En_RegionState> states;
 
@@ -17,16 +17,16 @@ public class RegionQuery extends BaseQuery {
 
     Long directionId;
 
-    public RegionQuery() {
+    public ProjectQuery() {
         sortField = En_SortField.prod_name;
         sortDir = En_SortDir.ASC;
     }
 
-    public RegionQuery( String searchString, En_SortField sortField, En_SortDir sortDir ) {
+    public ProjectQuery( String searchString, En_SortField sortField, En_SortDir sortDir ) {
         super(searchString, sortField, sortDir);
     }
 
-    public RegionQuery( Set<En_RegionState> state, String searchString, En_SortField sortField, En_SortDir sortDir ) {
+    public ProjectQuery( Set<En_RegionState> state, String searchString, En_SortField sortField, En_SortDir sortDir ) {
         super(searchString, sortField, sortDir);
         this.states = state;
     }
