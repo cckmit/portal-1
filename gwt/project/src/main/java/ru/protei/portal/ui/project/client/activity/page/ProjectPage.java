@@ -6,7 +6,6 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.ActionBarEvents;
-import ru.protei.portal.ui.common.client.events.IssueEvents;
 import ru.protei.portal.ui.common.client.events.ProjectEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.winter.web.common.client.events.MenuEvents;
@@ -54,6 +53,6 @@ public abstract class ProjectPage
     Lang lang;
 
     private String ТAB;
-    private IssueEvents.Show show = new IssueEvents.Show();
+    private ProjectEvents.Show show = new ProjectEvents.Show();
 }
 

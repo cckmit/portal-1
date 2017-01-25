@@ -19,7 +19,7 @@ public class StatusColumn extends ClickColumn< ProjectInfo > {
     @Override
     public void fillColumnValue( Element cell, ProjectInfo value ) {
         cell.addClassName( "status" );
-        cell.setInnerHTML( "<i class='"+lang.getStateIcon( value.getState() )+"'></i>" );
+        cell.setInnerHTML( "<i class='"+lang.getStateIcon( value.getState() )+" fa-2x"+"'></i>" );
     }
 
     @Inject

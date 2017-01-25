@@ -93,3 +93,13 @@
     color: #bf6400;
   }
 }
+
+.projects {
+  table > thead > tr > th.managers {
+    min-width: 100px;
+  }
+
+  table > tbody > tr > td.status {
+    opacity: 0.5;
+  }
+}

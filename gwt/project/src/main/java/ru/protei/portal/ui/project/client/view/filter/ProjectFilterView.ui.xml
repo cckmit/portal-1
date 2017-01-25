@@ -2,8 +2,8 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:sortfieldselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.sortfield'
              xmlns:state="urn:import:ru.protei.portal.ui.common.client.widget.selector.state"
-             xmlns:district="urn:import:ru.protei.portal.ui.region.client.widget.district"
-             xmlns:productdirection="urn:import:ru.protei.portal.ui.common.client.widget.selector.productdirection">
+             xmlns:productdirection="urn:import:ru.protei.portal.ui.common.client.widget.selector.productdirection"
+             xmlns:district="urn:import:ru.protei.portal.ui.common.client.widget.selector.district">
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel styleName="panel">

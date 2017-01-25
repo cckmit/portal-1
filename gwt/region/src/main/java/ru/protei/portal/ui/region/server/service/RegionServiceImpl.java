@@ -62,7 +62,7 @@ public class RegionServiceImpl implements RegionService {
         list = new ArrayList<>();
         result.put( "Кемеровская область", list );
         list.add( ProjectInfo.make( 2365L, "Разработка единой дежурно-диспетчерской службы города Междуреченск", "Поддержка активности", En_RegionState.TALK, "ЕДДС", "Богомолов Д.", "Магомедова Е." ) );
-        return null;
+        return result;
     }
 
     @Autowired
