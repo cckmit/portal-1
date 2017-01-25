@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.region.client.view.filter;
+package ru.protei.portal.ui.project.client.view.filter;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -16,12 +16,12 @@ import ru.protei.portal.core.model.struct.DistrictInfo;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.selector.district.DistrictBtnGroup;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionInputSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
-import ru.protei.portal.ui.region.client.activity.filter.AbstractRegionFilterActivity;
-import ru.protei.portal.ui.region.client.activity.filter.AbstractRegionFilterView;
-import ru.protei.portal.ui.common.client.widget.selector.district.DistrictBtnGroup;
 import ru.protei.portal.ui.common.client.widget.selector.state.RegionStateBtnGroup;
+import ru.protei.portal.ui.project.client.activity.filter.AbstractProjectFilterActivity;
+import ru.protei.portal.ui.project.client.activity.filter.AbstractProjectFilterView;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -29,7 +29,7 @@ import java.util.Set;
 /**
  * Представление фильтра регионов
  */
-public class RegionFilterView extends Composite implements AbstractRegionFilterView {
+public class ProjectFilterView extends Composite implements AbstractProjectFilterView {
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
@@ -49,7 +49,7 @@ public class RegionFilterView extends Composite implements AbstractRegionFilterV
     }
 
     @Override
-    public void setActivity( AbstractRegionFilterActivity activity ) {
+    public void setActivity( AbstractProjectFilterActivity activity ) {
         this.activity = activity;
     }
 
@@ -182,9 +182,9 @@ public class RegionFilterView extends Composite implements AbstractRegionFilterV
     @Inject
     FixedPositioner positioner;
 
-    AbstractRegionFilterActivity activity;
+    AbstractProjectFilterActivity activity;
 
-    private static RegionFilterView.RegionFilterViewUiBinder ourUiBinder = GWT.create( RegionFilterView.RegionFilterViewUiBinder.class );
-    interface RegionFilterViewUiBinder extends UiBinder<HTMLPanel, RegionFilterView > {}
+    private static ProjectFilterView.RegionFilterViewUiBinder ourUiBinder = GWT.create( ProjectFilterView.RegionFilterViewUiBinder.class );
+    interface RegionFilterViewUiBinder extends UiBinder<HTMLPanel, ProjectFilterView> {}
 
 }

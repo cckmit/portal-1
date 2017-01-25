@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.region.client.widget.state;
+package ru.protei.portal.ui.common.client.widget.selector.state;
 
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;

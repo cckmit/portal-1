@@ -319,4 +319,8 @@ public interface Lang extends Messages, ContactItemLang {
     String regionDistrict();
 
     String productDirection();
+
+    String projectDirection();
+
+    String projectInfo();
 }

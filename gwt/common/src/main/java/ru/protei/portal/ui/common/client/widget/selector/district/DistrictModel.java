@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.region.client.widget.district;
+package ru.protei.portal.ui.common.client.widget.selector.district;
 
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
