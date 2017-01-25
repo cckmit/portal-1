@@ -1,0 +1,59 @@
+package ru.protei.portal.ui.project.client.activity.page;
+
+import com.google.inject.Inject;
+import ru.brainworm.factory.generator.activity.client.activity.Activity;
+import ru.brainworm.factory.generator.activity.client.annotations.Event;
+import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.ui.common.client.common.UiConstants;
+import ru.protei.portal.ui.common.client.events.ActionBarEvents;
+import ru.protei.portal.ui.common.client.events.IssueEvents;
+import ru.protei.portal.ui.common.client.events.ProjectEvents;
+import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.winter.web.common.client.events.MenuEvents;
+import ru.protei.winter.web.common.client.events.SectionEvents;
+
+/**
+ * Активность по работе с вкладкой "Проекты"
+ */
+public abstract class ProjectPage
+        implements Activity {
+
+    @PostConstruct
+    public void onInit() {
+        ТAB = lang.projects();
+
+        fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.PROJECT ) );
+    }
+
+    @Event
+    public void onShowTable( ProjectEvents.Show event ) {
+        fireSelectTab();
+    }
+
+    @Event
+    public void onEdit( ProjectEvents.Edit event ) {
+        fireSelectTab();
+    }
+
+    @Event
+    public void onClickSection( SectionEvents.Clicked event ) {
+        if ( !ТAB.equals( event.identity ) ) {
+            return;
+        }
+
+        fireSelectTab();
+        fireEvent( show );
+    }
+
+    private void fireSelectTab() {
+        fireEvent( new ActionBarEvents.Clear() );
+        fireEvent( new MenuEvents.Select( ТAB ) );
+    }
+
+    @Inject
+    Lang lang;
+
+    private String ТAB;
+    private IssueEvents.Show show = new IssueEvents.Show();
+}
+

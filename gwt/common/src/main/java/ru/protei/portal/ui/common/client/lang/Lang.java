@@ -323,4 +323,6 @@ public interface Lang extends Messages, ContactItemLang {
     String projectDirection();
 
     String projectInfo();
+
+    String projects();
 }
