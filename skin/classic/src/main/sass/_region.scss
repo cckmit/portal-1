@@ -83,7 +83,7 @@
     &:before {
       content: "\f05d"
     }
-    color: #1abf00;
+    color: #6acc39;
   }
 
   &.support-finished {
@@ -101,5 +101,9 @@
 
   table > tbody > tr > td.status {
     opacity: 0.5;
+  }
+
+  table > tbody > tr > td.region {
+    background-color: #f9f9f9;
   }
 }

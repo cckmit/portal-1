@@ -1,8 +1,11 @@
 package ru.protei.portal.ui.project.client.view.table;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
@@ -71,7 +74,11 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
 
     @Override
     public void addSeparator( String text ) {
-        // do nothing till TableWidget working
+        Element elem = DOM.createDiv();
+        SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
+        safeHtmlBuilder.appendHtmlConstant( "<b>" ).appendEscapedLines( text ).appendHtmlConstant( "</b>" );
+        elem.setInnerSafeHtml( safeHtmlBuilder.toSafeHtml() );
+        table.addCustomRow( elem, "region", null );
     }
 
     private void initTable () {
