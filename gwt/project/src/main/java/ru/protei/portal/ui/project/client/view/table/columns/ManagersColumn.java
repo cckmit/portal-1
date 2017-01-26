@@ -17,7 +17,7 @@ public class ManagersColumn extends ClickColumn< ProjectInfo > {
     @Override
     protected void fillColumnHeader( Element columnHeader ) {
         columnHeader.addClassName( "managers" );
-        columnHeader.setInnerText( lang.projectInfo() );
+        columnHeader.setInnerText( lang.projectManagers() );
     }
 
     @Override

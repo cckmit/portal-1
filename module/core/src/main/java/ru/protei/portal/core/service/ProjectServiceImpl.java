@@ -5,7 +5,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.CoreResponse;
-import ru.protei.portal.core.model.dao.*;
+import ru.protei.portal.core.model.dao.CaseObjectDAO;
+import ru.protei.portal.core.model.dao.LocationDAO;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_LocationType;
 import ru.protei.portal.core.model.dict.En_RegionState;
@@ -14,12 +15,16 @@ import ru.protei.portal.core.model.ent.Location;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.LocationQuery;
 import ru.protei.portal.core.model.query.ProjectQuery;
+import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.struct.RegionInfo;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -39,7 +44,7 @@ public class ProjectServiceImpl implements ProjectService {
     JdbcManyRelationsHelper helper;
 
     @Override
-    public CoreResponse<List<RegionInfo>> listByRegions( ProjectQuery query ) {
+    public CoreResponse<List<RegionInfo>> listRegions( ProjectQuery query ) {
         LocationQuery locationQuery = new LocationQuery();
         locationQuery.setType( En_LocationType.REGION );
         List<Location> regions = locationDAO.listByQuery( locationQuery );
@@ -52,14 +57,31 @@ public class ProjectServiceImpl implements ProjectService {
         caseQuery.setType( En_CaseType.PROJECT );
         List<CaseObject> projects = caseObjectDAO.listByQuery( caseQuery );
         projects.forEach( (project)->{
-            applyProjectToAllRegions( project, regionInfos );
+            iterateAllLocations( project, (location)->{
+                applyCaseToRegionInfo( project, location, regionInfos );
+            } );
         } );
 
 
         return new CoreResponse<List<RegionInfo>>().success( new ArrayList<>( regionInfos.values() ));
     }
 
-    private void applyProjectToAllRegions( CaseObject project, Map<Long, RegionInfo> regions ) {
+    @Override
+    public CoreResponse<Map<String, List<ProjectInfo>>> listProjectsByRegions( ProjectQuery query ) {
+        Map<String, List<ProjectInfo>> regionToProjectMap = new HashMap<>();
+        CaseQuery caseQuery = new CaseQuery();
+        caseQuery.setType( En_CaseType.PROJECT );
+        List<CaseObject> projects = caseObjectDAO.listByQuery( caseQuery );
+        projects.forEach( (project)->{
+            iterateAllLocations( project, (location)->{
+                applyCaseToProjectInfo( project, location, regionToProjectMap );
+            } );
+        } );
+
+        return new CoreResponse<Map<String, List<ProjectInfo>>>().success( regionToProjectMap );
+    }
+
+    private void iterateAllLocations( CaseObject project, Consumer<Location> handler ) {
         if ( project == null ) {
             return;
         }
@@ -72,11 +94,11 @@ public class ProjectServiceImpl implements ProjectService {
         }
 
         locations.forEach( (location)->{
-            applyProjectToRegion( project, location, regions );
+            handler.accept( location );
         } );
     }
 
-    private void applyProjectToRegion( CaseObject project, Location location, Map<Long, RegionInfo> regions ) {
+    private void applyCaseToRegionInfo( CaseObject project, Location location, Map<Long, RegionInfo> regions ) {
         RegionInfo region = findRegionByLocation( regions, location );
         if ( region == null ) {
             return;
@@ -102,4 +124,26 @@ public class ProjectServiceImpl implements ProjectService {
         return null;
     }
 
+    private void applyCaseToProjectInfo( CaseObject project, Location location, Map<String, List<ProjectInfo>> projects ) {
+        if ( location == null ) {
+            return;
+        }
+
+        List<ProjectInfo> projectInfos = projects.get( location.getName() );
+        if ( projectInfos == null ) {
+            projectInfos = new ArrayList<>();
+            projects.put( location.getName(), projectInfos );
+        }
+
+        ProjectInfo projectInfo = new ProjectInfo();
+        projectInfo.setId( project.getId() );
+        projectInfo.setName( project.getName() );
+        projectInfo.setDetails( project.getInfo() );
+        projectInfo.setState( En_RegionState.forId( project.getStateId() ) );
+        projectInfo.setProductDirection( new EntityOption( "Неизвестно", null ) );
+        projectInfo.setHeadManager( new EntityOption( project.getManager().getDisplayShortName(), project.getManagerId() ) );
+        projectInfo.setManagers( new ArrayList<>() );
+
+        projectInfos.add( projectInfo );
+    }
 }

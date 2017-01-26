@@ -21,7 +21,7 @@ public interface RegionService extends RemoteService {
 
     List<DistrictInfo> getDistrictList() throws RequestFailedException;
 
-    Map<String, List<ProjectInfo>> getProjectsByRegions( ProjectQuery query );
+    Map<String, List<ProjectInfo>> getProjectsByRegions( ProjectQuery query ) throws RequestFailedException;
 
 //    DevUnit getProduct( Long productId ) throws RequestFailedException;
 
