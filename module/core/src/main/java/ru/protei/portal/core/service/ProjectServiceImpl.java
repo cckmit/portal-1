@@ -20,10 +20,7 @@ import ru.protei.portal.core.model.struct.RegionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -153,9 +150,16 @@ public class ProjectServiceImpl implements ProjectService {
         projectInfo.setName( project.getName() );
         projectInfo.setDetails( project.getInfo() );
         projectInfo.setState( En_RegionState.forId( project.getStateId() ) );
-        projectInfo.setProductDirection( new EntityOption( "Неизвестно", null ) );
-        projectInfo.setHeadManager( new EntityOption( project.getManager().getDisplayShortName(), project.getManagerId() ) );
+        if ( project.getProduct() != null ) {
+            projectInfo.setProductDirection( new EntityOption(
+                    project.getProduct().getName(), project.getProduct().getId()
+            ) );
+        }
+        projectInfo.setHeadManager( new EntityOption(
+                project.getManager().getDisplayShortName(), project.getManagerId()
+        ) );
         projectInfo.setManagers( new ArrayList<>() );
+        projectInfo.setCreated( project.getCreated() );
         return projectInfo;
     }
 }

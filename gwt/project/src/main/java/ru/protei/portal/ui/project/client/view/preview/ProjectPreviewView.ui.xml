@@ -1,58 +1,55 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-        >
+             xmlns:productdirection="urn:import:ru.protei.portal.ui.common.client.widget.selector.productdirection"
+>
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
     <g:HTMLPanel styleName="preview-wrapper grid with-table-pager">
-        <g:HTMLPanel ui:field="preview" styleName="preview">
+        <g:HTMLPanel ui:field="preview" styleName="preview project">
             <div class="col-xs-12">
-                <i ui:field="privateIssue" class="fa fa-lg fa-unlock-alt pull-left"/>
                 <g:Anchor ui:field="fullScreen" styleName="fa fa-lg fa-external-link pull-right" href="#"/>
             </div>
 
             <fieldset class="header">
                 <legend><lable ui:field="header"/></legend>
+                <div class="col-xs-12">
+                    <g:TextBox ui:field="projectName" styleName="col-xs-12 project-name" />
+                </div>
                 <div class="col-xs-6">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.issueCreationDate}"/></label>
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.projectCreationDate}"/></label>
                     <span class="col-xs-7 col-md-7" ui:field="creationDate"></span>
                 </div>
                 <div class="col-xs-6">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.issueCriticality}"/></label>
-                    <span class="col-xs-7 col-md-7">
-                        <i ui:field="iconCriticality"></i>
-                        <span ui:field="criticality"></span>
-                    </span>
-                </div>
-                <div class="col-xs-6">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.issueProduct}"/></label>
-                    <span class="col-xs-7 col-md-7" ui:field="direction"></span>
-                </div>
-                <div class="col-xs-6">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.issueState}"/></label>
-                    <span class="col-xs-7 col-md-7">
-                        <div ui:field="state"></div>
-                    </span>
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.projectDirection}"/></label>
+                    <div class="col-xs-7">
+                        <productdirection:ProductDirectionInputSelector ui:field="projectDirection" />
+                    </div>
                 </div>
             </fieldset>
             <fieldset class="header">
-                <legend><ui:text from="{lang.issueContactHeader}"/></legend>
+                <legend><ui:text from="{lang.projectManagers}"/></legend>
                 <div class="col-xs-6">
-                    <label class="col-xs-12 col-md-12" ui:field="company"></label>
-                    <span class="col-xs-12 col-md-12" ui:field="contact"></span>
+                    <label class="col-xs-12 col-md-12"><ui:text from="{lang.projectDeployManagers}"/></label>
+                    <span class="col-xs-12 col-md-12" ui:field="deployManager"></span>
                 </div>
                 <div class="col-xs-6">
-                    <label class="col-xs-12 col-md-12" ui:field="ourCompany"></label>
+                    <label class="col-xs-12 col-md-12"><ui:text from="{lang.projectHeadManager}"/></label>
                     <span class="col-xs-12 col-md-12" ui:field="headManager"></span>
                 </div>
             </fieldset>
             <fieldset class="header">
                 <legend><ui:text from="{lang.issueInfoHeader}"/></legend>
                 <div class="col-xs-12">
-                    <span class="col-xs-12 col-md-12 pre-formatted-info" ui:field="details"></span>
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.projectState}"/></label>
+                    <span class="col-xs-7 col-md-7">
+                        <div ui:field="state"></div>
+                    </span>
+                </div>
+                <div class="col-xs-12">
+                    <g:TextArea styleName="col-xs-12 col-md-12 pre-formatted-info project-details" ui:field="details"/>
                 </div>
             </fieldset>
-
-            <legend><ui:text from="{lang.comments}"/></legend>
-            <g:HTMLPanel ui:field="commentsContainer" styleName="col-xs-12 col-md-12"/>
+            <!--<legend><ui:text from="{lang.comments}"/></legend>-->
+            <!--<g:HTMLPanel ui:field="commentsContainer" styleName="col-xs-12 col-md-12"/>-->
         </g:HTMLPanel>
     </g:HTMLPanel>
 </ui:UiBinder>

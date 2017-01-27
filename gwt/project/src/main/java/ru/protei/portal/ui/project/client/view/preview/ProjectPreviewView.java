@@ -1,23 +1,19 @@
 package ru.protei.portal.ui.project.client.view.preview;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.DivElement;
-import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.LabelElement;
-import com.google.gwt.dom.client.SpanElement;
+import com.google.gwt.dom.client.*;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.Anchor;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.HasWidgets;
+import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_RegionState;
+import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.En_RegionStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionInputSelector;
 import ru.protei.portal.ui.project.client.activity.preview.AbstractProjectPreviewActivity;
 import ru.protei.portal.ui.project.client.activity.preview.AbstractProjectPreviewView;
 
@@ -26,7 +22,8 @@ import ru.protei.portal.ui.project.client.activity.preview.AbstractProjectPrevie
  */
 public class ProjectPreviewView extends Composite implements AbstractProjectPreviewView {
 
-    public ProjectPreviewView() {
+    @Inject
+    public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
     }
 
@@ -59,6 +56,12 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
 //        this.privateIssue.setClassName( "fa fa-fw fa-lg fa-unlock-alt text-success pull-left"  );
 //    }
 
+
+    @Override
+    public void setName( String name ) {
+        this.projectName.setValue( name );
+    }
+
     @Override
     public void setHeader( String value ) {
         this.header.setInnerText( value );
@@ -85,9 +88,10 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
 //    }
 
     @Override
-    public void setDirection( String value ) {
-        this.direction.setInnerText( value );
+    public HasValue<ProductDirectionInfo> direction() {
+        return projectDirection;
     }
+
 
 //    @Override
 //    public void setCompany( String value ) {
@@ -111,7 +115,7 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
 
     @Override
     public void setDetails( String value ) {
-        this.details.setInnerText( value );
+        this.details.setValue( value );
     }
 
     @Override
@@ -120,7 +124,7 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
         if ( value ) {
             this.preview.addStyleName( "col-xs-12 col-lg-6" );
         } else {
-            this.preview.setStyleName( "preview" );
+            this.preview.removeStyleName( "col-xs-12 col-lg-6" );
         }
     }
 
@@ -143,34 +147,27 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     @UiField
     Anchor fullScreen;
     @UiField
-    Element privateIssue;
-    @UiField
     Element header;
     @UiField
     SpanElement creationDate;
     @UiField
-    SpanElement direction;
-    @UiField
     DivElement state;
-    @UiField
-    Element iconCriticality;
-    @UiField
-    SpanElement criticality;
-    @UiField
-    LabelElement company;
-    @UiField
-    SpanElement contact;
-    @UiField
-    LabelElement ourCompany;
     @UiField
     SpanElement headManager;
     @UiField
-    SpanElement details;
+    SpanElement deployManager;
+    @UiField
+    TextArea details;
     @Inject
     @UiField
     Lang lang;
+//    @UiField
+//    HTMLPanel commentsContainer;
     @UiField
-    HTMLPanel commentsContainer;
+    TextBox projectName;
+    @Inject
+    @UiField( provided = true )
+    ProductDirectionInputSelector projectDirection;
 
 //    @Inject
 //    En_CaseImportanceLang caseImportanceLang;

@@ -1,7 +1,9 @@
 package ru.protei.portal.ui.project.client.activity.preview;
 
+import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_RegionState;
+import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 
 /**
  * Абстракция вида проекта
@@ -16,7 +18,8 @@ public interface AbstractProjectPreviewView extends IsWidget {
     void setCreationDate( String value );
     void setState( En_RegionState value );
 //    void setCriticality( int value );
-    void setDirection( String value );
+    HasValue<ProductDirectionInfo> direction();
+//    void setDirection( String value );
 //    void setCompany( String value );
 //    void setContact( String value );
 //    void setOurCompany( String value );
@@ -24,6 +27,7 @@ public interface AbstractProjectPreviewView extends IsWidget {
     void setDetails( String value );
 
     void showFullScreen( boolean value );
+    void setName( String name );
 
 //    HasWidgets getCommentsContainer();
 }

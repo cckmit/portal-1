@@ -107,3 +107,71 @@
     background-color: #f9f9f9;
   }
 }
+
+.preview.project {
+  input {
+    &.project-name {
+      font-size: 1.5em;
+      padding: 2px;
+      border: 1px solid rgb(255, 255, 255);
+      margin-bottom: 5px;
+
+      &:hover {
+        border: 1px solid rgb(197, 202, 208);
+      }
+      &:focus {
+        border: 1px solid rgb(197, 202, 208);
+        background-color: white;
+        outline: none;
+      }
+    }
+  }
+
+  button.btn > span {
+    line-height: 0px;
+  }
+
+  textarea {
+    &.project-details {
+      font-size: 1em;
+      padding: 2px;
+      border: 1px solid rgb(255, 255, 255);
+
+      &:hover {
+        border: 1px solid rgb(197, 202, 208);
+      }
+      &:focus {
+        border: 1px solid rgb(197, 202, 208);
+        background-color: white;
+        outline: none;
+      }
+    }
+  }
+
+  .btn-selector > button.btn-white {
+    border: 1px solid white;
+    margin-top: -3px;
+
+    span.caret {
+      display: none;
+    }
+
+    &:hover {
+      border: 1px solid rgb(197, 202, 208);
+      background-color: white;
+
+      span.caret {
+        display: inline;
+      }
+    }
+    &:focus {
+      border: 1px solid rgb(197, 202, 208);
+      background-color: white;
+      outline: none;
+
+      span.caret {
+        display: inline;
+      }
+    }
+  }
+}

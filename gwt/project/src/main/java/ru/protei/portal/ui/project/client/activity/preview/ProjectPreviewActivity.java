@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.AppEvents;
@@ -78,11 +79,13 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
 
     private void fillView( ProjectInfo value ) {
 //        view.setPrivateIssue( value.isPrivateCase() );
+        view.setName( value.getName() );
         view.setHeader( value.getId() == null ? "" : lang.projectHeader( value.getId().toString() ) );
         view.setCreationDate( value.getCreated() == null ? "" : DateFormatter.formatDateTime( value.getCreated() ) );
         view.setState( value.getState() );
 //        view.setCriticality( value.getImpLevel() );
-        view.setDirection( value.getProductDirection() == null ? "" : value.getProductDirection().getDisplayText() );
+
+        view.direction().setValue( value.getProductDirection() == null ? null : new ProductDirectionInfo( value.getProductDirection() ) );
 //        view.setCompany( value.getInitiatorCompany() == null ? "" : value.getInitiatorCompany().getCname() );
 //        view.setContact( value.getInitiator() == null ? "" : value.getInitiator().getDisplayName() );
 //        Company ourCompany = value.getManager() == null ? null : value.getManager().getCompany();
