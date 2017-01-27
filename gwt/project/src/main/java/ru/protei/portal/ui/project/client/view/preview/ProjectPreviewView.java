@@ -14,6 +14,7 @@ import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.En_RegionStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionInputSelector;
+import ru.protei.portal.ui.common.client.widget.selector.state.RegionStateIconSelector;
 import ru.protei.portal.ui.project.client.activity.preview.AbstractProjectPreviewActivity;
 import ru.protei.portal.ui.project.client.activity.preview.AbstractProjectPreviewView;
 
@@ -73,13 +74,11 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     }
 
     @Override
-    public void setState( En_RegionState state ) {
-//        En_CaseState caseState = En_CaseState.getById( value );
-        this.state.setClassName( "small label label-" + state.toString().toLowerCase());
-        this.state.setInnerText( stateLang.getStateName( state ) );
+    public HasValue<En_RegionState> state() {
+        return projectState;
     }
 
-//    @Override
+    //    @Override
 //    public void setCriticality( int value ) {
 //        En_ImportanceLevel importanceLevel = En_ImportanceLevel.find( value );
 //        this.iconCriticality.setClassName( "importance importance-lg none-vertical-align " + importanceLevel.toString().toLowerCase() );
@@ -151,8 +150,6 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     @UiField
     SpanElement creationDate;
     @UiField
-    DivElement state;
-    @UiField
     SpanElement headManager;
     @UiField
     SpanElement deployManager;
@@ -168,12 +165,9 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     @Inject
     @UiField( provided = true )
     ProductDirectionInputSelector projectDirection;
-
-//    @Inject
-//    En_CaseImportanceLang caseImportanceLang;
-
     @Inject
-    En_RegionStateLang stateLang;
+    @UiField( provided = true )
+    RegionStateIconSelector projectState;
 
     @Inject
     FixedPositioner positioner;

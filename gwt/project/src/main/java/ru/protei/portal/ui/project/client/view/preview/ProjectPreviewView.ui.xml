@@ -1,6 +1,7 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:productdirection="urn:import:ru.protei.portal.ui.common.client.widget.selector.productdirection"
+             xmlns:state="urn:import:ru.protei.portal.ui.common.client.widget.selector.state"
 >
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
     <g:HTMLPanel styleName="preview-wrapper grid with-table-pager">
@@ -41,7 +42,7 @@
                 <div class="col-xs-12">
                     <label class="col-xs-5 col-md-5"><ui:text from="{lang.projectState}"/></label>
                     <span class="col-xs-7 col-md-7">
-                        <div ui:field="state"></div>
+                        <state:RegionStateIconSelector ui:field="projectState" />
                     </span>
                 </div>
                 <div class="col-xs-12">

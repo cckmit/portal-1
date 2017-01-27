@@ -16,7 +16,7 @@ public interface AbstractProjectPreviewView extends IsWidget {
 //    void setPrivateIssue( boolean privateIssue );
     void setHeader( String value );
     void setCreationDate( String value );
-    void setState( En_RegionState value );
+    HasValue<En_RegionState> state();
 //    void setCriticality( int value );
     HasValue<ProductDirectionInfo> direction();
 //    void setDirection( String value );
