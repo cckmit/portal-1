@@ -81,6 +81,14 @@ public class ProjectServiceImpl implements ProjectService {
         return new CoreResponse<Map<String, List<ProjectInfo>>>().success( regionToProjectMap );
     }
 
+    @Override
+    public CoreResponse<ProjectInfo> getProject( Long id ) {
+        CaseObject caseObject = caseObjectDAO.get( id );
+        helper.fillAll( caseObject );
+
+        return new CoreResponse<ProjectInfo>().success( convertFrom( caseObject ) );
+    }
+
     private void iterateAllLocations( CaseObject project, Consumer<Location> handler ) {
         if ( project == null ) {
             return;
@@ -135,6 +143,11 @@ public class ProjectServiceImpl implements ProjectService {
             projects.put( location.getName(), projectInfos );
         }
 
+        ProjectInfo projectInfo = convertFrom( project );
+        projectInfos.add( projectInfo );
+    }
+
+    private ProjectInfo convertFrom( CaseObject project ) {
         ProjectInfo projectInfo = new ProjectInfo();
         projectInfo.setId( project.getId() );
         projectInfo.setName( project.getName() );
@@ -143,7 +156,6 @@ public class ProjectServiceImpl implements ProjectService {
         projectInfo.setProductDirection( new EntityOption( "Неизвестно", null ) );
         projectInfo.setHeadManager( new EntityOption( project.getManager().getDisplayShortName(), project.getManagerId() ) );
         projectInfo.setManagers( new ArrayList<>() );
-
-        projectInfos.add( projectInfo );
+        return projectInfo;
     }
 }

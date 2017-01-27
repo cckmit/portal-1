@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Сервис управления продуктами
+ * Сервис управления проектами и регионами
  */
 @RemoteServiceRelativePath( "springGwtServices/RegionService" )
 public interface RegionService extends RemoteService {
@@ -23,11 +23,5 @@ public interface RegionService extends RemoteService {
 
     Map<String, List<ProjectInfo>> getProjectsByRegions( ProjectQuery query ) throws RequestFailedException;
 
-//    DevUnit getProduct( Long productId ) throws RequestFailedException;
-
-//    Boolean saveProduct( DevUnit product ) throws RequestFailedException;
-
-//    boolean isNameUnique( String name, Long exceptId ) throws RequestFailedException;
-
-//    List<ProductShortView> getProductViewList( ProductQuery query ) throws RequestFailedException;
+    ProjectInfo getProject( Long id ) throws RequestFailedException;
 }

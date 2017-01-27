@@ -57,18 +57,18 @@ public class RegionServiceImpl implements RegionService {
             throw new RequestFailedException( response.getStatus() );
 
         return response.getData();
+    }
 
-//        Map<String, List<ProjectInfo>> result = new TreeMap<>();
-//        List<ProjectInfo> list = new ArrayList<>();
-//        result.put( "Ставропольский край", list );
-//        list.add( ProjectInfo.make( 6532L, "Разработка и настройка системы 112 для правительства ставропольского края", "Развитие проекта, поддержка", En_RegionState.SUPPORT, "Система 112", "Богомолов Д.", "Магомедова Е." ) );
-//        list.add( ProjectInfo.make( 6538L, "Очередное длинное государственное название проекта", "Развитие проекта, поддержка", En_RegionState.SUPPORT, "Система оповещения", "Богомолов Д.", "Магомедова Е.", "Соломко С." ) );
-//        list.add( ProjectInfo.make( 7228L, "Поставка решения обеспечивающего безопасность", "Развитие проекта, поддержка", En_RegionState.SUPPORT, "АПК БГ", "Богомолов Д.", "Магомедова Е.", "Магомедова Е." ) );
-//
-//        list = new ArrayList<>();
-//        result.put( "Кемеровская область", list );
-//        list.add( ProjectInfo.make( 2365L, "Разработка единой дежурно-диспетчерской службы города Междуреченск", "Поддержка активности", En_RegionState.TALK, "ЕДДС", "Богомолов Д.", "Магомедова Е." ) );
-//        return result;
+    @Override
+    public ProjectInfo getProject( Long id ) throws RequestFailedException {
+        log.debug( "getProject(): id={}", id );
+
+        CoreResponse<ProjectInfo> response = projectService.getProject( id );
+        if ( response.isError() ) {
+            throw new RequestFailedException( response.getStatus() );
+        }
+
+        return response.getData();
     }
 
     @Autowired

@@ -24,4 +24,10 @@ public interface ProjectService {
      * @param query    параметры запроса
      */
     CoreResponse<Map<String, List<ProjectInfo>>> listProjectsByRegions( ProjectQuery query );
+
+    /**
+     * Получает информацию о проекте
+     * @param id
+     */
+    CoreResponse<ProjectInfo> getProject( Long id );
 }

@@ -5,6 +5,7 @@ import ru.protei.portal.core.model.view.EntityOption;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -46,6 +47,11 @@ public class ProjectInfo implements Serializable {
      * Менеджеры внедрения
      */
     List<EntityOption> managers;
+
+    /**
+     * Дата создания
+     */
+    Date created;
 
     public static ProjectInfo make( Long id, String name, String details, En_RegionState state, String productDirection, String headManager, String... managers ) {
         ProjectInfo result = new ProjectInfo();
@@ -118,5 +124,13 @@ public class ProjectInfo implements Serializable {
 
     public void setManagers( List<EntityOption> managers ) {
         this.managers = managers;
+    }
+
+    public Date getCreated() {
+        return created;
+    }
+
+    public void setCreated( Date created ) {
+        this.created = created;
     }
 }
