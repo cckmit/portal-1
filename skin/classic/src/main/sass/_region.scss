@@ -174,4 +174,39 @@
       }
     }
   }
+
+  .icon-selector.status-group {
+
+    a.status {
+      border: 1px solid white;
+      padding-right: 20px;
+      padding-left: 5px;
+    }
+
+    a.caret-anchor {
+      position: absolute;
+      top: -18px;
+      right: 54px;
+      display: none;
+    }
+
+    &:hover {
+      a.status {
+        border: 1px solid rgb(197, 202, 208);
+      }
+
+      a.caret-anchor {
+        display: block;
+      }
+    }
+    &:focus {
+      a.status {
+        border: 1px solid rgb(197, 202, 208);
+      }
+
+      a.caret-anchor {
+        display: block;
+      }
+    }
+  }
 }
