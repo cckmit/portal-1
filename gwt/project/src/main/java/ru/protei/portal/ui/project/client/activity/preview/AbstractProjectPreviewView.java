@@ -4,6 +4,7 @@ import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
+import ru.protei.portal.core.model.view.PersonShortView;
 
 /**
  * Абстракция вида проекта
@@ -23,7 +24,7 @@ public interface AbstractProjectPreviewView extends IsWidget {
 //    void setCompany( String value );
 //    void setContact( String value );
 //    void setOurCompany( String value );
-    void setHeadManager( String value );
+    HasValue<PersonShortView> headManager();
     void setDetails( String value );
 
     void showFullScreen( boolean value );

@@ -12,12 +12,14 @@ import ru.protei.portal.core.model.dict.En_LocationType;
 import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Location;
+import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.LocationQuery;
 import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.struct.RegionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
@@ -155,9 +157,13 @@ public class ProjectServiceImpl implements ProjectService {
                     project.getProduct().getName(), project.getProduct().getId()
             ) );
         }
-        projectInfo.setHeadManager( new EntityOption(
-                project.getManager().getDisplayShortName(), project.getManagerId()
-        ) );
+
+        Person headManager = project.getManager();
+        if ( headManager != null ) {
+            projectInfo.setHeadManager( new PersonShortView(
+                headManager.getDisplayShortName(), headManager.getId(), headManager.isFired()
+            ) );
+        }
         projectInfo.setManagers( new ArrayList<>() );
         projectInfo.setCreated( project.getCreated() );
         return projectInfo;

@@ -209,4 +209,51 @@
       }
     }
   }
+
+  div.select2-container {
+    border: 1px solid #fff;
+    width: initial;
+
+    &:hover {
+      border: 1px solid #ccc;
+    }
+
+    ul.select2-choices {
+      list-style: none;
+      margin-top:5px;
+      padding-left: 10px;
+
+      li.select2-search-choice {
+        div {
+          display: inline-block;
+          width: initial;
+        }
+
+        a.select2-search-choice-close {
+          font: normal normal normal 14px/1 FontAwesome;
+          display: inline-block;
+
+          &:before {
+            content: "\f00d";
+          }
+        }
+      }
+    }
+
+    div.select2-button {
+      button {
+        background-color: white;
+      }
+
+      span.caret {
+        width: initial;
+        border: none;
+      }
+    }
+  }
+}
+
+// без этого фикса в выпадайке checkbox на отдельной строке рисуется
+ul > li.selectable-item > a {
+  display: inline-block;
 }

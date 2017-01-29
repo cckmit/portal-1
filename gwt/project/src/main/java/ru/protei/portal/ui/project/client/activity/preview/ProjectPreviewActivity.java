@@ -6,6 +6,8 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.struct.ProjectInfo;
+import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
@@ -90,7 +92,8 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
 //        view.setContact( value.getInitiator() == null ? "" : value.getInitiator().getDisplayName() );
 //        Company ourCompany = value.getManager() == null ? null : value.getManager().getCompany();
 //        view.setOurCompany( ourCompany == null ? "" : ourCompany.getCname() );
-        view.setHeadManager( value.getHeadManager() == null ? "" : value.getHeadManager().getDisplayText() );
+
+        view.headManager().setValue( value.getHeadManager() );
         view.setDetails( value.getDetails() == null ? "" : value.getDetails() );
 
 //        fireEvent( new IssueEvents.ShowComments( view.getCommentsContainer(), value.getId() ) );

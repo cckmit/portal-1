@@ -4,6 +4,7 @@ import com.google.gwt.user.client.Element;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
@@ -34,9 +35,9 @@ public class ManagersColumn extends ClickColumn< ProjectInfo > {
             content.append( "</b>" );
         }
 
-        EntityOption headManager = value.getHeadManager();
+        PersonShortView headManager = value.getHeadManager();
         if ( headManager != null ) {
-            content.append( headManager.getDisplayText() );
+            content.append( headManager.getDisplayShortName() );
         }
 
         cell.setInnerHTML( content.toString() );

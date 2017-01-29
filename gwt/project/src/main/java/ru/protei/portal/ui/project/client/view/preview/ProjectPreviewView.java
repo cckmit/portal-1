@@ -10,9 +10,13 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.En_RegionStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.selector.person.ContactButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionInputSelector;
 import ru.protei.portal.ui.common.client.widget.selector.state.RegionStateIconSelector;
 import ru.protei.portal.ui.project.client.activity.preview.AbstractProjectPreviewActivity;
@@ -26,6 +30,8 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+        headManager.setDefaultValue( "Выберите менеджера" );
+        deployManager.refreshValue();
     }
 
     @Override
@@ -91,8 +97,12 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
         return projectDirection;
     }
 
+    @Override
+    public HasValue< PersonShortView > headManager() {
+        return headManager;
+    }
 
-//    @Override
+    //    @Override
 //    public void setCompany( String value ) {
 //        this.company.setInnerText( value );
 //    }
@@ -106,11 +116,6 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
 //    public void setOurCompany( String value ) {
 //        this.ourCompany.setInnerText( value );
 //    }
-
-    @Override
-    public void setHeadManager( String value ) {
-        this.headManager.setInnerText( value );
-    }
 
     @Override
     public void setDetails( String value ) {
@@ -143,28 +148,40 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
 
     @UiField
     HTMLPanel preview;
+
     @UiField
     Anchor fullScreen;
+
     @UiField
     Element header;
+
     @UiField
     SpanElement creationDate;
-    @UiField
-    SpanElement headManager;
-    @UiField
-    SpanElement deployManager;
+
+    @Inject
+    @UiField( provided = true )
+    EmployeeButtonSelector headManager;
+
+    @Inject
+    @UiField( provided = true )
+    EmployeeMultiSelector deployManager;
+
     @UiField
     TextArea details;
+
     @Inject
     @UiField
     Lang lang;
 //    @UiField
 //    HTMLPanel commentsContainer;
+
     @UiField
     TextBox projectName;
+
     @Inject
     @UiField( provided = true )
     ProductDirectionInputSelector projectDirection;
+
     @Inject
     @UiField( provided = true )
     RegionStateIconSelector projectState;

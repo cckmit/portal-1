@@ -2,7 +2,8 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:productdirection="urn:import:ru.protei.portal.ui.common.client.widget.selector.productdirection"
              xmlns:state="urn:import:ru.protei.portal.ui.common.client.widget.selector.state"
->
+             xmlns:person="urn:import:ru.protei.portal.ui.common.client.widget.selector.person"
+        >
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
     <g:HTMLPanel styleName="preview-wrapper grid with-table-pager">
         <g:HTMLPanel ui:field="preview" styleName="preview project">
@@ -30,11 +31,16 @@
                 <legend><ui:text from="{lang.projectManagers}"/></legend>
                 <div class="col-xs-6">
                     <label class="col-xs-12 col-md-12"><ui:text from="{lang.projectDeployManagers}"/></label>
-                    <span class="col-xs-12 col-md-12" ui:field="deployManager"></span>
+                    <div class="col-xs-12">
+                        <person:EmployeeMultiSelector ui:field="deployManager" />
+                    </div>
                 </div>
                 <div class="col-xs-6">
                     <label class="col-xs-12 col-md-12"><ui:text from="{lang.projectHeadManager}"/></label>
-                    <span class="col-xs-12 col-md-12" ui:field="headManager"></span>
+
+                    <div class="col-xs-12">
+                        <person:EmployeeButtonSelector ui:field="headManager" />
+                    </div>
                 </div>
             </fieldset>
             <fieldset class="header">

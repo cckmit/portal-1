@@ -2,6 +2,7 @@ package ru.protei.portal.core.model.struct;
 
 import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PersonShortView;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -41,7 +42,7 @@ public class ProjectInfo implements Serializable {
     /**
      * Руководитель
      */
-    EntityOption headManager;
+    PersonShortView headManager;
 
     /**
      * Менеджеры внедрения
@@ -52,23 +53,6 @@ public class ProjectInfo implements Serializable {
      * Дата создания
      */
     Date created;
-
-    public static ProjectInfo make( Long id, String name, String details, En_RegionState state, String productDirection, String headManager, String... managers ) {
-        ProjectInfo result = new ProjectInfo();
-        result.id = id;
-        result.name = name;
-        result.details = details;
-        result.setState( state );
-        result.setProductDirection( new EntityOption( productDirection, null ) );
-        result.setHeadManager( new EntityOption( headManager, null ) );
-        if ( managers.length > 0 ) {
-            result.managers = new ArrayList<>();
-            for ( String manager : managers ) {
-                result.managers.add( new EntityOption( manager, null ) );
-            }
-        }
-        return result;
-    }
 
     public Long getId() {
         return id;
@@ -110,11 +94,11 @@ public class ProjectInfo implements Serializable {
         this.productDirection = productDirection;
     }
 
-    public EntityOption getHeadManager() {
+    public PersonShortView getHeadManager() {
         return headManager;
     }
 
-    public void setHeadManager( EntityOption headManager ) {
+    public void setHeadManager( PersonShortView headManager ) {
         this.headManager = headManager;
     }
 
