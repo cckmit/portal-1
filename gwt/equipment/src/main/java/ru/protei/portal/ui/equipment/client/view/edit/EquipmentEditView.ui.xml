@@ -1,0 +1,155 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:single="urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.single"
+             xmlns:dict="urn:import:ru.protei.portal.ui.common.client.widget.selector.dict"
+             xmlns:companyselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.company'
+             xmlns:validablefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'
+>
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+
+    <g:HTMLPanel styleName="panel">
+            <div class="body">
+                <div class="grid grid-indent">
+                    <div class="form-group col-xs-4">
+                        <label>
+                            <ui:text from="{lang.lastName}"/>
+                        </label>
+
+                        <validablefield:ValidableTextBox ui:field="lastName" styleName="input-field" notNull="true"/>
+
+                    </div>
+                    <div class="form-group col-xs-4">
+                        <label >
+                            <ui:text from="{lang.firstName}"/>
+                        </label>
+                        <validablefield:ValidableTextBox ui:field="firstName" styleName="input-field" notNull="true"/>
+                    </div>
+                    <div class="form-group col-xs-4">
+                        <label>
+                            <ui:text from="{lang.secondName}"/>
+                        </label>
+                        <g:TextBox ui:field="secondName" styleName="input-field"/>
+                    </div>
+
+                    <div class="form-group col-xs-2">
+                        <label class="">
+                            <ui:text from="{lang.birthday}"/>
+                        </label>
+                        <single:SinglePicker ui:field="birthDay" formatValue="dd.MM.yyyy" />
+                    </div>
+
+                    <div class="form-group col-xs-2">
+                        <label class="">
+                            <ui:text from="{lang.gender}"/>
+                        </label>
+                        <dict:GenderButtonSelector ui:field="gender" />
+                    </div>
+
+                    <div class="form-group col-xs-4">
+                        <label>
+                            <ui:text from="{lang.displayName}"/>
+                        </label>
+                        <g:TextBox ui:field="displayName" styleName="input-field"/>
+                    </div>
+
+                    <div class="form-group col-xs-4">
+                        <label class="">
+                            <ui:text from="{lang.displayShortName}"/>
+                        </label>
+
+                        <g:TextBox ui:field="shortName" styleName="input-field"/>
+                    </div>
+
+                </div>
+                <div class="grid grid-indent">
+                    <div class="form-group col-xs-4">
+                        <label>
+                            <ui:text from="{lang.company}"/>
+                        </label>
+                        <companyselector:CompanySelector ui:field="company" validation="true"/>
+                    </div>
+
+                    <div class="form-group col-xs-4">
+                        <label>
+                            <ui:text from="{lang.contactPosition}"/>
+                        </label>
+                        <g:TextBox ui:field="displayPosition" styleName="input-field"></g:TextBox>
+                    </div>
+
+                    <div class="form-group col-xs-4">
+                        <label class="">
+                            <ui:text from="{lang.department}"/>
+                        </label>
+                        <g:TextBox ui:field="displayDepartment" styleName="input-field"></g:TextBox>
+                    </div>
+                </div>
+                <div class="grid grid-indent">
+                    <div class="form-group col-xs-6">
+                        <label>
+                            <ui:text from="{lang.workEmail}"/>
+                        </label>
+                        <g:TextBox ui:field="workEmail" styleName="input-field"/>
+                    </div>
+                    <div class="form-group col-xs-6">
+                        <label class="">
+                            <ui:text from="{lang.personalEmail}"/>
+                        </label>
+                        <g:TextBox ui:field="personalEmail" styleName="input-field"/>
+                    </div>
+                    <div class="form-group col-xs-6">
+                        <label>
+                            <ui:text from="{lang.workPhone}"/>
+                        </label>
+                        <g:TextBox ui:field="workPhone" styleName="input-field"/>
+                    </div>
+                    <div class="form-group col-xs-6">
+                        <label class="">
+                            <ui:text from="{lang.personalPhone}"/>
+                        </label>
+                        <g:TextBox ui:field="homePhone" styleName="input-field"/>
+                    </div>
+
+                    <div class="form-group col-xs-6">
+                        <label class="">
+                            <ui:text from="{lang.primaryFax}"/>
+                        </label>
+                        <g:TextBox ui:field="workFax" styleName="input-field"/>
+                    </div>
+
+                    <div class="form-group col-xs-6">
+                        <label class="">
+                            <ui:text from="{lang.secondaryFax}"/>
+                        </label>
+                        <g:TextBox ui:field="homeFax" styleName="input-field"/>
+                    </div>
+
+                    <div class="form-group col-xs-6">
+                        <label class="">
+                            <ui:text from="{lang.workAddress}"/>
+                        </label>
+                        <g:TextArea ui:field="workAddress" styleName="input-field description"></g:TextArea>
+                    </div>
+
+                    <div class="form-group col-xs-6">
+                        <label class="">
+                            <ui:text from="{lang.homeAddress}"/>
+                        </label>
+                        <g:TextArea ui:field="homeAddress" styleName="input-field description"></g:TextArea>
+                    </div>
+
+                </div>
+                <div class="grid grid-indent">
+                    <div class="form-group col-xs-12">
+                        <label class="">
+                            <ui:text from="{lang.comment}"/>
+                        </label>
+                        <g:TextArea ui:field="personInfo" styleName="input-field description"></g:TextArea>
+                    </div>
+                </div>
+            </div>
+            <div class="footer">
+                <g:Button ui:field="saveButton" styleName="btn btn-success" text="{lang.buttonSave}"/>
+                <g:Button ui:field="cancelButton" styleName="btn btn-white close_btn" text="{lang.buttonCancel}"/>
+            </div>
+    </g:HTMLPanel>
+</ui:UiBinder>

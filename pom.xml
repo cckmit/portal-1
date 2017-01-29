@@ -42,6 +42,7 @@
                 <module>gwt/contact</module>
                 <module>gwt/issue</module>
                 <module>gwt/crm</module>
+                <module>gwt/equipment</module>
                 <!--<module>app/crm</module>-->
             </modules>
         </profile>

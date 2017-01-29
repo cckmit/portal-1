@@ -13,6 +13,7 @@ public class UiConstants {
         public static final String PRODUCT = "icon icon-product";
         public static final String ISSUE = "fa fa-tasks";
         public static final String DASHBOARD = "fa fa-dashboard";
+        public static final String EQUIPMENT = "fa fa-server";
     }
 
     public static interface ActionBarIcons {
@@ -25,6 +26,7 @@ public class UiConstants {
         public static final String COMPANY = "company";
         public static final String PRODUCT = "product";
         public static final String DASHBOARD = "dashboard";
+        public static final String EQUIPMENT = "equipment";
     }
 
     /**
