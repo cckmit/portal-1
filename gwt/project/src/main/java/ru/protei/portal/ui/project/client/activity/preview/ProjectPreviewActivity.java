@@ -16,6 +16,9 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.RegionServiceAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
+import java.util.HashSet;
+import java.util.TreeSet;
+
 /**
  * Активность превью проекта
  */
@@ -94,6 +97,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
 //        view.setOurCompany( ourCompany == null ? "" : ourCompany.getCname() );
 
         view.headManager().setValue( value.getHeadManager() );
+        view.deployManagers().setValue( new HashSet<>( value.getManagers() ) );
         view.setDetails( value.getDetails() == null ? "" : value.getDetails() );
 
 //        fireEvent( new IssueEvents.ShowComments( view.getCommentsContainer(), value.getId() ) );

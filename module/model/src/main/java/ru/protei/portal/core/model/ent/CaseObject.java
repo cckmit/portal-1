@@ -97,6 +97,9 @@ public class CaseObject implements Serializable {
     @JdbcManyToMany(linkTable = "case_location", localLinkColumn = "CASE_ID", remoteLinkColumn = "LOCATION_ID" )
     private List<Location> locations;
 
+    @JdbcOneToMany( table = "case_member", localColumn = "id", remoteColumn = "CASE_ID" )
+    private List<CaseMember> members;
+
     public CaseObject() {
 
     }
@@ -340,26 +343,46 @@ public class CaseObject implements Serializable {
         this.locations = locations;
     }
 
-    @Override
-    public String toString() {
-        return new StringBuilder("CaseObject{")
-                .append("id=").append(id)
-                .append(", typeId=").append(getTypeId())
-                .append(", caseNumber=").append(getCaseNumber())
-                .append(", created='").append(getCreated())
-                .append(", modified='").append(getModified())
-                .append(", name=").append(getName())
-                .append(", stateId=").append(getStateId())
-                .append(", importanceId=").append(getImpLevel())
-                .append(", private=").append(isPrivateCase())
-                .append(", info=").append(getInfo())
-                .append(", company=").append(getInitiatorCompany())
-                .append(", initiator=").append(getInitiator())
-                .append(", product=").append(getProduct())
-                .append(", manager=").append(getManager())
-                .append('}').toString();
+    public List< CaseMember > getMembers() {
+        return members;
     }
 
+    public void setMembers( List< CaseMember > members ) {
+        this.members = members;
+    }
 
-
+    @Override
+    public String toString() {
+        return "CaseObject{" +
+            "id=" + id +
+            ", typeId=" + typeId +
+            ", caseNumber=" + caseNumber +
+            ", created=" + created +
+            ", modified=" + modified +
+            ", name='" + name + '\'' +
+            ", extId='" + extId + '\'' +
+            ", info='" + info + '\'' +
+            ", stateId=" + stateId +
+            ", impLevel=" + impLevel +
+            ", creatorId=" + creatorId +
+            ", creator=" + creator +
+            ", creatorIp='" + creatorIp + '\'' +
+            ", initiatorId=" + initiatorId +
+            ", initiator=" + initiator +
+            ", initiatorCompanyId=" + initiatorCompanyId +
+            ", initiatorCompany=" + initiatorCompany +
+            ", productId=" + productId +
+            ", product=" + product +
+            ", managerId=" + managerId +
+            ", manager=" + manager +
+            ", keywords='" + keywords + '\'' +
+            ", local=" + local +
+            ", emails='" + emails + '\'' +
+            ", creatorInfo='" + creatorInfo + '\'' +
+            ", deleted=" + deleted +
+            ", privateCase=" + privateCase +
+            ", locations=" + locations +
+            ", members=" + members +
+            '}';
+    }
 }

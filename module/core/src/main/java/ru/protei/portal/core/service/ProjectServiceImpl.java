@@ -8,8 +8,10 @@ import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.LocationDAO;
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
 import ru.protei.portal.core.model.dict.En_LocationType;
 import ru.protei.portal.core.model.dict.En_RegionState;
+import ru.protei.portal.core.model.ent.CaseMember;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Location;
 import ru.protei.portal.core.model.ent.Person;
@@ -85,7 +87,7 @@ public class ProjectServiceImpl implements ProjectService {
         CaseObject caseObject = caseObjectDAO.get( id );
         helper.fillAll( caseObject );
 
-        return new CoreResponse<ProjectInfo>().success( convertFrom( caseObject ) );
+        return new CoreResponse<ProjectInfo>().success( ProjectInfo.fromCaseObject( caseObject ) );
     }
 
     private void iterateAllLocations( CaseObject project, Consumer<Location> handler ) {
@@ -142,30 +144,7 @@ public class ProjectServiceImpl implements ProjectService {
             projects.put( location.getName(), projectInfos );
         }
 
-        ProjectInfo projectInfo = convertFrom( project );
+        ProjectInfo projectInfo = ProjectInfo.fromCaseObject( project );
         projectInfos.add( projectInfo );
-    }
-
-    private ProjectInfo convertFrom( CaseObject project ) {
-        ProjectInfo projectInfo = new ProjectInfo();
-        projectInfo.setId( project.getId() );
-        projectInfo.setName( project.getName() );
-        projectInfo.setDetails( project.getInfo() );
-        projectInfo.setState( En_RegionState.forId( project.getStateId() ) );
-        if ( project.getProduct() != null ) {
-            projectInfo.setProductDirection( new EntityOption(
-                    project.getProduct().getName(), project.getProduct().getId()
-            ) );
-        }
-
-        Person headManager = project.getManager();
-        if ( headManager != null ) {
-            projectInfo.setHeadManager( new PersonShortView(
-                headManager.getDisplayShortName(), headManager.getId(), headManager.isFired()
-            ) );
-        }
-        projectInfo.setManagers( new ArrayList<>() );
-        projectInfo.setCreated( project.getCreated() );
-        return projectInfo;
     }
 }

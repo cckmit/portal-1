@@ -22,6 +22,8 @@ import ru.protei.portal.ui.common.client.widget.selector.state.RegionStateIconSe
 import ru.protei.portal.ui.project.client.activity.preview.AbstractProjectPreviewActivity;
 import ru.protei.portal.ui.project.client.activity.preview.AbstractProjectPreviewView;
 
+import java.util.Set;
+
 /**
  * Вид превью проекта
  */
@@ -100,6 +102,11 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     @Override
     public HasValue< PersonShortView > headManager() {
         return headManager;
+    }
+
+    @Override
+    public HasValue< Set< PersonShortView > > deployManagers() {
+        return deployManager;
     }
 
     //    @Override

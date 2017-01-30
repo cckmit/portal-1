@@ -1,6 +1,9 @@
 package ru.protei.portal.core.model.struct;
 
+import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
 import ru.protei.portal.core.model.dict.En_RegionState;
+import ru.protei.portal.core.model.ent.CaseMember;
+import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 
@@ -47,7 +50,7 @@ public class ProjectInfo implements Serializable {
     /**
      * Менеджеры внедрения
      */
-    List<EntityOption> managers;
+    List<PersonShortView> managers;
 
     /**
      * Дата создания
@@ -102,11 +105,11 @@ public class ProjectInfo implements Serializable {
         this.headManager = headManager;
     }
 
-    public List<EntityOption> getManagers() {
+    public List<PersonShortView> getManagers() {
         return managers;
     }
 
-    public void setManagers( List<EntityOption> managers ) {
+    public void setManagers( List<PersonShortView> managers ) {
         this.managers = managers;
     }
 
@@ -116,5 +119,32 @@ public class ProjectInfo implements Serializable {
 
     public void setCreated( Date created ) {
         this.created = created;
+    }
+
+    public static ProjectInfo fromCaseObject( CaseObject project ) {
+        ProjectInfo projectInfo = new ProjectInfo();
+        projectInfo.setId( project.getId() );
+        projectInfo.setName( project.getName() );
+        projectInfo.setDetails( project.getInfo() );
+        projectInfo.setState( En_RegionState.forId( project.getStateId() ) );
+        if ( project.getProduct() != null ) {
+            projectInfo.setProductDirection( new EntityOption(
+                project.getProduct().getName(), project.getProduct().getId()
+            ) );
+        }
+
+        List<PersonShortView> deployManagers = new ArrayList<>();
+        projectInfo.setManagers( deployManagers );
+        for ( CaseMember member : project.getMembers() ) {
+            if ( En_DevUnitPersonRoleType.HEAD_MANAGER.equals( member.getRole() ) ) {
+                projectInfo.setHeadManager( PersonShortView.fromPerson( member.getMember() ) );
+            }
+            else if ( En_DevUnitPersonRoleType.DEPLOY_MANAGER.equals( member.getRole() ) ) {
+                deployManagers.add( PersonShortView.fromPerson( member.getMember() ) );
+            }
+        }
+
+        projectInfo.setCreated( project.getCreated() );
+        return projectInfo;
     }
 }

@@ -26,11 +26,11 @@ public class ManagersColumn extends ClickColumn< ProjectInfo > {
         cell.addClassName( "managers" );
 
         StringBuilder content = new StringBuilder();
-        List<EntityOption> managers = value.getManagers();
+        List<PersonShortView> managers = value.getManagers();
         if ( managers != null ) {
             content.append( "<b>" );
-            for ( EntityOption manager : managers ) {
-                content.append( manager.getDisplayText() ).append( "<br/>" );
+            for ( PersonShortView manager : managers ) {
+                content.append( manager.getDisplayShortName() ).append( "<br/>" );
             }
             content.append( "</b>" );
         }
