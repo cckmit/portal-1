@@ -102,6 +102,9 @@ public class ProjectServiceImpl implements ProjectService {
         helper.fillAll( caseObject );
 
         caseObject.setName( project.getName() );
+        caseObject.setInfo( project.getDetails() );
+        caseObject.setStateId( project.getState().getId() );
+
         if ( project.getProductDirection() == null ) {
             caseObject.setProductId( null );
         }
@@ -110,6 +113,7 @@ public class ProjectServiceImpl implements ProjectService {
         }
 
         updateManagers( caseObject, project.getHeadManager(), project.getManagers() );
+
         caseObjectDAO.merge( caseObject );
 
         return new CoreResponse().success( null );

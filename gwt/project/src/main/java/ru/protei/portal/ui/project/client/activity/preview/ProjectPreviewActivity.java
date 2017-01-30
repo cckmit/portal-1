@@ -108,7 +108,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         view.direction().setValue( value.getProductDirection() == null ? null : new ProductDirectionInfo( value.getProductDirection() ) );
         view.headManager().setValue( value.getHeadManager() );
         view.deployManagers().setValue( new HashSet<>( value.getManagers() ) );
-        view.setDetails( value.getDetails() == null ? "" : value.getDetails() );
+        view.details().setText( value.getDetails() == null ? "" : value.getDetails() );
 
 //        fireEvent( new IssueEvents.ShowComments( view.getCommentsContainer(), value.getId() ) );
     }
@@ -118,6 +118,8 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         project.setProductDirection( EntityOption.fromProductDirectionInfo( view.direction().getValue() ) );
         project.setHeadManager( view.headManager().getValue() );
         project.setManagers( view.deployManagers().getValue().stream().collect( Collectors.toList() ) );
+        project.setState( view.state().getValue() );
+        project.setDetails( view.details().getText() );
     }
 
     @Inject

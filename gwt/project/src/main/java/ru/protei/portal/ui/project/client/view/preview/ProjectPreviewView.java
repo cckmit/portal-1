@@ -83,14 +83,6 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
         return projectState;
     }
 
-    //    @Override
-//    public void setCriticality( int value ) {
-//        En_ImportanceLevel importanceLevel = En_ImportanceLevel.find( value );
-//        this.iconCriticality.setClassName( "importance importance-lg none-vertical-align " + importanceLevel.toString().toLowerCase() );
-//        CriticalityStyleBuilder.make().addClassName( this.iconCriticality, En_ImportanceLevel.find( value ) );
-//        this.criticality.setInnerText( caseImportanceLang.getImportanceName( importanceLevel ) );
-//    }
-
     @Override
     public HasValue<ProductDirectionInfo> direction() {
         return projectDirection;
@@ -106,24 +98,9 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
         return deployManager;
     }
 
-    //    @Override
-//    public void setCompany( String value ) {
-//        this.company.setInnerText( value );
-//    }
-
-//    @Override
-//    public void setContact( String value ) {
-//        this.contact.setInnerHTML( value );
-//    }
-//
-//    @Override
-//    public void setOurCompany( String value ) {
-//        this.ourCompany.setInnerText( value );
-//    }
-
     @Override
-    public void setDetails( String value ) {
-        this.details.setValue( value );
+    public HasText details() {
+        return details;
     }
 
     @Override
@@ -150,26 +127,32 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
         }
     }
 
-    @UiHandler( "projectName" )
+    @UiHandler( {"projectName", "details"} )
     public void onNameChanged( KeyUpEvent event ) {
-        projectChanged.cancel();
-        projectChanged.schedule( 500 );
+        fireProjectChanged();
     }
 
     @UiHandler( "projectDirection" )
     public void onDirectionChanged( ValueChangeEvent<ProductDirectionInfo> event ) {
-        projectChanged.cancel();
-        projectChanged.schedule( 500 );
+        fireProjectChanged();
     }
 
     @UiHandler( "headManager" )
     public void onHedaManagerChanged( ValueChangeEvent<PersonShortView> value ) {
-        projectChanged.cancel();
-        projectChanged.schedule( 500 );
+        fireProjectChanged();
     }
 
     @UiHandler( "deployManager" )
     public void onDeployManagersChanged( ValueChangeEvent<Set<PersonShortView>> value ) {
+        fireProjectChanged();
+    }
+
+    @UiHandler( "projectState" )
+    public void onStateChanged( ValueChangeEvent<En_RegionState> event ) {
+        fireProjectChanged();
+    }
+
+    private void fireProjectChanged() {
         projectChanged.cancel();
         projectChanged.schedule( 500 );
     }
@@ -207,6 +190,7 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     @Inject
     @UiField
     Lang lang;
+
 //    @UiField
 //    HTMLPanel commentsContainer;
 
