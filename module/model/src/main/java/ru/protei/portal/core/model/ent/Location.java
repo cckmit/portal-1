@@ -4,6 +4,7 @@ import ru.protei.portal.core.model.dict.En_LocationType;
 import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.struct.DistrictInfo;
 import ru.protei.portal.core.model.struct.RegionInfo;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.winter.jdbc.annotations.IdInsertMode;
 import ru.protei.winter.jdbc.annotations.JdbcColumn;
 import ru.protei.winter.jdbc.annotations.JdbcEntity;
@@ -112,6 +113,10 @@ public class Location implements Serializable {
         catch (NullPointerException e) {}
         info.state = En_RegionState.UNKNOWN;
         return info;
+    }
+
+    public EntityOption toEntityOption() {
+        return new EntityOption( name, id );
     }
 
     public String getCode() {

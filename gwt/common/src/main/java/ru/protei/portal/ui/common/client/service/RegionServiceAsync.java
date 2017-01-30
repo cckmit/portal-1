@@ -6,6 +6,7 @@ import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.struct.DistrictInfo;
 import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.struct.RegionInfo;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.List;
@@ -24,4 +25,6 @@ public interface RegionServiceAsync {
     void getProject( Long id, AsyncCallback<ProjectInfo> callback );
 
     void saveProject( ProjectInfo project, AsyncCallback<Void> callback );
+
+    void getRegionList( AsyncCallback<List<EntityOption>> callback );
 }

@@ -7,6 +7,7 @@ import ru.protei.portal.core.aspect.ServiceLayerInterceptor;
 import ru.protei.portal.core.controller.auth.AuthInterceptor;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
+import ru.protei.portal.core.model.ent.CaseLocation;
 import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.user.AuthService;
 import ru.protei.portal.core.service.user.AuthServiceImpl;
@@ -177,6 +178,8 @@ public class MainConfiguration {
     @Bean
     public CaseMemberDAO getCaseMemberDAO() { return new CaseMemberDAO_Impl(); }
 
+    @Bean
+    public CaseLocationDAO getCaseLocationDAO() { return new CaseLocationDAO_Impl(); }
 /**
  *
  *

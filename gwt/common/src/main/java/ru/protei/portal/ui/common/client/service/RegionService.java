@@ -6,7 +6,9 @@ import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.struct.DistrictInfo;
 import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.struct.RegionInfo;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
+import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.List;
 import java.util.Map;
@@ -18,6 +20,8 @@ import java.util.Map;
 public interface RegionService extends RemoteService {
 
     List<RegionInfo> getRegionList( ProjectQuery query ) throws RequestFailedException;
+
+    List< EntityOption > getRegionList() throws RequestFailedException;
 
     List<DistrictInfo> getDistrictList() throws RequestFailedException;
 

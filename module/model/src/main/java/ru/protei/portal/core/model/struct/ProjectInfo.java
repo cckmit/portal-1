@@ -2,8 +2,10 @@ package ru.protei.portal.core.model.struct;
 
 import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
 import ru.protei.portal.core.model.dict.En_RegionState;
+import ru.protei.portal.core.model.ent.CaseLocation;
 import ru.protei.portal.core.model.ent.CaseMember;
 import ru.protei.portal.core.model.ent.CaseObject;
+import ru.protei.portal.core.model.ent.Location;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 
@@ -56,6 +58,8 @@ public class ProjectInfo implements Serializable {
      * Дата создания
      */
     Date created;
+
+    EntityOption region;
 
     public Long getId() {
         return id;
@@ -121,6 +125,14 @@ public class ProjectInfo implements Serializable {
         this.created = created;
     }
 
+    public EntityOption getRegion() {
+        return region;
+    }
+
+    public void setRegion( EntityOption region ) {
+        this.region = region;
+    }
+
     public static ProjectInfo fromCaseObject( CaseObject project ) {
         ProjectInfo projectInfo = new ProjectInfo();
         projectInfo.setId( project.getId() );
@@ -145,6 +157,11 @@ public class ProjectInfo implements Serializable {
         }
 
         projectInfo.setCreated( project.getCreated() );
+
+        List<CaseLocation> locations = project.getLocations();
+        if ( locations != null && !locations.isEmpty() ) {
+            projectInfo.setRegion( EntityOption.fromLocation( locations.get( 0 ).getLocation() ) );
+        }
         return projectInfo;
     }
 

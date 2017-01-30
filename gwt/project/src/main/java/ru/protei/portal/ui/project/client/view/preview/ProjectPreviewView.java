@@ -11,8 +11,10 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import com.sun.org.apache.xerces.internal.impl.dv.dtd.ENTITYDatatypeValidator;
 import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.En_RegionStateLang;
@@ -21,6 +23,7 @@ import ru.protei.portal.ui.common.client.widget.selector.person.ContactButtonSel
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionInputSelector;
+import ru.protei.portal.ui.common.client.widget.selector.region.RegionButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.state.RegionStateIconSelector;
 import ru.protei.portal.ui.project.client.activity.preview.AbstractProjectPreviewActivity;
 import ru.protei.portal.ui.project.client.activity.preview.AbstractProjectPreviewView;
@@ -36,7 +39,6 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
         headManager.setDefaultValue( "Выберите менеджера" );
-        deployManager.refreshValue();
     }
 
     @Override
@@ -104,6 +106,11 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     }
 
     @Override
+    public HasValue< EntityOption > region() {
+        return projectRegion;
+    }
+
+    @Override
     public void showFullScreen( boolean value ) {
         this.fullScreen.setVisible( !value );
         if ( value ) {
@@ -149,6 +156,11 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
 
     @UiHandler( "projectState" )
     public void onStateChanged( ValueChangeEvent<En_RegionState> event ) {
+        fireProjectChanged();
+    }
+
+    @UiHandler( "projectRegion" )
+    public void onRegionChanged( ValueChangeEvent<EntityOption> event ) {
         fireProjectChanged();
     }
 
@@ -204,6 +216,10 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     @Inject
     @UiField( provided = true )
     RegionStateIconSelector projectState;
+
+    @Inject
+    @UiField( provided = true )
+    RegionButtonSelector projectRegion;
 
     @Inject
     FixedPositioner positioner;

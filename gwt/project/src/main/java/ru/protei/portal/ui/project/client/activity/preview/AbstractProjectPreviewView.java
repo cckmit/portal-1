@@ -6,6 +6,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 
 import java.util.Set;
@@ -25,6 +26,7 @@ public interface AbstractProjectPreviewView extends IsWidget {
     HasValue<PersonShortView> headManager();
     HasValue<Set<PersonShortView> > deployManagers();
     HasText details();
+    HasValue<EntityOption> region();
 
     void showFullScreen( boolean value );
 

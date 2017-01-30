@@ -3,10 +3,13 @@ package ru.protei.portal.core.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.LocationDAO;
+import ru.protei.portal.core.model.dict.En_LocationType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.Location;
 import ru.protei.portal.core.model.query.DistrictQuery;
+import ru.protei.portal.core.model.query.LocationQuery;
 import ru.protei.portal.core.model.struct.DistrictInfo;
+import ru.protei.portal.core.model.view.EntityOption;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,4 +37,16 @@ public class LocationServiceImpl implements LocationService {
         );
     }
 
+    @Override
+    public CoreResponse< List< EntityOption > > regionShortList() {
+        LocationQuery locationQuery = new LocationQuery();
+        locationQuery.setType( En_LocationType.REGION );
+        List<Location> regions = locationDAO.listByQuery( locationQuery );
+
+        return new CoreResponse<List<EntityOption>>().success(
+            regions.stream()
+                .map( Location::toEntityOption )
+                .collect( Collectors.toList() )
+        );
+    }
 }

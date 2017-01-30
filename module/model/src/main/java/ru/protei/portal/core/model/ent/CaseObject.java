@@ -94,8 +94,8 @@ public class CaseObject implements Serializable {
     @JdbcColumn(name = "private_flag")
     private boolean privateCase;
 
-    @JdbcManyToMany(linkTable = "case_location", localLinkColumn = "CASE_ID", remoteLinkColumn = "LOCATION_ID" )
-    private List<Location> locations;
+    @JdbcOneToMany(table = "case_location", localColumn = "id", remoteColumn = "CASE_ID" )
+    private List<CaseLocation> locations;
 
     @JdbcOneToMany( table = "case_member", localColumn = "id", remoteColumn = "CASE_ID" )
     private List<CaseMember> members;
@@ -335,11 +335,11 @@ public class CaseObject implements Serializable {
         this.typeId = type.getId();
     }
 
-    public List<Location> getLocations() {
+    public List<CaseLocation> getLocations() {
         return locations;
     }
 
-    public void setLocations( List<Location> locations ) {
+    public void setLocations( List<CaseLocation> locations ) {
         this.locations = locations;
     }
 

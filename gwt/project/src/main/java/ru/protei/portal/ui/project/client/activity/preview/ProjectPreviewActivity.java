@@ -109,6 +109,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         view.headManager().setValue( value.getHeadManager() );
         view.deployManagers().setValue( new HashSet<>( value.getManagers() ) );
         view.details().setText( value.getDetails() == null ? "" : value.getDetails() );
+        view.region().setValue( value.getRegion() );
 
 //        fireEvent( new IssueEvents.ShowComments( view.getCommentsContainer(), value.getId() ) );
     }
@@ -120,6 +121,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         project.setManagers( view.deployManagers().getValue().stream().collect( Collectors.toList() ) );
         project.setState( view.state().getValue() );
         project.setDetails( view.details().getText() );
+        project.setRegion( view.region().getValue() );
     }
 
     @Inject

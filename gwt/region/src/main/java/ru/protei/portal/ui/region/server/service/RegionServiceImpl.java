@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.struct.DistrictInfo;
 import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.struct.RegionInfo;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.service.LocationService;
 import ru.protei.portal.core.service.ProjectService;
 import ru.protei.portal.ui.common.client.service.RegionService;
@@ -40,6 +41,16 @@ public class RegionServiceImpl implements RegionService {
     public List<DistrictInfo> getDistrictList() throws RequestFailedException {
 
         CoreResponse<List<DistrictInfo>> result = locationService.districtList( new DistrictQuery() );
+
+        if ( result.isError() )
+            throw new RequestFailedException( result.getStatus() );
+
+        return result.getData();
+    }
+
+    @Override
+    public List< EntityOption > getRegionList() throws RequestFailedException {
+        CoreResponse<List<EntityOption>> result = locationService.regionShortList();
 
         if ( result.isError() )
             throw new RequestFailedException( result.getStatus() );

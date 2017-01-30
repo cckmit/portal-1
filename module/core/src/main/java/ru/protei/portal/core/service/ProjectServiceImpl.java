@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.core.model.dao.CaseLocationDAO;
 import ru.protei.portal.core.model.dao.CaseMemberDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.LocationDAO;
@@ -13,10 +14,7 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
 import ru.protei.portal.core.model.dict.En_LocationType;
 import ru.protei.portal.core.model.dict.En_RegionState;
-import ru.protei.portal.core.model.ent.CaseMember;
-import ru.protei.portal.core.model.ent.CaseObject;
-import ru.protei.portal.core.model.ent.Location;
-import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.LocationQuery;
 import ru.protei.portal.core.model.query.ProjectQuery;
@@ -49,6 +47,9 @@ public class ProjectServiceImpl implements ProjectService {
     @Autowired
     CaseMemberDAO caseMemberDAO;
 
+    @Autowired
+    CaseLocationDAO caseLocationDAO;
+
     @Override
     public CoreResponse<List<RegionInfo>> listRegions( ProjectQuery query ) {
         LocationQuery locationQuery = new LocationQuery();
@@ -57,7 +58,6 @@ public class ProjectServiceImpl implements ProjectService {
         Map<Long, RegionInfo > regionInfos = regions.stream().collect(
                 Collectors.toMap( Location::getId, Location::toRegionInfo )
         );
-
 
         CaseQuery caseQuery = new CaseQuery();
         caseQuery.setType( En_CaseType.PROJECT );
@@ -113,6 +113,7 @@ public class ProjectServiceImpl implements ProjectService {
         }
 
         updateManagers( caseObject, project.getHeadManager(), project.getManagers() );
+        updateLocations( caseObject, project.getRegion() );
 
         caseObjectDAO.merge( caseObject );
 
@@ -148,6 +149,32 @@ public class ProjectServiceImpl implements ProjectService {
         }
     }
 
+    private void updateLocations( CaseObject caseObject, EntityOption location ) {
+        boolean locationFound = false;
+
+        if ( caseObject.getLocations() != null ) {
+            for ( CaseLocation loc : caseObject.getLocations() ) {
+                if ( loc.getLocationId().equals( location.getId() ) ) {
+                    locationFound = true;
+                    continue;
+                }
+
+                caseLocationDAO.removeByKey( loc.getId() );
+            }
+        }
+
+        if ( locationFound ) {
+            return;
+        }
+
+        if ( location == null ) {
+            return;
+        }
+
+        caseLocationDAO.persist( CaseLocation.makeLocationOf( caseObject, location ) );
+
+    }
+
     private void iterateAllLocations( CaseObject project, Consumer<Location> handler ) {
         if ( project == null ) {
             return;
@@ -155,13 +182,13 @@ public class ProjectServiceImpl implements ProjectService {
 
         helper.fillAll( project );
 
-        List<Location> locations = project.getLocations();
+        List<CaseLocation> locations = project.getLocations();
         if ( locations == null ) {
             return;
         }
 
         locations.forEach( (location)->{
-            handler.accept( location );
+            handler.accept( location.getLocation() );
         } );
     }
 
