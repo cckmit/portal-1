@@ -81,6 +81,11 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
         table.addCustomRow( elem, "region", null );
     }
 
+    @Override
+    public void updateRow( ProjectInfo project ) {
+        table.updateRow( project );
+    }
+
     private void initTable () {
         editClickColumn = new EditClickColumn< ProjectInfo >( lang ) {};
 

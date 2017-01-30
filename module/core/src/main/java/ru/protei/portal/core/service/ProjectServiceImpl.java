@@ -90,6 +90,18 @@ public class ProjectServiceImpl implements ProjectService {
         return new CoreResponse<ProjectInfo>().success( ProjectInfo.fromCaseObject( caseObject ) );
     }
 
+    @Override
+    public CoreResponse saveProject( ProjectInfo project ) {
+        CaseObject caseObject = caseObjectDAO.get( project.getId() );
+        helper.fillAll( caseObject );
+
+        caseObject.setName( project.getName() );
+
+        caseObjectDAO.merge( caseObject );
+
+        return new CoreResponse().success( null );
+    }
+
     private void iterateAllLocations( CaseObject project, Consumer<Location> handler ) {
         if ( project == null ) {
             return;

@@ -71,6 +71,18 @@ public class RegionServiceImpl implements RegionService {
         return response.getData();
     }
 
+    @Override
+    public void saveProject( ProjectInfo project ) throws RequestFailedException {
+        log.debug( "saveProject(): project={}", project );
+
+        CoreResponse response = projectService.saveProject( project );
+        if ( response.isError() ) {
+            throw new RequestFailedException( response.getStatus() );
+        }
+
+        return;
+    }
+
     @Autowired
     LocationService locationService;
 

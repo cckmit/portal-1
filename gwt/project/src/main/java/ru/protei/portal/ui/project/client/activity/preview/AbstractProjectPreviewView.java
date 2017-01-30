@@ -32,7 +32,9 @@ public interface AbstractProjectPreviewView extends IsWidget {
     void setDetails( String value );
 
     void showFullScreen( boolean value );
+
     void setName( String name );
+    String getName();
 
 //    HasWidgets getCommentsContainer();
 }

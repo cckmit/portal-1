@@ -71,6 +71,11 @@ public abstract class ProjectTableActivity
         this.initDetails = initDetails;
     }
 
+    @Event
+    public void onChanged( ProjectEvents.Changed event ) {
+        view.updateRow( event.project );
+    }
+
     @Override
     public void onItemClicked( ProjectInfo value ) {
         showPreview( value );

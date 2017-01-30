@@ -147,4 +147,35 @@ public class ProjectInfo implements Serializable {
         projectInfo.setCreated( project.getCreated() );
         return projectInfo;
     }
+
+    @Override
+    public boolean equals( Object o ) {
+        if ( this == o ) return true;
+        if ( o == null || getClass() != o.getClass() ) return false;
+
+        ProjectInfo that = (ProjectInfo) o;
+
+        if ( id != null ? !id.equals( that.id ) : that.id != null ) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
+    }
+
+    @Override
+    public String toString() {
+        return "ProjectInfo{" +
+            "id=" + id +
+            ", name='" + name + '\'' +
+            ", details='" + details + '\'' +
+            ", stateId=" + stateId +
+            ", productDirection=" + productDirection +
+            ", headManager=" + headManager +
+            ", managers=" + managers +
+            ", created=" + created +
+            '}';
+    }
 }

@@ -24,4 +24,6 @@ public interface RegionService extends RemoteService {
     Map<String, List<ProjectInfo>> getProjectsByRegions( ProjectQuery query ) throws RequestFailedException;
 
     ProjectInfo getProject( Long id ) throws RequestFailedException;
+
+    void saveProject( ProjectInfo project ) throws RequestFailedException;
 }

@@ -30,4 +30,10 @@ public interface ProjectService {
      * @param id
      */
     CoreResponse<ProjectInfo> getProject( Long id );
+
+    /**
+     * Изменяем проект
+     * @param project    проект
+     */
+    CoreResponse saveProject( ProjectInfo project );
 }

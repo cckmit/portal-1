@@ -62,6 +62,22 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         fireEvent( new ProjectEvents.ShowFullScreen( projectId ) );
     }
 
+    @Override
+    public void onProjectChanged() {
+        readView();
+        regionService.saveProject( project, new RequestCallback<Void>(){
+            @Override
+            public void onError( Throwable throwable ) {
+                fireEvent( new NotifyEvents.Show( lang.errNotSaved(), NotifyEvents.NotifyType.ERROR ) );
+            }
+
+            @Override
+            public void onSuccess( Void aVoid ) {
+                fireEvent( new ProjectEvents.Changed( project ) );
+            }
+        });
+    }
+
     private void fillView( Long id ) {
         if (id == null) {
             fireEvent( new NotifyEvents.Show( lang.errIncorrectParams(), NotifyEvents.NotifyType.ERROR ) );
@@ -83,6 +99,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
     }
 
     private void fillView( ProjectInfo value ) {
+        this.project = value;
 //        view.setPrivateIssue( value.isPrivateCase() );
         view.setName( value.getName() );
         view.setHeader( value.getId() == null ? "" : lang.projectHeader( value.getId().toString() ) );
@@ -103,6 +120,10 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
 //        fireEvent( new IssueEvents.ShowComments( view.getCommentsContainer(), value.getId() ) );
     }
 
+    private void readView() {
+        project.setName( view.getName() );
+    }
+
     @Inject
     Lang lang;
 
@@ -113,6 +134,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
     RegionServiceAsync regionService;
 
     private Long projectId;
+    ProjectInfo project;
 
     private AppEvents.InitDetails initDetails;
 }

@@ -3,6 +3,7 @@ package ru.protei.portal.ui.common.client.events;
 import com.google.gwt.user.client.ui.HasWidgets;
 import ru.brainworm.factory.context.client.annotation.Name;
 import ru.brainworm.factory.context.client.annotation.Url;
+import ru.protei.portal.core.model.struct.ProjectInfo;
 
 /**
  * События для вкладки с проектами
@@ -70,7 +71,16 @@ public class ProjectEvents {
     /**
      * Добавление / изменение / удаление проектов
      */
-    public static class ChangeModel {}
+    public static class Changed {
+        public Changed() {
+        }
+
+        public Changed( ProjectInfo project ) {
+            this.project = project;
+        }
+
+        public ProjectInfo project;
+    }
 
     /**
      * Показать комментарии
