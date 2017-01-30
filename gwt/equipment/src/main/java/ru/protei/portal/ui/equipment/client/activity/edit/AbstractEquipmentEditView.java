@@ -14,45 +14,4 @@ import java.util.Date;
  */
 public interface AbstractEquipmentEditView extends IsWidget {
     void setActivity( AbstractEquipmentEditActivity activity );
-
-    HasValue<String> firstName();
-    HasValue<String> lastName();
-    HasText secondName();
-
-    HasText displayName();
-    HasText shortName();
-
-    HasValue<Date> birthDay ();
-
-    HasText workPhone ();
-
-    HasText homePhone ();
-
-    HasText workEmail();
-
-//    HasText personalEmail ();
-
-    HasText workFax();
-
-//    HasText homeFax();
-
-    HasText workAddress ();
-
-    HasText homeAddress ();
-
-    HasText displayPosition ();
-
-    HasText displayDepartment ();
-
-    HasText personInfo ();
-
-    HasValue<EntityOption> company();
-
-    HasValue<En_Gender> gender ();
-
-    HasValidable companyValidator();
-
-    HasValidable firstNameValidator();
-
-    HasValidable lastNameValidator();
 }

@@ -652,6 +652,27 @@ label.bordered:after{
   }
 }
 
+.contacts {
+  table {
+    tbody {
+      tr {
+        td {
+          height: 20px;
+
+          > div {
+            height: 20px;
+            max-height: 20px;
+            white-space: pre-line;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+        }
+      }
+    }
+  }
+}
+
+
 .short-table-view {
   .issues {
     .contacts {

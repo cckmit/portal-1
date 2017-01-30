@@ -24,12 +24,10 @@ import ru.protei.portal.ui.equipment.client.activity.filter.AbstractEquipmentFil
  * Представление фильтра контактов
  */
 public class EquipmentFilterView extends Composite implements AbstractEquipmentFilterView {
+
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
-        company.setDefaultValue( lang.selectContactCompany() );
-        search.getElement().setPropertyString( "placeholder", lang.search() );
-        sortField.setType( ModuleType.CONTACT );
     }
 
     @Override
@@ -50,37 +48,19 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
     }
 
     @Override
-    public HasValue<EntityOption> company() {
-        return company;
-    }
-
-    @Override
-    public HasValue<Boolean> showFired() {
-        return showFired;
-    }
-
-    @Override
-    public HasValue<En_SortField> sortField() {
-        return sortField;
-    }
-
-    @Override
-    public HasValue<Boolean> sortDir() {
-        return sortDir;
-    }
-
-    @Override
-    public HasValue<String> searchPattern() {
-        return search;
-    }
-
-    @Override
     public void resetFilter() {
-        company.setValue( null );
-        showFired.setValue( false );
-        sortField.setValue( En_SortField.person_full_name );
-        sortDir.setValue( true );
-        search.setText( "" );
+        name.setValue( null );
+        number.setValue( null );
+    }
+
+    @Override
+    public HasValue< String > name() {
+        return name;
+    }
+
+    @Override
+    public HasValue< String > number() {
+        return number;
     }
 
     @UiHandler( "resetBtn" )
@@ -91,35 +71,7 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
         }
     }
 
-    @UiHandler( "company" )
-    public void onCompanySelected( ValueChangeEvent<EntityOption> event ) {
-        if ( activity != null ) {
-            activity.onFilterChanged();
-        }
-    }
-
-    @UiHandler( "showFired" )
-    public void onShowFireClicked( ClickEvent event ) {
-        if ( activity != null ) {
-            activity.onFilterChanged();
-        }
-    }
-
-    @UiHandler( "sortField" )
-    public void onSortFieldSelected( ValueChangeEvent< En_SortField > event ) {
-        if ( activity != null ) {
-            activity.onFilterChanged();
-        }
-    }
-
-    @UiHandler("sortDir")
-    public void onSortDirClicked( ClickEvent event ) {
-        if ( activity != null ) {
-            activity.onFilterChanged();
-        }
-    }
-
-    @UiHandler( "search" )
+    @UiHandler( {"name", "number"} )
     public void onKeyUpSearch( KeyUpEvent event ) {
         timer.cancel();
         timer.schedule( 300 );
@@ -134,29 +86,16 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
         }
     };
 
-    @Inject
-    @UiField( provided = true )
-    CompanySelector company;
-
-    @UiField
-    CheckBox showFired;
-
-    @Inject
-    @UiField( provided = true )
-    SortFieldSelector sortField;
-
-    @UiField
-    ToggleButton sortDir;
-
-    @UiField
-    TextBox search;
-
     @UiField
     Button resetBtn;
 
     @Inject
     @UiField
     Lang lang;
+    @UiField
+    TextBox number;
+    @UiField
+    TextBox name;
 
     @Inject
     FixedPositioner positioner;

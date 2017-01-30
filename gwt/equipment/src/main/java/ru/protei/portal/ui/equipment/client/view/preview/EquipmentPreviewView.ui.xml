@@ -1,0 +1,14 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+
+    <g:HTMLPanel styleName="preview-wrapper grid">
+        <g:HTMLPanel ui:field="preview" styleName="preview">
+            <fieldset class="header">
+                <legend><ui:text from="{lang.personalData}"/></legend>
+
+            </fieldset>
+        </g:HTMLPanel>
+    </g:HTMLPanel>
+</ui:UiBinder>

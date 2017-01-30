@@ -6,28 +6,27 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.helper.HelperFunc;
-import ru.protei.portal.core.model.query.ContactQuery;
-import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.ui.common.client.service.ContactService;
+import ru.protei.portal.core.model.query.EquipmentQuery;
+import ru.protei.portal.ui.common.client.service.EquipmentService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
 import java.util.List;
 
 /**
- * Реализация сервиса по работе с контактами
+ * Реализация сервиса по работе с оборудованием
  */
-@Service( "ContactService" )
-public class EquipmentServiceImpl implements ContactService {
+@Service( "EquipmentService" )
+public class EquipmentServiceImpl implements EquipmentService {
 
     @Override
-    public List<Person> getContacts( ContactQuery query ) throws RequestFailedException {
+    public List<Equipment> getEquipments( EquipmentQuery query ) throws RequestFailedException {
 
-        log.debug( "getContacts(): searchPattern={} | classifierId={} | isFired={} | sortField={} | sortDir={}",
-                query.getSearchString(), query.getCompanyId(), query.getFired(), query.getSortField(), query.getSortDir() );
+        log.debug( "getEquipments(): name={} | number={}",
+                query.getName(), query.getNumber() );
 
-        CoreResponse<List<Person>> response = contactService.contactList( query );
+        CoreResponse<List<Equipment>> response = equipmentService.equipmentList( query );
 
         if ( response.isError() ) {
             throw new RequestFailedException( response.getStatus() );
@@ -36,31 +35,31 @@ public class EquipmentServiceImpl implements ContactService {
     }
 
     @Override
-    public Person getContact(long id) throws RequestFailedException {
-        log.debug("get contact, id: {}", id);
+    public Equipment getEquipment(long id) throws RequestFailedException {
+        log.debug("get equipment, id: {}", id);
 
-        CoreResponse<Person> response = contactService.getContact(id);
+        CoreResponse<Equipment> response = equipmentService.getEquipment(id);
 
-        log.debug("get contact, id: {} -> {} ", id, response.isError() ? "error" : response.getData().getDisplayName());
+        log.debug("get equipment, id: {} -> {} ", id, response.isError() ? "error" : response.getData());
 
         return response.getData();
     }
 
     @Override
-    public Person saveContact(Person p) throws RequestFailedException {
+    public Equipment saveEquipment(Equipment p) throws RequestFailedException {
         if (p == null) {
-            log.warn("null person in request");
+            log.warn("null equipment in request");
             throw new RequestFailedException(En_ResultStatus.INTERNAL_ERROR);
         }
 
-        log.debug("store contact, id: {} ", HelperFunc.nvl(p.getId(), "new"));
+        log.debug("store equipment, id: {} ", HelperFunc.nvl(p.getId(), "new"));
 
-        CoreResponse<Person> response = contactService.saveContact(p);
+        CoreResponse<Equipment> response = equipmentService.saveEquipment(p);
 
-        log.debug("store contact, result: {}", response.isOk() ? "ok" : response.getStatus());
+        log.debug("store equipment, result: {}", response.isOk() ? "ok" : response.getStatus());
 
         if (response.isOk()) {
-            log.debug("store contact, applied id: {}", response.getData().getId());
+            log.debug("store equipment, applied id: {}", response.getData().getId());
             return response.getData();
         }
 
@@ -68,28 +67,13 @@ public class EquipmentServiceImpl implements ContactService {
     }
 
     @Override
-    public Long getContactsCount( ContactQuery query ) throws RequestFailedException {
-        log.debug( "getContactsCount(): query={}", query );
-        return contactService.count( query ).getData();
-    }
-
-    public List<PersonShortView> getContactViewList( ContactQuery query ) throws RequestFailedException {
-
-        log.debug( "getContactViewList(): searchPattern={} | classifierId={} | isFired={} | sortField={} | sortDir={}",
-                query.getSearchString(), query.getCompanyId(), query.getFired(), query.getSortField(), query.getSortDir() );
-
-        CoreResponse< List<PersonShortView> > result = contactService.shortViewList( query );
-
-        log.debug( "result status: {}, data-amount: {}", result.getStatus(), result.isOk() ? result.getDataAmountTotal() : 0 );
-
-        if ( result.isError() )
-            throw new RequestFailedException( result.getStatus() );
-
-        return result.getData();
+    public Long getEquipmentCount( EquipmentQuery query ) throws RequestFailedException {
+        log.debug( "getEquipmentCount(): query={}", query );
+        return equipmentService.count( query ).getData();
     }
 
     @Autowired
-    ru.protei.portal.core.service.ContactService contactService;
+    ru.protei.portal.core.service.EquipmentService equipmentService;
 
     private static final Logger log = LoggerFactory.getLogger( "web" );
 

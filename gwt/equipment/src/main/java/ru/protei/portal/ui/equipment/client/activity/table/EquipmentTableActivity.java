@@ -5,9 +5,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.dict.En_SortDir;
-import ru.protei.portal.core.model.dict.En_SortField;
-import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.query.EquipmentQuery;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
@@ -24,7 +22,7 @@ import ru.protei.winter.web.common.client.events.SectionEvents;
 import java.util.List;
 
 /**
- * Активность таблицы контактов
+ * Активность таблицы оборудования
  */
 public abstract class EquipmentTableActivity
         implements AbstractEquipmentTableActivity, AbstractEquipmentFilterActivity,
@@ -46,24 +44,26 @@ public abstract class EquipmentTableActivity
     }
 
     @Event
+    public void onInitDetails( AppEvents.InitDetails initDetails ) {
+        this.init = initDetails;
+    }
+
+    @Event
     public void onAuthSuccess (AuthEvents.Success event) {
         filterView.resetFilter();
     }
 
     @Event
     public void onShow( EquipmentEvents.Show event ) {
-
-        this.fireEvent( new AppEvents.InitPanelName( lang.contacts() ) );
         init.parent.clear();
         init.parent.add( view.asWidget() );
         init.parent.add( pagerView.asWidget() );
 
-        fireEvent( new ActionBarEvents.Add( CREATE_ACTION, UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.CONTACT ) );
+        fireEvent( new ActionBarEvents.Add( CREATE_ACTION, UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.EQUIPMENT ) );
 
         view.showElements();
-        isShowTable = false;
 
-        query = makeQuery( null );
+        query = makeQuery();
         requestTotalCount();
     }
 
@@ -73,52 +73,31 @@ public abstract class EquipmentTableActivity
             return;
         }
 
-        fireEvent(new EquipmentEvents.Edit().newItem(filterView.company().getValue()));
-    }
-
-    @Event
-    public void onShowTable( EquipmentEvents.ShowTable event ) {
-        event.parent.clear();
-        event.parent.add( view.asWidget() );
-
-        isShowTable = true;
-
-        query = makeQuery( event.companyId );
-
-        requestTotalCount();
-
-        view.hideElements();
-    }
-
-    @Event
-    public void onInitDetails( AppEvents.InitDetails initDetails ) {
-        this.init = initDetails;
+        fireEvent( new EquipmentEvents.Edit( null ) );
     }
 
     @Override
-    public void onItemClicked ( Person value ) {
-        if ( !isShowTable ) {
-            showPreview( value );
-        }
+    public void onItemClicked ( Equipment value ) {
+        showPreview( value );
     }
 
     @Override
-    public void onEditClicked(Person value ) {
+    public void onEditClicked(Equipment value ) {
         fireEvent(EquipmentEvents.Edit.byId(value.getId()));
     }
 
     @Override
     public void onFilterChanged() {
-        query = makeQuery( null );
+        query = makeQuery();
         requestTotalCount();
     }
 
     @Override
-    public void loadData( int offset, int limit, AsyncCallback<List<Person>> asyncCallback ) {
+    public void loadData( int offset, int limit, AsyncCallback<List<Equipment>> asyncCallback ) {
         query.setOffset( offset );
         query.setLimit( limit );
 
-        contactService.getEquipments( query, new RequestCallback<List<Person>>() {
+        equipmentService.getEquipments( query, new RequestCallback<List<Equipment>>() {
             @Override
             public void onError( Throwable throwable ) {
                 fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
@@ -126,7 +105,7 @@ public abstract class EquipmentTableActivity
             }
 
             @Override
-            public void onSuccess( List<Person> persons ) {
+            public void onSuccess( List<Equipment> persons ) {
                 asyncCallback.onSuccess( persons );
             }
         } );
@@ -151,7 +130,7 @@ public abstract class EquipmentTableActivity
         view.clearRecords();
         animation.closeDetails();
 
-        contactService.getEquipmentsCount(query, new RequestCallback<Long>() {
+        equipmentService.getEquipmentCount(query, new RequestCallback<Long>() {
             @Override
             public void onError(Throwable throwable) {
                 fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
@@ -165,8 +144,7 @@ public abstract class EquipmentTableActivity
         });
     }
 
-    private void showPreview ( Person value ) {
-
+    private void showPreview ( Equipment value ) {
         if ( value == null ) {
             animation.closeDetails();
         } else {
@@ -175,36 +153,25 @@ public abstract class EquipmentTableActivity
         }
     }
 
-    private EquipmentQuery makeQuery( Long companyId ) {
-        if ( companyId != null ) {
-            return new EquipmentQuery( companyId, null, null, En_SortField.person_full_name, En_SortDir.ASC);
-        }
-        return new EquipmentQuery( filterView.company().getValue(),
-                filterView.showFired().getValue() ? null : filterView.showFired().getValue(),
-                filterView.searchPattern().getValue(), filterView.sortField().getValue(),
-                filterView.sortDir().getValue()? En_SortDir.ASC: En_SortDir.DESC );
-
-    };
-
+    private EquipmentQuery makeQuery() {
+        return new EquipmentQuery( filterView.name().getValue(), filterView.number().getValue() );
+    }
 
     @Inject
     Lang lang;
-
     @Inject
     AbstractEquipmentTableView view;
     @Inject
     AbstractEquipmentFilterView filterView;
 
     @Inject
-    EquipmentServiceAsync contactService;
+    EquipmentServiceAsync equipmentService;
 
     @Inject
     TableAnimation animation;
 
     @Inject
     AbstractPagerView pagerView;
-
-    private boolean isShowTable = false;
 
     private AppEvents.InitDetails init;
     private EquipmentQuery query;

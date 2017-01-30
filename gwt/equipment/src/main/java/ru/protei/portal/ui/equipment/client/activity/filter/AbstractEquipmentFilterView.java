@@ -12,10 +12,9 @@ public interface AbstractEquipmentFilterView extends IsWidget {
 
     void setActivity( AbstractEquipmentFilterActivity activity );
 
-    HasValue<EntityOption> company();
-    HasValue<Boolean> showFired();
-    HasValue<En_SortField> sortField();
-    HasValue< Boolean > sortDir();
-    HasValue< String > searchPattern();
+    HasValue<String> name();
+
+    HasValue<String> number();
+
     void resetFilter();
 }

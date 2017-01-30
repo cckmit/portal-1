@@ -10,12 +10,17 @@ import ru.protei.portal.ui.common.client.animation.TableAnimation;
 public interface AbstractEquipmentTableView extends IsWidget {
 
     void setActivity( AbstractEquipmentTableActivity activity );
+
     void setAnimation ( TableAnimation animation );
 
     void hideElements();
+
     void showElements();
+
     void clearRecords();
+
     HasWidgets getPreviewContainer ();
+
     HasWidgets getFilterContainer ();
 
     void setRecordCount( Long count );

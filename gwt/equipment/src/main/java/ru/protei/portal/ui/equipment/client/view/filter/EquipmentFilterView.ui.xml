@@ -1,28 +1,17 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
-             xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:companyselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.company'
-             xmlns:sortfieldselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.sortfield'>
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel styleName="panel">
         <div class="body">
-            <div class="form-group local-search col-xs-12">
-                <span class="icon local-search-icon"></span>
-                <g:TextBox ui:field="search" styleName="input-field"/>
-            </div>
-            <div class="form-group  col-xs-12">
-                <label><ui:text from="{lang.sortBy}"/></label>
-                <div class="control-group">
-                    <sortfieldselector:SortFieldSelector ui:field="sortField" type="CONTACT"/>
-                    <g:ToggleButton ui:field="sortDir" styleName="btn btn-white sorting_button"/>
-                </div>
+            <div class="form-group col-xs-12">
+                <label><ui:text from="{lang.equipmentName}"/></label>
+                <g:TextBox ui:field="name" styleName="input-field"/>
             </div>
             <div class="form-group col-xs-12">
-                <companyselector:CompanySelector ui:field="company" header="{lang.company}"/>
-            </div>
-            <div class="form-group col-xs-12">
-                <g:CheckBox ui:field="showFired" styleName="checkbox" text="{lang.contactShowFired}"/>
+                <label><ui:text from="{lang.equipmentDecimalNumber}"/></label>
+                <g:TextBox ui:field="number" styleName="input-field"/>
             </div>
         </div>
         <div class="footer">

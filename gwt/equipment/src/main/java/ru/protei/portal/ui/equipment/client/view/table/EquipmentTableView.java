@@ -7,16 +7,13 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import ru.brainworm.factory.widget.table.client.AbstractColumn;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
-import ru.brainworm.factory.widget.table.client.helper.SelectionColumn;
-import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
+import ru.protei.portal.core.model.ent.Equipment;
+import ru.protei.portal.core.model.helper.HTMLHelper;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
-import ru.protei.portal.ui.common.client.common.ContactColumnBuilder;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.separator.Separator;
 import ru.protei.portal.ui.equipment.client.activity.table.AbstractEquipmentTableActivity;
@@ -63,7 +60,6 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
     @Override
     public void hideElements() {
         filterContainer.setVisible( false );
-        //hideColumn.setVisibility( false );
         tableContainer.removeStyleName( "col-xs-9" );
         tableContainer.addStyleName( "col-xs-12" );
     }
@@ -71,7 +67,6 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
     @Override
     public void showElements() {
         filterContainer.setVisible( true );
-        //hideColumn.setVisibility( true );
         tableContainer.removeStyleName( "col-xs-12" );
         tableContainer.addStyleName( "col-xs-9" );
     }
@@ -103,69 +98,77 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
     }
 
     private void initTable () {
+        editClickColumn = new EditClickColumn<Equipment>( lang ) {};
 
-        editClickColumn = new EditClickColumn<Person>( lang ) {};
-
-        ClickColumn< Person > displayName = new ClickColumn< Person >() {
+        ClickColumn< Equipment > name = new ClickColumn< Equipment >() {
             @Override
             protected void fillColumnHeader( Element element ) {
-                element.setInnerText( lang.contactFullName() );
+                element.setInnerText( lang.equipmentName() );
             }
 
             @Override
-            public void fillColumnValue ( Element cell, Person value ) {
+            public void fillColumnValue ( Element cell, Equipment value ) {
+                Element root = DOM.createDiv();
+                root.setInnerHTML( "<b>" + value.getName() + "</b>" + "<br/><i>" + value.getNameBySpecification() + "</i>");
+                cell.appendChild( root );
+            }
+        };
+        columns.add( name );
+
+        ClickColumn< Equipment > decimalNumber = new ClickColumn< Equipment >() {
+            @Override
+            protected void fillColumnHeader( Element element ) {
+                element.setInnerText( lang.equipmentDecimalNumber() );
+            }
+
+            @Override
+            public void fillColumnValue ( Element cell, Equipment value ) {
                 Element root = DOM.createDiv();
                 cell.appendChild( root );
 
-                Element fioElement = DOM.createDiv();
-                fioElement.setInnerHTML( "<b>" + value.getDisplayName() + "<b>" );
-                root.appendChild( fioElement );
+                if ( value.getPAMR_RegisterNumber() != null ) {
+                    Element pamrDecimalNumber = DOM.createDiv();
+                    pamrDecimalNumber.setInnerHTML( lang.equipmentOrganizationCodePAMR()
+                            + "." + value.getClassifierCode() + "." + value.getPAMR_RegisterNumber() );
+                    root.appendChild( pamrDecimalNumber );
+                }
 
-                PlainContactInfoFacade infoFacade = new PlainContactInfoFacade( value.getContactInfo() );
-                root.appendChild( ContactColumnBuilder.make().add( "ion-android-call", infoFacade.getWorkPhone() )
-                        .add( "ion-android-call", infoFacade.getMobilePhone() )
-                        .add( "ion-android-phone-portrait", infoFacade.getHomePhone() )
-                        .toElement() );
-
-                root.appendChild( ContactColumnBuilder.make().add( "ion-android-mail", infoFacade.getEmail() )
-                        .add( "ion-android-mail", infoFacade.getEmail_own() )
-                        .toElement() );
+                if ( value.getPDRA_RegisterNumber() != null ) {
+                    Element pdraDecimalNumber = DOM.createDiv();
+                    pdraDecimalNumber.setInnerHTML( lang.equipmentOrganizationCodePDRA()
+                            + "." + value.getClassifierCode() + "." + value.getPDRA_RegisterNumber() );
+                    root.appendChild( pdraDecimalNumber );
+                }
             }
         };
-        columns.add( displayName );
+        columns.add( decimalNumber );
 
-        ClickColumn< Person > company = new ClickColumn< Person >() {
+
+        ClickColumn< Equipment > comment = new ClickColumn< Equipment >() {
             @Override
             protected void fillColumnHeader( Element element ) {
-                element.setInnerText( lang.company() );
-                element.addClassName( "company" );
+                element.setInnerText( lang.equipmentComment() );
             }
 
             @Override
-            public void fillColumnValue ( Element cell, Person value ) {
-                Element root = DOM.createDiv();
-                cell.appendChild( root );
+            public void fillColumnValue ( Element cell, Equipment value ) {
+                if ( value.getComment() == null ) {
+                    return;
+                }
 
-                Element fioElement = DOM.createDiv();
-                fioElement.setInnerHTML( "<b>" + value.getCompany().getCname() + "<b>" );
-                root.appendChild( fioElement );
-
-                Element posElement = DOM.createDiv();
-                posElement.addClassName( "contact-position" );
-                posElement.setInnerHTML( value.getPosition() );
-                root.appendChild( posElement );
+                cell.setInnerHTML( HTMLHelper.wrapDiv( value.getComment() ) );
             }
         };
-        columns.add( company );
+        columns.add( comment );
 
-        //hideColumn = table.addColumn( selectionColumn.header, selectionColumn.values );
-        table.addColumn( company.header, company.values );
-        table.addColumn( displayName.header, displayName.values );
+        table.addColumn( name.header, name.values );
+        table.addColumn( decimalNumber.header, decimalNumber.values );
+        table.addColumn( comment.header, comment.values );
         table.addColumn( editClickColumn.header, editClickColumn.values );
     }
 
     @UiField
-    InfiniteTableWidget<Person> table;
+    InfiniteTableWidget<Equipment> table;
 
     @UiField
     HTMLPanel tableContainer;
@@ -182,10 +185,8 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
     Separator separator;
 
 
-    AbstractColumn hideColumn;
-    ClickColumnProvider<Person> columnProvider = new ClickColumnProvider<>();
-    SelectionColumn< Person > selectionColumn = new SelectionColumn<>();
-    EditClickColumn<Person > editClickColumn;
+    ClickColumnProvider<Equipment> columnProvider = new ClickColumnProvider<>();
+    EditClickColumn<Equipment> editClickColumn;
     List<ClickColumn > columns = new ArrayList<>();
 
 

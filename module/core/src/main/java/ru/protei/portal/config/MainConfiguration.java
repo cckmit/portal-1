@@ -169,6 +169,9 @@ public class MainConfiguration {
         return new CompanyCategoryDAO_Impl();
     }
 
+    @Bean
+    public EquipmentDAO getEquipmentDAO() { return new EquipmentDAO_Impl(); }
+
 /**
  *
  *
@@ -200,6 +203,8 @@ public class MainConfiguration {
     @Bean
     public CaseService getCaseService() { return new CaseServiceImpl(); }
 
+    @Bean
+    public EquipmentService getEquipmentService() { return new EquipmentServiceImpl(); }
 
 
     /** ASPECT/INTERCEPTORS **/

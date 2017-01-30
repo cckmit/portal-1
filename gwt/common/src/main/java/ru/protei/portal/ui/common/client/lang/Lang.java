@@ -297,4 +297,14 @@ public interface Lang extends Messages, ContactItemLang {
     String errEditIssueCommentEmpty();
 
     String classifier();
+
+    String equipmentName();
+
+    String equipmentOrganizationCodePAMR();
+
+    String equipmentOrganizationCodePDRA();
+
+    String equipmentDecimalNumber();
+
+    String equipmentComment();
 }
