@@ -61,6 +61,12 @@ public class ProjectServiceImpl implements ProjectService {
 
         CaseQuery caseQuery = new CaseQuery();
         caseQuery.setType( En_CaseType.PROJECT );
+        caseQuery.setStateIds( query.getStates().stream()
+                .map( (state)->{ return new Long(state.getId()).intValue();} )
+                .collect( Collectors.toList() )
+        );
+        caseQuery.setProductId( query.getDirectionId() );
+
         List<CaseObject> projects = caseObjectDAO.listByQuery( caseQuery );
         projects.forEach( (project)->{
             iterateAllLocations( project, (location)->{
@@ -77,6 +83,12 @@ public class ProjectServiceImpl implements ProjectService {
         Map<String, List<ProjectInfo>> regionToProjectMap = new HashMap<>();
         CaseQuery caseQuery = new CaseQuery();
         caseQuery.setType( En_CaseType.PROJECT );
+        caseQuery.setStateIds( query.getStates().stream()
+                .map( (state)->{ return new Long(state.getId()).intValue();} )
+                .collect( Collectors.toList() )
+        );
+        caseQuery.setProductId( query.getDirectionId() );
+
         List<CaseObject> projects = caseObjectDAO.listByQuery( caseQuery );
         projects.forEach( (project)->{
             iterateAllLocations( project, (location)->{

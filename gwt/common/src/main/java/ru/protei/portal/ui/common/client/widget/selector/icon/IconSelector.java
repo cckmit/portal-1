@@ -79,7 +79,6 @@ public class IconSelector<T> extends Selector<T> implements HasEnabled {
             removeOldStyleNames();
             anchorIcon.addStyleName( icon );
         }
-
         anchorIcon.setTitle( selectedValue.getIcon() );
     }
 

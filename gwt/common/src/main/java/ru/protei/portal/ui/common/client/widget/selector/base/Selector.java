@@ -48,13 +48,13 @@ public abstract class Selector<T>
             fireEvents = true;
         }
 
+        selectedOption = value;
         if ( value == null || !itemToDisplayOptionModel.containsKey( value ) ) {
             fillSelectorView( nullItemOption );
         } else {
             fillSelectorView( itemToDisplayOptionModel.get( value ) );
         }
 
-        selectedOption = value;
         if ( fireEvents ) {
             ValueChangeEvent.fire( this, value );
         }
