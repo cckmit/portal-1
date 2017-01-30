@@ -8,7 +8,7 @@
     <g:HTMLPanel styleName="preview-wrapper grid with-table-pager">
         <g:HTMLPanel ui:field="preview" styleName="preview project">
             <div class="col-xs-12">
-                <g:Anchor ui:field="fullScreen" styleName="fa fa-lg fa-external-link pull-right" href="#"/>
+                <g:Anchor ui:field="fullScreen" styleName="fa fa-lg fa-external-link pull-right hide" href="#"/>
             </div>
 
             <fieldset class="header">
