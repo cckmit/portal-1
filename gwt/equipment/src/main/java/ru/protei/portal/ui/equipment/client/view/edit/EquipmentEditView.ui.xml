@@ -1,11 +1,34 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:validatefield="urn:import:ru.protei.portal.ui.common.client.widget.validatefield"
+             xmlns:number="urn:import:ru.protei.portal.ui.equipment.client.widget.number"
 >
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel styleName="panel">
             <div class="body">
                 <div class="grid grid-indent">
+                    <div class="form-group col-xs-6">
+                        <label>
+                            <ui:text from="{lang.equipmentNameBySpecification}"/>
+                        </label>
+                        <validatefield:ValidableTextBox ui:field="nameSpecification" styleName="input-field" notNull="true"/>
+                    </div>
+
+                    <div class="form-group col-xs-6">
+                        <label>
+                            <ui:text from="{lang.equipmentNameBySldWrks}"/>
+                        </label>
+                        <validatefield:ValidableTextBox ui:field="nameSldWrks" styleName="input-field" notNull="true"/>
+                    </div>
+
+                    <div class="form-group col-xs-12 col-sm-6">
+                        <number:DecimalNumberBox ui:field="pamrNum" organizationCode="{lang.equipmentOrganizationCodePAMR}"/>
+                    </div>
+
+                    <div class="form-group col-xs-12 col-sm-6">
+                        <number:DecimalNumberBox ui:field="pdraNum" organizationCode="{lang.equipmentOrganizationCodePDRA}"/>
+                    </div>
                 </div>
             </div>
             <div class="footer">

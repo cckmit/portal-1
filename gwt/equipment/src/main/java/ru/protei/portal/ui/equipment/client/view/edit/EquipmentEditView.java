@@ -7,21 +7,14 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
-import ru.protei.portal.core.model.dict.En_Gender;
-import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
-import ru.protei.portal.ui.common.client.widget.selector.dict.GenderButtonSelector;
-import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.equipment.client.activity.edit.AbstractEquipmentEditActivity;
 import ru.protei.portal.ui.equipment.client.activity.edit.AbstractEquipmentEditView;
-
-import java.util.Date;
+import ru.protei.portal.ui.equipment.client.widget.number.DecimalNumberBox;
 
 
 /**
- * Created by michael on 02.11.16.
+ * Карточка редактирования единицы оборудования
  */
 public class EquipmentEditView extends Composite implements AbstractEquipmentEditView {
 
@@ -41,6 +34,7 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
             activity.onSaveClicked();
         }
     }
+
     @UiHandler( "cancelButton" )
     public void onCancelClicked( ClickEvent event ) {
         if ( activity != null ) {
@@ -53,6 +47,14 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
 
     @UiField
     Button cancelButton;
+    @UiField
+    ValidableTextBox nameSldWrks;
+    @UiField
+    ValidableTextBox nameSpecification;
+    @UiField
+    DecimalNumberBox pdraNum;
+    @UiField
+    DecimalNumberBox pamrNum;
 
     AbstractEquipmentEditActivity activity;
 

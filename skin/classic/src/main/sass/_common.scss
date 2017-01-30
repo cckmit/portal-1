@@ -1314,3 +1314,27 @@ a {
 .text-success {
   color: teal;
 }
+
+
+.dn {
+
+}
+
+.dn {
+  .dn-container {
+    width: 100%;
+    display: flex;
+
+    .dn-separator {
+      margin: 0 7px;
+    }
+
+    .dn-classifier-code {
+      flex-shrink: 2;
+    }
+
+    .dn-register-number, .dn-register-number-modifier {
+      flex-shrink: 3;
+    }
+  }
+}

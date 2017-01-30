@@ -307,4 +307,8 @@ public interface Lang extends Messages, ContactItemLang {
     String equipmentDecimalNumber();
 
     String equipmentComment();
+
+    String equipmentNameBySpecification();
+
+    String equipmentNameBySldWrks();
 }

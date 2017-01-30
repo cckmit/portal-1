@@ -1,0 +1,19 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:validatefield="urn:import:ru.protei.portal.ui.common.client.widget.validatefield">
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+
+    <g:HTMLPanel styleName="dn">
+        <div class="dn-container">
+            <label ui:field="organizationCode"></label>
+            <label class="dn-separator">.</label>
+            <validatefield:ValidableTextBox ui:field="classifierCode" styleName="input-field dn-classifier-code" notNull="true"/>
+            <label class="dn-separator">.</label>
+            <validatefield:ValidableTextBox ui:field="regNum" styleName="input-field dn-register-number"/>
+            <label class="dn-separator">–</label>
+            <validatefield:ValidableTextBox ui:field="regNumModifier" styleName="input-field dn-register-number-modifier" />
+        </div>
+        <p ui:field="msg" class="dn-msg"/>
+       </g:HTMLPanel>
+</ui:UiBinder>
