@@ -123,6 +123,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
     private void readView() {
         project.setName( view.getName() );
         project.setProductDirection( EntityOption.fromProductDirectionInfo( view.direction().getValue() ) );
+        project.setHeadManager( view.headManager().getValue() );
     }
 
     @Inject

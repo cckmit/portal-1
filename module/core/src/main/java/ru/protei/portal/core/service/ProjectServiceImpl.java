@@ -4,7 +4,9 @@ package ru.protei.portal.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.core.model.dao.CaseMemberDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.LocationDAO;
 import ru.protei.portal.core.model.dict.En_CaseType;
@@ -43,6 +45,9 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Autowired
     JdbcManyRelationsHelper helper;
+
+    @Autowired
+    CaseMemberDAO caseMemberDAO;
 
     @Override
     public CoreResponse<List<RegionInfo>> listRegions( ProjectQuery query ) {
@@ -91,6 +96,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
+    @Transactional
     public CoreResponse saveProject( ProjectInfo project ) {
         CaseObject caseObject = caseObjectDAO.get( project.getId() );
         helper.fillAll( caseObject );
@@ -103,9 +109,29 @@ public class ProjectServiceImpl implements ProjectService {
             caseObject.setProductId( project.getProductDirection().getId() );
         }
 
+        updateHeadManager( caseObject, project.getHeadManager() );
         caseObjectDAO.merge( caseObject );
 
         return new CoreResponse().success( null );
+    }
+
+    private void updateHeadManager( CaseObject caseObject, PersonShortView headManager ) {
+        for ( CaseMember member : caseObject.getMembers() ) {
+            if ( !member.getRole().equals( En_DevUnitPersonRoleType.HEAD_MANAGER ) ) {
+                continue;
+            }
+
+            if ( headManager == null ) {
+                caseMemberDAO.removeByKey( member.getId() );
+                return;
+            }
+            else {
+                member.setMemberId( headManager.getId() );
+                caseMemberDAO.merge( member );
+                return;
+            }
+
+        }
     }
 
     private void iterateAllLocations( CaseObject project, Consumer<Location> handler ) {

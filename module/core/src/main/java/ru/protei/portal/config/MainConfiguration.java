@@ -174,6 +174,9 @@ public class MainConfiguration {
         return new LocationDAO_Impl();
     }
 
+    @Bean
+    public CaseMemberDAO getCaseMemberDAO() { return new CaseMemberDAO_Impl(); }
+
 /**
  *
  *

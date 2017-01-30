@@ -16,9 +16,12 @@ public class CaseMember implements Serializable{
     private Long id;
 
     @JdbcColumn(name="CASE_ID")
-    private Integer caseId;
+    private Long caseId;
 
-    @JdbcJoinedObject(localColumn = "member_id", remoteColumn = "id", updateLocalColumn = true )
+    @JdbcColumn(name="MEMBER_ID")
+    private Long memberId;
+
+    @JdbcJoinedObject(localColumn = "MEMBER_ID", remoteColumn = "id", updateLocalColumn = true )
     private Person member;
 
     @JdbcColumn(name="MEMBER_ROLE_ID")
@@ -43,6 +46,14 @@ public class CaseMember implements Serializable{
         this.member = member;
     }
 
+    public Long getMemberId() {
+        return memberId;
+    }
+
+    public void setMemberId( Long memberId ) {
+        this.memberId = memberId;
+    }
+
     public En_DevUnitPersonRoleType getRole() {
         return En_DevUnitPersonRoleType.forId( roleId );
     }
@@ -51,11 +62,11 @@ public class CaseMember implements Serializable{
         this.roleId = role.getId();
     }
 
-    public Integer getCaseId() {
+    public Long getCaseId() {
         return caseId;
     }
 
-    public void setCaseId( Integer caseId ) {
+    public void setCaseId( Long caseId ) {
         this.caseId = caseId;
     }
 
