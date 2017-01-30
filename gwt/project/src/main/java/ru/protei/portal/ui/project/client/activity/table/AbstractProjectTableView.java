@@ -21,4 +21,5 @@ public interface AbstractProjectTableView extends IsWidget {
     void addSeparator( String text );
 
     void updateRow( ProjectInfo project );
+
 }

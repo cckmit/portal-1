@@ -18,6 +18,7 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.HashSet;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 /**
  * Активность превью проекта
@@ -100,19 +101,11 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
 
     private void fillView( ProjectInfo value ) {
         this.project = value;
-//        view.setPrivateIssue( value.isPrivateCase() );
         view.setName( value.getName() );
         view.setHeader( value.getId() == null ? "" : lang.projectHeader( value.getId().toString() ) );
         view.setCreationDate( value.getCreated() == null ? "" : DateFormatter.formatDateTime( value.getCreated() ) );
         view.state().setValue( value.getState() );
-//        view.setCriticality( value.getImpLevel() );
-
         view.direction().setValue( value.getProductDirection() == null ? null : new ProductDirectionInfo( value.getProductDirection() ) );
-//        view.setCompany( value.getInitiatorCompany() == null ? "" : value.getInitiatorCompany().getCname() );
-//        view.setContact( value.getInitiator() == null ? "" : value.getInitiator().getDisplayName() );
-//        Company ourCompany = value.getManager() == null ? null : value.getManager().getCompany();
-//        view.setOurCompany( ourCompany == null ? "" : ourCompany.getCname() );
-
         view.headManager().setValue( value.getHeadManager() );
         view.deployManagers().setValue( new HashSet<>( value.getManagers() ) );
         view.setDetails( value.getDetails() == null ? "" : value.getDetails() );
@@ -124,6 +117,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         project.setName( view.getName() );
         project.setProductDirection( EntityOption.fromProductDirectionInfo( view.direction().getValue() ) );
         project.setHeadManager( view.headManager().getValue() );
+        project.setManagers( view.deployManagers().getValue().stream().collect( Collectors.toList() ) );
     }
 
     @Inject

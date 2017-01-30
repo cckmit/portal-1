@@ -1,6 +1,7 @@
 package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
@@ -21,7 +22,7 @@ public class CaseMember implements Serializable{
     @JdbcColumn(name="MEMBER_ID")
     private Long memberId;
 
-    @JdbcJoinedObject(localColumn = "MEMBER_ID", remoteColumn = "id", updateLocalColumn = true )
+    @JdbcJoinedObject(localColumn = "MEMBER_ID", remoteColumn = "id", updateLocalColumn = false )
     private Person member;
 
     @JdbcColumn(name="MEMBER_ROLE_ID")
@@ -78,5 +79,13 @@ public class CaseMember implements Serializable{
             ", caseId=" + caseId +
             ", roleId=" + roleId +
             '}';
+    }
+
+    public static CaseMember makeDeployManagerOf( CaseObject caseObject, PersonShortView person ) {
+        CaseMember caseMember = new CaseMember();
+        caseMember.setMemberId( person.getId() );
+        caseMember.setRole( En_DevUnitPersonRoleType.DEPLOY_MANAGER );
+        caseMember.setCaseId( caseObject.getId() );
+        return caseMember;
     }
 }

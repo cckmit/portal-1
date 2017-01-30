@@ -109,28 +109,38 @@ public class ProjectServiceImpl implements ProjectService {
             caseObject.setProductId( project.getProductDirection().getId() );
         }
 
-        updateHeadManager( caseObject, project.getHeadManager() );
+        updateManagers( caseObject, project.getHeadManager(), project.getManagers() );
         caseObjectDAO.merge( caseObject );
 
         return new CoreResponse().success( null );
     }
 
-    private void updateHeadManager( CaseObject caseObject, PersonShortView headManager ) {
+    private void updateManagers( CaseObject caseObject, PersonShortView headManager, List<PersonShortView> deployManagers ) {
         for ( CaseMember member : caseObject.getMembers() ) {
-            if ( !member.getRole().equals( En_DevUnitPersonRoleType.HEAD_MANAGER ) ) {
-                continue;
+            if ( member.getRole().equals( En_DevUnitPersonRoleType.HEAD_MANAGER ) ) {
+                if ( headManager == null ) {
+                    caseMemberDAO.removeByKey( member.getId() );
+                    continue;
+                }
+                else {
+                    member.setMemberId( headManager.getId() );
+                    caseMemberDAO.merge( member );
+                    continue;
+                }
             }
+            else if ( member.getRole().equals( En_DevUnitPersonRoleType.DEPLOY_MANAGER ) ) {
+                int nPos = deployManagers.indexOf( PersonShortView.fromPerson( member.getMember() ) );
+                if ( nPos == -1 ) {
+                    caseMemberDAO.removeByKey( member.getId() );
+                }
+                else {
+                    deployManagers.remove( nPos );
+                }
+            }
+        }
 
-            if ( headManager == null ) {
-                caseMemberDAO.removeByKey( member.getId() );
-                return;
-            }
-            else {
-                member.setMemberId( headManager.getId() );
-                caseMemberDAO.merge( member );
-                return;
-            }
-
+        for ( PersonShortView deployManager : deployManagers ) {
+            caseMemberDAO.persist( CaseMember.makeDeployManagerOf( caseObject, deployManager ) );
         }
     }
 

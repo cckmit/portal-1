@@ -168,6 +168,12 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
         projectChanged.schedule( 500 );
     }
 
+    @UiHandler( "deployManager" )
+    public void onDeployManagersChanged( ValueChangeEvent<Set<PersonShortView>> value ) {
+        projectChanged.cancel();
+        projectChanged.schedule( 500 );
+    }
+
     private Timer projectChanged = new Timer() {
         @Override
         public void run() {
