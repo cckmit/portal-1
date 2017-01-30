@@ -180,6 +180,9 @@ public class MainConfiguration {
 
     @Bean
     public CaseLocationDAO getCaseLocationDAO() { return new CaseLocationDAO_Impl(); }
+
+    @Bean
+    public CaseTypeDAO getCaseTypeDAO() { return new CaseTypeDAO_Impl(); }
 /**
  *
  *

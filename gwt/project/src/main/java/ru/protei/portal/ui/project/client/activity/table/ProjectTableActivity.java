@@ -63,7 +63,19 @@ public abstract class ProjectTableActivity
             return;
         }
 
-        fireEvent(new ProjectEvents.Edit());
+        regionService.createNewProject( new RequestCallback<Long>(){
+            @Override
+            public void onError( Throwable throwable ) {
+
+            }
+
+            @Override
+            public void onSuccess( Long aLong ) {
+                updateListAndSelect( aLong );
+            }
+        });
+//
+//        fireEvent( new ProjectEvents.Edit() );
     }
 
     @Event
@@ -106,6 +118,24 @@ public abstract class ProjectTableActivity
                     fillRows( result );
                 }
             } );
+    }
+
+    private void updateListAndSelect( Long projectId ) {
+        regionService.getProjectsByRegions( getQuery(), new RequestCallback<Map<String, List<ProjectInfo>>>() {
+            @Override
+            public void onError( Throwable throwable ) {
+                fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
+            }
+
+            @Override
+            public void onSuccess( Map<String, List<ProjectInfo>> result ) {
+                view.clearRecords();
+                fillRows( result );
+                ProjectInfo info = new ProjectInfo();
+                info.setId( projectId );
+                onItemClicked( info );
+            }
+        } );
     }
 
     private void fillRows( Map<String, List<ProjectInfo>> result ) {

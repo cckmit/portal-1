@@ -27,4 +27,6 @@ public interface RegionServiceAsync {
     void saveProject( ProjectInfo project, AsyncCallback<Void> callback );
 
     void getRegionList( AsyncCallback<List<EntityOption>> callback );
+
+    void createNewProject( AsyncCallback<Long> callback );
 }

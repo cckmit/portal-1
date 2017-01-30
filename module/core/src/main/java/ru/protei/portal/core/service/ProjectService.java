@@ -36,4 +36,10 @@ public interface ProjectService {
      * @param project    проект
      */
     CoreResponse saveProject( ProjectInfo project );
+
+    /**
+     * Создает новый проект
+     * @param creatorId
+     */
+    CoreResponse<Long> createProject( Long creatorId );
 }

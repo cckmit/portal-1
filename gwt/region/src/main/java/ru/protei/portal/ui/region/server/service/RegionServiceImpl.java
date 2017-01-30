@@ -14,8 +14,10 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.service.LocationService;
 import ru.protei.portal.core.service.ProjectService;
 import ru.protei.portal.ui.common.client.service.RegionService;
+import ru.protei.portal.ui.common.server.service.SessionService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
 
@@ -94,11 +96,29 @@ public class RegionServiceImpl implements RegionService {
         return;
     }
 
+    @Override
+    public long createNewProject() throws RequestFailedException {
+        log.debug( "createNewProject()" );
+
+        CoreResponse<Long> response = projectService.createProject( sessionService.getUserSessionDescriptor( httpServletRequest ).getPerson().getId() );
+        if ( response.isError() ) {
+            throw new RequestFailedException( response.getStatus() );
+        }
+
+        return response.getData();
+    }
+
     @Autowired
     LocationService locationService;
 
     @Autowired
     ProjectService projectService;
+
+    @Autowired
+    SessionService sessionService;
+
+    @Autowired
+    HttpServletRequest httpServletRequest;
 
 
 //        CaseQuery caseQuery = new CaseQuery();

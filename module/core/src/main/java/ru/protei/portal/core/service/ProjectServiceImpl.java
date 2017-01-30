@@ -6,10 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
-import ru.protei.portal.core.model.dao.CaseLocationDAO;
-import ru.protei.portal.core.model.dao.CaseMemberDAO;
-import ru.protei.portal.core.model.dao.CaseObjectDAO;
-import ru.protei.portal.core.model.dao.LocationDAO;
+import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
 import ru.protei.portal.core.model.dict.En_LocationType;
@@ -49,6 +46,9 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Autowired
     CaseLocationDAO caseLocationDAO;
+
+    @Autowired
+    CaseTypeDAO caseTypeDAO;
 
     @Override
     public CoreResponse<List<RegionInfo>> listRegions( ProjectQuery query ) {
@@ -118,6 +118,27 @@ public class ProjectServiceImpl implements ProjectService {
         caseObjectDAO.merge( caseObject );
 
         return new CoreResponse().success( null );
+    }
+
+    @Override
+    @Transactional
+    public CoreResponse< Long > createProject( Long creatorId ) {
+        CaseType type = caseTypeDAO.get( new Long( En_CaseType.PROJECT.getId() ) );
+        Long id = type.getNextId();
+        type.setNextId( id+1 );
+        caseTypeDAO.merge( type );
+
+        CaseObject caseObject = new CaseObject();
+        caseObject.setCaseNumber( id );
+        caseObject.setTypeId( En_CaseType.PROJECT.getId() );
+        caseObject.setCreated( new Date() );
+        caseObject.setName( "Новый проект" );
+        caseObject.setInfo( "" );
+        caseObject.setStateId( En_RegionState.UNKNOWN.getId() );
+        caseObject.setCreatorId( creatorId );
+
+        Long newId = caseObjectDAO.persist( caseObject );
+        return new CoreResponse<Long>().success( newId );
     }
 
     private void updateManagers( CaseObject caseObject, PersonShortView headManager, List<PersonShortView> deployManagers ) {
