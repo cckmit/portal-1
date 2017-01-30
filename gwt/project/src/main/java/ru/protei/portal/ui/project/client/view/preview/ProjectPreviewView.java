@@ -4,6 +4,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.*;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -151,6 +152,12 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
 
     @UiHandler( "projectName" )
     public void onNameChanged( KeyUpEvent event ) {
+        projectChanged.cancel();
+        projectChanged.schedule( 500 );
+    }
+
+    @UiHandler( "projectDirection" )
+    public void onDirectionChanged( ValueChangeEvent<ProductDirectionInfo> event ) {
         projectChanged.cancel();
         projectChanged.schedule( 500 );
     }

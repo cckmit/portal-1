@@ -3,6 +3,7 @@ package ru.protei.portal.core.model.view;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanyCategory;
 import ru.protei.portal.core.model.ent.CompanyGroup;
+import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 
 import java.io.Serializable;
 
@@ -69,5 +70,12 @@ public class EntityOption implements Serializable {
         if(category == null)
             return null;
         return new EntityOption(category.getName(), category.getId());
+    }
+
+    public static EntityOption fromProductDirectionInfo( ProductDirectionInfo info ) {
+        if ( info == null ) {
+            return null;
+        }
+        return new EntityOption( info.name, info.id );
     }
 }

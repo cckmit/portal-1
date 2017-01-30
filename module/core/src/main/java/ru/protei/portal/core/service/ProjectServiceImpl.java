@@ -96,6 +96,12 @@ public class ProjectServiceImpl implements ProjectService {
         helper.fillAll( caseObject );
 
         caseObject.setName( project.getName() );
+        if ( project.getProductDirection() == null ) {
+            caseObject.setProductId( null );
+        }
+        else {
+            caseObject.setProductId( project.getProductDirection().getId() );
+        }
 
         caseObjectDAO.merge( caseObject );
 
