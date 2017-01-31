@@ -3,9 +3,10 @@
     <g:HTMLPanel>
 
         <g:FormPanel ui:field="form">
-            <g:FileUpload ui:field="fileUpload"/>
-
-            <g:Button ui:field="button"/>
+            <g:HTMLPanel tag="label">
+                <g:FileUpload ui:field="fileUpload" styleName="hide" name="file"/>
+                <g:HTMLPanel ui:field="visibleContent" />
+            </g:HTMLPanel>
         </g:FormPanel>
 
     </g:HTMLPanel>

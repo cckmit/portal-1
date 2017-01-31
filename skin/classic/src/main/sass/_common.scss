@@ -3,6 +3,10 @@ body {
   color: #686868;
 }
 
+.inline-block{
+  display: inline-block;
+}
+
 .selectList {
   position: absolute;
   z-index: 10;
@@ -1293,3 +1297,4 @@ a {
 .text-success {
   color: teal;
 }
+

@@ -1,5 +1,9 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
-             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:attachment='urn:import:ru.protei.portal.ui.common.client.widget.attachment.list'>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+
     <g:HTMLPanel tag="li" ui:field="root" styleName="left">
 
         <div>
@@ -21,6 +25,17 @@
 
         <a href="javascript:;" class="image"><img alt="" src="./images/user-icon-m.png"></img></a>
 
-        <g:Label ui:field="message" styleName="message"></g:Label>
+        <div class="message">
+            <g:InlineLabel ui:field="message"/>
+
+            <div class="attachment-block" ui:field="attachBlock">
+                <label style="font-size: 11px;font-weight: bold;">
+                    <ui:text from="{lang.issueAttachments}"/>
+                </label>
+                <attachment:AttachmentList ui:field="attachList"/>
+            </div>
+        </div>
+
+
     </g:HTMLPanel>
 </ui:UiBinder>

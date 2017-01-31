@@ -9,6 +9,7 @@ import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -195,6 +196,11 @@ public class AuthServiceImpl implements AuthService {
         closeSessionDesc(descriptor);
 
         return true;
+    }
+
+    @Override
+    public UserSessionDescriptor getUserSessionDescriptor(HttpServletRequest request) {
+        return ((UserSessionDescriptor)request.getSession().getAttribute( "auth-session-data" ));
     }
 
     private void closeSessionDesc(UserSessionDescriptor descriptor) {

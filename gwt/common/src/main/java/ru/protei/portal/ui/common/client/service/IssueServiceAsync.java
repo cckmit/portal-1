@@ -37,15 +37,11 @@ public interface IssueServiceAsync {
 
     /**
      * Удаление комментария обращения
-     * @param value
-     * @param async
      */
-    void removeIssueComment( CaseComment value, AsyncCallback<Void> async );
+    void removeIssueComment(CaseComment value, AsyncCallback<Boolean> async);
 
     /**
      * Редактирование комментария обращения
-     * @param value
-     * @param async
      */
-    void editIssueComment( CaseComment value, AsyncCallback<CaseComment> async );
+    void editIssueComment(CaseComment comment, AsyncCallback<CaseComment> async);
 }

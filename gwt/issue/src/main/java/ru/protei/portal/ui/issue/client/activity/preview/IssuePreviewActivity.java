@@ -4,15 +4,21 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.ui.common.client.common.AttachmentCollection;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.IssueEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
 import ru.protei.portal.ui.common.client.service.IssueServiceAsync;
+import ru.protei.portal.ui.common.client.widget.uploader.FileUploader;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
+
+import java.util.List;
 
 /**
  * Активность превью обращения
@@ -22,6 +28,16 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
     @PostConstruct
     public void onInit() {
         view.setActivity( this );
+        view.setFileUploadHandler(new FileUploader.FileUploadHandler() {
+            @Override
+            public void onSuccess(Attachment attachment) {
+                attachmentCollection.addAttachment(attachment);
+            }
+            @Override
+            public void onError() {
+                fireEvent(new NotifyEvents.Show(lang.uploadFileError(), NotifyEvents.NotifyType.ERROR));
+            }
+        });
     }
 
     @Event
@@ -43,6 +59,7 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
 
     @Event
     public void onShow( IssueEvents.ShowFullScreen event ) {
+        attachmentCollection.clear();
         initDetails.parent.clear();
         initDetails.parent.add( view.asWidget() );
 
@@ -53,12 +70,33 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
     }
 
     @Override
+    public void removeAttachment(Attachment attachment) {
+        attachmentService.removeAttachmentEverywhere(attachment.getId(), new RequestCallback<Boolean>() {
+            @Override
+            public void onError(Throwable throwable) {
+                fireEvent(new NotifyEvents.Show(lang.removeFileError(), NotifyEvents.NotifyType.ERROR));
+            }
+
+            @Override
+            public void onSuccess(Boolean result) {
+                if(!result){
+                    onError(null);
+                    return;
+                }
+                attachmentCollection.removeAttachment(attachment);
+                fireEvent( new IssueEvents.ShowComments( view.getCommentsContainer(), issueId, attachmentCollection ) );
+            }
+        });
+    }
+
+    @Override
     public void onFullScreenPreviewClicked() {
         fireEvent( new IssueEvents.ShowFullScreen( issueId ) );
     }
 
-    private void fillView( CaseObject value ) {
+    private void fillView(CaseObject value ) {
         view.setPrivateIssue( value.isPrivateCase() );
+        view.setCaseId(value.getId());
         view.setHeader( value.getCaseNumber() == null ? "" : lang.issueHeader( value.getCaseNumber().toString() ) );
         view.setCreationDate( value.getCreated() == null ? "" : DateFormatter.formatDateTime( value.getCreated() ) );
         view.setState( value.getStateId() );
@@ -71,11 +109,10 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
         view.setManager( value.getManager() == null ? "" : value.getManager().getDisplayName() );
         view.setInfo( value.getInfo() == null ? "" : value.getInfo() );
 
-        fireEvent( new IssueEvents.ShowComments( view.getCommentsContainer(), value.getId() ) );
+        fireEvent( new IssueEvents.ShowComments( view.getCommentsContainer(), value.getId(), attachmentCollection ) );
     }
 
     private void fillView( Long id ) {
-
         if (id == null) {
             fireEvent( new NotifyEvents.Show( lang.errIncorrectParams(), NotifyEvents.NotifyType.ERROR ) );
             return;
@@ -93,6 +130,20 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
                 fillView( caseObject );
             }
         } );
+
+        attachmentService.getAttachmentsByCaseId(id, new RequestCallback<List<Attachment>>() {
+            @Override
+            public void onError(Throwable throwable) {
+                fireEvent( new NotifyEvents.Show( lang.attachmentsNotLoaded(), NotifyEvents.NotifyType.ERROR ) );
+            }
+
+            @Override
+            public void onSuccess(List<Attachment> result) {
+                view.attachmentsContainer().clear();
+                result.forEach(attachmentCollection::addAttachment);
+            }
+        });
+
     }
 
     @Inject
@@ -103,6 +154,23 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
 
     @Inject
     IssueServiceAsync issueService;
+
+    @Inject
+    AttachmentServiceAsync attachmentService;
+
+    private AttachmentCollection attachmentCollection = new AttachmentCollection() {
+        @Override
+        public void addAttachment(Attachment attachment) {
+            put(attachment.getId(), attachment);
+            view.attachmentsContainer().add(attachment);
+        }
+
+        @Override
+        public void removeAttachment(Attachment attachment) {
+            remove(attachment.getId());
+            view.attachmentsContainer().remove(attachment);
+        }
+    };
 
     private Long issueId;
 

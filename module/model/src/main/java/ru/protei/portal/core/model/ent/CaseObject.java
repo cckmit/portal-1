@@ -4,6 +4,7 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Date;
 
 /**
@@ -93,9 +94,14 @@ public class CaseObject implements Serializable {
     @JdbcColumn(name = "private_flag")
     private boolean privateCase;
 
+    private Collection<Long> attachmentsIds;
 
     public CaseObject() {
 
+    }
+
+    public CaseObject(Long id) {
+        this.id = id;
     }
 
     public String defGUID () {
@@ -327,6 +333,14 @@ public class CaseObject implements Serializable {
 
     public void setCaseType (En_CaseType type) {
         this.typeId = type.getId();
+    }
+
+    public Collection<Long> getAttachmentsIds() {
+        return attachmentsIds;
+    }
+
+    public void setAttachmentsIds(Collection<Long> attachmentsIds) {
+        this.attachmentsIds = attachmentsIds;
     }
 
     @Override

@@ -3,7 +3,10 @@ package ru.protei.portal.core.model.ent;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by michael on 19.05.16.
@@ -41,8 +44,9 @@ public class CaseComment implements Serializable{
     @JdbcColumn(name="old_id")
     private Long oldId;
 
-    public CaseComment() {
-    }
+    private List<Long> attachmentsIds;
+
+    public CaseComment() {}
 
     public Long getId() {
         return id;
@@ -133,6 +137,24 @@ public class CaseComment implements Serializable{
 
     public void setOldId(Long oldId) {
         this.oldId = oldId;
+    }
+
+    public List<Long> getAttachmentsIds() {
+        return attachmentsIds;
+    }
+
+    public void setAttachmentsIds(List<Long> attachmentsIds) {
+        this.attachmentsIds = attachmentsIds;
+    }
+
+    public void setAttachments(Collection<Attachment> attachments){
+        if(attachments == null)
+            return;
+
+        this.attachmentsIds = attachments
+                .stream()
+                .map(Attachment::getId)
+                .collect(Collectors.toList());
     }
 
     @Override

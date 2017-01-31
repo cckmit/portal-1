@@ -8,6 +8,7 @@ import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseShortView;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -22,7 +23,9 @@ public interface CaseService {
     CoreResponse<CaseObject> updateCaseObject(CaseObject p);
     CoreResponse<List<En_CaseState>> stateList(En_CaseType caseType);
     CoreResponse<List<CaseComment>> getCaseCommentList( long caseId );
-    CoreResponse<CaseComment> addCaseComment( CaseComment p);
+    CoreResponse<CaseComment> addCaseComment(CaseComment comment);
+    CoreResponse<Boolean> updateCaseModified(Long caseId, Date modified);
+
     CoreResponse<CaseComment> updateCaseComment(CaseComment p);
-    CoreResponse removeCaseComment( CaseComment caseComment );
+    CoreResponse<CaseComment> removeCaseComment( CaseComment caseComment );
 }

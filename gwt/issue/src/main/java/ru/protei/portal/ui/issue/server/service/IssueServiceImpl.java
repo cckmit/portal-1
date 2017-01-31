@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
@@ -87,24 +88,27 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    public void removeIssueComment( CaseComment value ) throws RequestFailedException {
+    public Boolean removeIssueComment( CaseComment value ) throws RequestFailedException {
         log.debug( "removeIssueComment(): value={}", value );
 
-        CoreResponse<List<CaseComment>> response = caseService.removeCaseComment( value );
+        CoreResponse<CaseComment> response = caseService.removeCaseComment( value );
         if (response.isError()) {
             throw new RequestFailedException( response.getStatus() );
         }
+
+        return response.getData() != null;
     }
 
     @Override
-    public CaseComment editIssueComment( CaseComment value ) throws RequestFailedException {
-        log.debug( "editIssueComment(): value={}", value );
+    @Transactional
+    public CaseComment editIssueComment(CaseComment comment ) throws RequestFailedException {
+        log.debug( "editIssueComment(): comment={}", comment );
 
         CoreResponse<CaseComment> response;
-        if ( value.getId() == null ) {
-            response = caseService.addCaseComment( value );
+        if ( comment.getId() == null ) {
+            response = caseService.addCaseComment( comment );
         } else {
-            response = caseService.updateCaseComment( value );
+            response = caseService.updateCaseComment( comment );
         }
         if (response.isError()) {
             throw new RequestFailedException( response.getStatus() );
@@ -141,6 +145,7 @@ public class IssueServiceImpl implements IssueService {
 
     @Autowired
     HttpServletRequest request;
+
 
     private static final Logger log = LoggerFactory.getLogger( "web" );
 

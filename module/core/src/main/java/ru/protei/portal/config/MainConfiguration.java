@@ -169,6 +169,16 @@ public class MainConfiguration {
         return new CompanyCategoryDAO_Impl();
     }
 
+    @Bean
+    public CaseAttachmentDAO getCaseAttachmentDAO() {
+        return new CaseAttachmentDAO_Impl();
+    }
+
+    @Bean
+    public AttachmentDAO getAttachmentDAO() {
+        return new AttachmentDAO_Impl();
+    }
+
 /**
  *
  *
@@ -199,6 +209,10 @@ public class MainConfiguration {
 
     @Bean
     public CaseService getCaseService() { return new CaseServiceImpl(); }
+
+    @Bean
+    public AttachmentService getAttachmentService() { return new AttachmentServiceImpl(); }
+
 
 
 

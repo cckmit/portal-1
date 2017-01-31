@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.issue.client.view.edit;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -15,6 +16,9 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
+import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
+import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.dict.ImportanceButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.ContactButtonSelector;
@@ -139,6 +143,16 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         return commentsContainer;
     }
 
+    @Override
+    public HasAttachments attachmentsContainer(){
+        return attachmentContainer;
+    }
+
+    @Override
+    public void setFileUploadHandler(FileUploader.FileUploadHandler handler){
+        fileUploader.setFileUploadHandler(handler);
+    }
+
     @UiHandler("company")
     public void onChangeCompany(ValueChangeEvent<EntityOption> event){
         Company company = Company.fromEntityOption(event.getValue());
@@ -159,6 +173,21 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         if ( activity != null ) {
             activity.onCancelClicked();
         }
+
+    }
+
+    @UiHandler("attachmentContainer")
+    public void attachmentContainerRemove(RemoveEvent event) {
+        activity.removeAttachment(event.getAttachment());
+    }
+
+
+    @Override
+    public void showComments(boolean isShow) {
+        if(isShow)
+            comments.removeClassName("hide");
+        else
+            comments.addClassName("hide");
     }
 
     @UiField
@@ -203,10 +232,16 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     Lang lang;
     @UiField
     HTMLPanel commentsContainer;
-
-    @Inject
     @UiField
     FileUploader uploader;
+    @UiField
+    DivElement comments;
+    @Inject
+    @UiField
+    FileUploader fileUploader;
+    @Inject
+    @UiField(provided = true)
+    AttachmentList attachmentContainer;
 
 
     private AbstractIssueEditActivity activity;

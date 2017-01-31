@@ -3,6 +3,7 @@ package ru.protei.portal.ui.common.client.factory;
 import com.google.gwt.inject.client.AbstractGinModule;
 import com.google.inject.Singleton;
 import ru.protei.portal.ui.common.client.activity.actionbar.ActionBarActivity;
+import ru.protei.portal.ui.common.client.activity.attachment.AbstractAttachmentView;
 import ru.protei.portal.ui.common.client.activity.contactitem.AbstractContactItemListView;
 import ru.protei.portal.ui.common.client.activity.contactitem.AbstractContactItemView;
 import ru.protei.portal.ui.common.client.activity.contactitem.ContactItemActivity;
@@ -13,6 +14,7 @@ import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.common.IssueStates;
+import ru.protei.portal.ui.common.client.view.attachment.AttachmentView;
 import ru.protei.portal.ui.common.client.view.contactitem.item.ContactItemView;
 import ru.protei.portal.ui.common.client.view.contactitem.list.ContactItemListView;
 import ru.protei.portal.ui.common.client.view.dialogdetails.DialogDetailsView;
@@ -41,7 +43,7 @@ public class CommonClientModule extends AbstractGinModule {
         bind( ContactItemActivity.class ).asEagerSingleton();
         bind( AbstractContactItemListView.class ).to( ContactItemListView.class );
         bind( AbstractContactItemView.class ).to( ContactItemView.class );
-        
+
         bind( CompanyModel.class ).asEagerSingleton();
 
         bind( DateFormatter.class ).in( Singleton.class );
@@ -49,6 +51,7 @@ public class CommonClientModule extends AbstractGinModule {
         bind( AbstractPagerView.class ).to( PagerView.class );
 
         bind( IssueStates.class ).asEagerSingleton();
+        bind( AbstractAttachmentView.class ).to( AttachmentView.class );
 
         requestStaticInjection(RequestCallback.class);
 

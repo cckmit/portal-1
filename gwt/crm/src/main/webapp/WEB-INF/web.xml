@@ -17,9 +17,19 @@
         <servlet-class>org.spring4gwt.server.SpringGwtRemoteServiceServlet</servlet-class>
     </servlet>
 
+    <servlet>
+        <servlet-name>springServlet</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+    </servlet>
+
     <servlet-mapping>
         <servlet-name>springGwtRemoteServiceServlet</servlet-name>
         <url-pattern>/Crm/springGwtServices/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>springServlet</servlet-name>
+        <url-pattern>/Crm/springApi/*</url-pattern>
     </servlet-mapping>
 
     <filter>
