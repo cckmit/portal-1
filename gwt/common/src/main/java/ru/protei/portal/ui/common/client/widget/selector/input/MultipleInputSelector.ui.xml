@@ -1,0 +1,16 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+
+    <g:HTMLPanel>
+        <g:HTMLPanel ui:field="label" tag="label"/>
+
+        <div class="select2-container select2-container-multi multi-input-select">
+            <g:HTMLPanel ui:field="itemContainer" tag="ul" styleName="select2-choices"/>
+            <div class="select2-button">
+                <g:Button ui:field="caretButton" styleName="btn btn-flat btn-default">
+                    <span ui:field="add" class="caret"></span>
+                </g:Button>
+            </div>
+        </div>
+    </g:HTMLPanel>
+</ui:UiBinder>

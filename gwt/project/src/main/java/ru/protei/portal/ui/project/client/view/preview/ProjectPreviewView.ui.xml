@@ -1,0 +1,67 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:productdirection="urn:import:ru.protei.portal.ui.common.client.widget.selector.productdirection"
+             xmlns:state="urn:import:ru.protei.portal.ui.common.client.widget.selector.state"
+             xmlns:person="urn:import:ru.protei.portal.ui.common.client.widget.selector.person"
+             xmlns:region="urn:import:ru.protei.portal.ui.common.client.widget.selector.region"
+        >
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+    <g:HTMLPanel styleName="preview-wrapper grid with-table-pager">
+        <g:HTMLPanel ui:field="preview" styleName="preview project">
+            <div class="col-xs-12">
+                <g:Anchor ui:field="fullScreen" styleName="fa fa-lg fa-external-link pull-right hide" href="#"/>
+            </div>
+
+            <fieldset class="header">
+                <legend><lable ui:field="header"/></legend>
+                <div class="col-xs-8">
+                    <g:TextBox ui:field="projectName" styleName="col-xs-12 project-name" />
+                </div>
+                <div class="col-xs-4">
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.projectCreationDate}"/></label>
+                    <span class="col-xs-7 col-md-7" ui:field="creationDate"></span>
+                </div>
+
+                <div class="col-xs-6">
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.projectRegion}"/></label>
+                    <div class="col-xs-7">
+                        <region:RegionButtonSelector ui:field="projectRegion" />
+                    </div>
+                </div>
+                <div class="col-xs-6">
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.projectDirection}"/></label>
+                    <div class="col-xs-7">
+                        <productdirection:ProductDirectionInputSelector ui:field="projectDirection" />
+                    </div>
+                </div>
+            </fieldset>
+            <fieldset class="header">
+                <legend><ui:text from="{lang.projectManagers}"/></legend>
+                <div class="col-xs-6">
+                    <label class="col-xs-12 col-md-12"><ui:text from="{lang.projectDeployManagers}"/></label>
+                    <div class="col-xs-12">
+                        <person:EmployeeMultiSelector ui:field="deployManager" />
+                    </div>
+                </div>
+                <div class="col-xs-6">
+                    <label class="col-xs-12 col-md-12"><ui:text from="{lang.projectHeadManager}"/></label>
+
+                    <div class="col-xs-12">
+                        <person:EmployeeButtonSelector ui:field="headManager" />
+                    </div>
+                </div>
+            </fieldset>
+            <fieldset class="header">
+                <legend><ui:text from="{lang.projectState}"/></legend>
+                <div class="col-xs-2 fa-3x">
+                    <state:RegionStateIconSelector ui:field="projectState" />
+                </div>
+                <div class="col-xs-10">
+                    <g:TextArea styleName="col-xs-12 col-md-12 pre-formatted-info project-details" ui:field="details"/>
+                </div>
+            </fieldset>
+            <!--<legend><ui:text from="{lang.comments}"/></legend>-->
+            <!--<g:HTMLPanel ui:field="commentsContainer" styleName="col-xs-12 col-md-12"/>-->
+        </g:HTMLPanel>
+    </g:HTMLPanel>
+</ui:UiBinder>

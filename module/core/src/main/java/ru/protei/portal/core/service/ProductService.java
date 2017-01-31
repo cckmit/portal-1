@@ -2,7 +2,9 @@ package ru.protei.portal.core.service;
 
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.ent.DevUnit;
+import ru.protei.portal.core.model.query.ProductDirectionQuery;
 import ru.protei.portal.core.model.query.ProductQuery;
+import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.ProductShortView;
 
 import java.util.List;
@@ -19,4 +21,6 @@ public interface ProductService {
     CoreResponse<Long> createProduct(DevUnit product);
     CoreResponse<Boolean> updateProduct(DevUnit product);
     CoreResponse<Boolean> checkUniqueProductByName(String name, Long id);
+
+    CoreResponse<List<ProductDirectionInfo>> productDirectionList( ProductDirectionQuery query );
 }

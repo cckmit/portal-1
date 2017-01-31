@@ -48,13 +48,13 @@ public abstract class Selector<T>
             fireEvents = true;
         }
 
+        selectedOption = value;
         if ( value == null || !itemToDisplayOptionModel.containsKey( value ) ) {
             fillSelectorView( nullItemOption );
         } else {
             fillSelectorView( itemToDisplayOptionModel.get( value ) );
         }
 
-        selectedOption = value;
         if ( fireEvents ) {
             ValueChangeEvent.fire( this, value );
         }
@@ -254,7 +254,7 @@ public abstract class Selector<T>
     private SelectorItem nullItemView;
     private HandlerRegistration scrollRegistration;
 
-    private Map<SelectorItem, T> itemViewToModel = new HashMap<>();
-    private Map<T, SelectorItem> itemToViewModel = new HashMap<>();
-    private Map<T, DisplayOption> itemToDisplayOptionModel = new HashMap<>();
+    protected Map<SelectorItem, T> itemViewToModel = new HashMap<>();
+    protected Map<T, SelectorItem> itemToViewModel = new HashMap<>();
+    protected Map<T, DisplayOption> itemToDisplayOptionModel = new HashMap<>();
 }

@@ -1,0 +1,224 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet author="shagaleev" id="16-01-2017 09:38">
+        <validCheckSum>7:084199caef1c2583e8da4ce2636b037f</validCheckSum>
+        <insert tableName="dev_unit_type">
+            <column name="ID" value="3" />
+            <column name="UNIT_TYPE" value="product_direction" />
+            <column name="UNIT_INFO" value="Направление" />
+        </insert>
+    </changeSet>
+
+    <changeSet id="16-01-2017 10:15" author="shagaleev">
+        <createTable tableName="location_type">
+            <column autoIncrement="true" name="ID" type="INT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="LOCATION_TYPE" type="VARCHAR(32)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="LOCATION_INFO" type="VARCHAR(1000)"/>
+            <column name="WEIGHT" type="INT" />
+        </createTable>
+
+        <insert tableName="location_type">
+            <column name="ID" value="1" />
+            <column name="LOCATION_TYPE" value="DISTRICT" />
+            <column name="LOCATION_INFO" type="Федеральный округ" />
+            <column name="WEIGHT" type="1000" />
+        </insert>
+
+        <insert tableName="location_type">
+            <column name="ID" value="2" />
+            <column name="LOCATION_TYPE" value="REGION" />
+            <column name="LOCATION_INFO" type="Регион" />
+            <column name="WEIGHT" type="900" />
+        </insert>
+
+        <insert tableName="location_type">
+            <column name="ID" value="3" />
+            <column name="LOCATION_TYPE" value="MUNICIPALITY" />
+            <column name="LOCATION_INFO" type="Муниципальное образование" />
+            <column name="WEIGHT" type="800" />
+        </insert>
+    </changeSet>
+
+    <changeSet author="shagaleev" id="16-01-2017 10:27">
+        <createTable tableName="location">
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="PARENT_ID" type="BIGINT" />
+            <column name="TYPE_ID" type="INT" />
+            <column name="NAME" type="VARCHAR(256)">
+                <constraints nullable="false" />
+            </column>
+            <column name="DESCRIPTION" type="VARCHAR(1024)" />
+            <column name="OLD_ID" type="BIGINT" />
+            <column name="CODE" type="VARCHAR(32)" />
+            <column name="PATH" type="VARCHAR(256)">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint constraintName="FK_LOCATION_PARENT" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 baseColumnNames="PARENT_ID" baseTableName="location"
+                                 referencedTableName="location" referencedColumnNames="ID" />
+
+        <addForeignKeyConstraint constraintName="FK_LOCATION_TYPE" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 baseTableName="location" baseColumnNames="TYPE_ID"
+                                 referencedTableName="location_type" referencedColumnNames="ID" />
+    </changeSet>
+
+    <changeSet id="16-01-2017 11:02" author="shagaleev" runOnChange="true">
+        <createTable tableName="case_location">
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="CASE_ID" type="BIGINT" />
+            <column name="LOCATION_ID" type="BIGINT" />
+        </createTable>
+
+        <addForeignKeyConstraint constraintName="FK_CL_CASE" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 baseTableName="case_location" baseColumnNames="CASE_ID"
+                                 referencedTableName="case_object" referencedColumnNames="ID" />
+
+        <addForeignKeyConstraint constraintName="FK_CL_LOCATION" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 baseTableName="case_location" baseColumnNames="LOCATION_ID"
+                                 referencedTableName="location" referencedColumnNames="ID" />
+    </changeSet>
+    
+    <changeSet id="16-01-2017-add-project-states" author="shagaleev">
+        <insert tableName="case_state">
+            <column name="ID" value="22" />
+            <column name="STATE" value="unknown" />
+            <column name="INFO" value="unknown" />
+        </insert>
+        <insert tableName="case_state">
+            <column name="ID" value="23" />
+            <column name="STATE" value="rival" />
+            <column name="INFO" value="rival" />
+        </insert>
+        <insert tableName="case_state">
+            <column name="ID" value="24" />
+            <column name="STATE" value="talk" />
+            <column name="INFO" value="talk" />
+        </insert>
+        <insert tableName="case_state">
+            <column name="ID" value="25" />
+            <column name="STATE" value="projecting" />
+            <column name="INFO" value="projecting" />
+        </insert>
+        <insert tableName="case_state">
+            <column name="ID" value="26" />
+            <column name="STATE" value="development" />
+            <column name="INFO" value="development" />
+        </insert>
+        <insert tableName="case_state">
+            <column name="ID" value="27" />
+            <column name="STATE" value="deployment" />
+            <column name="INFO" value="deployment" />
+        </insert>
+        <insert tableName="case_state">
+            <column name="ID" value="28" />
+            <column name="STATE" value="support" />
+            <column name="INFO" value="support" />
+        </insert>
+        <insert tableName="case_state">
+            <column name="ID" value="29" />
+            <column name="STATE" value="support_finished" />
+            <column name="INFO" value="support_finished" />
+        </insert>
+    </changeSet>
+    
+    <changeSet id="20-01-2017-let-old-ids-be-null-in-state-matrix" author="shagaleev">
+        <dropNotNullConstraint tableName="case_state_matrix" columnName="OLD_ID" columnDataType="INT" />
+        <dropNotNullConstraint tableName="case_state_matrix" columnName="OLD_CODE" columnDataType="VARCHAR(32)" />
+    </changeSet>
+
+    <changeSet id="20-01-2017-add-project-states-to-state-matrix" author="shagaleev">
+        <insert tableName="case_state_matrix">
+            <column name="CASE_TYPE" value="9" />
+            <column name="CASE_STATE" value="22" />
+        </insert>
+        <insert tableName="case_state_matrix">
+            <column name="CASE_TYPE" value="9" />
+            <column name="CASE_STATE" value="23" />
+        </insert>
+        <insert tableName="case_state_matrix">
+            <column name="CASE_TYPE" value="9" />
+            <column name="CASE_STATE" value="24" />
+        </insert>
+        <insert tableName="case_state_matrix">
+            <column name="CASE_TYPE" value="9" />
+            <column name="CASE_STATE" value="25" />
+        </insert>
+        <insert tableName="case_state_matrix">
+            <column name="CASE_TYPE" value="9" />
+            <column name="CASE_STATE" value="26" />
+        </insert>
+        <insert tableName="case_state_matrix">
+            <column name="CASE_TYPE" value="9" />
+            <column name="CASE_STATE" value="27" />
+        </insert>
+        <insert tableName="case_state_matrix">
+            <column name="CASE_TYPE" value="9" />
+            <column name="CASE_STATE" value="28" />
+        </insert>
+        <insert tableName="case_state_matrix">
+            <column name="CASE_TYPE" value="9" />
+            <column name="CASE_STATE" value="29" />
+        </insert>
+    </changeSet>
+
+    <changeSet id="20-01-2017-let-ext-id-be-null-in-case-object" author="shagaleev">
+        <dropNotNullConstraint tableName="case_object" columnName="EXT_ID" columnDataType="VARCHAR(32)"/>
+    </changeSet>
+    
+    <changeSet id="20-01-2017-add-next-id-to-case-type" author="shagaleev">
+        <addColumn tableName="case_type">
+            <column name="NEXT_ID" type="BIGINT" />
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="29-01-2017-add-case-member-role-type" author="shagaleev">
+        <insert tableName="dev_unit_mrole">
+            <column name="ID" value="1" />
+            <column name="UROLE_CODE" value="head_manager" />
+            <column name="UROLE_INFO" type="Руководитель" />
+        </insert>
+
+        <insert tableName="dev_unit_mrole">
+            <column name="ID" value="2" />
+            <column name="UROLE_CODE" value="deploy_manager" />
+            <column name="UROLE_INFO" type="Менеджер внедрения" />
+        </insert>
+    </changeSet>
+
+    <changeSet id="30-01-2017-add-case-member" author="shagaleev">
+        <createTable tableName="case_member">
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="CASE_ID" type="BIGINT" />
+            <column name="MEMBER_ID" type="BIGINT" />
+            <column name="MEMBER_ROLE_ID" type="INT" />
+        </createTable>
+
+        <addForeignKeyConstraint constraintName="FK_CO_CASE" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 baseTableName="case_member" baseColumnNames="CASE_ID"
+                                 referencedTableName="case_object" referencedColumnNames="ID" />
+
+        <addForeignKeyConstraint constraintName="FK_CO_MEMBER" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 baseTableName="case_member" baseColumnNames="MEMBER_ID"
+                                 referencedTableName="person" referencedColumnNames="ID" />
+
+        <addForeignKeyConstraint constraintName="FK_CO_MEMBER_ROLE" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 baseTableName="case_member" baseColumnNames="MEMBER_ROLE_ID"
+                                 referencedTableName="dev_unit_mrole" referencedColumnNames="ID" />
+    </changeSet>
+</databaseChangeLog>

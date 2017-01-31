@@ -53,7 +53,12 @@ public enum En_SortField {
     /**
      * issue number
      */
-    issue_number ("caseno")
+    issue_number ("caseno"),
+
+    /**
+     * field name from location
+     */
+    name("NAME")
     ;
 
     private String fieldName;

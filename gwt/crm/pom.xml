@@ -52,6 +52,16 @@
             <artifactId>portal4.ui.issue</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>ru.protei</groupId>
+            <artifactId>portal4.ui.region</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>ru.protei</groupId>
+            <artifactId>portal4.ui.project</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
 
         <dependency>
             <groupId>ru.protei</groupId>
@@ -78,6 +88,11 @@
             <artifactId>gwt-dev</artifactId>
             <scope>provided</scope>
             <version>${project.gwt.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ru.protei</groupId>
+            <artifactId>portal4.ui.project</artifactId>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 

@@ -7,7 +7,9 @@ import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.DevUnit;
+import ru.protei.portal.core.model.query.ProductDirectionQuery;
 import ru.protei.portal.core.model.query.ProductQuery;
+import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.ProductShortView;
 
 import java.util.Date;
@@ -49,6 +51,18 @@ public class ProductServiceImpl implements ProductService {
             new CoreResponse<List<DevUnit>>().error(En_ResultStatus.GET_DATA_ERROR);
 
         return new CoreResponse<List<DevUnit>>().success(list);
+    }
+
+    @Override
+    public CoreResponse<List<ProductDirectionInfo>> productDirectionList( ProductDirectionQuery query ) {
+        List<DevUnit> list = devUnitDAO.listByQuery(query);
+
+        if (list == null)
+            new CoreResponse<List<ProductDirectionInfo>>().error(En_ResultStatus.GET_DATA_ERROR);
+
+        List<ProductDirectionInfo> result = list.stream().map(DevUnit::toProductDirectionInfo).collect(Collectors.toList());
+
+        return new CoreResponse<List<ProductDirectionInfo>>().success(result,result.size());
     }
 
     @Override
