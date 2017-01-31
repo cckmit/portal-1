@@ -136,11 +136,11 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     @Transactional
-    public CoreResponse<CaseComment> updateCaseComment ( CaseComment caseComment ) {
-        if (caseComment == null || caseComment.getId() == null)
+    public CoreResponse<CaseComment> updateCaseComment ( CaseComment caseComment, Long personId ) {
+        if (caseComment == null || caseComment.getId() == null || personId == null)
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
 
-        if (!isChangeAvailable ( caseComment.getCreated() ))
+        if (!personId.equals(caseComment.getAuthorId()) || !isChangeAvailable ( caseComment.getCreated() ))
             return new CoreResponse().error( En_ResultStatus.NOT_UPDATED );
 
         boolean isUpdated = caseCommentDAO.merge(caseComment);
@@ -159,11 +159,11 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     @Transactional
-    public CoreResponse removeCaseComment( CaseComment caseComment ) {
-        if (caseComment == null || caseComment.getId() == null)
+    public CoreResponse removeCaseComment( CaseComment caseComment, Long personId ) {
+        if (caseComment == null || caseComment.getId() == null || personId == null)
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
 
-        if (!isChangeAvailable ( caseComment.getCreated() ))
+        if (!personId.equals(caseComment.getAuthorId()) || !isChangeAvailable ( caseComment.getCreated() ))
             return new CoreResponse().error(En_ResultStatus.NOT_REMOVED);
 
         long caseId = caseComment.getCaseId();
