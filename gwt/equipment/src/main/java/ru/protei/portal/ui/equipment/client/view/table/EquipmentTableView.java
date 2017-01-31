@@ -174,6 +174,7 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
         columns.add( comment );
 
         table.addColumn( name.header, name.values );
+        table.addColumn( decimalNumber.header, decimalNumber.values );
         table.addColumn( product.header, product.values );
         table.addColumn( comment.header, comment.values );
         table.addColumn( editClickColumn.header, editClickColumn.values );
