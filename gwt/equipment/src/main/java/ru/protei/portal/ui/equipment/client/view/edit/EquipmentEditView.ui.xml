@@ -23,11 +23,11 @@
                     </div>
 
                     <div class="form-group col-xs-12 col-sm-6">
-                        <number:DecimalNumberBox ui:field="pamrNum" organizationCode="{lang.equipmentOrganizationCodePAMR}"/>
+                        <number:DecimalNumberBox ui:field="pamrNum" organizationCode="PAMR"/>
                     </div>
 
                     <div class="form-group col-xs-12 col-sm-6">
-                        <number:DecimalNumberBox ui:field="pdraNum" organizationCode="{lang.equipmentOrganizationCodePDRA}"/>
+                        <number:DecimalNumberBox ui:field="pdraNum" organizationCode="PDRA"/>
                     </div>
                 </div>
             </div>

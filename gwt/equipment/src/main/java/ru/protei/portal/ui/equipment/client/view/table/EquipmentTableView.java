@@ -143,6 +143,18 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
         };
         columns.add( decimalNumber );
 
+        ClickColumn< Equipment > product = new ClickColumn< Equipment >() {
+            @Override
+            protected void fillColumnHeader( Element element ) {
+                element.setInnerText( lang.equipmentProduct() );
+            }
+
+            @Override
+            public void fillColumnValue ( Element cell, Equipment value ) {
+            }
+        };
+        columns.add( product );
+
 
         ClickColumn< Equipment > comment = new ClickColumn< Equipment >() {
             @Override
@@ -162,7 +174,7 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
         columns.add( comment );
 
         table.addColumn( name.header, name.values );
-        table.addColumn( decimalNumber.header, decimalNumber.values );
+        table.addColumn( product.header, product.values );
         table.addColumn( comment.header, comment.values );
         table.addColumn( editClickColumn.header, editClickColumn.values );
     }

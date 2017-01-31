@@ -15,9 +15,11 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.EquipmentServiceAsync;
 
 /**
- * Created by michael on 02.11.16.
+ * Активность карточки редактирования единицы оборудования
  */
-public abstract class EquipmentEditActivity implements AbstractEquipmentEditActivity, Activity {
+public abstract class EquipmentEditActivity
+        implements Activity,
+        AbstractEquipmentEditActivity {
 
     @PostConstruct
     public void onInit() {
@@ -69,7 +71,7 @@ public abstract class EquipmentEditActivity implements AbstractEquipmentEditActi
         });
     }
 
-    private boolean fireErrorMessage(String msg) {
+    private boolean fireErrorMessage( String msg) {
         fireEvent( new NotifyEvents.Show(msg, NotifyEvents.NotifyType.ERROR));
         return false;
     }
@@ -103,7 +105,5 @@ public abstract class EquipmentEditActivity implements AbstractEquipmentEditActi
     @Inject
     EquipmentServiceAsync equipmentService;
 
-
     private AppEvents.InitDetails initDetails;
-
 }

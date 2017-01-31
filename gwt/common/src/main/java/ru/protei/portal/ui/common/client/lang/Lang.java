@@ -311,4 +311,14 @@ public interface Lang extends Messages, ContactItemLang {
     String equipmentNameBySpecification();
 
     String equipmentNameBySldWrks();
+
+    String equipmentOrganizationProtei();
+
+    String equipmentOrganizationProteiST();
+
+    String equipmentOrganization();
+
+    String equipmentSearchName();
+
+    String equipmentProduct();
 }

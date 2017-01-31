@@ -17,6 +17,7 @@ import ru.protei.portal.ui.common.client.lang.OrganizationCodeLang;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.common.shared.model.DecimalNumber;
 import ru.protei.portal.ui.common.shared.model.OrganizationCode;
+import ru.protei.portal.ui.equipment.client.provider.AbstractDecimalNumberDataProvider;
 
 /**
  * Вид виджета децимального номера
@@ -45,7 +46,7 @@ public class DecimalNumberBox
             value = new DecimalNumber();
         }
 
-        organizationCode.setInnerText( organizationCodeLang.getName( value.getOrganizationCode() ) );
+        organizationCodeName.setInnerText( organizationCodeLang.getName( value.getOrganizationCode() ) );
         classifierCode.setText( value.getClassifierCode() == null ? null : value.getClassifierCode());
         regNum.setText( value.getRegisterNumber() == null ? null : value.getRegisterNumber() );
         regNumModifier.setText( value.getModification() == null ? null : value.getModification() );
@@ -60,8 +61,13 @@ public class DecimalNumberBox
         return addHandler( handler, ValueChangeEvent.getType() );
     }
 
+    public void setOrganizationCode( OrganizationCode organizationCode ) {
+        this.organizationCode = organizationCode;
+        organizationCodeName.setInnerText( organizationCodeLang.getName( organizationCode ) );
+    }
+
     @UiField
-    LabelElement organizationCode;
+    LabelElement organizationCodeName;
     @UiField
     ValidableTextBox regNumModifier;
     @UiField
@@ -76,9 +82,13 @@ public class DecimalNumberBox
     Lang lang;
 
     @Inject
+    AbstractDecimalNumberDataProvider dataProvider;
+
+    @Inject
     private OrganizationCodeLang organizationCodeLang;
 
     private DecimalNumber value;
+    private OrganizationCode organizationCode;
 
     interface DecimalNumberWidgetUiBinder extends UiBinder<HTMLPanel, DecimalNumberBox> {}
     private static DecimalNumberWidgetUiBinder ourUiBinder = GWT.create( DecimalNumberWidgetUiBinder.class );

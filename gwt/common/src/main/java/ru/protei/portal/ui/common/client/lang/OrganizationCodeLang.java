@@ -22,6 +22,18 @@ public class OrganizationCodeLang {
         }
     }
 
+    public String getCompanyName( OrganizationCode value ) {
+        switch (value) {
+            case PAMR:
+                return lang.equipmentOrganizationProtei();
+            case PDRA:
+                return lang.equipmentOrganizationProteiST();
+
+            default:
+                return lang.unknownField();
+        }
+    }
+
     @Inject
     Lang lang;
 }

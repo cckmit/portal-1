@@ -6,15 +6,13 @@ import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.view.EntityOption;
 
 /**
- * Абстракция вида фильтра контактов
+ * Абстракция вида фильтра оборудования
  */
 public interface AbstractEquipmentFilterView extends IsWidget {
 
     void setActivity( AbstractEquipmentFilterActivity activity );
 
     HasValue<String> name();
-
-    HasValue<String> number();
 
     void resetFilter();
 }

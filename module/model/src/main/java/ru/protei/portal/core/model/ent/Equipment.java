@@ -7,6 +7,7 @@ import ru.protei.winter.jdbc.annotations.JdbcEntity;
 import ru.protei.winter.jdbc.annotations.JdbcId;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * Оборудование
@@ -52,6 +53,11 @@ public class Equipment implements Serializable {
      */
     @JdbcColumn
     private String comment;
+
+    /**
+     * Список единиц, в которые входит
+     */
+    private List<Equipment> includedIn;
 
     public Long getId() {
         return id;

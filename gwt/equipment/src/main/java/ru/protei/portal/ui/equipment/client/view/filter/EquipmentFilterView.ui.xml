@@ -1,17 +1,28 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
-             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:organization="urn:import:ru.protei.portal.ui.equipment.client.widget.organization"
+             xmlns:number="urn:import:ru.protei.portal.ui.equipment.client.widget.number">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel styleName="panel">
         <div class="body">
-            <div class="form-group col-xs-12">
-                <label><ui:text from="{lang.equipmentName}"/></label>
+            <div class="form-group local-search col-xs-12">
+                <span class="icon local-search-icon"></span>
                 <g:TextBox ui:field="name" styleName="input-field"/>
             </div>
+
             <div class="form-group col-xs-12">
-                <label><ui:text from="{lang.equipmentDecimalNumber}"/></label>
-                <g:TextBox ui:field="number" styleName="input-field"/>
+                <label><ui:text from="{lang.equipmentOrganization}"/></label>
+                <organization:OrganizationBtnGroup ui:field="organizationCode" styleName="form-group btn-group btn-group-justified"/>
+            </div>
+
+            <div class="form-group col-xs-12">
+                <number:DecimalNumberBox ui:field="pamrNum" organizationCode="PAMR"/>
+            </div>
+
+            <div class="form-group col-xs-12">
+                <number:DecimalNumberBox ui:field="pdraNum" organizationCode="PDRA"/>
             </div>
         </div>
         <div class="footer">

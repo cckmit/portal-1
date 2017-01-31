@@ -51,9 +51,11 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
     ValidableTextBox nameSldWrks;
     @UiField
     ValidableTextBox nameSpecification;
-    @UiField
+    @Inject
+    @UiField(provided = true)
     DecimalNumberBox pdraNum;
-    @UiField
+    @Inject
+    @UiField(provided = true)
     DecimalNumberBox pamrNum;
 
     AbstractEquipmentEditActivity activity;

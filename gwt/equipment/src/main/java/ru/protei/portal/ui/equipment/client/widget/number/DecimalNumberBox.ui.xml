@@ -6,7 +6,7 @@
 
     <g:HTMLPanel styleName="dn">
         <div class="dn-container">
-            <label ui:field="organizationCode"></label>
+            <label ui:field="organizationCodeName"></label>
             <label class="dn-separator">.</label>
             <validatefield:ValidableTextBox ui:field="classifierCode" styleName="input-field dn-classifier-code" notNull="true"/>
             <label class="dn-separator">.</label>

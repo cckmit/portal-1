@@ -17,17 +17,23 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
+import ru.protei.portal.ui.common.shared.model.OrganizationCode;
 import ru.protei.portal.ui.equipment.client.activity.filter.AbstractEquipmentFilterActivity;
 import ru.protei.portal.ui.equipment.client.activity.filter.AbstractEquipmentFilterView;
+import ru.protei.portal.ui.equipment.client.widget.number.DecimalNumberBox;
+import ru.protei.portal.ui.equipment.client.widget.organization.OrganizationBtnGroup;
+
+import java.util.Set;
 
 /**
- * Представление фильтра контактов
+ * Представление фильтра оборудования
  */
 public class EquipmentFilterView extends Composite implements AbstractEquipmentFilterView {
 
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+        name.getElement().setPropertyString( "placeholder", lang.equipmentSearchName() );
     }
 
     @Override
@@ -50,7 +56,8 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
     @Override
     public void resetFilter() {
         name.setValue( null );
-        number.setValue( null );
+        organizationCode.setValue( null );
+        switchOffAndResetDNumbers();
     }
 
     @Override
@@ -58,10 +65,6 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
         return name;
     }
 
-    @Override
-    public HasValue< String > number() {
-        return number;
-    }
 
     @UiHandler( "resetBtn" )
     public void onResetClicked ( ClickEvent event ) {
@@ -71,10 +74,31 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
         }
     }
 
-    @UiHandler( {"name", "number"} )
+    @UiHandler( "name" )
     public void onKeyUpSearch( KeyUpEvent event ) {
         timer.cancel();
         timer.schedule( 300 );
+    }
+
+    @UiHandler( "organizationCode" )
+    public void onSelectOrganizationCode( ValueChangeEvent<Set<OrganizationCode> > event ) {
+        Set<OrganizationCode> values = event.getValue();
+
+        if ( values == null || values.isEmpty() ) {
+            switchOffAndResetDNumbers();
+            return;
+        }
+
+        pamrNum.setVisible( values.contains( OrganizationCode.PAMR ) );
+        pdraNum.setVisible( values.contains( OrganizationCode.PDRA ) );
+    }
+
+    private void switchOffAndResetDNumbers() {
+        pamrNum.setVisible( false );
+        pdraNum.setVisible( false );
+
+        pamrNum.setValue( null );
+        pdraNum.setValue( null );
     }
 
     Timer timer = new Timer() {
@@ -93,9 +117,16 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
     @UiField
     Lang lang;
     @UiField
-    TextBox number;
-    @UiField
     TextBox name;
+    @Inject
+    @UiField(provided = true)
+    DecimalNumberBox pdraNum;
+    @Inject
+    @UiField(provided = true)
+    DecimalNumberBox pamrNum;
+    @Inject
+    @UiField(provided = true)
+    OrganizationBtnGroup organizationCode;
 
     @Inject
     FixedPositioner positioner;
@@ -105,5 +136,4 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
 
     private static EquipmentFilterView.ContactFilterViewUiBinder ourUiBinder = GWT.create( EquipmentFilterView.ContactFilterViewUiBinder.class );
     interface ContactFilterViewUiBinder extends UiBinder<HTMLPanel, EquipmentFilterView> {}
-
 }
