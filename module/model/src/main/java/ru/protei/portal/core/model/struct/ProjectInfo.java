@@ -5,7 +5,6 @@ import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.ent.CaseLocation;
 import ru.protei.portal.core.model.ent.CaseMember;
 import ru.protei.portal.core.model.ent.CaseObject;
-import ru.protei.portal.core.model.ent.Location;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 
@@ -147,12 +146,13 @@ public class ProjectInfo implements Serializable {
 
         List<PersonShortView> deployManagers = new ArrayList<>();
         projectInfo.setManagers( deployManagers );
-        for ( CaseMember member : project.getMembers() ) {
-            if ( En_DevUnitPersonRoleType.HEAD_MANAGER.equals( member.getRole() ) ) {
-                projectInfo.setHeadManager( PersonShortView.fromPerson( member.getMember() ) );
-            }
-            else if ( En_DevUnitPersonRoleType.DEPLOY_MANAGER.equals( member.getRole() ) ) {
-                deployManagers.add( PersonShortView.fromPerson( member.getMember() ) );
+        if ( project.getMembers() != null ) {
+            for ( CaseMember member : project.getMembers() ) {
+                if ( En_DevUnitPersonRoleType.HEAD_MANAGER.equals( member.getRole() ) ) {
+                    projectInfo.setHeadManager( PersonShortView.fromPerson( member.getMember() ) );
+                } else if ( En_DevUnitPersonRoleType.DEPLOY_MANAGER.equals( member.getRole() ) ) {
+                    deployManagers.add( PersonShortView.fromPerson( member.getMember() ) );
+                }
             }
         }
 

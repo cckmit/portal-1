@@ -61,10 +61,10 @@ public class ProjectServiceImpl implements ProjectService {
 
         CaseQuery caseQuery = new CaseQuery();
         caseQuery.setType( En_CaseType.PROJECT );
-        caseQuery.setStateIds( query.getStates().stream()
-                .map( (state)->{ return new Long(state.getId()).intValue();} )
-                .collect( Collectors.toList() )
-        );
+//        caseQuery.setStateIds( query.getStates().stream()
+//                .map( (state)->new Long(state.getId()).intValue() )
+//                .collect( Collectors.toList() )
+//        );
         caseQuery.setProductId( query.getDirectionId() );
 
         List<CaseObject> projects = caseObjectDAO.listByQuery( caseQuery );
@@ -75,7 +75,17 @@ public class ProjectServiceImpl implements ProjectService {
         } );
 
 
-        return new CoreResponse<List<RegionInfo>>().success( new ArrayList<>( regionInfos.values() ));
+        List<RegionInfo> result = regionInfos.values().stream()
+                .filter( (regionInfo)->{
+                    if ( query.getStates() == null || query.getStates().isEmpty() ) {
+                        return true;
+                    }
+
+                    return query.getStates().contains( regionInfo.state );
+                } )
+                .collect( Collectors.toList() );
+
+        return new CoreResponse<List<RegionInfo>>().success( result );
     }
 
     @Override
@@ -84,14 +94,14 @@ public class ProjectServiceImpl implements ProjectService {
         CaseQuery caseQuery = new CaseQuery();
         caseQuery.setType( En_CaseType.PROJECT );
         caseQuery.setStateIds( query.getStates().stream()
-                .map( (state)->{ return new Long(state.getId()).intValue();} )
+                .map( (state) -> new Long(state.getId()).intValue() )
                 .collect( Collectors.toList() )
         );
         caseQuery.setProductId( query.getDirectionId() );
 
         List<CaseObject> projects = caseObjectDAO.listByQuery( caseQuery );
         projects.forEach( (project)->{
-            iterateAllLocations( project, (location)->{
+            iterateAllLocations( project, ( location ) -> {
                 applyCaseToProjectInfo( project, location, regionToProjectMap );
             } );
         } );
@@ -216,7 +226,8 @@ public class ProjectServiceImpl implements ProjectService {
         helper.fillAll( project );
 
         List<CaseLocation> locations = project.getLocations();
-        if ( locations == null ) {
+        if ( locations == null || locations.isEmpty() ) {
+            handler.accept( null );
             return;
         }
 
@@ -238,6 +249,10 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     private RegionInfo findRegionByLocation( Map<Long, RegionInfo> regions, Location location ) {
+        if ( location == null ) {
+            return null;
+        }
+
         // добавить сюда поиск региона, если location у проекта не регион а муниципальное образование например
         if ( !En_LocationType.REGION.equals( location.getType() ) ) {
             return null;
@@ -252,14 +267,16 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     private void applyCaseToProjectInfo( CaseObject project, Location location, Map<String, List<ProjectInfo>> projects ) {
-        if ( location == null ) {
-            return;
+
+        String locationName = ""; // name for empty location
+        if ( location != null ) {
+            locationName = location.getName();
         }
 
-        List<ProjectInfo> projectInfos = projects.get( location.getName() );
+        List<ProjectInfo> projectInfos = projects.get( locationName );
         if ( projectInfos == null ) {
             projectInfos = new ArrayList<>();
-            projects.put( location.getName(), projectInfos );
+            projects.put( locationName, projectInfos );
         }
 
         ProjectInfo projectInfo = ProjectInfo.fromCaseObject( project );

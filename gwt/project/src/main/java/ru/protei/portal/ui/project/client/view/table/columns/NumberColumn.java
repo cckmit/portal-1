@@ -22,8 +22,11 @@ public class NumberColumn extends ClickColumn< ProjectInfo > {
         cell.addClassName( "number" );
 
         StringBuilder content = new StringBuilder();
-        content.append( "<b>" ).append( value.getId() ).append( "</b><br/>" )
-                .append( value.getProductDirection().getDisplayText() );
+        content.append( "<b>" ).append( value.getId() ).append( "</b><br/>" );
+
+        if ( value.getProductDirection() != null ) {
+            content.append( value.getProductDirection().getDisplayText() );
+        }
 
         cell.setInnerHTML( content.toString() );
     }
