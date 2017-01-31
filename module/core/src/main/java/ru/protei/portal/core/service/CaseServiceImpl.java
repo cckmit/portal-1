@@ -137,7 +137,7 @@ public class CaseServiceImpl implements CaseService {
     @Override
     @Transactional
     public CoreResponse<CaseComment> updateCaseComment ( CaseComment caseComment, Long personId ) {
-        if (caseComment == null || caseComment.getId() == null)
+        if (caseComment == null || caseComment.getId() == null || personId == null)
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
 
         if (!personId.equals(caseComment.getAuthorId()) || !isChangeAvailable ( caseComment.getCreated() ))
@@ -160,7 +160,7 @@ public class CaseServiceImpl implements CaseService {
     @Override
     @Transactional
     public CoreResponse removeCaseComment( CaseComment caseComment, Long personId ) {
-        if (caseComment == null || caseComment.getId() == null)
+        if (caseComment == null || caseComment.getId() == null || personId == null)
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
 
         if (!personId.equals(caseComment.getAuthorId()) || !isChangeAvailable ( caseComment.getCreated() ))
