@@ -34,6 +34,9 @@
                 <includes>
                     <include>*.gwt.xml</include>
                     <include>**/*.gwt.xml</include>
+
+                    <include>*.xml</include>
+                    <include>**/*.xml</include>
                 </includes>
             </resource>
         </resources>

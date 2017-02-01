@@ -85,4 +85,14 @@ public class BaseQuery implements Serializable, DataQuery {
         this.sortDir = sortDir;
     }
 
+    @Override
+    public String toString() {
+        return "BaseQuery{" +
+                "searchString='" + searchString + '\'' +
+                ", sortField=" + sortField +
+                ", sortDir=" + sortDir +
+                ", limit=" + limit +
+                ", offset=" + offset +
+                '}';
+    }
 }

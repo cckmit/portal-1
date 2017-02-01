@@ -1,0 +1,259 @@
+.header-block {
+  overflow: hidden;
+}
+
+.region-picture {
+  position: relative;
+  display: block;
+  left: calc( 100% - 120px );
+  top: -20px;
+  opacity: 0.3;
+
+  & > i {
+    position: relative;
+    display: block;
+    top: -46px;
+    left: 0px;
+
+    font-size: 10em;
+  }
+}
+
+.status-group {
+  & > div.btn {
+    padding: 5px 8px;
+    border-color: #ffffff;
+
+    //&:hover {
+    //  background-color: #ffffff;
+    //}
+  }
+}
+
+.region-state {
+  display: inline-block;
+  font: normal normal normal 14px/1 FontAwesome;
+  font-size: inherit;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  &.unknown {
+    &:before {
+      content: "\f29c";
+    }
+  }
+
+  &.times {
+    &:before {
+      content: "\f00d";
+    }
+    color: rgb(88, 5, 5);
+  }
+
+  &.talk {
+    &:before {
+      content: "\f0e6"
+    }
+    color: #88027b;
+  }
+
+  &.projecting {
+    &:before {
+      content: "\f002"
+    }
+    color: #0e00b9;
+  }
+
+  &.development {
+    &:before {
+      content: "\f1c9"
+    }
+    color: #00a5b9;
+  }
+
+  &.deployment {
+    &:before {
+      content: "\f0a3"
+    }
+    color: #b9ae00;
+  }
+
+  &.support {
+    &:before {
+      content: "\f05d"
+    }
+    color: #6acc39;
+  }
+
+  &.support-finished {
+    &:before {
+      content: "\f017"
+    }
+    color: #bf6400;
+  }
+}
+
+.projects {
+  table > thead > tr > th.managers {
+    min-width: 100px;
+  }
+
+  table > tbody > tr > td.status {
+    opacity: 0.5;
+  }
+
+  table > tbody > tr > td.region {
+    background-color: #f9f9f9;
+  }
+}
+
+.preview.project {
+  input {
+    &.project-name {
+      font-size: 1.5em;
+      padding: 2px;
+      border: 1px solid rgb(255, 255, 255);
+      margin-bottom: 5px;
+
+      &:hover {
+        border: 1px solid rgb(197, 202, 208);
+      }
+      &:focus {
+        border: 1px solid rgb(197, 202, 208);
+        background-color: white;
+        outline: none;
+      }
+    }
+  }
+
+  button.btn > span {
+    line-height: 0px;
+  }
+
+  textarea {
+    &.project-details {
+      font-size: 1em;
+      padding: 2px;
+      border: 1px solid rgb(255, 255, 255);
+
+      &:hover {
+        border: 1px solid rgb(197, 202, 208);
+      }
+      &:focus {
+        border: 1px solid rgb(197, 202, 208);
+        background-color: white;
+        outline: none;
+      }
+    }
+  }
+
+  .btn-selector > button.btn-white {
+    border: 1px solid white;
+    margin-top: -3px;
+
+    span.caret {
+      display: none;
+    }
+
+    &:hover {
+      border: 1px solid rgb(197, 202, 208);
+      background-color: white;
+
+      span.caret {
+        display: inline;
+      }
+    }
+    &:focus {
+      border: 1px solid rgb(197, 202, 208);
+      background-color: white;
+      outline: none;
+
+      span.caret {
+        display: inline;
+      }
+    }
+  }
+
+  .icon-selector.status-group {
+
+    a.status {
+      border: 1px solid white;
+      padding-right: 20px;
+      padding-left: 5px;
+    }
+
+    a.caret-anchor {
+      position: absolute;
+      top: -18px;
+      right: 54px;
+      display: none;
+    }
+
+    &:hover {
+      a.status {
+        border: 1px solid rgb(197, 202, 208);
+      }
+
+      a.caret-anchor {
+        display: block;
+      }
+    }
+    &:focus {
+      a.status {
+        border: 1px solid rgb(197, 202, 208);
+      }
+
+      a.caret-anchor {
+        display: block;
+      }
+    }
+  }
+
+  div.select2-container {
+    border: 1px solid #fff;
+    width: initial;
+
+    &:hover {
+      border: 1px solid #ccc;
+    }
+
+    ul.select2-choices {
+      list-style: none;
+      margin-top:5px;
+      padding-left: 10px;
+
+      li.select2-search-choice {
+        div {
+          display: inline-block;
+          width: initial;
+        }
+
+        a.select2-search-choice-close {
+          font: normal normal normal 14px/1 FontAwesome;
+          display: inline-block;
+
+          &:before {
+            content: "\f00d";
+          }
+        }
+      }
+    }
+
+    div.select2-button {
+      button {
+        background-color: white;
+      }
+
+      span.caret {
+        width: initial;
+        border: none;
+      }
+    }
+  }
+}
+
+// без этого фикса в выпадайке checkbox на отдельной строке рисуется
+ul > li.selectable-item > a {
+  display: inline-block;
+}

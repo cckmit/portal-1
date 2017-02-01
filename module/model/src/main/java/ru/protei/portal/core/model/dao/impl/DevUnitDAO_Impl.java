@@ -5,6 +5,7 @@ import ru.protei.portal.core.model.dao.DevUnitDAO;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.query.ProductDirectionQuery;
 import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 
@@ -35,6 +36,14 @@ public class DevUnitDAO_Impl extends PortalBaseJdbcDAO<DevUnit> implements DevUn
                 args.add(query.getState().getId());
             }
         });
+    }
+
+    @SqlConditionBuilder
+    public SqlCondition createProductDirectionSqlCondition( ProductDirectionQuery query ) {
+        return new SqlCondition().build( (condition, args)->{
+            condition.append( "UTYPE_ID=?" );
+            args.add( En_DevUnitType.DIRECTION.getId() );
+        } );
     }
 
 }

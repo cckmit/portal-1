@@ -19,6 +19,7 @@ import ru.protei.portal.ui.common.client.view.dialogdetails.DialogDetailsView;
 import ru.protei.portal.ui.common.client.view.notify.NotifyView;
 import ru.protei.portal.ui.common.client.view.view.PagerView;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
+import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeModel;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.winter.web.common.client.activity.section.AbstractSectionItemView;
 import ru.protei.winter.web.common.client.view.section.SectionItemView;
@@ -43,6 +44,7 @@ public class CommonClientModule extends AbstractGinModule {
         bind( AbstractContactItemView.class ).to( ContactItemView.class );
         
         bind( CompanyModel.class ).asEagerSingleton();
+        bind( EmployeeModel.class ).asEagerSingleton();
 
         bind( DateFormatter.class ).in( Singleton.class );
 

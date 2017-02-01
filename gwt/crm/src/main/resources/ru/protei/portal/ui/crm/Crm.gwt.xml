@@ -8,6 +8,8 @@
     <inherits name="ru.protei.portal.ui.contact.Contact"/>
     <inherits name="ru.protei.portal.ui.issue.Issue"/>
     <inherits name="ru.protei.portal.ui.equipment.Equipment"/>
+    <inherits name="ru.protei.portal.ui.region.Region" />
+    <inherits name="ru.protei.portal.ui.project.Project" />
 
     <entry-point class='ru.protei.portal.ui.crm.client.Main'/>
 

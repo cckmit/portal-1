@@ -23,6 +23,6 @@ public interface CaseService {
     CoreResponse<List<En_CaseState>> stateList(En_CaseType caseType);
     CoreResponse<List<CaseComment>> getCaseCommentList( long caseId );
     CoreResponse<CaseComment> addCaseComment( CaseComment p);
-    CoreResponse<CaseComment> updateCaseComment(CaseComment p);
-    CoreResponse removeCaseComment( CaseComment caseComment );
+    CoreResponse<CaseComment> updateCaseComment(CaseComment p, Long personId);
+    CoreResponse removeCaseComment( CaseComment caseComment, Long personId );
 }

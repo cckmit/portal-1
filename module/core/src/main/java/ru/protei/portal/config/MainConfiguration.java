@@ -7,6 +7,7 @@ import ru.protei.portal.core.aspect.ServiceLayerInterceptor;
 import ru.protei.portal.core.controller.auth.AuthInterceptor;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
+import ru.protei.portal.core.model.ent.CaseLocation;
 import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.user.AuthService;
 import ru.protei.portal.core.service.user.AuthServiceImpl;
@@ -172,6 +173,19 @@ public class MainConfiguration {
     @Bean
     public EquipmentDAO getEquipmentDAO() { return new EquipmentDAO_Impl(); }
 
+    @Bean
+    public LocationDAO getLocationDAO() {
+        return new LocationDAO_Impl();
+    }
+
+    @Bean
+    public CaseMemberDAO getCaseMemberDAO() { return new CaseMemberDAO_Impl(); }
+
+    @Bean
+    public CaseLocationDAO getCaseLocationDAO() { return new CaseLocationDAO_Impl(); }
+
+    @Bean
+    public CaseTypeDAO getCaseTypeDAO() { return new CaseTypeDAO_Impl(); }
 /**
  *
  *
@@ -202,6 +216,12 @@ public class MainConfiguration {
 
     @Bean
     public CaseService getCaseService() { return new CaseServiceImpl(); }
+
+    @Bean
+    public LocationService getLocationService() { return new LocationServiceImpl(); }
+
+    @Bean
+    public ProjectService getProjectService() { return new ProjectServiceImpl(); }
 
     @Bean
     public EquipmentService getEquipmentService() { return new EquipmentServiceImpl(); }

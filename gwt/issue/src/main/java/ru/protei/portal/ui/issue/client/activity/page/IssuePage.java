@@ -20,6 +20,7 @@ public abstract class IssuePage
     @PostConstruct
     public void onInit() {
         ТAB = lang.issues();
+
         fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.ISSUE ) );
     }
 

@@ -321,4 +321,48 @@ public interface Lang extends Messages, ContactItemLang {
     String equipmentSearchName();
 
     String equipmentProduct();
+
+    String regions();
+
+    String regionStateUnknown();
+
+    String regionStateRival();
+
+    String regionStateTalk();
+
+    String regionStateProjecting();
+
+    String regionStateDevelopment();
+
+    String regionStateDeployment();
+
+    String regionStateSupport();
+
+    String regionStateSupportFinished();
+
+    String regionState();
+
+    String regionDistrict();
+
+    String productDirection();
+
+    String projectDirection();
+
+    String projectInfo();
+
+    String projects();
+
+    String projectManagers();
+
+    String projectHeader( String s );
+
+    String projectCreationDate();
+
+    String projectHeadManager();
+
+    String projectDeployManagers();
+
+    String projectState();
+
+    String projectRegion();
 }

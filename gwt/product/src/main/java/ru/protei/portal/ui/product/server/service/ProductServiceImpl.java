@@ -6,7 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.ent.DevUnit;
+import ru.protei.portal.core.model.query.ProductDirectionQuery;
 import ru.protei.portal.core.model.query.ProductQuery;
+import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.service.ProductService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
@@ -96,6 +98,23 @@ public class ProductServiceImpl implements ProductService {
         CoreResponse< List<ProductShortView> > result = productService.shortViewList( query );
 
         log.debug( "result status: {}, data-amount: {}", result.getStatus(), result.isOk() ? result.getDataAmountTotal() : 0 );
+
+        if ( result.isError() )
+            throw new RequestFailedException( result.getStatus() );
+
+        return result.getData();
+    }
+
+    @Override
+    public List<ProductDirectionInfo> getProductDirectionList( ProductDirectionQuery query ) throws RequestFailedException {
+
+        log.debug( "getProductDirectionList(): query={}", query );
+
+        String[] names = new String[] {
+                "Система 112", "Call Center", "Видеонаблюдение", "Видеоаналитика"
+        };
+
+        CoreResponse< List< ProductDirectionInfo > > result = productService.productDirectionList( query );
 
         if ( result.isError() )
             throw new RequestFailedException( result.getStatus() );
