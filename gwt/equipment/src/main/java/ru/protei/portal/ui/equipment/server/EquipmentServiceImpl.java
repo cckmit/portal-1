@@ -23,8 +23,8 @@ public class EquipmentServiceImpl implements EquipmentService {
     @Override
     public List<Equipment> getEquipments( EquipmentQuery query ) throws RequestFailedException {
 
-        log.debug( "getEquipments(): name={} | number={}",
-                query.getName(), query.getNumber() );
+        log.debug( "getEquipments(): name={} | classifierCode={} | pamrRegisterNumber={} | pdraRegistreNumber={}",
+                query.getName(), query.getClassifierCode(), query.getPAMR_RegisterNumber(), query.getPDRA_RegisterNumber() );
 
         CoreResponse<List<Equipment>> response = equipmentService.equipmentList( query );
 

@@ -12,7 +12,7 @@
             <label class="dn-separator">.</label>
             <validatefield:ValidableTextBox ui:field="regNum" styleName="input-field dn-register-number"/>
             <label class="dn-separator">–</label>
-            <validatefield:ValidableTextBox ui:field="regNumModifier" styleName="input-field dn-register-number-modifier" />
+            <validatefield:ValidableTextBox ui:field="regNumModification" styleName="input-field dn-register-number-modifier" />
         </div>
         <p ui:field="msg" class="dn-msg"/>
        </g:HTMLPanel>

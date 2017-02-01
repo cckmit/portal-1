@@ -15,4 +15,10 @@ public interface AbstractEquipmentFilterView extends IsWidget {
     HasValue<String> name();
 
     void resetFilter();
+
+    String getClassifierCode();
+
+    String getPDRA_RegisterNumber();
+
+    String getPAMR_RegisterNumber();
 }

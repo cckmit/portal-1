@@ -7,15 +7,11 @@ public class EquipmentQuery extends BaseQuery {
 
     private String name;
 
-    private String number;
+    private String classifierCode;
 
-    public String getNumber() {
-        return number;
-    }
+    private String pdraRegNum;
 
-    public void setNumber( String number ) {
-        this.number = number;
-    }
+    private String pamrRegNum;
 
     public String getName() {
         return name;
@@ -25,12 +21,37 @@ public class EquipmentQuery extends BaseQuery {
         this.name = name;
     }
 
+    public String getClassifierCode() {
+        return classifierCode;
+    }
+
+    public void setClassifierCode( String classifierCode ) {
+        this.classifierCode = classifierCode;
+    }
+
+    public String getPDRA_RegisterNumber() {
+        return pdraRegNum;
+    }
+
+    public void setPdraRegNum( String pdraRegNum ) {
+        this.pdraRegNum = pdraRegNum;
+    }
+
+    public String getPAMR_RegisterNumber() {
+        return pamrRegNum;
+    }
+
+    public void setPamrRegNum( String pamrRegNum ) {
+        this.pamrRegNum = pamrRegNum;
+    }
+
     public EquipmentQuery() {
     }
 
-    public EquipmentQuery( String name, String number ) {
-        super();
+    public EquipmentQuery( String name, String classifierCode, String pdraRegNum, String pamrRegNum ) {
         this.name = name;
-        this.number = number;
+        this.classifierCode = classifierCode;
+        this.pdraRegNum = pdraRegNum;
+        this.pamrRegNum = pamrRegNum;
     }
 }

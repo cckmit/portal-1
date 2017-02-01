@@ -3,11 +3,13 @@ package ru.protei.portal.ui.equipment.client.widget.number;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.dom.client.ParagraphElement;
+import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasValue;
@@ -31,7 +33,7 @@ public class DecimalNumberBox
 
     @Override
     public DecimalNumber getValue() {
-        return null;
+        return value;
     }
 
     @Override
@@ -46,10 +48,10 @@ public class DecimalNumberBox
             value = new DecimalNumber();
         }
 
-        organizationCodeName.setInnerText( organizationCodeLang.getName( value.getOrganizationCode() ) );
+        value.setOrganizationCode( organizationCode );
         classifierCode.setText( value.getClassifierCode() == null ? null : value.getClassifierCode());
         regNum.setText( value.getRegisterNumber() == null ? null : value.getRegisterNumber() );
-        regNumModifier.setText( value.getModification() == null ? null : value.getModification() );
+        regNumModification.setText( value.getModification() == null ? null : value.getModification() );
 
         if ( fireEvents ) {
             ValueChangeEvent.fire( this, decimalNumber );
@@ -66,10 +68,19 @@ public class DecimalNumberBox
         organizationCodeName.setInnerText( organizationCodeLang.getName( organizationCode ) );
     }
 
+    @UiHandler( {"regNum", "classifierCode", "regNumModification" } )
+    public void onValuesChanged( KeyUpEvent event ) {
+        value.setClassifierCode( classifierCode.getValue() );
+        value.setModification( regNumModification.getValue() );
+        value.setRegisterNumber( regNum.getValue() );
+
+        ValueChangeEvent.fire( this, value );
+    }
+
     @UiField
     LabelElement organizationCodeName;
     @UiField
-    ValidableTextBox regNumModifier;
+    ValidableTextBox regNumModification;
     @UiField
     ValidableTextBox regNum;
     @UiField
