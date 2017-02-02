@@ -36,6 +36,11 @@ textarea.input-field {
 }
 
 
+input.input-field[disabled],
+textarea.input-field[disabled]{
+  background-color: whitesmoke;
+  cursor: not-allowed;
+}
 
   /**
      PANEL for create/edit pages

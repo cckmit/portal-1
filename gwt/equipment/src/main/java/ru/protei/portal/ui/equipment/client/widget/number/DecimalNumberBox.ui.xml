@@ -1,6 +1,6 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:validatefield="urn:import:ru.protei.portal.ui.common.client.widget.validatefield">
+             xmlns:mask="urn:import:ru.protei.portal.ui.common.client.widget.mask">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
@@ -8,12 +8,13 @@
         <div class="dn-container">
             <label ui:field="organizationCodeName"></label>
             <label class="dn-separator">.</label>
-            <validatefield:ValidableTextBox ui:field="classifierCode" styleName="input-field dn-classifier-code" notNull="true"/>
+            <mask:MaskedTextBox ui:field="classifierCode" styleName="input-field dn-classifier-code" mask="999999"/>
             <label class="dn-separator">.</label>
-            <validatefield:ValidableTextBox ui:field="regNum" styleName="input-field dn-register-number"/>
+            <mask:MaskedTextBox ui:field="regNum" styleName="input-field dn-register-number" mask="999"/>
             <label class="dn-separator">–</label>
-            <validatefield:ValidableTextBox ui:field="regNumModification" styleName="input-field dn-register-number-modifier" />
+            <mask:MaskedTextBox ui:field="regNumModification" styleName="input-field dn-register-number-modifier" mask="999"/>
         </div>
+
         <p ui:field="msg" class="dn-msg"/>
        </g:HTMLPanel>
 </ui:UiBinder>

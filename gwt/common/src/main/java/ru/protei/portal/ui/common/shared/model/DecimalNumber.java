@@ -47,6 +47,10 @@ public class DecimalNumber implements Serializable {
         this.modification = modification;
     }
 
+    public boolean isValid() {
+        return true;
+    }
+
     public DecimalNumber( OrganizationCode organizationCode, String classifierCode, String registerNumber, String modification ) {
         this.organizationCode = organizationCode;
         this.classifierCode = classifierCode;

@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.EquipmentQuery;
 import ru.protei.portal.ui.common.client.service.EquipmentService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
+import ru.protei.portal.ui.common.shared.model.DecimalNumber;
 
 import java.util.List;
 
@@ -23,7 +24,7 @@ public class EquipmentServiceImpl implements EquipmentService {
     @Override
     public List<Equipment> getEquipments( EquipmentQuery query ) throws RequestFailedException {
 
-        log.debug( "getEquipments(): name={} | classifierCode={} | pamrRegisterNumber={} | pdraRegistreNumber={}",
+        log.debug( "getEquipments(): nameBySldWrks={} | classifierCode={} | pamrRegisterNumber={} | pdraRegistreNumber={}",
                 query.getName(), query.getClassifierCode(), query.getPAMR_RegisterNumber(), query.getPDRA_RegisterNumber() );
 
         CoreResponse<List<Equipment>> response = equipmentService.equipmentList( query );
@@ -70,6 +71,36 @@ public class EquipmentServiceImpl implements EquipmentService {
     public Long getEquipmentCount( EquipmentQuery query ) throws RequestFailedException {
         log.debug( "getEquipmentCount(): query={}", query );
         return equipmentService.count( query ).getData();
+    }
+
+    @Override
+    public boolean checkIfExistDecimalNumber( DecimalNumber number ) throws RequestFailedException {
+        if (number == null) {
+            log.warn("null number in request");
+            throw new RequestFailedException(En_ResultStatus.INTERNAL_ERROR);
+        }
+        String regNum = number.getRegisterNumber();
+        if ( number.getModification() != null && !number.getModification().isEmpty() ) {
+            regNum += "-" + number.getModification();
+        }
+        log.debug( "check exist decimal number: organizationCode={}, classifierCode={}, regNum={}",
+                number.getOrganizationCode(), number.getClassifierCode(), regNum );
+
+        CoreResponse<Boolean> response = null;
+        switch ( number.getOrganizationCode() ) {
+            case PAMR:
+                response = equipmentService.checkIfExistPDRA_Number( number.getClassifierCode(), regNum );
+                break;
+            case PDRA:
+                response = equipmentService.checkIfExistPAMR_Number( number.getClassifierCode(), regNum );
+        }
+
+        if (response.isOk()) {
+            log.debug("check exist decimal number, result: {}", response.getData());
+            return response.getData();
+        }
+
+        throw new RequestFailedException(response.getStatus());
     }
 
     @Autowired

@@ -1,6 +1,9 @@
 package ru.protei.portal.ui.equipment.client.view.preview;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.dom.client.LabelElement;
+import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
@@ -37,10 +40,51 @@ public class EquipmentPreviewView extends Composite implements AbstractEquipment
         positioner.ignore(this);
     }
 
-   
+    @Override
+    public void setHeader( String value ) {
+        this.header.setInnerText( value );
+    }
+
+    @Override
+    public void setNameBySpecification( String value ) {
+        this.nameBySpec.setInnerText( value );
+    }
+
+    @Override
+    public void setNameBySldWrks( String value ) {
+        this.nameBySldWrks.setInnerText( value );
+    }
+
+    @Override
+    public void setComment( String value ) {
+        this.comment.setInnerText( value );
+    }
+
+    @Override
+    public void setPDRA_decimalNumber( String value ) {
+        this.pdraNum.setInnerText( value );
+    }
+
+    @Override
+    public void setPAMR_decimalNumber( String value ) {
+        this.pamrNum.setInnerText( value );
+    }
+
     @Inject
     @UiField
     Lang lang;
+    @UiField
+    SpanElement comment;
+    @UiField
+    LabelElement header;
+    @UiField
+    DivElement pamrNum;
+    @UiField
+    DivElement pdraNum;
+    @UiField
+    SpanElement nameBySpec;
+    @UiField
+    SpanElement nameBySldWrks;
 
     @Inject
     FixedPositioner positioner;

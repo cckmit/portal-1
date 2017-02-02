@@ -21,4 +21,8 @@ public interface EquipmentService {
     CoreResponse<Equipment> getEquipment( long id );
 
     CoreResponse<Equipment> saveEquipment( Equipment equipment );
+
+    CoreResponse<Boolean> checkIfExistPDRA_Number( String classifierCode, String registerNumber );
+
+    CoreResponse<Boolean> checkIfExistPAMR_Number( String classifierCode, String registerNumber );
 }

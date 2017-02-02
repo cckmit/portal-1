@@ -5,6 +5,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.query.EquipmentQuery;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
+import ru.protei.portal.ui.common.shared.model.DecimalNumber;
 
 import java.util.List;
 
@@ -26,4 +27,9 @@ public interface EquipmentService extends RemoteService {
     Equipment saveEquipment( Equipment p ) throws RequestFailedException;
 
     Long getEquipmentCount( EquipmentQuery query ) throws RequestFailedException;
+
+    /**
+     * Проверка валидности заданного децимального номера
+     */
+    boolean checkIfExistDecimalNumber( DecimalNumber number ) throws RequestFailedException;
 }

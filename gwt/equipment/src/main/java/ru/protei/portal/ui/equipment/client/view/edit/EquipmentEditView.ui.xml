@@ -22,12 +22,25 @@
                         <validatefield:ValidableTextBox ui:field="nameSldWrks" styleName="input-field" notNull="true"/>
                     </div>
 
-                    <div class="form-group col-xs-12 col-sm-6">
+                    <div class="form-group col-xs-12">
+                        <label>
+                            <ui:text from="{lang.equipmentDecimalNumber}"/>
+                        </label>
+                    </div>
+
+                    <div class="form-group col-xs-12 col-sm-6 col-md-6">
                         <number:DecimalNumberBox ui:field="pamrNum" organizationCode="PAMR"/>
                     </div>
 
-                    <div class="form-group col-xs-12 col-sm-6">
+                    <div class="form-group col-xs-12 col-sm-6 col-md-6">
                         <number:DecimalNumberBox ui:field="pdraNum" organizationCode="PDRA"/>
+                    </div>
+
+                    <div class="form-group col-xs-12">
+                        <label>
+                            <ui:text from="{lang.equipmentComment}"/>
+                        </label>
+                        <g:TextBox ui:field="comment" styleName="input-field"/>
                     </div>
                 </div>
             </div>

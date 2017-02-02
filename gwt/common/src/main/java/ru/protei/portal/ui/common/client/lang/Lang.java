@@ -365,4 +365,8 @@ public interface Lang extends Messages, ContactItemLang {
     String projectState();
 
     String projectRegion();
+
+    String equipmentAttachment();
+
+    String equipmentDescription();
 }

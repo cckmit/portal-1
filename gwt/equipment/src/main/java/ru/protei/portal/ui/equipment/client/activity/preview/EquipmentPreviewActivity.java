@@ -23,22 +23,30 @@ public abstract class EquipmentPreviewActivity implements Activity, AbstractEqui
     }
 
     @Event
-    public void onInit( AppEvents.InitDetails event ) {
-        this.initDetails = event;
-    }
-
-    @Event
     public void onShow( EquipmentEvents.ShowPreview event ) {
         event.parent.clear();
         event.parent.add( view.asWidget() );
 
         this.equipmentId = event.equipment.getId();
 
+        if( equipmentId == null ) {
+            fillView( equipmentId );
+            return;
+        }
+
         fillView( event.equipment );
     }
 
     private void fillView( Equipment value ) {
+        view.setHeader( lang.equipmentDescription() + " #" + value.getId() );
+        view.setNameBySpecification( value.getNameBySpecification() );
+        view.setNameBySldWrks( value.getName() );
+        view.setComment( value.getComment() );
 
+        String pdraNum = value.getPDRA_RegisterNumber() == null ? null : lang.equipmentOrganizationCodePDRA() + "." + value.getClassifierCode() + "." + value.getPDRA_RegisterNumber();
+        String pamrNum = value.getPAMR_RegisterNumber() == null ? null : lang.equipmentOrganizationCodePAMR() + "." + value.getClassifierCode() + "." + value.getPAMR_RegisterNumber();
+        view.setPAMR_decimalNumber( pamrNum );
+        view.setPDRA_decimalNumber( pdraNum );
     }
 
     private void fillView( Long id ) {
@@ -69,5 +77,4 @@ public abstract class EquipmentPreviewActivity implements Activity, AbstractEqui
     EquipmentServiceAsync equipmentService;
 
     private Long equipmentId;
-    private AppEvents.InitDetails initDetails;
 }

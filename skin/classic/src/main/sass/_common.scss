@@ -652,20 +652,24 @@ label.bordered:after{
   }
 }
 
-.contacts {
+.equipment {
   table {
     tbody {
       tr {
         td {
-          height: 20px;
+          height: 50px;
 
           > div {
-            height: 20px;
-            max-height: 20px;
+            height: 50px;
+            max-height: 50px;
             white-space: pre-line;
             overflow: hidden;
             text-overflow: ellipsis;
           }
+        }
+        .equipment-type-image {
+          height: 50px;
+          padding: 0 8px;
         }
       }
     }
@@ -1336,5 +1340,15 @@ a {
     .dn-register-number, .dn-register-number-modifier {
       flex-shrink: 3;
     }
+
+    input {
+      font-family: GostARegular;
+      font-size: 1.4em !important;
+    }
   }
+}
+
+.equipment-number {
+  font-family: GostARegular;
+  font-size: 18px;
 }

@@ -10,13 +10,8 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_SortField;
-import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
-import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
-import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.common.shared.model.DecimalNumber;
 import ru.protei.portal.ui.common.shared.model.OrganizationCode;
 import ru.protei.portal.ui.equipment.client.activity.filter.AbstractEquipmentFilterActivity;
@@ -24,6 +19,7 @@ import ru.protei.portal.ui.equipment.client.activity.filter.AbstractEquipmentFil
 import ru.protei.portal.ui.equipment.client.widget.number.DecimalNumberBox;
 import ru.protei.portal.ui.equipment.client.widget.organization.OrganizationBtnGroup;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -46,7 +42,7 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
     @Override
     public void resetFilter() {
         name.setValue( null );
-        organizationCode.setValue( null );
+        organizationCode.setValue( new HashSet<>() );
         switchOffAndResetDNumbers();
     }
 
@@ -122,8 +118,24 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
         pdraNum.setVisible( values.contains( OrganizationCode.PDRA ) );
     }
 
-    @UiHandler( {"pamrNum", "pdraNum"} )
-    public void onNumberChanged( ValueChangeEvent<DecimalNumber> event ) {
+    @UiHandler( "pdraNum" )
+    public void onPdraNumberChanged( ValueChangeEvent<DecimalNumber> event ) {
+        DecimalNumber pdra = pdraNum.getValue();
+        if ( pdra != null ) {
+            pamrNum.setClassifierCode( pdra.getClassifierCode() );
+        }
+
+        timer.cancel();
+        timer.schedule( 300 );
+    }
+
+    @UiHandler( "pamrNum" )
+    public void onPamrNumberChanged( ValueChangeEvent<DecimalNumber> event ) {
+        DecimalNumber pamr = pamrNum.getValue();
+        if ( pamr != null ) {
+            pdraNum.setClassifierCode( pamr.getClassifierCode() );
+        }
+
         timer.cancel();
         timer.schedule( 300 );
     }

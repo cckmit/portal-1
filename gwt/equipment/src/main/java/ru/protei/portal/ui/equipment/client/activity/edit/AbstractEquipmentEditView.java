@@ -1,6 +1,9 @@
 package ru.protei.portal.ui.equipment.client.activity.edit;
 
+import com.google.gwt.user.client.ui.HasEnabled;
+import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
+import ru.protei.portal.ui.common.shared.model.DecimalNumber;
 
 
 /**
@@ -8,4 +11,20 @@ import com.google.gwt.user.client.ui.IsWidget;
  */
 public interface AbstractEquipmentEditView extends IsWidget {
     void setActivity( AbstractEquipmentEditActivity activity );
+
+    HasValue<String> nameBySldWrks();
+
+    HasValue<String> nameBySpecification();
+
+    HasValue<String> comment();
+
+    HasEnabled nameBySpecificationEnabled();
+
+    HasValue<DecimalNumber> pdraNumber();
+
+    HasValue<DecimalNumber> pamrNumber();
+
+    HasEnabled pamrNumberEnabled();
+
+    HasEnabled pdraNumberEnabled();
 }

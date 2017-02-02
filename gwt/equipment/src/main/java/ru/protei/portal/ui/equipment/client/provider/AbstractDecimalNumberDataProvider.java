@@ -11,7 +11,7 @@ public interface AbstractDecimalNumberDataProvider {
      * Проверка доступности децимального номера изделия
      * @return
      */
-    boolean isValidDecimalNumber( DecimalNumber number );
+    boolean checkIfExistDecimalNumber( DecimalNumber number );
 
     /**
      * Получение следующего свободного децимального номера

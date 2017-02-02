@@ -1,6 +1,7 @@
 package ru.protei.portal.core.service;
 
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +53,21 @@ public class EquipmentServiceImpl implements EquipmentService {
         return new CoreResponse<Equipment>().error(En_ResultStatus.INTERNAL_ERROR);
     }
 
+    @Override
+    public CoreResponse< Boolean > checkIfExistPAMR_Number( String classifierCode, String registerNumber ) {
+        List< Equipment > equipments = equipmentDAO.getListByCondition( "Equipment.classifier_code=? and pamr_reg_num=?", classifierCode, registerNumber );
+
+        boolean isExist = CollectionUtils.size( equipments ) > 1;
+        return new CoreResponse<Boolean>().success( isExist );
+    }
+
+    @Override
+    public CoreResponse< Boolean > checkIfExistPDRA_Number( String classifierCode, String registerNumber ) {
+        List< Equipment > equipments = equipmentDAO.getListByCondition( "Equipment.classifier_code=? and pdra_reg_num=?", classifierCode, registerNumber );
+
+        boolean isExist = CollectionUtils.size( equipments ) > 1;
+        return new CoreResponse<Boolean>().success( isExist );
+    }
 
     @Override
     public CoreResponse<Long> count(EquipmentQuery query) {

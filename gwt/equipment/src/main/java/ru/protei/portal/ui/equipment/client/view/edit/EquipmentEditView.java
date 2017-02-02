@@ -8,6 +8,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
+import ru.protei.portal.ui.common.shared.model.DecimalNumber;
 import ru.protei.portal.ui.equipment.client.activity.edit.AbstractEquipmentEditActivity;
 import ru.protei.portal.ui.equipment.client.activity.edit.AbstractEquipmentEditView;
 import ru.protei.portal.ui.equipment.client.widget.number.DecimalNumberBox;
@@ -26,6 +27,46 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
     @Override
     public void setActivity(AbstractEquipmentEditActivity activity) {
         this.activity = activity;
+    }
+
+    @Override
+    public HasValue< String > nameBySldWrks() {
+        return nameSldWrks;
+    }
+
+    @Override
+    public HasValue< String > nameBySpecification() {
+        return nameSpecification;
+    }
+
+    @Override
+    public HasValue< String > comment() {
+        return comment;
+    }
+
+    @Override
+    public HasEnabled nameBySpecificationEnabled() {
+        return nameSpecification;
+    }
+
+    @Override
+    public HasValue< DecimalNumber > pdraNumber() {
+        return pdraNum;
+    }
+
+    @Override
+    public HasValue< DecimalNumber > pamrNumber() {
+        return pamrNum;
+    }
+
+    @Override
+    public HasEnabled pamrNumberEnabled() {
+        return pamrNum;
+    }
+
+    @Override
+    public HasEnabled pdraNumberEnabled() {
+        return pdraNum;
     }
 
     @UiHandler( "saveButton" )
@@ -57,6 +98,8 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
     @Inject
     @UiField(provided = true)
     DecimalNumberBox pamrNum;
+    @UiField
+    TextBox comment;
 
     AbstractEquipmentEditActivity activity;
 

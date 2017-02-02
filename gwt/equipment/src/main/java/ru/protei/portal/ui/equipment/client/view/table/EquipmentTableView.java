@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.equipment.client.view.table;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.DOM;
@@ -18,6 +19,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.separator.Separator;
 import ru.protei.portal.ui.equipment.client.activity.table.AbstractEquipmentTableActivity;
 import ru.protei.portal.ui.equipment.client.activity.table.AbstractEquipmentTableView;
+import ru.protei.portal.ui.equipment.client.common.EquipmentUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -100,20 +102,33 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
     private void initTable () {
         editClickColumn = new EditClickColumn<Equipment>( lang ) {};
 
-        ClickColumn< Equipment > name = new ClickColumn< Equipment >() {
+        ClickColumn< Equipment > nameBySpecification = new ClickColumn< Equipment >() {
             @Override
             protected void fillColumnHeader( Element element ) {
-                element.setInnerText( lang.equipmentName() );
+                element.setInnerText( lang.equipmentNameBySpecification() );
             }
 
             @Override
             public void fillColumnValue ( Element cell, Equipment value ) {
-                Element root = DOM.createDiv();
-                root.setInnerHTML( "<b>" + value.getName() + "</b>" + "<br/><i>" + value.getNameBySpecification() + "</i>");
-                cell.appendChild( root );
+                cell.setInnerHTML( HTMLHelper.wrapDiv( value.getNameBySpecification() ) );
+            }
+        };
+        columns.add( nameBySpecification );
+
+
+        ClickColumn< Equipment > name = new ClickColumn< Equipment >() {
+            @Override
+            protected void fillColumnHeader( Element element ) {
+                element.setInnerText( lang.equipmentNameBySldWrks() );
+            }
+
+            @Override
+            public void fillColumnValue ( Element cell, Equipment value ) {
+                cell.setInnerHTML( HTMLHelper.wrapDiv( value.getName() ) );
             }
         };
         columns.add( name );
+
 
         ClickColumn< Equipment > decimalNumber = new ClickColumn< Equipment >() {
             @Override
@@ -125,6 +140,7 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
             public void fillColumnValue ( Element cell, Equipment value ) {
                 Element root = DOM.createDiv();
                 cell.appendChild( root );
+                root.setClassName( "equipment-number" );
 
                 if ( value.getPAMR_RegisterNumber() != null ) {
                     Element pamrDecimalNumber = DOM.createDiv();
@@ -168,15 +184,47 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
                     return;
                 }
 
-                cell.setInnerHTML( HTMLHelper.wrapDiv( value.getComment() ) );
+                cell.setInnerHTML( "<div><i><small>" + value.getComment() + "</small></i></div>" );
             }
         };
         columns.add( comment );
 
+        ClickColumn< Equipment > attachment = new ClickColumn< Equipment >() {
+            @Override
+            protected void fillColumnHeader( Element element ) {
+                element.setInnerText( lang.equipmentAttachment() );
+            }
+
+            @Override
+            public void fillColumnValue ( Element cell, Equipment value ) {
+            }
+        };
+        columns.add( attachment );
+
+
+        ClickColumn< Equipment > type = new ClickColumn< Equipment >() {
+            @Override
+            protected void fillColumnHeader( Element element ) {}
+
+            @Override
+            public void fillColumnValue ( Element cell, Equipment value ) {
+                Element root = DOM.createDiv();
+                cell.appendChild( root );
+                ImageElement imageElement = DOM.createImg().cast();
+                imageElement.setSrc( EquipmentUtils.getESKDClassTypeIcon( value.getClassifierCode() ));
+                imageElement.setClassName( "equipment-type-image" );
+                root.appendChild( imageElement );
+            }
+        };
+        columns.add( type );
+
+        table.addColumn( type.header, type.values );
+        table.addColumn( nameBySpecification.header, nameBySpecification.values );
         table.addColumn( name.header, name.values );
         table.addColumn( decimalNumber.header, decimalNumber.values );
-        table.addColumn( product.header, product.values );
+//        table.addColumn( product.header, product.values );
         table.addColumn( comment.header, comment.values );
+        table.addColumn( attachment.header, attachment.values );
         table.addColumn( editClickColumn.header, editClickColumn.values );
     }
 
