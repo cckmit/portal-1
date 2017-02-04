@@ -1,10 +1,9 @@
 package ru.protei.portal.core.model.ent;
 
 
-import ru.protei.winter.jdbc.annotations.IdInsertMode;
-import ru.protei.winter.jdbc.annotations.JdbcColumn;
-import ru.protei.winter.jdbc.annotations.JdbcEntity;
-import ru.protei.winter.jdbc.annotations.JdbcId;
+import ru.protei.portal.core.model.dict.En_EquipmentStage;
+import ru.protei.portal.core.model.dict.En_EquipmentType;
+import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
 import java.util.List;
@@ -17,6 +16,20 @@ public class Equipment implements Serializable {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
+
+    /**
+     * Стадии разработки оборудования
+     */
+    @JdbcColumn
+    @JdbcEnumerated(EnumType.STRING)
+    private En_EquipmentStage stage;
+
+    /**
+     * Тип оборудования
+     */
+    @JdbcColumn
+    @JdbcEnumerated(EnumType.STRING)
+    private En_EquipmentType type;
 
     /**
      * Наименование оборудования (по Solid Works)
@@ -54,17 +67,28 @@ public class Equipment implements Serializable {
     @JdbcColumn
     private String comment;
 
-    /**
-     * Список единиц, в которые входит
-     */
-    private List<Equipment> includedIn;
-
     public Long getId() {
         return id;
     }
 
     public void setId( Long id ) {
         this.id = id;
+    }
+
+    public En_EquipmentStage getStage() {
+        return stage;
+    }
+
+    public void setStage( En_EquipmentStage stage ) {
+        this.stage = stage;
+    }
+
+    public En_EquipmentType getType() {
+        return type;
+    }
+
+    public void setType( En_EquipmentType type ) {
+        this.type = type;
     }
 
     public String getName() {

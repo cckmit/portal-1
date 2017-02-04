@@ -1,7 +1,8 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:organization="urn:import:ru.protei.portal.ui.equipment.client.widget.organization"
-             xmlns:number="urn:import:ru.protei.portal.ui.equipment.client.widget.number">
+             xmlns:number="urn:import:ru.protei.portal.ui.equipment.client.widget.number"
+             xmlns:type="urn:import:ru.protei.portal.ui.equipment.client.widget.type">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
@@ -24,6 +25,8 @@
             <div class="form-group col-xs-12">
                 <number:DecimalNumberBox ui:field="pdraNum" organizationCode="PDRA"/>
             </div>
+
+            <type:EquipmentTypeBtnGroup ui:field="type" title="{lang.equipmentType}"/>
         </div>
         <div class="footer">
             <g:Button ui:field="resetBtn" styleName="btn btn-white" text="{lang.buttonReset}"/>
