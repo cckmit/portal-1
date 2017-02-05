@@ -2,7 +2,8 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:organization="urn:import:ru.protei.portal.ui.equipment.client.widget.organization"
              xmlns:number="urn:import:ru.protei.portal.ui.equipment.client.widget.number"
-             xmlns:type="urn:import:ru.protei.portal.ui.equipment.client.widget.type">
+             xmlns:type="urn:import:ru.protei.portal.ui.equipment.client.widget.type"
+             xmlns:stage="urn:import:ru.protei.portal.ui.equipment.client.widget.stage">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
@@ -11,6 +12,12 @@
             <div class="form-group local-search col-xs-12">
                 <span class="icon local-search-icon"></span>
                 <g:TextBox ui:field="name" styleName="input-field"/>
+            </div>
+
+
+            <div class="form-group col-xs-12">
+                <label><ui:text from="{lang.equipmentType}"/></label>
+                <type:EquipmentTypeBtnGroup ui:field="types" title="{lang.equipmentType}" styleName="form-group btn-group btn-group-justified"/>
             </div>
 
             <div class="form-group col-xs-12">
@@ -26,7 +33,12 @@
                 <number:DecimalNumberBox ui:field="pdraNum" organizationCode="PDRA"/>
             </div>
 
-            <type:EquipmentTypeBtnGroup ui:field="type" title="{lang.equipmentType}"/>
+
+            <div class="form-group col-xs-12">
+                <label><ui:text from="{lang.equipmentStage}"/></label>
+                <stage:EquipmentStageOptionList ui:field="stages" title="{lang.equipmentStage}"/>
+            </div>
+
         </div>
         <div class="footer">
             <g:Button ui:field="resetBtn" styleName="btn btn-white" text="{lang.buttonReset}"/>

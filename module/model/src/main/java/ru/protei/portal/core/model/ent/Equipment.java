@@ -6,7 +6,6 @@ import ru.protei.portal.core.model.dict.En_EquipmentType;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
-import java.util.List;
 
 /**
  * Оборудование
@@ -20,7 +19,7 @@ public class Equipment implements Serializable {
     /**
      * Стадии разработки оборудования
      */
-    @JdbcColumn
+    @JdbcColumn( name = "dev_stage" )
     @JdbcEnumerated(EnumType.STRING)
     private En_EquipmentStage stage;
 

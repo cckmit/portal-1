@@ -15,6 +15,16 @@
                     <label class="col-xs-5"><ui:text from="{lang.equipmentNameBySldWrks}"/></label>
                     <span class="col-xs-7" ui:field="nameBySldWrks"></span>
                 </div>
+                <div class="col-xs-12">
+                    <label class="col-xs-5"><ui:text from="{lang.equipmentType}"/></label>
+                    <span class="col-xs-7" ui:field="type"></span>
+                </div>
+                <div class="col-xs-12">
+                    <label class="col-xs-5"><ui:text from="{lang.equipmentStage}"/></label>
+                    <div class="col-xs-7">
+                        <span ui:field="stage"></span>
+                    </div>
+                </div>
             </fieldset>
             <fieldset class="header">
                 <legend><ui:text from="{lang.equipmentDecimalNumber}"/></legend>

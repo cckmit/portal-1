@@ -654,22 +654,32 @@ label.bordered:after{
 
 .equipment {
   table {
+    thead {
+      .equipment-type-column {
+        width: 90px;
+      }
+    }
     tbody {
       tr {
         td {
-          height: 50px;
+          height: 75px;
 
           > div {
-            height: 50px;
-            max-height: 50px;
+            height: 75px;
+            max-height: 75px;
             white-space: pre-line;
             overflow: hidden;
             text-overflow: ellipsis;
           }
         }
-        .equipment-type-image {
-          height: 50px;
-          padding: 0 8px;
+
+        .equipment-type-column {
+          text-align: center;
+
+          img {
+            height: 50px;
+            padding: 0 8px;
+          }
         }
       }
     }
@@ -995,7 +1005,7 @@ td.info {
   font-size: 75%;
   font-weight: bold;
   line-height: 1;
-  color: #fff;
+  color: #fff !important;
   text-align: center;
   white-space: nowrap;
   vertical-align: baseline;
@@ -1004,7 +1014,9 @@ td.info {
 
 /*** LABELS OF STATES ***/
 .label-created,
-.option-created .option-name{
+.label-draft_project,
+.option-draft_project .option-name,
+.option-created .option-name {
   background-color: #ef5350;
 }
 
@@ -1014,7 +1026,9 @@ td.info {
 }
 
 .label-opened,
-.option-opened .option-name{
+.label-technical_project,
+.option-technical_project .option-name,
+.option-opened .option-name {
   background-color: #42a5f5;
 }
 
@@ -1024,7 +1038,9 @@ td.info {
 }
 
 .label-active,
-.option-active .option-name{
+.label-rkd_prototype,
+.option-rkd_prototype .option-name,
+.option-active .option-name {
   background-color: #00bcd4;
 }
 
@@ -1034,7 +1050,9 @@ td.info {
 }
 
 .label-done,
-.option-done .option-name{
+.label-rkd_product,
+.option-rkd_product .option-name,
+.option-done .option-name {
   background-color: #4caf50;
 }
 

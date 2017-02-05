@@ -70,6 +70,17 @@ public class EquipmentPreviewView extends Composite implements AbstractEquipment
         this.pamrNum.setInnerText( value );
     }
 
+    @Override
+    public void setType( String value ) {
+        this.type.setInnerText( value );
+    }
+
+    @Override
+    public void setStage( String value, String styleNamePrefix ) {
+        this.stage.setInnerText( value );
+        this.stage.addClassName( "label label-" + styleNamePrefix );
+    }
+
     @Inject
     @UiField
     Lang lang;
@@ -85,6 +96,10 @@ public class EquipmentPreviewView extends Composite implements AbstractEquipment
     SpanElement nameBySpec;
     @UiField
     SpanElement nameBySldWrks;
+    @UiField
+    SpanElement type;
+    @UiField
+    SpanElement stage;
 
     @Inject
     FixedPositioner positioner;

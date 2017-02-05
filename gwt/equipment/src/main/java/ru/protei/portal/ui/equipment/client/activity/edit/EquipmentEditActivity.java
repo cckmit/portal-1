@@ -83,6 +83,8 @@ public abstract class EquipmentEditActivity
         equipment.setName( view.nameBySldWrks().getValue() );
         equipment.setNameBySpecification( view.nameBySpecification().getValue() );
         equipment.setComment( view.comment().getValue() );
+        equipment.setType( view.type().getValue() );
+        equipment.setStage( view.stage().getValue() );
 
         DecimalNumber pamrNumber = view.pamrNumber().getValue();
         DecimalNumber pdraNumber = view.pdraNumber().getValue();
@@ -123,6 +125,8 @@ public abstract class EquipmentEditActivity
         view.nameBySldWrks().setValue( equipment.getName() );
         view.nameBySpecification().setValue( equipment.getNameBySpecification() );
         view.comment().setValue( equipment.getComment() );
+        view.type().setValue( equipment.getType() );
+        view.stage().setValue( equipment.getStage() );
 
         boolean isCreate = equipment.getId() == null;
         view.nameBySpecificationEnabled().setEnabled( isCreate );
@@ -137,8 +141,9 @@ public abstract class EquipmentEditActivity
                 : null ;
         view.pdraNumber().setValue( pdraNumber );
 
-        view.pamrNumberEnabled().setEnabled(isCreate);
-        view.pdraNumberEnabled().setEnabled(isCreate);
+        view.pamrNumberEnabled().setEnabled( isCreate );
+        view.pdraNumberEnabled().setEnabled( isCreate );
+        view.typeEnabled().setEnabled( isCreate );
     }
 
 

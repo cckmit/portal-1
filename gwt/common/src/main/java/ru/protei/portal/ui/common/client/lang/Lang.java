@@ -379,4 +379,14 @@ public interface Lang extends Messages, ContactItemLang {
     String equipmentTypeProduct();
 
     String equipmentType();
+
+    String equipmentStageDraftProject();
+
+    String equipmentStageRKD_Product();
+
+    String equipmentStageRKD_Prototype();
+
+    String equipmentStageTechnicalProject();
+
+    String equipmentStage();
 }

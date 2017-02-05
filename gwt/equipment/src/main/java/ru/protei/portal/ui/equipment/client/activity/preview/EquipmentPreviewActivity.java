@@ -4,10 +4,13 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_EquipmentStage;
 import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.EquipmentEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.lang.En_EquipmentStageLang;
+import ru.protei.portal.ui.common.client.lang.En_EquipmentTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.EquipmentServiceAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
@@ -42,6 +45,8 @@ public abstract class EquipmentPreviewActivity implements Activity, AbstractEqui
         view.setNameBySpecification( value.getNameBySpecification() );
         view.setNameBySldWrks( value.getName() );
         view.setComment( value.getComment() );
+        view.setType( typeLang.getName( value.getType() ) );
+        view.setStage( stageLang.getName( value.getStage() ), value.getStage().name().toLowerCase() );
 
         String pdraNum = value.getPDRA_RegisterNumber() == null ? null : lang.equipmentOrganizationCodePDRA() + "." + value.getClassifierCode() + "." + value.getPDRA_RegisterNumber();
         String pamrNum = value.getPAMR_RegisterNumber() == null ? null : lang.equipmentOrganizationCodePAMR() + "." + value.getClassifierCode() + "." + value.getPAMR_RegisterNumber();
@@ -72,6 +77,10 @@ public abstract class EquipmentPreviewActivity implements Activity, AbstractEqui
     Lang lang;
     @Inject
     AbstractEquipmentPreviewView view;
+    @Inject
+    En_EquipmentTypeLang typeLang;
+    @Inject
+    En_EquipmentStageLang stageLang;
 
     @Inject
     EquipmentServiceAsync equipmentService;

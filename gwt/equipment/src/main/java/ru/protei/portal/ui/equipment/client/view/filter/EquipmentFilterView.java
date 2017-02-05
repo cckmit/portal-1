@@ -10,6 +10,8 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.dict.En_EquipmentStage;
+import ru.protei.portal.core.model.dict.En_EquipmentType;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.shared.model.DecimalNumber;
@@ -18,6 +20,8 @@ import ru.protei.portal.ui.equipment.client.activity.filter.AbstractEquipmentFil
 import ru.protei.portal.ui.equipment.client.activity.filter.AbstractEquipmentFilterView;
 import ru.protei.portal.ui.equipment.client.widget.number.DecimalNumberBox;
 import ru.protei.portal.ui.equipment.client.widget.organization.OrganizationBtnGroup;
+import ru.protei.portal.ui.equipment.client.widget.stage.EquipmentStageOptionList;
+import ru.protei.portal.ui.equipment.client.widget.type.EquipmentTypeBtnGroup;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -43,6 +47,8 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
     public void resetFilter() {
         name.setValue( null );
         organizationCode.setValue( new HashSet<>() );
+        types.setValue( null );
+        stages.setValue( null );
         switchOffAndResetDNumbers();
     }
 
@@ -91,6 +97,16 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
         return result;
     }
 
+    @Override
+    public HasValue<Set<En_EquipmentStage>> stages() {
+        return stages;
+    }
+
+    @Override
+    public HasValue<Set<En_EquipmentType>> types() {
+        return types;
+    }
+
     @UiHandler( "resetBtn" )
     public void onResetClicked ( ClickEvent event ) {
         if ( activity != null ) {
@@ -101,8 +117,7 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
 
     @UiHandler( "name" )
     public void onKeyUpSearch( KeyUpEvent event ) {
-        timer.cancel();
-        timer.schedule( 300 );
+        fireChangeTimer();
     }
 
     @UiHandler( "organizationCode" )
@@ -114,8 +129,8 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
             return;
         }
 
-        pamrNum.setVisible( values.contains( OrganizationCode.PAMR ) );
-        pdraNum.setVisible( values.contains( OrganizationCode.PDRA ) );
+        pamrNum.setEnabled( values.contains( OrganizationCode.PAMR ) );
+        pdraNum.setEnabled( values.contains( OrganizationCode.PDRA ) );
     }
 
     @UiHandler( "pdraNum" )
@@ -125,8 +140,7 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
             pamrNum.setClassifierCode( pdra.getClassifierCode() );
         }
 
-        timer.cancel();
-        timer.schedule( 300 );
+        fireChangeTimer();
     }
 
     @UiHandler( "pamrNum" )
@@ -136,8 +150,17 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
             pdraNum.setClassifierCode( pamr.getClassifierCode() );
         }
 
-        timer.cancel();
-        timer.schedule( 300 );
+        fireChangeTimer();
+    }
+
+    @UiHandler( "types" )
+    public void onTypeSelected( ValueChangeEvent<Set<En_EquipmentType>> event ) {
+        fireChangeTimer();
+    }
+
+    @UiHandler( "stages" )
+    public void onStageSelected( ValueChangeEvent<Set<En_EquipmentStage>> event ) {
+        fireChangeTimer();
     }
 
     @Override
@@ -153,11 +176,16 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
     }
 
     private void switchOffAndResetDNumbers() {
-        pamrNum.setVisible( false );
-        pdraNum.setVisible( false );
+        pamrNum.setEnabled( false );
+        pdraNum.setEnabled( false );
 
         pamrNum.setValue( null );
         pdraNum.setValue( null );
+    }
+
+    private void fireChangeTimer() {
+        timer.cancel();
+        timer.schedule( 300 );
     }
 
     Timer timer = new Timer() {
@@ -186,6 +214,12 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
     @Inject
     @UiField(provided = true)
     OrganizationBtnGroup organizationCode;
+    @Inject
+    @UiField(provided = true)
+    EquipmentStageOptionList stages;
+    @Inject
+    @UiField(provided = true)
+    EquipmentTypeBtnGroup types;
 
     @Inject
     FixedPositioner positioner;

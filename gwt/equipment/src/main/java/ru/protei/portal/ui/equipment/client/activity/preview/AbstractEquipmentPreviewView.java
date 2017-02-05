@@ -20,4 +20,8 @@ public interface AbstractEquipmentPreviewView extends IsWidget {
     void setPDRA_decimalNumber( String value );
 
     void setPAMR_decimalNumber( String value );
+
+    void setType( String value );
+
+    void setStage( String value, String styleNamePrefix );
 }

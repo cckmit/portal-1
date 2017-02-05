@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.equipment.client.view.table;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -15,6 +16,7 @@ import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
+import ru.protei.portal.ui.common.client.lang.En_EquipmentStageLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.separator.Separator;
 import ru.protei.portal.ui.equipment.client.activity.table.AbstractEquipmentTableActivity;
@@ -204,16 +206,24 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
 
         ClickColumn< Equipment > type = new ClickColumn< Equipment >() {
             @Override
-            protected void fillColumnHeader( Element element ) {}
+            protected void fillColumnHeader( Element element ) {
+                element.addClassName( "equipment-type-column" );
+            }
 
             @Override
             public void fillColumnValue ( Element cell, Equipment value ) {
                 Element root = DOM.createDiv();
+                root.addClassName( "equipment-type-column" );
                 cell.appendChild( root );
                 ImageElement imageElement = DOM.createImg().cast();
-                imageElement.setSrc( EquipmentUtils.getESKDClassTypeIcon( value.getClassifierCode() ));
-                imageElement.setClassName( "equipment-type-image" );
+                imageElement.setSrc( "./images/eq_" + value.getType().name().toLowerCase() + ".png" );
                 root.appendChild( imageElement );
+
+                Element stageElement = DOM.createDiv();
+                stageElement.addClassName( "label label-" + value.getStage().name().toLowerCase() );
+                stageElement.setInnerText( stageLang.getName( value.getStage() ) );
+
+                root.appendChild( stageElement );
             }
         };
         columns.add( type );
@@ -241,6 +251,9 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
     @Inject
     @UiField
     Lang lang;
+
+    @Inject
+    En_EquipmentStageLang stageLang;
 
     @Inject
     Separator separator;

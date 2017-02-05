@@ -10,6 +10,11 @@ public enum En_EquipmentType {
     DETAIL,
 
     /**
+     * Сборочная единица
+     */
+    ASSEMBLY_UNIT,
+
+    /**
      * Комплекс
      */
     COMPLEX,
@@ -17,10 +22,5 @@ public enum En_EquipmentType {
     /**
      * Продукт
      */
-    PRODUCT,
-
-    /**
-     * Сборочная единица
-     */
-    ASSEMBLY_UNIT
+    PRODUCT
 }
