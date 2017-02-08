@@ -1,6 +1,9 @@
 package ru.protei.portal.ui.equipment.client.common;
 
+import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.common.UiConstants;
+import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.lang.OrganizationCodeLang;
 import ru.protei.portal.ui.common.shared.model.DecimalNumber;
 import ru.protei.portal.ui.common.shared.model.OrganizationCode;
 
@@ -33,4 +36,15 @@ public class EquipmentUtils {
 
         return new DecimalNumber( code, classifierCode, number, modification );
     }
+
+    public static String formatNumberByStringValues( OrganizationCode code, String classifierCode, String regNum ) {
+        if ( code == null || classifierCode == null ) {
+            return "";
+        }
+
+        return lang.getName( code ) + "." + classifierCode + "." + regNum;
+    }
+
+    @Inject
+    static OrganizationCodeLang lang;
 }

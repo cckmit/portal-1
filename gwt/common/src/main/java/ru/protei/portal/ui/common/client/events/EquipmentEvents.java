@@ -14,11 +14,7 @@ public class EquipmentEvents {
      * Показать
      */
     @Url( value = "equipments", primary = true )
-    public static class Show {
-
-        public Show () {}
-
-    }
+    public static class Show {}
 
     /**
      * Показать превью оборудования
@@ -49,4 +45,6 @@ public class EquipmentEvents {
             return new Edit(id);
         }
     }
+
+    public static class ChangeModel {}
 }

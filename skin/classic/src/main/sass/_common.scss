@@ -1370,3 +1370,11 @@ a {
   font-family: GostARegular;
   font-size: 18px;
 }
+
+.eq-type {
+  line-height: 0 !important;
+  > img {
+    height: 35px;
+    width: 35px;
+  }
+}

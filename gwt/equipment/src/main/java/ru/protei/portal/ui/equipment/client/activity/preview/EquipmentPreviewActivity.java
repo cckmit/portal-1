@@ -13,7 +13,9 @@ import ru.protei.portal.ui.common.client.lang.En_EquipmentStageLang;
 import ru.protei.portal.ui.common.client.lang.En_EquipmentTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.EquipmentServiceAsync;
+import ru.protei.portal.ui.common.shared.model.OrganizationCode;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
+import ru.protei.portal.ui.equipment.client.common.EquipmentUtils;
 
 /**
  * Активность превью контакта
@@ -48,8 +50,8 @@ public abstract class EquipmentPreviewActivity implements Activity, AbstractEqui
         view.setType( typeLang.getName( value.getType() ) );
         view.setStage( stageLang.getName( value.getStage() ), value.getStage().name().toLowerCase() );
 
-        String pdraNum = value.getPDRA_RegisterNumber() == null ? null : lang.equipmentOrganizationCodePDRA() + "." + value.getClassifierCode() + "." + value.getPDRA_RegisterNumber();
-        String pamrNum = value.getPAMR_RegisterNumber() == null ? null : lang.equipmentOrganizationCodePAMR() + "." + value.getClassifierCode() + "." + value.getPAMR_RegisterNumber();
+        String pdraNum = value.getPDRA_RegisterNumber() == null ? null : EquipmentUtils.formatNumberByStringValues( OrganizationCode.PDRA, value.getClassifierCode(), value.getPDRA_RegisterNumber() );
+        String pamrNum = value.getPAMR_RegisterNumber() == null ? null : EquipmentUtils.formatNumberByStringValues( OrganizationCode.PAMR, value.getClassifierCode(), value.getPAMR_RegisterNumber() );
         view.setPAMR_decimalNumber( pamrNum );
         view.setPDRA_decimalNumber( pdraNum );
     }

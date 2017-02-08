@@ -2,6 +2,7 @@ package ru.protei.portal.ui.common.client.widget.togglebtn.item;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -10,6 +11,7 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
@@ -53,7 +55,10 @@ public class ToggleButton
     }
 
     public void setIcon( String iconName ) {
-        this.icon.setClassName( iconName );
+        Element icon = DOM.createElement("i").cast();
+        icon.setClassName( iconName );
+
+        button.getElement().appendChild( icon );
     }
 
     @Override
@@ -87,6 +92,13 @@ public class ToggleButton
         }
     }
 
+    public void setImageSrc( String imageSrc ) {
+        ImageElement img = DOM.createImg().cast();
+        img.setSrc( imageSrc );
+
+        button.getElement().appendChild( img );
+    }
+
     private void setActive( Boolean value ) {
         if ( value ) {
             button.addStyleName( "active" );
@@ -100,8 +112,6 @@ public class ToggleButton
     CheckBox value;
     @UiField
     SpanElement text;
-    @UiField
-    Element icon;
     @UiField
     HTMLPanel button;
 

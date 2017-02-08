@@ -13,9 +13,9 @@ import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.common.shared.model.DecimalNumber;
 import ru.protei.portal.ui.equipment.client.activity.edit.AbstractEquipmentEditActivity;
 import ru.protei.portal.ui.equipment.client.activity.edit.AbstractEquipmentEditView;
+import ru.protei.portal.ui.equipment.client.widget.linkedequipment.LinkedEquipmentMultiSelector;
 import ru.protei.portal.ui.equipment.client.widget.number.DecimalNumberBox;
 import ru.protei.portal.ui.equipment.client.widget.stage.EquipmentStageSelector;
-import ru.protei.portal.ui.equipment.client.widget.type.EquipmentTypeBtnGroup;
 import ru.protei.portal.ui.equipment.client.widget.type.EquipmentTypeSelector;
 
 
@@ -126,6 +126,9 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
     @Inject
     @UiField(provided = true)
     EquipmentStageSelector stage;
+    @Inject
+    @UiField(provided = true)
+    LinkedEquipmentMultiSelector linkedEquipments;
 
     AbstractEquipmentEditActivity activity;
 

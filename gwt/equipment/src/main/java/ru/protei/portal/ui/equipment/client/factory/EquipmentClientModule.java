@@ -10,6 +10,7 @@ import ru.protei.portal.ui.equipment.client.activity.preview.AbstractEquipmentPr
 import ru.protei.portal.ui.equipment.client.activity.preview.EquipmentPreviewActivity;
 import ru.protei.portal.ui.equipment.client.activity.table.AbstractEquipmentTableView;
 import ru.protei.portal.ui.equipment.client.activity.table.EquipmentTableActivity;
+import ru.protei.portal.ui.equipment.client.common.EquipmentUtils;
 import ru.protei.portal.ui.equipment.client.provider.AbstractDecimalNumberDataProvider;
 import ru.protei.portal.ui.equipment.client.provider.DecimalNumberDataProvider;
 import ru.protei.portal.ui.equipment.client.view.edit.EquipmentEditView;
@@ -39,6 +40,8 @@ public class EquipmentClientModule extends AbstractGinModule {
         bind ( AbstractEquipmentFilterView.class ).to( EquipmentFilterView.class ).in( Singleton.class );
 
         bind ( AbstractDecimalNumberDataProvider.class ).to( DecimalNumberDataProvider.class ).in( Singleton.class );
+
+        requestStaticInjection( EquipmentUtils.class );
     }
 }
 

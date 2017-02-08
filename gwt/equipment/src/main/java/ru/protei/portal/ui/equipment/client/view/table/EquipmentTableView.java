@@ -17,8 +17,10 @@ import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
 import ru.protei.portal.ui.common.client.lang.En_EquipmentStageLang;
+import ru.protei.portal.ui.common.client.lang.En_EquipmentTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.separator.Separator;
+import ru.protei.portal.ui.common.shared.model.OrganizationCode;
 import ru.protei.portal.ui.equipment.client.activity.table.AbstractEquipmentTableActivity;
 import ru.protei.portal.ui.equipment.client.activity.table.AbstractEquipmentTableView;
 import ru.protei.portal.ui.equipment.client.common.EquipmentUtils;
@@ -146,15 +148,15 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
 
                 if ( value.getPAMR_RegisterNumber() != null ) {
                     Element pamrDecimalNumber = DOM.createDiv();
-                    pamrDecimalNumber.setInnerHTML( lang.equipmentOrganizationCodePAMR()
-                            + "." + value.getClassifierCode() + "." + value.getPAMR_RegisterNumber() );
+                    pamrDecimalNumber.setInnerHTML( EquipmentUtils.formatNumberByStringValues( OrganizationCode.PAMR,
+                            value.getClassifierCode(), value.getPAMR_RegisterNumber() ) );
                     root.appendChild( pamrDecimalNumber );
                 }
 
                 if ( value.getPDRA_RegisterNumber() != null ) {
                     Element pdraDecimalNumber = DOM.createDiv();
-                    pdraDecimalNumber.setInnerHTML( lang.equipmentOrganizationCodePDRA()
-                            + "." + value.getClassifierCode() + "." + value.getPDRA_RegisterNumber() );
+                    pdraDecimalNumber.setInnerHTML( EquipmentUtils.formatNumberByStringValues( OrganizationCode.PDRA,
+                            value.getClassifierCode(), value.getPDRA_RegisterNumber() ) );
                     root.appendChild( pdraDecimalNumber );
                 }
             }
@@ -217,6 +219,7 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
                 cell.appendChild( root );
                 ImageElement imageElement = DOM.createImg().cast();
                 imageElement.setSrc( "./images/eq_" + value.getType().name().toLowerCase() + ".png" );
+                imageElement.setTitle( typeLang.getName( value.getType() ) );
                 root.appendChild( imageElement );
 
                 Element stageElement = DOM.createDiv();
@@ -249,15 +252,15 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
     HTMLPanel filterContainer;
 
     @Inject
-    @UiField
-    Lang lang;
-
-    @Inject
-    En_EquipmentStageLang stageLang;
-
-    @Inject
     Separator separator;
 
+    @Inject
+    @UiField
+    Lang lang;
+    @Inject
+    En_EquipmentStageLang stageLang;
+    @Inject
+    En_EquipmentTypeLang typeLang;
 
     ClickColumnProvider<Equipment> columnProvider = new ClickColumnProvider<>();
     EditClickColumn<Equipment> editClickColumn;
