@@ -13,6 +13,7 @@ public class DecimalNumberDataProvider implements AbstractDecimalNumberDataProvi
     @Override
     public boolean checkIfExistDecimalNumber( DecimalNumber number ) {
         Boolean isExist = false;
+        Integer a;
 
         equipmentService.checkIfExistDecimalNumber( number, new RequestCallback<Boolean>(){
             @Override
@@ -20,6 +21,7 @@ public class DecimalNumberDataProvider implements AbstractDecimalNumberDataProvi
 
             @Override
             public void onSuccess( Boolean result ) {
+                isExist = result;
             }
         });
 
@@ -28,6 +30,15 @@ public class DecimalNumberDataProvider implements AbstractDecimalNumberDataProvi
 
     @Override
     public String getNextAvailableRegisterNumber( DecimalNumber number ) {
+        equipmentService.getNextAvailableRegisterNumber( number, new RequestCallback<DecimalNumber>(){
+            @Override
+            public void onError( Throwable throwable ) {}
+
+            @Override
+            public void onSuccess( DecimalNumber result ) {
+            }
+        });
+
         return null;
     }
 

@@ -62,6 +62,18 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
+    public CoreResponse<String> getNextAvailablePAMR_RegisterNum( String classifierCode, String regNum ) {
+        String maxNum = equipmentDAO.getMaxValue("SUBSTRING(pamr_reg_num, 1, 3)", String.class, "classifier_code=?", classifierCode);
+        return new CoreResponse<String>().success( maxNum );
+    }
+
+    @Override
+    public CoreResponse<String> getNextAvailablePDRA_RegisterNum( String classifierCode, String regNum ) {
+        String maxNum = equipmentDAO.getMaxValue("SUBSTRING(pdra_reg_num, 1, 3)", String.class, "classifier_code=?", classifierCode);
+        return new CoreResponse<String>().success( maxNum );
+    }
+
+    @Override
     public CoreResponse< Boolean > checkIfExistPDRA_Number( String classifierCode, String registerNumber ) {
         List< Equipment > equipments = equipmentDAO.getListByCondition( "Equipment.classifier_code=? and pdra_reg_num=?", classifierCode, registerNumber );
 

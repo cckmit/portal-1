@@ -4,6 +4,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.query.EquipmentQuery;
 import ru.protei.portal.ui.common.shared.model.DecimalNumber;
+import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.List;
 
@@ -30,12 +31,18 @@ public interface EquipmentServiceAsync {
     /**
      * Получение счетчика по оборудованию
      */
-    void getEquipmentCount( EquipmentQuery query, AsyncCallback<Long> async );
+    void getEquipmentCount( EquipmentQuery query, AsyncCallback<Long> callback );
 
     /**
      * Проверка валидности заданного децимального номера
      * @param number
-     * @param requestCallback
      */
-    void checkIfExistDecimalNumber( DecimalNumber number, AsyncCallback<Boolean> requestCallback );
+    void checkIfExistDecimalNumber( DecimalNumber number, AsyncCallback<Boolean> callback );
+
+    /**
+     * Получение следующего доступного номера
+     * @param number
+     * @param callback
+     */
+    void getNextAvailableRegisterNumber( DecimalNumber number, AsyncCallback<DecimalNumber> callback );
 }

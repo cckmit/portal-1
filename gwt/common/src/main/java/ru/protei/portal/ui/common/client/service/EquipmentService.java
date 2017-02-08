@@ -32,4 +32,11 @@ public interface EquipmentService extends RemoteService {
      * Проверка валидности заданного децимального номера
      */
     boolean checkIfExistDecimalNumber( DecimalNumber number ) throws RequestFailedException;
+
+    /**
+     * Получение следующего доступного номера
+     *
+     * @param number
+     */
+    DecimalNumber getNextAvailableRegisterNumber( DecimalNumber number ) throws RequestFailedException;
 }

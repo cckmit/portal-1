@@ -79,10 +79,7 @@ public class EquipmentServiceImpl implements EquipmentService {
             log.warn("null number in request");
             throw new RequestFailedException(En_ResultStatus.INTERNAL_ERROR);
         }
-        String regNum = number.getRegisterNumber();
-        if ( number.getModification() != null && !number.getModification().isEmpty() ) {
-            regNum += "-" + number.getModification();
-        }
+        String regNum = makeRegisterNumber( number );
         log.debug( "check exist decimal number: organizationCode={}, classifierCode={}, regNum={}",
                 number.getOrganizationCode(), number.getClassifierCode(), regNum );
 
@@ -101,6 +98,45 @@ public class EquipmentServiceImpl implements EquipmentService {
         }
 
         throw new RequestFailedException(response.getStatus());
+    }
+
+    @Override
+    public DecimalNumber getNextAvailableRegisterNumber( DecimalNumber number ) throws RequestFailedException {
+        if (number == null) {
+            log.warn("null number in request");
+            throw new RequestFailedException(En_ResultStatus.INTERNAL_ERROR);
+        }
+
+        String regNum = makeRegisterNumber( number );
+        log.debug( "get next available decimal number: organizationCode={}, classifierCode={}, regNum={}",
+                number.getOrganizationCode(), number.getClassifierCode(), regNum );
+
+        CoreResponse<String> response = null;
+        switch ( number.getOrganizationCode() ) {
+            case PAMR:
+                response = equipmentService.getNextAvailablePAMR_RegisterNum( number.getClassifierCode(), regNum );
+                break;
+            case PDRA:
+                response = equipmentService.getNextAvailablePDRA_RegisterNum( number.getClassifierCode(), regNum );
+        }
+
+        if (response.isOk()) {
+            log.debug("get next available decimal number, result: {}", response.getData());
+            number.setModification( null );
+            number.setRegisterNumber( response.getData() );
+            return number;
+        }
+
+        throw new RequestFailedException(response.getStatus());
+    }
+
+    private String makeRegisterNumber( DecimalNumber number ) {
+        String regNum = number.getRegisterNumber();
+        if ( number.getModification() != null && !number.getModification().isEmpty() ) {
+            regNum += "-" + number.getModification();
+        }
+
+        return regNum;
     }
 
     @Autowired

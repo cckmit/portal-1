@@ -25,4 +25,8 @@ public interface EquipmentService {
     CoreResponse<Boolean> checkIfExistPDRA_Number( String classifierCode, String registerNumber );
 
     CoreResponse<Boolean> checkIfExistPAMR_Number( String classifierCode, String registerNumber );
+
+    CoreResponse<String> getNextAvailablePAMR_RegisterNum( String classifierCode, String regNum );
+
+    CoreResponse<String> getNextAvailablePDRA_RegisterNum( String classifierCode, String regNum );
 }
