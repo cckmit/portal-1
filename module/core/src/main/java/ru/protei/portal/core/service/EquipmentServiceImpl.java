@@ -1,7 +1,6 @@
 package ru.protei.portal.core.service;
 
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +40,6 @@ public class EquipmentServiceImpl implements EquipmentService {
                 : new CoreResponse<Equipment>().error(En_ResultStatus.NOT_FOUND);
     }
 
-
     // TODO: fill check equipment data
     @Override
     public CoreResponse<Equipment> saveEquipment(Equipment equipment) {
@@ -54,30 +52,90 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
-    public CoreResponse< Boolean > checkIfExistPAMR_Number( String classifierCode, String registerNumber ) {
-        List< Equipment > equipments = equipmentDAO.getListByCondition( "Equipment.classifier_code=? and pamr_reg_num=?", classifierCode, registerNumber );
+    public CoreResponse<String> getNextAvailablePAMR_RegisterNum( String classifierCode ) {
+        String maxNumValue = equipmentDAO.getMaxPAMR_RegNum( classifierCode );
+        if ( maxNumValue == null ) {
+            return new CoreResponse<String>().success( "001" );
+        }
 
-        boolean isExist = CollectionUtils.size( equipments ) > 1;
+        Integer maxNum;
+        try {
+            maxNum  = Integer.parseInt( maxNumValue );
+        } catch ( NumberFormatException e ) {
+            return new CoreResponse<String>().error( En_ResultStatus.INCORRECT_PARAMS );
+        }
+        boolean ifExist = true;
+        while ( ifExist && maxNum < 999 ) {
+            maxNum += 1;
+            ifExist = equipmentDAO.checkIfExistPAMR_RegNum( classifierCode, maxNum.toString() );
+        }
+
+        return new CoreResponse<String>().success( maxNum.toString() );
+    }
+
+    @Override
+    public CoreResponse<String> getNextAvailablePDRA_RegisterNum( String classifierCode ) {
+        String maxNumValue = equipmentDAO.getMaxPDRA_RegNum( classifierCode );
+        if ( maxNumValue == null ) {
+            return new CoreResponse<String>().success( "001" );
+        }
+
+        Integer maxNum;
+        try {
+            maxNum  = Integer.parseInt( maxNumValue );
+        } catch ( NumberFormatException e ) {
+            return new CoreResponse<String>().error( En_ResultStatus.INCORRECT_PARAMS );
+        }
+        boolean ifExist = true;
+        while ( ifExist && maxNum < 999 ) {
+            maxNum += 1;
+            ifExist = equipmentDAO.checkIfExistPDRA_RegNum( classifierCode, maxNum.toString() );
+        }
+
+        return new CoreResponse<String>().success( maxNum.toString() );
+    }
+
+    @Override
+    public CoreResponse< String > getNextAvailablePAMR_RegisterNumModification( String classifierCode, String registerNumber ) {
+        String maxNumValue = equipmentDAO.getMaxPAMR_RegNumModification( classifierCode, registerNumber );
+        if ( maxNumValue == null ) {
+            return new CoreResponse<String>().success( "01" );
+        }
+
+        Integer maxNum;
+        try {
+            maxNum  = Integer.parseInt( maxNumValue );
+        } catch ( NumberFormatException e ) {
+            return new CoreResponse<String>().error( En_ResultStatus.INCORRECT_PARAMS );
+        }
+        return new CoreResponse<String>().success( maxNum.toString() );
+    }
+
+    @Override
+    public CoreResponse< String > getNextAvailablePDRA_RegisterNumModification( String classifierCode, String registerNumber ) {
+        String maxNumValue = equipmentDAO.getMaxPDRA_RegNumModification( classifierCode, registerNumber );
+        if ( maxNumValue == null ) {
+            return new CoreResponse<String>().success( "01" );
+        }
+
+        Integer maxNum;
+        try {
+            maxNum  = Integer.parseInt( maxNumValue );
+        } catch ( NumberFormatException e ) {
+            return new CoreResponse<String>().error( En_ResultStatus.INCORRECT_PARAMS );
+        }
+        return new CoreResponse<String>().success( maxNum.toString() );
+    }
+
+    @Override
+    public CoreResponse< Boolean > checkIfExistPAMR_Number( String classifierCode, String registerNumber ) {
+        boolean isExist = equipmentDAO.checkIfExistPAMR_RegNum( classifierCode, registerNumber );
         return new CoreResponse<Boolean>().success( isExist );
     }
 
     @Override
-    public CoreResponse<String> getNextAvailablePAMR_RegisterNum( String classifierCode, String regNum ) {
-        String maxNum = equipmentDAO.getMaxValue("SUBSTRING(pamr_reg_num, 1, 3)", String.class, "classifier_code=?", classifierCode);
-        return new CoreResponse<String>().success( maxNum );
-    }
-
-    @Override
-    public CoreResponse<String> getNextAvailablePDRA_RegisterNum( String classifierCode, String regNum ) {
-        String maxNum = equipmentDAO.getMaxValue("SUBSTRING(pdra_reg_num, 1, 3)", String.class, "classifier_code=?", classifierCode);
-        return new CoreResponse<String>().success( maxNum );
-    }
-
-    @Override
     public CoreResponse< Boolean > checkIfExistPDRA_Number( String classifierCode, String registerNumber ) {
-        List< Equipment > equipments = equipmentDAO.getListByCondition( "Equipment.classifier_code=? and pdra_reg_num=?", classifierCode, registerNumber );
-
-        boolean isExist = CollectionUtils.size( equipments ) > 1;
+        boolean isExist = equipmentDAO.checkIfExistPDRA_RegNum( classifierCode, registerNumber );
         return new CoreResponse<Boolean>().success( isExist );
     }
 

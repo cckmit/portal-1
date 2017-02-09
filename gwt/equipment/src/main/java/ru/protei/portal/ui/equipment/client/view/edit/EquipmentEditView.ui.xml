@@ -2,9 +2,9 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:validatefield="urn:import:ru.protei.portal.ui.common.client.widget.validatefield"
              xmlns:number="urn:import:ru.protei.portal.ui.equipment.client.widget.number"
-             xmlns:type="urn:import:ru.protei.portal.ui.equipment.client.widget.type"
              xmlns:stage="urn:import:ru.protei.portal.ui.equipment.client.widget.stage"
-             xmlns:linkedequipment="urn:import:ru.protei.portal.ui.equipment.client.widget.linkedequipment"
+             xmlns:selector="urn:import:ru.protei.portal.ui.equipment.client.widget.selector"
+             xmlns:type="urn:import:ru.protei.portal.ui.equipment.client.widget.type"
 >
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
@@ -30,11 +30,11 @@
                             <ui:text from="{lang.equipmentDecimalNumber}"/>
                         </label>
 
-                        <div class="form-group col-xs-6">
+                        <div class="form-group col-xs-6 p-r-10">
                             <number:DecimalNumberBox ui:field="pamrNum" organizationCode="PAMR"/>
                         </div>
 
-                        <div class="form-group col-xs-6">
+                        <div class="form-group col-xs-6 p-l-10">
                             <number:DecimalNumberBox ui:field="pdraNum" organizationCode="PDRA"/>
                         </div>
                     </div>
@@ -48,17 +48,22 @@
                         <label><ui:text from="{lang.equipmentStage}"/></label>
                         <stage:EquipmentStageSelector ui:field="stage" header=""/>
                     </div>
+                </div>
+                <div class="grid grid-indent">
+                    <div class="form-group col-xs-6">
+                        <label>
+                            <ui:text from="{lang.equipmentPrimaryUse}"/>
+                        </label>
+                        <selector:EquipmentSelector ui:field="primaryUseEq"/>
+                    </div>
 
-                    <div class="form-group col-xs-12">
+                    <div class="form-group col-xs-6">
                         <label>
                             <ui:text from="{lang.equipmentComment}"/>
                         </label>
                         <g:TextBox ui:field="comment" styleName="input-field"/>
                     </div>
 
-                    <div class="form-group col-xs-12">
-                        <linkedequipment:LinkedEquipmentMultiSelector ui:field="linkedEquipments" header=""/>
-                    </div>
                 </div>
             </div>
             <div class="footer">

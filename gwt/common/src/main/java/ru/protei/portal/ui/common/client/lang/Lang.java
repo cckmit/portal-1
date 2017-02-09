@@ -389,4 +389,12 @@ public interface Lang extends Messages, ContactItemLang {
     String equipmentStageTechnicalProject();
 
     String equipmentStage();
+
+    String equipmentPrimaryUse();
+
+    String equipmentPrimaryUseNotDefinied();
+
+    String equipmentDecimalNumberEmpty();
+
+    String equipmentDecimalNumberBusy();
 }

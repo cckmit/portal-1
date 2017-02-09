@@ -38,6 +38,13 @@
                 </div>
             </fieldset>
 
+            <fieldset class="header">
+                <legend><ui:text from="{lang.equipmentPrimaryUse}"/></legend>
+                <div class="col-xs-12">
+                    <span class="col-xs-12 col-md-12" ui:field="primaryUse"></span>
+                </div>
+            </fieldset>
+
             <g:HTMLPanel ui:field="commentsContainer" styleName="col-xs-12 col-md-12"/>
         </g:HTMLPanel>
     </g:HTMLPanel>

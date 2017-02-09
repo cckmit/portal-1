@@ -14,6 +14,7 @@ public class EquipmentTypeSelector extends ButtonSelector<En_EquipmentType> {
 
     @Inject
     public void init( ) {
+        setHasNullValue( false );
         fillOptions();
     }
     private void fillOptions() {

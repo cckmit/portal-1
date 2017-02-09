@@ -1,8 +1,8 @@
 package ru.protei.portal.ui.equipment.client.widget.number;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.LabelElement;
-import com.google.gwt.dom.client.ParagraphElement;
+import com.google.gwt.dom.client.*;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
@@ -18,10 +18,11 @@ import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.lang.OrganizationCodeLang;
 import ru.protei.portal.ui.common.client.widget.mask.MaskedTextBox;
-import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.common.shared.model.DecimalNumber;
 import ru.protei.portal.ui.common.shared.model.OrganizationCode;
+import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.equipment.client.provider.AbstractDecimalNumberDataProvider;
+import ru.protei.winter.web.common.client.common.DisplayStyle;
 
 /**
  * Вид виджета децимального номера
@@ -55,6 +56,7 @@ public class DecimalNumberBox
         regNum.setText( value.getRegisterNumber() == null ? null : value.getRegisterNumber() );
         regNumModification.setText( value.getModification() == null ? null : value.getModification() );
 
+        clearMessage();
         if ( fireEvents ) {
             ValueChangeEvent.fire( this, decimalNumber );
         }
@@ -87,9 +89,16 @@ public class DecimalNumberBox
         value.setRegisterNumber( regNum.getValue() );
         ValueChangeEvent.fire( this, value );
 
-//        if ( regNum.getText().length() == 3 ) {
-//            msg.setInnerText( "res: " + dataProvider.checkIfExistDecimalNumber( value ) );
-//        }
+        if ( !validable ) {
+            return;
+        }
+
+        if ( value.getClassifierCode().length() == 6 && value.getRegisterNumber().length() == 3 ) {
+            checkExistNumber();
+            return;
+        }
+
+        clearMessage();
     }
 
     @UiHandler( "classifierCode" )
@@ -97,9 +106,17 @@ public class DecimalNumberBox
         value.setClassifierCode( classifierCode.getValue() );
         ValueChangeEvent.fire( this, value );
 
-//        if ( regNum.getText().length() == 6 ) {
-//            msg.setInnerText( "res: " + dataProvider.checkIfExistDecimalNumber( value ) );
-//        }
+        if ( !validable ) {
+            return;
+        }
+
+        markBoxAsError( false );
+        if ( value.getClassifierCode().length() == 6 ) {
+            fillNextAvailableNumber();
+            return;
+        }
+
+        clearMessage();
     }
 
     @UiHandler( "regNumModification" )
@@ -107,12 +124,112 @@ public class DecimalNumberBox
         value.setRegisterNumber( regNum.getValue() );
         ValueChangeEvent.fire( this, value );
 
-//        msg.setInnerText( "res: " + dataProvider.checkIfExistDecimalNumber( value ) );
+        if ( !validable ) {
+            return;
+        }
+
+        checkExistNumber();
+    }
+
+
+    @UiHandler( "getNextNumber" )
+    public void onGetNextNumber( ClickEvent event ) {
+        event.preventDefault();
+        fillNextAvailableNumber();
+    }
+
+    @UiHandler( "getNextModification" )
+    public void onGetNextNumberModification( ClickEvent event ) {
+        event.preventDefault();
+        fillNextAvailableNumberModification();
     }
 
     public void setClassifierCode( String classifierCode ) {
         value.setClassifierCode( classifierCode );
         this.classifierCode.setValue( classifierCode );
+    }
+
+    public void setValidable( boolean validable ) {
+        this.validable = validable;
+    }
+
+    private void checkExistNumber() {
+        dataProvider.checkIfExistDecimalNumber( value, new RequestCallback< Boolean >() {
+            @Override
+            public void onError( Throwable throwable ) {
+                showMessage( "Ошибка при проверке номера", DisplayStyle.DANGER );
+            }
+
+            @Override
+            public void onSuccess( Boolean result ) {
+                markBoxAsError( result );
+                if ( result ) {
+                    showGetNextNumberMessage();
+                    return;
+                }
+
+                showMessage( "Номер свободен", DisplayStyle.SUCCESS );
+            }
+        } );
+    }
+
+    private void markBoxAsError( boolean isError ) {
+        if ( isError ) {
+            container.addClassName( "has-error" );
+            return;
+        }
+
+        container.removeClassName( "has-error" );
+    }
+
+    private void fillNextAvailableNumber() {
+        dataProvider.getNextAvailableRegisterNumber( value, new RequestCallback< DecimalNumber>() {
+            @Override
+            public void onError( Throwable throwable ) {
+                showMessage(  "Ошибка при получении следующего свободного номера", DisplayStyle.DANGER );
+            }
+
+            @Override
+            public void onSuccess( DecimalNumber result ) {
+                markBoxAsError( false );
+                setValue( result );
+                showMessage( lang.equipmentDecimalNumberEmpty(), DisplayStyle.SUCCESS );
+            }
+        } );
+    }
+
+    private void fillNextAvailableNumberModification() {
+        dataProvider.getNextAvailableRegisterNumberModification( value, new RequestCallback< DecimalNumber>() {
+            @Override
+            public void onError( Throwable throwable ) {
+                showMessage(  "Ошибка при получении следующего свободного номера", DisplayStyle.DANGER );
+            }
+
+            @Override
+            public void onSuccess( DecimalNumber result ) {
+                markBoxAsError( false );
+                setValue( result );
+                showMessage( lang.equipmentDecimalNumberEmpty(), DisplayStyle.SUCCESS );
+            }
+        } );
+    }
+
+    private void showGetNextNumberMessage() {
+        msg.addClassName( "hide" );
+        getNumberMsg.removeClassName( "hide" );
+    }
+
+    private void showMessage( String text, DisplayStyle style ) {
+        msg.removeClassName( "hide" );
+        getNumberMsg.addClassName( "hide" );
+        msg.setClassName( "text text-" + style.name().toLowerCase() );
+        msg.setInnerText( text );
+    }
+
+    private void clearMessage(){
+        getNumberMsg.addClassName( "hide" );
+        msg.addClassName( "hide" );
+        msg.setInnerText( "" );
     }
 
     @UiField
@@ -124,11 +241,15 @@ public class DecimalNumberBox
     @UiField
     MaskedTextBox classifierCode;
     @UiField
-    ParagraphElement msg;
+    Element msg;
 
     @UiField
     @Inject
     Lang lang;
+    @UiField
+    DivElement container;
+    @UiField
+    SpanElement getNumberMsg;
 
     @Inject
     AbstractDecimalNumberDataProvider dataProvider;
@@ -136,6 +257,7 @@ public class DecimalNumberBox
     @Inject
     private OrganizationCodeLang organizationCodeLang;
 
+    private boolean validable = true;
     private DecimalNumber value;
     private OrganizationCode organizationCode;
 

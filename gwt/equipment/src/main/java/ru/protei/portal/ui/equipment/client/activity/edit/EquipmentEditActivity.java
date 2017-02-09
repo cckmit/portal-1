@@ -68,7 +68,7 @@ public abstract class EquipmentEditActivity
             }
 
             @Override
-            public void onSuccess(Equipment person) {
+            public void onSuccess(Equipment equipment) {
                 fireEvent(new Back());
             }
         });
@@ -85,6 +85,7 @@ public abstract class EquipmentEditActivity
         equipment.setComment( view.comment().getValue() );
         equipment.setType( view.type().getValue() );
         equipment.setStage( view.stage().getValue() );
+        equipment.setLinkedEquipment( view.primaryUse().getValue() );
 
         DecimalNumber pamrNumber = view.pamrNumber().getValue();
         DecimalNumber pdraNumber = view.pdraNumber().getValue();
@@ -127,6 +128,7 @@ public abstract class EquipmentEditActivity
         view.comment().setValue( equipment.getComment() );
         view.type().setValue( equipment.getType() );
         view.stage().setValue( equipment.getStage() );
+        view.primaryUse().setValue( equipment.getLinkedEquipment() );
 
         boolean isCreate = equipment.getId() == null;
         view.nameBySpecificationEnabled().setEnabled( isCreate );

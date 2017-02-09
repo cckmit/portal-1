@@ -5,16 +5,24 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel styleName="dn">
-        <div class="dn-container">
+        <div class="dn-container" ui:field="container">
             <label ui:field="organizationCodeName"></label>
             <label class="dn-separator">.</label>
             <mask:MaskedTextBox ui:field="classifierCode" styleName="input-field dn-classifier-code" mask="999999"/>
             <label class="dn-separator">.</label>
             <mask:MaskedTextBox ui:field="regNum" styleName="input-field dn-register-number" mask="999"/>
             <label class="dn-separator">–</label>
-            <mask:MaskedTextBox ui:field="regNumModification" styleName="input-field dn-register-number-modifier" mask="999"/>
+            <mask:MaskedTextBox ui:field="regNumModification" styleName="input-field dn-register-number-modifier" mask="99"/>
         </div>
 
-        <p ui:field="msg" class="dn-msg"/>
+        <small class="dn-msg">
+            <span ui:field="msg"></span>
+            <span ui:field="getNumberMsg" class="text-danger">
+                <ui:text from="{lang.equipmentDecimalNumberBusy}"/>
+                Выбрать
+                <g:Anchor href="#" ui:field="getNextNumber" text="следующий доступный номер"></g:Anchor> или изменить
+                <g:Anchor href="#" ui:field="getNextModification" text="исполнение?"></g:Anchor>
+            </span>
+        </small>
        </g:HTMLPanel>
 </ui:UiBinder>

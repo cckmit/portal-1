@@ -76,6 +76,11 @@ public class EquipmentPreviewView extends Composite implements AbstractEquipment
     }
 
     @Override
+    public void setPrimaryUse( String value ) {
+        this.primaryUse.setInnerText( value );
+    }
+
+    @Override
     public void setStage( String value, String styleNamePrefix ) {
         this.stage.setInnerText( value );
         this.stage.addClassName( "label label-" + styleNamePrefix );
@@ -100,6 +105,8 @@ public class EquipmentPreviewView extends Composite implements AbstractEquipment
     SpanElement type;
     @UiField
     SpanElement stage;
+    @UiField
+    SpanElement primaryUse;
 
     @Inject
     FixedPositioner positioner;

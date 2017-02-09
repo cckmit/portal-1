@@ -1,10 +1,10 @@
-package ru.protei.portal.ui.equipment.client.widget.linkedequipment;
+package ru.protei.portal.ui.equipment.client.widget.selector;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.Equipment;
+import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
-import ru.protei.portal.ui.common.client.widget.selector.input.MultipleInputSelector;
-import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeModel;
+import ru.protei.portal.ui.common.client.widget.selector.input.InputSelector;
 import ru.protei.portal.ui.common.shared.model.OrganizationCode;
 import ru.protei.portal.ui.equipment.client.common.EquipmentUtils;
 
@@ -13,15 +13,17 @@ import java.util.List;
 /**
  * Виджет связанных устройств
  */
-public class LinkedEquipmentMultiSelector
-        extends MultipleInputSelector<Equipment >
+public class EquipmentSelector
+        extends InputSelector<Equipment >
         implements ModelSelector<Equipment>
     {
 
         @Inject
-        public void init( EquipmentModel model) {
+        public void init( EquipmentModel model, Lang lang ) {
             model.subscribe( this );
-            setAddName( "Добавить" );
+            setSearchEnabled( true );
+            setHasNullValue( true );
+            setNullOption( lang.equipmentPrimaryUseNotDefinied());
         }
 
         @Override
@@ -42,12 +44,12 @@ public class LinkedEquipmentMultiSelector
 
 
             if ( value.getPAMR_RegisterNumber() != null ) {
-                sb.append( EquipmentUtils.formatNumberByStringValues( OrganizationCode.PAMR,
+                sb.append( " / " + EquipmentUtils.formatNumberByStringValues( OrganizationCode.PAMR,
                         value.getClassifierCode(), value.getPAMR_RegisterNumber() ) );
             }
 
             if ( value.getPDRA_RegisterNumber() != null ) {
-                sb.append( EquipmentUtils.formatNumberByStringValues( OrganizationCode.PDRA,
+                sb.append( " / " + EquipmentUtils.formatNumberByStringValues( OrganizationCode.PDRA,
                         value.getClassifierCode(), value.getPDRA_RegisterNumber() ) );
             }
 

@@ -1,9 +1,9 @@
 package ru.protei.portal.ui.equipment.client.provider;
 
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.service.EquipmentServiceAsync;
 import ru.protei.portal.ui.common.shared.model.DecimalNumber;
-import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 /**
  * Провайдер данных по децимальным номерам
@@ -11,35 +11,18 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 public class DecimalNumberDataProvider implements AbstractDecimalNumberDataProvider {
 
     @Override
-    public boolean checkIfExistDecimalNumber( DecimalNumber number ) {
-        Boolean isExist = false;
-        Integer a;
-
-        equipmentService.checkIfExistDecimalNumber( number, new RequestCallback<Boolean>(){
-            @Override
-            public void onError( Throwable throwable ) {}
-
-            @Override
-            public void onSuccess( Boolean result ) {
-                isExist = result;
-            }
-        });
-
-        return isExist;
+    public void checkIfExistDecimalNumber( DecimalNumber number, AsyncCallback<Boolean> callback ) {
+        equipmentService.checkIfExistDecimalNumber( number, callback );
     }
 
     @Override
-    public String getNextAvailableRegisterNumber( DecimalNumber number ) {
-        equipmentService.getNextAvailableRegisterNumber( number, new RequestCallback<DecimalNumber>(){
-            @Override
-            public void onError( Throwable throwable ) {}
+    public void getNextAvailableRegisterNumber( DecimalNumber number, AsyncCallback<DecimalNumber> callback ) {
+        equipmentService.getNextAvailableRegisterNumber( number, callback );
+    }
 
-            @Override
-            public void onSuccess( DecimalNumber result ) {
-            }
-        });
-
-        return null;
+    @Override
+    public void getNextAvailableRegisterNumberModification( DecimalNumber number, AsyncCallback< DecimalNumber > callback ) {
+        equipmentService.getNextAvailableRegisterNumberModification( number, callback );
     }
 
     @Inject

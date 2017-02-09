@@ -114,16 +114,45 @@ public class EquipmentServiceImpl implements EquipmentService {
         CoreResponse<String> response = null;
         switch ( number.getOrganizationCode() ) {
             case PAMR:
-                response = equipmentService.getNextAvailablePAMR_RegisterNum( number.getClassifierCode(), regNum );
+                response = equipmentService.getNextAvailablePAMR_RegisterNum( number.getClassifierCode() );
                 break;
             case PDRA:
-                response = equipmentService.getNextAvailablePDRA_RegisterNum( number.getClassifierCode(), regNum );
+                response = equipmentService.getNextAvailablePDRA_RegisterNum( number.getClassifierCode() );
         }
 
         if (response.isOk()) {
             log.debug("get next available decimal number, result: {}", response.getData());
             number.setModification( null );
             number.setRegisterNumber( response.getData() );
+            return number;
+        }
+
+        throw new RequestFailedException(response.getStatus());
+    }
+
+    @Override
+    public DecimalNumber getNextAvailableRegisterNumberModification( DecimalNumber number ) throws RequestFailedException  {
+        if (number == null) {
+            log.warn("null number in request");
+            throw new RequestFailedException(En_ResultStatus.INTERNAL_ERROR);
+        }
+
+        String regNum = makeRegisterNumber( number );
+        log.debug( "get next available decimal number: organizationCode={}, classifierCode={}, regNum={}",
+                number.getOrganizationCode(), number.getClassifierCode(), regNum );
+
+        CoreResponse<String> response = null;
+        switch ( number.getOrganizationCode() ) {
+            case PAMR:
+                response = equipmentService.getNextAvailablePAMR_RegisterNumModification( number.getClassifierCode(), number.getRegisterNumber() );
+                break;
+            case PDRA:
+                response = equipmentService.getNextAvailablePDRA_RegisterNumModification( number.getClassifierCode(), number.getRegisterNumber()  );
+        }
+
+        if (response.isOk()) {
+            log.debug("get next available decimal number, result: {}", response.getData());
+            number.setModification( response.getData() );
             return number;
         }
 

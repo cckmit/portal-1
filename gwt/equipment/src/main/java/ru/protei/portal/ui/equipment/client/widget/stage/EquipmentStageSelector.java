@@ -12,8 +12,10 @@ public class EquipmentStageSelector extends ButtonSelector<En_EquipmentStage> {
 
     @Inject
     public void init( ) {
+        setHasNullValue( false );
         fillOptions();
     }
+
     private void fillOptions() {
         clearOptions();
 

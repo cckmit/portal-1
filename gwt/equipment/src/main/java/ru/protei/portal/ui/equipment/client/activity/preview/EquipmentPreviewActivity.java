@@ -4,9 +4,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.dict.En_EquipmentStage;
 import ru.protei.portal.core.model.ent.Equipment;
-import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.EquipmentEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.En_EquipmentStageLang;
@@ -49,7 +47,7 @@ public abstract class EquipmentPreviewActivity implements Activity, AbstractEqui
         view.setComment( value.getComment() );
         view.setType( typeLang.getName( value.getType() ) );
         view.setStage( stageLang.getName( value.getStage() ), value.getStage().name().toLowerCase() );
-
+        view.setPrimaryUse( value.getLinkedEquipment() == null ? lang.equipmentPrimaryUseNotDefinied() : value.getLinkedEquipment().getNameBySpecification() );
         String pdraNum = value.getPDRA_RegisterNumber() == null ? null : EquipmentUtils.formatNumberByStringValues( OrganizationCode.PDRA, value.getClassifierCode(), value.getPDRA_RegisterNumber() );
         String pamrNum = value.getPAMR_RegisterNumber() == null ? null : EquipmentUtils.formatNumberByStringValues( OrganizationCode.PAMR, value.getClassifierCode(), value.getPAMR_RegisterNumber() );
         view.setPAMR_decimalNumber( pamrNum );

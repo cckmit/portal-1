@@ -39,4 +39,6 @@ public interface EquipmentService extends RemoteService {
      * @param number
      */
     DecimalNumber getNextAvailableRegisterNumber( DecimalNumber number ) throws RequestFailedException;
+
+    DecimalNumber getNextAvailableRegisterNumberModification( DecimalNumber number ) throws RequestFailedException;
 }

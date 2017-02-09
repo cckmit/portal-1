@@ -66,6 +66,12 @@ public class Equipment implements Serializable {
     @JdbcColumn
     private String comment;
 
+    /**
+     * Первичное применение
+     */
+    @JdbcJoinedObject(localColumn = "linked_equipment_id", remoteColumn = "id", updateLocalColumn = true )
+    private Equipment linkedEquipment;
+
     public Long getId() {
         return id;
     }
@@ -136,5 +142,13 @@ public class Equipment implements Serializable {
 
     public void setComment( String comment ) {
         this.comment = comment;
+    }
+
+    public Equipment getLinkedEquipment() {
+        return linkedEquipment;
+    }
+
+    public void setLinkedEquipment( Equipment linkedEquipment ) {
+        this.linkedEquipment = linkedEquipment;
     }
 }

@@ -1,15 +1,11 @@
-package ru.protei.portal.ui.equipment.client.widget.linkedequipment;
+package ru.protei.portal.ui.equipment.client.widget.selector;
 
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.En_EquipmentType;
-import ru.protei.portal.core.model.dict.En_SortDir;
-import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Equipment;
-import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.query.EquipmentQuery;
-import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.EquipmentEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;

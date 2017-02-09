@@ -45,4 +45,6 @@ public interface EquipmentServiceAsync {
      * @param callback
      */
     void getNextAvailableRegisterNumber( DecimalNumber number, AsyncCallback<DecimalNumber> callback );
+
+    void getNextAvailableRegisterNumberModification( DecimalNumber number, AsyncCallback<DecimalNumber> callback );
 }

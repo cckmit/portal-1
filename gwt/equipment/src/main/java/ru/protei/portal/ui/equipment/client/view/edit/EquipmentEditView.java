@@ -9,11 +9,12 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_EquipmentStage;
 import ru.protei.portal.core.model.dict.En_EquipmentType;
+import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.common.shared.model.DecimalNumber;
 import ru.protei.portal.ui.equipment.client.activity.edit.AbstractEquipmentEditActivity;
 import ru.protei.portal.ui.equipment.client.activity.edit.AbstractEquipmentEditView;
-import ru.protei.portal.ui.equipment.client.widget.linkedequipment.LinkedEquipmentMultiSelector;
+import ru.protei.portal.ui.equipment.client.widget.selector.EquipmentSelector;
 import ru.protei.portal.ui.equipment.client.widget.number.DecimalNumberBox;
 import ru.protei.portal.ui.equipment.client.widget.stage.EquipmentStageSelector;
 import ru.protei.portal.ui.equipment.client.widget.type.EquipmentTypeSelector;
@@ -89,6 +90,11 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
         return pdraNum;
     }
 
+    @Override
+    public HasValue< Equipment > primaryUse() {
+        return primaryUseEq;
+    }
+
     @UiHandler( "saveButton" )
     public void onSaveClicked( ClickEvent event ) {
         if ( activity != null ) {
@@ -128,7 +134,7 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
     EquipmentStageSelector stage;
     @Inject
     @UiField(provided = true)
-    LinkedEquipmentMultiSelector linkedEquipments;
+    EquipmentSelector primaryUseEq;
 
     AbstractEquipmentEditActivity activity;
 

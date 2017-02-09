@@ -5,6 +5,7 @@ import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_EquipmentStage;
 import ru.protei.portal.core.model.dict.En_EquipmentType;
+import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.ui.common.shared.model.DecimalNumber;
 
 
@@ -35,4 +36,6 @@ public interface AbstractEquipmentEditView extends IsWidget {
     HasEnabled pamrNumberEnabled();
 
     HasEnabled pdraNumberEnabled();
+
+    HasValue<Equipment> primaryUse();
 }

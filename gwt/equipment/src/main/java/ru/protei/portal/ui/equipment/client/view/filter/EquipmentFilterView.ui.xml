@@ -20,11 +20,11 @@
             </div>
 
             <div class="form-group col-xs-12">
-                <number:DecimalNumberBox ui:field="pamrNum" organizationCode="PAMR"/>
+                <number:DecimalNumberBox ui:field="pamrNum" organizationCode="PAMR" validable="false"/>
             </div>
 
             <div class="form-group col-xs-12">
-                <number:DecimalNumberBox ui:field="pdraNum" organizationCode="PDRA"/>
+                <number:DecimalNumberBox ui:field="pdraNum" organizationCode="PDRA" validable="false"/>
             </div>
 
             <div class="form-group col-xs-12">
