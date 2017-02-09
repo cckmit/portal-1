@@ -5,7 +5,7 @@ import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
 import ru.protei.portal.ui.common.client.widget.selector.input.InputSelector;
-import ru.protei.portal.ui.common.shared.model.OrganizationCode;
+import ru.protei.portal.core.model.dict.En_OrganizationCode;
 import ru.protei.portal.ui.equipment.client.common.EquipmentUtils;
 
 import java.util.List;
@@ -40,16 +40,16 @@ public class EquipmentSelector
 
         private String buildEquipmentName( Equipment value ) {
             StringBuilder sb = new StringBuilder();
-            sb.append( value.getName() );
+            sb.append( value.getNameSldWrks() );
 
 
             if ( value.getPAMR_RegisterNumber() != null ) {
-                sb.append( " / " + EquipmentUtils.formatNumberByStringValues( OrganizationCode.PAMR,
+                sb.append( " / " + EquipmentUtils.formatNumberByStringValues( En_OrganizationCode.PAMR,
                         value.getClassifierCode(), value.getPAMR_RegisterNumber() ) );
             }
 
             if ( value.getPDRA_RegisterNumber() != null ) {
-                sb.append( " / " + EquipmentUtils.formatNumberByStringValues( OrganizationCode.PDRA,
+                sb.append( " / " + EquipmentUtils.formatNumberByStringValues( En_OrganizationCode.PDRA,
                         value.getClassifierCode(), value.getPDRA_RegisterNumber() ) );
             }
 

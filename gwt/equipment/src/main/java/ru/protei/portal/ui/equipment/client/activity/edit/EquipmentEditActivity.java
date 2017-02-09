@@ -12,8 +12,8 @@ import ru.protei.portal.ui.common.client.events.EquipmentEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.EquipmentServiceAsync;
-import ru.protei.portal.ui.common.shared.model.DecimalNumber;
-import ru.protei.portal.ui.common.shared.model.OrganizationCode;
+import ru.protei.portal.core.model.ent.DecimalNumber;
+import ru.protei.portal.core.model.dict.En_OrganizationCode;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.equipment.client.common.EquipmentUtils;
 
@@ -80,8 +80,8 @@ public abstract class EquipmentEditActivity
     }
 
     private Equipment applyChanges () {
-        equipment.setName( view.nameBySldWrks().getValue() );
-        equipment.setNameBySpecification( view.nameBySpecification().getValue() );
+        equipment.setNameSldWrks( view.nameBySldWrks().getValue() );
+        equipment.setName( view.nameBySpecification().getValue() );
         equipment.setComment( view.comment().getValue() );
         equipment.setType( view.type().getValue() );
         equipment.setStage( view.stage().getValue() );
@@ -123,8 +123,8 @@ public abstract class EquipmentEditActivity
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
 
-        view.nameBySldWrks().setValue( equipment.getName() );
-        view.nameBySpecification().setValue( equipment.getNameBySpecification() );
+        view.nameBySldWrks().setValue( equipment.getNameSldWrks() );
+        view.nameBySpecification().setValue( equipment.getName() );
         view.comment().setValue( equipment.getComment() );
         view.type().setValue( equipment.getType() );
         view.stage().setValue( equipment.getStage() );
@@ -134,12 +134,12 @@ public abstract class EquipmentEditActivity
         view.nameBySpecificationEnabled().setEnabled( isCreate );
 
         DecimalNumber pamrNumber = !isCreate && equipment.getPAMR_RegisterNumber() != null
-                ? EquipmentUtils.getDecimalNumberByStringValues( OrganizationCode.PAMR, equipment.getClassifierCode(), equipment.getPAMR_RegisterNumber() )
+                ? EquipmentUtils.getDecimalNumberByStringValues( En_OrganizationCode.PAMR, equipment.getClassifierCode(), equipment.getPAMR_RegisterNumber() )
                 : null;
         view.pamrNumber().setValue( pamrNumber );
 
         DecimalNumber pdraNumber = !isCreate && equipment.getPDRA_RegisterNumber() != null
-                ? EquipmentUtils.getDecimalNumberByStringValues( OrganizationCode.PDRA, equipment.getClassifierCode(), equipment.getPDRA_RegisterNumber() )
+                ? EquipmentUtils.getDecimalNumberByStringValues( En_OrganizationCode.PDRA, equipment.getClassifierCode(), equipment.getPDRA_RegisterNumber() )
                 : null ;
         view.pdraNumber().setValue( pdraNumber );
 

@@ -3,7 +3,7 @@ package ru.protei.portal.ui.equipment.client.provider;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.service.EquipmentServiceAsync;
-import ru.protei.portal.ui.common.shared.model.DecimalNumber;
+import ru.protei.portal.core.model.ent.DecimalNumber;
 
 /**
  * Провайдер данных по децимальным номерам

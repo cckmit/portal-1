@@ -1,7 +1,7 @@
 package ru.protei.portal.ui.equipment.client.provider;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import ru.protei.portal.ui.common.shared.model.DecimalNumber;
+import ru.protei.portal.core.model.ent.DecimalNumber;
 
 /**
  * Валидатор децимальных чисел

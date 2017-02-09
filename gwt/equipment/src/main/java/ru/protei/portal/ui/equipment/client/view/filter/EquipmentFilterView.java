@@ -14,8 +14,8 @@ import ru.protei.portal.core.model.dict.En_EquipmentStage;
 import ru.protei.portal.core.model.dict.En_EquipmentType;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.shared.model.DecimalNumber;
-import ru.protei.portal.ui.common.shared.model.OrganizationCode;
+import ru.protei.portal.core.model.ent.DecimalNumber;
+import ru.protei.portal.core.model.dict.En_OrganizationCode;
 import ru.protei.portal.ui.equipment.client.activity.filter.AbstractEquipmentFilterActivity;
 import ru.protei.portal.ui.equipment.client.activity.filter.AbstractEquipmentFilterView;
 import ru.protei.portal.ui.equipment.client.widget.number.DecimalNumberBox;
@@ -121,16 +121,16 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
     }
 
     @UiHandler( "organizationCode" )
-    public void onSelectOrganizationCode( ValueChangeEvent<Set<OrganizationCode> > event ) {
-        Set<OrganizationCode> values = event.getValue();
+    public void onSelectOrganizationCode( ValueChangeEvent<Set<En_OrganizationCode > > event ) {
+        Set<En_OrganizationCode > values = event.getValue();
 
         if ( values == null || values.isEmpty() ) {
             switchOffAndResetDNumbers();
             return;
         }
 
-        pamrNum.setEnabled( values.contains( OrganizationCode.PAMR ) );
-        pdraNum.setEnabled( values.contains( OrganizationCode.PDRA ) );
+        pamrNum.setEnabled( values.contains( En_OrganizationCode.PAMR ) );
+        pdraNum.setEnabled( values.contains( En_OrganizationCode.PDRA ) );
     }
 
     @UiHandler( "pdraNum" )

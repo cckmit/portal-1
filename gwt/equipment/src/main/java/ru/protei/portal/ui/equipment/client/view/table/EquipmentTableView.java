@@ -1,7 +1,6 @@
 package ru.protei.portal.ui.equipment.client.view.table;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -20,7 +19,7 @@ import ru.protei.portal.ui.common.client.lang.En_EquipmentStageLang;
 import ru.protei.portal.ui.common.client.lang.En_EquipmentTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.separator.Separator;
-import ru.protei.portal.ui.common.shared.model.OrganizationCode;
+import ru.protei.portal.core.model.dict.En_OrganizationCode;
 import ru.protei.portal.ui.equipment.client.activity.table.AbstractEquipmentTableActivity;
 import ru.protei.portal.ui.equipment.client.activity.table.AbstractEquipmentTableView;
 import ru.protei.portal.ui.equipment.client.common.EquipmentUtils;
@@ -114,7 +113,7 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
 
             @Override
             public void fillColumnValue ( Element cell, Equipment value ) {
-                cell.setInnerHTML( HTMLHelper.wrapDiv( value.getNameBySpecification() ) );
+                cell.setInnerHTML( HTMLHelper.wrapDiv( value.getName() ) );
             }
         };
         columns.add( nameBySpecification );
@@ -128,7 +127,7 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
 
             @Override
             public void fillColumnValue ( Element cell, Equipment value ) {
-                cell.setInnerHTML( HTMLHelper.wrapDiv( value.getName() ) );
+                cell.setInnerHTML( HTMLHelper.wrapDiv( value.getNameSldWrks() ) );
             }
         };
         columns.add( name );
@@ -148,14 +147,14 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
 
                 if ( value.getPAMR_RegisterNumber() != null ) {
                     Element pamrDecimalNumber = DOM.createDiv();
-                    pamrDecimalNumber.setInnerHTML( EquipmentUtils.formatNumberByStringValues( OrganizationCode.PAMR,
+                    pamrDecimalNumber.setInnerHTML( EquipmentUtils.formatNumberByStringValues( En_OrganizationCode.PAMR,
                             value.getClassifierCode(), value.getPAMR_RegisterNumber() ) );
                     root.appendChild( pamrDecimalNumber );
                 }
 
                 if ( value.getPDRA_RegisterNumber() != null ) {
                     Element pdraDecimalNumber = DOM.createDiv();
-                    pdraDecimalNumber.setInnerHTML( EquipmentUtils.formatNumberByStringValues( OrganizationCode.PDRA,
+                    pdraDecimalNumber.setInnerHTML( EquipmentUtils.formatNumberByStringValues( En_OrganizationCode.PDRA,
                             value.getClassifierCode(), value.getPDRA_RegisterNumber() ) );
                     root.appendChild( pdraDecimalNumber );
                 }

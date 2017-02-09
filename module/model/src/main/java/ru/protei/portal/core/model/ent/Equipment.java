@@ -31,16 +31,16 @@ public class Equipment implements Serializable {
     private En_EquipmentType type;
 
     /**
-     * Наименование оборудования (по Solid Works)
+     * Название по спецификации
      */
     @JdbcColumn
     private String name;
 
     /**
-     * Название по спецификации
+     * Наименование оборудования (по Solid Works)
      */
-    @JdbcColumn(name = "name_by_spec")
-    private String nameBySpecification;
+    @JdbcColumn(name = "name_sldwrks")
+    private String nameSldWrks;
 
     /**
      * Код по классификатору ЕСКД
@@ -96,20 +96,20 @@ public class Equipment implements Serializable {
         this.type = type;
     }
 
+    public String getNameSldWrks() {
+        return nameSldWrks;
+    }
+
+    public void setNameSldWrks( String nameSldWrks ) {
+        this.nameSldWrks = nameSldWrks;
+    }
+
     public String getName() {
         return name;
     }
 
     public void setName( String name ) {
         this.name = name;
-    }
-
-    public String getNameBySpecification() {
-        return nameBySpecification;
-    }
-
-    public void setNameBySpecification( String nameBySpecification ) {
-        this.nameBySpecification = nameBySpecification;
     }
 
     public String getClassifierCode() {

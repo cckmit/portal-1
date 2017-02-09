@@ -1,8 +1,7 @@
 package ru.protei.portal.ui.common.client.lang;
 
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_SortField;
-import ru.protei.portal.ui.common.shared.model.OrganizationCode;
+import ru.protei.portal.core.model.dict.En_OrganizationCode;
 
 
 /**
@@ -10,7 +9,7 @@ import ru.protei.portal.ui.common.shared.model.OrganizationCode;
  */
 public class OrganizationCodeLang {
 
-    public String getName( OrganizationCode value ) {
+    public String getName( En_OrganizationCode value ) {
         switch (value) {
             case PAMR:
                 return lang.equipmentOrganizationCodePAMR();
@@ -22,7 +21,7 @@ public class OrganizationCodeLang {
         }
     }
 
-    public String getCompanyName( OrganizationCode value ) {
+    public String getCompanyName( En_OrganizationCode value ) {
         switch (value) {
             case PAMR:
                 return lang.equipmentOrganizationProtei();

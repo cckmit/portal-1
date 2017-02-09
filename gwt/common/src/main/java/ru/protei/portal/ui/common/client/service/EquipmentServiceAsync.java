@@ -3,8 +3,7 @@ package ru.protei.portal.ui.common.client.service;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.query.EquipmentQuery;
-import ru.protei.portal.ui.common.shared.model.DecimalNumber;
-import ru.protei.portal.ui.common.shared.model.RequestCallback;
+import ru.protei.portal.core.model.ent.DecimalNumber;
 
 import java.util.List;
 

@@ -18,8 +18,8 @@ import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.lang.OrganizationCodeLang;
 import ru.protei.portal.ui.common.client.widget.mask.MaskedTextBox;
-import ru.protei.portal.ui.common.shared.model.DecimalNumber;
-import ru.protei.portal.ui.common.shared.model.OrganizationCode;
+import ru.protei.portal.core.model.ent.DecimalNumber;
+import ru.protei.portal.core.model.dict.En_OrganizationCode;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.equipment.client.provider.AbstractDecimalNumberDataProvider;
 import ru.protei.winter.web.common.client.common.DisplayStyle;
@@ -67,7 +67,7 @@ public class DecimalNumberBox
         return addHandler( handler, ValueChangeEvent.getType() );
     }
 
-    public void setOrganizationCode( OrganizationCode organizationCode ) {
+    public void setOrganizationCode( En_OrganizationCode organizationCode ) {
         this.organizationCode = organizationCode;
         organizationCodeName.setInnerText( organizationCodeLang.getName( organizationCode ) );
     }
@@ -259,7 +259,7 @@ public class DecimalNumberBox
 
     private boolean validable = true;
     private DecimalNumber value;
-    private OrganizationCode organizationCode;
+    private En_OrganizationCode organizationCode;
 
     interface DecimalNumberWidgetUiBinder extends UiBinder<HTMLPanel, DecimalNumberBox> {}
     private static DecimalNumberWidgetUiBinder ourUiBinder = GWT.create( DecimalNumberWidgetUiBinder.class );

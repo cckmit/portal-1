@@ -2,7 +2,6 @@ package ru.protei.portal.ui.common.client.lang;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_EquipmentType;
-import ru.protei.portal.ui.common.shared.model.OrganizationCode;
 
 
 /**
