@@ -36,12 +36,17 @@ public class EquipmentUtils {
         return new DecimalNumber( code, classifierCode, number, modification );
     }
 
-    public static String formatNumberByStringValues( En_OrganizationCode code, String classifierCode, String regNum ) {
+    public static String formatNumberByStringValues( En_OrganizationCode code, String classifierCode, String regNum, String modification ) {
         if ( code == null || classifierCode == null ) {
             return "";
         }
 
-        return lang.getName( code ) + "." + classifierCode + "." + regNum;
+        String num = lang.getName( code ) + "." + classifierCode + "." + regNum;
+        if ( modification != null ) {
+            num += "–" + modification;
+        }
+
+        return num;
     }
 
     @Inject

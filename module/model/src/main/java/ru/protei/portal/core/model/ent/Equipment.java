@@ -6,6 +6,7 @@ import ru.protei.portal.core.model.dict.En_EquipmentType;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * Оборудование
@@ -43,28 +44,16 @@ public class Equipment implements Serializable {
     private String nameSldWrks;
 
     /**
-     * Код по классификатору ЕСКД
-     */
-    @JdbcColumn(name = "classifier_code")
-    private String classifierCode;
-
-    /**
-     * Регистрационный номер в компании "Протей"
-     */
-    @JdbcColumn(name = "pamr_reg_num")
-    private String PAMR_RegisterNumber;
-
-    /**
-     * Регистрационный номер в компании "Протей СТ"
-     */
-    @JdbcColumn(name = "pdra_reg_num")
-    private String PDRA_RegisterNumber;
-
-    /**
      * Комментарий к оборудованию
      */
     @JdbcColumn
     private String comment;
+
+    /**
+     * Привязанные децимальные номера
+     */
+    @JdbcOneToMany(localColumn = "id", remoteColumn = "equipment_id" )
+    private List<DecimalNumber> decimalNumbers;
 
     /**
      * Первичное применение
@@ -112,28 +101,12 @@ public class Equipment implements Serializable {
         this.name = name;
     }
 
-    public String getClassifierCode() {
-        return classifierCode;
+    public List<DecimalNumber> getDecimalNumbers() {
+        return decimalNumbers;
     }
 
-    public void setClassifierCode( String classifierCode ) {
-        this.classifierCode = classifierCode;
-    }
-
-    public String getPAMR_RegisterNumber() {
-        return PAMR_RegisterNumber;
-    }
-
-    public void setPAMR_RegisterNumber( String PAMR_RegisterNumber ) {
-        this.PAMR_RegisterNumber = PAMR_RegisterNumber;
-    }
-
-    public String getPDRA_RegisterNumber() {
-        return PDRA_RegisterNumber;
-    }
-
-    public void setPDRA_RegisterNumber( String PDRA_RegisterNumber ) {
-        this.PDRA_RegisterNumber = PDRA_RegisterNumber;
+    public void setDecimalNumbers( List<DecimalNumber> decimalNumbers ) {
+        this.decimalNumbers = decimalNumbers;
     }
 
     public String getComment() {

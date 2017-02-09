@@ -24,6 +24,7 @@ import ru.protei.portal.ui.equipment.client.widget.stage.EquipmentStageOptionLis
 import ru.protei.portal.ui.equipment.client.widget.type.EquipmentTypeBtnGroup;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -57,7 +58,6 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
         return name;
     }
 
-    @Override
     public String getClassifierCode() {
         DecimalNumber value = pdraNum.getValue();
         if ( value == null ) {
@@ -67,7 +67,6 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
         return value.getClassifierCode();
     }
 
-    @Override
     public String getPDRA_RegisterNumber() {
         DecimalNumber value = pdraNum.getValue();
         if ( value == null ) {
@@ -82,7 +81,6 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
         return result;
     }
 
-    @Override
     public String getPAMR_RegisterNumber() {
         DecimalNumber value = pamrNum.getValue();
         if ( value == null ) {
@@ -105,6 +103,11 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
     @Override
     public HasValue<Set<En_EquipmentType>> types() {
         return types;
+    }
+
+    @Override
+    public List<DecimalNumber> getNumbers() {
+        return null;
     }
 
     @UiHandler( "resetBtn" )

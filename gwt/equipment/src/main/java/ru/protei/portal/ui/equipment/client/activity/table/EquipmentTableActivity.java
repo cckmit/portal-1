@@ -154,8 +154,7 @@ public abstract class EquipmentTableActivity
     }
 
     private EquipmentQuery makeQuery() {
-        return new EquipmentQuery( filterView.name().getValue(), filterView.getClassifierCode(),
-                filterView.getPDRA_RegisterNumber(), filterView.getPAMR_RegisterNumber(),
+        return new EquipmentQuery( filterView.name().getValue(), filterView.getNumbers(),
                 filterView.stages().getValue(), filterView.types().getValue() );
     }
 

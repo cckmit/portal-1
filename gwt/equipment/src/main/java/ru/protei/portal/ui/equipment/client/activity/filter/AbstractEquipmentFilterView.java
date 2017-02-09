@@ -5,8 +5,10 @@ import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_EquipmentStage;
 import ru.protei.portal.core.model.dict.En_EquipmentType;
 import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.view.EntityOption;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -20,13 +22,9 @@ public interface AbstractEquipmentFilterView extends IsWidget {
 
     void resetFilter();
 
-    String getClassifierCode();
-
-    String getPDRA_RegisterNumber();
-
-    String getPAMR_RegisterNumber();
-
     HasValue<Set<En_EquipmentStage>> stages();
 
     HasValue<Set<En_EquipmentType>> types();
+
+    List<DecimalNumber> getNumbers();
 }

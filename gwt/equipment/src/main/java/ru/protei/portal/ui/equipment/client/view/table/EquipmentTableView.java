@@ -9,6 +9,7 @@ import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
+import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.helper.HTMLHelper;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
@@ -19,7 +20,6 @@ import ru.protei.portal.ui.common.client.lang.En_EquipmentStageLang;
 import ru.protei.portal.ui.common.client.lang.En_EquipmentTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.separator.Separator;
-import ru.protei.portal.core.model.dict.En_OrganizationCode;
 import ru.protei.portal.ui.equipment.client.activity.table.AbstractEquipmentTableActivity;
 import ru.protei.portal.ui.equipment.client.activity.table.AbstractEquipmentTableView;
 import ru.protei.portal.ui.equipment.client.common.EquipmentUtils;
@@ -141,22 +141,19 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
 
             @Override
             public void fillColumnValue ( Element cell, Equipment value ) {
+                if ( value.getDecimalNumbers() == null ) {
+                    return;
+                }
+
                 Element root = DOM.createDiv();
                 cell.appendChild( root );
                 root.setClassName( "equipment-number" );
 
-                if ( value.getPAMR_RegisterNumber() != null ) {
-                    Element pamrDecimalNumber = DOM.createDiv();
-                    pamrDecimalNumber.setInnerHTML( EquipmentUtils.formatNumberByStringValues( En_OrganizationCode.PAMR,
-                            value.getClassifierCode(), value.getPAMR_RegisterNumber() ) );
-                    root.appendChild( pamrDecimalNumber );
-                }
-
-                if ( value.getPDRA_RegisterNumber() != null ) {
-                    Element pdraDecimalNumber = DOM.createDiv();
-                    pdraDecimalNumber.setInnerHTML( EquipmentUtils.formatNumberByStringValues( En_OrganizationCode.PDRA,
-                            value.getClassifierCode(), value.getPDRA_RegisterNumber() ) );
-                    root.appendChild( pdraDecimalNumber );
+                for ( DecimalNumber number : value.getDecimalNumbers() ) {
+                    Element numElem = DOM.createDiv();
+                    numElem.setInnerHTML( EquipmentUtils.formatNumberByStringValues( number.getOrganizationCode(),
+                            number.getClassifierCode(), number.getRegisterNumber(), number.getModification() ) );
+                    root.appendChild( numElem );
                 }
             }
         };
