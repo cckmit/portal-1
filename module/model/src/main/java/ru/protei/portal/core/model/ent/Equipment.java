@@ -52,13 +52,13 @@ public class Equipment implements Serializable {
     /**
      * Привязанные децимальные номера
      */
-    @JdbcOneToMany(localColumn = "id", remoteColumn = "equipment_id" )
+    @JdbcOneToMany(table = "decimal_number", localColumn = "id", remoteColumn = "equipment_id")
     private List<DecimalNumber> decimalNumbers;
 
     /**
      * Первичное применение
      */
-    @JdbcJoinedObject(localColumn = "linked_equipment_id", remoteColumn = "id", updateLocalColumn = true )
+//    @JdbcJoinedObject(localColumn = "linked_equipment_id", remoteColumn = "id", updateLocalColumn = true )
     private Equipment linkedEquipment;
 
     public Long getId() {

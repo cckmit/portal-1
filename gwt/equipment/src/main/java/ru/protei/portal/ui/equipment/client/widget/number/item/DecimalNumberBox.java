@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.equipment.client.widget.number;
+package ru.protei.portal.ui.equipment.client.widget.number.item;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.*;
@@ -51,7 +51,6 @@ public class DecimalNumberBox
             value = new DecimalNumber();
         }
 
-        value.setOrganizationCode( organizationCode );
         classifierCode.setText( value.getClassifierCode() == null ? null : value.getClassifierCode());
         regNum.setText( value.getRegisterNumber() == null ? null : value.getRegisterNumber() );
         regNumModification.setText( value.getModification() == null ? null : value.getModification() );
@@ -65,11 +64,6 @@ public class DecimalNumberBox
     @Override
     public HandlerRegistration addValueChangeHandler( ValueChangeHandler<DecimalNumber> handler ) {
         return addHandler( handler, ValueChangeEvent.getType() );
-    }
-
-    public void setOrganizationCode( En_OrganizationCode organizationCode ) {
-        this.organizationCode = organizationCode;
-        organizationCodeName.setInnerText( organizationCodeLang.getName( organizationCode ) );
     }
 
     @Override
@@ -149,6 +143,10 @@ public class DecimalNumberBox
         this.classifierCode.setValue( classifierCode );
     }
 
+    public void setOrganizationCode( En_OrganizationCode code ) {
+        organizationCodeName.setInnerText( organizationCodeLang.getName( code ) );
+    }
+
     public void setValidable( boolean validable ) {
         this.validable = validable;
     }
@@ -168,7 +166,7 @@ public class DecimalNumberBox
                     return;
                 }
 
-                showMessage( "Номер свободен", DisplayStyle.SUCCESS );
+                showMessage( lang.equipmentDecimalNumberEmpty(), DisplayStyle.SUCCESS );
             }
         } );
     }
@@ -259,7 +257,6 @@ public class DecimalNumberBox
 
     private boolean validable = true;
     private DecimalNumber value;
-    private En_OrganizationCode organizationCode;
 
     interface DecimalNumberWidgetUiBinder extends UiBinder<HTMLPanel, DecimalNumberBox> {}
     private static DecimalNumberWidgetUiBinder ourUiBinder = GWT.create( DecimalNumberWidgetUiBinder.class );

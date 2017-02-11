@@ -23,7 +23,7 @@ public interface AbstractEquipmentPreviewView extends IsWidget {
 
     void setType( String value );
 
-    void setPrimaryUse( String value );
+    void setLinkedEquipment( String value );
 
     void setStage( String value, String styleNamePrefix );
 }

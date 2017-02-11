@@ -31,30 +31,10 @@ public class EquipmentSelector
             clearOptions();
 
             for ( Equipment type : options ) {
-                addOption( buildEquipmentName( type ), type );
+                addOption( type.getName(), type );
             }
         }
 
         @Override
         public void refreshValue() {}
-
-        private String buildEquipmentName( Equipment value ) {
-            StringBuilder sb = new StringBuilder();
-            sb.append( value.getNameSldWrks() );
-
-
-            if ( value.getPAMR_RegisterNumber() != null ) {
-                sb.append( " / " + EquipmentUtils.formatNumberByStringValues( En_OrganizationCode.PAMR,
-                        value.getClassifierCode(), value.getPAMR_RegisterNumber() ) );
-            }
-
-            if ( value.getPDRA_RegisterNumber() != null ) {
-                sb.append( " / " + EquipmentUtils.formatNumberByStringValues( En_OrganizationCode.PDRA,
-                        value.getClassifierCode(), value.getPDRA_RegisterNumber() ) );
-            }
-
-            return sb.toString();
-        }
-
-
 }

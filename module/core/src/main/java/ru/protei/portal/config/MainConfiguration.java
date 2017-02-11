@@ -186,6 +186,9 @@ public class MainConfiguration {
 
     @Bean
     public CaseTypeDAO getCaseTypeDAO() { return new CaseTypeDAO_Impl(); }
+
+    @Bean
+    public DecimalNumberDAO getDecimalNumberDAO() { return new DecimalNumberDAO_Impl(); }
 /**
  *
  *

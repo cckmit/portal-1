@@ -24,8 +24,8 @@ public class EquipmentServiceImpl implements EquipmentService {
     @Override
     public List<Equipment> getEquipments( EquipmentQuery query ) throws RequestFailedException {
 
-        log.debug( "getEquipments(): nameBySldWrks={} | classifierCode={} | pamrRegisterNumber={} | pdraRegistreNumber={}",
-                query.getName(), query.getClassifierCode(), query.getPAMR_RegisterNumber(), query.getPDRA_RegisterNumber() );
+        log.debug( "getEquipments(): name={} | types={} | stages={} | decimalNumbers={}",
+                query.getName(), query.getTypes(), query.getStages(), query.getDecimalNumbers() );
 
         CoreResponse<List<Equipment>> response = equipmentService.equipmentList( query );
 
@@ -40,10 +40,14 @@ public class EquipmentServiceImpl implements EquipmentService {
         log.debug("get equipment, id: {}", id);
 
         CoreResponse<Equipment> response = equipmentService.getEquipment(id);
-
         log.debug("get equipment, id: {} -> {} ", id, response.isError() ? "error" : response.getData());
 
-        return response.getData();
+        if (response.isOk()) {
+            log.debug("get equipment, applied data: {}", response.getData().getId());
+            return response.getData();
+        }
+
+        throw new RequestFailedException(response.getStatus());
     }
 
     @Override
@@ -56,7 +60,6 @@ public class EquipmentServiceImpl implements EquipmentService {
         log.debug("store equipment, id: {} ", HelperFunc.nvl(p.getId(), "new"));
 
         CoreResponse<Equipment> response = equipmentService.saveEquipment(p);
-
         log.debug("store equipment, result: {}", response.isOk() ? "ok" : response.getStatus());
 
         if (response.isOk()) {
@@ -79,19 +82,10 @@ public class EquipmentServiceImpl implements EquipmentService {
             log.warn("null number in request");
             throw new RequestFailedException(En_ResultStatus.INTERNAL_ERROR);
         }
-        String regNum = makeRegisterNumber( number );
-        log.debug( "check exist decimal number: organizationCode={}, classifierCode={}, regNum={}",
-                number.getOrganizationCode(), number.getClassifierCode(), regNum );
+        log.debug( "check exist decimal number: organizationCode={}, classifierCode={}, regNum={}, modification={}",
+                number.getOrganizationCode(), number.getClassifierCode(), number.getRegisterNumber(), number.getModification() );
 
-        CoreResponse<Boolean> response = null;
-        switch ( number.getOrganizationCode() ) {
-            case PAMR:
-                response = equipmentService.checkIfExistPDRA_Number( number.getClassifierCode(), regNum );
-                break;
-            case PDRA:
-                response = equipmentService.checkIfExistPAMR_Number( number.getClassifierCode(), regNum );
-        }
-
+        CoreResponse<Boolean> response = equipmentService.checkIfExistDecimalNumber( number );
         if (response.isOk()) {
             log.debug("check exist decimal number, result: {}", response.getData());
             return response.getData();
@@ -107,23 +101,12 @@ public class EquipmentServiceImpl implements EquipmentService {
             throw new RequestFailedException(En_ResultStatus.INTERNAL_ERROR);
         }
 
-        String regNum = makeRegisterNumber( number );
         log.debug( "get next available decimal number: organizationCode={}, classifierCode={}, regNum={}",
-                number.getOrganizationCode(), number.getClassifierCode(), regNum );
+                number.getOrganizationCode(), number.getClassifierCode(), number.getRegisterNumber() );
 
-        CoreResponse<String> response = null;
-        switch ( number.getOrganizationCode() ) {
-            case PAMR:
-                response = equipmentService.getNextAvailablePAMR_RegisterNum( number.getClassifierCode() );
-                break;
-            case PDRA:
-                response = equipmentService.getNextAvailablePDRA_RegisterNum( number.getClassifierCode() );
-        }
-
+        CoreResponse<DecimalNumber> response = equipmentService.getNextAvailableDecimalNumber( number );
         if (response.isOk()) {
             log.debug("get next available decimal number, result: {}", response.getData());
-            number.setModification( null );
-            number.setRegisterNumber( response.getData() );
             return number;
         }
 
@@ -137,35 +120,16 @@ public class EquipmentServiceImpl implements EquipmentService {
             throw new RequestFailedException(En_ResultStatus.INTERNAL_ERROR);
         }
 
-        String regNum = makeRegisterNumber( number );
-        log.debug( "get next available decimal number: organizationCode={}, classifierCode={}, regNum={}",
-                number.getOrganizationCode(), number.getClassifierCode(), regNum );
+        log.debug( "get next available decimal number modification: organizationCode={}, classifierCode={}, regNum={}",
+                number.getOrganizationCode(), number.getClassifierCode(), number.getRegisterNumber() );
 
-        CoreResponse<String> response = null;
-        switch ( number.getOrganizationCode() ) {
-            case PAMR:
-                response = equipmentService.getNextAvailablePAMR_RegisterNumModification( number.getClassifierCode(), number.getRegisterNumber() );
-                break;
-            case PDRA:
-                response = equipmentService.getNextAvailablePDRA_RegisterNumModification( number.getClassifierCode(), number.getRegisterNumber()  );
-        }
-
+        CoreResponse<DecimalNumber> response = equipmentService.getNextAvailableDecimalNumberModification( number );
         if (response.isOk()) {
             log.debug("get next available decimal number, result: {}", response.getData());
-            number.setModification( response.getData() );
             return number;
         }
 
         throw new RequestFailedException(response.getStatus());
-    }
-
-    private String makeRegisterNumber( DecimalNumber number ) {
-        String regNum = number.getRegisterNumber();
-        if ( number.getModification() != null && !number.getModification().isEmpty() ) {
-            regNum += "-" + number.getModification();
-        }
-
-        return regNum;
     }
 
     @Autowired

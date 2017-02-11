@@ -4,6 +4,7 @@ import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_EquipmentStage;
 import ru.protei.portal.core.model.dict.En_EquipmentType;
+import ru.protei.portal.core.model.dict.En_OrganizationCode;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -26,5 +27,7 @@ public interface AbstractEquipmentFilterView extends IsWidget {
 
     HasValue<Set<En_EquipmentType>> types();
 
-    List<DecimalNumber> getNumbers();
+    HasValue<List<DecimalNumber>> numbers();
+
+    HasValue<Set<En_OrganizationCode>> organizationCodes();
 }

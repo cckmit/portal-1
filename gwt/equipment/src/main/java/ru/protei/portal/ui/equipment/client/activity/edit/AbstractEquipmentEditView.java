@@ -8,6 +8,8 @@ import ru.protei.portal.core.model.dict.En_EquipmentType;
 import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 
+import java.util.List;
+
 
 /**
  *  Абстрактное представление карточки редактирования единицы оборудования
@@ -15,13 +17,13 @@ import ru.protei.portal.core.model.ent.DecimalNumber;
 public interface AbstractEquipmentEditView extends IsWidget {
     void setActivity( AbstractEquipmentEditActivity activity );
 
-    HasValue<String> nameBySldWrks();
+    HasValue<String> nameSldWrks();
 
-    HasValue<String> nameBySpecification();
+    HasValue<String> name();
 
     HasValue<String> comment();
 
-    HasEnabled nameBySpecificationEnabled();
+    HasEnabled nameEnabled();
 
     HasEnabled typeEnabled();
 
@@ -29,13 +31,7 @@ public interface AbstractEquipmentEditView extends IsWidget {
 
     HasValue<En_EquipmentStage> stage();
 
-    HasValue<DecimalNumber> pdraNumber();
+    HasValue<Equipment> linkedEquipment();
 
-    HasValue<DecimalNumber> pamrNumber();
-
-    HasEnabled pamrNumberEnabled();
-
-    HasEnabled pdraNumberEnabled();
-
-    HasValue<Equipment> primaryUse();
+    HasValue<List<DecimalNumber> > numbers();
 }

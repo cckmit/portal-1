@@ -18,7 +18,8 @@ import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.dict.En_OrganizationCode;
 import ru.protei.portal.ui.equipment.client.activity.filter.AbstractEquipmentFilterActivity;
 import ru.protei.portal.ui.equipment.client.activity.filter.AbstractEquipmentFilterView;
-import ru.protei.portal.ui.equipment.client.widget.number.DecimalNumberBox;
+import ru.protei.portal.ui.equipment.client.widget.number.item.DecimalNumberBox;
+import ru.protei.portal.ui.equipment.client.widget.number.list.DecimalNumberList;
 import ru.protei.portal.ui.equipment.client.widget.organization.OrganizationBtnGroup;
 import ru.protei.portal.ui.equipment.client.widget.stage.EquipmentStageOptionList;
 import ru.protei.portal.ui.equipment.client.widget.type.EquipmentTypeBtnGroup;
@@ -47,52 +48,15 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
     @Override
     public void resetFilter() {
         name.setValue( null );
-        organizationCode.setValue( new HashSet<>() );
+        organizationCode.setValue( null );
         types.setValue( null );
         stages.setValue( null );
-        switchOffAndResetDNumbers();
+        numbers.setValue( null );
     }
 
     @Override
     public HasValue< String > name() {
         return name;
-    }
-
-    public String getClassifierCode() {
-        DecimalNumber value = pdraNum.getValue();
-        if ( value == null ) {
-            return null;
-        }
-
-        return value.getClassifierCode();
-    }
-
-    public String getPDRA_RegisterNumber() {
-        DecimalNumber value = pdraNum.getValue();
-        if ( value == null ) {
-            return null;
-        }
-
-        String result = value.getRegisterNumber();
-        if ( value.getModification() != null && !value.getModification().isEmpty() ) {
-            result += "-" + value.getModification();
-        }
-
-        return result;
-    }
-
-    public String getPAMR_RegisterNumber() {
-        DecimalNumber value = pamrNum.getValue();
-        if ( value == null ) {
-            return null;
-        }
-
-        String result = value.getRegisterNumber();
-        if ( value.getModification() != null && !value.getModification().isEmpty() ) {
-            result += "-" + value.getModification();
-        }
-
-        return result;
     }
 
     @Override
@@ -106,8 +70,13 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
     }
 
     @Override
-    public List<DecimalNumber> getNumbers() {
-        return null;
+    public HasValue< List< DecimalNumber > > numbers() {
+        return numbers;
+    }
+
+    @Override
+    public HasValue< Set<En_OrganizationCode> > organizationCodes() {
+        return organizationCode;
     }
 
     @UiHandler( "resetBtn" )
@@ -125,34 +94,11 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
 
     @UiHandler( "organizationCode" )
     public void onSelectOrganizationCode( ValueChangeEvent<Set<En_OrganizationCode > > event ) {
-        Set<En_OrganizationCode > values = event.getValue();
-
-        if ( values == null || values.isEmpty() ) {
-            switchOffAndResetDNumbers();
-            return;
-        }
-
-        pamrNum.setEnabled( values.contains( En_OrganizationCode.PAMR ) );
-        pdraNum.setEnabled( values.contains( En_OrganizationCode.PDRA ) );
-    }
-
-    @UiHandler( "pdraNum" )
-    public void onPdraNumberChanged( ValueChangeEvent<DecimalNumber> event ) {
-        DecimalNumber pdra = pdraNum.getValue();
-        if ( pdra != null ) {
-            pamrNum.setClassifierCode( pdra.getClassifierCode() );
-        }
-
         fireChangeTimer();
     }
 
-    @UiHandler( "pamrNum" )
-    public void onPamrNumberChanged( ValueChangeEvent<DecimalNumber> event ) {
-        DecimalNumber pamr = pamrNum.getValue();
-        if ( pamr != null ) {
-            pdraNum.setClassifierCode( pamr.getClassifierCode() );
-        }
-
+    @UiHandler( "numbers" )
+    public void onNumbersChanged( ValueChangeEvent<List<DecimalNumber> > event ) {
         fireChangeTimer();
     }
 
@@ -176,14 +122,6 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
     protected void onDetach() {
         super.onDetach();
         positioner.ignore(this);
-    }
-
-    private void switchOffAndResetDNumbers() {
-        pamrNum.setEnabled( false );
-        pdraNum.setEnabled( false );
-
-        pamrNum.setValue( null );
-        pdraNum.setValue( null );
     }
 
     private void fireChangeTimer() {
@@ -210,12 +148,6 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
     TextBox name;
     @Inject
     @UiField(provided = true)
-    DecimalNumberBox pdraNum;
-    @Inject
-    @UiField(provided = true)
-    DecimalNumberBox pamrNum;
-    @Inject
-    @UiField(provided = true)
     OrganizationBtnGroup organizationCode;
     @Inject
     @UiField(provided = true)
@@ -223,6 +155,9 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
     @Inject
     @UiField(provided = true)
     EquipmentTypeBtnGroup types;
+    @Inject
+    @UiField(provided = true)
+    DecimalNumberList numbers;
 
     @Inject
     FixedPositioner positioner;

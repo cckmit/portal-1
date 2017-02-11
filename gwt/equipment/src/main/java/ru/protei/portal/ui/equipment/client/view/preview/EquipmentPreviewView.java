@@ -76,7 +76,7 @@ public class EquipmentPreviewView extends Composite implements AbstractEquipment
     }
 
     @Override
-    public void setPrimaryUse( String value ) {
+    public void setLinkedEquipment( String value ) {
         this.primaryUse.setInnerText( value );
     }
 

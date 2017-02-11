@@ -1,6 +1,7 @@
 package ru.protei.portal.core.service;
 
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.query.EquipmentQuery;
@@ -14,23 +15,17 @@ import java.util.List;
  */
 public interface EquipmentService {
 
-    CoreResponse<Long> count( EquipmentQuery query );
+    CoreResponse< Long > count( EquipmentQuery query );
 
-    CoreResponse<List<Equipment >> equipmentList( EquipmentQuery query );
+    CoreResponse< List< Equipment > > equipmentList( EquipmentQuery query );
 
-    CoreResponse<Equipment> getEquipment( long id );
+    CoreResponse< Equipment > getEquipment( long id );
 
-    CoreResponse<Equipment> saveEquipment( Equipment equipment );
+    CoreResponse< Equipment > saveEquipment( Equipment equipment );
 
-    CoreResponse<Boolean> checkIfExistPDRA_Number( String classifierCode, String registerNumber );
+    CoreResponse< DecimalNumber > getNextAvailableDecimalNumber( DecimalNumber number );
 
-    CoreResponse<Boolean> checkIfExistPAMR_Number( String classifierCode, String registerNumber );
+    CoreResponse< DecimalNumber > getNextAvailableDecimalNumberModification( DecimalNumber number );
 
-    CoreResponse<String> getNextAvailablePAMR_RegisterNum( String classifierCode );
-
-    CoreResponse<String> getNextAvailablePDRA_RegisterNum( String classifierCode );
-
-    CoreResponse<String> getNextAvailablePAMR_RegisterNumModification( String classifierCode, String registerNumber );
-
-    CoreResponse<String> getNextAvailablePDRA_RegisterNumModification( String classifierCode, String registerNumber );
+    CoreResponse< Boolean > checkIfExistDecimalNumber( DecimalNumber number );
 }

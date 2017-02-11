@@ -154,7 +154,7 @@ public abstract class EquipmentTableActivity
     }
 
     private EquipmentQuery makeQuery() {
-        return new EquipmentQuery( filterView.name().getValue(), filterView.getNumbers(),
+        return new EquipmentQuery( filterView.name().getValue(), filterView.organizationCodes().getValue(), filterView.numbers().getValue(),
                 filterView.stages().getValue(), filterView.types().getValue() );
     }
 

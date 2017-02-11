@@ -1,9 +1,6 @@
 package ru.protei.portal.core.model.query;
 
-import ru.protei.portal.core.model.dict.En_EquipmentStage;
-import ru.protei.portal.core.model.dict.En_EquipmentType;
-import ru.protei.portal.core.model.dict.En_SortDir;
-import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 
 import java.util.List;
@@ -15,6 +12,8 @@ import java.util.Set;
 public class EquipmentQuery extends BaseQuery {
 
     private String name;
+
+    private Set<En_OrganizationCode> organizationCodes;
 
     private List<DecimalNumber> decimalNumbers;
 
@@ -54,11 +53,20 @@ public class EquipmentQuery extends BaseQuery {
         this.types = types;
     }
 
+    public Set<En_OrganizationCode> getOrganizationCodes() {
+        return organizationCodes;
+    }
+
+    public void setOrganizationCodes( Set<En_OrganizationCode> organizationCodes ) {
+        this.organizationCodes = organizationCodes;
+    }
+
     public EquipmentQuery() {
     }
 
-    public EquipmentQuery( String name, List<DecimalNumber> decimalNumbers, Set<En_EquipmentStage> stages, Set<En_EquipmentType> types ) {
+    public EquipmentQuery( String name, Set<En_OrganizationCode> organizationCodes, List<DecimalNumber> decimalNumbers, Set<En_EquipmentStage> stages, Set<En_EquipmentType> types ) {
         this.name = name;
+        this.organizationCodes = organizationCodes;
         this.decimalNumbers = decimalNumbers;
         this.stages = stages;
         this.types = types;

@@ -17,7 +17,7 @@ public class DecimalNumber implements Serializable {
     /**
      * Регистрационный код организации
      */
-    @JdbcColumn( name = "dev_stage" )
+    @JdbcColumn( name = "org_code" )
     @JdbcEnumerated(EnumType.STRING)
     private En_OrganizationCode organizationCode;
 
@@ -25,19 +25,22 @@ public class DecimalNumber implements Serializable {
      * Код по классификатору ЕСКД
      */
     @JdbcColumn( name = "classifier_code" )
-    private String classifierCode;
+    private Integer classifierCode;
 
     /**
      * Регистрационный номер
      */
     @JdbcColumn( name = "reg_number" )
-    private String registerNumber;
+    private Integer registerNumber;
 
     /**
      * Номер исполнения
      */
     @JdbcColumn( name = "modification_number" )
-    private String modification;
+    private Integer modification;
+
+    @JdbcColumn( name = "equipment_id")
+    private Long equipmentId;
 
     public Long getId() {
         return id;
@@ -55,27 +58,27 @@ public class DecimalNumber implements Serializable {
         this.organizationCode = organizationCode;
     }
 
-    public String getClassifierCode() {
+    public Integer getClassifierCode() {
         return classifierCode;
     }
 
-    public void setClassifierCode( String classifierCode ) {
+    public void setClassifierCode( Integer classifierCode ) {
         this.classifierCode = classifierCode;
     }
 
-    public String getRegisterNumber() {
+    public Integer getRegisterNumber() {
         return registerNumber;
     }
 
-    public void setRegisterNumber( String registerNumber ) {
+    public void setRegisterNumber( Integer registerNumber ) {
         this.registerNumber = registerNumber;
     }
 
-    public String getModification() {
+    public Integer getModification() {
         return modification;
     }
 
-    public void setModification( String modification ) {
+    public void setModification( Integer modification ) {
         this.modification = modification;
     }
 
@@ -83,7 +86,7 @@ public class DecimalNumber implements Serializable {
         return true;
     }
 
-    public DecimalNumber( En_OrganizationCode organizationCode, String classifierCode, String registerNumber, String modification ) {
+    public DecimalNumber( En_OrganizationCode organizationCode, Integer classifierCode, Integer registerNumber, Integer modification ) {
         this.organizationCode = organizationCode;
         this.classifierCode = classifierCode;
         this.registerNumber = registerNumber;

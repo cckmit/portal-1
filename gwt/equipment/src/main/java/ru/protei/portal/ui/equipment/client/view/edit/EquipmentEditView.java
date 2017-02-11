@@ -14,10 +14,12 @@ import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.ui.equipment.client.activity.edit.AbstractEquipmentEditActivity;
 import ru.protei.portal.ui.equipment.client.activity.edit.AbstractEquipmentEditView;
+import ru.protei.portal.ui.equipment.client.widget.number.list.DecimalNumberList;
 import ru.protei.portal.ui.equipment.client.widget.selector.EquipmentSelector;
-import ru.protei.portal.ui.equipment.client.widget.number.DecimalNumberBox;
 import ru.protei.portal.ui.equipment.client.widget.stage.EquipmentStageSelector;
 import ru.protei.portal.ui.equipment.client.widget.type.EquipmentTypeSelector;
+
+import java.util.List;
 
 
 /**
@@ -36,12 +38,12 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
     }
 
     @Override
-    public HasValue< String > nameBySldWrks() {
+    public HasValue< String > nameSldWrks() {
         return nameSldWrks;
     }
 
     @Override
-    public HasValue< String > nameBySpecification() {
+    public HasValue< String > name() {
         return nameSpecification;
     }
 
@@ -51,7 +53,7 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
     }
 
     @Override
-    public HasEnabled nameBySpecificationEnabled() {
+    public HasEnabled nameEnabled() {
         return nameSpecification;
     }
 
@@ -71,28 +73,13 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
     }
 
     @Override
-    public HasValue< DecimalNumber > pdraNumber() {
-        return pdraNum;
+    public HasValue< Equipment > linkedEquipment() {
+        return linkedEquipment;
     }
 
     @Override
-    public HasValue< DecimalNumber > pamrNumber() {
-        return pamrNum;
-    }
-
-    @Override
-    public HasEnabled pamrNumberEnabled() {
-        return pamrNum;
-    }
-
-    @Override
-    public HasEnabled pdraNumberEnabled() {
-        return pdraNum;
-    }
-
-    @Override
-    public HasValue< Equipment > primaryUse() {
-        return primaryUseEq;
+    public HasValue< List<DecimalNumber> > numbers() {
+        return numbers;
     }
 
     @UiHandler( "saveButton" )
@@ -118,12 +105,6 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
     ValidableTextBox nameSldWrks;
     @UiField
     ValidableTextBox nameSpecification;
-    @Inject
-    @UiField(provided = true)
-    DecimalNumberBox pdraNum;
-    @Inject
-    @UiField(provided = true)
-    DecimalNumberBox pamrNum;
     @UiField
     TextBox comment;
     @Inject
@@ -134,12 +115,13 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
     EquipmentStageSelector stage;
     @Inject
     @UiField(provided = true)
-    EquipmentSelector primaryUseEq;
+    EquipmentSelector linkedEquipment;
+    @Inject
+    @UiField(provided = true)
+    DecimalNumberList numbers;
 
     AbstractEquipmentEditActivity activity;
 
-
     private static ContactViewUiBinder ourUiBinder = GWT.create(ContactViewUiBinder.class);
     interface ContactViewUiBinder extends UiBinder<HTMLPanel, EquipmentEditView> {}
-
 }

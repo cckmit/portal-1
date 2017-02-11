@@ -12,10 +12,7 @@ import ru.protei.portal.ui.common.client.events.EquipmentEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.EquipmentServiceAsync;
-import ru.protei.portal.core.model.ent.DecimalNumber;
-import ru.protei.portal.core.model.dict.En_OrganizationCode;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
-import ru.protei.portal.ui.equipment.client.common.EquipmentUtils;
 
 /**
  * Активность карточки редактирования единицы оборудования
@@ -80,33 +77,13 @@ public abstract class EquipmentEditActivity
     }
 
     private Equipment applyChanges () {
-        equipment.setNameSldWrks( view.nameBySldWrks().getValue() );
-        equipment.setName( view.nameBySpecification().getValue() );
+        equipment.setNameSldWrks( view.nameSldWrks().getValue() );
+        equipment.setName( view.name().getValue() );
         equipment.setComment( view.comment().getValue() );
         equipment.setType( view.type().getValue() );
         equipment.setStage( view.stage().getValue() );
-        equipment.setLinkedEquipment( view.primaryUse().getValue() );
-
-        DecimalNumber pamrNumber = view.pamrNumber().getValue();
-        DecimalNumber pdraNumber = view.pdraNumber().getValue();
-
-        if ( pamrNumber != null ) {
-            equipment.setClassifierCode( pamrNumber.getClassifierCode() );
-            String num = pamrNumber.getRegisterNumber();
-            if ( pamrNumber.getModification() != null ) {
-                num += "-" + pamrNumber.getModification();
-            }
-            equipment.setPAMR_RegisterNumber( num );
-        }
-
-        if ( pdraNumber != null ) {
-            equipment.setClassifierCode( pdraNumber.getClassifierCode() );
-            String num = pdraNumber.getRegisterNumber();
-            if ( pdraNumber.getModification() != null ) {
-                num += "-" + pdraNumber.getModification();
-            }
-            equipment.setPDRA_RegisterNumber( num );
-        }
+        equipment.setLinkedEquipment( view.linkedEquipment().getValue() );
+        equipment.setDecimalNumbers( view.numbers().getValue() );
 
         return equipment;
     }
@@ -123,31 +100,18 @@ public abstract class EquipmentEditActivity
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
 
-        view.nameBySldWrks().setValue( equipment.getNameSldWrks() );
-        view.nameBySpecification().setValue( equipment.getName() );
+        view.nameSldWrks().setValue( equipment.getNameSldWrks() );
+        view.name().setValue( equipment.getName() );
         view.comment().setValue( equipment.getComment() );
         view.type().setValue( equipment.getType() );
         view.stage().setValue( equipment.getStage() );
-        view.primaryUse().setValue( equipment.getLinkedEquipment() );
+        view.linkedEquipment().setValue( equipment.getLinkedEquipment() );
 
         boolean isCreate = equipment.getId() == null;
-        view.nameBySpecificationEnabled().setEnabled( isCreate );
-
-        DecimalNumber pamrNumber = !isCreate && equipment.getPAMR_RegisterNumber() != null
-                ? EquipmentUtils.getDecimalNumberByStringValues( En_OrganizationCode.PAMR, equipment.getClassifierCode(), equipment.getPAMR_RegisterNumber() )
-                : null;
-        view.pamrNumber().setValue( pamrNumber );
-
-        DecimalNumber pdraNumber = !isCreate && equipment.getPDRA_RegisterNumber() != null
-                ? EquipmentUtils.getDecimalNumberByStringValues( En_OrganizationCode.PDRA, equipment.getClassifierCode(), equipment.getPDRA_RegisterNumber() )
-                : null ;
-        view.pdraNumber().setValue( pdraNumber );
-
-        view.pamrNumberEnabled().setEnabled( isCreate );
-        view.pdraNumberEnabled().setEnabled( isCreate );
+        view.nameEnabled().setEnabled( isCreate );
+        view.numbers().setValue( equipment.getDecimalNumbers() );
         view.typeEnabled().setEnabled( isCreate );
     }
-
 
     @Inject
     AbstractEquipmentEditView view;
