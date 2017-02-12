@@ -151,8 +151,7 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
 
                 for ( DecimalNumber number : value.getDecimalNumbers() ) {
                     Element numElem = DOM.createDiv();
-                    numElem.setInnerHTML( EquipmentUtils.formatNumberByStringValues( number.getOrganizationCode(),
-                            number.getClassifierCode(), number.getRegisterNumber(), number.getModification() ) );
+                    numElem.setInnerHTML( EquipmentUtils.formatNumber( number ) );
                     root.appendChild( numElem );
                 }
             }

@@ -21,7 +21,7 @@ public class DecimalNumberDAO_Impl extends PortalBaseJdbcDAO<DecimalNumber > imp
         String condition = "org_code=? and classifier_code=? and reg_number=?";
         List<Object> args = new ArrayList<>( Arrays.asList( number.getOrganizationCode().name(), number.getClassifierCode(), number.getRegisterNumber() ) );
 
-        if ( number.getModification() != null && !number.getModification().isEmpty() ) {
+        if ( number.getModification() != null ) {
             condition += " and modification_number=?";
             args.add( number.getModification() );
         }
@@ -38,7 +38,7 @@ public class DecimalNumberDAO_Impl extends PortalBaseJdbcDAO<DecimalNumber > imp
 
     @Override
     public Integer getMaxModification( DecimalNumber number ) {
-        return getMaxValue( "modification_number", Integer.class, "org_code=? and classifier_code=? and reg_number", number.getOrganizationCode().name(),
+        return getMaxValue( "modification_number", Integer.class, "org_code=? and classifier_code=? and reg_number=?", number.getOrganizationCode().name(),
                 number.getClassifierCode(), number.getRegisterNumber() );
     }
 }

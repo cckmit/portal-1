@@ -30,12 +30,14 @@ import ru.protei.winter.web.common.client.common.DisplayStyle;
 public class DecimalNumberBox
         extends Composite implements HasValue<DecimalNumber>, HasEnabled {
 
+
     public DecimalNumberBox() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
     }
 
     @Override
     public DecimalNumber getValue() {
+            // todo: need parse value
         return value;
     }
 
@@ -49,11 +51,12 @@ public class DecimalNumberBox
         this.value = decimalNumber;
         if ( value == null ) {
             value = new DecimalNumber();
+            value.setOrganizationCode( organizationCode );
         }
 
-        classifierCode.setText( value.getClassifierCode() == null ? null : value.getClassifierCode());
-        regNum.setText( value.getRegisterNumber() == null ? null : value.getRegisterNumber() );
-        regNumModification.setText( value.getModification() == null ? null : value.getModification() );
+        classifierCode.setText( value.getClassifierCode() == null ? null : value.getClassifierCode().toString() );
+        regNum.setText( value.getRegisterNumber() == null ? null : value.getRegisterNumber().toString() );
+        regNumModification.setText( value.getModification() == null ? null : value.getModification().toString() );
 
         clearMessage();
         if ( fireEvents ) {
@@ -80,14 +83,14 @@ public class DecimalNumberBox
 
     @UiHandler( "regNum" )
     public void onRegNumChanged( KeyUpEvent event ) {
-        value.setRegisterNumber( regNum.getValue() );
+        value.setRegisterNumber( Integer.parseInt( regNum.getValue() ) );
         ValueChangeEvent.fire( this, value );
 
         if ( !validable ) {
             return;
         }
 
-        if ( value.getClassifierCode().length() == 6 && value.getRegisterNumber().length() == 3 ) {
+        if ( regNum.getText().length() == 3 ) {
             checkExistNumber();
             return;
         }
@@ -97,7 +100,7 @@ public class DecimalNumberBox
 
     @UiHandler( "classifierCode" )
     public void onClassifierCodeChanged( KeyUpEvent event ) {
-        value.setClassifierCode( classifierCode.getValue() );
+        value.setClassifierCode( Integer.parseInt( classifierCode.getValue() ) );
         ValueChangeEvent.fire( this, value );
 
         if ( !validable ) {
@@ -105,7 +108,7 @@ public class DecimalNumberBox
         }
 
         markBoxAsError( false );
-        if ( value.getClassifierCode().length() == 6 ) {
+        if ( classifierCode.getText().length() == 6 ) {
             fillNextAvailableNumber();
             return;
         }
@@ -115,7 +118,7 @@ public class DecimalNumberBox
 
     @UiHandler( "regNumModification" )
     public void onRegNumModificationChanged( KeyUpEvent event ) {
-        value.setRegisterNumber( regNum.getValue() );
+        value.setRegisterNumber( Integer.parseInt( regNum.getValue() ) );
         ValueChangeEvent.fire( this, value );
 
         if ( !validable ) {
@@ -138,12 +141,14 @@ public class DecimalNumberBox
         fillNextAvailableNumberModification();
     }
 
-    public void setClassifierCode( String classifierCode ) {
+    public void setClassifierCode( Integer classifierCode ) {
         value.setClassifierCode( classifierCode );
-        this.classifierCode.setValue( classifierCode );
+        this.classifierCode.setValue( classifierCode == null ? "" : classifierCode.toString() );
     }
 
     public void setOrganizationCode( En_OrganizationCode code ) {
+        this.organizationCode = code;
+        value.setOrganizationCode( organizationCode );
         organizationCodeName.setInnerText( organizationCodeLang.getName( code ) );
     }
 
@@ -256,7 +261,8 @@ public class DecimalNumberBox
     private OrganizationCodeLang organizationCodeLang;
 
     private boolean validable = true;
-    private DecimalNumber value;
+    private DecimalNumber value = new DecimalNumber();
+    private En_OrganizationCode organizationCode;
 
     interface DecimalNumberWidgetUiBinder extends UiBinder<HTMLPanel, DecimalNumberBox> {}
     private static DecimalNumberWidgetUiBinder ourUiBinder = GWT.create( DecimalNumberWidgetUiBinder.class );

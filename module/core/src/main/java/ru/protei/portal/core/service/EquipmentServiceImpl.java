@@ -68,14 +68,14 @@ public class EquipmentServiceImpl implements EquipmentService {
         number.setModification( null );
 
         if ( maxNum == null ) {
-            number.setRegisterNumber( "001" );
+            number.setRegisterNumber( 1 );
             return new CoreResponse<DecimalNumber>().success( number );
         }
 
         boolean ifExist = true;
         while ( ifExist && maxNum < 999 ) {
             maxNum += 1;
-            number.setRegisterNumber( maxNum.toString() );
+            number.setRegisterNumber( maxNum );
             ifExist = decimalNumberDAO.checkIfExist( number );
         }
 
@@ -87,14 +87,14 @@ public class EquipmentServiceImpl implements EquipmentService {
         Integer maxNum = decimalNumberDAO.getMaxModification( number );
 
         if ( maxNum == null ) {
-            number.setModification( "01" );
+            number.setModification( 1 );
             return new CoreResponse<DecimalNumber>().success( number );
         }
 
         boolean ifExist = true;
         while ( ifExist && maxNum < 999 ) {
             maxNum += 1;
-            number.setModification( maxNum.toString() );
+            number.setModification( maxNum );
             ifExist = decimalNumberDAO.checkIfExist( number );
         }
 
