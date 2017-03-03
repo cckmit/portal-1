@@ -82,7 +82,7 @@ public abstract class EquipmentEditActivity
         equipment.setComment( view.comment().getValue() );
         equipment.setType( view.type().getValue() );
         equipment.setStage( view.stage().getValue() );
-        equipment.setLinkedEquipment( view.linkedEquipment().getValue() );
+        equipment.setLinkedEquipmentId( view.linkedEquipment().getValue() == null ? null : view.linkedEquipment().getValue().getId() );
         equipment.setDecimalNumbers( view.numbers().getValue() );
 
         return equipment;
@@ -105,7 +105,7 @@ public abstract class EquipmentEditActivity
         view.comment().setValue( equipment.getComment() );
         view.type().setValue( equipment.getType() );
         view.stage().setValue( equipment.getStage() );
-        view.linkedEquipment().setValue( equipment.getLinkedEquipment() );
+        view.linkedEquipment().setValue( new Equipment( equipment.getLinkedEquipmentId() ) );
 
         boolean isCreate = equipment.getId() == null;
         view.nameEnabled().setEnabled( isCreate );

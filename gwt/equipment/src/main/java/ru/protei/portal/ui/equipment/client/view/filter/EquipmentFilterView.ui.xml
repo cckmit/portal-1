@@ -3,7 +3,7 @@
              xmlns:organization="urn:import:ru.protei.portal.ui.equipment.client.widget.organization"
              xmlns:type="urn:import:ru.protei.portal.ui.equipment.client.widget.type"
              xmlns:stage="urn:import:ru.protei.portal.ui.equipment.client.widget.stage"
-             xmlns:list="urn:import:ru.protei.portal.ui.equipment.client.widget.number.list">
+             >
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
@@ -20,7 +20,13 @@
             </div>
 
             <div class="form-group col-xs-12">
-                <list:DecimalNumberList ui:field="numbers" validable="false"/>
+                <label><ui:text from="{lang.equipmentClassifierCode}"/></label>
+                <g:TextBox ui:field="classifierCode" styleName="input-field dn-classifier-code" maxLength="6"/>
+            </div>
+
+            <div class="form-group col-xs-12">
+                <label><ui:text from="{lang.equipmentRegisterNumber}"/></label>
+                <g:TextBox ui:field="regNum" styleName="input-field dn-register-number" maxLength="3"/>
             </div>
 
             <div class="form-group col-xs-12">

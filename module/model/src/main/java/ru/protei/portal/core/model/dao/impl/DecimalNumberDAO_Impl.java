@@ -10,6 +10,7 @@ import sun.swing.BakedArrayList;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 /**
  * DAO децимальных номеров
@@ -40,5 +41,10 @@ public class DecimalNumberDAO_Impl extends PortalBaseJdbcDAO<DecimalNumber > imp
     public Integer getMaxModification( DecimalNumber number ) {
         return getMaxValue( "modification_number", Integer.class, "org_code=? and classifier_code=? and reg_number=?", number.getOrganizationCode().name(),
                 number.getClassifierCode(), number.getRegisterNumber() );
+    }
+
+    @Override
+    public Set< Long > getEquipmentsIds( List< DecimalNumber > numbers ) {
+        return null;
     }
 }

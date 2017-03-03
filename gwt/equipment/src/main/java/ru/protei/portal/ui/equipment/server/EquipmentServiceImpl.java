@@ -7,12 +7,15 @@ import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.Equipment;
+import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.EquipmentQuery;
 import ru.protei.portal.ui.common.client.service.EquipmentService;
+import ru.protei.portal.ui.common.server.service.SessionService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -24,8 +27,9 @@ public class EquipmentServiceImpl implements EquipmentService {
     @Override
     public List<Equipment> getEquipments( EquipmentQuery query ) throws RequestFailedException {
 
-        log.debug( "getEquipments(): name={} | types={} | stages={} | decimalNumbers={}",
-                query.getName(), query.getTypes(), query.getStages(), query.getDecimalNumbers() );
+        log.debug( "getEquipments(): name={} | types={} | stages={} | organizationCodes={} | classifierCode={} | regNum={}",
+                query.getName(), query.getTypes(), query.getStages(), query.getOrganizationCodes(), query.getClassifierCode(),
+                query.getRegisterNumber() );
 
         CoreResponse<List<Equipment>> response = equipmentService.equipmentList( query );
 
@@ -51,15 +55,19 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
-    public Equipment saveEquipment(Equipment p) throws RequestFailedException {
-        if (p == null) {
+    public Equipment saveEquipment(Equipment eq) throws RequestFailedException {
+        if (eq == null) {
             log.warn("null equipment in request");
             throw new RequestFailedException(En_ResultStatus.INTERNAL_ERROR);
         }
 
-        log.debug("store equipment, id: {} ", HelperFunc.nvl(p.getId(), "new"));
+        if ( eq.getId() == null ) {
+            UserSessionDescriptor session = sessionService.getUserSessionDescriptor( httpRequest );
+            eq.setAuthorId( session.getPerson() == null ? 0 : session.getPerson().getId() );
+        }
+        log.debug("store equipment, id: {} ", HelperFunc.nvl(eq.getId(), "new"));
 
-        CoreResponse<Equipment> response = equipmentService.saveEquipment(p);
+        CoreResponse<Equipment> response = equipmentService.saveEquipment(eq);
         log.debug("store equipment, result: {}", response.isOk() ? "ok" : response.getStatus());
 
         if (response.isOk()) {
@@ -134,6 +142,12 @@ public class EquipmentServiceImpl implements EquipmentService {
 
     @Autowired
     ru.protei.portal.core.service.EquipmentService equipmentService;
+
+    @Autowired
+    SessionService sessionService;
+
+    @Autowired
+    HttpServletRequest httpRequest;
 
     private static final Logger log = LoggerFactory.getLogger( "web" );
 

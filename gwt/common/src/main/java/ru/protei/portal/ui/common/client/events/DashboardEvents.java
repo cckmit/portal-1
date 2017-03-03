@@ -20,14 +20,6 @@ public class DashboardEvents {
 
     }
 
-    public static class Init{
-        public Profile profile;
-        public Init(Profile profile){
-            this.profile = profile;
-        }
-
-    }
-
     public static class ShowTableBlock{
 
         public CaseQuery query;

@@ -46,8 +46,8 @@ public class EquipmentPreviewView extends Composite implements AbstractEquipment
     }
 
     @Override
-    public void setNameBySpecification( String value ) {
-        this.nameBySpec.setInnerText( value );
+    public void setName( String value ) {
+        this.name.setInnerText( value );
     }
 
     @Override
@@ -58,16 +58,6 @@ public class EquipmentPreviewView extends Composite implements AbstractEquipment
     @Override
     public void setComment( String value ) {
         this.comment.setInnerText( value );
-    }
-
-    @Override
-    public void setPDRA_decimalNumber( String value ) {
-        this.pdraNum.setInnerText( value );
-    }
-
-    @Override
-    public void setPAMR_decimalNumber( String value ) {
-        this.pamrNum.setInnerText( value );
     }
 
     @Override
@@ -86,6 +76,11 @@ public class EquipmentPreviewView extends Composite implements AbstractEquipment
         this.stage.addClassName( "label label-" + styleNamePrefix );
     }
 
+    @Override
+    public void setDecimalNumbers( String value ) {
+        this.number.setInnerText( value );
+    }
+
     @Inject
     @UiField
     Lang lang;
@@ -94,11 +89,9 @@ public class EquipmentPreviewView extends Composite implements AbstractEquipment
     @UiField
     LabelElement header;
     @UiField
-    DivElement pamrNum;
+    DivElement number;
     @UiField
-    DivElement pdraNum;
-    @UiField
-    SpanElement nameBySpec;
+    SpanElement name;
     @UiField
     SpanElement nameBySldWrks;
     @UiField

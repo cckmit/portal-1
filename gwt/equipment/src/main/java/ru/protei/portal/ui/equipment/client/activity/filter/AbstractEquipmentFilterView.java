@@ -27,7 +27,9 @@ public interface AbstractEquipmentFilterView extends IsWidget {
 
     HasValue<Set<En_EquipmentType>> types();
 
-    HasValue<List<DecimalNumber>> numbers();
-
     HasValue<Set<En_OrganizationCode>> organizationCodes();
+
+    HasValue<String> classifierCode();
+
+    HasValue<String> registerNumber();
 }

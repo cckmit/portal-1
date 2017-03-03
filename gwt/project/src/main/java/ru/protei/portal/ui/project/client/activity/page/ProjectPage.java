@@ -4,8 +4,10 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.ui.common.client.common.PolicyUtils;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.ActionBarEvents;
+import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.ProjectEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.winter.web.common.client.events.MenuEvents;
@@ -20,8 +22,13 @@ public abstract class ProjectPage
     @PostConstruct
     public void onInit() {
         ТAB = lang.projects();
+    }
 
-        fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.PROJECT ) );
+    @Event
+    public void onAuthSuccess( AuthEvents.Success event ) {
+        if ( PolicyUtils.isAllowedProjectTab( event.profile ) ) {
+            fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.PROJECT ) );
+        }
     }
 
     @Event

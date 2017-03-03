@@ -232,7 +232,7 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
         table.addColumn( decimalNumber.header, decimalNumber.values );
 //        table.addColumn( product.header, product.values );
         table.addColumn( comment.header, comment.values );
-        table.addColumn( attachment.header, attachment.values );
+//        table.addColumn( attachment.header, attachment.values );
         table.addColumn( editClickColumn.header, editClickColumn.values );
     }
 
@@ -245,9 +245,6 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
     HTMLPanel previewContainer;
     @UiField
     HTMLPanel filterContainer;
-
-    @Inject
-    Separator separator;
 
     @Inject
     @UiField

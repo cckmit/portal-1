@@ -11,4 +11,6 @@ import java.util.List;
 public interface EquipmentDAO extends PortalBaseDAO<Equipment> {
 
     List<Equipment> getListByQuery( EquipmentQuery query );
+
+    Long countByQuery( EquipmentQuery query );
 }

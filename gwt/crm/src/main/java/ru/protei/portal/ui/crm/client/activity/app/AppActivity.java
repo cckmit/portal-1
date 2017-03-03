@@ -6,8 +6,10 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.ui.common.client.common.PageService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
+import ru.protei.winter.web.common.client.events.HeaderEvents;
 import ru.protei.winter.web.common.client.events.MenuEvents;
 
 /**
@@ -36,40 +38,24 @@ public abstract class AppActivity
 
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
-
         init.parent.clear();
         init.parent.add( view.asWidget() );
 
         view.setUsername( event.profile.getName(), event.profile.getRole().getCaRoleName() );
 
-        fireEvent(new DashboardEvents.Init(event.profile));
         if(initialToken == null || initialToken.isEmpty() || initialToken.equals(UiConstants.LOGIN_PAGE)){
-            initialToken = UiConstants.INITIAL_PAGE;
+            fireEvent( pageService.getFirstAvailablePageEvent() );
+        } else {
+            History.newItem( initialToken );
         }
-
-        History.newItem( initialToken );
     }
 
-    /**
-     *  Здесь дыра!
-     *  Можно войти без авторизации и получить доступ ко всем сущностям
-     */
-
-/*    @Event
-    public void onShowApp( AppEvents.Show event ) {
-        init.parent.clear();
-        init.parent.add(view.asWidget());
-    }*/
-
-    @Event
-    public void onInitPanelName(AppEvents.InitPanelName event) {}
-
-    public void onUserClicked() {
-        Window.alert("Wow! User clicked!");
-    }
+    public void onUserClicked() {}
 
     public void onLogoutClicked() {
         fireEvent( new AppEvents.Logout() );
+        fireEvent( new MenuEvents.Clear() );
+
         view.getDetailsContainer().clear();
     }
 
@@ -81,6 +67,9 @@ public abstract class AppActivity
 
     @Inject
     AbstractAppView view;
+
+    @Inject
+    PageService pageService;
 
     String initialToken;
     private AppEvents.Init init;

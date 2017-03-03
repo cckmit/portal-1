@@ -4,8 +4,11 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.ui.common.client.common.PolicyUtils;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.ActionBarEvents;
+import ru.protei.portal.ui.common.client.events.AppEvents;
+import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.DashboardEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.winter.web.common.client.events.MenuEvents;
@@ -19,7 +22,14 @@ public abstract class DashboardPage implements Activity {
     @PostConstruct
     public void onInit() {
         TAB = lang.dashboard();
-        fireEvent( new MenuEvents.Add(TAB, UiConstants.TabIcons.DASHBOARD ) );
+    }
+
+    @Event
+    public void onAuthSuccess( AuthEvents.Success event ) {
+        if ( PolicyUtils.isAllowedDashboardTab( event.profile ) ) {
+            fireEvent( new MenuEvents.Add(TAB, UiConstants.TabIcons.DASHBOARD ) );
+            fireEvent( new AppEvents.InitPage( show ) );
+        }
     }
 
     @Event

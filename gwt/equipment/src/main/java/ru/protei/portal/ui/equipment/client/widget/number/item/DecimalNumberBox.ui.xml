@@ -15,7 +15,7 @@
             <mask:MaskedTextBox ui:field="regNumModification" styleName="input-field dn-register-number-modifier" mask="99"/>
         </div>
 
-        <small class="dn-msg">
+        <small class="dn-msg hide">
             <span ui:field="msg"></span>
             <span ui:field="getNumberMsg" class="text-danger">
                 <ui:text from="{lang.equipmentDecimalNumberBusy}"/>

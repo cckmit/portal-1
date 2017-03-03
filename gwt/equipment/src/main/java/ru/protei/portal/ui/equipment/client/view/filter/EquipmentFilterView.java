@@ -16,6 +16,7 @@ import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.dict.En_OrganizationCode;
+import ru.protei.portal.ui.common.client.widget.mask.MaskedTextBox;
 import ru.protei.portal.ui.equipment.client.activity.filter.AbstractEquipmentFilterActivity;
 import ru.protei.portal.ui.equipment.client.activity.filter.AbstractEquipmentFilterView;
 import ru.protei.portal.ui.equipment.client.widget.number.item.DecimalNumberBox;
@@ -51,7 +52,8 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
         organizationCode.setValue( null );
         types.setValue( null );
         stages.setValue( null );
-        numbers.setValue( null );
+        classifierCode.setValue( null );
+        regNum.setValue( null );
     }
 
     @Override
@@ -70,13 +72,18 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
     }
 
     @Override
-    public HasValue< List< DecimalNumber > > numbers() {
-        return numbers;
+    public HasValue< Set<En_OrganizationCode> > organizationCodes() {
+        return organizationCode;
     }
 
     @Override
-    public HasValue< Set<En_OrganizationCode> > organizationCodes() {
-        return organizationCode;
+    public HasValue<String> classifierCode() {
+        return classifierCode;
+    }
+
+    @Override
+    public HasValue<String> registerNumber() {
+        return regNum;
     }
 
     @UiHandler( "resetBtn" )
@@ -87,18 +94,13 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
         }
     }
 
-    @UiHandler( "name" )
+    @UiHandler( {"name", "classifierCode", "regNum"} )
     public void onKeyUpSearch( KeyUpEvent event ) {
         fireChangeTimer();
     }
 
     @UiHandler( "organizationCode" )
     public void onSelectOrganizationCode( ValueChangeEvent<Set<En_OrganizationCode > > event ) {
-        fireChangeTimer();
-    }
-
-    @UiHandler( "numbers" )
-    public void onNumbersChanged( ValueChangeEvent<List<DecimalNumber> > event ) {
         fireChangeTimer();
     }
 
@@ -155,9 +157,10 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
     @Inject
     @UiField(provided = true)
     EquipmentTypeBtnGroup types;
-    @Inject
-    @UiField(provided = true)
-    DecimalNumberList numbers;
+    @UiField
+    TextBox classifierCode;
+    @UiField
+    TextBox regNum;
 
     @Inject
     FixedPositioner positioner;
@@ -165,6 +168,6 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
 
     AbstractEquipmentFilterActivity activity;
 
-    private static EquipmentFilterView.ContactFilterViewUiBinder ourUiBinder = GWT.create( EquipmentFilterView.ContactFilterViewUiBinder.class );
-    interface ContactFilterViewUiBinder extends UiBinder<HTMLPanel, EquipmentFilterView> {}
+    private static EquipmentFilterView.EquipmentFilterViewUiBinder ourUiBinder = GWT.create( EquipmentFilterView.EquipmentFilterViewUiBinder.class );
+    interface EquipmentFilterViewUiBinder extends UiBinder<HTMLPanel, EquipmentFilterView> {}
 }

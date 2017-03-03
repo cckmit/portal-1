@@ -48,8 +48,7 @@ public abstract class EquipmentModel implements Activity {
 
     private void refreshOptions() {
         // todo: needed check filter values
-        equipmentService.getEquipments( new EquipmentQuery( null, null, null, null,
-                        new HashSet<>( Arrays.asList( En_EquipmentType.ASSEMBLY_UNIT, En_EquipmentType.COMPLEX, En_EquipmentType.PRODUCT ) )),
+        equipmentService.getEquipments( new EquipmentQuery( new HashSet<>( Arrays.asList( En_EquipmentType.ASSEMBLY_UNIT, En_EquipmentType.COMPLEX, En_EquipmentType.PRODUCT ) ) ),
                 new RequestCallback< List< Equipment > >() {
             @Override
             public void onError( Throwable throwable ) {

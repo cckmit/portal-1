@@ -12,6 +12,9 @@ import ru.protei.portal.ui.common.client.lang.En_EquipmentTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.EquipmentServiceAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
+import ru.protei.portal.ui.equipment.client.common.EquipmentUtils;
+
+import java.util.stream.Collectors;
 
 /**
  * Активность превью контакта
@@ -40,13 +43,16 @@ public abstract class EquipmentPreviewActivity implements Activity, AbstractEqui
 
     private void fillView( Equipment value ) {
         view.setHeader( lang.equipmentDescription() + " #" + value.getId() );
-        view.setNameBySpecification( value.getName() );
+        view.setName( value.getName() );
         view.setNameBySldWrks( value.getNameSldWrks() );
         view.setComment( value.getComment() );
         view.setType( typeLang.getName( value.getType() ) );
         view.setStage( stageLang.getName( value.getStage() ), value.getStage().name().toLowerCase() );
-        view.setLinkedEquipment( value.getLinkedEquipment() == null ? lang.equipmentPrimaryUseNotDefinied() : value.getLinkedEquipment().getName() );
-//        view.setDecimalNumbers( );
+        view.setLinkedEquipment( value.getLinkedEquipmentName() == null ? lang.equipmentPrimaryUseNotDefinied() : value.getLinkedEquipmentName() );
+
+        if( value.getDecimalNumbers() != null ) {
+            view.setDecimalNumbers( value.getDecimalNumbers().stream().map(EquipmentUtils::formatNumber).collect( Collectors.joining(", ")) );
+        }
     }
 
     private void fillView( Long id ) {

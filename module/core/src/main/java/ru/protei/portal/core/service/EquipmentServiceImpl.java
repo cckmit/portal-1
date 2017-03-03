@@ -13,6 +13,7 @@ import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.query.EquipmentQuery;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -54,7 +55,6 @@ public class EquipmentServiceImpl implements EquipmentService {
     // TODO: fill check equipment data
     @Override
     public CoreResponse<Equipment> saveEquipment(Equipment equipment) {
-
         if (equipmentDAO.saveOrUpdate(equipment)) {
             return new CoreResponse<Equipment>().success(equipment);
         }
@@ -109,6 +109,6 @@ public class EquipmentServiceImpl implements EquipmentService {
 
     @Override
     public CoreResponse<Long> count(EquipmentQuery query) {
-        return new CoreResponse<Long>().success(equipmentDAO.count(query));
+        return new CoreResponse<Long>().success(equipmentDAO.countByQuery(query));
     }
 }

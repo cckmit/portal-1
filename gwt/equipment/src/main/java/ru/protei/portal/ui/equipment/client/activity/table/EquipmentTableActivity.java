@@ -31,8 +31,6 @@ public abstract class EquipmentTableActivity
 
     @PostConstruct
     public void onInit() {
-        CREATE_ACTION = lang.buttonCreate();
-
         view.setActivity( this );
         view.setAnimation( animation );
 
@@ -59,7 +57,7 @@ public abstract class EquipmentTableActivity
         init.parent.add( view.asWidget() );
         init.parent.add( pagerView.asWidget() );
 
-        fireEvent( new ActionBarEvents.Add( CREATE_ACTION, UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.EQUIPMENT ) );
+        fireEvent( new ActionBarEvents.Add( lang.buttonCreate(), UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.EQUIPMENT ) );
 
         view.showElements();
 
@@ -69,7 +67,7 @@ public abstract class EquipmentTableActivity
 
     @Event
     public void onCreateClicked( SectionEvents.Clicked event ) {
-        if ( !UiConstants.ActionBarIdentity. EQUIPMENT.equals( event.identity ) ) {
+        if ( !UiConstants.ActionBarIdentity.EQUIPMENT.equals( event.identity ) ) {
             return;
         }
 
@@ -154,8 +152,9 @@ public abstract class EquipmentTableActivity
     }
 
     private EquipmentQuery makeQuery() {
-        return new EquipmentQuery( filterView.name().getValue(), filterView.organizationCodes().getValue(), filterView.numbers().getValue(),
-                filterView.stages().getValue(), filterView.types().getValue() );
+        return new EquipmentQuery( filterView.name().getValue(), filterView.organizationCodes().getValue(),
+                filterView.stages().getValue(), filterView.types().getValue(), filterView.classifierCode().getValue(),
+                filterView.registerNumber().getValue() );
     }
 
     @Inject
@@ -176,6 +175,4 @@ public abstract class EquipmentTableActivity
 
     private AppEvents.InitDetails init;
     private EquipmentQuery query;
-
-    private static String CREATE_ACTION;
 }

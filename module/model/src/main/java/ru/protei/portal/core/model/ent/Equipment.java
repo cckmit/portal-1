@@ -6,6 +6,7 @@ import ru.protei.portal.core.model.dict.En_EquipmentType;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -50,6 +51,18 @@ public class Equipment implements Serializable {
     private String comment;
 
     /**
+     * Дата создания
+     */
+    @JdbcColumn
+    private Date created;
+
+    /**
+     * Автор
+     */
+    @JdbcColumn( name = "author_id" )
+    private Long authorId;
+
+    /**
      * Привязанные децимальные номера
      */
     @JdbcOneToMany(table = "decimal_number", localColumn = "id", remoteColumn = "equipment_id")
@@ -58,8 +71,18 @@ public class Equipment implements Serializable {
     /**
      * Первичное применение
      */
-//    @JdbcJoinedObject(localColumn = "linked_equipment_id", remoteColumn = "id", updateLocalColumn = true )
-    private Equipment linkedEquipment;
+    @JdbcColumn(name = "linked_equipment_id")
+    private Long linkedEquipmentId;
+
+    @JdbcJoinedColumn( localColumn = "linked_equipment_id", table = "Equipment", remoteColumn = "id", mappedColumn = "name")
+    private String linkedEquipmentName;
+
+    public Equipment() {
+    }
+
+    public Equipment( Long id ) {
+        this.id = id;
+    }
 
     public Long getId() {
         return id;
@@ -117,11 +140,35 @@ public class Equipment implements Serializable {
         this.comment = comment;
     }
 
-    public Equipment getLinkedEquipment() {
-        return linkedEquipment;
+    public Long getLinkedEquipmentId() {
+        return linkedEquipmentId;
     }
 
-    public void setLinkedEquipment( Equipment linkedEquipment ) {
-        this.linkedEquipment = linkedEquipment;
+    public void setLinkedEquipmentId( Long linkedEquipmentId ) {
+        this.linkedEquipmentId = linkedEquipmentId;
+    }
+
+    public String getLinkedEquipmentName() {
+        return linkedEquipmentName;
+    }
+
+    public void setLinkedEquipmentName( String linkedEquipmentName ) {
+        this.linkedEquipmentName = linkedEquipmentName;
+    }
+
+    public Date getCreated() {
+        return created;
+    }
+
+    public void setCreated( Date created ) {
+        this.created = created;
+    }
+
+    public Long getAuthorId() {
+        return authorId;
+    }
+
+    public void setAuthorId( Long authorId ) {
+        this.authorId = authorId;
     }
 }

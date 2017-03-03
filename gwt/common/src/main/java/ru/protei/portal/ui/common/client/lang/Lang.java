@@ -397,4 +397,12 @@ public interface Lang extends Messages, ContactItemLang {
     String equipmentDecimalNumberEmpty();
 
     String equipmentDecimalNumberBusy();
+
+    String buttonImport();
+
+    String equipmentClassifierCode();
+
+    String equipmentRegisterNumber();
+
+    String equipmentCommonHeader();
 }

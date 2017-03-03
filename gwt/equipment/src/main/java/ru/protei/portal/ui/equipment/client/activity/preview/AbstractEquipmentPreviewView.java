@@ -11,19 +11,17 @@ public interface AbstractEquipmentPreviewView extends IsWidget {
 
     void setHeader( String value );
 
-    void setNameBySpecification( String value );
+    void setName( String value );
 
     void setNameBySldWrks( String value );
 
     void setComment( String value );
-
-    void setPDRA_decimalNumber( String value );
-
-    void setPAMR_decimalNumber( String value );
 
     void setType( String value );
 
     void setLinkedEquipment( String value );
 
     void setStage( String value, String styleNamePrefix );
+
+    void setDecimalNumbers( String value );
 }

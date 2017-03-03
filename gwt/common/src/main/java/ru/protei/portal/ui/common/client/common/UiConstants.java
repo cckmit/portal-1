@@ -20,6 +20,7 @@ public class UiConstants {
 
     public interface ActionBarIcons {
         String CREATE = "fa fa-plus";
+        String IMPORT = "fa fa-upload";
     }
 
     public interface ActionBarIdentity {
@@ -31,17 +32,6 @@ public class UiConstants {
         String EQUIPMENT = "equipment";
         String PROJECT = "project";
     }
-
-    public interface ESKDClassTypeIcons {
-        String DETAIL = "./images/eq_details.png";
-        String PRODUCT = "./images/eq_product.png";
-    }
-
-
-    /**
-     * from {@link ru.protei.portal.ui.common.client.events.DashboardEvents}
-     */
-    public static final String INITIAL_PAGE = "dashboard";
 
     /**
      * from {@link ru.protei.portal.ui.common.client.events.AuthEvents}

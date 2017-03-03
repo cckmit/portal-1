@@ -15,11 +15,13 @@ public class EquipmentQuery extends BaseQuery {
 
     private Set<En_OrganizationCode> organizationCodes;
 
-    private List<DecimalNumber> decimalNumbers;
-
     private Set<En_EquipmentStage> stages;
 
     private Set<En_EquipmentType> types;
+
+    private String classifierCode;
+
+    private String registerNumber;
 
     public String getName() {
         return name;
@@ -27,14 +29,6 @@ public class EquipmentQuery extends BaseQuery {
 
     public void setName( String name ) {
         this.name = name;
-    }
-
-    public List<DecimalNumber> getDecimalNumbers() {
-        return decimalNumbers;
-    }
-
-    public void setDecimalNumbers( List<DecimalNumber> decimalNumbers ) {
-        this.decimalNumbers = decimalNumbers;
     }
 
     public Set<En_EquipmentStage> getStages() {
@@ -57,6 +51,22 @@ public class EquipmentQuery extends BaseQuery {
         return organizationCodes;
     }
 
+    public String getClassifierCode() {
+        return classifierCode;
+    }
+
+    public void setClassifierCode( String classifierCode ) {
+        this.classifierCode = classifierCode;
+    }
+
+    public String getRegisterNumber() {
+        return registerNumber;
+    }
+
+    public void setRegisterNumber( String registerNumber ) {
+        this.registerNumber = registerNumber;
+    }
+
     public void setOrganizationCodes( Set<En_OrganizationCode> organizationCodes ) {
         this.organizationCodes = organizationCodes;
     }
@@ -64,11 +74,16 @@ public class EquipmentQuery extends BaseQuery {
     public EquipmentQuery() {
     }
 
-    public EquipmentQuery( String name, Set<En_OrganizationCode> organizationCodes, List<DecimalNumber> decimalNumbers, Set<En_EquipmentStage> stages, Set<En_EquipmentType> types ) {
+    public EquipmentQuery( Set< En_EquipmentType > types ) {
+        this.types = types;
+    }
+
+    public EquipmentQuery( String name, Set< En_OrganizationCode > organizationCodes, Set< En_EquipmentStage > stages, Set< En_EquipmentType > types, String classifierCode, String registerNumber ) {
         this.name = name;
         this.organizationCodes = organizationCodes;
-        this.decimalNumbers = decimalNumbers;
         this.stages = stages;
         this.types = types;
+        this.classifierCode = classifierCode;
+        this.registerNumber = registerNumber;
     }
 }

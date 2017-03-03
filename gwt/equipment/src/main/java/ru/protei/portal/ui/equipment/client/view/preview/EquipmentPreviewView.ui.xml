@@ -9,7 +9,7 @@
                 <legend><label ui:field="header"></label></legend>
                 <div class="col-xs-12">
                     <label class="col-xs-5"><ui:text from="{lang.equipmentNameBySpecification}"/></label>
-                    <span class="col-xs-7" ui:field="nameBySpec"></span>
+                    <span class="col-xs-7" ui:field="name"></span>
                 </div>
                 <div class="col-xs-12">
                     <label class="col-xs-5"><ui:text from="{lang.equipmentNameBySldWrks}"/></label>
@@ -28,8 +28,7 @@
             </fieldset>
             <fieldset class="header">
                 <legend><ui:text from="{lang.equipmentDecimalNumber}"/></legend>
-                <div class="col-xs-12 equipment-number" ui:field="pamrNum"></div>
-                <div class="col-xs-12 equipment-number" ui:field="pdraNum"></div>
+                <div class="col-xs-12 equipment-number" ui:field="number"></div>
             </fieldset>
             <fieldset class="header">
                 <legend><ui:text from="{lang.equipmentComment}"/></legend>
