@@ -57,6 +57,7 @@ public abstract class AppActivity
     public void onUserClicked() {}
 
     public void onLogoutClicked() {
+        initialToken = null;
         fireEvent( new AppEvents.Logout() );
         fireEvent( new MenuEvents.Clear() );
 
