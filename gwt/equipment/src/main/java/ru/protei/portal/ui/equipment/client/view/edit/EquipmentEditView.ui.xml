@@ -44,9 +44,7 @@
 
                 <legend class="header"><ui:text from="{lang.equipmentDecimalNumber}"/></legend>
                 <div class="grid grid-indent">
-                    <div class="form-group col-xs-6">
-                        <ui:text from="{lang.equipmentDecimalNumber}"/>
-
+                    <div class="form-group col-xs-12">
                         <list:DecimalNumberList ui:field="numbers"/>
                     </div>
                 </div>
@@ -54,7 +52,7 @@
                 <legend class="header"><ui:text from="{lang.equipmentComment}"/></legend>
                 <div class="grid grid-indent">
                     <div class="form-group col-xs-12">
-                        <g:TextBox ui:field="comment" styleName="input-field"/>
+                        <g:TextArea ui:field="comment" styleName="input-field comment"/>
                     </div>
                 </div>
             </div>

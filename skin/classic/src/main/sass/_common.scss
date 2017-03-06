@@ -596,6 +596,10 @@ label.required:after {
   min-height: 200px;
 }
 
+.input-field.comment {
+  min-height: 00px;
+}
+
 .panelField{
   display: flex;
   position: relative

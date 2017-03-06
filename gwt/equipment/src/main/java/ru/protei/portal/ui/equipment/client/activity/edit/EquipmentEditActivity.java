@@ -46,19 +46,21 @@ public abstract class EquipmentEditActivity
             }
 
             @Override
-            public void onSuccess(Equipment person) {
-                fillView(person);
+            public void onSuccess(Equipment equipment) {
+                fillView(equipment);
             }
         });
     }
 
     @Override
     public void onSaveClicked() {
-//        if (!validate ()) {
-//            return;
-//        }
+        Equipment equipment = applyChanges();
+        if ( equipment.getDecimalNumbers() == null || equipment.getDecimalNumbers().isEmpty() ) {
+            fireEvent( new NotifyEvents.Show( lang.equipmentDecimalNumberNotDefinied(), NotifyEvents.NotifyType.ERROR ) );
+            return;
+        }
 
-        equipmentService.saveEquipment(applyChanges(), new RequestCallback<Equipment>() {
+        equipmentService.saveEquipment(equipment, new RequestCallback<Equipment>() {
             @Override
             public void onError(Throwable throwable) {
                 fireErrorMessage(throwable.getMessage());
@@ -106,10 +108,10 @@ public abstract class EquipmentEditActivity
         view.type().setValue( equipment.getType() );
         view.stage().setValue( equipment.getStage() );
         view.linkedEquipment().setValue( new Equipment( equipment.getLinkedEquipmentId() ) );
+        view.numbers().setValue( equipment.getDecimalNumbers() );
 
         boolean isCreate = equipment.getId() == null;
         view.nameEnabled().setEnabled( isCreate );
-        view.numbers().setValue( equipment.getDecimalNumbers() );
         view.typeEnabled().setEnabled( isCreate );
     }
 

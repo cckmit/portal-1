@@ -37,10 +37,6 @@ public abstract class Selector<T>
         setValue( value, false );
     }
 
-//    public void findAndSelectValue (Predicate<T> predicate, boolean fireEvents) {
-//        setValue(itemToDisplayOptionModel.keySet().stream().filter(predicate).findFirst().orElse(null), fireEvents);
-//    }
-
     @Override
     public void setValue( T value, boolean fireEvents ) {
         if ( value == null && !hasNullValue && !itemToDisplayOptionModel.isEmpty() ) {

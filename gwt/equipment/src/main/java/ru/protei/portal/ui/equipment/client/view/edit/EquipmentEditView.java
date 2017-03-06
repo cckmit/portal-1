@@ -106,7 +106,7 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
     @UiField
     ValidableTextBox nameSpecification;
     @UiField
-    TextBox comment;
+    TextArea comment;
     @Inject
     @UiField(provided = true)
     EquipmentTypeSelector type;

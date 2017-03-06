@@ -405,4 +405,24 @@ public interface Lang extends Messages, ContactItemLang {
     String equipmentRegisterNumber();
 
     String equipmentCommonHeader();
+
+    String equipmentReserve();
+
+    String buttonAdd();
+
+    String equipmentRemove();
+
+    String equipmentDecimalNumberNotDefinied();
+
+    String equipmentRegisterNumberModification();
+
+    String equipmentErrorGetNextAvailableNumber();
+
+    String equipmentErrorCheckNumber();
+
+    String equipmentNextAvailableNumber();
+
+    String equipmentOrChange();
+
+    String equipmentModification();
 }

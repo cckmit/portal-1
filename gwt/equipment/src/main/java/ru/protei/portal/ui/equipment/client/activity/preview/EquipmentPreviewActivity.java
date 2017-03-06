@@ -51,7 +51,7 @@ public abstract class EquipmentPreviewActivity implements Activity, AbstractEqui
         view.setLinkedEquipment( value.getLinkedEquipmentName() == null ? lang.equipmentPrimaryUseNotDefinied() : value.getLinkedEquipmentName() );
 
         if( value.getDecimalNumbers() != null ) {
-            view.setDecimalNumbers( value.getDecimalNumbers().stream().map(EquipmentUtils::formatNumber).collect( Collectors.joining(", ")) );
+            view.setDecimalNumbers( value.getDecimalNumbers().stream().map((s) -> EquipmentUtils.formatNumber(s)).collect( Collectors.joining(", ")) );
         }
     }
 

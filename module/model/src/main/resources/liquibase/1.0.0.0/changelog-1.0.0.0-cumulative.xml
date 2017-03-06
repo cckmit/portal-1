@@ -9,5 +9,6 @@
   <include file="03-sprint-10.xml" relativeToChangelogFile="true" />
   <include file="04-sprint-11.xml" relativeToChangelogFile="true" />
   <include file="05-regions.xml" relativeToChangelogFile="true" />
+  <include file="06-equipment.xml" relativeToChangelogFile="true" />
 
 </databaseChangeLog>

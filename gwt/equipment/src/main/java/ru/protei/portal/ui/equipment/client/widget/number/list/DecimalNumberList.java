@@ -1,22 +1,23 @@
 package ru.protei.portal.ui.equipment.client.widget.number.list;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.protei.portal.core.model.dict.En_OrganizationCode;
 import ru.protei.portal.core.model.ent.DecimalNumber;
+import ru.protei.portal.ui.common.client.widget.selector.event.RemoveEvent;
+import ru.protei.portal.ui.common.client.widget.selector.event.RemoveHandler;
 import ru.protei.portal.ui.equipment.client.widget.number.item.DecimalNumberBox;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Список децимальных номеров
@@ -28,11 +29,6 @@ public class DecimalNumberList
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
-        fillBoxes();
-    }
-
-    public void setValidable( boolean validable ) {
-        this.validable = validable;
     }
 
     @Override
@@ -47,6 +43,20 @@ public class DecimalNumberList
 
     @Override
     public void setValue( List< DecimalNumber > value, boolean fireEvents ) {
+        this.values = value;
+        if ( values == null ) {
+            values = new ArrayList<>();
+        }
+
+        clearBoxes();
+        if ( values == null || values.isEmpty() ) {
+            createEmptyBox();
+        } else {
+            values.forEach( this :: createBoxAndFillValue );
+        }
+
+        checkAddButtonState();
+
         if ( fireEvents ) {
             ValueChangeEvent.fire( this, value );
         }
@@ -57,27 +67,74 @@ public class DecimalNumberList
         return addHandler( handler, ValueChangeEvent.getType() );
     }
 
-    private void fillBoxes() {
-        for ( En_OrganizationCode code : En_OrganizationCode.values() ) {
-            DecimalNumberBox decimalNumberBox = boxProvider.get();
-            decimalNumberBox.setOrganizationCode( code );
-            decimalNumberBox.setValidable( validable );
-
-            typeToView.put( code, decimalNumberBox );
-            root.add( decimalNumberBox.asWidget() );
+    @UiHandler( "add" )
+    public void onAddClicked( ClickEvent event )  {
+        boolean isFull = values.size() == En_OrganizationCode.values().length;
+        if ( !isFull ) {
+            numberBoxes.forEach( ( s) -> s.enabledOrganizationCode().setEnabled( false )  );
+            createEmptyBox();
         }
+
+        checkAddButtonState();
+    }
+
+    private void clearBoxes() {
+        list.clear();
+        numberBoxes.clear();
+    }
+
+    private void createBoxAndFillValue( DecimalNumber number ) {
+        DecimalNumberBox box = boxProvider.get();
+        box.setValue( number );
+
+        numberBoxes.add( box );
+        list.add( box.asWidget() );
+        addRemoveHandler( box, number );
+    }
+
+    private void addRemoveHandler( DecimalNumberBox box, DecimalNumber number ) {
+        box.addRemoveHandler( event -> {
+            values.remove( number );
+            list.remove( box );
+            numberBoxes.remove( box );
+
+            checkAddButtonState();
+        } );
+    }
+
+    private void createEmptyBox() {
+        DecimalNumberBox box = boxProvider.get();
+        DecimalNumber emptyNumber = new DecimalNumber();
+
+        Set<En_OrganizationCode> availableValues = new HashSet<>( Arrays.asList( En_OrganizationCode.values() ) );
+        for ( DecimalNumberBox numberBox : numberBoxes ) {
+            availableValues.remove( numberBox.getValue().getOrganizationCode() );
+        }
+        box.fillOrganizationCodesOption( availableValues );
+
+        box.setValue( emptyNumber );
+        box.enabledOrganizationCode().setEnabled( true );
+
+        values.add( emptyNumber );
+        numberBoxes.add( box );
+        list.add( box.asWidget() );
+        addRemoveHandler( box, emptyNumber );
+    }
+
+    private void checkAddButtonState() {
+        add.setVisible( En_OrganizationCode.values().length - values.size() >= 1 );
     }
 
     @UiField
-    HTMLPanel root;
+    HTMLPanel list;
+    @UiField
+    Button add;
 
     @Inject
     Provider<DecimalNumberBox> boxProvider;
 
     private List<DecimalNumber> values = new ArrayList<>();
-    private boolean validable = true;
-
-    private Map<En_OrganizationCode, DecimalNumberBox> typeToView = new HashMap<>();
+    private List<DecimalNumberBox> numberBoxes = new ArrayList<>();
 
     interface DecimalNumberListUiBinder extends UiBinder< HTMLPanel, DecimalNumberList > {}
     private static DecimalNumberListUiBinder ourUiBinder = GWT.create( DecimalNumberListUiBinder.class );

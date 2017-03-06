@@ -7,32 +7,41 @@ import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.HasEnabled;
-import com.google.gwt.user.client.ui.HasValue;
+import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.lang.OrganizationCodeLang;
 import ru.protei.portal.ui.common.client.widget.mask.MaskedTextBox;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.dict.En_OrganizationCode;
+import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
+import ru.protei.portal.ui.common.client.widget.selector.event.HasRemoveHandlers;
+import ru.protei.portal.ui.common.client.widget.selector.event.RemoveEvent;
+import ru.protei.portal.ui.common.client.widget.selector.event.RemoveHandler;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.equipment.client.provider.AbstractDecimalNumberDataProvider;
+import ru.protei.portal.ui.equipment.client.widget.selector.OrganizationCodeSelector;
 import ru.protei.winter.web.common.client.common.DisplayStyle;
+
+import java.util.List;
+import java.util.Set;
 
 /**
  * Вид виджета децимального номера
  */
 public class DecimalNumberBox
-        extends Composite implements HasValue<DecimalNumber>, HasEnabled {
+        extends Composite implements HasValue<DecimalNumber>, HasEnabled, HasRemoveHandlers{
 
-
-    public DecimalNumberBox() {
+    @Inject
+    public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+        classifierCode.getElement().setAttribute( "placeholder", lang.equipmentClassifierCode().toLowerCase() );
+        regNum.getElement().setAttribute( "placeholder", lang.equipmentRegisterNumber().toLowerCase() );
+        regNumModification.getElement().setAttribute( "placeholder", lang.equipmentRegisterNumberModification().toLowerCase() );
     }
 
     @Override
@@ -51,12 +60,13 @@ public class DecimalNumberBox
         this.value = decimalNumber;
         if ( value == null ) {
             value = new DecimalNumber();
-            value.setOrganizationCode( organizationCode );
         }
 
-        classifierCode.setText( value.getClassifierCode() == null ? null : value.getClassifierCode().toString() );
-        regNum.setText( value.getRegisterNumber() == null ? null : value.getRegisterNumber().toString() );
-        regNumModification.setText( value.getModification() == null ? null : value.getModification().toString() );
+        organizationCode.setValue( value.getOrganizationCode() );
+        classifierCode.setText( value.getClassifierCode() == null ? null : NumberFormat.getFormat("000000").format( value.getClassifierCode() ) );
+        regNum.setText( value.getRegisterNumber() == null ? null : NumberFormat.getFormat("000").format( value.getRegisterNumber() ) );
+        regNumModification.setText( value.getModification() == null ? null : NumberFormat.getFormat("00").format( value.getModification() ) );
+        isReserve.setValue( value.isReserve() );
 
         clearMessage();
         if ( fireEvents ) {
@@ -67,6 +77,11 @@ public class DecimalNumberBox
     @Override
     public HandlerRegistration addValueChangeHandler( ValueChangeHandler<DecimalNumber> handler ) {
         return addHandler( handler, ValueChangeEvent.getType() );
+    }
+
+    @Override
+    public HandlerRegistration addRemoveHandler( RemoveHandler handler ) {
+        return addHandler( handler, RemoveEvent.getType() );
     }
 
     @Override
@@ -86,10 +101,6 @@ public class DecimalNumberBox
         value.setRegisterNumber( Integer.parseInt( regNum.getValue() ) );
         ValueChangeEvent.fire( this, value );
 
-        if ( !validable ) {
-            return;
-        }
-
         if ( regNum.getText().length() == 3 ) {
             checkExistNumber();
             return;
@@ -103,10 +114,6 @@ public class DecimalNumberBox
         value.setClassifierCode( Integer.parseInt( classifierCode.getValue() ) );
         ValueChangeEvent.fire( this, value );
 
-        if ( !validable ) {
-            return;
-        }
-
         markBoxAsError( false );
         if ( classifierCode.getText().length() == 6 ) {
             fillNextAvailableNumber();
@@ -118,12 +125,9 @@ public class DecimalNumberBox
 
     @UiHandler( "regNumModification" )
     public void onRegNumModificationChanged( KeyUpEvent event ) {
-        value.setRegisterNumber( Integer.parseInt( regNum.getValue() ) );
-        ValueChangeEvent.fire( this, value );
-
-        if ( !validable ) {
-            return;
-        }
+        String modificationString = regNumModification.getValue();
+        this.value.setModification( modificationString == null || modificationString.isEmpty() ? null : Integer.parseInt( modificationString ) );
+        ValueChangeEvent.fire( this, this.value );
 
         checkExistNumber();
     }
@@ -135,32 +139,40 @@ public class DecimalNumberBox
         fillNextAvailableNumber();
     }
 
+    @UiHandler( "isReserve" )
+    public void onIsReserveChanged( ClickEvent event ) {
+        value.setReserve( isReserve.getValue() );
+    }
+
+    @UiHandler( "organizationCode" )
+    public void onOrganizationCodeChanged( ValueChangeEvent<En_OrganizationCode> event ) {
+        value.setOrganizationCode( organizationCode.getValue() );
+    }
+
     @UiHandler( "getNextModification" )
     public void onGetNextNumberModification( ClickEvent event ) {
         event.preventDefault();
         fillNextAvailableNumberModification();
     }
 
-    public void setClassifierCode( Integer classifierCode ) {
-        value.setClassifierCode( classifierCode );
-        this.classifierCode.setValue( classifierCode == null ? "" : classifierCode.toString() );
+    @UiHandler( "remove" )
+    public void onRemoveClicked( ClickEvent event ) {
+        RemoveEvent.fire( this );
     }
 
-    public void setOrganizationCode( En_OrganizationCode code ) {
-        this.organizationCode = code;
-        value.setOrganizationCode( organizationCode );
-        organizationCodeName.setInnerText( organizationCodeLang.getName( code ) );
+    public HasEnabled enabledOrganizationCode() {
+        return organizationCode;
     }
 
-    public void setValidable( boolean validable ) {
-        this.validable = validable;
+    public void fillOrganizationCodesOption( Set< En_OrganizationCode > availableValues ) {
+        organizationCode.fillOptions( availableValues );
     }
 
     private void checkExistNumber() {
         dataProvider.checkIfExistDecimalNumber( value, new RequestCallback< Boolean >() {
             @Override
             public void onError( Throwable throwable ) {
-                showMessage( "Ошибка при проверке номера", DisplayStyle.DANGER );
+                showMessage( lang.equipmentErrorCheckNumber(), DisplayStyle.DANGER );
             }
 
             @Override
@@ -189,13 +201,14 @@ public class DecimalNumberBox
         dataProvider.getNextAvailableRegisterNumber( value, new RequestCallback< DecimalNumber>() {
             @Override
             public void onError( Throwable throwable ) {
-                showMessage(  "Ошибка при получении следующего свободного номера", DisplayStyle.DANGER );
+                showMessage( lang.equipmentErrorGetNextAvailableNumber(), DisplayStyle.DANGER );
             }
 
             @Override
             public void onSuccess( DecimalNumber result ) {
                 markBoxAsError( false );
-                setValue( result );
+                value.setRegisterNumber( result.getRegisterNumber() );
+                regNum.setText( value.getRegisterNumber() == null ? null : NumberFormat.getFormat("000").format( value.getRegisterNumber() ) );
                 showMessage( lang.equipmentDecimalNumberEmpty(), DisplayStyle.SUCCESS );
             }
         } );
@@ -205,13 +218,14 @@ public class DecimalNumberBox
         dataProvider.getNextAvailableRegisterNumberModification( value, new RequestCallback< DecimalNumber>() {
             @Override
             public void onError( Throwable throwable ) {
-                showMessage(  "Ошибка при получении следующего свободного номера", DisplayStyle.DANGER );
+                showMessage( lang.equipmentErrorGetNextAvailableNumber(), DisplayStyle.DANGER );
             }
 
             @Override
             public void onSuccess( DecimalNumber result ) {
                 markBoxAsError( false );
-                setValue( result );
+                value.setModification( result.getModification() );
+                regNumModification.setText( value.getModification() == null ? null : NumberFormat.getFormat("00").format( value.getModification() ) );
                 showMessage( lang.equipmentDecimalNumberEmpty(), DisplayStyle.SUCCESS );
             }
         } );
@@ -235,8 +249,9 @@ public class DecimalNumberBox
         msg.setInnerText( "" );
     }
 
-    @UiField
-    LabelElement organizationCodeName;
+    @Inject
+    @UiField(provided = true)
+    OrganizationCodeSelector organizationCode;
     @UiField
     MaskedTextBox regNumModification;
     @UiField
@@ -253,16 +268,13 @@ public class DecimalNumberBox
     DivElement container;
     @UiField
     SpanElement getNumberMsg;
+    @UiField
+    ToggleButton isReserve;
 
     @Inject
     AbstractDecimalNumberDataProvider dataProvider;
 
-    @Inject
-    private OrganizationCodeLang organizationCodeLang;
-
-    private boolean validable = true;
     private DecimalNumber value = new DecimalNumber();
-    private En_OrganizationCode organizationCode;
 
     interface DecimalNumberWidgetUiBinder extends UiBinder<HTMLPanel, DecimalNumberBox> {}
     private static DecimalNumberWidgetUiBinder ourUiBinder = GWT.create( DecimalNumberWidgetUiBinder.class );

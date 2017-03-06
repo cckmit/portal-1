@@ -42,6 +42,9 @@ public class DecimalNumber implements Serializable {
     @JdbcColumn( name = "equipment_id")
     private Long equipmentId;
 
+    @JdbcColumn( name = "is_reserve")
+    private boolean isReserve;
+
     public Long getId() {
         return id;
     }
@@ -80,6 +83,22 @@ public class DecimalNumber implements Serializable {
 
     public void setModification( Integer modification ) {
         this.modification = modification;
+    }
+
+    public boolean isReserve() {
+        return isReserve;
+    }
+
+    public void setReserve( boolean reserve ) {
+        isReserve = reserve;
+    }
+
+    public Long getEquipmentId() {
+        return equipmentId;
+    }
+
+    public void setEquipmentId( Long equipmentId ) {
+        this.equipmentId = equipmentId;
     }
 
     public boolean isValid() {

@@ -4,6 +4,7 @@ package ru.protei.portal.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.DecimalNumberDAO;
 import ru.protei.portal.core.model.dao.EquipmentDAO;
@@ -11,10 +12,15 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.query.EquipmentQuery;
+import ru.protei.winter.core.utils.collections.CollectionUtils;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
+import java.io.Serializable;
+import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * Реализация сервиса управления оборудованием
@@ -54,12 +60,24 @@ public class EquipmentServiceImpl implements EquipmentService {
 
     // TODO: fill check equipment data
     @Override
+    @Transactional
     public CoreResponse<Equipment> saveEquipment(Equipment equipment) {
-        if (equipmentDAO.saveOrUpdate(equipment)) {
-            return new CoreResponse<Equipment>().success(equipment);
+        equipment.setCreated( new Date() );
+        if ( !equipmentDAO.saveOrUpdate(equipment) ) {
+            return new CoreResponse<Equipment>().error(En_ResultStatus.INTERNAL_ERROR);
         }
 
-        return new CoreResponse<Equipment>().error(En_ResultStatus.INTERNAL_ERROR);
+        if ( equipment.getId() != null && !CollectionUtils.isEmpty( equipment.getDecimalNumbers() )) {
+            List<Long> ids = equipment.getDecimalNumbers().stream()
+                    .map(DecimalNumber::getId)
+                    .filter( Objects::nonNull)
+                    .collect( Collectors.toList());
+            decimalNumberDAO.removeByKeys(ids);
+        }
+
+        jdbcManyRelationsHelper.persistAll( equipment );
+
+        return new CoreResponse<Equipment>().success(equipment);
     }
 
     @Override

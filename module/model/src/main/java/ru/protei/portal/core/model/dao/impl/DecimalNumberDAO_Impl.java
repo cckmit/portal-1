@@ -5,6 +5,7 @@ import ru.protei.portal.core.model.dao.DecimalNumberDAO;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.query.SqlCondition;
 import sun.swing.BakedArrayList;
 
 import java.util.ArrayList;
@@ -44,7 +45,8 @@ public class DecimalNumberDAO_Impl extends PortalBaseJdbcDAO<DecimalNumber > imp
     }
 
     @Override
-    public Set< Long > getEquipmentsIds( List< DecimalNumber > numbers ) {
-        return null;
+    public List< Long > getDecimalNumbersByEquipmentId( Long id ) {
+        StringBuilder sql = new StringBuilder("select id from ").append(getTableName()).append( "where equipment_id=?" );
+        return jdbcTemplate.queryForList(sql.toString(), Long.class, id);
     }
 }

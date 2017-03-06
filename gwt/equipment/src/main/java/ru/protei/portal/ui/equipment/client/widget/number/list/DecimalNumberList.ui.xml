@@ -1,5 +1,12 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'>
 
-    <g:HTMLPanel ui:field="root"></g:HTMLPanel>
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+
+    <g:HTMLPanel ui:field="root">
+        <g:HTMLPanel ui:field="list"/>
+        <g:Button ui:field="add" styleName="btn btn-white">
+            <ui:text from="{lang.buttonAdd}"/>
+        </g:Button>
+    </g:HTMLPanel>
 </ui:UiBinder>

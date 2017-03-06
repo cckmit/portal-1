@@ -16,5 +16,5 @@ public interface DecimalNumberDAO extends PortalBaseDAO<DecimalNumber> {
 
     Integer getMaxModification( DecimalNumber number );
 
-    Set<Long> getEquipmentsIds( List<DecimalNumber> numbers );
+    List<Long> getDecimalNumbersByEquipmentId( Long id );
 }

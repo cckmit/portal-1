@@ -1,5 +1,7 @@
 package ru.protei.portal.ui.crm.client.activity.app;
 
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
@@ -43,11 +45,13 @@ public abstract class AppActivity
 
         view.setUsername( event.profile.getName(), event.profile.getRole().getCaRoleName() );
 
-        if(initialToken == null || initialToken.isEmpty() || initialToken.equals(UiConstants.LOGIN_PAGE)){
-            fireEvent( pageService.getFirstAvailablePageEvent() );
-        } else {
-            History.newItem( initialToken );
-        }
+        Scheduler.get().scheduleDeferred( (Command) () -> {
+            if(initialToken == null || initialToken.isEmpty() || initialToken.equals(UiConstants.LOGIN_PAGE)){
+                fireEvent( pageService.getFirstAvailablePageEvent() );
+            } else {
+                History.newItem( initialToken );
+            }
+        } );
     }
 
     public void onUserClicked() {}
