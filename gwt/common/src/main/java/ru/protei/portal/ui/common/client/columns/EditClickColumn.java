@@ -31,7 +31,7 @@ public abstract class EditClickColumn< T > extends ru.protei.portal.ui.common.cl
     public void fillColumnValue( Element cell, T value ) {
         AnchorElement a = DOM.createAnchor().cast();
         a.setHref( "#" );
-        a.addClassName( "fa fa-lg fa-pencil-square-o" );
+        a.addClassName( "fa-2x ion-compose" );
         a.setTitle( lang.edit() );
         cell.appendChild( a );
 

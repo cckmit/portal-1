@@ -24,7 +24,7 @@ public class ContactServiceImpl implements ContactService {
     @Override
     public List<Person> getContacts( ContactQuery query ) throws RequestFailedException {
 
-        log.debug( "getContacts(): searchPattern={} | companyId={} | isFired={} | sortField={} | sortDir={}",
+        log.debug( "getEquipments(): searchPattern={} | companyId={} | isFired={} | sortField={} | sortDir={}",
                 query.getSearchString(), query.getCompanyId(), query.getFired(), query.getSortField(), query.getSortDir() );
 
         CoreResponse<List<Person>> response = contactService.contactList( query );
@@ -69,7 +69,7 @@ public class ContactServiceImpl implements ContactService {
 
     @Override
     public Long getContactsCount( ContactQuery query ) throws RequestFailedException {
-        log.debug( "getContactsCount(): query={}", query );
+        log.debug( "getEquipmentCount(): query={}", query );
         return contactService.count( query ).getData();
     }
 

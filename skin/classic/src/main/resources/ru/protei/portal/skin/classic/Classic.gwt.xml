@@ -6,7 +6,7 @@
     <stylesheet src="css/animate.css"/>
     <stylesheet src="css/modal.css"/>
     <stylesheet src="css/font-awesome.min.css"/>
-    <stylesheet src="css/importance.css"/>
+    <stylesheet src="css/advance-fonts.css"/>
     <stylesheet src="css/ionicons.min.css"/>
 
     <source path='client'/>

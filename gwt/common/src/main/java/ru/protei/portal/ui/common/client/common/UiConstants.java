@@ -7,33 +7,31 @@ public class UiConstants {
     /**
      * Иконки вкладок приложения
      */
-    public static interface TabIcons {
-        public static final String COMPANY = "icon icon-organization";
-        public static final String CONTACT = "fa fa-group";
-        public static final String PRODUCT = "icon icon-product";
-        public static final String ISSUE = "fa fa-tasks";
-        public static final String DASHBOARD = "fa fa-dashboard";
-        public static final String REGION = "fa fa-globe";
-        public static final String PROJECT = "fa fa-archive";
+    public interface TabIcons {
+        String COMPANY = "icon icon-organization";
+        String CONTACT = "fa fa-group";
+        String PRODUCT = "icon icon-product";
+        String ISSUE = "fa fa-tasks";
+        String DASHBOARD = "fa fa-dashboard";
+        String REGION = "fa fa-globe";
+        String PROJECT = "fa fa-archive";
+        String EQUIPMENT = "fa fa-server";
     }
 
-    public static interface ActionBarIcons {
-        public static final String CREATE = "fa fa-plus";
+    public interface ActionBarIcons {
+        String CREATE = "fa fa-plus";
+        String IMPORT = "fa fa-upload";
     }
 
-    public static interface ActionBarIdentity {
-        public static final String CONTACT = "contact";
-        public static final String ISSUE = "issue";
-        public static final String COMPANY = "company";
-        public static final String PRODUCT = "product";
-        public static final String DASHBOARD = "dashboard";
-        public static final String PROJECT = "project";
+    public interface ActionBarIdentity {
+        String CONTACT = "contact";
+        String ISSUE = "issue";
+        String COMPANY = "company";
+        String PRODUCT = "product";
+        String DASHBOARD = "dashboard";
+        String EQUIPMENT = "equipment";
+        String PROJECT = "project";
     }
-
-    /**
-     * from {@link ru.protei.portal.ui.common.client.events.DashboardEvents}
-     */
-    public static final String INITIAL_PAGE = "dashboard";
 
     /**
      * from {@link ru.protei.portal.ui.common.client.events.AuthEvents}

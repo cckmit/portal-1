@@ -171,6 +171,9 @@ public class MainConfiguration {
     }
 
     @Bean
+    public EquipmentDAO getEquipmentDAO() { return new EquipmentDAO_Impl(); }
+
+    @Bean
     public LocationDAO getLocationDAO() {
         return new LocationDAO_Impl();
     }
@@ -183,6 +186,9 @@ public class MainConfiguration {
 
     @Bean
     public CaseTypeDAO getCaseTypeDAO() { return new CaseTypeDAO_Impl(); }
+
+    @Bean
+    public DecimalNumberDAO getDecimalNumberDAO() { return new DecimalNumberDAO_Impl(); }
 /**
  *
  *
@@ -220,6 +226,8 @@ public class MainConfiguration {
     @Bean
     public ProjectService getProjectService() { return new ProjectServiceImpl(); }
 
+    @Bean
+    public EquipmentService getEquipmentService() { return new EquipmentServiceImpl(); }
 
 
     /** ASPECT/INTERCEPTORS **/

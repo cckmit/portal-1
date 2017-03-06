@@ -109,9 +109,6 @@ public abstract class PortalBaseJdbcDAO<T> extends JdbcBaseDAO<Long,T> implement
         parameters.withLimit(query.getLimit());
         parameters.withSort(TypeConverters.createSort( query ));
         return getList(parameters);
-
-//        return getListByCondition(where.isConditionDefined() ? where.condition : "1=1", where.args,
-//                query.getOffset(), query.getLimit(), TypeConverters.createSort( query )).getResults();
     }
 
 
@@ -157,33 +154,28 @@ public abstract class PortalBaseJdbcDAO<T> extends JdbcBaseDAO<Long,T> implement
         final int dirModifier = dir == JdbcSort.Direction.ASC ? 1 : -1;
         final int dirModifierRev = dir == JdbcSort.Direction.ASC ? -1 : 1;
 
-        Collections.sort(entries, new Comparator<T>() {
-            @Override
-            public int compare(T o1, T o2) {
+        Collections.sort(entries, ( o1, o2 ) -> {
+            Object v1 = column.get(o1);
+            Object v2 = column.get(o2);
 
-                Object v1 = column.get(o1);
-                Object v2 = column.get(o2);
-
-                if (v1 == null && v2 == null) {
-                    return 0;
-                }
-
-                if (v1 == null)
-                    return -1;
-
-                if (v2 == null)
-                    return 1;
-
-                if (v1 instanceof Comparable)
-                    return ((Comparable) v1).compareTo(v2) * dirModifier;
-
-                if (v2 instanceof Comparable)
-                    return ((Comparable) v2).compareTo(v1) * dirModifierRev;
-
-                //
+            if (v1 == null && v2 == null) {
                 return 0;
             }
-        });
+
+            if (v1 == null)
+                return -1;
+
+            if (v2 == null)
+                return 1;
+
+            if (v1 instanceof Comparable)
+                return ((Comparable) v1).compareTo(v2) * dirModifier;
+
+            if (v2 instanceof Comparable)
+                return ((Comparable) v2).compareTo(v1) * dirModifierRev;
+
+            return 0;
+        } );
 
         return entries;
     }

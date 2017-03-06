@@ -50,9 +50,10 @@ package ru.protei.portal.ui.common.client.common;
  * 4.0.23.25 - m1-t-3 - Дашборд. доработки
  * 4.0.23.26 - m1-t-21 - доработать миграцию
  * 4.0.23.27 - m1-t-34 - доработка скролла у превью обращения
+ * 4.0.24.27 - доработка по децимальным номерам
  */
 public class Version {
     public static String getVersion() {
-        return "4.0.23.27";
+        return "4.0.24.27";
     }
 }

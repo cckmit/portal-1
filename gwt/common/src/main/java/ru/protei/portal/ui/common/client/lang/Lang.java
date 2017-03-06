@@ -296,6 +296,32 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errEditIssueCommentEmpty();
 
+    String classifier();
+
+    String equipmentName();
+
+    String equipmentOrganizationCodePAMR();
+
+    String equipmentOrganizationCodePDRA();
+
+    String equipmentDecimalNumber();
+
+    String equipmentComment();
+
+    String equipmentNameBySpecification();
+
+    String equipmentNameBySldWrks();
+
+    String equipmentOrganizationProtei();
+
+    String equipmentOrganizationProteiST();
+
+    String equipmentOrganization();
+
+    String equipmentSearchName();
+
+    String equipmentProduct();
+
     String regions();
 
     String regionStateUnknown();
@@ -339,4 +365,64 @@ public interface Lang extends Messages, ContactItemLang {
     String projectState();
 
     String projectRegion();
+
+    String equipmentAttachment();
+
+    String equipmentDescription();
+
+    String equipmentTypeAssemblyUnit();
+
+    String equipmentTypeComplex();
+
+    String equipmentTypeDetail();
+
+    String equipmentTypeProduct();
+
+    String equipmentType();
+
+    String equipmentStageDraftProject();
+
+    String equipmentStageRKD_Product();
+
+    String equipmentStageRKD_Prototype();
+
+    String equipmentStageTechnicalProject();
+
+    String equipmentStage();
+
+    String equipmentPrimaryUse();
+
+    String equipmentPrimaryUseNotDefinied();
+
+    String equipmentDecimalNumberEmpty();
+
+    String equipmentDecimalNumberBusy();
+
+    String buttonImport();
+
+    String equipmentClassifierCode();
+
+    String equipmentRegisterNumber();
+
+    String equipmentCommonHeader();
+
+    String equipmentReserve();
+
+    String buttonAdd();
+
+    String equipmentRemove();
+
+    String equipmentDecimalNumberNotDefinied();
+
+    String equipmentRegisterNumberModification();
+
+    String equipmentErrorGetNextAvailableNumber();
+
+    String equipmentErrorCheckNumber();
+
+    String equipmentNextAvailableNumber();
+
+    String equipmentOrChange();
+
+    String equipmentModification();
 }

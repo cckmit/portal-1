@@ -4,8 +4,10 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.ui.common.client.common.PolicyUtils;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.ActionBarEvents;
+import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.ProductEvents;
 import ru.protei.portal.ui.common.client.events.RegionEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -21,7 +23,13 @@ public abstract class RegionPage
     @PostConstruct
     public void onInit() {
         ТAB = lang.regions();
-        fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.REGION ) );
+    }
+
+    @Event
+    public void onAuthSuccess( AuthEvents.Success event ) {
+        if ( PolicyUtils.isAllowedRegionTab( event.profile ) ) {
+            fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.REGION ) );
+        }
     }
 
     @Event

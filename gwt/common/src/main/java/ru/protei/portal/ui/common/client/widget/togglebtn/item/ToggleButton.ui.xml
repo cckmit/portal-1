@@ -3,7 +3,6 @@
 
     <g:HTMLPanel ui:field="button" styleName="btn btn-white">
         <g:CheckBox ui:field="value" styleName="hide"/>
-        <i ui:field="icon" class="hide"/>
         <span ui:field="text"/>
     </g:HTMLPanel>
 
