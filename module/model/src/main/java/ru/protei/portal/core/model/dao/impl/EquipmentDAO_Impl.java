@@ -23,13 +23,16 @@ public class EquipmentDAO_Impl extends PortalBaseJdbcDAO<Equipment> implements E
     @Override
     public List<Equipment> getListByQuery(EquipmentQuery query) {
         SqlCondition where = createSqlCondition(query);
+
         String join = "INNER JOIN decimal_number DN ON DN.equipment_id = equipment.id";
 
         return getList(
                 new JdbcQueryParameters().
                         withJoins(join).
                         withCondition(where.condition, where.args).
-                        withDistinct(true)
+                        withDistinct(true).
+                        withOffset(query.getOffset()).
+                        withLimit(query.getLimit())
         );
     }
 

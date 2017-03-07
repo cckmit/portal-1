@@ -8,6 +8,7 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.brainworm.factory.widget.table.client.AbstractColumn;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.Equipment;
@@ -19,7 +20,6 @@ import ru.protei.portal.ui.common.client.columns.EditClickColumn;
 import ru.protei.portal.ui.common.client.lang.En_EquipmentStageLang;
 import ru.protei.portal.ui.common.client.lang.En_EquipmentTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.separator.Separator;
 import ru.protei.portal.ui.equipment.client.activity.table.AbstractEquipmentTableActivity;
 import ru.protei.portal.ui.equipment.client.activity.table.AbstractEquipmentTableView;
 import ru.protei.portal.ui.equipment.client.common.EquipmentUtils;
@@ -64,16 +64,12 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
 
     @Override
     public void hideElements() {
-        filterContainer.setVisible( false );
-        tableContainer.removeStyleName( "col-xs-9" );
-        tableContainer.addStyleName( "col-xs-12" );
+        hideOnShowPreviewColumns.forEach( s -> s.setVisibility(false) );
     }
 
     @Override
     public void showElements() {
-        filterContainer.setVisible( true );
-        tableContainer.removeStyleName( "col-xs-12" );
-        tableContainer.addStyleName( "col-xs-9" );
+        hideOnShowPreviewColumns.forEach( s -> s.setVisibility(true) );
     }
 
     @Override
@@ -105,7 +101,7 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
     private void initTable () {
         editClickColumn = new EditClickColumn<Equipment>( lang ) {};
 
-        ClickColumn< Equipment > nameBySpecification = new ClickColumn< Equipment >() {
+        ClickColumn< Equipment > name = new ClickColumn< Equipment >() {
             @Override
             protected void fillColumnHeader( Element element ) {
                 element.setInnerText( lang.equipmentNameBySpecification() );
@@ -116,10 +112,10 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
                 cell.setInnerHTML( HTMLHelper.wrapDiv( value.getName() ) );
             }
         };
-        columns.add( nameBySpecification );
+        columns.add( name );
 
 
-        ClickColumn< Equipment > name = new ClickColumn< Equipment >() {
+        ClickColumn< Equipment > nameSldWrks = new ClickColumn< Equipment >() {
             @Override
             protected void fillColumnHeader( Element element ) {
                 element.setInnerText( lang.equipmentNameBySldWrks() );
@@ -130,7 +126,7 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
                 cell.setInnerHTML( HTMLHelper.wrapDiv( value.getNameSldWrks() ) );
             }
         };
-        columns.add( name );
+        columns.add( nameSldWrks );
 
 
         ClickColumn< Equipment > decimalNumber = new ClickColumn< Equipment >() {
@@ -152,6 +148,11 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
                 for ( DecimalNumber number : value.getDecimalNumbers() ) {
                     Element numElem = DOM.createDiv();
                     numElem.setInnerHTML( EquipmentUtils.formatNumber( number ) );
+                    if ( number.isReserve() ) {
+                        Element isReserveEl = DOM.createElement("i");
+                        isReserveEl.addClassName( "fa fa-flag text-danger m-l-10" );
+                        numElem.appendChild( isReserveEl );
+                    }
                     root.appendChild( numElem );
                 }
             }
@@ -226,13 +227,34 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
         };
         columns.add( type );
 
+        ClickColumn< Equipment > primaryUse = new ClickColumn< Equipment >() {
+            @Override
+            protected void fillColumnHeader( Element element ) {
+                element.setInnerText( lang.equipmentPrimaryUse() );
+            }
+
+            @Override
+            public void fillColumnValue ( Element cell, Equipment value ) {
+                if ( value != null ) {
+                    cell.setInnerHTML( HTMLHelper.wrapDiv(value.getLinkedEquipmentName() == null ? "" : value.getLinkedEquipmentName() ));
+                }
+            }
+        };
+        columns.add( primaryUse );
+
+
         table.addColumn( type.header, type.values );
-        table.addColumn( nameBySpecification.header, nameBySpecification.values );
         table.addColumn( name.header, name.values );
+        AbstractColumn nameBySldWrksColumn = table.addColumn( nameSldWrks.header, nameSldWrks.values );
+        hideOnShowPreviewColumns.add( nameBySldWrksColumn );
+
         table.addColumn( decimalNumber.header, decimalNumber.values );
 //        table.addColumn( product.header, product.values );
-        table.addColumn( comment.header, comment.values );
-//        table.addColumn( attachment.header, attachment.values );
+        AbstractColumn primaryUseColumn = table.addColumn( primaryUse.header, primaryUse.values );
+        hideOnShowPreviewColumns.add( primaryUseColumn );
+
+        AbstractColumn commentColumn = table.addColumn( comment.header, comment.values );
+        hideOnShowPreviewColumns.add( commentColumn );
         table.addColumn( editClickColumn.header, editClickColumn.values );
     }
 
@@ -257,6 +279,7 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
     ClickColumnProvider<Equipment> columnProvider = new ClickColumnProvider<>();
     EditClickColumn<Equipment> editClickColumn;
     List<ClickColumn > columns = new ArrayList<>();
+    List<AbstractColumn> hideOnShowPreviewColumns = new ArrayList<>();
 
 
     AbstractEquipmentTableActivity activity;

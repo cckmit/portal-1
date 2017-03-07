@@ -3,6 +3,7 @@ package ru.protei.portal.ui.equipment.client.view.preview;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.LabelElement;
+import com.google.gwt.dom.client.LegendElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -87,7 +88,7 @@ public class EquipmentPreviewView extends Composite implements AbstractEquipment
     @UiField
     SpanElement comment;
     @UiField
-    LabelElement header;
+    LegendElement header;
     @UiField
     DivElement number;
     @UiField

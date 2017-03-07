@@ -1539,6 +1539,8 @@ a {
   .dn-container {
     width: 100%;
     display: flex;
+    display: -webkit-flex;
+    display: -ms-flexbox;
 
     .dn-separator {
       margin: 0 7px;
@@ -1546,10 +1548,14 @@ a {
 
     .dn-classifier-code {
       flex-shrink: 2;
+      -webkit-flex-shrink: 2;
+      min-width: 1px;
     }
 
     .dn-register-number, .dn-register-number-modifier {
       flex-shrink: 3;
+      -webkit-flex-shrink: 3;
+      min-width: 1px;
     }
 
     .dn-org-code button{

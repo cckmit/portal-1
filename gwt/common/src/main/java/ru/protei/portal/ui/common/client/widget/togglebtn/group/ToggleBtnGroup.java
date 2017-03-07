@@ -105,8 +105,9 @@ public class ToggleBtnGroup< T >
         }
     }
 
-    public void addBtnWithImage( String imageSrc, String buttonStyle, String caption, T value ) {
+    public void addBtnWithImage( String imageSrc, String buttonStyle, String caption, T value, String title ) {
         ToggleButton itemView = addBtn( caption, value, buttonStyle );
+        itemView.setTitle( title );
         if ( imageSrc != null ) {
             itemView.setImageSrc( imageSrc );
         }

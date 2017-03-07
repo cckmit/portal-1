@@ -6,7 +6,7 @@
     <g:HTMLPanel styleName="preview-wrapper grid with-table-pager">
         <g:HTMLPanel ui:field="preview" styleName="preview">
             <fieldset class="header">
-                <legend><label ui:field="header"></label></legend>
+                <legend ui:field="header"></legend>
                 <div class="col-xs-12">
                     <label class="col-xs-5"><ui:text from="{lang.equipmentNameBySpecification}"/></label>
                     <span class="col-xs-7" ui:field="name"></span>
@@ -30,12 +30,7 @@
                 <legend><ui:text from="{lang.equipmentDecimalNumber}"/></legend>
                 <div class="col-xs-12 equipment-number" ui:field="number"></div>
             </fieldset>
-            <fieldset class="header">
-                <legend><ui:text from="{lang.equipmentComment}"/></legend>
-                <div class="col-xs-12">
-                    <span class="col-xs-12 col-md-12" ui:field="comment"></span>
-                </div>
-            </fieldset>
+
 
             <fieldset class="header">
                 <legend><ui:text from="{lang.equipmentPrimaryUse}"/></legend>
@@ -44,7 +39,13 @@
                 </div>
             </fieldset>
 
-            <g:HTMLPanel ui:field="commentsContainer" styleName="col-xs-12 col-md-12"/>
+            <fieldset class="header">
+                <legend><ui:text from="{lang.equipmentComment}"/></legend>
+                <div class="col-xs-12">
+                    <span class="col-xs-12 col-md-12 pre-formatted-info" ui:field="comment"></span>
+                </div>
+            </fieldset>
+
         </g:HTMLPanel>
     </g:HTMLPanel>
 </ui:UiBinder>

@@ -145,8 +145,10 @@ public abstract class EquipmentTableActivity
     private void showPreview ( Equipment value ) {
         if ( value == null ) {
             animation.closeDetails();
+            view.showElements();
         } else {
             animation.showDetails();
+            view.hideElements();
             fireEvent(new EquipmentEvents.ShowPreview(view.getPreviewContainer(), value));
         }
     }
