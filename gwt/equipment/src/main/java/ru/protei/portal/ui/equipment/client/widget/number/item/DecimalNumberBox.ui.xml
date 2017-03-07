@@ -7,7 +7,9 @@
 
     <g:HTMLPanel styleName="dn col-xs-6">
         <div class="dn-container" ui:field="container">
-            <selector:OrganizationCodeSelector ui:field="organizationCode" enabled="false"/>
+            <g:ToggleButton ui:field="isReserve" styleName="btn dn-reserve" title="{lang.equipmentReserve}"/>
+            <label class="dn-separator"></label>
+            <selector:OrganizationCodeSelector ui:field="organizationCode" enabled="false" addStyleNames="dn-org-code"/>
             <label class="dn-separator">.</label>
             <mask:MaskedTextBox ui:field="classifierCode" styleName="input-field dn-classifier-code" mask="999999"/>
             <label class="dn-separator">.</label>
@@ -15,10 +17,8 @@
             <label class="dn-separator">–</label>
             <mask:MaskedTextBox ui:field="regNumModification" styleName="input-field dn-register-number-modifier" mask="99"/>
             <label class="dn-separator"></label>
-            <g:ToggleButton ui:field="isReserve" styleName="btn btn-danger private-btn" title="{lang.equipmentReserve}"/>
-            <label class="dn-separator"></label>
             <g:Button ui:field="remove" styleName="btn btn-danger" title="{lang.equipmentRemove}">
-                <i class="fa fa-trash"/>
+                <i class="fa fa-trash fa-lg"/>
             </g:Button>
             <label class="dn-separator"></label>
         </div>

@@ -3,7 +3,9 @@ package ru.protei.portal.ui.equipment.client.widget.selector;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
+import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.input.InputSelector;
 import ru.protei.portal.core.model.dict.En_OrganizationCode;
 import ru.protei.portal.ui.equipment.client.common.EquipmentUtils;
@@ -14,7 +16,7 @@ import java.util.List;
  * Виджет связанных устройств
  */
 public class EquipmentSelector
-        extends InputSelector<Equipment >
+        extends ButtonSelector<Equipment >
         implements ModelSelector<Equipment>
     {
 
@@ -23,7 +25,7 @@ public class EquipmentSelector
             model.subscribe( this );
             setSearchEnabled( true );
             setHasNullValue( true );
-            setNullOption( lang.equipmentPrimaryUseNotDefinied());
+            nullItemOption = new DisplayOption( lang.equipmentPrimaryUseNotDefinied() );
         }
 
         @Override

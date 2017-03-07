@@ -171,4 +171,20 @@ public class Equipment implements Serializable {
     public void setAuthorId( Long authorId ) {
         this.authorId = authorId;
     }
+
+    @Override
+    public boolean equals( Object o ) {
+        if ( this == o ) return true;
+        if ( !( o instanceof Equipment ) ) return false;
+
+        Equipment equipment = (Equipment) o;
+
+        return id != null ? id.equals( equipment.id ) : equipment.id == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
+    }
 }

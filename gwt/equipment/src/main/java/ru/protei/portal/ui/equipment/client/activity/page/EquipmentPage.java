@@ -7,6 +7,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.ui.common.client.common.PolicyUtils;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.ActionBarEvents;
+import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.EquipmentEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -28,6 +29,7 @@ public abstract class EquipmentPage
     public void onAuthSuccess( AuthEvents.Success event ) {
         if ( PolicyUtils.isAllowedEquipmentTab( event.profile ) ) {
             fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.EQUIPMENT ) );
+            fireEvent( new AppEvents.InitPage( show ) );
         }
     }
 

@@ -68,6 +68,7 @@ public abstract class EquipmentEditActivity
 
             @Override
             public void onSuccess(Equipment equipment) {
+                fireEvent( new EquipmentEvents.ChangeModel() );
                 fireEvent(new Back());
             }
         });

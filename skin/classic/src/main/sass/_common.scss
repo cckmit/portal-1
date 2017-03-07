@@ -597,7 +597,7 @@ label.required:after {
 }
 
 .input-field.comment {
-  min-height: 00px;
+  min-height: 100px;
 }
 
 .panelField{
@@ -1550,6 +1550,32 @@ a {
 
     .dn-register-number, .dn-register-number-modifier {
       flex-shrink: 3;
+    }
+
+    .dn-org-code button{
+      width: 80px;
+    }
+
+    .dn-reserve.btn {
+      padding: 0;
+      min-width: 30px;
+      border-left: 0;
+      height: 28px;
+
+      &.btn-down:after,
+      &.btn-up-hovering:after{
+        font-family: "FontAwesome";
+        content: "\f024";
+        font-size: 1.6em;
+        color: #d52020;
+      }
+
+      &.btn-up:after,
+      &.btn-down-hovering:after{
+        font-family: "FontAwesome";
+        content: "\f11d";
+        font-size: 1.6em;
+      }
     }
 
     input {
