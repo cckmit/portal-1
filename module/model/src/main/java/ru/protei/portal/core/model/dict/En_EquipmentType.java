@@ -15,12 +15,12 @@ public enum En_EquipmentType {
     ASSEMBLY_UNIT,
 
     /**
-     * Комплекс
-     */
-    COMPLEX,
-
-    /**
      * Продукт
      */
-    PRODUCT
+    PRODUCT,
+
+    /**
+     * Комплекс
+     */
+    COMPLEX
 }

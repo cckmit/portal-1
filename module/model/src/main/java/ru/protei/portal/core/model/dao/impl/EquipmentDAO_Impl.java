@@ -88,7 +88,7 @@ public class EquipmentDAO_Impl extends PortalBaseJdbcDAO<Equipment> implements E
 
             if ( !StringUtils.isEmpty( query.getRegisterNumber() ) ) {
                 condition.append( " and DN.reg_number like ? " );
-                String likeArg = HelperFunc.makeLikeArg(query.getRegisterNumber(), true);
+                String likeArg = HelperFunc.makeLikeArg( query.getRegisterNumber(), true);
                 args.add(likeArg);
             }
         });

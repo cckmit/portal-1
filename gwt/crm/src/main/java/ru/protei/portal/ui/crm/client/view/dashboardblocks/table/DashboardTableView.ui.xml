@@ -8,7 +8,7 @@
             <span ui:field="sectionName"/>
             <span ui:field="count" class="dashboard-total-count"/>
             <div class="rightSide">
-                <importance:CustomImportanceBtnGroup ui:field="importance"/>
+                <importance:CustomImportanceBtnGroupMulti ui:field="importance"/>
             </div>
         </label>
         <div ui:field="loader" class="Loader"/>

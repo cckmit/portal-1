@@ -16,10 +16,10 @@ import ru.protei.portal.core.model.struct.DistrictInfo;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.selector.district.DistrictBtnGroup;
+import ru.protei.portal.ui.common.client.widget.selector.district.DistrictBtnGroupMulti;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionInputSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
-import ru.protei.portal.ui.common.client.widget.selector.state.RegionStateBtnGroup;
+import ru.protei.portal.ui.common.client.widget.selector.state.RegionStateBtnGroupMulti;
 import ru.protei.portal.ui.project.client.activity.filter.AbstractProjectFilterActivity;
 import ru.protei.portal.ui.project.client.activity.filter.AbstractProjectFilterView;
 
@@ -169,11 +169,11 @@ public class ProjectFilterView extends Composite implements AbstractProjectFilte
 
     @Inject
     @UiField( provided = true )
-    RegionStateBtnGroup states;
+    RegionStateBtnGroupMulti states;
 
     @Inject
     @UiField( provided = true )
-    DistrictBtnGroup districts;
+    DistrictBtnGroupMulti districts;
 
     @Inject
     @UiField( provided = true )

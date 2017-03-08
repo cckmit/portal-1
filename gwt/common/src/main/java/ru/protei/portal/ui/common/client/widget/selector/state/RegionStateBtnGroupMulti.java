@@ -4,12 +4,12 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.ui.common.client.lang.En_RegionStateLang;
-import ru.protei.portal.ui.common.client.widget.togglebtn.group.ToggleBtnGroup;
+import ru.protei.portal.ui.common.client.widget.togglebtn.group.ToggleBtnGroupMulti;
 
 /**
  * Селектор состояния региона
  */
-public class RegionStateBtnGroup extends ToggleBtnGroup<En_RegionState> {
+public class RegionStateBtnGroupMulti extends ToggleBtnGroupMulti<En_RegionState> {
 
     @Inject
     public void init() {

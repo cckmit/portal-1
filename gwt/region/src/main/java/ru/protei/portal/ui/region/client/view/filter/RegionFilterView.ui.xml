@@ -22,13 +22,13 @@
             <div class="form-group col-xs-12">
                 <label><ui:text from="{lang.regionDistrict}"/></label>
                 <div class="control-group">
-                    <district2:DistrictBtnGroup ui:field="districts" />
+                    <district2:DistrictBtnGroupMulti ui:field="districts" />
                 </div>
             </div>
             <div class="form-group col-xs-12">
                 <label><ui:text from="{lang.regionState}"/></label>
                 <div class="control-group">
-                    <state:RegionStateBtnGroup ui:field="states" />
+                    <state:RegionStateBtnGroupMulti ui:field="states" />
                 </div>
             </div>
             <div class="form-group col-xs-12">

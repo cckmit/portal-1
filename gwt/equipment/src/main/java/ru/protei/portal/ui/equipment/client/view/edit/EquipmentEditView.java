@@ -17,6 +17,7 @@ import ru.protei.portal.ui.equipment.client.activity.edit.AbstractEquipmentEditV
 import ru.protei.portal.ui.equipment.client.widget.number.list.DecimalNumberList;
 import ru.protei.portal.ui.equipment.client.widget.selector.EquipmentSelector;
 import ru.protei.portal.ui.equipment.client.widget.stage.EquipmentStageSelector;
+import ru.protei.portal.ui.equipment.client.widget.type.EquipmentTypeBtnGroup;
 import ru.protei.portal.ui.equipment.client.widget.type.EquipmentTypeSelector;
 
 import java.util.List;
@@ -109,7 +110,7 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
     TextArea comment;
     @Inject
     @UiField(provided = true)
-    EquipmentTypeSelector type;
+    EquipmentTypeBtnGroup type;
     @Inject
     @UiField(provided = true)
     EquipmentStageSelector stage;

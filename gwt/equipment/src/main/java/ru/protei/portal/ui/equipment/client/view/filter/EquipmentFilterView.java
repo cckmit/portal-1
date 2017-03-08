@@ -14,19 +14,13 @@ import ru.protei.portal.core.model.dict.En_EquipmentStage;
 import ru.protei.portal.core.model.dict.En_EquipmentType;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.dict.En_OrganizationCode;
-import ru.protei.portal.ui.common.client.widget.mask.MaskedTextBox;
 import ru.protei.portal.ui.equipment.client.activity.filter.AbstractEquipmentFilterActivity;
 import ru.protei.portal.ui.equipment.client.activity.filter.AbstractEquipmentFilterView;
-import ru.protei.portal.ui.equipment.client.widget.number.item.DecimalNumberBox;
-import ru.protei.portal.ui.equipment.client.widget.number.list.DecimalNumberList;
-import ru.protei.portal.ui.equipment.client.widget.organization.OrganizationBtnGroup;
+import ru.protei.portal.ui.equipment.client.widget.organization.OrganizationBtnGroupMulti;
 import ru.protei.portal.ui.equipment.client.widget.stage.EquipmentStageOptionList;
-import ru.protei.portal.ui.equipment.client.widget.type.EquipmentTypeBtnGroup;
+import ru.protei.portal.ui.equipment.client.widget.type.EquipmentTypeBtnGroupMulti;
 
-import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -150,13 +144,13 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
     TextBox name;
     @Inject
     @UiField(provided = true)
-    OrganizationBtnGroup organizationCode;
+    OrganizationBtnGroupMulti organizationCode;
     @Inject
     @UiField(provided = true)
     EquipmentStageOptionList stages;
     @Inject
     @UiField(provided = true)
-    EquipmentTypeBtnGroup types;
+    EquipmentTypeBtnGroupMulti types;
     @UiField
     TextBox classifierCode;
     @UiField

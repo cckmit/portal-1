@@ -27,7 +27,7 @@
                     </div>
                     <div class="form-group col-xs-3">
                         <label><ui:text from="{lang.equipmentType}"/></label>
-                        <type:EquipmentTypeSelector ui:field="type" header=""/>
+                        <type:EquipmentTypeBtnGroup ui:field="type"/>
                     </div>
 
                     <div class="form-group col-xs-3">

@@ -20,8 +20,8 @@ import ru.protei.portal.ui.common.client.widget.selector.productdirection.Produc
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.region.client.activity.filter.AbstractRegionFilterActivity;
 import ru.protei.portal.ui.region.client.activity.filter.AbstractRegionFilterView;
-import ru.protei.portal.ui.common.client.widget.selector.district.DistrictBtnGroup;
-import ru.protei.portal.ui.common.client.widget.selector.state.RegionStateBtnGroup;
+import ru.protei.portal.ui.common.client.widget.selector.district.DistrictBtnGroupMulti;
+import ru.protei.portal.ui.common.client.widget.selector.state.RegionStateBtnGroupMulti;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -169,11 +169,11 @@ public class RegionFilterView extends Composite implements AbstractRegionFilterV
 
     @Inject
     @UiField( provided = true )
-    RegionStateBtnGroup states;
+    RegionStateBtnGroupMulti states;
 
     @Inject
     @UiField( provided = true )
-    DistrictBtnGroup districts;
+    DistrictBtnGroupMulti districts;
 
     @Inject
     @UiField( provided = true )

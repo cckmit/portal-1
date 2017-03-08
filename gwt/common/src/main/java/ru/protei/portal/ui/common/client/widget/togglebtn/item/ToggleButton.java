@@ -12,17 +12,14 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.ui.CheckBox;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.HasValue;
+import com.google.gwt.user.client.ui.*;
 
 /**
  * Вид кнопки-переключателя
  */
 public class ToggleButton
         extends Composite
-        implements HasValue<Boolean> {
+        implements HasValue<Boolean>, HasEnabled {
 
     public ToggleButton () {
         initWidget( ourUiBinder.createAndBindUi( this ) );
@@ -70,15 +67,12 @@ public class ToggleButton
     protected void onAttach() {
         super.onAttach();
 
-        reg = addDomHandler( new ClickHandler() {
-            @Override
-            public void onClick( ClickEvent event ) {
-                boolean oldValue = getValue();
-                boolean newValue = !oldValue;
-                setValue( newValue );
+        reg = addDomHandler( event -> {
+            boolean oldValue = getValue();
+            boolean newValue = !oldValue;
+            setValue( newValue );
 
-                ValueChangeEvent.fireIfNotEqual( ToggleButton.this, oldValue, newValue );
-            }
+            ValueChangeEvent.fireIfNotEqual( ToggleButton.this, oldValue, newValue );
         }, ClickEvent.getType() );
     }
 
@@ -97,6 +91,21 @@ public class ToggleButton
         img.setSrc( imageSrc );
 
         button.getElement().appendChild( img );
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return value.isEnabled();
+    }
+
+    @Override
+    public void setEnabled( boolean enabled ) {
+        value.setEnabled( enabled );
+        if ( enabled ) {
+            button.removeStyleName( "disabled" );
+        } else {
+            button.addStyleName( "disabled" );
+        }
     }
 
     private void setActive( Boolean value ) {

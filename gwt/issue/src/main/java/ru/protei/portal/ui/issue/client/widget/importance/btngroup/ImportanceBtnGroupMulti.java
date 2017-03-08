@@ -4,12 +4,12 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.ui.common.client.common.CriticalityStyleBuilder;
 import ru.protei.portal.ui.common.client.lang.En_CaseImportanceLang;
-import ru.protei.portal.ui.common.client.widget.togglebtn.group.ToggleBtnGroup;
+import ru.protei.portal.ui.common.client.widget.togglebtn.group.ToggleBtnGroupMulti;
 
 /**
  * Селектор критичности обращения
  */
-public class ImportanceBtnGroup extends ToggleBtnGroup<En_ImportanceLevel> {
+public class ImportanceBtnGroupMulti extends ToggleBtnGroupMulti<En_ImportanceLevel> {
 
     @Inject
     public void init() {

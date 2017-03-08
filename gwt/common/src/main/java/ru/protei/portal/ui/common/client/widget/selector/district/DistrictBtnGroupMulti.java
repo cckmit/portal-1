@@ -4,14 +4,14 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.struct.DistrictInfo;
 import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
-import ru.protei.portal.ui.common.client.widget.togglebtn.group.ToggleBtnGroup;
+import ru.protei.portal.ui.common.client.widget.togglebtn.group.ToggleBtnGroupMulti;
 
 import java.util.List;
 
 /**
  * Селектор состояния региона
  */
-public class DistrictBtnGroup extends ToggleBtnGroup<DistrictInfo> implements ModelSelector<DistrictInfo> {
+public class DistrictBtnGroupMulti extends ToggleBtnGroupMulti<DistrictInfo> implements ModelSelector<DistrictInfo> {
 
     @Inject
     public void init( DistrictModel model ) {

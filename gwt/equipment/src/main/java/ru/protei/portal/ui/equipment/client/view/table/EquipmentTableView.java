@@ -64,12 +64,12 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
 
     @Override
     public void hideElements() {
-        hideOnShowPreviewColumns.forEach( s -> s.setVisibility(false) );
+        hideOnShowPreviewColumn.setVisibility( false );
     }
 
     @Override
     public void showElements() {
-        hideOnShowPreviewColumns.forEach( s -> s.setVisibility(true) );
+        hideOnShowPreviewColumn.setVisibility( true );
     }
 
     @Override
@@ -159,19 +159,6 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
         };
         columns.add( decimalNumber );
 
-        ClickColumn< Equipment > product = new ClickColumn< Equipment >() {
-            @Override
-            protected void fillColumnHeader( Element element ) {
-                element.setInnerText( lang.equipmentProduct() );
-            }
-
-            @Override
-            public void fillColumnValue ( Element cell, Equipment value ) {
-            }
-        };
-        columns.add( product );
-
-
         ClickColumn< Equipment > comment = new ClickColumn< Equipment >() {
             @Override
             protected void fillColumnHeader( Element element ) {
@@ -245,16 +232,11 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
 
         table.addColumn( type.header, type.values );
         table.addColumn( name.header, name.values );
-        AbstractColumn nameBySldWrksColumn = table.addColumn( nameSldWrks.header, nameSldWrks.values );
-        hideOnShowPreviewColumns.add( nameBySldWrksColumn );
-
+        table.addColumn( nameSldWrks.header, nameSldWrks.values );
         table.addColumn( decimalNumber.header, decimalNumber.values );
-//        table.addColumn( product.header, product.values );
-        AbstractColumn primaryUseColumn = table.addColumn( primaryUse.header, primaryUse.values );
-        hideOnShowPreviewColumns.add( primaryUseColumn );
+        table.addColumn( primaryUse.header, primaryUse.values );
 
-        AbstractColumn commentColumn = table.addColumn( comment.header, comment.values );
-        hideOnShowPreviewColumns.add( commentColumn );
+        hideOnShowPreviewColumn = table.addColumn( comment.header, comment.values );
         table.addColumn( editClickColumn.header, editClickColumn.values );
     }
 
@@ -279,7 +261,7 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
     ClickColumnProvider<Equipment> columnProvider = new ClickColumnProvider<>();
     EditClickColumn<Equipment> editClickColumn;
     List<ClickColumn > columns = new ArrayList<>();
-    List<AbstractColumn> hideOnShowPreviewColumns = new ArrayList<>();
+    AbstractColumn hideOnShowPreviewColumn;
 
 
     AbstractEquipmentTableActivity activity;
