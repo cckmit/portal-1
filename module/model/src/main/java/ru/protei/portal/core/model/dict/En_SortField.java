@@ -58,8 +58,12 @@ public enum En_SortField {
     /**
      * field name from location
      */
-    name("NAME")
-    ;
+    name("NAME"),
+
+    /**
+     * equipment sldwrks filename
+     */
+    equipment_name_sldwrks("name_sldwrks");
 
     private String fieldName;
     private String bundleKey;

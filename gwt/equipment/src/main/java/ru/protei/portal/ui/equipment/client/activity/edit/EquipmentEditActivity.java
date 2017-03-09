@@ -6,7 +6,9 @@ import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_EquipmentType;
 import ru.protei.portal.core.model.ent.Equipment;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.EquipmentEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
@@ -87,7 +89,8 @@ public abstract class EquipmentEditActivity
         equipment.setStage( view.stage().getValue() );
         equipment.setLinkedEquipmentId( view.linkedEquipment().getValue() == null ? null : view.linkedEquipment().getValue().getId() );
         equipment.setDecimalNumbers( view.numbers().getValue() );
-
+        equipment.setManagerId( view.manager().getValue() == null ? null : view.manager().getValue().getId() );
+        equipment.setProject( view.project().getValue() );
         return equipment;
     }
 
@@ -103,15 +106,20 @@ public abstract class EquipmentEditActivity
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
 
+        boolean isCreate = equipment.getId() == null;
+
         view.nameSldWrks().setValue( equipment.getNameSldWrks() );
         view.name().setValue( equipment.getName() );
         view.comment().setValue( equipment.getComment() );
-        view.type().setValue( equipment.getType() );
+        view.type().setValue( isCreate ? En_EquipmentType.DETAIL : equipment.getType() );
         view.stage().setValue( equipment.getStage() );
         view.linkedEquipment().setValue( new Equipment( equipment.getLinkedEquipmentId() ) );
         view.numbers().setValue( equipment.getDecimalNumbers() );
+        PersonShortView manager = new PersonShortView();
+        manager.setId( equipment.getManagerId() );
+        view.manager().setValue( manager );
+        view.project().setValue( equipment.getProject() );
 
-        boolean isCreate = equipment.getId() == null;
         view.nameEnabled().setEnabled( isCreate );
         view.typeEnabled().setEnabled( isCreate );
     }

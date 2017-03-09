@@ -7,6 +7,7 @@ import ru.protei.portal.core.model.dict.En_EquipmentStage;
 import ru.protei.portal.core.model.dict.En_EquipmentType;
 import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.ent.DecimalNumber;
+import ru.protei.portal.core.model.view.PersonShortView;
 
 import java.util.List;
 
@@ -34,4 +35,8 @@ public interface AbstractEquipmentEditView extends IsWidget {
     HasValue<Equipment> linkedEquipment();
 
     HasValue<List<DecimalNumber> > numbers();
+
+    HasValue< PersonShortView > manager();
+
+    HasValue<String> project();
 }

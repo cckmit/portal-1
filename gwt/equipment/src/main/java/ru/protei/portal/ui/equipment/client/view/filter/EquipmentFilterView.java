@@ -10,11 +10,12 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_EquipmentStage;
-import ru.protei.portal.core.model.dict.En_EquipmentType;
+import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.core.model.dict.En_OrganizationCode;
+import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.equipment.client.activity.filter.AbstractEquipmentFilterActivity;
 import ru.protei.portal.ui.equipment.client.activity.filter.AbstractEquipmentFilterView;
 import ru.protei.portal.ui.equipment.client.widget.organization.OrganizationBtnGroupMulti;
@@ -31,9 +32,8 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
-        name.getElement().setPropertyString( "placeholder", lang.equipmentSearchName() );
+        name.getElement().setPropertyString( "placeholder", lang.equipmentSearchNameOrProject() );
     }
-
 
     @Override
     public void setActivity( AbstractEquipmentFilterActivity activity ) {
@@ -48,11 +48,19 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
         stages.setValue( null );
         classifierCode.setValue( null );
         regNum.setValue( null );
+        manager.setValue( null );
+        sortField.setValue( En_SortField.name );
+        sortDir.setValue( false );
     }
 
     @Override
     public HasValue< String > name() {
         return name;
+    }
+
+    @Override
+    public HasValue< PersonShortView > manager() {
+        return manager;
     }
 
     @Override
@@ -80,6 +88,16 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
         return regNum;
     }
 
+    @Override
+    public HasValue< En_SortField > sortField() {
+        return sortField;
+    }
+
+    @Override
+    public HasValue< Boolean > sortDir() {
+        return sortDir;
+    }
+
     @UiHandler( "resetBtn" )
     public void onResetClicked ( ClickEvent event ) {
         if ( activity != null ) {
@@ -105,6 +123,21 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
 
     @UiHandler( "stages" )
     public void onStageSelected( ValueChangeEvent<Set<En_EquipmentStage>> event ) {
+        fireChangeTimer();
+    }
+
+    @UiHandler( "manager" )
+    public void onManagerSelected( ValueChangeEvent<PersonShortView> event ) {
+        fireChangeTimer();
+    }
+
+    @UiHandler( "sortDir" )
+    public void onSortDirChanged( ValueChangeEvent<Boolean> event ) {
+        fireChangeTimer();
+    }
+
+    @UiHandler( "sortField" )
+    public void onSordFieldChanged( ValueChangeEvent<En_SortField> event ) {
         fireChangeTimer();
     }
 
@@ -155,6 +188,14 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
     TextBox classifierCode;
     @UiField
     TextBox regNum;
+    @Inject
+    @UiField(provided = true)
+    EmployeeButtonSelector manager;
+    @Inject
+    @UiField(provided = true)
+    SortFieldSelector sortField;
+    @UiField
+    ToggleButton sortDir;
 
     @Inject
     FixedPositioner positioner;

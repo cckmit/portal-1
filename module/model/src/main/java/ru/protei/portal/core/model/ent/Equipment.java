@@ -63,6 +63,18 @@ public class Equipment implements Serializable {
     private Long authorId;
 
     /**
+     * Менеджер
+     */
+    @JdbcColumn( name = "manager_id" )
+    private Long managerId;
+
+    @JdbcJoinedColumn( localColumn = "manager_id", table = "Person", remoteColumn = "id", mappedColumn = "displayShortName")
+    private String managerShortName;
+
+    @JdbcColumn
+    private String project;
+
+    /**
      * Привязанные децимальные номера
      */
     @JdbcOneToMany(table = "decimal_number", localColumn = "id", remoteColumn = "equipment_id")
@@ -74,8 +86,9 @@ public class Equipment implements Serializable {
     @JdbcColumn(name = "linked_equipment_id")
     private Long linkedEquipmentId;
 
-    @JdbcJoinedColumn( localColumn = "linked_equipment_id", table = "Equipment", remoteColumn = "id", mappedColumn = "name")
-    private String linkedEquipmentName;
+
+    @JdbcOneToMany(table = "decimal_number", localColumn = "linked_equipment_id", remoteColumn = "equipment_id")
+    private List<DecimalNumber> linkedEquipmentDecimalNumbers;
 
     public Equipment() {
     }
@@ -148,12 +161,12 @@ public class Equipment implements Serializable {
         this.linkedEquipmentId = linkedEquipmentId;
     }
 
-    public String getLinkedEquipmentName() {
-        return linkedEquipmentName;
+    public List< DecimalNumber > getLinkedEquipmentDecimalNumbers() {
+        return linkedEquipmentDecimalNumbers;
     }
 
-    public void setLinkedEquipmentName( String linkedEquipmentName ) {
-        this.linkedEquipmentName = linkedEquipmentName;
+    public void setLinkedEquipmentDecimalNumbers( List< DecimalNumber > linkedEquipmentDecimalNumbers ) {
+        this.linkedEquipmentDecimalNumbers = linkedEquipmentDecimalNumbers;
     }
 
     public Date getCreated() {
@@ -170,6 +183,30 @@ public class Equipment implements Serializable {
 
     public void setAuthorId( Long authorId ) {
         this.authorId = authorId;
+    }
+
+    public Long getManagerId() {
+        return managerId;
+    }
+
+    public void setManagerId( Long managerId ) {
+        this.managerId = managerId;
+    }
+
+    public String getManagerShortName() {
+        return managerShortName;
+    }
+
+    public void setManagerShortName( String managerShortName ) {
+        this.managerShortName = managerShortName;
+    }
+
+    public String getProject() {
+        return project;
+    }
+
+    public void setProject( String project ) {
+        this.project = project;
     }
 
     @Override

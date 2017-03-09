@@ -48,10 +48,17 @@ public abstract class EquipmentPreviewActivity implements Activity, AbstractEqui
         view.setComment( value.getComment() );
         view.setType( typeLang.getName( value.getType() ) );
         view.setStage( stageLang.getName( value.getStage() ), value.getStage().name().toLowerCase() );
-        view.setLinkedEquipment( value.getLinkedEquipmentName() == null ? lang.equipmentPrimaryUseNotDefinied() : value.getLinkedEquipmentName() );
+        view.setProject( value.getProject() == null ? "" : value.getProject() );
+        view.setManager( value.getManagerShortName() == null ? "" : value.getManagerShortName() );
 
         if( value.getDecimalNumbers() != null ) {
-            view.setDecimalNumbers( value.getDecimalNumbers().stream().map((s) -> EquipmentUtils.formatNumber(s)).collect( Collectors.joining(", ")) );
+            view.setDecimalNumbers( value.getDecimalNumbers().stream().map( EquipmentUtils:: formatNumber ).collect( Collectors.joining(", ")) );
+        }
+
+        if ( value.getLinkedEquipmentDecimalNumbers() != null && !value.getLinkedEquipmentDecimalNumbers().isEmpty() ) {
+            view.setLinkedEquipment( value.getLinkedEquipmentDecimalNumbers().stream().map( EquipmentUtils:: formatNumber ).collect( Collectors.joining(", ")) );
+        } else {
+            view.setLinkedEquipment( lang.equipmentPrimaryUseNotDefinied() );
         }
     }
 

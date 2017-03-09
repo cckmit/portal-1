@@ -28,7 +28,7 @@ public class EquipmentServiceImpl implements EquipmentService {
     public List<Equipment> getEquipments( EquipmentQuery query ) throws RequestFailedException {
 
         log.debug( "getEquipments(): name={} | types={} | stages={} | organizationCodes={} | classifierCode={} | regNum={}",
-                query.getName(), query.getTypes(), query.getStages(), query.getOrganizationCodes(), query.getClassifierCode(),
+                query.getSearchString(), query.getTypes(), query.getStages(), query.getOrganizationCodes(), query.getClassifierCode(),
                 query.getRegisterNumber() );
 
         CoreResponse<List<Equipment>> response = equipmentService.equipmentList( query );

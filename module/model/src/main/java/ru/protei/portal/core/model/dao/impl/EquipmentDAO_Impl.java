@@ -8,6 +8,7 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.DataQuery;
 import ru.protei.portal.core.model.query.EquipmentQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
+import ru.protei.portal.core.utils.TypeConverters;
 import ru.protei.winter.core.utils.collections.CollectionUtils;
 import ru.protei.winter.jdbc.JdbcQueryParameters;
 import ru.protei.winter.jdbc.JdbcSort;
@@ -32,7 +33,8 @@ public class EquipmentDAO_Impl extends PortalBaseJdbcDAO<Equipment> implements E
                         withCondition(where.condition, where.args).
                         withDistinct(true).
                         withOffset(query.getOffset()).
-                        withLimit(query.getLimit())
+                        withLimit(query.getLimit()).
+                        withSort( TypeConverters.createSort( query ) )
         );
     }
 
@@ -62,9 +64,10 @@ public class EquipmentDAO_Impl extends PortalBaseJdbcDAO<Equipment> implements E
         return new SqlCondition().build((condition, args) -> {
             condition.append("1=1");
 
-            if ( !StringUtils.isEmpty( query.getName() ) ) {
-                condition.append( " and equipment.name_by_spec like ? " );
-                String likeArg = HelperFunc.makeLikeArg(query.getName(), true);
+            if ( !StringUtils.isEmpty( query.getSearchString() ) ) {
+                condition.append( " and ( equipment.name like ? or equipment.project like ? )" );
+                String likeArg = HelperFunc.makeLikeArg(query.getSearchString(), true);
+                args.add(likeArg);
                 args.add(likeArg);
             }
 
@@ -88,8 +91,14 @@ public class EquipmentDAO_Impl extends PortalBaseJdbcDAO<Equipment> implements E
 
             if ( !StringUtils.isEmpty( query.getRegisterNumber() ) ) {
                 condition.append( " and DN.reg_number like ? " );
-                String likeArg = HelperFunc.makeLikeArg( query.getRegisterNumber(), true);
+                Integer regNum = Integer.parseInt( query.getRegisterNumber() );
+                String likeArg = HelperFunc.makeLikeArg( regNum.toString(), true);
                 args.add(likeArg);
+            }
+
+            if ( query.getManagerId() != null ) {
+                condition.append( " and manager_id=? " );
+                args.add(query.getManagerId());
             }
         });
     }

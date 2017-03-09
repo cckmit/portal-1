@@ -1,8 +1,8 @@
 package ru.protei.portal.ui.common.client.widget.selector.sortfield;
 
 /**
- * Created by turik on 17.10.16.
+ * Модули
  */
 public enum ModuleType {
-    COMPANY, PRODUCT, CONTACT, ISSUE;
+    COMPANY, PRODUCT, CONTACT, ISSUE, EQUIPMENT;
 }

@@ -26,6 +26,7 @@ import ru.protei.portal.ui.equipment.client.common.EquipmentUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Представление таблицы контактов
@@ -64,12 +65,14 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
 
     @Override
     public void hideElements() {
-        hideOnShowPreviewColumn.setVisibility( false );
+        hideOnShowPreviewCommentColumn.setVisibility( false );
+        hideOnShowPreviewProjectColumn.setVisibility( false );
     }
 
     @Override
     public void showElements() {
-        hideOnShowPreviewColumn.setVisibility( true );
+        hideOnShowPreviewCommentColumn.setVisibility( true );
+        hideOnShowPreviewProjectColumn.setVisibility( true );
     }
 
     @Override
@@ -109,30 +112,17 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
 
             @Override
             public void fillColumnValue ( Element cell, Equipment value ) {
-                cell.setInnerHTML( HTMLHelper.wrapDiv( value.getName() ) );
+                String nameSldWrksHtml = "<div><i><small><i class='fa fa-file-o m-r-5'></i>" + value.getNameSldWrks() + "</small></i></div>";
+                cell.setInnerHTML( HTMLHelper.wrapDiv( value.getName() + nameSldWrksHtml ) );
             }
         };
         columns.add( name );
-
-
-        ClickColumn< Equipment > nameSldWrks = new ClickColumn< Equipment >() {
-            @Override
-            protected void fillColumnHeader( Element element ) {
-                element.setInnerText( lang.equipmentNameBySldWrks() );
-            }
-
-            @Override
-            public void fillColumnValue ( Element cell, Equipment value ) {
-                cell.setInnerHTML( HTMLHelper.wrapDiv( value.getNameSldWrks() ) );
-            }
-        };
-        columns.add( nameSldWrks );
-
 
         ClickColumn< Equipment > decimalNumber = new ClickColumn< Equipment >() {
             @Override
             protected void fillColumnHeader( Element element ) {
                 element.setInnerText( lang.equipmentDecimalNumber() );
+                element.addClassName( "equipment-number-column" );
             }
 
             @Override
@@ -218,25 +208,47 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
             @Override
             protected void fillColumnHeader( Element element ) {
                 element.setInnerText( lang.equipmentPrimaryUse() );
+                element.addClassName( "equipment-number-column" );
             }
 
             @Override
             public void fillColumnValue ( Element cell, Equipment value ) {
-                if ( value != null ) {
-                    cell.setInnerHTML( HTMLHelper.wrapDiv(value.getLinkedEquipmentName() == null ? "" : value.getLinkedEquipmentName() ));
+                cell.setClassName( "equipment-number" );
+
+                if ( value != null && value.getLinkedEquipmentDecimalNumbers() != null ) {
+                    cell.setInnerHTML( HTMLHelper.wrapDiv(
+                            value.getLinkedEquipmentDecimalNumbers().stream().map( EquipmentUtils:: formatNumber ).collect( Collectors.joining(", "))
+                    ));
                 }
             }
         };
         columns.add( primaryUse );
 
+        ClickColumn< Equipment > project = new ClickColumn< Equipment >() {
+            @Override
+            protected void fillColumnHeader( Element element ) {
+                element.setInnerText( lang.equipmentProject() );
+            }
+
+            @Override
+            public void fillColumnValue ( Element cell, Equipment value ) {
+                String managerHtml = "";
+                if ( value.getManagerShortName() != null ) {
+                    managerHtml = "<div><i><small><i class='fa fa-user-o m-r-5'></i>" + value.getManagerShortName() + "</small></i></div>";
+                }
+
+                cell.setInnerHTML( HTMLHelper.wrapDiv( value.getProject() == null ? "" : value.getProject() + managerHtml ) );
+            }
+        };
+        columns.add( project );
+
 
         table.addColumn( type.header, type.values );
         table.addColumn( name.header, name.values );
-        table.addColumn( nameSldWrks.header, nameSldWrks.values );
         table.addColumn( decimalNumber.header, decimalNumber.values );
         table.addColumn( primaryUse.header, primaryUse.values );
-
-        hideOnShowPreviewColumn = table.addColumn( comment.header, comment.values );
+        hideOnShowPreviewProjectColumn = table.addColumn( project.header, project.values );
+        hideOnShowPreviewCommentColumn = table.addColumn( comment.header, comment.values );
         table.addColumn( editClickColumn.header, editClickColumn.values );
     }
 
@@ -261,8 +273,8 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
     ClickColumnProvider<Equipment> columnProvider = new ClickColumnProvider<>();
     EditClickColumn<Equipment> editClickColumn;
     List<ClickColumn > columns = new ArrayList<>();
-    AbstractColumn hideOnShowPreviewColumn;
-
+    AbstractColumn hideOnShowPreviewCommentColumn;
+    AbstractColumn hideOnShowPreviewProjectColumn;
 
     AbstractEquipmentTableActivity activity;
 

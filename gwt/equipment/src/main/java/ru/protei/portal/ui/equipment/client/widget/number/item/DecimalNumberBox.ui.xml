@@ -5,7 +5,7 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="dn col-md-6 col-xs-12">
+    <g:HTMLPanel styleName="dn col-md-12 col-lg-6">
         <div class="dn-container" ui:field="container">
             <g:ToggleButton ui:field="isReserve" styleName="btn dn-reserve" title="{lang.equipmentReserve}"/>
             <label class="dn-separator"></label>
@@ -17,7 +17,7 @@
             <label class="dn-separator">–</label>
             <mask:MaskedTextBox ui:field="regNumModification" styleName="input-field dn-register-number-modifier" mask="99"/>
             <label class="dn-separator"></label>
-            <g:Button ui:field="remove" styleName="btn btn-danger" title="{lang.equipmentRemove}">
+            <g:Button ui:field="remove" styleName="btn btn-primary" title="{lang.equipmentRemove}">
                 <i class="fa fa-trash fa-lg"/>
             </g:Button>
             <label class="dn-separator"></label>

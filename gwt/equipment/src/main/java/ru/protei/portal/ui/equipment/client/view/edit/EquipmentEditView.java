@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.equipment.client.view.edit;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -10,6 +11,8 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_EquipmentStage;
 import ru.protei.portal.core.model.dict.En_EquipmentType;
 import ru.protei.portal.core.model.ent.Equipment;
+import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.ui.equipment.client.activity.edit.AbstractEquipmentEditActivity;
@@ -18,7 +21,6 @@ import ru.protei.portal.ui.equipment.client.widget.number.list.DecimalNumberList
 import ru.protei.portal.ui.equipment.client.widget.selector.EquipmentSelector;
 import ru.protei.portal.ui.equipment.client.widget.stage.EquipmentStageSelector;
 import ru.protei.portal.ui.equipment.client.widget.type.EquipmentTypeBtnGroup;
-import ru.protei.portal.ui.equipment.client.widget.type.EquipmentTypeSelector;
 
 import java.util.List;
 
@@ -83,6 +85,16 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
         return numbers;
     }
 
+    @Override
+    public HasValue< PersonShortView > manager() {
+        return manager;
+    }
+
+    @Override
+    public HasValue< String > project() {
+        return project;
+    }
+
     @UiHandler( "saveButton" )
     public void onSaveClicked( ClickEvent event ) {
         if ( activity != null ) {
@@ -120,6 +132,11 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
     @Inject
     @UiField(provided = true)
     DecimalNumberList numbers;
+    @Inject
+    @UiField(provided = true)
+    EmployeeButtonSelector manager;
+    @UiField
+    TextBox project;
 
     AbstractEquipmentEditActivity activity;
 

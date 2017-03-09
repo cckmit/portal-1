@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.dict.En_OrganizationCode;
 import ru.protei.portal.ui.equipment.client.common.EquipmentUtils;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Виджет связанных устройств
@@ -32,8 +33,17 @@ public class EquipmentSelector
         public void fillOptions( List< Equipment > options ) {
             clearOptions();
 
-            for ( Equipment type : options ) {
-                addOption( type.getName(), type );
+            for ( Equipment value : options ) {
+                StringBuilder sb = new StringBuilder();
+                sb.append( value.getName() );
+                if ( value.getDecimalNumbers() != null ) {
+                    sb
+                            .append( " (" )
+                            .append( value.getDecimalNumbers().stream().map( EquipmentUtils:: formatNumber ).collect( Collectors.joining(", ")) )
+                            .append( ")" );
+                }
+
+                addOption( sb.toString(), value );
             }
         }
 

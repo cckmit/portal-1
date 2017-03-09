@@ -63,4 +63,12 @@
                                  onDelete="CASCADE"/>
 
     </changeSet>
+
+
+    <changeSet id="addManagerAndProjectColumnToEquipmentTable" author="ponomareva">
+        <addColumn tableName="Equipment">
+            <column name="manager_id" type="BIGINT"/>
+            <column name="project" type="VARCHAR(128)"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

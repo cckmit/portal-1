@@ -82,6 +82,16 @@ public class EquipmentPreviewView extends Composite implements AbstractEquipment
         this.number.setInnerText( value );
     }
 
+    @Override
+    public void setProject( String value ) {
+        project.setInnerText( value );
+    }
+
+    @Override
+    public void setManager( String value ) {
+        manager.setInnerText( value );
+    }
+
     @Inject
     @UiField
     Lang lang;
@@ -101,6 +111,10 @@ public class EquipmentPreviewView extends Composite implements AbstractEquipment
     SpanElement stage;
     @UiField
     SpanElement primaryUse;
+    @UiField
+    SpanElement manager;
+    @UiField
+    SpanElement project;
 
     @Inject
     FixedPositioner positioner;

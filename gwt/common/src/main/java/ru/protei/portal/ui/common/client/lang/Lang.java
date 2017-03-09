@@ -318,7 +318,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String equipmentOrganization();
 
-    String equipmentSearchName();
+    String equipmentSearchNameOrProject();
 
     String equipmentProduct();
 
@@ -425,4 +425,10 @@ public interface Lang extends Messages, ContactItemLang {
     String equipmentOrChange();
 
     String equipmentModification();
+
+    String equipmentManager();
+
+    String equipmentProject();
+
+    String selectorAny();
 }

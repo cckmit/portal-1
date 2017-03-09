@@ -851,6 +851,9 @@ label.bordered:after{
       .equipment-type-column {
         width: 90px;
       }
+      .equipment-number-column {
+        min-width: 175px;
+      }
     }
     tbody {
       tr {
@@ -1549,16 +1552,16 @@ a {
     .dn-classifier-code {
       flex-shrink: 2;
       -webkit-flex-shrink: 2;
-      min-width: 1px;
+      min-width: 90px;
     }
 
     .dn-register-number, .dn-register-number-modifier {
       flex-shrink: 3;
       -webkit-flex-shrink: 3;
-      min-width: 1px;
+      min-width: 50px;
     }
 
-    .dn-org-code button{
+    .dn-org-code button {
       width: 80px;
     }
 
@@ -1617,4 +1620,10 @@ a {
     height: 35px;
     width: 35px;
   }
+}
+
+.eq-type-details {
+  overflow: hidden;
+  height: 55px;
+  padding-top: 8px !important;
 }

@@ -5,6 +5,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.query.EquipmentQuery;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
@@ -154,9 +155,12 @@ public abstract class EquipmentTableActivity
     }
 
     private EquipmentQuery makeQuery() {
-        return new EquipmentQuery( filterView.name().getValue(), filterView.organizationCodes().getValue(),
-                filterView.stages().getValue(), filterView.types().getValue(), filterView.classifierCode().getValue(),
-                filterView.registerNumber().getValue() );
+        Long managerId = filterView.manager().getValue() == null ? null : filterView.manager().getValue().getId();
+        En_SortDir sortDir = filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC;
+
+        return new EquipmentQuery( filterView.name().getValue(), filterView.sortField().getValue(), sortDir,
+                filterView.organizationCodes().getValue(), filterView.stages().getValue(), filterView.types().getValue(),
+                filterView.classifierCode().getValue(), filterView.registerNumber().getValue(), managerId );
     }
 
     @Inject

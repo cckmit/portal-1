@@ -3,7 +3,9 @@
              xmlns:organization="urn:import:ru.protei.portal.ui.equipment.client.widget.organization"
              xmlns:type="urn:import:ru.protei.portal.ui.equipment.client.widget.type"
              xmlns:stage="urn:import:ru.protei.portal.ui.equipment.client.widget.stage"
-             >
+             xmlns:person="urn:import:ru.protei.portal.ui.common.client.widget.selector.person"
+             xmlns:sortfield="urn:import:ru.protei.portal.ui.common.client.widget.selector.sortfield"
+>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
@@ -12,6 +14,21 @@
             <div class="form-group local-search col-xs-12">
                 <span class="icon local-search-icon"></span>
                 <g:TextBox ui:field="name" styleName="input-field"/>
+            </div>
+
+            <div class="form-group col-xs-12">
+                <label>
+                    <ui:text from="{lang.equipmentManager}"/>
+                </label>
+                <person:EmployeeButtonSelector ui:field="manager" defaultValue="{lang.selectorAny}"/>
+            </div>
+
+            <div class="form-group col-xs-12">
+                <label><ui:text from="{lang.sortBy}"/></label>
+                <div class="control-group">
+                    <sortfield:SortFieldSelector ui:field="sortField" type="EQUIPMENT" hasNullValue="false"/>
+                    <g:ToggleButton ui:field="sortDir" styleName="btn btn-white sorting_button"/>
+                </div>
             </div>
 
             <div class="form-group col-xs-12">
@@ -28,6 +45,7 @@
                 <label><ui:text from="{lang.equipmentRegisterNumber}"/></label>
                 <g:TextBox ui:field="regNum" styleName="input-field dn-register-number" maxLength="3"/>
             </div>
+
 
             <div class="form-group col-xs-12">
                 <label><ui:text from="{lang.equipmentType}"/></label>

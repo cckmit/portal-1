@@ -15,11 +15,9 @@ import ru.protei.portal.core.model.query.EquipmentQuery;
 import ru.protei.winter.core.utils.collections.CollectionUtils;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
-import java.io.Serializable;
-import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -58,24 +56,19 @@ public class EquipmentServiceImpl implements EquipmentService {
                 : new CoreResponse<Equipment>().error(En_ResultStatus.NOT_FOUND);
     }
 
-    // TODO: fill check equipment data
     @Override
     @Transactional
     public CoreResponse<Equipment> saveEquipment(Equipment equipment) {
+        if ( CollectionUtils.isEmpty( equipment.getDecimalNumbers() ) ) {
+            return new CoreResponse<Equipment>().error( En_ResultStatus.INCORRECT_PARAMS );
+        }
+
         equipment.setCreated( new Date() );
         if ( !equipmentDAO.saveOrUpdate(equipment) ) {
             return new CoreResponse<Equipment>().error(En_ResultStatus.INTERNAL_ERROR);
         }
 
-        if ( equipment.getId() != null && !CollectionUtils.isEmpty( equipment.getDecimalNumbers() )) {
-            List<Long> ids = equipment.getDecimalNumbers().stream()
-                    .map(DecimalNumber::getId)
-                    .filter( Objects::nonNull)
-                    .collect( Collectors.toList());
-            decimalNumberDAO.removeByKeys(ids);
-        }
-
-        jdbcManyRelationsHelper.persistAll( equipment );
+        updateDecimalNumbers(equipment);
 
         return new CoreResponse<Equipment>().success(equipment);
     }
@@ -128,5 +121,51 @@ public class EquipmentServiceImpl implements EquipmentService {
     @Override
     public CoreResponse<Long> count(EquipmentQuery query) {
         return new CoreResponse<Long>().success(equipmentDAO.countByQuery(query));
+    }
+
+
+    private boolean updateDecimalNumbers( Equipment equipment ) {
+        Long equipmentId = equipment.getId();
+        log.info( "binding update to linked decimal numbers for equipmentId = {}", equipmentId );
+
+        List<Long> toRemoveNumberIds = decimalNumberDAO.getDecimalNumbersByEquipmentId( equipmentId );
+        if ( CollectionUtils.isEmpty(equipment.getDecimalNumbers()) && CollectionUtils.isEmpty(toRemoveNumberIds) ) {
+            return true;
+        }
+
+        List<DecimalNumber> newNumbers = new ArrayList<>();
+        List< DecimalNumber > oldNumbers = new ArrayList<>();
+        equipment.getDecimalNumbers().forEach( number -> {
+            if ( number.getId() == null ) {
+                number.setEquipmentId( equipmentId );
+                newNumbers.add( number );
+            } else {
+                oldNumbers.add( number );
+            }
+        } );
+
+        if ( !CollectionUtils.isEmpty( newNumbers ) ) {
+            log.info( "persist decimal numbers = {} for equipmentId = {}", newNumbers, equipmentId );
+            decimalNumberDAO.persistBatch( newNumbers );
+        }
+
+        if ( !CollectionUtils.isEmpty( oldNumbers ) ) {
+            log.info( "merge decimal numbers = {} for equipmentId = {}", oldNumbers, equipmentId );
+            int countMerged = decimalNumberDAO.mergeBatch( oldNumbers );
+            if ( countMerged != oldNumbers.size() ) {
+                return false;
+            }
+        }
+
+        toRemoveNumberIds.removeAll( oldNumbers.stream().map(DecimalNumber::getId).collect( Collectors.toList() ) );
+        if ( !CollectionUtils.isEmpty( toRemoveNumberIds ) ) {
+            log.info( "remove decimal numbers = {} for equipmentId = {}", toRemoveNumberIds, equipmentId );
+            int countRemoved = decimalNumberDAO.removeByKeys( toRemoveNumberIds );
+            if ( countRemoved != toRemoveNumberIds.size() ) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
