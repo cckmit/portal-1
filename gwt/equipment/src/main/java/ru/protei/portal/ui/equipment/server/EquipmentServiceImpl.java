@@ -27,7 +27,7 @@ public class EquipmentServiceImpl implements EquipmentService {
     @Override
     public List<Equipment> getEquipments( EquipmentQuery query ) throws RequestFailedException {
 
-        log.debug( "getEquipments(): name={} | types={} | stages={} | organizationCodes={} | classifierCode={} | regNum={}",
+        log.debug( "get equipments: name={} | types={} | stages={} | organizationCodes={} | classifierCode={} | regNum={}",
                 query.getSearchString(), query.getTypes(), query.getStages(), query.getOrganizationCodes(), query.getClassifierCode(),
                 query.getRegisterNumber() );
 
@@ -79,8 +79,40 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
+    public Long copyEquipment( Long equipmentId, String newName ) throws RequestFailedException {
+        log.debug( "copy equipment: id: {}, newName = {}", equipmentId, newName );
+
+        UserSessionDescriptor session = sessionService.getUserSessionDescriptor( httpRequest );
+        Long authorId = session.getPerson() == null ? 0 : session.getPerson().getId();
+
+        CoreResponse<Long> response = equipmentService.copyEquipment(equipmentId, newName, authorId);
+        log.debug( "copy equipment: result: {}", response.isOk() ? "ok" : response.getStatus() );
+
+        if (response.isOk()) {
+            log.debug("copy equipment, applied id: {}", response.getData());
+            return response.getData();
+        }
+
+        throw new RequestFailedException(response.getStatus());
+    }
+
+    @Override
+    public boolean removeEquipment( Long equipmentId ) throws RequestFailedException {
+        log.debug( "remove equipment: id={}", equipmentId );
+
+        CoreResponse<Boolean> response = equipmentService.removeEquipment(equipmentId);
+        log.debug( "remove equipment: result: {}", response.isOk() ? "ok" : response.getStatus() );
+
+        if (response.isOk()) {
+            return response.getData();
+        }
+
+        throw new RequestFailedException(response.getStatus());
+    }
+
+    @Override
     public Long getEquipmentCount( EquipmentQuery query ) throws RequestFailedException {
-        log.debug( "getEquipmentCount(): query={}", query );
+        log.debug( "get equipment count(): query={}", query );
         return equipmentService.count( query ).getData();
     }
 

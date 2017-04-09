@@ -26,6 +26,10 @@ public interface EquipmentService extends RemoteService {
 
     Equipment saveEquipment( Equipment p ) throws RequestFailedException;
 
+    Long copyEquipment( Long equipmentId, String newName ) throws RequestFailedException;
+
+    boolean removeEquipment( Long equipmentId ) throws RequestFailedException;
+
     Long getEquipmentCount( EquipmentQuery query ) throws RequestFailedException;
 
     /**

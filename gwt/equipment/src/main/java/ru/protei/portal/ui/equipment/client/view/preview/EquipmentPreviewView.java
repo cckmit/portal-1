@@ -5,8 +5,11 @@ import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.dom.client.LegendElement;
 import com.google.gwt.dom.client.SpanElement;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.inject.Inject;
@@ -92,6 +95,20 @@ public class EquipmentPreviewView extends Composite implements AbstractEquipment
         manager.setInnerText( value );
     }
 
+    @UiHandler( "copy" )
+    public void onCopyClicked( ClickEvent event ) {
+        if( activity != null ) {
+            activity.onCopyClicked();
+        }
+    }
+
+    @UiHandler( "remove" )
+    public void onRemoveClicked( ClickEvent event ) {
+        if( activity != null ) {
+            activity.onRemoveClicked();
+        }
+    }
+
     @Inject
     @UiField
     Lang lang;
@@ -115,6 +132,10 @@ public class EquipmentPreviewView extends Composite implements AbstractEquipment
     SpanElement manager;
     @UiField
     SpanElement project;
+    @UiField
+    Button remove;
+    @UiField
+    Button copy;
 
     @Inject
     FixedPositioner positioner;

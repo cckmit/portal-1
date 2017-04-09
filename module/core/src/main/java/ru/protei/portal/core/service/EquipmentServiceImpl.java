@@ -13,6 +13,7 @@ import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.query.EquipmentQuery;
 import ru.protei.winter.core.utils.collections.CollectionUtils;
+import ru.protei.winter.core.utils.result.ResultWrapperException;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.ArrayList;
@@ -116,6 +117,39 @@ public class EquipmentServiceImpl implements EquipmentService {
     public CoreResponse< Boolean > checkIfExistDecimalNumber( DecimalNumber number ) {
         boolean isExist = decimalNumberDAO.checkIfExist( number );
         return new CoreResponse<Boolean>().success( isExist );
+    }
+
+    @Override
+    public CoreResponse<Long> copyEquipment( Long equipmentId, String newName, Long authorId ) {
+        if (equipmentId == null || newName == null) {
+            return new CoreResponse<Long>().error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        Equipment equipment = equipmentDAO.get(equipmentId);
+        if (equipment == null) {
+            return new CoreResponse<Long>().error(En_ResultStatus.NOT_FOUND);
+        }
+
+        Equipment newEquipment = new Equipment(equipment);
+        newEquipment.setAuthorId( authorId );
+        newEquipment.setCreated( new Date() );
+
+        Long newId = equipmentDAO.persist(newEquipment);
+        if (newId == null) {
+            return new CoreResponse<Long>().error(En_ResultStatus.INTERNAL_ERROR);
+        }
+
+        return new CoreResponse<Long>().success( newId );
+    }
+
+    @Override
+    public CoreResponse<Boolean> removeEquipment( Long equipmentId ) {
+        if (equipmentId == null) {
+            return new CoreResponse<Boolean>().error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        Boolean removeStatus = equipmentDAO.removeByKey(equipmentId);
+        return new CoreResponse<Boolean>().success( removeStatus );
     }
 
     @Override

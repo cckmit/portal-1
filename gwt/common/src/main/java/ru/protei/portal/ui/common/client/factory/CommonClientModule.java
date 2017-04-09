@@ -3,6 +3,8 @@ package ru.protei.portal.ui.common.client.factory;
 import com.google.gwt.inject.client.AbstractGinModule;
 import com.google.inject.Singleton;
 import ru.protei.portal.ui.common.client.activity.actionbar.ActionBarActivity;
+import ru.protei.portal.ui.common.client.activity.confirmdialog.AbstractConfirmDialogView;
+import ru.protei.portal.ui.common.client.activity.confirmdialog.ConfirmDialogActivity;
 import ru.protei.portal.ui.common.client.activity.contactitem.AbstractContactItemListView;
 import ru.protei.portal.ui.common.client.activity.contactitem.AbstractContactItemView;
 import ru.protei.portal.ui.common.client.activity.contactitem.ContactItemActivity;
@@ -13,6 +15,7 @@ import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.common.IssueStates;
+import ru.protei.portal.ui.common.client.view.confirmdialog.ConfirmDialogView;
 import ru.protei.portal.ui.common.client.view.contactitem.item.ContactItemView;
 import ru.protei.portal.ui.common.client.view.contactitem.list.ContactItemListView;
 import ru.protei.portal.ui.common.client.view.dialogdetails.DialogDetailsView;
@@ -52,10 +55,10 @@ public class CommonClientModule extends AbstractGinModule {
 
         bind( IssueStates.class ).asEagerSingleton();
 
+        bind( ConfirmDialogActivity.class ).asEagerSingleton();
+        bind( AbstractConfirmDialogView.class ).to( ConfirmDialogView.class ).in( Singleton.class );
+
         requestStaticInjection(RequestCallback.class);
-
-
-
     }
 }
 

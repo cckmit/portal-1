@@ -47,4 +47,12 @@ public class EquipmentEvents {
     }
 
     public static class ChangeModel {}
+
+    public static class ShowCopyDialog {
+        public ShowCopyDialog( Long id ) {
+            this.id = id;
+        }
+
+        public Long id;
+    }
 }

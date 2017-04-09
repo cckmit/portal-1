@@ -2,6 +2,8 @@ package ru.protei.portal.ui.equipment.client.factory;
 
 import com.google.gwt.inject.client.AbstractGinModule;
 import com.google.inject.Singleton;
+import ru.protei.portal.ui.equipment.client.activity.copy.AbstractEquipmentCopyView;
+import ru.protei.portal.ui.equipment.client.activity.copy.EquipmentCopyActivity;
 import ru.protei.portal.ui.equipment.client.activity.edit.AbstractEquipmentEditView;
 import ru.protei.portal.ui.equipment.client.activity.edit.EquipmentEditActivity;
 import ru.protei.portal.ui.equipment.client.activity.filter.AbstractEquipmentFilterView;
@@ -13,6 +15,7 @@ import ru.protei.portal.ui.equipment.client.activity.table.EquipmentTableActivit
 import ru.protei.portal.ui.equipment.client.common.EquipmentUtils;
 import ru.protei.portal.ui.equipment.client.provider.AbstractDecimalNumberDataProvider;
 import ru.protei.portal.ui.equipment.client.provider.DecimalNumberDataProvider;
+import ru.protei.portal.ui.equipment.client.view.copy.EquipmentCopyView;
 import ru.protei.portal.ui.equipment.client.view.edit.EquipmentEditView;
 import ru.protei.portal.ui.equipment.client.view.filter.EquipmentFilterView;
 import ru.protei.portal.ui.equipment.client.view.preview.EquipmentPreviewView;
@@ -38,8 +41,10 @@ public class EquipmentClientModule extends AbstractGinModule {
         bind ( AbstractEquipmentEditView.class ).to(EquipmentEditView.class).in(Singleton.class);
 
         bind ( AbstractEquipmentFilterView.class ).to( EquipmentFilterView.class ).in( Singleton.class );
-
         bind ( AbstractDecimalNumberDataProvider.class ).to( DecimalNumberDataProvider.class ).in( Singleton.class );
+
+        bind( EquipmentCopyActivity.class ).asEagerSingleton();
+        bind( AbstractEquipmentCopyView.class ).to( EquipmentCopyView.class ).in( Singleton.class );
 
         requestStaticInjection( EquipmentUtils.class );
     }

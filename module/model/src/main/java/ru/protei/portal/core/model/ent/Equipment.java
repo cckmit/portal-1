@@ -97,6 +97,16 @@ public class Equipment implements Serializable {
         this.id = id;
     }
 
+    public Equipment( Equipment equipment ) {
+        this.name = equipment.getName();
+        this.nameSldWrks = equipment.getNameSldWrks();
+        this.stage = equipment.getStage();
+        this.type = equipment.getType();
+        this.managerId = equipment.getManagerId();
+        this.project = equipment.getProject();
+        this.comment = equipment.getComment();
+    }
+
     public Long getId() {
         return id;
     }

@@ -431,4 +431,24 @@ public interface Lang extends Messages, ContactItemLang {
     String equipmentProject();
 
     String selectorAny();
+
+    String buttonYes();
+
+    String buttonNo();
+
+    String buttonCopy();
+
+    String buttonRemove();
+
+    String equipmentRemoveConfirmMessage();
+
+    String equipmentRemoveSuccessed();
+
+    String equipmentNewName();
+
+    String equipmentCopyNotFilledNewName();
+
+    String equpmentCopySuccess();
+
+    String equipmentCopyHeader();
 }

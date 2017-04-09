@@ -5,6 +5,15 @@
 
     <g:HTMLPanel styleName="preview-wrapper grid with-table-pager">
         <g:HTMLPanel ui:field="preview" styleName="preview">
+            <div class="pull-right">
+                <g:Button styleName="btn btn-white" ui:field="copy" title="{lang.buttonCopy}">
+                    <i class="fa fa-copy"></i>
+                </g:Button>
+                <g:Button styleName="btn btn-danger" ui:field="remove" title="{lang.buttonRemove}">
+                    <i class="fa fa-trash-o"></i>
+                </g:Button>
+            </div>
+
             <fieldset class="header">
                 <legend ui:field="header"></legend>
                 <div class="col-xs-12">

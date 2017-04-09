@@ -28,4 +28,8 @@ public interface EquipmentService {
     CoreResponse< DecimalNumber > getNextAvailableDecimalNumberModification( DecimalNumber number );
 
     CoreResponse< Boolean > checkIfExistDecimalNumber( DecimalNumber number );
+
+    CoreResponse<Long> copyEquipment( Long equipmentId, String newName, Long authorId );
+
+    CoreResponse<Boolean> removeEquipment( Long equipmentId );
 }

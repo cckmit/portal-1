@@ -5,6 +5,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.Equipment;
+import ru.protei.portal.ui.common.client.events.ConfirmDialogEvents;
 import ru.protei.portal.ui.common.client.events.EquipmentEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.En_EquipmentStageLang;
@@ -39,6 +40,33 @@ public abstract class EquipmentPreviewActivity implements Activity, AbstractEqui
         }
 
         fillView( event.equipment );
+    }
+
+    @Event
+    public void onConfirmRemove( ConfirmDialogEvents.Confirm event ) {
+        if ( !event.identity.equals( getClass().getName() ) ) {
+            return;
+        }
+
+        equipmentService.removeEquipment( equipmentId, new RequestCallback<Boolean>() {
+            @Override
+            public void onError( Throwable throwable ) {}
+
+            @Override
+            public void onSuccess( Boolean aBoolean ) {
+                fireEvent( new EquipmentEvents.Show() );
+                fireEvent( new NotifyEvents.Show( lang.equipmentRemoveSuccessed(), NotifyEvents.NotifyType.SUCCESS ) );
+            }
+        } );
+    }
+    @Override
+    public void onCopyClicked() {
+        fireEvent( new EquipmentEvents.ShowCopyDialog( equipmentId ) );
+    }
+
+    @Override
+    public void onRemoveClicked() {
+        fireEvent( new ConfirmDialogEvents.Show( getClass().getName(), lang.equipmentRemoveConfirmMessage() ) );
     }
 
     private void fillView( Equipment value ) {
