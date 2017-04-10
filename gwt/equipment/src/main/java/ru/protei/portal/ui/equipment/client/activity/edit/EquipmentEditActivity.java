@@ -119,9 +119,6 @@ public abstract class EquipmentEditActivity
         manager.setId( equipment.getManagerId() );
         view.manager().setValue( manager );
         view.project().setValue( equipment.getProject() );
-
-        view.nameEnabled().setEnabled( isCreate );
-        view.typeEnabled().setEnabled( isCreate );
     }
 
     @Inject

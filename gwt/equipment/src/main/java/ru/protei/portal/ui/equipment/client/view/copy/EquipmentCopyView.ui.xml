@@ -3,10 +3,10 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-   <g:HTMLPanel>
+   <g:HTMLPanel styleName="">
            <div class="form-group">
                <label><ui:text from="{lang.equipmentNewName}"/></label>
-               <g:TextBox ui:field="name" styleName="form-control"/>
+               <g:TextBox ui:field="name" styleName="input-field"/>
            </div>
     </g:HTMLPanel>
 </ui:UiBinder>

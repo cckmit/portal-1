@@ -3,21 +3,24 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="popupBlock">
-            <div class="popup active" ui:field="dialog">
-                <div class="head">
-                    <span class="part name" ui:field="header"/>
-                    <div class="rightSide">
-                        <g:Label ui:field="close" styleName="close_button"/>
+    <g:HTMLPanel styleName="modal">
+        <div class="modal-dialog dialog-content" ui:field="modalDialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <g:Button ui:field="close" styleName="close">×</g:Button>
+                    <h4 class="modal-title" ui:field="header"></h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <g:HTMLPanel ui:field="bodyContainer" styleName='col-xs-12' />
                     </div>
                 </div>
-
-                <g:HTMLPanel ui:field="bodyContainer" styleName='body' />
-
-                <div class="footer">
-                    <g:Anchor href='javascript;;' ui:field="save" styleName="save"><ui:text from="{lang.buttonSave}"/></g:Anchor>
-                    <g:Anchor href='#' ui:field="cancel" styleName="cancel"><ui:text from="{lang.buttonCancel}"/></g:Anchor>
+                <div class="modal-footer">
+                    <g:Anchor href='#' ui:field="save" styleName="btn btn-primary"><ui:text from="{lang.buttonSave}"/></g:Anchor>
+                    <g:Anchor href='#' ui:field="cancel" styleName="btn btn-white"><ui:text from="{lang.buttonCancel}"/></g:Anchor>
                 </div>
             </div>
+        </div>
     </g:HTMLPanel>
+
 </ui:UiBinder>
