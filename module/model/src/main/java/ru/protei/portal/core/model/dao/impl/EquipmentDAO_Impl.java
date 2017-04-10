@@ -25,7 +25,7 @@ public class EquipmentDAO_Impl extends PortalBaseJdbcDAO<Equipment> implements E
     public List<Equipment> getListByQuery(EquipmentQuery query) {
         SqlCondition where = createSqlCondition(query);
 
-        String join = "INNER JOIN decimal_number DN ON DN.equipment_id = equipment.id";
+        String join = "LEFT JOIN decimal_number DN ON DN.equipment_id = equipment.id";
 
         return getList(
                 new JdbcQueryParameters().
@@ -41,7 +41,7 @@ public class EquipmentDAO_Impl extends PortalBaseJdbcDAO<Equipment> implements E
     @Override
     public Long countByQuery( EquipmentQuery query ) {
         SqlCondition where = createSqlCondition(query);
-        String join = "INNER JOIN decimal_number DN ON DN.equipment_id = equipment.id";
+        String join = "LEFT JOIN decimal_number DN ON DN.equipment_id = equipment.id";
 
         return (long) getObjectsCount( where.condition, where.args, join, true );
     }

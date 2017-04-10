@@ -451,4 +451,6 @@ public interface Lang extends Messages, ContactItemLang {
     String equpmentCopySuccess();
 
     String equipmentCopyHeader();
+
+    String equipmentCopyMessage();
 }

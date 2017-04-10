@@ -133,6 +133,7 @@ public class EquipmentServiceImpl implements EquipmentService {
         Equipment newEquipment = new Equipment(equipment);
         newEquipment.setAuthorId( authorId );
         newEquipment.setCreated( new Date() );
+        newEquipment.setName( newName );
 
         Long newId = equipmentDAO.persist(newEquipment);
         if (newId == null) {
