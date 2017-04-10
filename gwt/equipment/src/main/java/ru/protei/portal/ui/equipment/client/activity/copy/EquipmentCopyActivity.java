@@ -31,7 +31,11 @@ public abstract class EquipmentCopyActivity
     @Event
     public void onShow( EquipmentEvents.ShowCopyDialog event ) {
         this.show = event;
-        view.name().setValue( null );
+        if ( event.equipment == null ) {
+            return;
+        }
+        view.name().setValue( event.equipment.getName() + lang.copyPostfix() );
+
         dialogView.getDialogAnimation().show();
     }
 
@@ -43,7 +47,7 @@ public abstract class EquipmentCopyActivity
             return;
         }
 
-        equipmentService.copyEquipment( show.id, title, new RequestCallback<Long>() {
+        equipmentService.copyEquipment( show.equipment.getId(), title, new RequestCallback<Long>() {
             @Override
             public void onError( Throwable caught ) {}
 

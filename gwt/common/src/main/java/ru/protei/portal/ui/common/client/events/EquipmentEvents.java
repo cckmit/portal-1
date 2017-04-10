@@ -49,10 +49,10 @@ public class EquipmentEvents {
     public static class ChangeModel {}
 
     public static class ShowCopyDialog {
-        public ShowCopyDialog( Long id ) {
-            this.id = id;
+        public ShowCopyDialog( Equipment equipment ) {
+            this.equipment = equipment;
         }
 
-        public Long id;
+        public Equipment equipment;
     }
 }

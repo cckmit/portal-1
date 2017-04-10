@@ -32,8 +32,7 @@ public abstract class EquipmentPreviewActivity implements Activity, AbstractEqui
         event.parent.clear();
         event.parent.add( view.asWidget() );
 
-        this.equipmentId = event.equipment.getId();
-
+        Long equipmentId = event.equipment.getId();
         if( equipmentId == null ) {
             fillView( equipmentId );
             return;
@@ -48,7 +47,7 @@ public abstract class EquipmentPreviewActivity implements Activity, AbstractEqui
             return;
         }
 
-        equipmentService.removeEquipment( equipmentId, new RequestCallback<Boolean>() {
+        equipmentService.removeEquipment( equipment.getId(), new RequestCallback<Boolean>() {
             @Override
             public void onError( Throwable throwable ) {}
 
@@ -61,7 +60,7 @@ public abstract class EquipmentPreviewActivity implements Activity, AbstractEqui
     }
     @Override
     public void onCopyClicked() {
-        fireEvent( new EquipmentEvents.ShowCopyDialog( equipmentId ) );
+        fireEvent( new EquipmentEvents.ShowCopyDialog( equipment ) );
     }
 
     @Override
@@ -70,6 +69,8 @@ public abstract class EquipmentPreviewActivity implements Activity, AbstractEqui
     }
 
     private void fillView( Equipment value ) {
+        this.equipment = value;
+
         view.setHeader( lang.equipmentDescription() + " #" + value.getId() );
         view.setName( value.getName() );
         view.setNameBySldWrks( value.getNameSldWrks() );
@@ -80,11 +81,11 @@ public abstract class EquipmentPreviewActivity implements Activity, AbstractEqui
         view.setManager( value.getManagerShortName() == null ? "" : value.getManagerShortName() );
 
         if( value.getDecimalNumbers() != null ) {
-            view.setDecimalNumbers( value.getDecimalNumbers().stream().map( EquipmentUtils:: formatNumber ).collect( Collectors.joining(", ")) );
+            view.setDecimalNumbers( value.getDecimalNumbers().stream().map( EquipmentUtils::formatNumber ).collect( Collectors.joining(", ")) );
         }
 
         if ( value.getLinkedEquipmentDecimalNumbers() != null && !value.getLinkedEquipmentDecimalNumbers().isEmpty() ) {
-            view.setLinkedEquipment( value.getLinkedEquipmentDecimalNumbers().stream().map( EquipmentUtils:: formatNumber ).collect( Collectors.joining(", ")) );
+            view.setLinkedEquipment( value.getLinkedEquipmentDecimalNumbers().stream().map( EquipmentUtils::formatNumber ).collect( Collectors.joining(", ")) );
         } else {
             view.setLinkedEquipment( lang.equipmentPrimaryUseNotDefinied() );
         }
@@ -121,5 +122,5 @@ public abstract class EquipmentPreviewActivity implements Activity, AbstractEqui
     @Inject
     EquipmentServiceAsync equipmentService;
 
-    private Long equipmentId;
+    private Equipment equipment;
 }

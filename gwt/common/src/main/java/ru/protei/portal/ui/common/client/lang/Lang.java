@@ -453,4 +453,6 @@ public interface Lang extends Messages, ContactItemLang {
     String equipmentCopyHeader();
 
     String equipmentCopyMessage();
+
+    String copyPostfix();
 }
