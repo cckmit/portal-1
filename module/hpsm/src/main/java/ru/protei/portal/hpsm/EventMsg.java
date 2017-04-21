@@ -1,12 +1,17 @@
 package ru.protei.portal.hpsm;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import protei.utils.common.ThreadLocalDateFormat;
+
+import java.util.Date;
 
 /**
  * Created by michael on 19.04.17.
  */
 @XStreamAlias("FIELDS")
 public class EventMsg {
+
+    private static ThreadLocalDateFormat DATE_FMT = new ThreadLocalDateFormat("dd/MM/yyyy HH:mm:ss");
 
     @XStreamAlias("ID_HPSM")
     String hpsmId;
@@ -72,16 +77,16 @@ public class EventMsg {
     String txRegistrationTime;
 
     @XStreamAlias("TO_WORK_TIME")
-    String txWorkTime;
+    String txOpenTime;
 
     @XStreamAlias("WORKAROUND_TIME")
-    String workaroundTime;
+    String txWorkaroundTime;
 
     @XStreamAlias("RESOLUTION_TIME")
-    String solutionTime;
+    String txSolutionTime;
 
     @XStreamAlias("ACCEPT_WORKAROUND_TIME")
-    String acceptWorkaroundTime;
+    String txAcceptWorkaroundTime;
 
     public EventMsg () {
 
@@ -255,35 +260,59 @@ public class EventMsg {
         this.txRegistrationTime = txRegistrationTime;
     }
 
-    public String getTxWorkTime() {
-        return txWorkTime;
+    public String getTxOpenTime() {
+        return txOpenTime;
     }
 
-    public void setTxWorkTime(String txWorkTime) {
-        this.txWorkTime = txWorkTime;
+    public void setTxOpenTime(String txOpenTime) {
+        this.txOpenTime = txOpenTime;
     }
 
-    public String getWorkaroundTime() {
-        return workaroundTime;
+    public String getTxWorkaroundTime() {
+        return txWorkaroundTime;
     }
 
-    public void setWorkaroundTime(String workaroundTime) {
-        this.workaroundTime = workaroundTime;
+    public void setTxWorkaroundTime(String txWorkaroundTime) {
+        this.txWorkaroundTime = txWorkaroundTime;
     }
 
-    public String getSolutionTime() {
-        return solutionTime;
+    public String getTxSolutionTime() {
+        return txSolutionTime;
     }
 
-    public void setSolutionTime(String solutionTime) {
-        this.solutionTime = solutionTime;
+    public void setTxSolutionTime(String txSolutionTime) {
+        this.txSolutionTime = txSolutionTime;
     }
 
-    public String getAcceptWorkaroundTime() {
-        return acceptWorkaroundTime;
+    public String getTxAcceptWorkaroundTime() {
+        return txAcceptWorkaroundTime;
     }
 
-    public void setAcceptWorkaroundTime(String acceptWorkaroundTime) {
-        this.acceptWorkaroundTime = acceptWorkaroundTime;
+    public void setTxAcceptWorkaroundTime(String txAcceptWorkaroundTime) {
+        this.txAcceptWorkaroundTime = txAcceptWorkaroundTime;
     }
+
+    public void setRegistrationTime (Date d) {
+        this.txRegistrationTime = d == null ? null : DATE_FMT.format(d);
+    }
+
+    public void setOpenTime (Date d) {
+        this.txOpenTime = d == null ? null : DATE_FMT.format(d);
+    }
+
+    public void setWorkaroundTime (Date d) {
+        this.txWorkaroundTime = d == null ? null : DATE_FMT.format(d);
+    }
+
+    public void setSolutionTime (Date d) {
+        this.txSolutionTime = d == null ? null : DATE_FMT.format(d);
+    }
+
+    public void setConfirmWaTime (Date d) {
+        this.txAcceptWorkaroundTime = d == null ? null : DATE_FMT.format(d);
+    }
+
+//    public Date getRegistrationTime () {
+//        return DATE_FMT.parse(txRegistrationTime);
+//    }
 }
