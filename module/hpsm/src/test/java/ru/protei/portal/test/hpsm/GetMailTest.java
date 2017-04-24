@@ -40,6 +40,7 @@ public class GetMailTest {
             System.out.println(msg.getHeaders());
             System.out.println(msg.getPayload());
 
+
             if (msg.getPayload().getContent() instanceof MimeMultipart) {
                 System.out.println("Multupart message:");
 

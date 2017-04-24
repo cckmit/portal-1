@@ -104,10 +104,6 @@ public class EventMsg {
         return statusText;
     }
 
-    public void setStatusText(String statusText) {
-        this.statusText = statusText;
-    }
-
     public String getOurId() {
         return ourId;
     }
@@ -315,4 +311,18 @@ public class EventMsg {
 //    public Date getRegistrationTime () {
 //        return DATE_FMT.parse(txRegistrationTime);
 //    }
+
+
+    public HpsmStatus status (HpsmStatus s) {
+        this.statusText = s.getHpsmCode();
+        return s;
+    }
+
+    public HpsmStatus status () {
+        return HpsmStatus.parse(this.statusText);
+    }
+
+    public HpsmSeverity severity () {
+        return HpsmSeverity.find(this.severity);
+    }
 }

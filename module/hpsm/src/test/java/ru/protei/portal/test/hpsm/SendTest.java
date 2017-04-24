@@ -9,9 +9,7 @@ import org.springframework.core.io.InputStreamSource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMailMessage;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import ru.protei.portal.hpsm.EventMsg;
-import ru.protei.portal.hpsm.EventMsgInputStreamSource;
-import ru.protei.portal.hpsm.HpsmConfiguration;
+import ru.protei.portal.hpsm.*;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
@@ -41,10 +39,13 @@ public class SendTest {
         JavaMailSender sender = ctx.getBean(JavaMailSender.class);
 
         try {
+            EventSubject subject = new EventSubject("RTS000111", "", HpsmStatus.NEW);
+
             EventMsg eventMsg = new EventMsg();
-            eventMsg.setHpsmId("RTS000111");
-            eventMsg.setStatusText("Новый");
-            eventMsg.setOurId("crm-22");
+            eventMsg.setHpsmId(subject.getHpsmId());
+            eventMsg.status(subject.getStatus());
+            eventMsg.setOurId(subject.getOurId());
+
             eventMsg.setAddress("Russia, SPB");
             eventMsg.setContactPerson("Michael Zavedeev");
             eventMsg.setContactPersonEmail("zavedeev@protei.ru");
@@ -53,18 +54,10 @@ public class SendTest {
             eventMsg.setMessage("This is a comment");
             eventMsg.setRegistrationTime(new Date());
 
-
             MimeMessage message = sender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
 
-
-            helper.setSubject(
-                    String.format("ID_HPSM=[%s]ID_VENDOR=[%s]STATUS=[%s]",
-                            eventMsg.getHpsmId(),
-                            eventMsg.getOurId(),
-                            eventMsg.getStatusText())
-            );
-
+            helper.setSubject(subject.toString());
             helper.setTo("crm_test@protei.ru");
             helper.setFrom("hpsm-agent@testcompany.com");
 
