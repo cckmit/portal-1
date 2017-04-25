@@ -11,9 +11,14 @@ import org.springframework.integration.mail.MailReceiver;
 import org.springframework.integration.mail.MailReceivingMessageSource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+import ru.protei.portal.hpsm.api.MailMessageFactory;
+import ru.protei.portal.hpsm.api.MailSendChannel;
+import ru.protei.portal.hpsm.handler.HpsmPingCommandHandler;
 import ru.protei.portal.hpsm.struct.EventMsg;
 import ru.protei.portal.hpsm.struct.HpsmSetup;
 import ru.protei.portal.hpsm.utils.EventMsgInputStreamSource;
+import ru.protei.portal.hpsm.utils.JavaMailMessageFactory;
+import ru.protei.portal.hpsm.utils.JavaMailSendChannel;
 
 /**
  * Created by michael on 19.04.17.
@@ -21,24 +26,43 @@ import ru.protei.portal.hpsm.utils.EventMsgInputStreamSource;
 @Configuration
 public class HpsmConfiguration {
 
-    @Bean(name = "hpsmSender")
-    public JavaMailSender mailSender () {
-        JavaMailSenderImpl impl = new org.springframework.mail.javamail.JavaMailSenderImpl ();
-
-        impl.setDefaultEncoding("utf-8");
-        impl.setHost("smtp.protei.ru");
-        impl.setPort(2525);
-
-
-        return impl;
-    }
-
     @Bean
     public HpsmSetup getHpsmSetup () {
         HpsmSetup setup = new HpsmSetup();
         setup.senderAddress = "crm_test-user@protei.ru";
         setup.hpsmAddress = "crm_test@protei.ru";
+        setup.mailServerHost = "smtp.protei.ru";
+        setup.mailServerPort = 2525;
         return setup;
+    }
+
+    @Bean(name = "hpsmSender")
+    public JavaMailSender mailSender () {
+
+        HpsmSetup setup = getHpsmSetup ();
+
+        JavaMailSenderImpl impl = new org.springframework.mail.javamail.JavaMailSenderImpl ();
+
+        impl.setDefaultEncoding("utf-8");
+        impl.setHost(setup.mailServerHost);
+        impl.setPort(setup.mailServerPort);
+
+        return impl;
+    }
+
+    @Bean(name = "hpsmSendChannel")
+    public MailSendChannel getRealMailSendChannel () {
+        return new JavaMailSendChannel(mailSender());
+    }
+
+    @Bean(name = "hpsmMessageFactory")
+    public MailMessageFactory getMailMessageFactory () {
+        return new JavaMailMessageFactory (mailSender());
+    }
+
+    @Bean
+    public HpsmPingCommandHandler getPingCommandHandler () {
+        return new HpsmPingCommandHandler();
     }
 
 

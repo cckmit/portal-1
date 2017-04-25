@@ -8,4 +8,7 @@ public class HpsmSetup {
     public String senderAddress;
     public String hpsmAddress;
 
+    public String mailServerHost;
+    public int mailServerPort;
+
 }

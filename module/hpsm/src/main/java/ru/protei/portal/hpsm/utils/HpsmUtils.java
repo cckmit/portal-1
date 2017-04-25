@@ -1,7 +1,12 @@
 package ru.protei.portal.hpsm.utils;
 
+import org.springframework.mail.javamail.MimeMessageHelper;
 import protei.utils.common.ThreadLocalDateFormat;
+import ru.protei.portal.hpsm.struct.HpsmPingCmd;
+import ru.protei.portal.hpsm.struct.HpsmSetup;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 import java.text.ParseException;
 import java.util.Date;
 
@@ -37,5 +42,15 @@ public class HpsmUtils {
             return defaultValue;
 
         return x.substring(s+tag_len, e);
+    }
+
+    public static MimeMessage makeMessgae (MimeMessage msg, HpsmPingCmd cmd, HpsmSetup setup) throws MessagingException {
+        MimeMessageHelper helper = new MimeMessageHelper(msg, false);
+
+        helper.setSubject(cmd.toString());
+        helper.setTo(setup.hpsmAddress);
+        helper.setFrom(setup.senderAddress);
+
+        return msg;
     }
 }

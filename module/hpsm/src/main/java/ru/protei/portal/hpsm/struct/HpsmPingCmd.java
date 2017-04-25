@@ -35,6 +35,10 @@ public class HpsmPingCmd {
         this.responseTime = isRequest ? null : new Date();
     }
 
+    public boolean isResponse () {
+        return !isRequest;
+    }
+
     public boolean isRequest() {
         return isRequest;
     }
@@ -64,14 +68,14 @@ public class HpsmPingCmd {
 
     public static HpsmPingCmd parse (String x) throws ParseException {
         String server = HpsmUtils.extractOption(x, "TEST_SERVER", null);
-        String sendTimeTx = HpsmUtils.extractOption(x, "HPSM_SEND_TIME", null);
+        String requestTimeTx = HpsmUtils.extractOption(x, "HPSM_SEND_TIME", null);
 
-        if (server == null || sendTimeTx == null)
+        if (server == null || requestTimeTx == null)
             return null;
 
         String respTime = HpsmUtils.extractOption(x, "VENDOR_SEND_TIME", null);
 
-        HpsmPingCmd result = new HpsmPingCmd(server.equals(HPSM_ID), HpsmUtils.parseDate(sendTimeTx));
+        HpsmPingCmd result = new HpsmPingCmd(server.equals(HPSM_ID), HpsmUtils.parseDate(requestTimeTx));
         result.responseTime = HpsmUtils.parseDate(respTime);
 
         return result;

@@ -7,8 +7,11 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import ru.protei.portal.hpsm.MailHandler;
+import ru.protei.portal.hpsm.api.MailMessageFactory;
+import ru.protei.portal.hpsm.api.MailSendChannel;
 import ru.protei.portal.hpsm.struct.HpsmPingCmd;
 import ru.protei.portal.hpsm.struct.HpsmSetup;
+import ru.protei.portal.hpsm.utils.HpsmUtils;
 
 import javax.mail.internet.MimeMessage;
 
@@ -20,13 +23,23 @@ public class HpsmPingCommandHandler implements MailHandler {
     private static Logger logger = LoggerFactory.getLogger(HpsmPingCommandHandler.class);
 
     @Autowired
-    @Qualifier("hpsmSender")
-    private JavaMailSender sender;
+    @Qualifier("hpsmSendChannel")
+    private MailSendChannel sendChannel;
+
+    @Autowired
+    @Qualifier("hpsmMessageFactory")
+    private MailMessageFactory messageFactory;
 
     @Autowired
     private HpsmSetup setup;
 
+
     public HpsmPingCommandHandler() {
+    }
+
+
+    public void setSendChannel (MailSendChannel channel) {
+        this.sendChannel = channel;
     }
 
 
@@ -57,12 +70,7 @@ public class HpsmPingCommandHandler implements MailHandler {
 
                 logger.debug("send response {}", response.toString());
 
-                MimeMessage message = sender.createMimeMessage();
-                MimeMessageHelper helper = new MimeMessageHelper(message, false);
-
-                helper.setSubject(response.toString());
-                helper.setTo(setup.hpsmAddress);
-                helper.setFrom(setup.senderAddress);
+                sendChannel.send(HpsmUtils.makeMessgae(messageFactory.createMailMessage(),response,setup));
             }
             catch (Throwable e) {
                 logger.debug("unable to send response", e);
