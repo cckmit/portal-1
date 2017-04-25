@@ -13,6 +13,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import ru.protei.portal.hpsm.struct.EventMsg;
 import ru.protei.portal.hpsm.struct.HpsmSetup;
+import ru.protei.portal.hpsm.utils.EventMsgInputStreamSource;
 
 /**
  * Created by michael on 19.04.17.
@@ -74,7 +75,7 @@ public class HpsmConfiguration {
     @Bean
     @Scope("prototype")
     public EventMsgInputStreamSource eventMsgInputStreamSource () {
-        return new EventMsgInputStreamSource ();
+        return new EventMsgInputStreamSource();
     }
 
 

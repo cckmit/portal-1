@@ -11,6 +11,7 @@ import ru.protei.portal.hpsm.*;
 import ru.protei.portal.hpsm.api.HpsmStatus;
 import ru.protei.portal.hpsm.struct.EventMsg;
 import ru.protei.portal.hpsm.struct.EventSubject;
+import ru.protei.portal.hpsm.utils.EventMsgInputStreamSource;
 
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;

@@ -1,4 +1,4 @@
-package ru.protei.portal.hpsm;
+package ru.protei.portal.hpsm.handler;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import ru.protei.portal.hpsm.MailHandler;
 import ru.protei.portal.hpsm.struct.HpsmPingCmd;
 import ru.protei.portal.hpsm.struct.HpsmSetup;
 

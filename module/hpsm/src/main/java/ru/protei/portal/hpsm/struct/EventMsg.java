@@ -3,7 +3,7 @@ package ru.protei.portal.hpsm.struct;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import ru.protei.portal.hpsm.api.HpsmSeverity;
 import ru.protei.portal.hpsm.api.HpsmStatus;
-import ru.protei.portal.hpsm.HpsmUtils;
+import ru.protei.portal.hpsm.utils.HpsmUtils;
 
 import java.util.Date;
 

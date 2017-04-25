@@ -2,7 +2,7 @@ package ru.protei.portal.test.hpsm;
 
 import org.junit.Assert;
 import org.junit.Test;
-import ru.protei.portal.hpsm.HpsmUtils;
+import ru.protei.portal.hpsm.utils.HpsmUtils;
 
 /**
  * Created by michael on 25.04.17.

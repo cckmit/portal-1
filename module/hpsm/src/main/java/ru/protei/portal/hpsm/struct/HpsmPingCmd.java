@@ -1,6 +1,6 @@
 package ru.protei.portal.hpsm.struct;
 
-import ru.protei.portal.hpsm.HpsmUtils;
+import ru.protei.portal.hpsm.utils.HpsmUtils;
 
 import java.text.ParseException;
 import java.util.Date;

@@ -1,4 +1,4 @@
-package ru.protei.portal.hpsm;
+package ru.protei.portal.hpsm.utils;
 
 import protei.utils.common.ThreadLocalDateFormat;
 

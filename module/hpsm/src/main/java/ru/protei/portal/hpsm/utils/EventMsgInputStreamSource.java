@@ -1,4 +1,4 @@
-package ru.protei.portal.hpsm;
+package ru.protei.portal.hpsm.utils;
 
 import com.thoughtworks.xstream.XStream;
 import org.springframework.beans.factory.annotation.Autowired;
