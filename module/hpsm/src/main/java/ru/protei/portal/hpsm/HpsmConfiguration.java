@@ -86,10 +86,9 @@ public class HpsmConfiguration {
     }
 
 
-    @Bean
+    @Bean(name = "hpsmSerializer")
     public XStream xstreamSerializer () {
         XStream x = new XStream(new Xpp3Driver(new XmlFriendlyNameCoder("_-", "_")));
-
         x.autodetectAnnotations(true);
         x.processAnnotations(EventMsg.class);
         return x;
