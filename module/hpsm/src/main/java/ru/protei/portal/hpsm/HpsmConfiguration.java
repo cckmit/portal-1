@@ -5,17 +5,14 @@ import com.thoughtworks.xstream.io.xml.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
-import org.springframework.integration.annotation.InboundChannelAdapter;
-import org.springframework.integration.annotation.Poller;
 import org.springframework.integration.core.MessageSource;
 import org.springframework.integration.mail.ImapMailReceiver;
 import org.springframework.integration.mail.MailReceiver;
 import org.springframework.integration.mail.MailReceivingMessageSource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
-import org.springframework.mail.javamail.MimeMailMessage;
-
-import javax.mail.Message;
+import ru.protei.portal.hpsm.struct.EventMsg;
+import ru.protei.portal.hpsm.struct.HpsmSetup;
 
 /**
  * Created by michael on 19.04.17.
@@ -23,7 +20,7 @@ import javax.mail.Message;
 @Configuration
 public class HpsmConfiguration {
 
-    @Bean(name = "sender")
+    @Bean(name = "hpsmSender")
     public JavaMailSender mailSender () {
         JavaMailSenderImpl impl = new org.springframework.mail.javamail.JavaMailSenderImpl ();
 
@@ -33,6 +30,14 @@ public class HpsmConfiguration {
 
 
         return impl;
+    }
+
+    @Bean
+    public HpsmSetup getHpsmSetup () {
+        HpsmSetup setup = new HpsmSetup();
+        setup.senderAddress = "crm_test-user@protei.ru";
+        setup.hpsmAddress = "crm_test@protei.ru";
+        return setup;
     }
 
 

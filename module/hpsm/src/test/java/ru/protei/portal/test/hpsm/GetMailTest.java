@@ -7,10 +7,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.integration.core.MessageSource;
 import org.springframework.messaging.Message;
-import ru.protei.portal.hpsm.EventMsg;
+import ru.protei.portal.hpsm.struct.EventMsg;
 import ru.protei.portal.hpsm.HpsmConfiguration;
 
-import javax.mail.Multipart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 

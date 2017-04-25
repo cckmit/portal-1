@@ -1,4 +1,4 @@
-package ru.protei.portal.hpsm;
+package ru.protei.portal.hpsm.api;
 
 import ru.protei.portal.core.model.dict.En_CaseState;
 

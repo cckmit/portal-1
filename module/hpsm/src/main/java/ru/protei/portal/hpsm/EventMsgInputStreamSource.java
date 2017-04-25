@@ -3,6 +3,7 @@ package ru.protei.portal.hpsm;
 import com.thoughtworks.xstream.XStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamSource;
+import ru.protei.portal.hpsm.struct.EventMsg;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

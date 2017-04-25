@@ -1,4 +1,6 @@
-package ru.protei.portal.hpsm;
+package ru.protei.portal.hpsm.struct;
+
+import ru.protei.portal.hpsm.api.HpsmStatus;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

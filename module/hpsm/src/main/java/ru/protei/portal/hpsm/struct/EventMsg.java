@@ -1,7 +1,9 @@
-package ru.protei.portal.hpsm;
+package ru.protei.portal.hpsm.struct;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-import protei.utils.common.ThreadLocalDateFormat;
+import ru.protei.portal.hpsm.api.HpsmSeverity;
+import ru.protei.portal.hpsm.api.HpsmStatus;
+import ru.protei.portal.hpsm.HpsmUtils;
 
 import java.util.Date;
 
@@ -10,8 +12,6 @@ import java.util.Date;
  */
 @XStreamAlias("FIELDS")
 public class EventMsg {
-
-    private static ThreadLocalDateFormat DATE_FMT = new ThreadLocalDateFormat("dd/MM/yyyy HH:mm:ss");
 
     @XStreamAlias("ID_HPSM")
     String hpsmId;
@@ -289,28 +289,24 @@ public class EventMsg {
     }
 
     public void setRegistrationTime (Date d) {
-        this.txRegistrationTime = d == null ? null : DATE_FMT.format(d);
+        this.txRegistrationTime = HpsmUtils.formatDate(d);
     }
 
     public void setOpenTime (Date d) {
-        this.txOpenTime = d == null ? null : DATE_FMT.format(d);
+        this.txOpenTime = HpsmUtils.formatDate(d);
     }
 
     public void setWorkaroundTime (Date d) {
-        this.txWorkaroundTime = d == null ? null : DATE_FMT.format(d);
+        this.txWorkaroundTime = HpsmUtils.formatDate(d);
     }
 
     public void setSolutionTime (Date d) {
-        this.txSolutionTime = d == null ? null : DATE_FMT.format(d);
+        this.txSolutionTime = HpsmUtils.formatDate(d);
     }
 
     public void setConfirmWaTime (Date d) {
-        this.txAcceptWorkaroundTime = d == null ? null : DATE_FMT.format(d);
+        this.txAcceptWorkaroundTime = HpsmUtils.formatDate(d);
     }
-
-//    public Date getRegistrationTime () {
-//        return DATE_FMT.parse(txRegistrationTime);
-//    }
 
 
     public HpsmStatus status (HpsmStatus s) {

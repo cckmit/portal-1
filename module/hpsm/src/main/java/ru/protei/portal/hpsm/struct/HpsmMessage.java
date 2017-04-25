@@ -1,4 +1,7 @@
-package ru.protei.portal.hpsm;
+package ru.protei.portal.hpsm.struct;
+
+import ru.protei.portal.hpsm.struct.EventMsg;
+import ru.protei.portal.hpsm.struct.EventSubject;
 
 /**
  * Created by michael on 24.04.17.

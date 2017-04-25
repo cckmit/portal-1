@@ -2,6 +2,7 @@ package ru.protei.portal.hpsm;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
+import ru.protei.portal.hpsm.struct.EventMsg;
 
 import javax.mail.internet.MimeMessage;
 
