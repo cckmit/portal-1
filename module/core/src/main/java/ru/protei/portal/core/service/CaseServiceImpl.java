@@ -282,8 +282,8 @@ public class CaseServiceImpl implements CaseService {
     }
 
     private void removeAttachments(List<Long> attachmentsIds){
-        attachmentDAO.removeByKeys(attachmentsIds);
         fileController.removeFiles(attachmentsIds);
+        attachmentDAO.removeByKeys(attachmentsIds);
     }
 
     private void putAttachmentsToComments(Collection<CaseComment> comments, Collection<CaseAttachment> caseAttachments){

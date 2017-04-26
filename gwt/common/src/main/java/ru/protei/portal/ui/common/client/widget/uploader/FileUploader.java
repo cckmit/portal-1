@@ -122,8 +122,8 @@ public class FileUploader extends Composite implements HasHTML, HasSafeHtml {
     @UiField
     HTMLPanel visibleContent;
 
-    private final String UPLOAD_WITHOUT_AUTOBINDING_URL = "/Crm/springApi/issueUploadFile";
-    private final String UPLOAD_WITH_AUTOBINDING_URL = "/Crm/springApi/uploadFileToCase";
+    private static final String UPLOAD_WITHOUT_AUTOBINDING_URL = "/Crm/springApi/issueUploadFile";
+    private static final String UPLOAD_WITH_AUTOBINDING_URL = "/Crm/springApi/uploadFileToCase";
     private FileUploadHandler fileUploadHandler;
     private Long caseId;
 

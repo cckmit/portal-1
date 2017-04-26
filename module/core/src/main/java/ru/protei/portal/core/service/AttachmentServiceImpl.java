@@ -41,10 +41,12 @@ public class AttachmentServiceImpl implements AttachmentService {
             caseService.updateCaseModified(ca.getCaseId(), new Date());
         }
 
-        boolean result = attachmentDAO.removeByKey(id) && fileController.removeFiles(Collections.singletonList(id));
+        fileController.removeFiles(Collections.singletonList(id));
+        attachmentDAO.removeByKey(id);
 
-        if (!result)
-            new CoreResponse().error(En_ResultStatus.NOT_REMOVED);
+//        if (!result) {
+//            return new CoreResponse().error(En_ResultStatus.NOT_REMOVED);
+//        }
 
         return new CoreResponse<Boolean>().success(true);
     }
@@ -56,7 +58,7 @@ public class AttachmentServiceImpl implements AttachmentService {
         );
 
         if(list == null)
-            new CoreResponse().error(En_ResultStatus.GET_DATA_ERROR);
+            return new CoreResponse().error(En_ResultStatus.GET_DATA_ERROR);
 
         return new CoreResponse<List<Attachment>>().success(list);
     }
@@ -66,7 +68,7 @@ public class AttachmentServiceImpl implements AttachmentService {
         List<Attachment> list = attachmentDAO.getListByKeys(ids);
 
         if(list == null)
-            new CoreResponse().error(En_ResultStatus.GET_DATA_ERROR);
+            return new CoreResponse().error(En_ResultStatus.GET_DATA_ERROR);
 
         return new CoreResponse<List<Attachment>>().success(list);
     }

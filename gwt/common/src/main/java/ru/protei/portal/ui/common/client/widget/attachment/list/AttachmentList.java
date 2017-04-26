@@ -41,12 +41,12 @@ public class AttachmentList extends Composite implements HasAttachments, HasAtta
         view.setActivity(this);
         view.setFileName(attachment.getFileName());
         view.setFileSize(attachment.getDataSize());
-        view.setDownloadUrl(attachment.getExtLink());
+        view.setDownloadUrl(DOWNLOAD_PATH + attachment.getExtLink());
 
         if(!isSimpleMode) {
             AttachmentType.AttachmentCategory category = AttachmentType.getCategory(attachment.getMimeType());
             if (category == AttachmentType.AttachmentCategory.IMAGE)
-                view.setPicture(attachment.getExtLink());
+                view.setPicture(DOWNLOAD_PATH + attachment.getExtLink());
             else
                 view.setPicture(category.picture);
         }else
@@ -124,6 +124,7 @@ public class AttachmentList extends Composite implements HasAttachments, HasAtta
     private boolean isSimpleMode;
     private boolean isHiddenControls;
     private Map<AbstractAttachmentView, Attachment> viewToAttachment;
+    private static final String DOWNLOAD_PATH = "/Crm/springApi/files/";
 
     interface AttachmentListUiBinder extends UiBinder<HTMLPanel, AttachmentList> {}
     private static AttachmentListUiBinder ourUiBinder = GWT.create(AttachmentListUiBinder.class);

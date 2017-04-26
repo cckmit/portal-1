@@ -11,7 +11,9 @@ import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.core.model.dao.AttachmentDAO;
 import ru.protei.portal.core.model.dao.CaseAttachmentDAO;
 import ru.protei.portal.core.model.ent.Attachment;
@@ -21,11 +23,12 @@ import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.service.user.AuthService;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.FileOutputStream;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 @RestController
 public class FileController {
@@ -42,11 +45,12 @@ public class FileController {
     @Autowired
     AuthService authService;
 
+
     private ObjectMapper mapper = new ObjectMapper();
+    private FileStorage fileStorage = new FileStorage();
     private ServletFileUpload upload = new ServletFileUpload(new DiskFileItemFactory());
 
     private final String ERROR_RESULT = "error";
-    private final String CONTEXT_PATH = "gwt_saved_file_";
 
 
     @RequestMapping(value = "/issueUploadFile", method = RequestMethod.POST)
@@ -99,27 +103,43 @@ public class FileController {
         return ERROR_RESULT;
     }
 
+    @RequestMapping(value = "/files/{folder}/{fileName:.+}", method = RequestMethod.GET)
+    @ResponseBody
+    public byte[] getFile (HttpServletResponse response,
+                           @PathVariable("folder") String folder,
+                           @PathVariable("fileName") String fileName){
+
+        FileStorage.File file = fileStorage.getFile(folder +"/"+ fileName);
+        if(file == null) {
+            response.setStatus(HttpStatus.NOT_FOUND.value());
+            return new byte[0];
+        }
+
+        response.setStatus(HttpStatus.CREATED.value());
+        response.setContentType(file.getContentType());
+
+        return file.getData();
+    }
+
     public boolean removeFiles(Collection<Long> ids){
+        List<Attachment> attachments = attachmentDAO.partialGetListByKeys(ids, "ext_link");
+        for(Attachment attachment: attachments) {
+            boolean isDeleted = fileStorage.deleteFile(attachment.getExtLink());
+            if (!isDeleted)
+                return false;
+        }
         return true;
     }
 
     private String saveFile(FileItem file) throws IOException{
-
         String fileName = file.getName();
         if (fileName != null) {
             fileName = FilenameUtils.getName(fileName);
         }
-        byte[] data = file.get();
-
-        String path  =  CONTEXT_PATH + fileName;
-
-        try (FileOutputStream fileOutSt = new FileOutputStream(path)){
-            fileOutSt.write(data);
-            return path;
-        }catch (IOException e){
-            throw e;
-        }
-
+        String path = fileStorage.save(fileName, file.get());
+        if(path == null)
+            throw new IOException("File upload error");
+        return path;
     }
 
     private Long bindAttachmentToCase(Attachment attachment, Long caseId) throws SQLException{
@@ -140,7 +160,7 @@ public class FileController {
 
 
     private Attachment saveAttachment(FileItem item, Long creatorId) throws IOException, SQLException{
-        String filePath = saveFile(item); //?????
+        String filePath = saveFile(item);
 
         Attachment attachment = new Attachment();
         attachment.setCreatorId(creatorId);
