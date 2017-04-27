@@ -1,7 +1,6 @@
 package ru.protei.portal.api.struct;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -14,6 +13,8 @@ import org.springframework.http.HttpStatus;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.time.YearMonth;
 import java.util.Base64;
 import java.util.Properties;
@@ -47,18 +48,20 @@ public class FileStorage {
      */
     public String save(String fileName, byte[] data){
         try (CloseableHttpClient httpClient = HttpClients.createDefault()){
+            String currentYearMonth = YearMonth.now().toString();
+            String filePath = currentYearMonth +"/"+ fileName;
             int folderCreationStatusCode;
             do{
-                int fileCreationStatusCode = saveFile(httpClient, fileName, data)
+                int fileCreationStatusCode = saveFile(httpClient, filePath, data)
                         .getStatusLine().getStatusCode();
 
                 if(fileCreationStatusCode == HttpStatus.NOT_FOUND.value()){ //folder not exists
                     RequestBuilder request = RequestBuilder.create("MKCOL");
-                    request.setUri(STORAGE_PATH + YearMonth.now());
+                    request.setUri(STORAGE_PATH + currentYearMonth);
                     request.addHeader("Authorization", "Basic " + AUTHENTICATION);
                     folderCreationStatusCode = httpClient.execute(request.build()).getStatusLine().getStatusCode();
                 }else
-                    return fileCreationStatusCode == HttpStatus.CREATED.value()? YearMonth.now() +"/"+ fileName: null;
+                    return fileCreationStatusCode == HttpStatus.CREATED.value()? filePath: null;
             }while (folderCreationStatusCode == HttpStatus.CREATED.value());
         }catch (IOException e){
             logger.error(e);
@@ -67,9 +70,9 @@ public class FileStorage {
     }
 
 
-    private HttpResponse saveFile(HttpClient httpClient, String fileName, byte[] data) throws IOException{
+    private HttpResponse saveFile(HttpClient httpClient, String filePath, byte[] data) throws IOException{
         RequestBuilder request = RequestBuilder.create("PUT");
-        request.setUri(STORAGE_PATH + YearMonth.now() +"/"+ fileName);
+        request.setUri(STORAGE_PATH + filePath);
         request.addHeader("Authorization", "Basic " + AUTHENTICATION);
         request.addHeader("Content-Type", "text/plain");
         request.addHeader("Translate", "f");
@@ -81,11 +84,16 @@ public class FileStorage {
      * @return {@link FileStorage.File} File or NULL otherwise
      */
     public File getFile(String filePath){
-        try (CloseableHttpClient httpClient = HttpClients.createDefault()){
-            RequestBuilder request = RequestBuilder.get(STORAGE_PATH + filePath);
-            request.addHeader("Authorization", "Basic " + AUTHENTICATION);
-            HttpEntity entity = httpClient.execute(request.build()).getEntity();
-            return new File(entity.getContentType().getValue(), IOUtils.toByteArray(entity.getContent()));
+        try {
+            HttpURLConnection conn = (HttpURLConnection) new URL(STORAGE_PATH + filePath).openConnection();
+            conn.setRequestProperty("Authorization", "Basic "+ AUTHENTICATION);
+            conn.connect();
+            if(conn.getResponseCode() != HttpStatus.OK.value())
+                return null;
+
+            File file = new File(conn.getContentType(), IOUtils.toByteArray(conn.getInputStream()));
+            conn.disconnect();
+            return file;
         }catch (IOException e){
             logger.error(e);
         }
@@ -102,7 +110,7 @@ public class FileStorage {
             request.addHeader("Authorization", "Basic " + AUTHENTICATION);
 
             CloseableHttpResponse response = httpClient.execute(request.build());
-            return response.getStatusLine().getStatusCode() == HttpStatus.CREATED.value();
+            return HttpStatus.valueOf(response.getStatusLine().getStatusCode()).is2xxSuccessful();
         }catch (IOException e){
             logger.error(e);
         }

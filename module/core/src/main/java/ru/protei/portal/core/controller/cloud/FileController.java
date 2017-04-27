@@ -115,7 +115,7 @@ public class FileController {
             return new byte[0];
         }
 
-        response.setStatus(HttpStatus.CREATED.value());
+        response.setStatus(HttpStatus.OK.value());
         response.setContentType(file.getContentType());
 
         return file.getData();
