@@ -10,6 +10,8 @@ public class HpsmSetup {
     private String mailServerHost;
     private int mailServerPort;
 
+    private String hpsmMailAddress;
+
 //    public String hpsmAddress;
 
 //    private Map<String,ControlPoint> controlPointMap;
@@ -41,12 +43,20 @@ public class HpsmSetup {
         return this;
     }
 
+    public HpsmSetup receiver (String hpsmMailAddress) {
+        this.hpsmMailAddress = hpsmMailAddress;
+        return this;
+    }
+
     public HpsmSetup mailServer (String host, int port) {
         this.mailServerHost = host;
         this.mailServerPort = port;
         return this;
     }
 
+    public String getHpsmMailAddress() {
+        return hpsmMailAddress;
+    }
 
     public String getSenderAddress() {
         return senderAddress;

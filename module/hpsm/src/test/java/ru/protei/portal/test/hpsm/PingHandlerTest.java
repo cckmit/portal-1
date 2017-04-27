@@ -12,6 +12,8 @@ import ru.protei.portal.hpsm.struct.HpsmPingCmd;
 import ru.protei.portal.hpsm.struct.HpsmSetup;
 import ru.protei.portal.hpsm.utils.HpsmUtils;
 import ru.protei.portal.hpsm.utils.VirtualMailSendChannel;
+import ru.protei.winter.core.CoreConfigurationContext;
+import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import javax.mail.internet.MimeMessage;
 import java.util.Calendar;
@@ -27,7 +29,7 @@ public class PingHandlerTest {
 
     @BeforeClass
     public static void init () {
-        ctx = new AnnotationConfigApplicationContext(HpsmConfiguration.class);
+        ctx = new AnnotationConfigApplicationContext(CoreConfigurationContext.class, JdbcConfigurationContext.class, HpsmConfiguration.class);
     }
 
     @Test
@@ -36,6 +38,7 @@ public class PingHandlerTest {
         VirtualMailSendChannel backChannel = new VirtualMailSendChannel();
 
         MailMessageFactory messageFactory = ctx.getBean(MailMessageFactory.class);
+        HpsmSetup setup = ctx.getBean(HpsmSetup.class);
 
         HpsmPingCommandHandler handler = ctx.getBean(HpsmPingCommandHandler.class);
         handler.setSendChannel(backChannel);
@@ -46,7 +49,7 @@ public class PingHandlerTest {
 
         HpsmPingCmd requestCmd = new HpsmPingCmd(true, cld.getTime());
 
-        Assert.assertTrue(handler.handle(HpsmUtils.makeMessgae(messageFactory.createMailMessage(), requestCmd, ctx.getBean(HpsmSetup.class))));
+        Assert.assertTrue(handler.handle(handler.makeMessgae( setup.getSenderAddress(), requestCmd)));
 
         MimeMessage response = backChannel.get();
 

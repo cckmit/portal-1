@@ -4,6 +4,7 @@ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Scope;
 import org.springframework.integration.core.MessageSource;
 import org.springframework.integration.mail.ImapMailReceiver;
@@ -11,9 +12,12 @@ import org.springframework.integration.mail.MailReceiver;
 import org.springframework.integration.mail.MailReceivingMessageSource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+import ru.protei.portal.config.MainConfiguration;
 import ru.protei.portal.hpsm.api.MailMessageFactory;
 import ru.protei.portal.hpsm.api.MailSendChannel;
 import ru.protei.portal.hpsm.handler.HpsmPingCommandHandler;
+import ru.protei.portal.hpsm.service.HpsmService;
+import ru.protei.portal.hpsm.service.HpsmServiceImpl;
 import ru.protei.portal.hpsm.struct.EventMsg;
 import ru.protei.portal.hpsm.struct.HpsmSetup;
 import ru.protei.portal.hpsm.utils.EventMsgInputStreamSource;
@@ -24,12 +28,14 @@ import ru.protei.portal.hpsm.utils.JavaMailSendChannel;
  * Created by michael on 19.04.17.
  */
 @Configuration
+@Import(MainConfiguration.class)
 public class HpsmConfiguration {
 
     @Bean
     public HpsmSetup getHpsmSetup () {
         return new HpsmSetup()
                 .sender("crm_test-user@protei.ru")
+                .receiver("crm_test@protei.ru")
                 .mailServer("smtp.protei.ru", 2525);
     }
 
@@ -45,6 +51,11 @@ public class HpsmConfiguration {
         impl.setPort(setup.getMailServerPort());
 
         return impl;
+    }
+
+    @Bean
+    public HpsmService getHpsmService () {
+        return new HpsmServiceImpl();
     }
 
     @Bean(name = "hpsmSendChannel")

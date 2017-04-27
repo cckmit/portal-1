@@ -12,6 +12,7 @@ import ru.protei.portal.hpsm.api.HpsmStatus;
 import ru.protei.portal.hpsm.api.MailHandler;
 import ru.protei.portal.hpsm.api.MailMessageFactory;
 import ru.protei.portal.hpsm.api.MailSendChannel;
+import ru.protei.portal.hpsm.service.HpsmService;
 import ru.protei.portal.hpsm.struct.EventMsg;
 import ru.protei.portal.hpsm.struct.EventSubject;
 import ru.protei.portal.hpsm.struct.HpsmSetup;
@@ -47,6 +48,9 @@ public class HpsmEventCommandHandler implements MailHandler {
 
     @Autowired
     private CaseService caseService;
+
+    @Autowired
+    private HpsmService hpsmService;
 
 
     @Override
@@ -146,6 +150,9 @@ public class HpsmEventCommandHandler implements MailHandler {
             logger.debug("unable to parse event data");
             return null;
         }
+
+        hpsmService.getCompanyByBranchName()
+
 
         return new HpsmRequest(subject, eventMsg, msg);
     }
