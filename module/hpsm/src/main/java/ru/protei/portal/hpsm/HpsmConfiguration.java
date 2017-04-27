@@ -28,12 +28,9 @@ public class HpsmConfiguration {
 
     @Bean
     public HpsmSetup getHpsmSetup () {
-        HpsmSetup setup = new HpsmSetup();
-        setup.senderAddress = "crm_test-user@protei.ru";
-        setup.hpsmAddress = "crm_test@protei.ru";
-        setup.mailServerHost = "smtp.protei.ru";
-        setup.mailServerPort = 2525;
-        return setup;
+        return new HpsmSetup()
+                .sender("crm_test-user@protei.ru")
+                .mailServer("smtp.protei.ru", 2525);
     }
 
     @Bean(name = "hpsmSender")
@@ -44,8 +41,8 @@ public class HpsmConfiguration {
         JavaMailSenderImpl impl = new org.springframework.mail.javamail.JavaMailSenderImpl ();
 
         impl.setDefaultEncoding("utf-8");
-        impl.setHost(setup.mailServerHost);
-        impl.setPort(setup.mailServerPort);
+        impl.setHost(setup.getMailServerHost());
+        impl.setPort(setup.getMailServerPort());
 
         return impl;
     }

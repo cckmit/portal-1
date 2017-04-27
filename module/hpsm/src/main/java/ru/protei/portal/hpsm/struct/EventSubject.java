@@ -23,6 +23,9 @@ public class EventSubject {
         this.status = status;
     }
 
+    public boolean isNewCaseRequest () {
+        return this.ourId == null || this.ourId.isEmpty();
+    }
 
     public String getHpsmId() {
         return hpsmId;
