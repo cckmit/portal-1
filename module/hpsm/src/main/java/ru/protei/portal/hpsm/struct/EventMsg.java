@@ -29,7 +29,7 @@ public class EventMsg {
     String contactPersonEmail;
 
     @XStreamAlias("FILIAL")
-    String departmentName;
+    String companyBranch;
 
     @XStreamAlias("REGION")
     String geoRegion;
@@ -62,7 +62,7 @@ public class EventMsg {
     int severity;
 
     @XStreamAlias("BRIEF_DESCRIPTION")
-    String subject;
+    String shortDescription;
 
     @XStreamAlias("DESCRIPTION")
     String description;
@@ -128,12 +128,12 @@ public class EventMsg {
         this.contactPersonEmail = contactPersonEmail;
     }
 
-    public String getDepartmentName() {
-        return departmentName;
+    public String getCompanyBranch() {
+        return companyBranch;
     }
 
-    public void setDepartmentName(String departmentName) {
-        this.departmentName = departmentName;
+    public void setCompanyBranch(String companyBranch) {
+        this.companyBranch = companyBranch;
     }
 
     public String getGeoRegion() {
@@ -216,12 +216,12 @@ public class EventMsg {
         this.severity = severity;
     }
 
-    public String getSubject() {
-        return subject;
+    public String getShortDescription() {
+        return shortDescription;
     }
 
-    public void setSubject(String subject) {
-        this.subject = subject;
+    public void setShortDescription(String shortDescription) {
+        this.shortDescription = shortDescription;
     }
 
     public String getDescription() {

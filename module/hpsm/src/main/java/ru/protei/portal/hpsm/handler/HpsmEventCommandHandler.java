@@ -6,8 +6,18 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import ru.protei.portal.core.model.dao.DevUnitDAO;
+import ru.protei.portal.core.model.dao.PersonDAO;
+import ru.protei.portal.core.model.dict.En_CaseState;
+import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.ent.DevUnit;
+import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.service.CaseService;
+import ru.protei.portal.core.service.ContactService;
+import ru.protei.portal.core.service.ProductService;
 import ru.protei.portal.hpsm.api.HpsmStatus;
 import ru.protei.portal.hpsm.api.MailHandler;
 import ru.protei.portal.hpsm.api.MailMessageFactory;
@@ -21,6 +31,7 @@ import ru.protei.portal.hpsm.utils.HpsmUtils;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import java.io.InputStream;
+import java.util.Date;
 
 /**
  * Created by michael on 25.04.17.
@@ -48,6 +59,12 @@ public class HpsmEventCommandHandler implements MailHandler {
 
     @Autowired
     private CaseService caseService;
+
+    @Autowired
+    private PersonDAO personDAO;
+
+    @Autowired
+    private DevUnitDAO devUnitDAO;
 
     @Autowired
     private HpsmService hpsmService;
@@ -103,6 +120,19 @@ public class HpsmEventCommandHandler implements MailHandler {
             this.mailMessage = mailMessage;
         }
 
+        public HpsmRequest assign (Company company) {
+            this.company = company;
+            return this;
+        }
+
+        public Company getCompany() {
+            return company;
+        }
+
+        public MimeMessage getMailMessage() {
+            return mailMessage;
+        }
+
         public EventSubject getSubject() {
             return subject;
         }
@@ -151,10 +181,15 @@ public class HpsmEventCommandHandler implements MailHandler {
             return null;
         }
 
-        hpsmService.getCompanyByBranchName()
+        Company company = hpsmService.getCompanyByBranchName(eventMsg.getCompanyBranch());
+
+        if (company == null) {
+            logger.debug("unable to map company by branch name : {}", eventMsg.getCompanyBranch());
+            return null;
+        }
 
 
-        return new HpsmRequest(subject, eventMsg, msg);
+        return new HpsmRequest(subject, eventMsg, msg).assign(company);
     }
 
 
@@ -175,7 +210,34 @@ public class HpsmEventCommandHandler implements MailHandler {
         @Override
         public MimeMessage handle(HpsmRequest request) throws Exception {
 
+            Person contactPerson = null;
 
+            if (HelperFunc.isNotEmpty(request.getEventMsg().getContactPersonEmail())) {
+                contactPerson = personDAO.findContact(request.getCompany().getId(), request.eventMsg.getContactPersonEmail());
+
+                if (contactPerson == null) {
+                    logger.debug("unable to find contact person : email={}, company={}", request.getEventMsg().getContactPersonEmail(), request.getCompany().getCname());
+                }
+            }
+
+            DevUnit product = null; //devUnitDAO.
+
+            CaseObject obj = new CaseObject();
+            obj.setCreated(new Date());
+
+            obj.setCaseType(En_CaseType.CRM_SUPPORT);
+            obj.setProduct(product);
+            obj.setInitiator(contactPerson);
+            obj.setInitiatorCompany(request.getCompany());
+
+            if (HelperFunc.isNotEmpty(request.getEventMsg().getContactPersonEmail()))
+                obj.setEmails(request.getEventMsg().getContactPersonEmail());
+
+            obj.setImpLevel(request.getEventMsg().severity().getCaseImpLevel().getId());
+            obj.setName(request.getEventMsg().getShortDescription());
+            obj.setInfo(request.getEventMsg().getDescription());
+            obj.setLocal(0);
+            obj.setStateId(En_CaseState.CREATED.getId());
 
             return null;
         }

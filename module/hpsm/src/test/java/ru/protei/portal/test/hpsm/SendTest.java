@@ -48,7 +48,7 @@ public class SendTest {
             eventMsg.setAddress("Russia, SPB");
             eventMsg.setContactPerson("Michael Zavedeev");
             eventMsg.setContactPersonEmail("zavedeev@protei.ru");
-            eventMsg.setSubject("test-message");
+            eventMsg.setShortDescription("test-message");
             eventMsg.setDescription("Just for test purpose only");
             eventMsg.setMessage("This is a comment");
             eventMsg.setRegistrationTime(new Date());

@@ -13,6 +13,8 @@ import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.utils.EntityCache;
 import ru.protei.portal.core.utils.EntitySelector;
+import ru.protei.portal.core.utils.TypeConverters;
+import ru.protei.winter.jdbc.JdbcQueryParameters;
 import ru.protei.winter.jdbc.JdbcSort;
 
 import javax.annotation.PostConstruct;
@@ -36,6 +38,27 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
         homeGroupCache = new EntityCache<CompanyHomeGroupItem>(groupHomeDAO, TimeUnit.MINUTES.toMillis(10));
     }
 
+    @Override
+    public Person findContact(long companyId, String email) {
+        SqlCondition sql = new SqlCondition().build((condition, args) -> {
+//            condition.append("Person.company_id not in (select companyId from company_group_home)");
+            condition.append("Person.company_id = ?");
+            args.add(companyId);
+
+            condition.append("and Person.contactInfo like ?");
+            args.add(HelperFunc.makeLikeArg(email, true));
+        });
+
+        JdbcQueryParameters parameters = new JdbcQueryParameters();
+        parameters.withCondition(sql.condition, sql.args);
+
+        parameters.withOffset(0);
+        parameters.withLimit(1);
+
+        List<Person> rlist = getList (parameters);
+
+        return rlist != null && !rlist.isEmpty() ? rlist.get(0) : null;
+    }
 
     @Override
     public Person getEmployee( long id ) {
