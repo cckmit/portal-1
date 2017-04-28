@@ -1,6 +1,8 @@
 package ru.protei.portal.hpsm.utils;
 
 import protei.utils.common.ThreadLocalDateFormat;
+import ru.protei.portal.hpsm.struct.EventMsg;
+import ru.protei.portal.hpsm.struct.EventSubject;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;

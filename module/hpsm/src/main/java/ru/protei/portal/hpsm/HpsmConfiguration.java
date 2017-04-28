@@ -15,6 +15,7 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import ru.protei.portal.config.MainConfiguration;
 import ru.protei.portal.hpsm.api.MailMessageFactory;
 import ru.protei.portal.hpsm.api.MailSendChannel;
+import ru.protei.portal.hpsm.handler.HpsmEventCommandHandler;
 import ru.protei.portal.hpsm.handler.HpsmPingCommandHandler;
 import ru.protei.portal.hpsm.service.HpsmService;
 import ru.protei.portal.hpsm.service.HpsmServiceImpl;
@@ -73,6 +74,9 @@ public class HpsmConfiguration {
         return new HpsmPingCommandHandler();
     }
 
+    @Bean HpsmEventCommandHandler getEventCommandHandler () {
+        return new HpsmEventCommandHandler();
+    }
 
     @Bean
     //@InboundChannelAdapter(value = "testReceiveEmailChannel", poller = @Poller(fixedDelay = "5000", taskExecutor = "asyncTaskExecutor"))

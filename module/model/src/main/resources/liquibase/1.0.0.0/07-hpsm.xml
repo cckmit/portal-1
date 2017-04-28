@@ -1,0 +1,30 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet author="michael" id="28-04-2017 14:59">
+        <dropNotNullConstraint columnDataType="bigint"
+                               columnName="CREATOR"
+                               tableName="CASE_OBJECT"/>
+    </changeSet>
+
+
+    <changeSet author="michael" id="28-04-2017 15:07">
+        <addColumn tableName="CASE_OBJECT">
+            <column name="EXT_APP" type="varchar(16)">
+                <constraints nullable="true" unique="true" />
+            </column>
+
+            <column name="EXT_APP_ID" type="varchar(64)">
+                <constraints nullable="true" unique="true" />
+            </column>
+
+            <column name="EXT_APP_DATA" type="mediumtext">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>

@@ -100,6 +100,16 @@ public class CaseObject implements Serializable {
     @JdbcOneToMany( table = "case_member", localColumn = "id", remoteColumn = "CASE_ID" )
     private List<CaseMember> members;
 
+    @JdbcColumn(name = "EXT_APP")
+    private String extAppType;
+
+    @JdbcColumn(name = "EXT_APP_ID")
+    private String extAppCaseId;
+
+    @JdbcColumn(name = "EXT_APP_DATA")
+    private String extAppData;
+
+
     public CaseObject() {
 
     }
@@ -349,6 +359,31 @@ public class CaseObject implements Serializable {
 
     public void setMembers( List< CaseMember > members ) {
         this.members = members;
+    }
+
+
+    public String getExtAppCaseId() {
+        return extAppCaseId;
+    }
+
+    public void setExtAppCaseId(String extAppCaseId) {
+        this.extAppCaseId = extAppCaseId;
+    }
+
+    public String getExtAppData() {
+        return extAppData;
+    }
+
+    public void setExtAppData(String extAppData) {
+        this.extAppData = extAppData;
+    }
+
+    public String getExtAppType() {
+        return extAppType;
+    }
+
+    public void setExtAppType(String extAppType) {
+        this.extAppType = extAppType;
     }
 
     @Override

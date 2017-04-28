@@ -11,7 +11,7 @@ import java.util.Date;
  * Created by michael on 19.04.17.
  */
 @XStreamAlias("FIELDS")
-public class EventMsg {
+public class EventMsg implements Cloneable {
 
     @XStreamAlias("ID_HPSM")
     String hpsmId;
@@ -25,8 +25,14 @@ public class EventMsg {
     @XStreamAlias("ASSIGNMENT")
     String contactPerson;
 
+    @XStreamAlias("V_ASSIGNMENT")
+    String ourManager;
+
     @XStreamAlias("ASSIGNMENT_EMAIL")
     String contactPersonEmail;
+
+    @XStreamAlias("V_ASSIGNMENT_EMAIL")
+    String ourManagerEmail;
 
     @XStreamAlias("FILIAL")
     String companyBranch;
@@ -41,7 +47,7 @@ public class EventMsg {
     String address;
 
     @XStreamAlias("SITE_NAME")
-    String siteName;
+    String webSite;
 
     @XStreamAlias("PRODUCT_TYPE")
     String productName;
@@ -76,17 +82,36 @@ public class EventMsg {
     @XStreamAlias("REGISTRATION_TIME")
     String txRegistrationTime;
 
+    @XStreamAlias("V_REGISTRATION_TIME")
+    String txOurRegistrationTime;
+
     @XStreamAlias("TO_WORK_TIME")
     String txOpenTime;
+
+    @XStreamAlias("V_TO_WORK_TIME")
+    String txOurOpenTime;
 
     @XStreamAlias("WORKAROUND_TIME")
     String txWorkaroundTime;
 
+    @XStreamAlias("V_WORKAROUND_TIME")
+    String txOurWorkaroundTime;
+
     @XStreamAlias("RESOLUTION_TIME")
     String txSolutionTime;
 
+    @XStreamAlias("V_RESOLUTION_TIME")
+    String txOurSolutionTime;
+
     @XStreamAlias("ACCEPT_WORKAROUND_TIME")
     String txAcceptWorkaroundTime;
+
+
+    @XStreamAlias("WORKAROUND")
+    String workaroundText;
+
+    @XStreamAlias("RESOLUTION")
+    String resolutionText;
 
     public EventMsg () {
 
@@ -160,12 +185,12 @@ public class EventMsg {
         this.address = address;
     }
 
-    public String getSiteName() {
-        return siteName;
+    public String getWebSite() {
+        return webSite;
     }
 
-    public void setSiteName(String siteName) {
-        this.siteName = siteName;
+    public void setWebSite(String webSite) {
+        this.webSite = webSite;
     }
 
     public String getProductName() {
@@ -288,25 +313,106 @@ public class EventMsg {
         this.txAcceptWorkaroundTime = txAcceptWorkaroundTime;
     }
 
+    public String getOurManager() {
+        return ourManager;
+    }
+
+    public void setOurManager(String ourManager) {
+        this.ourManager = ourManager;
+    }
+
+    public String getOurManagerEmail() {
+        return ourManagerEmail;
+    }
+
+    public void setOurManagerEmail(String ourManagerEmail) {
+        this.ourManagerEmail = ourManagerEmail;
+    }
+
+    public String getTxOurRegistrationTime() {
+        return txOurRegistrationTime;
+    }
+
+    public void setTxOurRegistrationTime(String txOurRegistrationTime) {
+        this.txOurRegistrationTime = txOurRegistrationTime;
+    }
+
+    public String getTxOurOpenTime() {
+        return txOurOpenTime;
+    }
+
+    public void setTxOurOpenTime(String txOurOpenTime) {
+        this.txOurOpenTime = txOurOpenTime;
+    }
+
+    public String getTxOurWorkaroundTime() {
+        return txOurWorkaroundTime;
+    }
+
+    public void setTxOurWorkaroundTime(String txOurWorkaroundTime) {
+        this.txOurWorkaroundTime = txOurWorkaroundTime;
+    }
+
+    public String getTxOurSolutionTime() {
+        return txOurSolutionTime;
+    }
+
+    public void setTxOurSolutionTime(String txOurSolutionTime) {
+        this.txOurSolutionTime = txOurSolutionTime;
+    }
+
+    public String getWorkaroundText() {
+        return workaroundText;
+    }
+
+    public void setWorkaroundText(String workaroundText) {
+        this.workaroundText = workaroundText;
+    }
+
+    public String getResolutionText() {
+        return resolutionText;
+    }
+
+    public void setResolutionText(String resolutionText) {
+        this.resolutionText = resolutionText;
+    }
+
     public void setRegistrationTime (Date d) {
         this.txRegistrationTime = HpsmUtils.formatDate(d);
+    }
+
+    public void setOurRegistrationTime (Date d) {
+        this.txOurRegistrationTime = HpsmUtils.formatDate(d);
     }
 
     public void setOpenTime (Date d) {
         this.txOpenTime = HpsmUtils.formatDate(d);
     }
 
+    public void setOurOpenTime (Date d) {
+        this.txOurOpenTime = HpsmUtils.formatDate(d);
+    }
+
     public void setWorkaroundTime (Date d) {
         this.txWorkaroundTime = HpsmUtils.formatDate(d);
+    }
+
+    public void setOurWorkaroundTime (Date d) {
+        this.txOurWorkaroundTime = HpsmUtils.formatDate(d);
     }
 
     public void setSolutionTime (Date d) {
         this.txSolutionTime = HpsmUtils.formatDate(d);
     }
 
+    public void setOurSolutionTime (Date d) {
+        this.txOurSolutionTime = HpsmUtils.formatDate(d);
+    }
+
     public void setConfirmWaTime (Date d) {
         this.txAcceptWorkaroundTime = HpsmUtils.formatDate(d);
     }
+
 
 
     public HpsmStatus status (HpsmStatus s) {
@@ -320,5 +426,15 @@ public class EventMsg {
 
     public HpsmSeverity severity () {
         return HpsmSeverity.find(this.severity);
+    }
+
+
+    public EventMsg createCopy () {
+        try {
+            return (EventMsg) clone();
+        }
+        catch (Exception e) {
+            throw new RuntimeException("Unable to clone event-message object", e);
+        }
     }
 }

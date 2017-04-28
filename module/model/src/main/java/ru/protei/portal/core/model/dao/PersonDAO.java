@@ -25,7 +25,9 @@ public interface PersonDAO extends PortalBaseDAO<Person> {
 
     Person getContact (long id);
 
-    Person findContact (long companyId, String email);
+    Person findContactByEmail(long companyId, String email);
+
+    Person findContactByName (long companyId, String displayName);
 
     @SqlConditionBuilder
     SqlCondition createContactSqlCondition(ContactQuery query);

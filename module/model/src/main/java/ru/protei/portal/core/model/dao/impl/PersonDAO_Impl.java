@@ -39,9 +39,32 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
     }
 
     @Override
-    public Person findContact(long companyId, String email) {
+    public Person findContactByName(long companyId, String displayName) {
         SqlCondition sql = new SqlCondition().build((condition, args) -> {
-//            condition.append("Person.company_id not in (select companyId from company_group_home)");
+            condition.append("Person.company_id = ?");
+            args.add(companyId);
+
+            condition.append("and Person.displayName like ?");
+            args.add(HelperFunc.makeLikeArg(displayName, false));
+        });
+
+        return findFirst(sql);
+    }
+
+    private Person findFirst(SqlCondition sql) {
+        JdbcQueryParameters parameters = new JdbcQueryParameters();
+        parameters.withCondition(sql.condition, sql.args);
+        parameters.withOffset(0);
+        parameters.withLimit(1);
+
+        List<Person> rlist = getList (parameters);
+
+        return rlist != null && !rlist.isEmpty() ? rlist.get(0) : null;
+    }
+
+    @Override
+    public Person findContactByEmail(long companyId, String email) {
+        SqlCondition sql = new SqlCondition().build((condition, args) -> {
             condition.append("Person.company_id = ?");
             args.add(companyId);
 
@@ -49,15 +72,7 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
             args.add(HelperFunc.makeLikeArg(email, true));
         });
 
-        JdbcQueryParameters parameters = new JdbcQueryParameters();
-        parameters.withCondition(sql.condition, sql.args);
-
-        parameters.withOffset(0);
-        parameters.withLimit(1);
-
-        List<Person> rlist = getList (parameters);
-
-        return rlist != null && !rlist.isEmpty() ? rlist.get(0) : null;
+        return findFirst(sql);
     }
 
     @Override

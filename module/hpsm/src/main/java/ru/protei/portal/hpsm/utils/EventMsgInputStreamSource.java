@@ -25,6 +25,10 @@ public class EventMsgInputStreamSource implements InputStreamSource {
 
     }
 
+    public EventMsgInputStreamSource (XStream stream) {
+        this.stream = stream;
+    }
+
     public EventMsgInputStreamSource attach (EventMsg msg) {
         this.msg = msg;
         return this;
