@@ -7,11 +7,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
-import ru.protei.portal.core.controller.cloud.FileController;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.CaseAttachment;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
@@ -47,7 +47,7 @@ public class CaseServiceImpl implements CaseService {
     AttachmentDAO attachmentDAO;
 
     @Autowired
-    FileController fileController;
+    AttachmentService attachmentService;
 
     @Override
     public CoreResponse<List<CaseShortView>> caseObjectList( CaseQuery query) {
@@ -86,6 +86,8 @@ public class CaseServiceImpl implements CaseService {
         Date now = new Date();
         caseObject.setCreated(now);
         caseObject.setModified(now);
+        if(CollectionUtils.isNotEmpty(caseObject.getAttachmentsIds()))
+            caseObject.setAttachmentExists(true);
 
         Long caseId = caseObjectDAO.insertCase(caseObject);
 
@@ -108,6 +110,8 @@ public class CaseServiceImpl implements CaseService {
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
 
         caseObject.setModified(new Date());
+        caseObject.setAttachmentExists(CollectionUtils.isNotEmpty(caseObject.getAttachmentsIds()));
+
         boolean isUpdated = caseObjectDAO.merge(caseObject);
 
         if (!isUpdated)
@@ -142,7 +146,7 @@ public class CaseServiceImpl implements CaseService {
         if ( list == null )
             return new CoreResponse<List<CaseComment>>().error(En_ResultStatus.GET_DATA_ERROR);
 
-        putAttachmentsToComments(list, caseAttachmentDAO.getListByCaseId(caseId));
+        fillAttachmentsIntoComments(list, caseAttachmentDAO.getListByCaseId(caseId));
 
         return new CoreResponse<List<CaseComment>>().success(list);
     }
@@ -163,6 +167,7 @@ public class CaseServiceImpl implements CaseService {
 
         List<Long> attachmentsIds = comment.getAttachmentsIds();
         if(CollectionUtils.isNotEmpty(attachmentsIds)){
+            updateExistsAttachmentsFlag(comment.getCaseId(), true);
             caseAttachmentDAO.persistBatch(
                 generateCaseAttachments(attachmentsIds, comment.getCaseId(), commentId)
             );
@@ -187,9 +192,9 @@ public class CaseServiceImpl implements CaseService {
         if (!isChangeAvailable ( comment.getCreated() ))
             return new CoreResponse().error( En_ResultStatus.NOT_UPDATED );
 
-        boolean isUpdated = caseCommentDAO.merge(comment);
+        boolean isCommentUpdated = caseCommentDAO.merge(comment);
 
-        if (!isUpdated)
+        if (!isCommentUpdated)
             return new CoreResponse().error( En_ResultStatus.NOT_UPDATED );
 
 
@@ -199,11 +204,13 @@ public class CaseServiceImpl implements CaseService {
                         generateCaseAttachments(comment.getAttachmentsIds(), comment.getCaseId(), comment.getId())
                 );
 
-        if(!removedCaseAttachments.isEmpty()){
+        if (!removedCaseAttachments.isEmpty()) {
             removeAttachments(removedCaseAttachments);
         }
 
-        boolean isCaseChanged = updateCaseModified ( comment.getCaseId(), new Date() ).getData();
+        boolean isCaseChanged =
+                updateExistsAttachmentsFlag(comment.getCaseId()).getData()
+                && updateCaseModified ( comment.getCaseId(), new Date() ).getData();
 
         if (!isCaseChanged)
             throw new RuntimeException( "failed to update case modifiedDate " );
@@ -214,24 +221,26 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     @Transactional
-    public CoreResponse<CaseComment> removeCaseComment( CaseComment caseComment ) {
-        if (caseComment == null || caseComment.getId() == null)
+    public CoreResponse<CaseComment> removeCaseComment( CaseComment comment ) {
+        if (comment == null || comment.getId() == null)
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
 
-        if (!isChangeAvailable ( caseComment.getCreated() ))
+        if (!isChangeAvailable ( comment.getCreated() ))
             return new CoreResponse().error(En_ResultStatus.NOT_REMOVED);
 
-        long caseId = caseComment.getCaseId();
+        long caseId = comment.getCaseId();
 
-        boolean isRemoved = caseCommentDAO.remove(caseComment);
+        boolean isRemoved = caseCommentDAO.remove(comment);
 
         if (!isRemoved)
             return new CoreResponse().error( En_ResultStatus.NOT_REMOVED );
 
-        List<Long> attachmentsIds = caseComment.getAttachmentsIds();
-        if(CollectionUtils.isNotEmpty(attachmentsIds)){
+        if(CollectionUtils.isNotEmpty(comment.getAttachmentsIds())){
             caseAttachmentDAO.removeByCommentId(caseId);
-            removeAttachments(attachmentsIds);
+            comment.getAttachmentsIds().forEach(attachmentService::removeAttachment);
+
+            if(!isExistsAttachments(comment.getCaseId()))
+                updateExistsAttachmentsFlag(comment.getCaseId(), false);
         }
 
         boolean isCaseChanged = updateCaseModified(caseId, new Date()).getData();
@@ -239,7 +248,7 @@ public class CaseServiceImpl implements CaseService {
         if (!isCaseChanged)
             throw new RuntimeException( "failed to update case modifiedDate " );
 
-        return new CoreResponse<CaseComment>().success(caseComment);
+        return new CoreResponse<CaseComment>().success(comment);
     }
 
     @Override
@@ -254,9 +263,8 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     public CoreResponse<Boolean> updateCaseModified(Long caseId, Date modified) {
-
         if(caseId == null || !caseObjectDAO.checkExistsByKey(caseId))
-            return new CoreResponse<Boolean>().success(false);
+            return new CoreResponse<Boolean>().error(En_ResultStatus.INCORRECT_PARAMS);
 
         CaseObject caseObject = new CaseObject(caseId);
         caseObject.setModified(modified == null? new Date(): modified);
@@ -266,7 +274,52 @@ public class CaseServiceImpl implements CaseService {
         return new CoreResponse<Boolean>().success(isUpdated);
     }
 
-    private boolean isChangeAvailable ( Date date ) {
+    @Override
+    public CoreResponse<Boolean> updateExistsAttachmentsFlag(Long caseId, boolean flag){
+        if(caseId == null)
+            return new CoreResponse<Boolean>().error(En_ResultStatus.INCORRECT_PARAMS);
+
+        CaseObject caseObject = new CaseObject(caseId);
+        caseObject.setAttachmentExists(flag);
+        boolean result = caseObjectDAO.partialMerge(caseObject, "ATTACHMENT_EXISTS");
+
+        if(!result)
+            return new CoreResponse<Boolean>().error(En_ResultStatus.NOT_UPDATED);
+        return new CoreResponse<Boolean>().success(true);
+    }
+
+    @Override
+    public CoreResponse<Boolean> updateExistsAttachmentsFlag(Long caseId){
+        return updateExistsAttachmentsFlag(caseId, isExistsAttachments(caseId));
+    }
+
+
+    @Override
+    @Transactional
+    public CoreResponse<Long> bindAttachmentToCase(Attachment attachment, long caseId) {
+        CaseAttachment caseAttachment = new CaseAttachment(caseId, attachment.getId());
+        Long caseAttachId = caseAttachmentDAO.persist(caseAttachment);
+
+        if(caseAttachId == null)
+            return new CoreResponse<Long>().error(En_ResultStatus.NOT_CREATED);
+
+        CaseObject caseObject = new CaseObject(caseId);
+        caseObject.setAttachmentExists(true);
+        caseObject.setModified(new Date());
+        boolean isCaseUpdated = caseObjectDAO.partialMerge(caseObject, "ATTACHMENT_EXISTS", "MODIFIED");
+
+        if(!isCaseUpdated)
+            throw new RuntimeException("failed to update case object");
+
+        return new CoreResponse<Long>().success(caseAttachId);
+    }
+
+    @Override
+    public boolean isExistsAttachments(Long caseId) {
+        return caseAttachmentDAO.checkExistsByCondition("case_id = ?", caseId);
+    }
+
+    private boolean isChangeAvailable (Date date ) {
         Calendar c = Calendar.getInstance();
         long current = c.getTimeInMillis();
         c.setTime( date );
@@ -276,36 +329,26 @@ public class CaseServiceImpl implements CaseService {
     }
 
     private void removeAttachments(Collection<CaseAttachment> list){
-        removeAttachments(
-                list.stream().map(CaseAttachment::getAttachmentId).collect(Collectors.toList())
-        );
+        list.forEach(ca -> attachmentService.removeAttachment(ca.getAttachmentId()));
     }
 
-    private void removeAttachments(List<Long> attachmentsIds){
-        fileController.removeFiles(attachmentsIds);
-        attachmentDAO.removeByKeys(attachmentsIds);
-    }
-
-    private void putAttachmentsToComments(Collection<CaseComment> comments, Collection<CaseAttachment> caseAttachments){
+    private void fillAttachmentsIntoComments(Collection<CaseComment> comments, Collection<CaseAttachment> caseAttachments){
         if(CollectionUtils.isEmpty(comments) || CollectionUtils.isEmpty(caseAttachments))
             return;
 
-        Collection<CaseAttachment> nonEmptyCaseAttachments = caseAttachments
+        Collection<Long> commentsIdsOfCa = new ArrayList<>();
+        Collection<CaseAttachment> caseAttachmentsForComments = caseAttachments
                 .stream()
                 .filter(ca -> ca.getCommentId() != null)
+                .peek(ca -> commentsIdsOfCa.add(ca.getCommentId()))
                 .collect(Collectors.toList());
 
-        Collection<Long> nonEmptyCommentsIds = nonEmptyCaseAttachments
-                .stream()
-                .map(CaseAttachment::getCommentId)
-                .collect(Collectors.toSet());
-
         for(CaseComment comment: comments){
-            if(!nonEmptyCommentsIds.contains(comment.getId()))
+            if(!commentsIdsOfCa.contains(comment.getId()))
                 continue;
 
             List<Long> attachmentsIds = new ArrayList<>();
-            nonEmptyCaseAttachments.forEach(ca -> {
+            caseAttachmentsForComments.forEach(ca -> {
                 if(comment.getId().equals(ca.getCommentId()))
                     attachmentsIds.add(ca.getAttachmentId());
             });

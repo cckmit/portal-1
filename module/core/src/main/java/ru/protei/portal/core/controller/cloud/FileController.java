@@ -5,19 +5,19 @@ package ru.protei.portal.core.controller.cloud;
  */
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import liquibase.util.file.FilenameUtils;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.core.model.dao.AttachmentDAO;
 import ru.protei.portal.core.model.dao.CaseAttachmentDAO;
 import ru.protei.portal.core.model.ent.Attachment;
-import ru.protei.portal.core.model.ent.CaseAttachment;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.service.user.AuthService;
@@ -26,9 +26,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
 
 @RestController
 public class FileController {
@@ -46,40 +43,20 @@ public class FileController {
     AuthService authService;
 
 
+    private static final Logger logger = Logger.getLogger(FileStorage.class);
     private ObjectMapper mapper = new ObjectMapper();
-    private FileStorage fileStorage = new FileStorage();
     private ServletFileUpload upload = new ServletFileUpload(new DiskFileItemFactory());
 
-    private final String ERROR_RESULT = "error";
 
-
-    @RequestMapping(value = "/issueUploadFile", method = RequestMethod.POST)
+    @RequestMapping(value = "/uploadFile", method = RequestMethod.POST)
     @ResponseBody
-    public String issueFileUpload (HttpServletRequest request){
-        UserSessionDescriptor ud = authService.getUserSessionDescriptor(request);
-
-        if(ud != null){
-            Long creatorId = ud.getPerson().getId();
-
-            try {
-                for(FileItem item: upload.parseRequest(request)) {
-                    if (!item.isFormField()) {
-
-                        Attachment attachment = saveAttachment(item, creatorId);
-                        return mapper.writeValueAsString(attachment);
-
-                    }
-                }
-            }catch (FileUploadException | SQLException | IOException e){
-                e.printStackTrace();
-            }
-        }
-        return ERROR_RESULT;
+    public String uploadFile(HttpServletRequest request){
+        return uploadFileToCase(request, null);
     }
 
     @RequestMapping(value = "/uploadFileToCase{caseId:[0-9]+}", method = RequestMethod.POST)
     @ResponseBody
-    public String issueFileUpload (HttpServletRequest request, @PathVariable("caseId") Long caseId){
+    public String uploadFileToCase (HttpServletRequest request, @PathVariable("caseId") Long caseId){
         UserSessionDescriptor ud = authService.getUserSessionDescriptor(request);
 
         if(ud != null) {
@@ -90,17 +67,20 @@ public class FileController {
                     if (!item.isFormField()) {
 
                         Attachment attachment = saveAttachment(item, creatorId);
-                        bindAttachmentToCase(attachment, caseId);
-                        return mapper.writeValueAsString(attachment);
 
+                        if(caseId != null) {
+                            CoreResponse<Long> caseAttachId = caseService.bindAttachmentToCase(attachment, caseId);
+                            if(caseAttachId.isError())
+                                break;
+                        }
+                        return mapper.writeValueAsString(attachment);
                     }
                 }
             } catch (FileUploadException | SQLException | IOException e) {
-                e.printStackTrace();
+                logger.error(e);
             }
         }
-
-        return ERROR_RESULT;
+        return "error";
     }
 
     @RequestMapping(value = "/files/{folder}/{fileName:.+}", method = RequestMethod.GET)
@@ -109,7 +89,7 @@ public class FileController {
                            @PathVariable("folder") String folder,
                            @PathVariable("fileName") String fileName){
 
-        FileStorage.File file = fileStorage.getFile(folder +"/"+ fileName);
+        FileStorage.File file = FileStorage.getDefault().getFile(folder +"/"+ fileName);
         if(file == null) {
             response.setStatus(HttpStatus.NOT_FOUND.value());
             return new byte[0];
@@ -117,47 +97,15 @@ public class FileController {
 
         response.setStatus(HttpStatus.OK.value());
         response.setContentType(file.getContentType());
-
+        response.setHeader("Content-Transfer-Encoding", "binary");
+        response.setHeader("Cache-Control", "max-age=86400, must-revalidate"); // 1 day
+        response.setHeader("Content-Disposition", "filename="+ fileName.substring(fileName.indexOf("_") + 1));
         return file.getData();
     }
 
-    public boolean removeFiles(Collection<Long> ids){
-        List<Attachment> attachments = attachmentDAO.partialGetListByKeys(ids, "ext_link");
-        for(Attachment attachment: attachments) {
-            boolean isDeleted = fileStorage.deleteFile(attachment.getExtLink());
-            if (!isDeleted)
-                return false;
-        }
-        return true;
-    }
-
     private String saveFile(FileItem file) throws IOException{
-        String fileName = file.getName();
-        if (fileName != null) {
-            fileName = FilenameUtils.getName(fileName);
-        }
-        String path = fileStorage.save(fileName, file.get());
-        if(path == null)
-            throw new IOException("File upload error");
-        return path;
+        return FileStorage.getDefault().save(generateHash() +"_"+ file.getName(), file.get());
     }
-
-    private Long bindAttachmentToCase(Attachment attachment, Long caseId) throws SQLException{
-        CaseAttachment caseAttachment = new CaseAttachment();
-        caseAttachment.setAttachmentId(attachment.getId());
-        caseAttachment.setCaseId(caseId);
-
-        Long caseAttachId = caseAttachmentDAO.persist(caseAttachment);
-        if (caseAttachId == null)
-            throw new SQLException("insert attachment error");
-
-        boolean result = caseService.updateCaseModified(caseId, new Date()).getData();
-        if(!result)
-            throw new SQLException("caseObject update error");
-
-        return caseAttachId;
-    }
-
 
     private Attachment saveAttachment(FileItem item, Long creatorId) throws IOException, SQLException{
         String filePath = saveFile(item);
@@ -171,10 +119,13 @@ public class FileController {
 
         Long attachId = attachmentDAO.saveAttachment(attachment);
         if(attachId == null)
-            throw new SQLException("insert attachment error");
+            throw new SQLException("attachment not saved");
 
         return attachment;
     }
 
+    private String generateHash(){
+        return Long.toString(System.currentTimeMillis(), Character.MAX_RADIX);
+    }
 
 }

@@ -94,6 +94,9 @@ public class CaseObject implements Serializable {
     @JdbcColumn(name = "private_flag")
     private boolean privateCase;
 
+    @JdbcColumn(name = "ATTACHMENT_EXISTS")
+    private boolean isAttachmentExists;
+
     private Collection<Long> attachmentsIds;
 
     public CaseObject() {
@@ -343,6 +346,14 @@ public class CaseObject implements Serializable {
         this.attachmentsIds = attachmentsIds;
     }
 
+    public boolean isAttachmentExists() {
+        return isAttachmentExists;
+    }
+
+    public void setAttachmentExists(boolean attachmentExists) {
+        isAttachmentExists = attachmentExists;
+    }
+
     @Override
     public String toString() {
         return new StringBuilder("CaseObject{")
@@ -360,6 +371,7 @@ public class CaseObject implements Serializable {
                 .append(", initiator=").append(getInitiator())
                 .append(", product=").append(getProduct())
                 .append(", manager=").append(getManager())
+                .append(", isAttachmentExists=").append(isAttachmentExists())
                 .append('}').toString();
     }
 

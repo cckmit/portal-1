@@ -56,6 +56,11 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
         return new SqlCondition().build((condition, args) -> {
             condition.append("1=1");
 
+            if ( query.getId() != null ) {
+                condition.append( " and case_object.id=?" );
+                args.add( query.getId() );
+            }
+
             if ( query.getType() != null ) {
                 condition.append( " and case_type=?" );
                 args.add( query.getType().getId() );

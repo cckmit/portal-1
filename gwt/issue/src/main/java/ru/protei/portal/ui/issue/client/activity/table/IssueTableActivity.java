@@ -132,6 +132,21 @@ public abstract class IssueTableActivity
     }
 
     @Override
+    public void updateRow(Long issueId){
+        issueService.getIssues( new CaseQuery(issueId), new RequestCallback<List<CaseShortView>>() {
+            @Override
+            public void onError( Throwable throwable ) {
+                fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
+            }
+
+            @Override
+            public void onSuccess( List<CaseShortView> caseObjects ) {
+                view.updateRow(caseObjects.get(0));
+            }
+        } );
+    }
+
+    @Override
     public void onLastClicked() {
         view.scrollTo( view.getPageCount()-1 );
     }

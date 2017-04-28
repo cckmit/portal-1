@@ -17,6 +17,7 @@ import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
 import ru.protei.portal.ui.common.client.service.IssueServiceAsync;
 import ru.protei.portal.ui.common.client.widget.uploader.FileUploader;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
+import ru.protei.portal.ui.issue.client.activity.table.IssueTableActivity;
 
 import java.util.List;
 
@@ -49,6 +50,7 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
     public void onShow( IssueEvents.ShowPreview event ) {
         event.parent.clear();
         event.parent.add( view.asWidget() );
+        attachmentCollection.clear();
 
         this.issueId = event.issueId;
 
@@ -59,9 +61,9 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
 
     @Event
     public void onShow( IssueEvents.ShowFullScreen event ) {
-        attachmentCollection.clear();
         initDetails.parent.clear();
         initDetails.parent.add( view.asWidget() );
+        attachmentCollection.clear();
 
         this.issueId = event.issueId;
 
@@ -148,19 +150,21 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
 
     @Inject
     Lang lang;
-
     @Inject
     AbstractIssuePreviewView view;
-
     @Inject
     IssueServiceAsync issueService;
-
     @Inject
     AttachmentServiceAsync attachmentService;
+    @Inject
+    IssueTableActivity issueTableActivity;
 
     private AttachmentCollection attachmentCollection = new AttachmentCollection() {
         @Override
         public void addAttachment(Attachment attachment) {
+            if(isEmpty())
+                issueTableActivity.updateRow(issueId);
+
             put(attachment.getId(), attachment);
             view.attachmentsContainer().add(attachment);
         }
@@ -169,6 +173,9 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
         public void removeAttachment(Attachment attachment) {
             remove(attachment.getId());
             view.attachmentsContainer().remove(attachment);
+
+            if(isEmpty())
+                issueTableActivity.updateRow(issueId);
         }
     };
 

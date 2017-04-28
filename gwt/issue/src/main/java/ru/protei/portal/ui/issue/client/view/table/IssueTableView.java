@@ -108,6 +108,12 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
         table.scrollToPage( page );
     }
 
+    @Override
+    public void updateRow(CaseShortView item) {
+        if(item != null)
+            table.updateRow(item);
+    }
+
     private void initTable () {
         attachClickColumn = new AttachClickColumn<CaseShortView>(lang) {};
         editClickColumn = new EditClickColumn< CaseShortView>( lang ) {};

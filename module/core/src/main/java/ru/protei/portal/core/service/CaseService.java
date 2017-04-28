@@ -3,6 +3,7 @@ package ru.protei.portal.core.service;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.query.CaseQuery;
@@ -28,4 +29,9 @@ public interface CaseService {
 
     CoreResponse<CaseComment> updateCaseComment(CaseComment p);
     CoreResponse<CaseComment> removeCaseComment( CaseComment caseComment );
+
+    CoreResponse<Long> bindAttachmentToCase(Attachment attachment, long caseId);
+    boolean isExistsAttachments(Long caseId);
+    CoreResponse<Boolean> updateExistsAttachmentsFlag(Long caseId, boolean flag);
+    CoreResponse<Boolean> updateExistsAttachmentsFlag(Long caseId);
 }

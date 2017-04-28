@@ -18,6 +18,8 @@ public interface AttachmentService {
      */
     CoreResponse<Boolean> removeAttachmentEverywhere(Long attachmentId);
 
+    CoreResponse<Boolean> removeAttachment(Long id);
+
     CoreResponse<List<Attachment>> getAttachmentsByCaseId(Long caseId);
 
     CoreResponse<List<Attachment>> getAttachments(List<Long> ids);

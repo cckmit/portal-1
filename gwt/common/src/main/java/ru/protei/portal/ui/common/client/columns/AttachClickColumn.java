@@ -31,16 +31,12 @@ abstract public class AttachClickColumn< T extends CaseShortView> extends ru.pro
 
     @Override
     public void fillColumnValue( Element cell, T value ) {
-
-        if(value.getCaseNumber()%2 != 0)
+        if(!value.isAttachmentExists())
             return;
 
         Anchor a = new Anchor();
-
-//        AnchorElement a = DOM.createAnchor().cast();
         a.setHref( "#" );
         a.setStyleName("fa fa-lg fa-paperclip" );
-//        a.addClassName( "fa fa-lg fa-paperclip" );
         a.setTitle( lang.attachment() );
         cell.appendChild( a.getElement() );
 

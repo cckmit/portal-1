@@ -3,14 +3,13 @@ package ru.protei.portal.core.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
-import ru.protei.portal.core.controller.cloud.FileController;
+import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.core.model.dao.AttachmentDAO;
 import ru.protei.portal.core.model.dao.CaseAttachmentDAO;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.CaseAttachment;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -26,27 +25,43 @@ public class AttachmentServiceImpl implements AttachmentService {
     CaseAttachmentDAO caseAttachmentDAO;
 
     @Autowired
-    FileController fileController;
-
-    @Autowired
     CaseService caseService;
 
+    /**
+     * remove attachment from fileStorage, DataBase (item and relations)
+     */
     @Override
     @Transactional
     public CoreResponse<Boolean> removeAttachmentEverywhere(Long id) {
-
         CaseAttachment ca = caseAttachmentDAO.getByAttachmentId(id);
         if (ca != null) {
-            caseAttachmentDAO.removeByKey(ca.getId());
+            boolean isDeleted = caseAttachmentDAO.removeByKey(ca.getId());
+            if(!isDeleted)
+                return new CoreResponse<Boolean>().error(En_ResultStatus.NOT_REMOVED);
+
             caseService.updateCaseModified(ca.getCaseId(), new Date());
+
+            if (!caseService.isExistsAttachments(ca.getCaseId()))
+                caseService.updateExistsAttachmentsFlag(ca.getCaseId(), false);
         }
 
-        fileController.removeFiles(Collections.singletonList(id));
-        attachmentDAO.removeByKey(id);
+        return removeAttachment(id);
+    }
 
-//        if (!result) {
-//            return new CoreResponse().error(En_ResultStatus.NOT_REMOVED);
-//        }
+    /**
+     * remove attachment from fileStorage and DataBase (only item)
+     */
+    @Override
+    @Transactional
+    public CoreResponse<Boolean> removeAttachment(Long id) {
+        Attachment attachment = attachmentDAO.partialGet(id, "ext_link");
+        if(attachment == null)
+            return new CoreResponse<Boolean>().error(En_ResultStatus.NOT_FOUND);
+
+        boolean result = FileStorage.getDefault().deleteFile(attachment.getExtLink()) && attachmentDAO.removeByKey(id);
+
+        if (!result)
+            return new CoreResponse<Boolean>().error(En_ResultStatus.NOT_REMOVED);
 
         return new CoreResponse<Boolean>().success(true);
     }
