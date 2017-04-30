@@ -7,7 +7,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.integration.core.MessageSource;
 import org.springframework.messaging.Message;
-import ru.protei.portal.hpsm.struct.EventMsg;
+import ru.protei.portal.hpsm.struct.HpsmMessage;
 import ru.protei.portal.hpsm.HpsmConfiguration;
 
 import javax.mail.internet.MimeMessage;
@@ -57,9 +57,9 @@ public class GetMailTest {
 //                        System.out.println(mparts.getBodyPart(i).getContent().toString());
                         //System.out.println(mparts.getBodyPart(i).getContent().toString());
 
-                        EventMsg eventMsg = (EventMsg) xstream.fromXML(mparts.getBodyPart(i).getInputStream());
+                        HpsmMessage hpsmMessage = (HpsmMessage) xstream.fromXML(mparts.getBodyPart(i).getInputStream());
 
-                        System.out.println(xstream.toXML(eventMsg));
+                        System.out.println(xstream.toXML(hpsmMessage));
                         //xstream.fr
                     }
 

@@ -19,7 +19,7 @@ import ru.protei.portal.hpsm.handler.HpsmEventCommandHandler;
 import ru.protei.portal.hpsm.handler.HpsmPingCommandHandler;
 import ru.protei.portal.hpsm.service.HpsmService;
 import ru.protei.portal.hpsm.service.HpsmServiceImpl;
-import ru.protei.portal.hpsm.struct.EventMsg;
+import ru.protei.portal.hpsm.struct.HpsmMessage;
 import ru.protei.portal.hpsm.struct.HpsmSetup;
 import ru.protei.portal.hpsm.utils.EventMsgInputStreamSource;
 import ru.protei.portal.hpsm.utils.JavaMailMessageFactory;
@@ -102,7 +102,7 @@ public class HpsmConfiguration {
     public XStream xstreamSerializer () {
         XStream x = new XStream(new Xpp3Driver(new XmlFriendlyNameCoder("_-", "_")));
         x.autodetectAnnotations(true);
-        x.processAnnotations(EventMsg.class);
+        x.processAnnotations(HpsmMessage.class);
         return x;
     }
 

@@ -9,8 +9,8 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import ru.protei.portal.hpsm.*;
 import ru.protei.portal.hpsm.api.HpsmStatus;
-import ru.protei.portal.hpsm.struct.EventMsg;
-import ru.protei.portal.hpsm.struct.EventSubject;
+import ru.protei.portal.hpsm.struct.HpsmMessage;
+import ru.protei.portal.hpsm.struct.HpsmMessageHeader;
 import ru.protei.portal.hpsm.utils.EventMsgInputStreamSource;
 
 import javax.mail.internet.MimeMessage;
@@ -38,20 +38,20 @@ public class SendTest {
         JavaMailSender sender = ctx.getBean(JavaMailSender.class);
 
         try {
-            EventSubject subject = new EventSubject("RTS000111", "", HpsmStatus.NEW);
+            HpsmMessageHeader subject = new HpsmMessageHeader("RTS000111", "", HpsmStatus.NEW);
 
-            EventMsg eventMsg = new EventMsg();
-            eventMsg.setHpsmId(subject.getHpsmId());
-            eventMsg.status(subject.getStatus());
-            eventMsg.setOurId(subject.getOurId());
+            HpsmMessage hpsmMessage = new HpsmMessage();
+            hpsmMessage.setHpsmId(subject.getHpsmId());
+            hpsmMessage.status(subject.getStatus());
+            hpsmMessage.setOurId(subject.getOurId());
 
-            eventMsg.setAddress("Russia, SPB");
-            eventMsg.setContactPerson("Michael Zavedeev");
-            eventMsg.setContactPersonEmail("zavedeev@protei.ru");
-            eventMsg.setShortDescription("test-message");
-            eventMsg.setDescription("Just for test purpose only");
-            eventMsg.setMessage("This is a comment");
-            eventMsg.setRegistrationTime(new Date());
+            hpsmMessage.setAddress("Russia, SPB");
+            hpsmMessage.setContactPerson("Michael Zavedeev");
+            hpsmMessage.setContactPersonEmail("zavedeev@protei.ru");
+            hpsmMessage.setShortDescription("test-message");
+            hpsmMessage.setDescription("Just for test purpose only");
+            hpsmMessage.setMessage("This is a comment");
+            hpsmMessage.setRegistrationTime(new Date());
 
             MimeMessage message = sender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
@@ -63,10 +63,10 @@ public class SendTest {
 //            message.setText("Hello!");
             helper.setText("<h1>Hello</h1>", true);
 
-            helper.addAttachment("rtts_hpsm.xml", ctx.getBean(EventMsgInputStreamSource.class).attach(eventMsg), "application/xml");
+            helper.addAttachment("rtts_hpsm.xml", ctx.getBean(EventMsgInputStreamSource.class).attach(hpsmMessage), "application/xml");
             helper.addAttachment("example.trace.log", new ClassPathResource("/samples/attachments/java.trace.log"), "plain/text");
 
-            System.out.println(ctx.getBean(EventMsgInputStreamSource.class).attach(eventMsg).asString());
+            System.out.println(ctx.getBean(EventMsgInputStreamSource.class).attach(hpsmMessage).asString());
 
             //sender.send(message);
 

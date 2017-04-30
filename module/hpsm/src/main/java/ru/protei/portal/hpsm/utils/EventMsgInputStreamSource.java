@@ -3,7 +3,7 @@ package ru.protei.portal.hpsm.utils;
 import com.thoughtworks.xstream.XStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamSource;
-import ru.protei.portal.hpsm.struct.EventMsg;
+import ru.protei.portal.hpsm.struct.HpsmMessage;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -17,7 +17,7 @@ public class EventMsgInputStreamSource implements InputStreamSource {
     @Autowired
     XStream stream;
 
-    EventMsg msg;
+    HpsmMessage msg;
 
     String charset = "utf-8";
 
@@ -29,7 +29,7 @@ public class EventMsgInputStreamSource implements InputStreamSource {
         this.stream = stream;
     }
 
-    public EventMsgInputStreamSource attach (EventMsg msg) {
+    public EventMsgInputStreamSource attach (HpsmMessage msg) {
         this.msg = msg;
         return this;
     }
