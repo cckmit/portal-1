@@ -22,10 +22,11 @@ import ru.protei.portal.hpsm.api.MailHandler;
 import ru.protei.portal.hpsm.api.MailMessageFactory;
 import ru.protei.portal.hpsm.api.MailSendChannel;
 import ru.protei.portal.hpsm.service.HpsmService;
-import ru.protei.portal.hpsm.struct.EventMsg;
-import ru.protei.portal.hpsm.struct.EventSubject;
+import ru.protei.portal.hpsm.struct.HpsmMessage;
+import ru.protei.portal.hpsm.struct.HpsmMessageHeader;
 import ru.protei.portal.hpsm.struct.HpsmSetup;
 import ru.protei.portal.hpsm.utils.EventMsgInputStreamSource;
+import ru.protei.portal.hpsm.utils.HpsmUtils;
 
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
@@ -72,21 +73,35 @@ public class HpsmEventCommandHandler implements MailHandler {
     private HpsmService hpsmService;
 
 
+    public MailSendChannel getSendChannel() {
+        return sendChannel;
+    }
+
+    public void setSendChannel(MailSendChannel sendChannel) {
+        this.sendChannel = sendChannel;
+    }
+
     @Override
     public boolean handle(MimeMessage msg) {
 
-        EventSubject subject = null;
+        HpsmMessageHeader subject = null;
 
         try {
-            subject = EventSubject.parse(msg.getSubject());
+            subject = HpsmMessageHeader.parse(msg.getSubject());
 
             if (subject == null)
                 return false;
 
 
-            HpsmRequest request = buildRequest(subject, msg);
+            HpsmCommand request = buildRequest(subject, msg);
 
-            HpsmRequestHandler handler = createHandler(request);
+            if (request == null) {
+                logger.debug("unable to create request");
+                sendChannel.send(createRejectMessage(HpsmUtils.getEmailFromAddress(msg), subject, "wrong request data"));
+                return true;
+            }
+
+            HpsmCommandHandler handler = createHandler(request);
             logger.debug("created handler : {}", handler);
 
             MimeMessage responseMsg = handler.handle(request);
@@ -109,7 +124,7 @@ public class HpsmEventCommandHandler implements MailHandler {
     }
 
 
-    private HpsmRequest buildRequest (EventSubject subject, MimeMessage msg) throws Exception {
+    private HpsmCommand buildRequest (HpsmMessageHeader subject, MimeMessage msg) throws Exception {
 
         logger.debug("Got inbound event-message {}", subject.toString());
 
@@ -120,7 +135,7 @@ public class HpsmEventCommandHandler implements MailHandler {
 
         MimeMultipart mparts = (MimeMultipart) msg.getContent();
 
-        EventMsg eventMsg = null;
+        HpsmMessage hpsmMessage = null;
 
         for (int i = 0; i < mparts.getCount(); i++) {
             logger.debug("process part #{}", i);
@@ -131,12 +146,12 @@ public class HpsmEventCommandHandler implements MailHandler {
 
             if (fileName != null && fileName.equalsIgnoreCase(RTTS_HPSM_XML)) {
                 try (InputStream contentStream = mparts.getBodyPart(i).getInputStream()) {
-                    eventMsg = (EventMsg) xstream.fromXML(contentStream);
+                    hpsmMessage = (HpsmMessage) xstream.fromXML(contentStream);
                 }
             }
         }
 
-        if (eventMsg != null) {
+        if (hpsmMessage != null) {
             logger.debug("event message parsed");
         }
         else {
@@ -144,19 +159,19 @@ public class HpsmEventCommandHandler implements MailHandler {
             return null;
         }
 
-        Company company = hpsmService.getCompanyByBranchName(eventMsg.getCompanyBranch());
+        Company company = hpsmService.getCompanyByBranchName(hpsmMessage.getCompanyBranch());
 
         if (company == null) {
-            logger.debug("unable to map company by branch name : {}", eventMsg.getCompanyBranch());
+            logger.debug("unable to map company by branch name : {}", hpsmMessage.getCompanyBranch());
             return null;
         }
 
 
-        return new HpsmRequest(subject, eventMsg, msg).assign(company);
+        return new HpsmCommand(subject, hpsmMessage, msg).assign(company);
     }
 
 
-    private HpsmRequestHandler createHandler (HpsmRequest request) {
+    private HpsmCommandHandler createHandler (HpsmCommand request) {
         if (request.getSubject().isNewCaseRequest())
             return new CreateNewCaseHandler();
 
@@ -164,16 +179,16 @@ public class HpsmEventCommandHandler implements MailHandler {
     }
 
 
-    class CreateNewCaseHandler implements HpsmRequestHandler {
+    class CreateNewCaseHandler implements HpsmCommandHandler {
         @Override
-        public MimeMessage handle(HpsmRequest request) throws Exception {
+        public MimeMessage handle(HpsmCommand request) throws Exception {
 
-            Person contactPerson = getAssignedPerson(request.getCompany().getId(), request.getEventMsg());
+            Person contactPerson = getAssignedPerson(request.getCompany().getId(), request.getHpsmMessage());
             if (contactPerson == null) {
                 return createRejectMessage(request, "No contact person provided");
             }
 
-            DevUnit product = getAssignedProduct(request.getEventMsg());
+            DevUnit product = getAssignedProduct(request.getHpsmMessage());
             if (product == null) {
                 return createRejectMessage(request, "product not found");
             }
@@ -188,25 +203,25 @@ public class HpsmEventCommandHandler implements MailHandler {
             obj.setInitiator(contactPerson);
             obj.setInitiatorCompany(request.getCompany());
 
-            if (HelperFunc.isNotEmpty(request.getEventMsg().getContactPersonEmail()))
-                obj.setEmails(request.getEventMsg().getContactPersonEmail());
+            if (HelperFunc.isNotEmpty(request.getHpsmMessage().getContactPersonEmail()))
+                obj.setEmails(request.getHpsmMessage().getContactPersonEmail());
 
-            obj.setImpLevel(request.getEventMsg().severity().getCaseImpLevel().getId());
-            obj.setName(request.getEventMsg().getShortDescription());
-            obj.setInfo(request.getEventMsg().getDescription());
+            obj.setImpLevel(request.getHpsmMessage().severity().getCaseImpLevel().getId());
+            obj.setName(request.getHpsmMessage().getShortDescription());
+            obj.setInfo(request.getHpsmMessage().getDescription());
             obj.setLocal(0);
             obj.setStateId(En_CaseState.CREATED.getId());
             obj.setProduct(product);
             obj.setCreatorInfo("hpsm");
-            obj.setExtAppCaseId(request.getEventMsg().getHpsmId());
+            obj.setExtAppCaseId(request.getHpsmMessage().getHpsmId());
 
             Long caseObjId = caseObjectDAO.insertCase(obj);
             if (caseObjId != null && caseObjId > 0L) {
 
 
                 StringBuilder commentText = new StringBuilder();
-                if (HelperFunc.isNotEmpty(request.getEventMsg().getMessage())) {
-                    commentText.append(request.getEventMsg().getMessage());
+                if (HelperFunc.isNotEmpty(request.getHpsmMessage().getMessage())) {
+                    commentText.append(request.getHpsmMessage().getMessage());
                 }
 
                 CaseComment comment = new CaseComment();
@@ -215,12 +230,12 @@ public class HpsmEventCommandHandler implements MailHandler {
                 comment.setCaseId(caseObjId);
                 comment.setCaseStateId(obj.getStateId());
                 comment.setClientIp("hpsm");
-                comment.setText(appendCommentInfo (commentText, request.getEventMsg()).toString());
+                comment.setText(appendCommentInfo (commentText, request.getHpsmMessage()).toString());
 
                 commentDAO.persist(comment);
 
-                EventSubject replySubj = new EventSubject(request.getSubject().getHpsmId(), obj.getExtId(), HpsmStatus.REGISTERED);
-                EventMsg replyEvent = request.getEventMsg().createCopy();
+                HpsmMessageHeader replySubj = new HpsmMessageHeader(request.getSubject().getHpsmId(), obj.getExtId(), HpsmStatus.REGISTERED);
+                HpsmMessage replyEvent = request.getHpsmMessage().createCopy();
 
                 replyEvent.status(HpsmStatus.REGISTERED);
                 replyEvent.setOurRegistrationTime(obj.getCreated());
@@ -240,7 +255,7 @@ public class HpsmEventCommandHandler implements MailHandler {
 
 
 
-    class RejectHandler implements HpsmRequestHandler {
+    class RejectHandler implements HpsmCommandHandler {
 
         private String messageText;
 
@@ -253,19 +268,19 @@ public class HpsmEventCommandHandler implements MailHandler {
         }
 
         @Override
-        public MimeMessage handle(HpsmRequest request) throws Exception {
+        public MimeMessage handle(HpsmCommand request) throws Exception {
             return createRejectMessage(request, messageText);
         }
     }
 
 
-    private DevUnit getAssignedProduct (EventMsg msg) {
+    private DevUnit getAssignedProduct (HpsmMessage msg) {
 
         return devUnitDAO.checkExistsByName(En_DevUnitType.PRODUCT, msg.getProductName());
 
     }
 
-    private Person getAssignedPerson (Long companyId, EventMsg msg) {
+    private Person getAssignedPerson (Long companyId, HpsmMessage msg) {
 
         Person person = null;
 
@@ -333,7 +348,10 @@ public class HpsmEventCommandHandler implements MailHandler {
     }
 
 
-    public MimeMessage createReplyMessage (HpsmRequest request, EventSubject subject, EventMsg eventMsg) throws Exception {
+
+
+
+    public MimeMessage createReplyMessage (HpsmCommand request, HpsmMessageHeader subject, HpsmMessage hpsmMessage) throws Exception {
 
         MimeMessage response = messageFactory.createMailMessage();
         MimeMessageHelper helper = new MimeMessageHelper(response, false);
@@ -341,21 +359,24 @@ public class HpsmEventCommandHandler implements MailHandler {
         helper.setSubject(subject.toString());
         helper.setTo(request.getEmailSourceAddr());
         helper.setFrom(setup.getSenderAddress());
-        helper.addAttachment(RTTS_HPSM_XML, new EventMsgInputStreamSource (xstream).attach(eventMsg), "application/xml");
+        helper.addAttachment(RTTS_HPSM_XML, new EventMsgInputStreamSource (xstream).attach(hpsmMessage), "application/xml");
 
         return response;
     }
 
+    private MimeMessage createRejectMessage (HpsmCommand request, String messageText) throws Exception {
+        return createRejectMessage(request.getEmailSourceAddr(), request.getSubject(), messageText);
+    }
 
-    private MimeMessage createRejectMessage (HpsmRequest request, String messageText) throws Exception {
+    private MimeMessage createRejectMessage (String replyTo, HpsmMessageHeader subject, String messageText) throws Exception {
         MimeMessage response = messageFactory.createMailMessage();
 
-        EventSubject respSubject = new EventSubject(request.subject.getHpsmId(), request.subject.getOurId(), HpsmStatus.REJECTED);
+        HpsmMessageHeader respSubject = new HpsmMessageHeader(subject.getHpsmId(), subject.getOurId(), HpsmStatus.REJECTED);
 
         MimeMessageHelper helper = new MimeMessageHelper(response, false);
 
         helper.setSubject(respSubject.toString());
-        helper.setTo(request.getEmailSourceAddr());
+        helper.setTo(replyTo);
         helper.setFrom(setup.getSenderAddress());
 
         if (messageText != null)
@@ -366,7 +387,7 @@ public class HpsmEventCommandHandler implements MailHandler {
 
 
 
-    private StringBuilder appendCommentInfo (StringBuilder commentText, EventMsg msg) {
+    private StringBuilder appendCommentInfo (StringBuilder commentText, HpsmMessage msg) {
         commentText.append("--").append("\n");
 
         if (HelperFunc.isNotEmpty(msg.getGeoRegion())) {

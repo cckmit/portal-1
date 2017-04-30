@@ -1,8 +1,8 @@
 package ru.protei.portal.hpsm.handler;
 
 import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.hpsm.struct.EventMsg;
-import ru.protei.portal.hpsm.struct.EventSubject;
+import ru.protei.portal.hpsm.struct.HpsmMessage;
+import ru.protei.portal.hpsm.struct.HpsmMessageHeader;
 import ru.protei.portal.hpsm.utils.HpsmUtils;
 
 import javax.mail.internet.MimeMessage;
@@ -10,20 +10,21 @@ import javax.mail.internet.MimeMessage;
 /**
  * Created by michael on 28.04.17.
  */
-public class HpsmRequest {
-    EventSubject subject;
-    EventMsg eventMsg;
+public class HpsmCommand {
+
+    HpsmMessageHeader subject;
+    HpsmMessage hpsmMessage;
     MimeMessage mailMessage;
 
     Company company;
 
-    public HpsmRequest(EventSubject subject, EventMsg msg, MimeMessage mailMessage) {
+    public HpsmCommand(HpsmMessageHeader subject, HpsmMessage msg, MimeMessage mailMessage) {
         this.subject = subject;
-        this.eventMsg = msg;
+        this.hpsmMessage = msg;
         this.mailMessage = mailMessage;
     }
 
-    public HpsmRequest assign(Company company) {
+    public HpsmCommand assign(Company company) {
         this.company = company;
         return this;
     }
@@ -36,12 +37,12 @@ public class HpsmRequest {
         return mailMessage;
     }
 
-    public EventSubject getSubject() {
+    public HpsmMessageHeader getSubject() {
         return subject;
     }
 
-    public EventMsg getEventMsg() {
-        return eventMsg;
+    public HpsmMessage getHpsmMessage() {
+        return hpsmMessage;
     }
 
     public String getEmailSourceAddr() throws Exception {

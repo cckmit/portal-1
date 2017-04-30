@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 /**
  * Created by michael on 24.04.17.
  */
-public class EventSubject {
+public class HpsmMessageHeader {
     public static final String SUBJ_FORMAT = "ID_HPSM=[%s]ID_VENDOR=[%s]STATUS=[%s]";
     public static final Pattern SUBJ_PATTERN = Pattern.compile("ID_HPSM=\\[([^\\]]+)\\]ID_VENDOR=\\[([^\\]]*)\\]STATUS=\\[([^\\]]+)\\]");
 
@@ -17,7 +17,7 @@ public class EventSubject {
     private HpsmStatus status;
 
 
-    public EventSubject (String hpsmId, String ourId, HpsmStatus status) {
+    public HpsmMessageHeader(String hpsmId, String ourId, HpsmStatus status) {
         this.hpsmId = hpsmId;
         this.ourId = ourId == null ? "" : ourId;
         this.status = status;
@@ -43,7 +43,7 @@ public class EventSubject {
         return String.format(SUBJ_FORMAT, this.hpsmId, this.ourId, this.status.getHpsmCode());
     }
 
-    public static EventSubject parse (String subject) {
+    public static HpsmMessageHeader parse (String subject) {
 
         Matcher m = SUBJ_PATTERN.matcher(subject);
         if (!m.matches())
@@ -55,6 +55,6 @@ public class EventSubject {
             return null;
         }
 
-        return new EventSubject(m.group(1), m.group(2), status);
+        return new HpsmMessageHeader(m.group(1), m.group(2), status);
     }
 }

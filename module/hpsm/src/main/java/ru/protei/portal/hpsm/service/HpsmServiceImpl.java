@@ -58,6 +58,6 @@ public class HpsmServiceImpl implements HpsmService {
 
     @Override
     public Company getCompanyByBranchName(String branchName) {
-        return branchToCompanyIdMap.get(branchKey(branchName));
+        return branchName == null ? null : branchToCompanyIdMap.get(branchKey(branchName));
     }
 }

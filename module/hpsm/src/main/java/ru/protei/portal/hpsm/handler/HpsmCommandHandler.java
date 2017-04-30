@@ -5,6 +5,6 @@ import javax.mail.internet.MimeMessage;
 /**
  * Created by michael on 28.04.17.
  */
-interface HpsmRequestHandler {
-    MimeMessage handle(HpsmRequest request) throws Exception;
+interface HpsmCommandHandler {
+    MimeMessage handle(HpsmCommand request) throws Exception;
 }

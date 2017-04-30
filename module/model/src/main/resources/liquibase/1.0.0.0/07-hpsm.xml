@@ -14,7 +14,7 @@
     <changeSet author="michael" id="28-04-2017 15:07">
         <addColumn tableName="CASE_OBJECT">
             <column name="EXT_APP" type="varchar(16)">
-                <constraints nullable="true" unique="true" />
+                <constraints nullable="true" unique="false" />
             </column>
 
             <column name="EXT_APP_ID" type="varchar(64)">

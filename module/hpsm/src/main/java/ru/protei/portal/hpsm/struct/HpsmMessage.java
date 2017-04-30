@@ -11,7 +11,7 @@ import java.util.Date;
  * Created by michael on 19.04.17.
  */
 @XStreamAlias("FIELDS")
-public class EventMsg implements Cloneable {
+public class HpsmMessage implements Cloneable {
 
     @XStreamAlias("ID_HPSM")
     String hpsmId;
@@ -113,7 +113,7 @@ public class EventMsg implements Cloneable {
     @XStreamAlias("RESOLUTION")
     String resolutionText;
 
-    public EventMsg () {
+    public HpsmMessage() {
 
     }
 
@@ -429,9 +429,9 @@ public class EventMsg implements Cloneable {
     }
 
 
-    public EventMsg createCopy () {
+    public HpsmMessage createCopy () {
         try {
-            return (EventMsg) clone();
+            return (HpsmMessage) clone();
         }
         catch (Exception e) {
             throw new RuntimeException("Unable to clone event-message object", e);
