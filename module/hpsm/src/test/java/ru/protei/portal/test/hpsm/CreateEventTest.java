@@ -10,7 +10,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import ru.protei.portal.hpsm.HpsmConfiguration;
 import ru.protei.portal.hpsm.api.HpsmStatus;
 import ru.protei.portal.hpsm.api.MailMessageFactory;
-import ru.protei.portal.hpsm.handler.HpsmEventCommandHandler;
+import ru.protei.portal.hpsm.handler.HpsmMainEventHandler;
 import ru.protei.portal.hpsm.struct.HpsmMessage;
 import ru.protei.portal.hpsm.struct.HpsmMessageHeader;
 import ru.protei.portal.hpsm.struct.HpsmSetup;
@@ -21,12 +21,12 @@ import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import javax.mail.internet.MimeMessage;
 
-import static ru.protei.portal.hpsm.handler.HpsmEventCommandHandler.RTTS_HPSM_XML;
+import static ru.protei.portal.hpsm.handler.HpsmMainEventHandler.RTTS_HPSM_XML;
 
 /**
  * Created by Mike on 01.05.2017.
  */
-public class CreateCommandTest {
+public class CreateEventTest {
     static ApplicationContext ctx;
 
     @BeforeClass
@@ -43,7 +43,7 @@ public class CreateCommandTest {
         HpsmSetup setup = ctx.getBean(HpsmSetup.class);
         XStream xstream = ctx.getBean(XStream.class);
 
-        HpsmEventCommandHandler handler = ctx.getBean(HpsmEventCommandHandler.class);
+        HpsmMainEventHandler handler = ctx.getBean(HpsmMainEventHandler.class);
 
         handler.setSendChannel(backChannel);
 

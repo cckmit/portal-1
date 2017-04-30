@@ -15,8 +15,8 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import ru.protei.portal.config.MainConfiguration;
 import ru.protei.portal.hpsm.api.MailMessageFactory;
 import ru.protei.portal.hpsm.api.MailSendChannel;
-import ru.protei.portal.hpsm.handler.HpsmEventCommandHandler;
-import ru.protei.portal.hpsm.handler.HpsmPingCommandHandler;
+import ru.protei.portal.hpsm.handler.HpsmMainEventHandler;
+import ru.protei.portal.hpsm.handler.HpsmPingEventHandler;
 import ru.protei.portal.hpsm.service.HpsmService;
 import ru.protei.portal.hpsm.service.HpsmServiceImpl;
 import ru.protei.portal.hpsm.struct.HpsmMessage;
@@ -70,12 +70,13 @@ public class HpsmConfiguration {
     }
 
     @Bean
-    public HpsmPingCommandHandler getPingCommandHandler () {
-        return new HpsmPingCommandHandler();
+    public HpsmPingEventHandler getPingCommandHandler () {
+        return new HpsmPingEventHandler();
     }
 
-    @Bean HpsmEventCommandHandler getEventCommandHandler () {
-        return new HpsmEventCommandHandler();
+    @Bean
+    HpsmMainEventHandler getEventCommandHandler () {
+        return new HpsmMainEventHandler();
     }
 
     @Bean

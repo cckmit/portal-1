@@ -36,9 +36,9 @@ import java.util.Date;
 /**
  * Created by michael on 25.04.17.
  */
-public class HpsmEventCommandHandler implements MailHandler {
+public class HpsmMainEventHandler implements MailHandler {
 
-    private static Logger logger = LoggerFactory.getLogger(HpsmEventCommandHandler.class);
+    private static Logger logger = LoggerFactory.getLogger(HpsmMainEventHandler.class);
 
     public static final String RTTS_HPSM_XML = "rtts_hpsm.xml";
 
@@ -93,7 +93,7 @@ public class HpsmEventCommandHandler implements MailHandler {
                 return false;
 
 
-            HpsmCommand request = buildRequest(subject, msg);
+            HpsmEvent request = buildRequest(subject, msg);
 
             if (request == null) {
                 logger.debug("unable to create request");
@@ -101,7 +101,7 @@ public class HpsmEventCommandHandler implements MailHandler {
                 return true;
             }
 
-            HpsmCommandHandler handler = createHandler(request);
+            HpsmEventHandler handler = createHandler(request);
             logger.debug("created handler : {}", handler);
 
             MimeMessage responseMsg = handler.handle(request);
@@ -124,7 +124,7 @@ public class HpsmEventCommandHandler implements MailHandler {
     }
 
 
-    private HpsmCommand buildRequest (HpsmMessageHeader subject, MimeMessage msg) throws Exception {
+    private HpsmEvent buildRequest (HpsmMessageHeader subject, MimeMessage msg) throws Exception {
 
         logger.debug("Got inbound event-message {}", subject.toString());
 
@@ -167,11 +167,11 @@ public class HpsmEventCommandHandler implements MailHandler {
         }
 
 
-        return new HpsmCommand(subject, hpsmMessage, msg).assign(company);
+        return new HpsmEvent(subject, hpsmMessage, msg).assign(company);
     }
 
 
-    private HpsmCommandHandler createHandler (HpsmCommand request) {
+    private HpsmEventHandler createHandler (HpsmEvent request) {
         if (request.getSubject().isNewCaseRequest())
             return new CreateNewCaseHandler();
 
@@ -179,9 +179,9 @@ public class HpsmEventCommandHandler implements MailHandler {
     }
 
 
-    class CreateNewCaseHandler implements HpsmCommandHandler {
+    class CreateNewCaseHandler implements HpsmEventHandler {
         @Override
-        public MimeMessage handle(HpsmCommand request) throws Exception {
+        public MimeMessage handle(HpsmEvent request) throws Exception {
 
             Person contactPerson = getAssignedPerson(request.getCompany().getId(), request.getHpsmMessage());
             if (contactPerson == null) {
@@ -255,7 +255,7 @@ public class HpsmEventCommandHandler implements MailHandler {
 
 
 
-    class RejectHandler implements HpsmCommandHandler {
+    class RejectHandler implements HpsmEventHandler {
 
         private String messageText;
 
@@ -268,7 +268,7 @@ public class HpsmEventCommandHandler implements MailHandler {
         }
 
         @Override
-        public MimeMessage handle(HpsmCommand request) throws Exception {
+        public MimeMessage handle(HpsmEvent request) throws Exception {
             return createRejectMessage(request, messageText);
         }
     }
@@ -351,7 +351,7 @@ public class HpsmEventCommandHandler implements MailHandler {
 
 
 
-    public MimeMessage createReplyMessage (HpsmCommand request, HpsmMessageHeader subject, HpsmMessage hpsmMessage) throws Exception {
+    public MimeMessage createReplyMessage (HpsmEvent request, HpsmMessageHeader subject, HpsmMessage hpsmMessage) throws Exception {
 
         MimeMessage response = messageFactory.createMailMessage();
         MimeMessageHelper helper = new MimeMessageHelper(response, false);
@@ -364,7 +364,7 @@ public class HpsmEventCommandHandler implements MailHandler {
         return response;
     }
 
-    private MimeMessage createRejectMessage (HpsmCommand request, String messageText) throws Exception {
+    private MimeMessage createRejectMessage (HpsmEvent request, String messageText) throws Exception {
         return createRejectMessage(request.getEmailSourceAddr(), request.getSubject(), messageText);
     }
 

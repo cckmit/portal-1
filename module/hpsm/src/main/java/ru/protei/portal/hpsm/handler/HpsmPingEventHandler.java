@@ -18,9 +18,9 @@ import javax.mail.internet.MimeMessage;
 /**
  * Created by michael on 25.04.17.
  */
-public class HpsmPingCommandHandler implements MailHandler {
+public class HpsmPingEventHandler implements MailHandler {
 
-    private static Logger logger = LoggerFactory.getLogger(HpsmPingCommandHandler.class);
+    private static Logger logger = LoggerFactory.getLogger(HpsmPingEventHandler.class);
 
     @Autowired
     @Qualifier("hpsmSendChannel")
@@ -34,7 +34,7 @@ public class HpsmPingCommandHandler implements MailHandler {
     private HpsmSetup setup;
 
 
-    public HpsmPingCommandHandler() {
+    public HpsmPingEventHandler() {
     }
 
 

@@ -10,7 +10,7 @@ import javax.mail.internet.MimeMessage;
 /**
  * Created by michael on 28.04.17.
  */
-public class HpsmCommand {
+public class HpsmEvent {
 
     HpsmMessageHeader subject;
     HpsmMessage hpsmMessage;
@@ -18,13 +18,13 @@ public class HpsmCommand {
 
     Company company;
 
-    public HpsmCommand(HpsmMessageHeader subject, HpsmMessage msg, MimeMessage mailMessage) {
+    public HpsmEvent(HpsmMessageHeader subject, HpsmMessage msg, MimeMessage mailMessage) {
         this.subject = subject;
         this.hpsmMessage = msg;
         this.mailMessage = mailMessage;
     }
 
-    public HpsmCommand assign(Company company) {
+    public HpsmEvent assign(Company company) {
         this.company = company;
         return this;
     }
