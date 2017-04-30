@@ -16,12 +16,19 @@ public class HpsmEvent {
     HpsmMessage hpsmMessage;
     MimeMessage mailMessage;
 
+    String mailBodyText;
+
     Company company;
 
     public HpsmEvent(HpsmMessageHeader subject, HpsmMessage msg, MimeMessage mailMessage) {
         this.subject = subject;
         this.hpsmMessage = msg;
         this.mailMessage = mailMessage;
+    }
+
+    public HpsmEvent assign (HpsmMessage message) {
+        this.hpsmMessage = message;
+        return this;
     }
 
     public HpsmEvent assign(Company company) {
@@ -47,5 +54,13 @@ public class HpsmEvent {
 
     public String getEmailSourceAddr() throws Exception {
         return HpsmUtils.getEmailFromAddress(mailMessage);
+    }
+
+    public void setMailBodyText (String text) {
+        this.mailBodyText = text;
+    }
+
+    public String getMailBodyText () {
+        return this.mailBodyText;
     }
 }

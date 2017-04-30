@@ -10,18 +10,20 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import ru.protei.portal.hpsm.HpsmConfiguration;
 import ru.protei.portal.hpsm.api.HpsmStatus;
 import ru.protei.portal.hpsm.api.MailMessageFactory;
+import ru.protei.portal.hpsm.handler.HpsmEvent;
 import ru.protei.portal.hpsm.handler.HpsmMainEventHandler;
 import ru.protei.portal.hpsm.struct.HpsmMessage;
 import ru.protei.portal.hpsm.struct.HpsmMessageHeader;
 import ru.protei.portal.hpsm.struct.HpsmSetup;
 import ru.protei.portal.hpsm.utils.EventMsgInputStreamSource;
+import ru.protei.portal.hpsm.utils.HpsmUtils;
 import ru.protei.portal.hpsm.utils.VirtualMailSendChannel;
 import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import javax.mail.internet.MimeMessage;
 
-import static ru.protei.portal.hpsm.handler.HpsmMainEventHandler.RTTS_HPSM_XML;
+import static ru.protei.portal.hpsm.utils.HpsmUtils.RTTS_HPSM_XML;
 
 /**
  * Created by Mike on 01.05.2017.
@@ -65,6 +67,15 @@ public class CreateEventTest {
 
         Assert.assertTrue(result);
 
-        System.out.println(backChannel.get());
+        MimeMessage responseMail = backChannel.get();
+
+        Assert.assertNotNull(responseMail);
+
+        HpsmEvent responseEvent = HpsmUtils.parseEvent(responseMail, xstream);
+
+        Assert.assertNotNull(responseEvent);
+
+        System.out.println(responseEvent.getMailBodyText());
+
     }
 }

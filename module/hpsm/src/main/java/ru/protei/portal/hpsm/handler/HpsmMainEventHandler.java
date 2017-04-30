@@ -40,8 +40,6 @@ public class HpsmMainEventHandler implements MailHandler {
 
     private static Logger logger = LoggerFactory.getLogger(HpsmMainEventHandler.class);
 
-    public static final String RTTS_HPSM_XML = "rtts_hpsm.xml";
-
     @Autowired
     @Qualifier("hpsmSerializer")
     private XStream xstream;
@@ -128,30 +126,9 @@ public class HpsmMainEventHandler implements MailHandler {
 
         logger.debug("Got inbound event-message {}", subject.toString());
 
-        if (!(msg.getContent() instanceof MimeMultipart)) {
-            logger.debug("Wrong mail message type : {}, skip handling", msg.getContent().getClass());
-            return null;
-        }
+        HpsmEvent hpsmEvent = HpsmUtils.parseEvent(msg, xstream);
 
-        MimeMultipart mparts = (MimeMultipart) msg.getContent();
-
-        HpsmMessage hpsmMessage = null;
-
-        for (int i = 0; i < mparts.getCount(); i++) {
-            logger.debug("process part #{}", i);
-            logger.debug(" message part #{}, Content type: {}", i, mparts.getBodyPart(i).getContentType());
-
-            String fileName = mparts.getBodyPart(i).getFileName();
-            logger.debug(" message part #{}, File name: {}", i, fileName);
-
-            if (fileName != null && fileName.equalsIgnoreCase(RTTS_HPSM_XML)) {
-                try (InputStream contentStream = mparts.getBodyPart(i).getInputStream()) {
-                    hpsmMessage = (HpsmMessage) xstream.fromXML(contentStream);
-                }
-            }
-        }
-
-        if (hpsmMessage != null) {
+        if (hpsmEvent.getHpsmMessage() != null) {
             logger.debug("event message parsed");
         }
         else {
@@ -159,15 +136,14 @@ public class HpsmMainEventHandler implements MailHandler {
             return null;
         }
 
-        Company company = hpsmService.getCompanyByBranchName(hpsmMessage.getCompanyBranch());
+        Company company = hpsmService.getCompanyByBranchName(hpsmEvent.getHpsmMessage().getCompanyBranch());
 
         if (company == null) {
-            logger.debug("unable to map company by branch name : {}", hpsmMessage.getCompanyBranch());
+            logger.debug("unable to map company by branch name : {}", hpsmEvent.getHpsmMessage().getCompanyBranch());
             return null;
         }
 
-
-        return new HpsmEvent(subject, hpsmMessage, msg).assign(company);
+        return hpsmEvent.assign(company);
     }
 
 
@@ -359,7 +335,7 @@ public class HpsmMainEventHandler implements MailHandler {
         helper.setSubject(subject.toString());
         helper.setTo(request.getEmailSourceAddr());
         helper.setFrom(setup.getSenderAddress());
-        helper.addAttachment(RTTS_HPSM_XML, new EventMsgInputStreamSource (xstream).attach(hpsmMessage), "application/xml");
+        helper.addAttachment(HpsmUtils.RTTS_HPSM_XML, new EventMsgInputStreamSource (xstream).attach(hpsmMessage), "application/xml");
 
         return response;
     }
