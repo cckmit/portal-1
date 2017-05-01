@@ -44,7 +44,7 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
             condition.append("Person.company_id = ?");
             args.add(companyId);
 
-            condition.append("and Person.displayName like ?");
+            condition.append(" and Person.displayName like ?");
             args.add(HelperFunc.makeLikeArg(displayName, false));
         });
 
@@ -68,7 +68,7 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
             condition.append("Person.company_id = ?");
             args.add(companyId);
 
-            condition.append("and Person.contactInfo like ?");
+            condition.append(" and Person.contactInfo like ?");
             args.add(HelperFunc.makeLikeArg(email, true));
         });
 

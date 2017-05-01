@@ -200,6 +200,11 @@ public class MainConfiguration {
  **/
 
     @Bean
+    public CaseControlService getCaseControlService () {
+        return new CaseControlServiceImpl();
+    }
+
+    @Bean
     public EmployeeService getEmployeeService () { return new EmployeeServiceImpl(); }
 
     @Bean

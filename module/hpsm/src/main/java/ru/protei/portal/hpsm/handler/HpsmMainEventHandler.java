@@ -169,6 +169,11 @@ public class HpsmMainEventHandler implements MailHandler {
                 return createRejectMessage(request, "product not found");
             }
 
+            CaseObject ex_test = caseObjectDAO.getByCondition("ext_app_id=?", request.getSubject().getHpsmId());
+            if (ex_test != null) {
+                return createRejectMessage(request, "already_registered");
+            }
+
             CaseObject obj = new CaseObject();
             obj.setCreated(new Date());
             obj.setModified(new Date());
@@ -183,7 +188,7 @@ public class HpsmMainEventHandler implements MailHandler {
                 obj.setEmails(request.getHpsmMessage().getContactPersonEmail());
 
             obj.setImpLevel(request.getHpsmMessage().severity().getCaseImpLevel().getId());
-            obj.setName(request.getHpsmMessage().getShortDescription());
+            obj.setName(HelperFunc.nvlt(request.getHpsmMessage().getShortDescription(),request.getSubject().getHpsmId()));
             obj.setInfo(request.getHpsmMessage().getDescription());
             obj.setLocal(0);
             obj.setStateId(En_CaseState.CREATED.getId());
@@ -326,11 +331,10 @@ public class HpsmMainEventHandler implements MailHandler {
 
 
 
-
     public MimeMessage createReplyMessage (HpsmEvent request, HpsmMessageHeader subject, HpsmMessage hpsmMessage) throws Exception {
 
         MimeMessage response = messageFactory.createMailMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(response, false);
+        MimeMessageHelper helper = new MimeMessageHelper(response, true);
 
         helper.setSubject(subject.toString());
         helper.setTo(request.getEmailSourceAddr());
