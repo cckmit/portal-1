@@ -22,6 +22,7 @@ import ru.protei.portal.hpsm.service.HpsmServiceImpl;
 import ru.protei.portal.hpsm.struct.HpsmMessage;
 import ru.protei.portal.hpsm.struct.HpsmSetup;
 import ru.protei.portal.hpsm.utils.EventMsgInputStreamSource;
+import ru.protei.portal.hpsm.utils.HpsmTestUtils;
 import ru.protei.portal.hpsm.utils.JavaMailMessageFactory;
 import ru.protei.portal.hpsm.utils.JavaMailSendChannel;
 
@@ -115,6 +116,9 @@ public class HpsmConfiguration {
     }
 
 
-
+    @Bean
+    public HpsmTestUtils createTestUtils () {
+        return new HpsmTestUtils ();
+    }
 
 }
