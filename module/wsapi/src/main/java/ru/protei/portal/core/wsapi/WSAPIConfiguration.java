@@ -34,7 +34,7 @@ public class WSAPIConfiguration {
         JaxWsServiceFactoryBean b = new JaxWsServiceFactoryBean();
         b.setDataBinding (new AegisDatabinding());
         endpoint.setServiceFactory (b);
-        endpoint.publish ("/api/ws/case");
+        endpoint.publish ("/case");
         return endpoint;
     }
 }
