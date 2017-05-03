@@ -20,6 +20,14 @@ public class HelperFunc {
         return !isEmpty(s);
     }
 
+    public static boolean testAllNotEmpty (String...arr) {
+        for (String s : arr)
+            if (isEmpty(s))
+                return false;
+
+        return true;
+    }
+
     public static <T> T nvlt (T...arr) {
         for (T t : arr)
             if (t != null)

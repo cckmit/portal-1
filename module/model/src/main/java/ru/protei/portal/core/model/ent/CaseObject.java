@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.winter.jdbc.annotations.*;
 
@@ -384,6 +385,14 @@ public class CaseObject implements Serializable {
 
     public void setExtAppType(String extAppType) {
         this.extAppType = extAppType;
+    }
+
+    public En_CaseState getState () {
+        return En_CaseState.getById(this.stateId);
+    }
+
+    public void setState (En_CaseState state) {
+        this.stateId = state.getId();
     }
 
     @Override

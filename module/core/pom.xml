@@ -52,7 +52,7 @@
             <artifactId>portal4.model</artifactId>
             <version>4.0.0</version>
         </dependency>
-
+<!--
         <dependency>
             <groupId>ru.protei</groupId>
             <artifactId>winter.core</artifactId>
@@ -64,7 +64,7 @@
             <artifactId>winter.jdbc</artifactId>
             <version>${project.winter.version}</version>
         </dependency>
-
+-->
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>

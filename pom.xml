@@ -8,11 +8,6 @@
     <artifactId>portal4</artifactId>
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
-    <modules>
-        <module>module/hpsm</module>
-        <module>module/wsapi</module>
-    </modules>
-
 
     <properties>
         <project.gwt.version>2.8.0</project.gwt.version>
@@ -52,6 +47,16 @@
                 <!--<module>app/crm</module>-->
             </modules>
         </profile>
+        <profile>
+            <id>api</id>
+            <modules>
+                <module>module/model</module>
+                <module>module/core</module>
+                <module>module/wsapi</module>
+                <module>app/wsapi-app</module>
+            </modules>
+        </profile>
+
     </profiles>
 
 

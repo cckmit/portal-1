@@ -31,10 +31,10 @@ public class WSAPIConfiguration {
     @Bean(name = "ws-case-endpoint")
     public Endpoint wsCaseEndpoint() {
         EndpointImpl endpoint = new EndpointImpl(springBus(), createSoapCaseService ());
-        JaxWsServiceFactoryBean b = new JaxWsServiceFactoryBean();
-        b.setDataBinding (new AegisDatabinding());
-        endpoint.setServiceFactory (b);
-        endpoint.publish ("/case");
+//        JaxWsServiceFactoryBean b = new JaxWsServiceFactoryBean();
+//        b.setDataBinding (new AegisDatabinding());
+//        endpoint.setServiceFactory (b);
+        endpoint.publish ("/WSCaseModule");
         return endpoint;
     }
 }

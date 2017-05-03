@@ -28,6 +28,10 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
         return numberToIdMap;
     }
 
+    @Override
+    public CaseObject getByExternalAppId(String extAppId) {
+        return getByCondition("EXT_APP_ID=?", extAppId);
+    }
 
     @Override
     public Long insertCase(CaseObject object) {
