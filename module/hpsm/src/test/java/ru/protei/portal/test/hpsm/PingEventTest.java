@@ -5,14 +5,12 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import ru.protei.portal.hpsm.HpsmConfiguration;
 import ru.protei.portal.hpsm.api.MailMessageFactory;
 import ru.protei.portal.hpsm.handler.HpsmPingEventHandler;
 import ru.protei.portal.hpsm.struct.HpsmPingCmd;
 import ru.protei.portal.hpsm.struct.HpsmSetup;
 import ru.protei.portal.hpsm.utils.VirtualMailSendChannel;
-import ru.protei.winter.core.CoreConfigurationContext;
-import ru.protei.winter.jdbc.JdbcConfigurationContext;
+import ru.protei.portal.test.hpsm.config.HpsmTestConfiguration;
 
 import javax.mail.internet.MimeMessage;
 import java.util.Calendar;
@@ -28,7 +26,7 @@ public class PingEventTest {
 
     @BeforeClass
     public static void init () {
-        ctx = new AnnotationConfigApplicationContext(CoreConfigurationContext.class, JdbcConfigurationContext.class, HpsmConfiguration.class);
+        ctx = new AnnotationConfigApplicationContext(HpsmTestConfiguration.class);
     }
 
     @Test

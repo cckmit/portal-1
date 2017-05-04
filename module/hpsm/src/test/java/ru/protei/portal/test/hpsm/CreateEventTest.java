@@ -4,14 +4,12 @@ import org.junit.*;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import ru.protei.portal.core.service.CaseControlService;
-import ru.protei.portal.hpsm.HpsmConfiguration;
 import ru.protei.portal.hpsm.api.HpsmStatus;
 import ru.protei.portal.hpsm.handler.HpsmEvent;
 import ru.protei.portal.hpsm.handler.HpsmMainEventHandler;
 import ru.protei.portal.hpsm.utils.HpsmTestUtils;
 import ru.protei.portal.hpsm.utils.VirtualMailSendChannel;
-import ru.protei.winter.core.CoreConfigurationContext;
-import ru.protei.winter.jdbc.JdbcConfigurationContext;
+import ru.protei.portal.test.hpsm.config.HpsmTestConfiguration;
 
 import javax.mail.internet.MimeMessage;
 
@@ -24,7 +22,7 @@ public class CreateEventTest {
 
     @BeforeClass
     public static void init () {
-        ctx = new AnnotationConfigApplicationContext(CoreConfigurationContext.class, JdbcConfigurationContext.class, HpsmConfiguration.class);
+        ctx = new AnnotationConfigApplicationContext(HpsmTestConfiguration.class);
     }
 
     @Test

@@ -234,6 +234,11 @@ public class MainConfiguration {
     public EquipmentService getEquipmentService() { return new EquipmentServiceImpl(); }
 
 
+    @Bean
+    public EventPublisherService getEventPublisherService () {
+        return new AsyncEventPublisherService();
+    }
+
     /** ASPECT/INTERCEPTORS **/
     @Bean
     public ServiceLayerInterceptor getServiceLayerInterceptor () {

@@ -1,7 +1,5 @@
 package ru.protei.portal.wsapi.test;
 
-import org.apache.cxf.aegis.databinding.AegisDatabinding;
-import org.apache.cxf.frontend.ClientProxyFactoryBean;
 import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
 import org.junit.*;
 import org.springframework.context.ApplicationContext;

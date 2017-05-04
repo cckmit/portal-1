@@ -4,8 +4,12 @@ package ru.protei.portal.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.core.event.CaseObjectCreateEvent;
+import ru.protei.portal.core.event.CaseObjectUpdateEvent;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.CaseShortViewDAO;
@@ -41,6 +45,11 @@ public class CaseServiceImpl implements CaseService {
     @Autowired
     CaseCommentDAO caseCommentDAO;
 
+    @Autowired
+    EventPublisherService publisherService;
+
+
+
     @Override
     public CoreResponse<List<CaseShortView>> caseObjectList( CaseQuery query) {
         List<CaseShortView> list = caseShortViewDAO.getCases( query );
@@ -73,6 +82,8 @@ public class CaseServiceImpl implements CaseService {
         if (caseId == null)
             return new CoreResponse().error(En_ResultStatus.NOT_CREATED);
 
+        publisherService.publishEvent(new CaseObjectCreateEvent(this, caseObject));
+
         return new CoreResponse<CaseObject>().success( caseObject );
     }
 
@@ -82,10 +93,15 @@ public class CaseServiceImpl implements CaseService {
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
 
         caseObject.setModified(new Date());
+
+        CaseObjectUpdateEvent updateEvent = new CaseObjectUpdateEvent(this, caseObject, caseObjectDAO.get(caseObject.getId()));
+
         boolean isUpdated = caseObjectDAO.merge(caseObject);
 
         if (!isUpdated)
             return new CoreResponse().error(En_ResultStatus.NOT_UPDATED);
+
+        publisherService.publishEvent(updateEvent);
 
         return new CoreResponse<CaseObject>().success( caseObject );
     }

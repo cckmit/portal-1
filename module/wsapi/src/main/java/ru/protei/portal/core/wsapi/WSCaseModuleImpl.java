@@ -127,6 +127,25 @@ public class WSCaseModuleImpl implements WSCaseModule {
         return object;
     }
 
+    @Override
+    public CaseObject saveSupportTicket(SupportTicketRequest request) {
+        CaseObject obj = caseObjectDAO.getByExternalAppId(request.getExtId());
+
+        if (obj == null) {
+            return createSupportTicket(request);
+        }
+
+        if (!WSAPIDefs.testCaseVisible(obj))
+            return null;
+
+        obj.setName(request.subject);
+        obj.setInfo(request.description);
+
+        caseObjectDAO.merge(obj);
+
+        return obj;
+    }
+
     private DevUnit ensureProductExists (String prodName, Person creator) {
         DevUnit product = devUnitDAO.checkExistsByName(En_DevUnitType.PRODUCT, prodName);
 

@@ -36,6 +36,14 @@ public interface WSCaseModule {
      */
     CaseObject createSupportTicket (SupportTicketRequest request);
 
+
+    /**
+     * create or replace
+     * @param request
+     * @return
+     */
+    CaseObject saveSupportTicket (SupportTicketRequest request);
+
     /**
      * @param caseId
      * @param comment

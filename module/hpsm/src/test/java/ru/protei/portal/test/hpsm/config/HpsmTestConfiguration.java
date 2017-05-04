@@ -1,7 +1,8 @@
-package ru.protei.portal.hpsm;
+package ru.protei.portal.test.hpsm.config;
 
 import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.io.xml.*;
+import com.thoughtworks.xstream.io.xml.XmlFriendlyNameCoder;
+import com.thoughtworks.xstream.io.xml.Xpp3Driver;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -25,12 +26,15 @@ import ru.protei.portal.hpsm.utils.EventMsgInputStreamSource;
 import ru.protei.portal.hpsm.utils.HpsmTestUtils;
 import ru.protei.portal.hpsm.utils.JavaMailMessageFactory;
 import ru.protei.portal.hpsm.utils.JavaMailSendChannel;
+import ru.protei.winter.core.CoreConfigurationContext;
+import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 /**
  * Created by michael on 19.04.17.
  */
 @Configuration
-public class HpsmConfiguration {
+@Import({CoreConfigurationContext.class, JdbcConfigurationContext.class, MainConfiguration.class})
+public class HpsmTestConfiguration {
 
     @Bean
     public HpsmSetup getHpsmSetup () {
@@ -45,7 +49,7 @@ public class HpsmConfiguration {
 
         HpsmSetup setup = getHpsmSetup ();
 
-        JavaMailSenderImpl impl = new org.springframework.mail.javamail.JavaMailSenderImpl ();
+        JavaMailSenderImpl impl = new JavaMailSenderImpl ();
 
         impl.setDefaultEncoding("utf-8");
         impl.setHost(setup.getMailServerHost());
