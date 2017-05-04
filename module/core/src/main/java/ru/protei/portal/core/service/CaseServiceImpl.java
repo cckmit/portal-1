@@ -4,12 +4,10 @@ package ru.protei.portal.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
-import ru.protei.portal.core.event.CaseObjectCreateEvent;
-import ru.protei.portal.core.event.CaseObjectUpdateEvent;
+import ru.protei.portal.core.event.CaseCommentEvent;
+import ru.protei.portal.core.event.CaseObjectEvent;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.CaseShortViewDAO;
@@ -82,7 +80,7 @@ public class CaseServiceImpl implements CaseService {
         if (caseId == null)
             return new CoreResponse().error(En_ResultStatus.NOT_CREATED);
 
-        publisherService.publishEvent(new CaseObjectCreateEvent(this, caseObject));
+        publisherService.publishEvent(new CaseObjectEvent(this, caseObject));
 
         return new CoreResponse<CaseObject>().success( caseObject );
     }
@@ -94,7 +92,7 @@ public class CaseServiceImpl implements CaseService {
 
         caseObject.setModified(new Date());
 
-        CaseObjectUpdateEvent updateEvent = new CaseObjectUpdateEvent(this, caseObject, caseObjectDAO.get(caseObject.getId()));
+        CaseObjectEvent updateEvent = new CaseObjectEvent(this, caseObject, caseObjectDAO.get(caseObject.getId()));
 
         boolean isUpdated = caseObjectDAO.merge(caseObject);
 
@@ -146,6 +144,8 @@ public class CaseServiceImpl implements CaseService {
             throw new RuntimeException( "failed to update case modifiedDate " );
 
         CaseComment result = caseCommentDAO.get( commentId );
+
+        publisherService.publishEvent(new CaseCommentEvent(this, caseObjectDAO.get(result.getCaseId()), result));
 
         return new CoreResponse<CaseComment>().success( result );
     }

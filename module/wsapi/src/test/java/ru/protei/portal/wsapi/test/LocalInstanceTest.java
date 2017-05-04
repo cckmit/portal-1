@@ -29,7 +29,7 @@ public class LocalInstanceTest {
     public static void init() {
         JaxWsProxyFactoryBean factory = new JaxWsProxyFactoryBean();
         factory.setServiceClass(WSCaseModule.class);
-        factory.setAddress("http://localhost:8080/portal.wsapi/api/ws/WSCaseModule");
+        factory.setAddress("http://newportal/portal.wsapi/api/ws/WSCaseModule");
 
         caseModule = (WSCaseModule) factory.create();
 
@@ -57,7 +57,7 @@ public class LocalInstanceTest {
         request.setProductName("junit");
         request.setPersonName("Zavedeev Michael");
 
-        CaseObject caseObject = caseModule.createSupportTicket(request);
+        CaseObject caseObject = caseModule.saveSupportTicket(request);
 
         Assert.assertNotNull(caseObject);
         Assert.assertNotNull(caseObject.getId());
@@ -87,9 +87,9 @@ public class LocalInstanceTest {
     }
 
 
-    @After
-    @Before
-    public void cleanup () {
-        ctx.getBean(CaseControlService.class).deleteByExtAppId(JUNIT001_1_case_ext_id);
-    }
+//    @After
+//    @Before
+//    public void cleanup () {
+//        ctx.getBean(CaseControlService.class).deleteByExtAppId(JUNIT001_1_case_ext_id);
+//    }
 }

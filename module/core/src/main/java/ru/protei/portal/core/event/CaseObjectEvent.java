@@ -1,6 +1,7 @@
 package ru.protei.portal.core.event;
 
 import org.springframework.context.ApplicationEvent;
+import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.service.CaseService;
 
@@ -15,13 +16,21 @@ public class CaseObjectEvent extends ApplicationEvent {
     private CaseObject oldState;
 
     public CaseObjectEvent(CaseService source, CaseObject newState) {
-        this (source, newState, CaseObjectEventType.CREATE, null);
+        this (source, newState, null);
     }
 
-    public CaseObjectEvent(CaseService source, CaseObject newState, CaseObjectEventType eventType, CaseObject oldState) {
+    public CaseObjectEvent(CaseService source, CaseObject newState, CaseObject oldState) {
         super(source);
         this.newState = newState;
         this.oldState = oldState;
+    }
+
+    public boolean isCreateEvent () {
+        return this.oldState == null;
+    }
+
+    public boolean isUpdateEvent () {
+        return this.oldState != null;
     }
 
     public Date getEventDate () {
