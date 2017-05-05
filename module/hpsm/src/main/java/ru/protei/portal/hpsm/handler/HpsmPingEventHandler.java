@@ -9,7 +9,7 @@ import ru.protei.portal.hpsm.api.MailHandler;
 import ru.protei.portal.hpsm.api.MailMessageFactory;
 import ru.protei.portal.hpsm.api.MailSendChannel;
 import ru.protei.portal.hpsm.struct.HpsmPingCmd;
-import ru.protei.portal.hpsm.struct.HpsmSetup;
+import ru.protei.portal.hpsm.config.HpsmEnvConfig;
 import ru.protei.portal.hpsm.utils.HpsmUtils;
 
 import javax.mail.MessagingException;
@@ -31,7 +31,7 @@ public class HpsmPingEventHandler implements MailHandler {
     private MailMessageFactory messageFactory;
 
     @Autowired
-    private HpsmSetup setup;
+    private HpsmEnvConfig setup;
 
 
     public HpsmPingEventHandler() {

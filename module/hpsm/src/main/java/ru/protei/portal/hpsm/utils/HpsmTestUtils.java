@@ -9,7 +9,7 @@ import ru.protei.portal.hpsm.api.MailMessageFactory;
 import ru.protei.portal.hpsm.handler.HpsmEvent;
 import ru.protei.portal.hpsm.struct.HpsmMessage;
 import ru.protei.portal.hpsm.struct.HpsmMessageHeader;
-import ru.protei.portal.hpsm.struct.HpsmSetup;
+import ru.protei.portal.hpsm.config.HpsmEnvConfig;
 
 import javax.mail.internet.MimeMessage;
 
@@ -24,7 +24,7 @@ public class HpsmTestUtils {
     MailMessageFactory messageFactory;
 
     @Autowired
-    HpsmSetup setup;
+    HpsmEnvConfig setup;
 
     @Autowired
     @Qualifier("hpsmSerializer")

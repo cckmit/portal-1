@@ -21,7 +21,7 @@ import ru.protei.portal.hpsm.handler.HpsmPingEventHandler;
 import ru.protei.portal.hpsm.service.HpsmService;
 import ru.protei.portal.hpsm.service.HpsmServiceImpl;
 import ru.protei.portal.hpsm.struct.HpsmMessage;
-import ru.protei.portal.hpsm.struct.HpsmSetup;
+import ru.protei.portal.hpsm.config.HpsmEnvConfig;
 import ru.protei.portal.hpsm.utils.EventMsgInputStreamSource;
 import ru.protei.portal.hpsm.utils.HpsmTestUtils;
 import ru.protei.portal.hpsm.utils.JavaMailMessageFactory;
@@ -37,8 +37,8 @@ import ru.protei.winter.jdbc.JdbcConfigurationContext;
 public class HpsmTestConfiguration {
 
     @Bean
-    public HpsmSetup getHpsmSetup () {
-        return new HpsmSetup()
+    public HpsmEnvConfig getHpsmSetup () {
+        return new HpsmEnvConfig()
                 .sender("crm_test-user@protei.ru")
                 .receiver("crm_test@protei.ru")
                 .mailServer("smtp.protei.ru", 2525);
@@ -47,7 +47,7 @@ public class HpsmTestConfiguration {
     @Bean(name = "hpsmSender")
     public JavaMailSender mailSender () {
 
-        HpsmSetup setup = getHpsmSetup ();
+        HpsmEnvConfig setup = getHpsmSetup ();
 
         JavaMailSenderImpl impl = new JavaMailSenderImpl ();
 

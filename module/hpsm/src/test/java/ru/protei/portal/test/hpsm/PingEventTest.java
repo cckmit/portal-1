@@ -8,7 +8,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import ru.protei.portal.hpsm.api.MailMessageFactory;
 import ru.protei.portal.hpsm.handler.HpsmPingEventHandler;
 import ru.protei.portal.hpsm.struct.HpsmPingCmd;
-import ru.protei.portal.hpsm.struct.HpsmSetup;
+import ru.protei.portal.hpsm.config.HpsmEnvConfig;
 import ru.protei.portal.hpsm.utils.VirtualMailSendChannel;
 import ru.protei.portal.test.hpsm.config.HpsmTestConfiguration;
 
@@ -35,7 +35,7 @@ public class PingEventTest {
         VirtualMailSendChannel backChannel = new VirtualMailSendChannel();
 
         MailMessageFactory messageFactory = ctx.getBean(MailMessageFactory.class);
-        HpsmSetup setup = ctx.getBean(HpsmSetup.class);
+        HpsmEnvConfig setup = ctx.getBean(HpsmEnvConfig.class);
 
         HpsmPingEventHandler handler = ctx.getBean(HpsmPingEventHandler.class);
         handler.setSendChannel(backChannel);

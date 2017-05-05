@@ -24,13 +24,11 @@ import ru.protei.portal.hpsm.api.MailSendChannel;
 import ru.protei.portal.hpsm.service.HpsmService;
 import ru.protei.portal.hpsm.struct.HpsmMessage;
 import ru.protei.portal.hpsm.struct.HpsmMessageHeader;
-import ru.protei.portal.hpsm.struct.HpsmSetup;
+import ru.protei.portal.hpsm.config.HpsmEnvConfig;
 import ru.protei.portal.hpsm.utils.EventMsgInputStreamSource;
 import ru.protei.portal.hpsm.utils.HpsmUtils;
 
 import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
-import java.io.InputStream;
 import java.util.Date;
 
 /**
@@ -53,7 +51,7 @@ public class HpsmMainEventHandler implements MailHandler {
     private MailMessageFactory messageFactory;
 
     @Autowired
-    private HpsmSetup setup;
+    private HpsmEnvConfig setup;
 
     @Autowired
     private CaseObjectDAO caseObjectDAO;
