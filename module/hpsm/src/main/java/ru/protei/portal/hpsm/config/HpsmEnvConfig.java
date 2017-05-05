@@ -61,6 +61,14 @@ public class HpsmEnvConfig {
 
         public CompanyBranchEntry() {
         }
+
+        public String getBranchName() {
+            return branchName;
+        }
+
+        public long getCompanyId() {
+            return companyId;
+        }
     }
 
     public static class ServiceInstance {

@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.core.model.dao.CompanyDAO;
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.hpsm.config.HpsmEnvConfig;
 
 import javax.annotation.PostConstruct;
 import java.util.HashMap;
@@ -19,6 +20,9 @@ public class HpsmServiceImpl implements HpsmService {
     @Autowired
     CompanyDAO companyDAO;
 
+    @Autowired
+    HpsmEnvConfig config;
+
     private HashMap<String,Company> branchToCompanyIdMap;
 
     public HpsmServiceImpl() {
@@ -27,17 +31,20 @@ public class HpsmServiceImpl implements HpsmService {
 
     @PostConstruct
     private void postConstruct () {
-        addCompany("TT Mobile", 230L);
-        addCompany("Аквафон GSM", 766L);
-        addCompany("Дальневосточный Филиал", 546L);
-        addCompany("Кавказский Филиал", 2366L);
-        addCompany("Поволжский Филиал", 151L);
 
-        addCompany("Северо-Западный Филиал", 231L);
-        addCompany("Столичный Филиал", 550L);
-        addCompany("Сибирский Филиал", 553L);
-        addCompany("Уральский Филиал", 549L);
-        addCompany("Центральный Филиал", 260L);
+        config.getCompanyMapEntries().forEach(e -> addCompany(e.getBranchName(), e.getCompanyId()));
+
+//        addCompany("TT Mobile", 230L);
+//        addCompany("Аквафон GSM", 766L);
+//        addCompany("Дальневосточный Филиал", 546L);
+//        addCompany("Кавказский Филиал", 2366L);
+//        addCompany("Поволжский Филиал", 151L);
+//
+//        addCompany("Северо-Западный Филиал", 231L);
+//        addCompany("Столичный Филиал", 550L);
+//        addCompany("Сибирский Филиал", 553L);
+//        addCompany("Уральский Филиал", 549L);
+//        addCompany("Центральный Филиал", 260L);
     }
 
 
