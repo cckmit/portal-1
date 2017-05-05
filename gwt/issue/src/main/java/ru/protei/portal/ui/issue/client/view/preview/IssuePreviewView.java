@@ -118,6 +118,11 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     }
 
     @Override
+    public void setWorkingGroup(String value) {
+        this.workingGroup.setInnerText(value);
+    }
+
+    @Override
     public void showFullScreen( boolean value ) {
         this.fullScreen.setVisible( !value );
         if ( value ) {
@@ -169,6 +174,9 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     SpanElement manager;
     @UiField
     SpanElement info;
+    @UiField
+    SpanElement workingGroup;
+
     @Inject
     @UiField
     Lang lang;

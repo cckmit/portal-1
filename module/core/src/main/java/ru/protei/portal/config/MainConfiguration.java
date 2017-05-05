@@ -188,6 +188,11 @@ public class MainConfiguration {
 
     @Bean
     public DecimalNumberDAO getDecimalNumberDAO() { return new DecimalNumberDAO_Impl(); }
+
+    @Bean
+    public WorkingGroupDAO getWorkingGroupDAO () {
+        return new WorkingGroupDAO_Impl ();
+    }
 /**
  *
  *
@@ -233,6 +238,10 @@ public class MainConfiguration {
     @Bean
     public EquipmentService getEquipmentService() { return new EquipmentServiceImpl(); }
 
+    @Bean
+    public WorkingGroupService getWorkingGroupService () {
+        return new WorkingGroupServiceImpl ();
+    }
 
     @Bean
     public EventPublisherService getEventPublisherService () {

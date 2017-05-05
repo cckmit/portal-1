@@ -11,6 +11,7 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.ent.WorkingGroup;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
@@ -20,6 +21,7 @@ import ru.protei.portal.ui.common.client.widget.selector.dict.ImportanceButtonSe
 import ru.protei.portal.ui.common.client.widget.selector.person.ContactButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.ProductButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.workinggroup.WorkingGroupButtonSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditActivity;
@@ -85,6 +87,11 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @Override
     public HasValue<ProductShortView> product() {
         return product;
+    }
+
+    @Override
+    public HasValue<WorkingGroup> workingGroup() {
+        return workingGroup;
     }
 
     @Override
@@ -188,6 +195,10 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @Inject
     @UiField(provided = true)
     ProductButtonSelector product;
+
+    @Inject
+    @UiField(provided = true)
+    WorkingGroupButtonSelector workingGroup;
 
     @Inject
     @UiField(provided = true)

@@ -27,6 +27,10 @@
                     <span class="col-xs-7 col-md-7" ui:field="product"></span>
                 </div>
                 <div class="col-xs-6">
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.workingGroup}"/></label>
+                    <span class="col-xs-7 col-md-7" ui:field="workingGroup"></span>
+                </div>
+                <div class="col-xs-6">
                     <label class="col-xs-5 col-md-5"><ui:text from="{lang.issueState}"/></label>
                     <span class="col-xs-7 col-md-7">
                         <div ui:field="state"></div>

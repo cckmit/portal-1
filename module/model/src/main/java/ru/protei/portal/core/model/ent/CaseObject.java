@@ -110,6 +110,12 @@ public class CaseObject implements Serializable {
     @JdbcColumn(name = "EXT_APP_DATA")
     private String extAppData;
 
+    @JdbcColumn(name = "workGroup_id")
+    private Long workingGroupId;
+
+    @JdbcJoinedObject( localColumn = "workGroup_id", remoteColumn = "id", updateLocalColumn = false )
+    private WorkingGroup workingGroup;
+
 
     public CaseObject() {
 
@@ -393,6 +399,23 @@ public class CaseObject implements Serializable {
 
     public void setState (En_CaseState state) {
         this.stateId = state.getId();
+    }
+
+    public Long getWorkingGroupId() {
+        return workingGroupId;
+    }
+
+    public void setWorkingGroupId(Long workingGroupId) {
+        this.workingGroupId = workingGroupId;
+    }
+
+    public WorkingGroup getWorkingGroup() {
+        return workingGroup;
+    }
+
+    public void setWorkingGroup(WorkingGroup workingGroup) {
+        this.workingGroup = workingGroup;
+        this.workingGroupId = workingGroup == null ? null : workingGroup.getId();
     }
 
     @Override

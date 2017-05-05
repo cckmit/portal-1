@@ -4,6 +4,7 @@ import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.ent.WorkingGroup;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
@@ -24,6 +25,7 @@ public interface AbstractIssueEditView extends IsWidget {
     HasValue<PersonShortView> initiator();
     HasValue<PersonShortView> manager();
     HasValue<ProductShortView> product();
+    HasValue<WorkingGroup> workingGroup();
     HasValue<Boolean> isLocal();
 
     HasValidable nameValidator();

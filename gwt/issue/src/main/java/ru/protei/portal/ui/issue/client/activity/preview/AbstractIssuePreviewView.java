@@ -22,6 +22,7 @@ public interface AbstractIssuePreviewView extends IsWidget {
     void setOurCompany( String value );
     void setManager( String value );
     void setInfo( String value );
+    void setWorkingGroup (String value);
 
     void showFullScreen( boolean value );
 

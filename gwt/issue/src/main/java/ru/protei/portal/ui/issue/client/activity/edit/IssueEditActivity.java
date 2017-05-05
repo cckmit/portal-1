@@ -119,6 +119,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
         view.product().setValue( ProductShortView.fromProduct(issue.getProduct()));
         view.manager().setValue(PersonShortView.fromPerson(issue.getManager()));
+        view.workingGroup().setValue(issue.getWorkingGroup());
     }
 
     private void fillIssueObject(CaseObject issue){
@@ -134,6 +135,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
         issue.setProduct(DevUnit.fromProductShortView(view.product().getValue()));
         issue.setManager(Person.fromPersonShortView( view.manager().getValue()));
+        issue.setWorkingGroup(view.workingGroup().getValue());
     }
 
     private boolean validateFieldsAndGetResult(){

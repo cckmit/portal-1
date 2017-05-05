@@ -1,0 +1,43 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="05-05-2017 06:56" author="michael">
+        <createTable tableName="WorkingGroup">
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+
+            <column name="groupName" type="VARCHAR(200)">
+                <constraints nullable="false" />
+            </column>
+
+            <column name="groupInfo" type="VARCHAR(1000)" />
+        </createTable>
+
+        <!--<insert tableName="WorkingGroup">-->
+            <!--<column name="id" value="1"/>-->
+            <!--<column name="groupName" value="бригада электрик" />-->
+        <!--</insert>-->
+        <!--<insert tableName="WorkingGroup">-->
+            <!--<column name="id" value="2"/>-->
+            <!--<column name="groupName" value="бригада сантехник" />-->
+        <!--</insert>-->
+
+        <addColumn tableName="case_object">
+            <column name="workGroup_id" type="BIGINT" defaultValue="null">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+
+        <addForeignKeyConstraint constraintName="fk_case_object_work_group"
+                                 baseTableName="case_object"
+                                 baseColumnNames="workGroup_id"
+                                 referencedTableName="WorkingGroup"
+                                 referencedColumnNames="id"
+                                 onDelete="SET NULL" />
+    </changeSet>
+
+</databaseChangeLog>

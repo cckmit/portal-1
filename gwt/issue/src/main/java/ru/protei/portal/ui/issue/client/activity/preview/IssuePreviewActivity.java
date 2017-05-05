@@ -70,6 +70,7 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
         view.setOurCompany( ourCompany == null ? "" : ourCompany.getCname() );
         view.setManager( value.getManager() == null ? "" : value.getManager().getDisplayName() );
         view.setInfo( value.getInfo() == null ? "" : value.getInfo() );
+        view.setWorkingGroup( value.getWorkingGroup() == null ? "" : value.getWorkingGroup().getName());
 
         fireEvent( new IssueEvents.ShowComments( view.getCommentsContainer(), value.getId() ) );
     }
