@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import ru.protei.portal.hpsm.api.MailHandler;
 import ru.protei.portal.hpsm.api.MailMessageFactory;
 import ru.protei.portal.hpsm.api.MailSendChannel;
 import ru.protei.portal.hpsm.struct.HpsmPingMessage;
@@ -18,7 +17,7 @@ import javax.mail.internet.MimeMessage;
 /**
  * Created by michael on 25.04.17.
  */
-public class HpsmPingEventHandler implements MailHandler {
+public class HpsmPingEventHandler {
 
     private static Logger logger = LoggerFactory.getLogger(HpsmPingEventHandler.class);
 
@@ -42,8 +41,8 @@ public class HpsmPingEventHandler implements MailHandler {
         this.sendChannel = channel;
     }
 
-
-    public boolean handle (MimeMessage msg) {
+    @Override
+    public boolean handle(MimeMessage msg) {
 
         HpsmPingMessage cmd = null;
 
@@ -84,16 +83,5 @@ public class HpsmPingEventHandler implements MailHandler {
     }
 
 
-    public MimeMessage makeMessgae (String to, HpsmPingMessage cmd) throws MessagingException {
-
-        MimeMessage msg = messageFactory.createMailMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(msg, false);
-
-        helper.setSubject(cmd.toString());
-        helper.setTo(to);
-        helper.setFrom(setup.getSenderAddress());
-
-        return msg;
-    }
 
 }

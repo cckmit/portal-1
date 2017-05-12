@@ -77,34 +77,15 @@ public class HpsmConfigurationContext {
         return new JavaMailMessageFactory (mailSender());
     }
 
-    @Bean
-    public HpsmPingEventHandler getPingCommandHandler () {
-        return new HpsmPingEventHandler();
-    }
-
-    @Bean
-    HpsmMainEventHandler getEventCommandHandler () {
-        return new HpsmMainEventHandler();
-    }
-
-    @Bean
-    //@InboundChannelAdapter(value = "testReceiveEmailChannel", poller = @Poller(fixedDelay = "5000", taskExecutor = "asyncTaskExecutor"))
-    public MessageSource mailMessageSource() {
-        MailReceivingMessageSource mailReceivingMessageSource = new MailReceivingMessageSource(imapMailReceiver());
-        // other setters here
-
-        return mailReceivingMessageSource;
-    }
-
-    @Bean
-    public MailReceiver imapMailReceiver() {
-        ImapMailReceiver imapMailReceiver = new ImapMailReceiver("imaps://crm_test-user:hae7Eito@imap.protei.ru:993/INBOX");
-        imapMailReceiver.setShouldMarkMessagesAsRead(false);
-        imapMailReceiver.setShouldDeleteMessages(false);
-        imapMailReceiver.setEmbeddedPartsAsBytes(false);
-
-        return imapMailReceiver;
-    }
+//    @Bean
+//    public HpsmPingEventHandler getPingCommandHandler () {
+//        return new HpsmPingEventHandler();
+//    }
+//
+//    @Bean
+//    HpsmMainEventHandler getEventCommandHandler () {
+//        return new HpsmMainEventHandler();
+//    }
 
 
     @Bean(name = "hpsmSerializer")

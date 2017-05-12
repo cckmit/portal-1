@@ -18,7 +18,7 @@ public class HpsmEnvConfig {
         return ConfigParser.parse(file, true,
                 HpsmEnvConfig.class,
                 MailServerDesc.class,
-                ServiceInstance.class,
+                ServiceConfig.class,
                 OutboundChannel.class,
                 InboundChannel.class,
                 CompanyBranchEntry.class);
@@ -30,7 +30,7 @@ public class HpsmEnvConfig {
 
     @XStreamImplicit
     @XStreamAlias("service-instance")
-    private List<ServiceInstance> instanceList;
+    private List<ServiceConfig> instanceList;
 
     @XStreamAlias("company-map")
     private List<CompanyBranchEntry> companyMapEntries;
@@ -42,7 +42,7 @@ public class HpsmEnvConfig {
         return mailServer;
     }
 
-    public List<ServiceInstance> getInstanceList() {
+    public List<ServiceConfig> getInstanceList() {
         return instanceList;
     }
 
@@ -71,7 +71,7 @@ public class HpsmEnvConfig {
         }
     }
 
-    public static class ServiceInstance {
+    public static class ServiceConfig {
 
         @XStreamAlias("id")
         @XStreamAsAttribute
@@ -83,7 +83,11 @@ public class HpsmEnvConfig {
         @XStreamAlias("outbound-channel")
         private OutboundChannel outboundChannel;
 
-        public ServiceInstance() {
+        public ServiceConfig() {
+        }
+
+        public String getId() {
+            return id;
         }
 
         public InboundChannel getInboundChannel() {
