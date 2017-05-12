@@ -5,13 +5,14 @@ import ru.protei.portal.hpsm.api.HpsmSeverity;
 import ru.protei.portal.hpsm.api.HpsmStatus;
 import ru.protei.portal.hpsm.utils.HpsmUtils;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Created by michael on 19.04.17.
  */
 @XStreamAlias("FIELDS")
-public class HpsmMessage implements Cloneable {
+public class HpsmMessage implements Cloneable,Serializable {
 
     @XStreamAlias("ID_HPSM")
     String hpsmId;

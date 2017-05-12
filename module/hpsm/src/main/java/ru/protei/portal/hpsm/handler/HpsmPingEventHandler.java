@@ -8,7 +8,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import ru.protei.portal.hpsm.api.MailHandler;
 import ru.protei.portal.hpsm.api.MailMessageFactory;
 import ru.protei.portal.hpsm.api.MailSendChannel;
-import ru.protei.portal.hpsm.struct.HpsmPingCmd;
+import ru.protei.portal.hpsm.struct.HpsmPingMessage;
 import ru.protei.portal.hpsm.config.HpsmEnvConfig;
 import ru.protei.portal.hpsm.utils.HpsmUtils;
 
@@ -45,10 +45,10 @@ public class HpsmPingEventHandler implements MailHandler {
 
     public boolean handle (MimeMessage msg) {
 
-        HpsmPingCmd cmd = null;
+        HpsmPingMessage cmd = null;
 
         try {
-           cmd = HpsmPingCmd.parse(msg.getSubject());
+           cmd = HpsmPingMessage.parse(msg.getSubject());
         }
         catch (Throwable e) {
             logger.debug("unable to parse ping-command subject", e);
@@ -66,7 +66,7 @@ public class HpsmPingEventHandler implements MailHandler {
             try {
                 logger.debug("got ping-command: {}", cmd.toString());
 
-                HpsmPingCmd response = cmd.response();
+                HpsmPingMessage response = cmd.response();
 
                 logger.debug("send response {}", response.toString());
 
@@ -84,7 +84,7 @@ public class HpsmPingEventHandler implements MailHandler {
     }
 
 
-    public MimeMessage makeMessgae (String to, HpsmPingCmd cmd) throws MessagingException {
+    public MimeMessage makeMessgae (String to, HpsmPingMessage cmd) throws MessagingException {
 
         MimeMessage msg = messageFactory.createMailMessage();
         MimeMessageHelper helper = new MimeMessageHelper(msg, false);

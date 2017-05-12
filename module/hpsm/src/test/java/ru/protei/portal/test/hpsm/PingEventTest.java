@@ -7,7 +7,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import ru.protei.portal.hpsm.api.MailMessageFactory;
 import ru.protei.portal.hpsm.handler.HpsmPingEventHandler;
-import ru.protei.portal.hpsm.struct.HpsmPingCmd;
+import ru.protei.portal.hpsm.struct.HpsmPingMessage;
 import ru.protei.portal.hpsm.config.HpsmEnvConfig;
 import ru.protei.portal.hpsm.utils.VirtualMailSendChannel;
 import ru.protei.portal.test.hpsm.config.HpsmTestConfiguration;
@@ -44,7 +44,7 @@ public class PingEventTest {
         cld.setTime(new Date());
         cld.set(Calendar.MILLISECOND, 0);
 
-        HpsmPingCmd requestCmd = new HpsmPingCmd(true, cld.getTime());
+        HpsmPingMessage requestCmd = new HpsmPingMessage(true, cld.getTime());
 
         Assert.assertTrue(handler.handle(handler.makeMessgae( setup.getSenderAddress(), requestCmd)));
 
@@ -52,7 +52,7 @@ public class PingEventTest {
 
         Assert.assertNotNull(response);
 
-        HpsmPingCmd responseCmd = HpsmPingCmd.parse(response.getSubject());
+        HpsmPingMessage responseCmd = HpsmPingMessage.parse(response.getSubject());
 
         Assert.assertNotNull(responseCmd);
         Assert.assertTrue(responseCmd.isResponse());

@@ -6,16 +6,18 @@
         <default-charset>utf-8</default-charset>
     </mail-server>
 
-    <instance id="mf">
+    <service-instance id="mf">
         <inbound-channel>
             <url>imaps://crm_test-user:hae7Eito@imap.protei.ru:993/INBOX</url>
         </inbound-channel>
 
         <outbound-channel>
+            <!-- FROM-field -->
             <sender-address>crm_test@protei.ru</sender-address>
-            <send-to>crm_test@protei.ru</send-to>
+            <!-- TO-field -->
+            <send-to>zavedeev@protei.ru</send-to>
         </outbound-channel>
-    </instance>
+    </service-instance>
 
     <company-map>
         <company-map-entry>

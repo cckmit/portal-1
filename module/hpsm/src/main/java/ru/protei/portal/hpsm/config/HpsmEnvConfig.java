@@ -26,11 +26,11 @@ public class HpsmEnvConfig {
 
 
     @XStreamAlias("mail-server")
-    MailServerDesc mailServer;
+    private MailServerDesc mailServer;
 
     @XStreamImplicit
-    @XStreamAlias("instance")
-    List<ServiceInstance> instanceList;
+    @XStreamAlias("service-instance")
+    private List<ServiceInstance> instanceList;
 
     @XStreamAlias("company-map")
     private List<CompanyBranchEntry> companyMapEntries;

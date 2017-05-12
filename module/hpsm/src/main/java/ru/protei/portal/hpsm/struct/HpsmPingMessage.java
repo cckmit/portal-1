@@ -8,7 +8,7 @@ import java.util.Date;
 /**
  * Created by michael on 25.04.17.
  */
-public class HpsmPingCmd {
+public class HpsmPingMessage {
     public static final String HPSM_ID = "HPSM";
     public static final String VENDOR_ID = "VENDOR";
 
@@ -25,11 +25,11 @@ public class HpsmPingCmd {
     private Date responseTime;
 
 
-    public HpsmPingCmd (boolean isRequest) {
+    public HpsmPingMessage(boolean isRequest) {
         this (isRequest, new Date());
     }
 
-    public HpsmPingCmd (boolean isRequest, Date requestTime) {
+    public HpsmPingMessage(boolean isRequest, Date requestTime) {
         this.isRequest = isRequest;
         this.requestTime = requestTime;
         this.responseTime = isRequest ? null : new Date();
@@ -55,8 +55,8 @@ public class HpsmPingCmd {
         return responseTime;
     }
 
-    public HpsmPingCmd response () {
-        return new HpsmPingCmd(false, this.requestTime);
+    public HpsmPingMessage response () {
+        return new HpsmPingMessage(false, this.requestTime);
     }
 
 
@@ -66,7 +66,7 @@ public class HpsmPingCmd {
     }
 
 
-    public static HpsmPingCmd parse (String x) throws ParseException {
+    public static HpsmPingMessage parse (String x) throws ParseException {
         String server = HpsmUtils.extractOption(x, "TEST_SERVER", null);
         String requestTimeTx = HpsmUtils.extractOption(x, "HPSM_SEND_TIME", null);
 
@@ -75,7 +75,7 @@ public class HpsmPingCmd {
 
         String respTime = HpsmUtils.extractOption(x, "VENDOR_SEND_TIME", null);
 
-        HpsmPingCmd result = new HpsmPingCmd(server.equals(HPSM_ID), HpsmUtils.parseDate(requestTimeTx));
+        HpsmPingMessage result = new HpsmPingMessage(server.equals(HPSM_ID), HpsmUtils.parseDate(requestTimeTx));
         result.responseTime = HpsmUtils.parseDate(respTime);
 
         return result;
