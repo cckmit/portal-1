@@ -17,32 +17,17 @@ import javax.mail.internet.MimeMessage;
 /**
  * Created by michael on 25.04.17.
  */
-public class HpsmPingEventHandler {
+public class HpsmPingEventHandler implements  HpsmHandler{
 
     private static Logger logger = LoggerFactory.getLogger(HpsmPingEventHandler.class);
-
-    @Autowired
-    @Qualifier("hpsmSendChannel")
-    private MailSendChannel sendChannel;
-
-    @Autowired
-    @Qualifier("hpsmMessageFactory")
-    private MailMessageFactory messageFactory;
-
-    @Autowired
-    private HpsmEnvConfig setup;
 
 
     public HpsmPingEventHandler() {
     }
 
 
-    public void setSendChannel (MailSendChannel channel) {
-        this.sendChannel = channel;
-    }
-
     @Override
-    public boolean handle(MimeMessage msg) {
+    public boolean handle(MimeMessage msg, ServiceInstance instance) {
 
         HpsmPingMessage cmd = null;
 
@@ -69,17 +54,14 @@ public class HpsmPingEventHandler {
 
                 logger.debug("send response {}", response.toString());
 
-                sendChannel.send(makeMessgae(HpsmUtils.getEmailFromAddress(msg), response));
+                instance.sendReply(HpsmUtils.getEmailFromAddress(msg), response);
             }
             catch (Throwable e) {
                 logger.debug("unable to send response", e);
             }
-
         }
 
-
         return cmd != null;
-
     }
 
 

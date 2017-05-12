@@ -7,6 +7,6 @@ import ru.protei.portal.core.model.ent.Company;
  */
 public interface HpsmService {
 
-    Company getCompanyByBranchName (String branchName);
+//    Company getCompanyByBranchName (String branchName);
 
 }

@@ -5,7 +5,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.DevUnitDAO;
@@ -18,12 +17,9 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.hpsm.api.HpsmStatus;
-import ru.protei.portal.hpsm.api.MailMessageFactory;
-import ru.protei.portal.hpsm.api.MailSendChannel;
+import ru.protei.portal.hpsm.config.HpsmEnvConfig;
 import ru.protei.portal.hpsm.struct.HpsmMessage;
 import ru.protei.portal.hpsm.struct.HpsmMessageHeader;
-import ru.protei.portal.hpsm.config.HpsmEnvConfig;
-import ru.protei.portal.hpsm.utils.EventMsgInputStreamSource;
 import ru.protei.portal.hpsm.utils.HpsmUtils;
 
 import javax.mail.internet.MimeMessage;
@@ -32,24 +28,13 @@ import java.util.Date;
 /**
  * Created by michael on 25.04.17.
  */
-public class HpsmMainEventHandler {
+public class HpsmMainEventHandler implements HpsmHandler {
 
     private static Logger logger = LoggerFactory.getLogger(HpsmMainEventHandler.class);
 
     @Autowired
     @Qualifier("hpsmSerializer")
     private XStream xstream;
-
-    @Autowired
-    @Qualifier("hpsmSendChannel")
-    private MailSendChannel sendChannel;
-
-    @Autowired
-    @Qualifier("hpsmMessageFactory")
-    private MailMessageFactory messageFactory;
-
-    @Autowired
-    private HpsmEnvConfig setup;
 
     @Autowired
     private CaseObjectDAO caseObjectDAO;
@@ -63,21 +48,9 @@ public class HpsmMainEventHandler {
     @Autowired
     private CaseCommentDAO commentDAO;
 
-//    @Autowired
-//    private HpsmService hpsmService;
-
-
-    public MailSendChannel getSendChannel() {
-        return sendChannel;
-    }
-
-    public void setSendChannel(MailSendChannel sendChannel) {
-        this.sendChannel = sendChannel;
-    }
-
 
     @Override
-    public boolean handle(MimeMessage msg) {
+    public boolean handle(MimeMessage msg, ServiceInstance instance) {
 
         HpsmMessageHeader subject = null;
 
@@ -87,29 +60,18 @@ public class HpsmMainEventHandler {
             if (subject == null)
                 return false;
 
-
-            HpsmEvent request = buildRequest(subject, msg);
+            HpsmEvent request = buildRequest(subject, instance, msg);
 
             if (request == null) {
                 logger.debug("unable to create request");
-                sendChannel.send(createRejectMessage(HpsmUtils.getEmailFromAddress(msg), subject, "wrong request data"));
+                instance.sendReject(HpsmUtils.getEmailFromAddress(msg), subject, "wrong request data");
                 return true;
             }
 
             HpsmEventHandler handler = createHandler(request);
             logger.debug("created handler : {}", handler);
 
-            MimeMessage responseMsg = handler.handle(request);
-
-            if (responseMsg != null) {
-                logger.debug("handler return message with subject {}, send it back", responseMsg.getSubject());
-
-                sendChannel.send(responseMsg);
-            }
-            else {
-                logger.debug("Handler return empty message, it's nothing to send back");
-            }
-
+            handler.handle(request, instance);
         } catch (Throwable e) {
             logger.debug("error on event message handle", e);
         }
@@ -119,7 +81,7 @@ public class HpsmMainEventHandler {
     }
 
 
-    private HpsmEvent buildRequest (HpsmMessageHeader subject, MimeMessage msg) throws Exception {
+    private HpsmEvent buildRequest (HpsmMessageHeader subject, ServiceInstance instance, MimeMessage msg) throws Exception {
 
         logger.debug("Got inbound event-message {}", subject.toString());
 
@@ -133,7 +95,7 @@ public class HpsmMainEventHandler {
             return null;
         }
 
-        Company company = hpsmService.getCompanyByBranchName(hpsmEvent.getHpsmMessage().getCompanyBranch());
+        Company company = instance.getCompanyByBranch(hpsmEvent.getHpsmMessage().getCompanyBranch());
 
         if (company == null) {
             logger.debug("unable to map company by branch name : {}", hpsmEvent.getHpsmMessage().getCompanyBranch());
@@ -154,21 +116,24 @@ public class HpsmMainEventHandler {
 
     class CreateNewCaseHandler implements HpsmEventHandler {
         @Override
-        public MimeMessage handle(HpsmEvent request) throws Exception {
+        public void handle(HpsmEvent request, ServiceInstance instance) throws Exception {
 
             Person contactPerson = getAssignedPerson(request.getCompany().getId(), request.getHpsmMessage());
             if (contactPerson == null) {
-                return createRejectMessage(request, "No contact person provided");
+                instance.sendReject(request, "No contact person provided");
+                return;
             }
 
             DevUnit product = getAssignedProduct(request.getHpsmMessage());
             if (product == null) {
-                return createRejectMessage(request, "product not found");
+                instance.sendReject(request, "product not found");
+                return;
             }
 
             CaseObject ex_test = caseObjectDAO.getByCondition("ext_app_id=?", request.getSubject().getHpsmId());
             if (ex_test != null) {
-                return createRejectMessage(request, "already_registered");
+                instance.sendReject(request, "already_registered");
+                return;
             }
 
             CaseObject obj = new CaseObject();
@@ -223,10 +188,10 @@ public class HpsmMainEventHandler {
 
                 caseObjectDAO.merge(obj);
 
-                return createReplyMessage (request, replySubj, replyEvent);
+                instance.sendReply(request, replySubj, replyEvent);
             }
             else {
-                return createRejectMessage(request, "system error");
+                instance.sendReject(request, "system error");
             }
         }
     }
@@ -246,8 +211,8 @@ public class HpsmMainEventHandler {
         }
 
         @Override
-        public MimeMessage handle(HpsmEvent request) throws Exception {
-            return createRejectMessage(request, messageText);
+        public void handle(HpsmEvent request, ServiceInstance instance) throws Exception {
+            instance.sendReject(request, messageText);
         }
     }
 
@@ -324,45 +289,6 @@ public class HpsmMainEventHandler {
 
         return person;
     }
-
-
-
-
-    public MimeMessage createReplyMessage (HpsmEvent request, HpsmMessageHeader subject, HpsmMessage hpsmMessage) throws Exception {
-
-        MimeMessage response = messageFactory.createMailMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(response, true);
-
-        helper.setSubject(subject.toString());
-        helper.setTo(request.getEmailSourceAddr());
-        helper.setFrom(setup.getSenderAddress());
-        helper.addAttachment(HpsmUtils.RTTS_HPSM_XML, new EventMsgInputStreamSource (xstream).attach(hpsmMessage), "application/xml");
-
-        return response;
-    }
-
-    private MimeMessage createRejectMessage (HpsmEvent request, String messageText) throws Exception {
-        return createRejectMessage(request.getEmailSourceAddr(), request.getSubject(), messageText);
-    }
-
-    private MimeMessage createRejectMessage (String replyTo, HpsmMessageHeader subject, String messageText) throws Exception {
-        MimeMessage response = messageFactory.createMailMessage();
-
-        HpsmMessageHeader respSubject = new HpsmMessageHeader(subject.getHpsmId(), subject.getOurId(), HpsmStatus.REJECTED);
-
-        MimeMessageHelper helper = new MimeMessageHelper(response, false);
-
-        helper.setSubject(respSubject.toString());
-        helper.setTo(replyTo);
-        helper.setFrom(setup.getSenderAddress());
-
-        if (messageText != null)
-            helper.setText(messageText);
-
-        return response;
-    }
-
-
 
     private StringBuilder appendCommentInfo (StringBuilder commentText, HpsmMessage msg) {
         commentText.append("--").append("\n");

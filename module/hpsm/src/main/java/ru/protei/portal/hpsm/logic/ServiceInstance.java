@@ -1,5 +1,6 @@
 package ru.protei.portal.hpsm.logic;
 
+import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.hpsm.struct.HpsmMessage;
 import ru.protei.portal.hpsm.struct.HpsmMessageHeader;
 import ru.protei.portal.hpsm.struct.HpsmPingMessage;
@@ -15,9 +16,13 @@ public interface ServiceInstance {
 
     MimeMessage read ();
 
-    void sendReject (HpsmEvent request, String reason);
+    Company getCompanyByBranch (String branchName);
 
-    void sendReply (HpsmEvent request, HpsmMessageHeader replyHeader, HpsmMessage replyMessage);
+    void sendReject (HpsmEvent request, String reason) throws Exception;
+    void sendReject (String to, HpsmEvent request, String reason) throws Exception;
+    void sendReject (String to, HpsmMessageHeader subject, String reason) throws Exception;
 
-    void sendReply (HpsmPingMessage msg);
+    void sendReply (HpsmEvent request, HpsmMessageHeader replyHeader, HpsmMessage replyMessage) throws Exception;
+
+    void sendReply (String replyTo, HpsmPingMessage msg) throws Exception;
 }

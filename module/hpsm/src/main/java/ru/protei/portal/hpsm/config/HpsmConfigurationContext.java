@@ -42,10 +42,6 @@ public class HpsmConfigurationContext {
         catch (IOException ex) {
             throw new RuntimeException("Unable to load HPSM-configuration, check file " + HPSM_CONFIG_XML_FILE, ex);
         }
-//        return new HpsmEnvConfig()
-//                .sender("crm_test-user@protei.ru")
-//                .receiver("crm_test@protei.ru")
-//                .mailServer("smtp.protei.ru", 2525);
     }
 
     @Bean(name = "hpsmSender")
@@ -64,7 +60,7 @@ public class HpsmConfigurationContext {
 
     @Bean
     public HpsmService getHpsmService () {
-        return new HpsmServiceImpl();
+        return new HpsmServiceImpl(getPingCommandHandler(), getMainEventHandler());
     }
 
     @Bean(name = "hpsmSendChannel")
@@ -77,15 +73,15 @@ public class HpsmConfigurationContext {
         return new JavaMailMessageFactory (mailSender());
     }
 
-//    @Bean
-//    public HpsmPingEventHandler getPingCommandHandler () {
-//        return new HpsmPingEventHandler();
-//    }
-//
-//    @Bean
-//    HpsmMainEventHandler getEventCommandHandler () {
-//        return new HpsmMainEventHandler();
-//    }
+    @Bean
+    public HpsmPingEventHandler getPingCommandHandler () {
+        return new HpsmPingEventHandler();
+    }
+
+    @Bean
+    public HpsmMainEventHandler getMainEventHandler () {
+        return new HpsmMainEventHandler();
+    }
 
 
     @Bean(name = "hpsmSerializer")

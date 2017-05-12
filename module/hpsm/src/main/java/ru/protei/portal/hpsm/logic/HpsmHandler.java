@@ -1,7 +1,5 @@
 package ru.protei.portal.hpsm.logic;
 
-import ru.protei.portal.hpsm.config.HpsmEnvConfig;
-
 import javax.mail.internet.MimeMessage;
 
 /**
