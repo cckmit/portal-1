@@ -3,9 +3,8 @@ package ru.protei.portal.hpsm.utils;
 import com.thoughtworks.xstream.XStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import protei.utils.common.ThreadLocalDateFormat;
-import ru.protei.portal.hpsm.handler.HpsmEvent;
+import ru.protei.portal.hpsm.logic.HpsmEvent;
 import ru.protei.portal.hpsm.struct.HpsmMessage;
 import ru.protei.portal.hpsm.struct.HpsmMessageHeader;
 

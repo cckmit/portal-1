@@ -1,4 +1,4 @@
-package ru.protei.portal.hpsm.handler;
+package ru.protei.portal.hpsm.logic;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

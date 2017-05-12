@@ -1,4 +1,4 @@
-package ru.protei.portal.hpsm.handler;
+package ru.protei.portal.hpsm.logic;
 
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.hpsm.struct.HpsmMessage;

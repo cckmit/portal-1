@@ -1,4 +1,4 @@
-package ru.protei.portal.hpsm.handler;
+package ru.protei.portal.hpsm.logic;
 
 import com.thoughtworks.xstream.XStream;
 import org.slf4j.Logger;

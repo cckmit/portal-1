@@ -6,7 +6,7 @@ import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import ru.protei.portal.hpsm.api.MailMessageFactory;
-import ru.protei.portal.hpsm.handler.HpsmPingEventHandler;
+import ru.protei.portal.hpsm.logic.HpsmPingEventHandler;
 import ru.protei.portal.hpsm.struct.HpsmPingMessage;
 import ru.protei.portal.hpsm.config.HpsmEnvConfig;
 import ru.protei.portal.hpsm.utils.VirtualMailSendChannel;
