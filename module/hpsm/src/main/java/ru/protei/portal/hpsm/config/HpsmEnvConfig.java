@@ -86,6 +86,10 @@ public class HpsmEnvConfig {
         public ServiceConfig() {
         }
 
+        public ServiceConfig(String id) {
+            this.id = id;
+        }
+
         public String getId() {
             return id;
         }
@@ -96,6 +100,16 @@ public class HpsmEnvConfig {
 
         public OutboundChannel getOutboundChannel() {
             return outboundChannel;
+        }
+
+        public ServiceConfig outbound (String senderAddress, String sendTo) {
+            this.outboundChannel = new OutboundChannel(senderAddress, sendTo);
+            return this;
+        }
+
+        public ServiceConfig inbound (String url) {
+            this.inboundChannel = new InboundChannel(url);
+            return this;
         }
     }
 
@@ -109,6 +123,12 @@ public class HpsmEnvConfig {
         private String sendTo;
 
         public OutboundChannel() {
+        }
+
+
+        public OutboundChannel(String senderAddress, String sendTo) {
+            this.senderAddress = senderAddress;
+            this.sendTo = sendTo;
         }
 
         public String getSenderAddress() {
@@ -126,6 +146,10 @@ public class HpsmEnvConfig {
         private String url;
 
         public InboundChannel() {
+        }
+
+        public InboundChannel(String url) {
+            this.url = url;
         }
 
         public String getUrl() {

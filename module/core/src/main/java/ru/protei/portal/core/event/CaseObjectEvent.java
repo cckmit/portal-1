@@ -3,6 +3,7 @@ package ru.protei.portal.core.event;
 import org.springframework.context.ApplicationEvent;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.service.CaseService;
 
 import java.util.Date;
@@ -33,8 +34,24 @@ public class CaseObjectEvent extends ApplicationEvent {
         return this.oldState != null;
     }
 
+    public boolean isCaseStateChanged () {
+        return isUpdateEvent() && newState.getState() != oldState.getState();
+    }
+
+    public boolean isCaseImportanceChanged () {
+        return isUpdateEvent() && !newState.getImpLevel().equals(oldState.getImpLevel());
+    }
+
+    public boolean isManagerChanged () {
+        return isUpdateEvent() && !HelperFunc.equals(newState.getManagerId(),oldState.getManagerId());
+    }
+
     public Date getEventDate () {
         return new Date(getTimestamp());
+    }
+
+    public CaseObject getCaseObject () {
+        return newState != null ? newState : oldState;
     }
 
     public CaseObject getNewState() {

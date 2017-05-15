@@ -2,6 +2,7 @@ package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
@@ -416,6 +417,10 @@ public class CaseObject implements Serializable {
     public void setWorkingGroup(WorkingGroup workingGroup) {
         this.workingGroup = workingGroup;
         this.workingGroupId = workingGroup == null ? null : workingGroup.getId();
+    }
+
+    public En_ImportanceLevel importanceLevel () {
+        return En_ImportanceLevel.getById(this.impLevel);
     }
 
     @Override

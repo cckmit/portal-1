@@ -5,10 +5,13 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import ru.protei.portal.hpsm.api.HpsmMessageFactory;
 import ru.protei.portal.hpsm.api.MailMessageFactory;
 import ru.protei.portal.hpsm.logic.HpsmPingEventHandler;
 import ru.protei.portal.hpsm.struct.HpsmPingMessage;
 import ru.protei.portal.hpsm.config.HpsmEnvConfig;
+import ru.protei.portal.hpsm.utils.HpsmTestUtils;
+import ru.protei.portal.hpsm.utils.TestServiceInstance;
 import ru.protei.portal.hpsm.utils.VirtualMailSendChannel;
 import ru.protei.portal.test.hpsm.config.HpsmTestConfiguration;
 
@@ -32,13 +35,9 @@ public class PingEventTest {
     @Test
     public void test001 () throws Exception {
 
-        VirtualMailSendChannel backChannel = new VirtualMailSendChannel();
-
-        MailMessageFactory messageFactory = ctx.getBean(MailMessageFactory.class);
-        HpsmEnvConfig setup = ctx.getBean(HpsmEnvConfig.class);
-
+        TestServiceInstance testServiceInstance = ctx.getBean(TestServiceInstance.class);
         HpsmPingEventHandler handler = ctx.getBean(HpsmPingEventHandler.class);
-        handler.setSendChannel(backChannel);
+        HpsmMessageFactory messageFactory = ctx.getBean(HpsmMessageFactory.class);
 
         Calendar cld = GregorianCalendar.getInstance();
         cld.setTime(new Date());
@@ -46,9 +45,12 @@ public class PingEventTest {
 
         HpsmPingMessage requestCmd = new HpsmPingMessage(true, cld.getTime());
 
-        Assert.assertTrue(handler.handle(handler.makeMessgae( setup.getSenderAddress(), requestCmd)));
+        Assert.assertTrue(handler.handle(
+                messageFactory.makeMessgae(HpsmTestUtils.HPSM_MAIL_ADDRESS, HpsmTestUtils.SENDER_ADDRESS, requestCmd),
+                testServiceInstance
+        ));
 
-        MimeMessage response = backChannel.get();
+        MimeMessage response = testServiceInstance.getSentMessage();
 
         Assert.assertNotNull(response);
 
@@ -60,11 +62,6 @@ public class PingEventTest {
         Assert.assertNotNull(responseCmd.getRequestTime());
         Assert.assertNotNull(responseCmd.getResponseTime());
 
-//        System.out.println (requestCmd.getRequestTime().getTime());
-//        System.out.println(responseCmd.getRequestTime().getTime());
-
         Assert.assertEquals(requestCmd.getRequestTime(), responseCmd.getRequestTime());
-
-//        handler.handle()
     }
 }

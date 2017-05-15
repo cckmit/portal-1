@@ -139,7 +139,10 @@ public class HpsmMainEventHandler implements HpsmHandler {
             CaseObject obj = new CaseObject();
             obj.setCreated(new Date());
             obj.setModified(new Date());
-            obj.setExtAppType("hpsm");
+
+            HpsmUtils.bindCase(obj, instance);
+
+            obj.setExtAppCaseId(request.getHpsmMessage().getHpsmId());
 
             obj.setCaseType(En_CaseType.CRM_SUPPORT);
             obj.setProduct(product);
@@ -155,8 +158,6 @@ public class HpsmMainEventHandler implements HpsmHandler {
             obj.setLocal(0);
             obj.setStateId(En_CaseState.CREATED.getId());
             obj.setProduct(product);
-            obj.setCreatorInfo("hpsm");
-            obj.setExtAppCaseId(request.getHpsmMessage().getHpsmId());
 
             Long caseObjId = caseObjectDAO.insertCase(obj);
             if (caseObjId != null && caseObjId > 0L) {
@@ -188,10 +189,10 @@ public class HpsmMainEventHandler implements HpsmHandler {
 
                 caseObjectDAO.merge(obj);
 
-                instance.sendReply(request, replySubj, replyEvent);
+                instance.sendReply(request.getEmailSourceAddr(), replySubj, replyEvent);
             }
             else {
-                instance.sendReject(request, "system error");
+                instance.sendReject(request.getEmailSourceAddr(), request, "system error");
             }
         }
     }

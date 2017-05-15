@@ -46,6 +46,12 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
         return persist(object);
     }
 
+
+    public boolean saveExtAppData (CaseObject object) {
+        return partialMerge(object, "EXT_APP_DATA");
+    }
+
+
     @Override
     public List< CaseObject > getCases( CaseQuery query ) {
 //        SqlCondition condition = caseQueryCondition( query );

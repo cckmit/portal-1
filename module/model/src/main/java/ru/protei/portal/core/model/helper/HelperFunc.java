@@ -1,5 +1,7 @@
 package ru.protei.portal.core.model.helper;
 
+import org.apache.commons.collections4.ComparatorUtils;
+
 import java.util.Date;
 
 /**
@@ -18,6 +20,24 @@ public class HelperFunc {
 
     public static boolean isNotEmpty (String s) {
         return !isEmpty(s);
+    }
+
+    public static boolean equals (Object o1, Object o2) {
+        return o1 == null ? o2 == null : o2 != null ? (o1 == o2 || o1.equals(o2)) : false;
+    }
+
+    public static boolean allEquals (Object...objects) {
+        if (objects == null || objects.length == 0)
+            return true;
+
+        Object cmp = objects[0];
+
+        for (Object o : objects) {
+            if (!equals(cmp, o))
+                return false;
+        }
+
+        return true;
     }
 
     public static boolean testAllNotEmpty (String...arr) {

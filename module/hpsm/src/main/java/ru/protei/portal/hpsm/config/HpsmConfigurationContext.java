@@ -1,27 +1,23 @@
 package ru.protei.portal.hpsm.config;
 
 import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.io.xml.*;
+import com.thoughtworks.xstream.io.xml.XmlFriendlyNameCoder;
+import com.thoughtworks.xstream.io.xml.Xpp3Driver;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
-import org.springframework.integration.core.MessageSource;
-import org.springframework.integration.mail.ImapMailReceiver;
-import org.springframework.integration.mail.MailReceiver;
-import org.springframework.integration.mail.MailReceivingMessageSource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+import ru.protei.portal.hpsm.api.HpsmMessageFactory;
 import ru.protei.portal.hpsm.api.MailMessageFactory;
 import ru.protei.portal.hpsm.api.MailSendChannel;
 import ru.protei.portal.hpsm.logic.HpsmMainEventHandler;
 import ru.protei.portal.hpsm.logic.HpsmPingEventHandler;
+import ru.protei.portal.hpsm.service.HpsmMessageFactoryImpl;
 import ru.protei.portal.hpsm.service.HpsmService;
 import ru.protei.portal.hpsm.service.HpsmServiceImpl;
 import ru.protei.portal.hpsm.struct.HpsmMessage;
-import ru.protei.portal.hpsm.utils.EventMsgInputStreamSource;
-import ru.protei.portal.hpsm.utils.HpsmTestUtils;
-import ru.protei.portal.hpsm.utils.JavaMailMessageFactory;
-import ru.protei.portal.hpsm.utils.JavaMailSendChannel;
+import ru.protei.portal.hpsm.utils.*;
 
 import java.io.IOException;
 
@@ -33,6 +29,15 @@ public class HpsmConfigurationContext {
 
     public static final String HPSM_CONFIG_XML_FILE = "hpsm-config.xml";
 
+
+    @Bean(name = "hpsmSerializer")
+    public XStream xstreamSerializer () {
+        XStream x = new XStream(new Xpp3Driver(new XmlFriendlyNameCoder("_-", "_")));
+        x.autodetectAnnotations(true);
+        x.processAnnotations(HpsmMessage.class);
+        return x;
+    }
+
     @Bean
     public HpsmEnvConfig getHpsmSetup () {
 
@@ -43,6 +48,12 @@ public class HpsmConfigurationContext {
             throw new RuntimeException("Unable to load HPSM-configuration, check file " + HPSM_CONFIG_XML_FILE, ex);
         }
     }
+
+    @Bean
+    public CompanyBranchMap companyBranchMap () {
+        return new CompanyBranchMap();
+    }
+
 
     @Bean(name = "hpsmSender")
     public JavaMailSender mailSender () {
@@ -58,20 +69,22 @@ public class HpsmConfigurationContext {
         return impl;
     }
 
-    @Bean
-    public HpsmService getHpsmService () {
-        return new HpsmServiceImpl(getPingCommandHandler(), getMainEventHandler());
+    @Bean(name = "hpsmMailFactory")
+    public MailMessageFactory createHpsmMailFactory() {
+        return new JavaMailMessageFactory (mailSender());
     }
+
+    @Bean
+    public HpsmMessageFactory createHpsmMessageFactory() {
+        return new HpsmMessageFactoryImpl();
+    }
+
 
     @Bean(name = "hpsmSendChannel")
     public MailSendChannel getRealMailSendChannel () {
         return new JavaMailSendChannel(mailSender());
     }
 
-    @Bean(name = "hpsmMessageFactory")
-    public MailMessageFactory getMailMessageFactory () {
-        return new JavaMailMessageFactory (mailSender());
-    }
 
     @Bean
     public HpsmPingEventHandler getPingCommandHandler () {
@@ -84,12 +97,29 @@ public class HpsmConfigurationContext {
     }
 
 
-    @Bean(name = "hpsmSerializer")
-    public XStream xstreamSerializer () {
-        XStream x = new XStream(new Xpp3Driver(new XmlFriendlyNameCoder("_-", "_")));
-        x.autodetectAnnotations(true);
-        x.processAnnotations(HpsmMessage.class);
-        return x;
+    @Bean
+    public HpsmService getHpsmService () {
+        return new HpsmServiceImpl(getPingCommandHandler(), getMainEventHandler());
+    }
+
+
+    @Bean
+    public TestServiceInstance createTestServiceInstance () {
+        HpsmEnvConfig.ServiceConfig config = new HpsmEnvConfig.ServiceConfig("test")
+                .outbound(HpsmTestUtils.SENDER_ADDRESS, HpsmTestUtils.HPSM_MAIL_ADDRESS)
+                .inbound("virtual://");
+
+        return new TestServiceInstance (config, companyBranchMap(), createHpsmMessageFactory());
+    }
+
+
+
+
+
+
+    @Bean
+    public HpsmTestUtils createTestUtils () {
+        return new HpsmTestUtils ();
     }
 
 
@@ -98,11 +128,4 @@ public class HpsmConfigurationContext {
     public EventMsgInputStreamSource eventMsgInputStreamSource () {
         return new EventMsgInputStreamSource();
     }
-
-
-    @Bean
-    public HpsmTestUtils createTestUtils () {
-        return new HpsmTestUtils ();
-    }
-
 }

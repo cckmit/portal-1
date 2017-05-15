@@ -20,11 +20,13 @@ import static ru.protei.portal.hpsm.utils.HpsmUtils.RTTS_HPSM_XML;
  */
 public class HpsmTestUtils {
 
-    @Autowired
-    MailMessageFactory messageFactory;
+    public static final String SENDER_ADDRESS = "crm_test@protei.ru";
+    public static final String SEND_TO_ADDRESS = "crm_test@protei.ru";
+    public static final String HPSM_MAIL_ADDRESS = "zavedeev@protei.ru";
 
     @Autowired
-    HpsmEnvConfig setup;
+    @Qualifier("hpsmMailFactory")
+    MailMessageFactory messageFactory;
 
     @Autowired
     @Qualifier("hpsmSerializer")
@@ -46,8 +48,8 @@ public class HpsmTestUtils {
         requestMessage.setProductName("ПРОТЕЙ_RG");
 
         helper.setSubject(requestSubject.toString());
-        helper.setTo(setup.getSenderAddress());
-        helper.setFrom(setup.getHpsmMailAddress());
+        helper.setTo(SEND_TO_ADDRESS);
+        helper.setFrom(HPSM_MAIL_ADDRESS);
         helper.addAttachment(RTTS_HPSM_XML, new EventMsgInputStreamSource(xstream).attach(requestMessage), "application/xml");
 
         return mailMessage;

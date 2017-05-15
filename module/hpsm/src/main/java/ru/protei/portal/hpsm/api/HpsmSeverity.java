@@ -29,6 +29,14 @@ public enum HpsmSeverity {
         return caseImpLevel;
     }
 
+    public static HpsmSeverity find (En_ImportanceLevel importanceLevel) {
+        for (HpsmSeverity it : HpsmSeverity.values())
+            if (it.caseImpLevel == importanceLevel)
+                return it;
+
+        return HpsmSeverity.LEVEL3;
+    }
+
     public static HpsmSeverity find (int hpsmLevel) {
         for (HpsmSeverity it : HpsmSeverity.values())
             if (it.hpsmLevel == hpsmLevel)

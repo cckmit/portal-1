@@ -4,7 +4,9 @@ import com.thoughtworks.xstream.XStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import protei.utils.common.ThreadLocalDateFormat;
+import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.hpsm.logic.HpsmEvent;
+import ru.protei.portal.hpsm.logic.ServiceInstance;
 import ru.protei.portal.hpsm.struct.HpsmMessage;
 import ru.protei.portal.hpsm.struct.HpsmMessageHeader;
 
@@ -20,6 +22,7 @@ import java.util.Date;
  */
 public class HpsmUtils {
 
+    public static final String COMMON_HPSM_TAG = "hpsm";
     public static final String RTTS_HPSM_XML = "rtts_hpsm.xml";
     private static Logger logger = LoggerFactory.getLogger(HpsmUtils.class);
 
@@ -32,6 +35,22 @@ public class HpsmUtils {
 
     public static Date parseDate(String x) throws ParseException{
         return x == null || x.isEmpty() ? null : DATE_FMT.parse(x);
+    }
+
+    public static void bindCase (CaseObject object, ServiceInstance instance) {
+
+        object.setExtAppType(COMMON_HPSM_TAG);
+        object.setCreatorInfo(createInstanceTag(instance));
+
+    }
+
+    private static String createInstanceTag(ServiceInstance instance) {
+        return COMMON_HPSM_TAG + "_" + instance.id();
+    }
+
+    public static boolean testBind (CaseObject object, ServiceInstance instance) {
+        return object.getExtAppType() != null && object.getExtAppType().equalsIgnoreCase(COMMON_HPSM_TAG)
+                && object.getCreatorInfo() != null && object.getCreatorInfo().equalsIgnoreCase(createInstanceTag(instance));
     }
 
 
@@ -59,6 +78,16 @@ public class HpsmUtils {
         return msg.getFrom()[0].toString();
     }
 
+    public static String getMessageSubject (MimeMessage mail) {
+        try {
+            return mail.getSubject();
+        }
+        catch (Exception e) {
+            logger.error("unable to get mail subject", e);
+        }
+
+        return "";
+    }
 
     public static HpsmEvent parseEvent (MimeMessage mailMessage, XStream xstream) throws Exception {
         HpsmMessageHeader header = HpsmMessageHeader.parse(mailMessage.getSubject());

@@ -25,4 +25,7 @@ public interface CaseObjectDAO extends PortalBaseDAO<CaseObject> {
 
     @SqlConditionBuilder
     SqlCondition caseQueryCondition (CaseQuery query);
+
+
+    boolean saveExtAppData (CaseObject object);
 }

@@ -14,7 +14,7 @@
         <project.gin.version>2.1.2</project.gin.version>
         <project.factory.version>2.3-SNAPSHOT</project.factory.version>
         <project.winter.web.version>1.3-SNAPSHOT</project.winter.web.version>
-        <project.spring.version>4.3.0.RELEASE</project.spring.version>
+        <project.spring.version>4.3.7.RELEASE</project.spring.version>
         <project.winter.version>3.0-SNAPSHOT</project.winter.version>
 
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -31,6 +31,7 @@
             <modules>
                 <module>module/model</module>
                 <module>module/core</module>
+                <module>module/hpsm</module>
                 <!--<module>app/web-ui</module>-->
                 
                 <module>skin/classic</module>
@@ -53,6 +54,7 @@
                 <module>module/model</module>
                 <module>module/core</module>
                 <module>module/wsapi</module>
+                <module>module/hpsm</module>
                 <module>app/wsapi-app</module>
             </modules>
         </profile>

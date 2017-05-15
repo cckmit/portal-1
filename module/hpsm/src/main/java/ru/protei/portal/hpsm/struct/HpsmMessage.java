@@ -429,6 +429,12 @@ public class HpsmMessage implements Cloneable,Serializable {
         return HpsmSeverity.find(this.severity);
     }
 
+    public HpsmSeverity severity (HpsmSeverity sv) {
+        this.severity = sv.getHpsmLevel();
+        return sv;
+    }
+
+
 
     public HpsmMessage createCopy () {
         try {

@@ -13,5 +13,4 @@ import ru.protei.winter.jdbc.JdbcConfigurationContext;
 @Configuration
 @Import({CoreConfigurationContext.class, JdbcConfigurationContext.class, MainConfiguration.class, HpsmConfigurationContext.class})
 public class HpsmTestConfiguration {
-
 }

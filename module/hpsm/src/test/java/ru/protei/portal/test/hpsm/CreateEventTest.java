@@ -8,6 +8,7 @@ import ru.protei.portal.hpsm.api.HpsmStatus;
 import ru.protei.portal.hpsm.logic.HpsmEvent;
 import ru.protei.portal.hpsm.logic.HpsmMainEventHandler;
 import ru.protei.portal.hpsm.utils.HpsmTestUtils;
+import ru.protei.portal.hpsm.utils.TestServiceInstance;
 import ru.protei.portal.hpsm.utils.VirtualMailSendChannel;
 import ru.protei.portal.test.hpsm.config.HpsmTestConfiguration;
 
@@ -28,18 +29,16 @@ public class CreateEventTest {
     @Test
     public void test001 () throws Exception {
 
-        VirtualMailSendChannel backChannel = new VirtualMailSendChannel();
-
+        TestServiceInstance testServiceInstance = ctx.getBean(TestServiceInstance.class);
         HpsmMainEventHandler handler = ctx.getBean(HpsmMainEventHandler.class);
-        handler.setSendChannel(backChannel);
 
         HpsmTestUtils testUtils = ctx.getBean(HpsmTestUtils.class);
 
-        boolean result = handler.handle(testUtils.createNewRequest(HPSM_TEST_CASE_ID1));
+        boolean result = handler.handle(testUtils.createNewRequest(HPSM_TEST_CASE_ID1), testServiceInstance);
 
         Assert.assertTrue(result);
 
-        MimeMessage responseMail = backChannel.get();
+        MimeMessage responseMail = testServiceInstance.getSentMessage();
 
         Assert.assertNotNull(responseMail);
 
