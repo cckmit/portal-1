@@ -4,7 +4,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.EventListener;
+import org.springframework.integration.mail.MailReceivingMessageSource;
 import ru.protei.portal.core.event.CaseCommentEvent;
 import ru.protei.portal.core.event.CaseObjectEvent;
 import ru.protei.portal.core.model.ent.CaseObject;
@@ -51,6 +53,10 @@ public class HpsmServiceImpl implements HpsmService {
     @Autowired(required = false)
     TestServiceInstance testServiceInstance;
 
+
+    @Autowired
+    ApplicationContext context;
+
     private InboundMessageHandler[] inboundHandlers;
     private HashMap<String, ServiceInstance> serviceMap;
 
@@ -70,7 +76,7 @@ public class HpsmServiceImpl implements HpsmService {
     }
 
     private void addService (HpsmEnvConfig.ServiceConfig instCfg) {
-        serviceMap.put(instCfg.getId(), new ServiceInstanceImpl(instCfg, companyBranchMap, outboundChannel, hpsmMessageFactory));
+        serviceMap.put(instCfg.getId(), context.getBean(ServiceInstance.class, instCfg));
     }
 
 

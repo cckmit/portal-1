@@ -3,22 +3,23 @@ package ru.protei.portal.hpsm.config;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.XmlFriendlyNameCoder;
 import com.thoughtworks.xstream.io.xml.Xpp3Driver;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
+import org.springframework.integration.mail.ImapMailReceiver;
+import org.springframework.integration.mail.MailReceivingMessageSource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import ru.protei.portal.hpsm.api.HpsmMessageFactory;
 import ru.protei.portal.hpsm.api.MailMessageFactory;
 import ru.protei.portal.hpsm.api.MailSendChannel;
-import ru.protei.portal.hpsm.logic.BackChannelHandlerFactory;
-import ru.protei.portal.hpsm.logic.BackChannelHandlerFactoryImpl;
-import ru.protei.portal.hpsm.logic.InboundMainMessageHandler;
-import ru.protei.portal.hpsm.logic.InboundPingMessageHandler;
+import ru.protei.portal.hpsm.logic.*;
 import ru.protei.portal.hpsm.service.HpsmMessageFactoryImpl;
 import ru.protei.portal.hpsm.service.HpsmService;
 import ru.protei.portal.hpsm.service.HpsmServiceImpl;
+import ru.protei.portal.hpsm.service.ServiceInstanceImpl;
 import ru.protei.portal.hpsm.struct.HpsmMessage;
 import ru.protei.portal.hpsm.utils.CompanyBranchMap;
 import ru.protei.portal.hpsm.utils.EventMsgInputStreamSource;
@@ -114,10 +115,30 @@ public class HpsmConfigurationContext {
     }
 
 
+    @Bean(name = "hpsmServiceInstance")
+    @Scope(BeanDefinition.SCOPE_PROTOTYPE)
+    public ServiceInstance createServiceInstance(HpsmEnvConfig.ServiceConfig config) {
+        return new ServiceInstanceImpl(config,
+                companyBranchMap(),
+                createInboundSource(config.getInboundChannel().getUrl()),
+                getRealMailSendChannel(),
+                createHpsmMessageFactory());
+    }
 
+
+
+    @Bean(name = "hpsmMessageSource")
+    @Scope(BeanDefinition.SCOPE_PROTOTYPE)
+    public MailReceivingMessageSource createInboundSource(String url) {
+        ImapMailReceiver imapMailReceiver = new ImapMailReceiver(url);
+        imapMailReceiver.setShouldMarkMessagesAsRead(true);
+        imapMailReceiver.setShouldDeleteMessages(false);
+        imapMailReceiver.setEmbeddedPartsAsBytes(false);
+        return new MailReceivingMessageSource(imapMailReceiver);
+    }
 
     @Bean
-    @Scope("prototype")
+    @Scope(BeanDefinition.SCOPE_PROTOTYPE)
     public EventMsgInputStreamSource eventMsgInputStreamSource () {
         return new EventMsgInputStreamSource();
     }

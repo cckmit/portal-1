@@ -32,16 +32,17 @@ public abstract class AbstractServiceInstanceImpl implements ServiceInstance {
 
     public AbstractServiceInstanceImpl(HpsmEnvConfig.ServiceConfig config,
                                        CompanyBranchMap companyBranchMap,
+                                       MailReceivingMessageSource inboundSource,
                                        MailSendChannel outChannel,
                                        HpsmMessageFactory messageFactory) {
         this.serviceConfig = config;
         this.sendChannel = outChannel;
         this.messageFactory = messageFactory;
         this.companyBranchMap = companyBranchMap;
-        this.inboundSource = createInboundSource(config);
+        this.inboundSource = inboundSource;//createInboundSource(config);
     }
 
-    protected abstract MailReceivingMessageSource createInboundSource (HpsmEnvConfig.ServiceConfig serviceConfig);
+    //protected abstract MailReceivingMessageSource createInboundSource (HpsmEnvConfig.ServiceConfig serviceConfig);
 
 
     @Override

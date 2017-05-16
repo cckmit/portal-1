@@ -1,8 +1,11 @@
 package ru.protei.portal.test.hpsm;
 
+import org.junit.Test;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.integration.core.MessageSource;
-import org.springframework.integration.mail.ImapMailReceiver;
-import org.springframework.integration.mail.MailReceivingMessageSource;
+import ru.protei.portal.hpsm.service.HpsmService;
+import ru.protei.portal.test.hpsm.config.HpsmTestConfiguration;
+import ru.protei.portal.test.hpsm.config.RawMailTestConfig;
 
 
 /**
@@ -10,23 +13,26 @@ import org.springframework.integration.mail.MailReceivingMessageSource;
  */
 public class TestInMail {
 
-    public static void main (String argv[]) {
+    @Test
+    public void test001 () {
 
-        ImapMailReceiver imapMailReceiver = new ImapMailReceiver("imaps://crm_test-user:hae7Eito@imap.protei.ru:993/INBOX");
-//        imapMailReceiver.setShouldMarkMessagesAsRead(false);
-//        imapMailReceiver.setShouldDeleteMessages(false);
-        imapMailReceiver.setEmbeddedPartsAsBytes(false);
-//        imapMailReceiver.setUserFlag(null);
+        AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext (RawMailTestConfig.class);
 
+        MessageSource<Object> source = ctx.getBean("rawTestSource", MessageSource.class);
 
-        MessageSource<Object> source = new MailReceivingMessageSource(imapMailReceiver);
         Object x = source.receive();
 
         if (x != null)
             System.out.println(x);
         else
             System.out.println("no data");
+    }
 
 
+    @Test
+    public void test002 () {
+        AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext (HpsmTestConfiguration.class);
+
+        ctx.getBean(HpsmService.class).handleInboundRequest();
     }
 }
