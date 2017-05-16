@@ -1,6 +1,7 @@
 package ru.protei.portal.hpsm.struct;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.hpsm.api.HpsmSeverity;
 import ru.protei.portal.hpsm.api.HpsmStatus;
 import ru.protei.portal.hpsm.utils.HpsmUtils;
@@ -414,6 +415,21 @@ public class HpsmMessage implements Cloneable,Serializable {
         this.txAcceptWorkaroundTime = HpsmUtils.formatDate(d);
     }
 
+
+    public void updateCustomerFields (HpsmMessage custState) {
+        this.severity = custState.severity;
+        this.txAcceptWorkaroundTime = custState.txAcceptWorkaroundTime;
+        this.txOpenTime = custState.txOpenTime;
+        this.txSolutionTime = custState.txSolutionTime;
+        this.txWorkaroundTime = custState.txWorkaroundTime;
+
+        if (HelperFunc.isNotEmpty(custState.contactPerson))
+            this.contactPerson = custState.contactPerson;
+
+        if (HelperFunc.isNotEmpty(custState.contactPersonEmail)) {
+            this.contactPersonEmail = custState.contactPersonEmail;
+        }
+    }
 
 
     public HpsmStatus status (HpsmStatus s) {

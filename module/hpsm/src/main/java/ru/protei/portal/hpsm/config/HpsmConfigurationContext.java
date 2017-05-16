@@ -118,11 +118,6 @@ public class HpsmConfigurationContext {
         return new TestServiceInstance (config, companyBranchMap(), createHpsmMessageFactory());
     }
 
-
-
-
-
-
     @Bean
     public HpsmTestUtils createTestUtils () {
         return new HpsmTestUtils ();
