@@ -48,7 +48,7 @@ public class HpsmServiceImpl implements HpsmService {
     @Autowired
     BackChannelHandlerFactory backChannelHandlerFactory;
 
-    @Autowired
+    @Autowired(required = false)
     TestServiceInstance testServiceInstance;
 
     private InboundMessageHandler[] inboundHandlers;
