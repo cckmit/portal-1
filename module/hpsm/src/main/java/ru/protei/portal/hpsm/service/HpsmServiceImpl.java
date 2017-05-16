@@ -76,8 +76,13 @@ public class HpsmServiceImpl implements HpsmService {
 
     @Override
     public void handleInboundRequest() {
+        logger.debug("check for incoming requests");
+
         serviceMap.values().forEach(s -> {
+            logger.debug("try read mail message from {} instance", s.id());
+
             MimeMessage msg = s.read();
+
             if (msg != null) {
 
                 logger.debug("service {}, got message to handle", s.id());
@@ -92,6 +97,9 @@ public class HpsmServiceImpl implements HpsmService {
                 if (!handled) {
                     logger.warn("unable to handle message, subject : {}", HpsmUtils.getMessageSubject(msg));
                 }
+            }
+            else {
+                logger.debug("no incoming messages for {} instance", s.id());
             }
         });
     }
