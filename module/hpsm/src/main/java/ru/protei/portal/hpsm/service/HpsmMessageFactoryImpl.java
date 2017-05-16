@@ -7,14 +7,12 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import ru.protei.portal.hpsm.api.HpsmMessageFactory;
 import ru.protei.portal.hpsm.api.HpsmStatus;
 import ru.protei.portal.hpsm.api.MailMessageFactory;
-import ru.protei.portal.hpsm.logic.HpsmEvent;
 import ru.protei.portal.hpsm.struct.HpsmMessage;
 import ru.protei.portal.hpsm.struct.HpsmMessageHeader;
 import ru.protei.portal.hpsm.struct.HpsmPingMessage;
 import ru.protei.portal.hpsm.utils.EventMsgInputStreamSource;
 import ru.protei.portal.hpsm.utils.HpsmUtils;
 
-import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 /**

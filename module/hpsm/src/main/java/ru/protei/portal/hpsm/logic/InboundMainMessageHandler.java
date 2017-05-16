@@ -59,6 +59,8 @@ public class InboundMainMessageHandler implements InboundMessageHandler {
             if (subject == null)
                 return false;
 
+            logger.debug("main message parsed, subject {}", subject.toString());
+
             HpsmEvent request = buildRequest(subject, instance, msg);
 
             if (request == null) {

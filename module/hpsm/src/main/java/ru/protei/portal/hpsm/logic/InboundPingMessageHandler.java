@@ -33,6 +33,8 @@ public class InboundPingMessageHandler implements InboundMessageHandler {
 
         if (cmd != null) {
 
+            logger.debug("ping-message parsed: {}", cmd.toString());
+
             // защита от рекурсии при использовании одного почтового ящика для приема и отправки в тестовом окружении
             if (!cmd.isRequest()) {
                 logger.debug("skip ping-response handling: {}", cmd.toString());

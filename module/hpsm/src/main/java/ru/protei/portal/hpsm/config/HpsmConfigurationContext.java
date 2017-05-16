@@ -11,15 +11,18 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import ru.protei.portal.hpsm.api.HpsmMessageFactory;
 import ru.protei.portal.hpsm.api.MailMessageFactory;
 import ru.protei.portal.hpsm.api.MailSendChannel;
-import ru.protei.portal.hpsm.logic.InboundMainMessageHandler;
-import ru.protei.portal.hpsm.logic.InboundPingMessageHandler;
 import ru.protei.portal.hpsm.logic.BackChannelHandlerFactory;
 import ru.protei.portal.hpsm.logic.BackChannelHandlerFactoryImpl;
+import ru.protei.portal.hpsm.logic.InboundMainMessageHandler;
+import ru.protei.portal.hpsm.logic.InboundPingMessageHandler;
 import ru.protei.portal.hpsm.service.HpsmMessageFactoryImpl;
 import ru.protei.portal.hpsm.service.HpsmService;
 import ru.protei.portal.hpsm.service.HpsmServiceImpl;
 import ru.protei.portal.hpsm.struct.HpsmMessage;
-import ru.protei.portal.hpsm.utils.*;
+import ru.protei.portal.hpsm.utils.CompanyBranchMap;
+import ru.protei.portal.hpsm.utils.EventMsgInputStreamSource;
+import ru.protei.portal.hpsm.utils.JavaMailMessageFactory;
+import ru.protei.portal.hpsm.utils.JavaMailSendChannel;
 
 import java.io.IOException;
 

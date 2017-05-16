@@ -9,7 +9,6 @@ import ru.protei.portal.hpsm.api.MailMessageFactory;
 import ru.protei.portal.hpsm.logic.HpsmEvent;
 import ru.protei.portal.hpsm.struct.HpsmMessage;
 import ru.protei.portal.hpsm.struct.HpsmMessageHeader;
-import ru.protei.portal.hpsm.config.HpsmEnvConfig;
 
 import javax.mail.internet.MimeMessage;
 
