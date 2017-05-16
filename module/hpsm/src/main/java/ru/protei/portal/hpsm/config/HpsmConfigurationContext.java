@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import ru.protei.portal.hpsm.api.HpsmMessageFactory;
 import ru.protei.portal.hpsm.api.MailMessageFactory;
 import ru.protei.portal.hpsm.api.MailSendChannel;
@@ -30,6 +31,7 @@ import java.io.IOException;
  * Created by michael on 19.04.17.
  */
 @Configuration
+@EnableScheduling
 public class HpsmConfigurationContext {
 
     public static final String HPSM_CONFIG_XML_FILE = "hpsm-config.xml";
