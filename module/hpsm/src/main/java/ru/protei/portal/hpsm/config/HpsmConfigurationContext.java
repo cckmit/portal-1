@@ -109,19 +109,6 @@ public class HpsmConfigurationContext {
     }
 
 
-    @Bean
-    public TestServiceInstance createTestServiceInstance () {
-        HpsmEnvConfig.ServiceConfig config = new HpsmEnvConfig.ServiceConfig("test")
-                .outbound(HpsmTestUtils.SENDER_ADDRESS, HpsmTestUtils.HPSM_MAIL_ADDRESS)
-                .inbound("virtual://");
-
-        return new TestServiceInstance (config, companyBranchMap(), createHpsmMessageFactory());
-    }
-
-    @Bean
-    public HpsmTestUtils createTestUtils () {
-        return new HpsmTestUtils ();
-    }
 
 
     @Bean

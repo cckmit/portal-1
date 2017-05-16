@@ -19,6 +19,7 @@ import ru.protei.portal.hpsm.struct.HpsmMessage;
 import ru.protei.portal.hpsm.struct.HpsmMessageHeader;
 import ru.protei.portal.hpsm.utils.CompanyBranchMap;
 import ru.protei.portal.hpsm.utils.HpsmUtils;
+import ru.protei.portal.hpsm.utils.TestServiceInstance;
 
 import javax.annotation.PostConstruct;
 import javax.mail.internet.MimeMessage;
@@ -47,9 +48,11 @@ public class HpsmServiceImpl implements HpsmService {
     @Autowired
     BackChannelHandlerFactory backChannelHandlerFactory;
 
+    @Autowired
+    TestServiceInstance testServiceInstance;
 
     private InboundMessageHandler[] inboundHandlers;
-    private HashMap<String, ServiceInstanceImpl> serviceMap;
+    private HashMap<String, ServiceInstance> serviceMap;
 
 
 
@@ -61,6 +64,9 @@ public class HpsmServiceImpl implements HpsmService {
     @PostConstruct
     private void postConstruct () {
         config.getInstanceList().forEach(cfg -> addService(cfg));
+        if (testServiceInstance != null) {
+            serviceMap.put(testServiceInstance.id(), testServiceInstance);
+        }
     }
 
     private void addService (HpsmEnvConfig.ServiceConfig instCfg) {

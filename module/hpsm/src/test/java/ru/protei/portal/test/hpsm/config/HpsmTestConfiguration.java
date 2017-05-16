@@ -1,9 +1,16 @@
 package ru.protei.portal.test.hpsm.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import ru.protei.portal.config.MainConfiguration;
+import ru.protei.portal.hpsm.api.HpsmMessageFactory;
 import ru.protei.portal.hpsm.config.HpsmConfigurationContext;
+import ru.protei.portal.hpsm.config.HpsmEnvConfig;
+import ru.protei.portal.hpsm.utils.CompanyBranchMap;
+import ru.protei.portal.hpsm.utils.HpsmTestUtils;
+import ru.protei.portal.hpsm.utils.TestServiceInstance;
 import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
@@ -13,4 +20,19 @@ import ru.protei.winter.jdbc.JdbcConfigurationContext;
 @Configuration
 @Import({CoreConfigurationContext.class, JdbcConfigurationContext.class, MainConfiguration.class, HpsmConfigurationContext.class})
 public class HpsmTestConfiguration {
+
+    @Bean
+    public TestServiceInstance createTestServiceInstance (@Autowired CompanyBranchMap companyBranchMap, @Autowired HpsmMessageFactory hpsmMessageFactory) {
+        HpsmEnvConfig.ServiceConfig config = new HpsmEnvConfig.ServiceConfig("test")
+                .outbound(HpsmTestUtils.SENDER_ADDRESS, HpsmTestUtils.HPSM_MAIL_ADDRESS)
+                .inbound("virtual://");
+
+        return new TestServiceInstance (config, companyBranchMap, hpsmMessageFactory);
+    }
+
+    @Bean
+    public HpsmTestUtils createTestUtils () {
+        return new HpsmTestUtils ();
+    }
+
 }
