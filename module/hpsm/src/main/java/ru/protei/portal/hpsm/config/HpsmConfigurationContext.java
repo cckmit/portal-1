@@ -13,6 +13,8 @@ import ru.protei.portal.hpsm.api.MailMessageFactory;
 import ru.protei.portal.hpsm.api.MailSendChannel;
 import ru.protei.portal.hpsm.logic.HpsmMainEventHandler;
 import ru.protei.portal.hpsm.logic.HpsmPingEventHandler;
+import ru.protei.portal.hpsm.logic.BackChannelHandlerFactory;
+import ru.protei.portal.hpsm.logic.BackChannelHandlerFactoryImpl;
 import ru.protei.portal.hpsm.service.HpsmMessageFactoryImpl;
 import ru.protei.portal.hpsm.service.HpsmService;
 import ru.protei.portal.hpsm.service.HpsmServiceImpl;
@@ -96,6 +98,10 @@ public class HpsmConfigurationContext {
         return new HpsmMainEventHandler();
     }
 
+    @Bean
+    public BackChannelHandlerFactory backChannelHandlerFactory () {
+        return new BackChannelHandlerFactoryImpl();
+    }
 
     @Bean
     public HpsmService getHpsmService () {

@@ -12,6 +12,8 @@ import ru.protei.portal.hpsm.api.HpsmMessageFactory;
 import ru.protei.portal.hpsm.api.MailSendChannel;
 import ru.protei.portal.hpsm.config.HpsmEnvConfig;
 import ru.protei.portal.hpsm.logic.HpsmHandler;
+import ru.protei.portal.hpsm.logic.BackChannelEventHandler;
+import ru.protei.portal.hpsm.logic.BackChannelHandlerFactory;
 import ru.protei.portal.hpsm.logic.ServiceInstance;
 import ru.protei.portal.hpsm.struct.HpsmMessage;
 import ru.protei.portal.hpsm.struct.HpsmMessageHeader;
@@ -41,6 +43,9 @@ public class HpsmServiceImpl implements HpsmService {
 
     @Autowired
     HpsmMessageFactory hpsmMessageFactory;
+
+    @Autowired
+    BackChannelHandlerFactory backChannelHandlerFactory;
 
 
     private HpsmHandler[] inboundHandlers;
@@ -132,5 +137,30 @@ public class HpsmServiceImpl implements HpsmService {
     @EventListener
     public void onCaseObjectEvent(CaseObjectEvent event) {
 
+        ServiceInstance instance = findInstance(event.getCaseObject());
+        if (instance == null) {
+            logger.debug("no handler instance found for case {}", event.getCaseObject().getExtId());
+            return;
+        }
+
+        HpsmMessage msg = this.hpsmMessageFactory.parseMessage(event.getCaseObject().getExtAppData());
+
+        if (msg == null) {
+            logger.error("unable to parse app-data, case {}", event.getCaseObject().getExtId());
+            return;
+        }
+
+        BackChannelEventHandler handler = backChannelHandlerFactory.createHandler(msg, event);
+        if (handler == null) {
+            logger.debug("unable to create event handler, case {}", event.getCaseObject().getExtId());
+            return;
+        }
+
+        try {
+            handler.handle(event, msg, instance);
+        }
+        catch (Exception e) {
+            logger.debug("error while handling event for case {}", event.getCaseObject().getExtId(), e);
+        }
     }
 }

@@ -6,6 +6,8 @@ import ru.protei.portal.hpsm.struct.HpsmMessage;
 /**
  * Created by michael on 15.05.17.
  */
-public interface ReverseEventHandler {
-    void handle (CaseObjectEvent event, HpsmMessage message, ServiceInstance instance);
+public interface BackChannelHandlerFactory {
+
+    BackChannelEventHandler createHandler (HpsmMessage currentState, CaseObjectEvent event);
+
 }
