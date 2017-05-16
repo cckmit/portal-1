@@ -17,7 +17,6 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.hpsm.api.HpsmStatus;
-import ru.protei.portal.hpsm.config.HpsmEnvConfig;
 import ru.protei.portal.hpsm.struct.HpsmMessage;
 import ru.protei.portal.hpsm.struct.HpsmMessageHeader;
 import ru.protei.portal.hpsm.utils.HpsmUtils;
@@ -28,9 +27,9 @@ import java.util.Date;
 /**
  * Created by michael on 25.04.17.
  */
-public class HpsmMainEventHandler implements HpsmHandler {
+public class InboundMainMessageHandler implements InboundMessageHandler {
 
-    private static Logger logger = LoggerFactory.getLogger(HpsmMainEventHandler.class);
+    private static Logger logger = LoggerFactory.getLogger(InboundMainMessageHandler.class);
 
     @Autowired
     @Qualifier("hpsmSerializer")

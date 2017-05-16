@@ -6,13 +6,10 @@ import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import ru.protei.portal.hpsm.api.HpsmMessageFactory;
-import ru.protei.portal.hpsm.api.MailMessageFactory;
-import ru.protei.portal.hpsm.logic.HpsmPingEventHandler;
+import ru.protei.portal.hpsm.logic.InboundPingMessageHandler;
 import ru.protei.portal.hpsm.struct.HpsmPingMessage;
-import ru.protei.portal.hpsm.config.HpsmEnvConfig;
 import ru.protei.portal.hpsm.utils.HpsmTestUtils;
 import ru.protei.portal.hpsm.utils.TestServiceInstance;
-import ru.protei.portal.hpsm.utils.VirtualMailSendChannel;
 import ru.protei.portal.test.hpsm.config.HpsmTestConfiguration;
 
 import javax.mail.internet.MimeMessage;
@@ -36,7 +33,7 @@ public class PingEventTest {
     public void test001 () throws Exception {
 
         TestServiceInstance testServiceInstance = ctx.getBean(TestServiceInstance.class);
-        HpsmPingEventHandler handler = ctx.getBean(HpsmPingEventHandler.class);
+        InboundPingMessageHandler handler = ctx.getBean(InboundPingMessageHandler.class);
         HpsmMessageFactory messageFactory = ctx.getBean(HpsmMessageFactory.class);
 
         Calendar cld = GregorianCalendar.getInstance();

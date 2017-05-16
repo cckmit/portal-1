@@ -11,7 +11,7 @@ import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.hpsm.api.HpsmMessageFactory;
 import ru.protei.portal.hpsm.api.MailSendChannel;
 import ru.protei.portal.hpsm.config.HpsmEnvConfig;
-import ru.protei.portal.hpsm.logic.HpsmHandler;
+import ru.protei.portal.hpsm.logic.InboundMessageHandler;
 import ru.protei.portal.hpsm.logic.BackChannelEventHandler;
 import ru.protei.portal.hpsm.logic.BackChannelHandlerFactory;
 import ru.protei.portal.hpsm.logic.ServiceInstance;
@@ -48,12 +48,12 @@ public class HpsmServiceImpl implements HpsmService {
     BackChannelHandlerFactory backChannelHandlerFactory;
 
 
-    private HpsmHandler[] inboundHandlers;
+    private InboundMessageHandler[] inboundHandlers;
     private HashMap<String, ServiceInstanceImpl> serviceMap;
 
 
 
-    public HpsmServiceImpl(HpsmHandler...handlers) {
+    public HpsmServiceImpl(InboundMessageHandler...handlers) {
         this.inboundHandlers = handlers;
         this.serviceMap = new HashMap<>();
     }
@@ -78,7 +78,7 @@ public class HpsmServiceImpl implements HpsmService {
 
                 boolean handled = false;
 
-                for (HpsmHandler h : inboundHandlers) {
+                for (InboundMessageHandler h : inboundHandlers) {
                     if (handled = h.handle(msg, s))
                         break;
                 }

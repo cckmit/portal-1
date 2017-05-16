@@ -6,10 +6,9 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import ru.protei.portal.core.service.CaseControlService;
 import ru.protei.portal.hpsm.api.HpsmStatus;
 import ru.protei.portal.hpsm.logic.HpsmEvent;
-import ru.protei.portal.hpsm.logic.HpsmMainEventHandler;
+import ru.protei.portal.hpsm.logic.InboundMainMessageHandler;
 import ru.protei.portal.hpsm.utils.HpsmTestUtils;
 import ru.protei.portal.hpsm.utils.TestServiceInstance;
-import ru.protei.portal.hpsm.utils.VirtualMailSendChannel;
 import ru.protei.portal.test.hpsm.config.HpsmTestConfiguration;
 
 import javax.mail.internet.MimeMessage;
@@ -30,7 +29,7 @@ public class CreateEventTest {
     public void test001 () throws Exception {
 
         TestServiceInstance testServiceInstance = ctx.getBean(TestServiceInstance.class);
-        HpsmMainEventHandler handler = ctx.getBean(HpsmMainEventHandler.class);
+        InboundMainMessageHandler handler = ctx.getBean(InboundMainMessageHandler.class);
 
         HpsmTestUtils testUtils = ctx.getBean(HpsmTestUtils.class);
 

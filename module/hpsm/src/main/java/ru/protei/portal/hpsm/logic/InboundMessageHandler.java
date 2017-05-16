@@ -5,7 +5,7 @@ import javax.mail.internet.MimeMessage;
 /**
  * Created by michael on 25.04.17.
  */
-public interface HpsmHandler {
+public interface InboundMessageHandler {
     /**
      * @param msg
      * @return true if this message was handled

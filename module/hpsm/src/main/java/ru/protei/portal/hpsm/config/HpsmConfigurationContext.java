@@ -11,8 +11,8 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import ru.protei.portal.hpsm.api.HpsmMessageFactory;
 import ru.protei.portal.hpsm.api.MailMessageFactory;
 import ru.protei.portal.hpsm.api.MailSendChannel;
-import ru.protei.portal.hpsm.logic.HpsmMainEventHandler;
-import ru.protei.portal.hpsm.logic.HpsmPingEventHandler;
+import ru.protei.portal.hpsm.logic.InboundMainMessageHandler;
+import ru.protei.portal.hpsm.logic.InboundPingMessageHandler;
 import ru.protei.portal.hpsm.logic.BackChannelHandlerFactory;
 import ru.protei.portal.hpsm.logic.BackChannelHandlerFactoryImpl;
 import ru.protei.portal.hpsm.service.HpsmMessageFactoryImpl;
@@ -89,13 +89,13 @@ public class HpsmConfigurationContext {
 
 
     @Bean
-    public HpsmPingEventHandler getPingCommandHandler () {
-        return new HpsmPingEventHandler();
+    public InboundPingMessageHandler getPingCommandHandler () {
+        return new InboundPingMessageHandler();
     }
 
     @Bean
-    public HpsmMainEventHandler getMainEventHandler () {
-        return new HpsmMainEventHandler();
+    public InboundMainMessageHandler getMainEventHandler () {
+        return new InboundMainMessageHandler();
     }
 
     @Bean

@@ -2,27 +2,20 @@ package ru.protei.portal.hpsm.logic;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.mail.javamail.MimeMessageHelper;
-import ru.protei.portal.hpsm.api.MailMessageFactory;
-import ru.protei.portal.hpsm.api.MailSendChannel;
 import ru.protei.portal.hpsm.struct.HpsmPingMessage;
-import ru.protei.portal.hpsm.config.HpsmEnvConfig;
 import ru.protei.portal.hpsm.utils.HpsmUtils;
 
-import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 /**
  * Created by michael on 25.04.17.
  */
-public class HpsmPingEventHandler implements  HpsmHandler{
+public class InboundPingMessageHandler implements InboundMessageHandler {
 
-    private static Logger logger = LoggerFactory.getLogger(HpsmPingEventHandler.class);
+    private static Logger logger = LoggerFactory.getLogger(InboundPingMessageHandler.class);
 
 
-    public HpsmPingEventHandler() {
+    public InboundPingMessageHandler() {
     }
 
 
