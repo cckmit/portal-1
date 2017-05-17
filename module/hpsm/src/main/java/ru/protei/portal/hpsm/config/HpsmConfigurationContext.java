@@ -129,14 +129,21 @@ public class HpsmConfigurationContext {
                 createHpsmMessageFactory());
     }
 
+
     @Bean
     @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-    public MailReceivingMessageSource createInboundSource(String url) {
+    public ImapMailReceiver imapMailReceiver(String url) {
         ImapMailReceiver imapMailReceiver = new ImapMailReceiver(url);
         imapMailReceiver.setShouldMarkMessagesAsRead(true);
         imapMailReceiver.setShouldDeleteMessages(false);
         imapMailReceiver.setEmbeddedPartsAsBytes(false);
-        return new MailReceivingMessageSource(imapMailReceiver);
+        return imapMailReceiver;
+    }
+
+    @Bean
+    @Scope(BeanDefinition.SCOPE_PROTOTYPE)
+    public MailReceivingMessageSource createInboundSource(String url) {
+        return new MailReceivingMessageSource(imapMailReceiver(url));
     }
 
     @Bean
