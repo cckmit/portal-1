@@ -3,6 +3,7 @@ package ru.protei.portal.hpsm.config;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.XmlFriendlyNameCoder;
 import com.thoughtworks.xstream.io.xml.Xpp3Driver;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,12 +20,8 @@ import ru.protei.portal.hpsm.logic.*;
 import ru.protei.portal.hpsm.service.HpsmMessageFactoryImpl;
 import ru.protei.portal.hpsm.service.HpsmService;
 import ru.protei.portal.hpsm.service.HpsmServiceImpl;
-import ru.protei.portal.hpsm.service.ServiceInstanceImpl;
 import ru.protei.portal.hpsm.struct.HpsmMessage;
-import ru.protei.portal.hpsm.utils.CompanyBranchMap;
-import ru.protei.portal.hpsm.utils.EventMsgInputStreamSource;
-import ru.protei.portal.hpsm.utils.JavaMailMessageFactory;
-import ru.protei.portal.hpsm.utils.JavaMailSendChannel;
+import ru.protei.portal.hpsm.utils.*;
 
 import java.io.IOException;
 
@@ -115,7 +112,14 @@ public class HpsmConfigurationContext {
     }
 
 
-    @Bean(name = "hpsmServiceInstance")
+    @Bean
+    public ServiceInstanceRegistry makeInstanceRegistry (@Autowired HpsmEnvConfig setup) {
+        ServiceInstanceRegistryImpl registry = new ServiceInstanceRegistryImpl();
+        setup.getInstanceList().forEach(serviceConfig -> registry.add(createServiceInstance(serviceConfig)));
+        return registry;
+    }
+
+    @Bean
     @Scope(BeanDefinition.SCOPE_PROTOTYPE)
     public ServiceInstance createServiceInstance(HpsmEnvConfig.ServiceConfig config) {
         return new ServiceInstanceImpl(config,
@@ -125,9 +129,7 @@ public class HpsmConfigurationContext {
                 createHpsmMessageFactory());
     }
 
-
-
-    @Bean(name = "hpsmMessageSource")
+    @Bean
     @Scope(BeanDefinition.SCOPE_PROTOTYPE)
     public MailReceivingMessageSource createInboundSource(String url) {
         ImapMailReceiver imapMailReceiver = new ImapMailReceiver(url);

@@ -1,4 +1,4 @@
-package ru.protei.portal.hpsm.service;
+package ru.protei.portal.hpsm.logic;
 
 import org.springframework.integration.mail.MailReceivingMessageSource;
 import org.springframework.messaging.Message;
@@ -20,7 +20,7 @@ import javax.mail.internet.MimeMessage;
 /**
  * Created by michael on 15.05.17.
  */
-public abstract class AbstractServiceInstanceImpl implements ServiceInstance {
+public class ServiceInstanceImpl implements ServiceInstance {
 
     private HpsmEnvConfig.ServiceConfig serviceConfig;
 
@@ -30,11 +30,11 @@ public abstract class AbstractServiceInstanceImpl implements ServiceInstance {
     private HpsmMessageFactory messageFactory;
 
 
-    public AbstractServiceInstanceImpl(HpsmEnvConfig.ServiceConfig config,
-                                       CompanyBranchMap companyBranchMap,
-                                       MailReceivingMessageSource inboundSource,
-                                       MailSendChannel outChannel,
-                                       HpsmMessageFactory messageFactory) {
+    public ServiceInstanceImpl(HpsmEnvConfig.ServiceConfig config,
+                               CompanyBranchMap companyBranchMap,
+                               MailReceivingMessageSource inboundSource,
+                               MailSendChannel outChannel,
+                               HpsmMessageFactory messageFactory) {
         this.serviceConfig = config;
         this.sendChannel = outChannel;
         this.messageFactory = messageFactory;

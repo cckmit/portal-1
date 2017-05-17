@@ -13,10 +13,7 @@ import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.hpsm.api.HpsmMessageFactory;
 import ru.protei.portal.hpsm.api.MailSendChannel;
 import ru.protei.portal.hpsm.config.HpsmEnvConfig;
-import ru.protei.portal.hpsm.logic.BackChannelEventHandler;
-import ru.protei.portal.hpsm.logic.BackChannelHandlerFactory;
-import ru.protei.portal.hpsm.logic.InboundMessageHandler;
-import ru.protei.portal.hpsm.logic.ServiceInstance;
+import ru.protei.portal.hpsm.logic.*;
 import ru.protei.portal.hpsm.struct.HpsmMessage;
 import ru.protei.portal.hpsm.struct.HpsmMessageHeader;
 import ru.protei.portal.hpsm.utils.CompanyBranchMap;
@@ -53,38 +50,29 @@ public class HpsmServiceImpl implements HpsmService {
     @Autowired(required = false)
     TestServiceInstance testServiceInstance;
 
-
     @Autowired
-    ApplicationContext context;
+    ServiceInstanceRegistry serviceInstanceRegistry;
 
     private InboundMessageHandler[] inboundHandlers;
-    private HashMap<String, ServiceInstance> serviceMap;
 
 
 
     public HpsmServiceImpl(InboundMessageHandler...handlers) {
         this.inboundHandlers = handlers;
-        this.serviceMap = new HashMap<>();
     }
 
     @PostConstruct
     private void postConstruct () {
-        config.getInstanceList().forEach(cfg -> addService(cfg));
         if (testServiceInstance != null) {
-            serviceMap.put(testServiceInstance.id(), testServiceInstance);
+            serviceInstanceRegistry.add(testServiceInstance);
         }
     }
-
-    private void addService (HpsmEnvConfig.ServiceConfig instCfg) {
-        serviceMap.put(instCfg.getId(), context.getBean(ServiceInstance.class, instCfg));
-    }
-
 
     @Override
     public void handleInboundRequest() {
         logger.debug("check for incoming requests");
 
-        serviceMap.values().forEach(s -> {
+        serviceInstanceRegistry.each(s -> {
             logger.debug("try read mail message from {} instance", s.id());
 
             MimeMessage msg = s.read();
@@ -111,15 +99,6 @@ public class HpsmServiceImpl implements HpsmService {
     }
 
 
-    private ServiceInstance findInstance (CaseObject object) {
-        for (ServiceInstance instance : serviceMap.values()) {
-            if (instance.acceptCase(object))
-                return instance;
-        }
-
-        return null;
-    }
-
     @Override
     @EventListener
     public void onCaseCommentEvent(CaseCommentEvent event) {
@@ -127,7 +106,7 @@ public class HpsmServiceImpl implements HpsmService {
         CaseObject object = event.getCaseObject();
 
         logger.debug("hpsm, case-comment event, case {}, comment #{}", object.getExtId(),event.getCaseComment().getId());
-        ServiceInstance instance = findInstance(event.getCaseObject());
+        ServiceInstance instance = serviceInstanceRegistry.find(event.getCaseObject());
 
         if (instance == null) {
             logger.debug("no handler instance found for case {}", object.getExtId());
@@ -157,7 +136,7 @@ public class HpsmServiceImpl implements HpsmService {
     @EventListener
     public void onCaseObjectEvent(CaseObjectEvent event) {
 
-        ServiceInstance instance = findInstance(event.getCaseObject());
+        ServiceInstance instance = serviceInstanceRegistry.find(event.getCaseObject());
         if (instance == null) {
             logger.debug("no handler instance found for case {}", event.getCaseObject().getExtId());
             return;
