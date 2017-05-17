@@ -15,12 +15,17 @@ public class InitTestCases {
 
     public static void main (String argv[]) {
 
+        // на всякий случай, чтобы не мешать тестированию с зказчиком
+        System.exit(0);
+
+
         ApplicationContext ctx = new AnnotationConfigApplicationContext(HpsmTestConfiguration.class);
 
         CaseObjectDAO caseObjectDAO = ctx.getBean(CaseObjectDAO.class);
 
         if (caseObjectDAO.getByExternalAppId(HPSM_TEST_CASE_ID1) != null)
             return;
+
 
         MailSendChannel sendChannel = ctx.getBean(MailSendChannel.class);
 

@@ -119,7 +119,7 @@ public class HpsmEnvConfig {
         @XStreamAlias("sender-address")
         private String senderAddress;
 
-        @XStreamAlias("sender-to")
+        @XStreamAlias("send-to")
         private String sendTo;
 
         public OutboundChannel() {
