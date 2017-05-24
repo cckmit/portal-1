@@ -13,8 +13,9 @@ public interface HpsmMessageFactory {
 
 //    MimeMessage createReplyMessage(String from, HpsmEvent request, HpsmMessageHeader subject, HpsmMessage hpsmMessage) throws Exception;
 
-    MimeMessage makeMessgae (String to, String from, HpsmPingMessage cmd) throws Exception;
-    MimeMessage makeMessage (String to, String from, HpsmMessageHeader subject, HpsmMessage hpsmMessage) throws  Exception;
+    MimeMessage makePingMessgae(String to, String from, HpsmPingMessage cmd) throws Exception;
+    MimeMessage makeRequestMesssage(String to, String from, HpsmMessageHeader subject, HpsmMessage hpsmMessage) throws  Exception;
+    MimeMessage makeReplyMessage (String to, String from, HpsmMessageHeader subject, HpsmMessage hpsmMessage) throws  Exception;
 
     MimeMessage createRejectMessage (String replyTo, String from, HpsmMessageHeader subject, String messageText) throws Exception;
 

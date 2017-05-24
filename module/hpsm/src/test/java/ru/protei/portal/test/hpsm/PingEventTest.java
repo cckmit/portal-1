@@ -43,7 +43,7 @@ public class PingEventTest {
         HpsmPingMessage requestCmd = new HpsmPingMessage(true, cld.getTime());
 
         Assert.assertTrue(handler.handle(
-                messageFactory.makeMessgae(HpsmTestUtils.HPSM_MAIL_ADDRESS, HpsmTestUtils.SENDER_ADDRESS, requestCmd),
+                messageFactory.makePingMessgae(HpsmTestUtils.HPSM_MAIL_ADDRESS, HpsmTestUtils.SENDER_ADDRESS, requestCmd),
                 testServiceInstance
         ));
 

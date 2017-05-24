@@ -7,8 +7,6 @@ import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.hpsm.api.HpsmMessageFactory;
 import ru.protei.portal.hpsm.api.MailSendChannel;
 import ru.protei.portal.hpsm.config.HpsmEnvConfig;
-import ru.protei.portal.hpsm.logic.HpsmEvent;
-import ru.protei.portal.hpsm.logic.ServiceInstance;
 import ru.protei.portal.hpsm.struct.HpsmMessage;
 import ru.protei.portal.hpsm.struct.HpsmMessageHeader;
 import ru.protei.portal.hpsm.struct.HpsmPingMessage;
@@ -93,11 +91,11 @@ public class ServiceInstanceImpl implements ServiceInstance {
 
     @Override
     public void sendReply(String to, HpsmMessageHeader replyHeader, HpsmMessage replyMessage) throws Exception {
-        this.sendChannel.send(messageFactory.makeMessage(to, serviceConfig.getOutboundChannel().getSenderAddress(), replyHeader, replyMessage));
+        this.sendChannel.send(messageFactory.makeReplyMessage(to, serviceConfig.getOutboundChannel().getSenderAddress(), replyHeader, replyMessage));
     }
 
     @Override
     public void sendReply(String replyTo, HpsmPingMessage msg) throws Exception {
-        this.sendChannel.send(messageFactory.makeMessgae(replyTo, serviceConfig.getOutboundChannel().getSenderAddress(), msg));
+        this.sendChannel.send(messageFactory.makePingMessgae(replyTo, serviceConfig.getOutboundChannel().getSenderAddress(), msg));
     }
 }

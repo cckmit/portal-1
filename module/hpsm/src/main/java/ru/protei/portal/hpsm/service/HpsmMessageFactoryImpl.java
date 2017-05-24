@@ -39,13 +39,29 @@ public class HpsmMessageFactoryImpl implements HpsmMessageFactory {
     }
 
     @Override
-    public MimeMessage makeMessage(String to, String from, HpsmMessageHeader subject, HpsmMessage hpsmMessage) throws Exception {
+    public MimeMessage makeReplyMessage(String to, String from, HpsmMessageHeader subject, HpsmMessage hpsmMessage) throws Exception {
+        return makeMessageBase (to, from, subject, hpsmMessage, HpsmUtils.RTTS_HPSM_XML_REPLY);
+    }
+
+    @Override
+    public MimeMessage makeRequestMesssage(String to, String from, HpsmMessageHeader subject, HpsmMessage hpsmMessage) throws Exception {
+        return makeMessageBase (to, from, subject, hpsmMessage, HpsmUtils.RTTS_HPSM_XML_REQUEST);
+    }
+
+
+    private MimeMessage makeMessageBase (String to, String from,
+                                 HpsmMessageHeader subject,
+                                 HpsmMessage hpsmMessage,
+                                 String xmlName
+    ) throws Exception {
         MimeMessage response = messageFactory.createMailMessage();
         MimeMessageHelper helper = new MimeMessageHelper(response, true);
         helper.setSubject(subject.toString());
         helper.setTo(to);
         helper.setFrom(from);
-        helper.addAttachment(HpsmUtils.RTTS_HPSM_XML, new EventMsgInputStreamSource(xstream).attach(hpsmMessage), "application/xml");
+        helper.addAttachment(xmlName,
+                new EventMsgInputStreamSource(xstream).attach(hpsmMessage),
+                "application/xml");
 
         return response;
     }
@@ -58,12 +74,12 @@ public class HpsmMessageFactoryImpl implements HpsmMessageFactory {
 //        helper.setSubject(subject.toString());
 //        helper.setTo(request.getEmailSourceAddr());
 //        helper.setFrom(from);
-//        helper.addAttachment(HpsmUtils.RTTS_HPSM_XML, new EventMsgInputStreamSource(xstream).attach(hpsmMessage), "application/xml");
+//        helper.addAttachment(HpsmUtils.RTTS_HPSM_XML_REQUEST, new EventMsgInputStreamSource(xstream).attach(hpsmMessage), "application/xml");
 //
 //        return response;
 //    }
 
-    public MimeMessage makeMessgae (String to, String from, HpsmPingMessage cmd) throws Exception {
+    public MimeMessage makePingMessgae(String to, String from, HpsmPingMessage cmd) throws Exception {
 
         MimeMessage msg = messageFactory.createMailMessage();
         MimeMessageHelper helper = new MimeMessageHelper(msg, false);

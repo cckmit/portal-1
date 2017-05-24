@@ -23,7 +23,9 @@ import java.util.Date;
 public class HpsmUtils {
 
     public static final String COMMON_HPSM_TAG = "hpsm";
-    public static final String RTTS_HPSM_XML = "rtts_hpsm.xml";
+    public static final String RTTS_HPSM_XML_REQUEST = "rtts_hpsm.xml";
+    public static final String RTTS_HPSM_XML_REPLY = "rtts_vendor.xml";
+
     private static Logger logger = LoggerFactory.getLogger(HpsmUtils.class);
 
 
@@ -107,9 +109,17 @@ public class HpsmUtils {
                 String fileName = mparts.getBodyPart(i).getFileName();
                 logger.debug(" message part #{}, File name: {}", i, fileName);
 
-                if (fileName != null && fileName.equalsIgnoreCase(RTTS_HPSM_XML)) {
+                if (fileName != null && (fileName.equalsIgnoreCase(RTTS_HPSM_XML_REQUEST) || fileName.equalsIgnoreCase(RTTS_HPSM_XML_REPLY))) {
+                    logger.debug(" message part #{}, file: {}, trying parse incoming xml-event data", i, fileName);
                     try (InputStream contentStream = mparts.getBodyPart(i).getInputStream()) {
                         event.assign((HpsmMessage) xstream.fromXML(contentStream));
+
+                        if (event.getHpsmMessage() != null) {
+                            logger.debug(" >> parsed message data: {}", xstream.toXML(event.getHpsmMessage()));
+                        }
+                        else {
+                            logger.debug(" >> parsing is failed");
+                        }
                     }
                 }
             }
