@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
  */
 public class HpsmMessageHeader {
     public static final String SUBJ_FORMAT = "ID_HPSM=[%s]ID_VENDOR=[%s]STATUS=[%s]";
-    public static final Pattern SUBJ_PATTERN = Pattern.compile("ID_HPSM=\\[([^\\]]+)\\]ID_VENDOR=\\[([^\\]]*)\\]STATUS=\\[([^\\]]+)\\]");
+    public static final Pattern SUBJ_PATTERN = Pattern.compile("^.*ID_HPSM=\\[([^\\]]+)\\]ID_VENDOR=\\[([^\\]]*)\\]STATUS=\\[([^\\]]+)\\].*");
 
     private String hpsmId;
     private String ourId;

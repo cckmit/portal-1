@@ -2,6 +2,8 @@ package ru.protei.portal.test.hpsm;
 
 import org.junit.Assert;
 import org.junit.Test;
+import ru.protei.portal.hpsm.api.HpsmStatus;
+import ru.protei.portal.hpsm.struct.HpsmMessageHeader;
 import ru.protei.portal.hpsm.utils.HpsmUtils;
 
 /**
@@ -22,5 +24,18 @@ public class TestUtils {
         Assert.assertEquals("FAIL", HpsmUtils.extractOption(testData, "BAD_OPT1", "FAIL"));
         Assert.assertEquals("FAIL", HpsmUtils.extractOption(testData, "BAD_OPT2", "FAIL"));
         Assert.assertEquals("FAIL", HpsmUtils.extractOption(testData, "BAD_OPT3", "FAIL"));
+    }
+
+
+    @Test
+    public void testParseMessage001 () {
+
+        HpsmMessageHeader testHeader = HpsmMessageHeader.parse("*ТЕСТ*ID_HPSM=[RTS1631]ID_VENDOR=[]STATUS=[Новый]");
+        Assert.assertNotNull(testHeader);
+        Assert.assertEquals("RTS1631", testHeader.getHpsmId());
+        Assert.assertTrue(testHeader.isNewCaseRequest());
+
+        Assert.assertEquals(HpsmStatus.NEW, testHeader.getStatus());
+
     }
 }
