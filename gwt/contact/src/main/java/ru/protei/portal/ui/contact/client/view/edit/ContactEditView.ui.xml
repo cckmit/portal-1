@@ -139,11 +139,24 @@
 
                 </div>
                 <div class="grid grid-indent">
-                    <div class="form-group col-xs-12">
+                    <div class="form-group col-xs-6">
                         <label class="">
                             <ui:text from="{lang.comment}"/>
                         </label>
                         <g:TextArea ui:field="personInfo" styleName="input-field description"></g:TextArea>
+                    </div>
+                    <div class="form-group col-xs-6">
+                        <fieldset>
+                            <legend>параметры доступа к внешнему CRM</legend>
+                            <label class="">
+                                <ui:text from="{lang.login}"/>
+                            </label>
+                            <g:TextBox ui:field="login" styleName="input-field"/>
+                            <label class="">
+                                <ui:text from="{lang.password}"/>
+                            </label>
+                            <g:PasswordTextBox ui:field="password" styleName="input-field"/>
+                        </fieldset>
                     </div>
                 </div>
             </div>

@@ -5,6 +5,27 @@
   label {
     font-weight: 600;
   }
+
+  fieldset {
+    margin-top: 13px;
+    border: 1px solid rgba(84, 129, 193, 0.44);
+    min-height: 197px;
+
+    legend {
+      padding-left: 10px;
+      padding-right: 10px;
+    }
+  }
+
+  legend{
+    color: #5481c1;
+    padding: 2px;
+    margin-left: 14px;
+    font-weight: bold;
+    font-size: 14px;
+    /*     font-weight:00; */
+    text-transform: uppercase;
+  }
 }
 
 input.input-field,

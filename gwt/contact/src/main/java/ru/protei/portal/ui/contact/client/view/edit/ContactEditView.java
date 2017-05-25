@@ -224,6 +224,10 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     @Inject
     @UiField(provided = true)
     GenderButtonSelector gender;
+    @UiField
+    TextBox login;
+    @UiField
+    PasswordTextBox password;
 
 
     AbstractContactEditActivity activity;
