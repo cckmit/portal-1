@@ -245,6 +245,12 @@ public class MainConfiguration {
         return new AsyncEventPublisherService();
     }
 
+
+    @Bean
+    public CaseSubscriptionService getCaseSubscriptionService () {
+        return new CaseSubscriptionServiceImpl();
+    }
+
     /** ASPECT/INTERCEPTORS **/
     @Bean
     public ServiceLayerInterceptor getServiceLayerInterceptor () {
