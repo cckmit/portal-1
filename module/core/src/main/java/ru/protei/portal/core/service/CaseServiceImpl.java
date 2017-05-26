@@ -6,6 +6,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.core.event.CaseCommentEvent;
+import ru.protei.portal.core.event.CaseObjectEvent;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.CaseShortViewDAO;
@@ -41,6 +43,11 @@ public class CaseServiceImpl implements CaseService {
     @Autowired
     CaseCommentDAO caseCommentDAO;
 
+    @Autowired
+    EventPublisherService publisherService;
+
+
+
     @Override
     public CoreResponse<List<CaseShortView>> caseObjectList( CaseQuery query) {
         List<CaseShortView> list = caseShortViewDAO.getCases( query );
@@ -73,6 +80,8 @@ public class CaseServiceImpl implements CaseService {
         if (caseId == null)
             return new CoreResponse().error(En_ResultStatus.NOT_CREATED);
 
+        publisherService.publishEvent(new CaseObjectEvent(this, caseObject));
+
         return new CoreResponse<CaseObject>().success( caseObject );
     }
 
@@ -82,10 +91,15 @@ public class CaseServiceImpl implements CaseService {
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
 
         caseObject.setModified(new Date());
+
+        CaseObjectEvent updateEvent = new CaseObjectEvent(this, caseObject, caseObjectDAO.get(caseObject.getId()));
+
         boolean isUpdated = caseObjectDAO.merge(caseObject);
 
         if (!isUpdated)
             return new CoreResponse().error(En_ResultStatus.NOT_UPDATED);
+
+        publisherService.publishEvent(updateEvent);
 
         return new CoreResponse<CaseObject>().success( caseObject );
     }
@@ -130,6 +144,8 @@ public class CaseServiceImpl implements CaseService {
             throw new RuntimeException( "failed to update case modifiedDate " );
 
         CaseComment result = caseCommentDAO.get( commentId );
+
+        publisherService.publishEvent(new CaseCommentEvent(this, caseObjectDAO.get(result.getCaseId()), result));
 
         return new CoreResponse<CaseComment>().success( result );
     }

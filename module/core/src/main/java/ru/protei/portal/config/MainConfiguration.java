@@ -7,7 +7,6 @@ import ru.protei.portal.core.aspect.ServiceLayerInterceptor;
 import ru.protei.portal.core.controller.auth.AuthInterceptor;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
-import ru.protei.portal.core.model.ent.CaseLocation;
 import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.user.AuthService;
 import ru.protei.portal.core.service.user.AuthServiceImpl;
@@ -189,6 +188,7 @@ public class MainConfiguration {
 
     @Bean
     public DecimalNumberDAO getDecimalNumberDAO() { return new DecimalNumberDAO_Impl(); }
+
 /**
  *
  *
@@ -198,6 +198,11 @@ public class MainConfiguration {
  *
  *
  **/
+
+    @Bean
+    public CaseControlService getCaseControlService () {
+        return new CaseControlServiceImpl();
+    }
 
     @Bean
     public EmployeeService getEmployeeService () { return new EmployeeServiceImpl(); }
@@ -229,6 +234,11 @@ public class MainConfiguration {
     @Bean
     public EquipmentService getEquipmentService() { return new EquipmentServiceImpl(); }
 
+
+    @Bean
+    public EventPublisherService getEventPublisherService () {
+        return new AsyncEventPublisherService();
+    }
 
     /** ASPECT/INTERCEPTORS **/
     @Bean
