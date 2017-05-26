@@ -11,6 +11,8 @@ import ru.protei.portal.tools.migrate.tools.MigrateAction;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by michael on 01.04.16.
@@ -43,6 +45,9 @@ public class MigrateClientLoginAction implements MigrateAction {
     @Override
     public void migrate(Connection sourceConnection) throws SQLException {
 
+        final Map<String, UserLogin> rtUnique = new HashMap<>();
+        userLoginDAO.getAll().forEach(u -> rtUnique.put(u.getUlogin().toLowerCase(), u));
+
         new BatchInsertTask(migrationEntryDAO, MIGRATE_ITEM_CODE)
                 .forTable("\"resource\".Tm_CompanyLogin", "nID", null)
                 .skipEmptyEntity(true)
@@ -56,9 +61,10 @@ public class MigrateClientLoginAction implements MigrateAction {
                         return null;
                     }
 
-                    UserLogin ex = userLoginDAO.findByLogin (ulogin.getUlogin());
-                    if (ex != null) {
-                        logger.warn("user-login is not unique, portal-id={}, curr-id={}, login={}, skip", row.get("nID"), ex.getId(), ex.getUlogin());
+                    UserLogin existing = rtUnique.get(ulogin.getUlogin().toLowerCase());
+
+                    if (existing != null) {
+                        logger.warn("user-login is not unique, portal-id={}, curr-id={}, login={}, skip", row.get("nID"), existing.getId(), existing.getUlogin());
                         return null;
                     }
 
@@ -103,6 +109,8 @@ public class MigrateClientLoginAction implements MigrateAction {
 
                         ulogin.setPersonId(p.getId());
                     }
+
+                    rtUnique.put(ulogin.getUlogin().toLowerCase(), ulogin);
 
                     return ulogin;
                 })

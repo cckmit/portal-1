@@ -1,6 +1,8 @@
 package ru.protei.portal.tools.migrate.parts;
 
-import org.apache.log4j.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.core.model.dao.CompanyGroupHomeDAO;
 import ru.protei.portal.core.model.dao.MigrationEntryDAO;
@@ -29,7 +31,7 @@ import java.util.regex.Pattern;
  */
 public class MigratePersonAction implements MigrateAction {
 
-    private static Logger logger = Logger.getLogger(MigratePersonAction.class);
+    private static Logger logger = LoggerFactory.getLogger(MigratePersonAction.class);
 
     public static final String TM_PERSON_ITEM_CODE = "Tm_Person";
     public static final String TM_PERSON_PROTEI_ITEM_CODE = "Tm_Person_Protei";
@@ -124,7 +126,8 @@ public class MigratePersonAction implements MigrateAction {
                 List<UserLogin> loginBatch = new ArrayList<>();
 
                 for (Person p : insertedEntries) {
-                    if (groupHomeDAO.checkIfHome(p.getCompanyId())) {
+                    if (groupHomeDAO.checkIfHome(p.getCompanyId()) && !p.isDeleted() && !p.isFired()) {
+
                         UserLogin ulogin = new UserLogin();
                         ulogin.setAdminStateId(En_AdminState.UNLOCKED.getId());
                         ulogin.setAuthTypeId(En_AuthType.LDAP.getId());
@@ -135,8 +138,12 @@ public class MigratePersonAction implements MigrateAction {
                         ulogin.setUlogin(createLogin(p));
 
                         if (ulogin.getUlogin() == null) {
-                            logger.warn("unable to create user login for person " + p.toDebugString());
-                        } else
+                            logger.warn("unable to create user login for person {}", p.toDebugString());
+                        }
+                        else if (userLoginDAO.findByLogin(ulogin.getUlogin()) != null) {
+                            logger.warn("duplicated login {}", ulogin.getUlogin());
+                        }
+                        else
                             loginBatch.add(ulogin);
                     }
                 }
@@ -153,7 +160,7 @@ public class MigratePersonAction implements MigrateAction {
             x.setBirthday((Date) row.get("dtBirthday"));
 
             if (row.get("nCompanyID") == null) {
-                logger.warn("company is null for: " + row);
+                logger.warn("company is null for: {}", row);
                 x.setCompanyId(-1L);
             } else
                 x.setCompanyId(((Number) row.get("nCompanyID")).longValue());
@@ -216,7 +223,7 @@ public class MigratePersonAction implements MigrateAction {
 
 
             if (row.get("properties") != null) {
-                logger.debug("properties: " + row.get("properties"));
+                logger.debug("properties: ", row.get("properties"));
 
                 Map<String, String> xp = splitProps((String) row.get("properties"));
 
@@ -247,7 +254,7 @@ public class MigratePersonAction implements MigrateAction {
                 contactInfoFacade.addIcq(nvl(xp.get("ICQ рабочий"), nvl(xp.get("ICQ без категории"), xp.get("ICQ домашний"))), "");
             }
 
-            logger.debug(x.getId() + "/" + x.getDisplayName());
+            logger.debug("id={} / {}", x.getId() , x.getDisplayName());
             return x;
         };
 
