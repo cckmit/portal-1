@@ -9,6 +9,7 @@ import ru.protei.portal.core.model.dao.UserLoginDAO;
 import ru.protei.portal.core.model.dict.En_AdminState;
 import ru.protei.portal.core.model.dict.En_AuthType;
 import ru.protei.portal.core.model.dict.En_Gender;
+import ru.protei.portal.core.model.dict.En_UserRole;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
@@ -130,7 +131,7 @@ public class MigratePersonAction implements MigrateAction {
                         ulogin.setCreated(new Date());
                         ulogin.setInfo(p.getDisplayName());
                         ulogin.setPersonId(p.getId());
-                        ulogin.setRoleId(1); //@TODO replace to enum
+                        ulogin.setRoleId(En_UserRole.EMPLOYEE.getId());
                         ulogin.setUlogin(createLogin(p));
 
                         if (ulogin.getUlogin() == null) {
