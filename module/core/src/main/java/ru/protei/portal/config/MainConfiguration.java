@@ -43,20 +43,6 @@ public class MainConfiguration {
         return new PersonAbsenceDAO_Impl();
     }
 
-    @Bean
-    public SessionIdGen getSessionIdGenerator() {
-        return new SimpleSidGenerator();
-    }
-
-    @Bean
-    public AuthService getAuthService() {
-        return new AuthServiceImpl();
-    }
-
-    @Bean
-    public AuthInterceptor getAuthInterceptor() {
-        return new AuthInterceptor();
-    }
 
     @Bean
     public CompanyDAO getCompanyDAO() {
@@ -189,6 +175,11 @@ public class MainConfiguration {
     @Bean
     public DecimalNumberDAO getDecimalNumberDAO() { return new DecimalNumberDAO_Impl(); }
 
+    @Bean
+    public CompanySubscriptionDAO getCompanySubscriptionDAO () {
+        return new CompanySubscriptionDAO_Impl ();
+    }
+
 /**
  *
  *
@@ -198,6 +189,20 @@ public class MainConfiguration {
  *
  *
  **/
+    @Bean
+    public SessionIdGen getSessionIdGenerator() {
+    return new SimpleSidGenerator();
+}
+
+    @Bean
+    public AuthService getAuthService() {
+        return new AuthServiceImpl();
+    }
+
+    @Bean
+    public AuthInterceptor getAuthInterceptor() {
+        return new AuthInterceptor();
+    }
 
     @Bean
     public CaseControlService getCaseControlService () {

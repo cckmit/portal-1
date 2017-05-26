@@ -48,9 +48,16 @@ public class MigrateConfiguration {
     }
 
 
-    @Bean MigrateAction getClientLoginMigrateAction () {
+    @Bean
+    public MigrateAction getClientLoginMigrateAction () {
        return new MigrateClientLoginAction();
     }
+
+    @Bean
+    public MigrateAction getCompanyEmailMigrateAction () {
+       return new MigrateCompanySubscriptionAction ();
+    }
+
 
 //    @Bean
 //    public MigrateAction getFreqMigrateAction () {
