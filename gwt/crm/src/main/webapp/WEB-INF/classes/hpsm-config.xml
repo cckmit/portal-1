@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hpsm-config>
+    <mail-server id="default">
+        <host>smtp.protei.ru</host>
+        <port>2525</port>
+        <default-charset>utf-8</default-charset>
+    </mail-server>
+
+    <service-instance id="mf">
+        <inbound-channel>
+            <url>imaps://crm_test-user:hae7Eito@imap.protei.ru:993/INBOX</url>
+        </inbound-channel>
+
+        <outbound-channel>
+            <!-- FROM-field -->
+            <sender-address>crm_test@protei.ru</sender-address>
+            <!-- TO-field -->
+            <send-to>zavedeev@protei.ru</send-to>
+        </outbound-channel>
+    </service-instance>
+
+    <company-map>
+        <company-map-entry>
+            <branch-name>Центральный Филиал</branch-name>
+            <company-id>260</company-id>
+        </company-map-entry>
+
+        <company-map-entry>
+            <branch-name>Столичный Филиал</branch-name>
+            <company-id>550</company-id>
+        </company-map-entry>
+
+        <company-map-entry>
+            <branch-name>TT Mobile</branch-name>
+            <company-id>230</company-id>
+        </company-map-entry>
+
+        <company-map-entry>
+            <branch-name>Аквафон GSM</branch-name>
+            <company-id>766</company-id>
+        </company-map-entry>
+
+        <company-map-entry>
+            <branch-name>Дальневосточный Филиал</branch-name>
+            <company-id>546</company-id>
+        </company-map-entry>
+
+        <company-map-entry>
+            <branch-name>Кавказский Филиал</branch-name>
+            <company-id>2366</company-id>
+        </company-map-entry>
+
+        <company-map-entry>
+            <branch-name>Поволжский Филиал</branch-name>
+            <company-id>151</company-id>
+        </company-map-entry>
+
+        <company-map-entry>
+            <branch-name>Северо-Западный Филиал</branch-name>
+            <company-id>231</company-id>
+        </company-map-entry>
+
+        <company-map-entry>
+            <branch-name>Сибирский Филиал</branch-name>
+            <company-id>553</company-id>
+        </company-map-entry>
+
+        <company-map-entry>
+            <branch-name>Уральский Филиал</branch-name>
+            <company-id>549</company-id>
+        </company-map-entry>
+    </company-map>
+</hpsm-config>
