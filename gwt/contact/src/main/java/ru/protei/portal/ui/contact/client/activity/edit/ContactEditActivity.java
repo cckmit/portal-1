@@ -1,20 +1,25 @@
 package ru.protei.portal.ui.contact.client.activity.edit;
 
 
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
+import org.apache.commons.codec.digest.DigestUtils;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
+import ru.protei.portal.ui.common.client.common.MD5Utils;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.ContactEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ContactServiceAsync;
+import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 /**
  * Created by michael on 02.11.16.
@@ -38,7 +43,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
             this.fireEvent(new AppEvents.InitPanelName(lang.newContact()));
             Person newPerson = new Person();
             newPerson.setCompanyId(event.companyId);
-            fillView(newPerson);
+            fillView(newPerson, new UserLogin());
         }
         else {
             contactService.getContact(event.id, new AsyncCallback<Person>() {
@@ -49,9 +54,16 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
 
                 @Override
                 public void onSuccess(Person person) {
-                    fireEvent( new AppEvents.InitPanelName( lang.editContactHeader(person.getDisplayName())));
+                    fireEvent(new AppEvents.InitPanelName( lang.editContactHeader(person.getDisplayName())));
+                    contactService.getUserLogin( person.getId(), new RequestCallback< UserLogin >() {
+                        @Override
+                        public void onError( Throwable throwable ) {}
 
-                    fillView(person);
+                        @Override
+                        public void onSuccess( UserLogin userLogin ) {
+                            fillView( person, userLogin );
+                        }
+                    } );
                 }
             });
         }
@@ -62,8 +74,8 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         if (!validate ()) {
             return;
         }
-
-        contactService.saveContact(applyChanges(), new AsyncCallback<Person>() {
+        applyChanges();
+        contactService.saveContact(contact, new AsyncCallback<Person>() {
             @Override
             public void onFailure(Throwable throwable) {
                 fireErrorMessage(throwable.getMessage());
@@ -71,7 +83,21 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
 
             @Override
             public void onSuccess(Person person) {
-                fireEvent(new Back());
+                if (userLogin.getId()==null) {
+                    userLogin.setPersonId(person.getId());
+                    userLogin.setInfo(person.getDisplayName());
+                }
+                contactService.saveUserLogin(userLogin, new RequestCallback<UserLogin>() {
+                    @Override
+                    public void onError( Throwable throwable ) {
+                        fireErrorMessage(throwable.getMessage());
+                    }
+
+                    @Override
+                    public void onSuccess( UserLogin userLogin ) {
+                        fireEvent(new Back());
+                    }
+                } );
             }
         });
     }
@@ -81,7 +107,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         return false;
     }
 
-    private Person applyChanges () {
+    private void applyChanges () {
         contact.setGender(view.gender().getValue());
         contact.setCompanyId(view.company().getValue().getId());
         contact.setFirstName(view.firstName().getValue());
@@ -105,7 +131,17 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
 //        contact.setFaxHome(view.homeFax().getText());
         contact.setPosition(view.displayPosition().getText());
         contact.setDepartment(view.displayDepartment().getText());
-        return contact;
+
+        if ( view.login().getText() == null || view.login().getText().trim().isEmpty() ) {
+            userLogin.setUlogin( null );
+            userLogin.setUpass( null );
+        } else {
+            userLogin.setUlogin( view.login().getText() );
+            if ( userLogin.getUpass() == null || !userLogin.getUpass().equals( view.password() ) ) {
+                userLogin.setUpass( MD5Utils.getHash( view.password().getText() ) );
+            }
+        }
+        //return contact;
     }
 
     private boolean validate() {
@@ -120,7 +156,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
     }
 
 
-    private void fillView(Person person){
+    private void fillView(Person person, UserLogin userLogin){
         this.contact = person;
         initDetails.parent.clear();
 
@@ -159,6 +195,14 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         view.displayPosition().setText(person.getPosition());
         view.displayDepartment().setText(person.getDepartment());
 
+        if( userLogin != null ) {
+            view.login().setText( userLogin.getUlogin() );
+            view.password().setText( userLogin.getUpass() );
+        } else {
+            view.login().setText( null );
+            view.password().setText( null );
+        }
+
         initDetails.parent.add(view.asWidget());
     }
 
@@ -170,6 +214,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
     Lang lang;
 
     Person contact;
+    UserLogin userLogin;
 
     @Inject
     ContactServiceAsync contactService;

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.ContactQuery;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -88,9 +89,40 @@ public class ContactServiceImpl implements ContactService {
         return result.getData();
     }
 
+    @Override
+    public UserLogin getUserLogin( long id ) throws RequestFailedException {
+        log.debug( "get user login, id: {}", id );
+
+        CoreResponse< UserLogin > response = contactService.getUserLogin( id );
+
+        log.debug( "get user login, id: {} -> {} ", id, response.isError() ? "error" : response.getData().getUlogin() );
+
+        return response.getData();
+    }
+
+    @Override
+    public UserLogin saveUserLogin( UserLogin userLogin ) throws RequestFailedException {
+        if ( userLogin == null ) {
+            log.warn("null user login in request");
+            throw new RequestFailedException(En_ResultStatus.INTERNAL_ERROR);
+        }
+
+        log.debug( "store user login, id: {} ", HelperFunc.nvl( userLogin.getId(), "new" ) );
+
+        CoreResponse< UserLogin > response = contactService.saveUserLogin( userLogin );
+
+        log.debug( "store user login, result: {}", response.isOk() ? "ok" : response.getStatus() );
+
+        if ( response.isOk() ) {
+            log.debug( "store user login, applied id: {}", response.getData().getId() );
+            return response.getData();
+        }
+
+        throw new RequestFailedException( response.getStatus() );
+    }
+
     @Autowired
     ru.protei.portal.core.service.ContactService contactService;
 
     private static final Logger log = LoggerFactory.getLogger( "web" );
-
 }

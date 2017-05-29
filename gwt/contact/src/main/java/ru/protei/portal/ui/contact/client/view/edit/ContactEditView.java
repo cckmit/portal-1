@@ -30,7 +30,6 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
         initWidget( ourUiBinder.createAndBindUi( this ) );
     }
 
-
     @Override
     public void setActivity(AbstractContactEditActivity activity) {
         this.activity = activity;
@@ -132,6 +131,16 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     }
 
     @Override
+    public HasText login() {
+        return login;
+    }
+
+    @Override
+    public HasText password() {
+        return password;
+    }
+
+    @Override
     public HasValidable companyValidator(){
         return company;
     }
@@ -224,14 +233,14 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     @Inject
     @UiField(provided = true)
     GenderButtonSelector gender;
+
     @UiField
     TextBox login;
+
     @UiField
     PasswordTextBox password;
 
-
     AbstractContactEditActivity activity;
-
 
     private static ContactViewUiBinder ourUiBinder = GWT.create(ContactViewUiBinder.class);
     interface ContactViewUiBinder extends UiBinder<HTMLPanel, ContactEditView> {}

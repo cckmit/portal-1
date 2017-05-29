@@ -7,5 +7,7 @@ import ru.protei.portal.core.model.ent.UserLogin;
  */
 public interface UserLoginDAO extends PortalBaseDAO<UserLogin> {
 
-    public UserLogin findByLogin (String login);
+    UserLogin findByLogin(String login);
+
+    UserLogin findByPersonId(Long id);
 }

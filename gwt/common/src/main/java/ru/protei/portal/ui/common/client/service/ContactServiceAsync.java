@@ -2,6 +2,7 @@ package ru.protei.portal.ui.common.client.service;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.query.ContactQuery;
 import ru.protei.portal.core.model.view.PersonShortView;
 
@@ -31,4 +32,8 @@ public interface ContactServiceAsync {
      * @param callback
      */
     void getContactViewList( ContactQuery query, AsyncCallback< List<PersonShortView> > callback );
+
+    void getUserLogin ( long id, AsyncCallback< UserLogin > callback );
+
+    void saveUserLogin ( UserLogin userLogin, AsyncCallback< UserLogin > callback );
 }

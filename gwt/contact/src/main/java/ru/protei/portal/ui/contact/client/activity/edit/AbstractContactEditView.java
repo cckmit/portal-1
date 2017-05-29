@@ -46,6 +46,10 @@ public interface AbstractContactEditView extends IsWidget {
 
     HasText personInfo ();
 
+    HasText login();
+
+    HasText password();
+
     HasValue<EntityOption> company();
 
     HasValue<En_Gender> gender ();

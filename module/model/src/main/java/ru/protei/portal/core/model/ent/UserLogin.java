@@ -6,13 +6,14 @@ import ru.protei.winter.jdbc.annotations.JdbcColumn;
 import ru.protei.winter.jdbc.annotations.JdbcEntity;
 import ru.protei.winter.jdbc.annotations.JdbcId;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Created by michael on 16.06.16.
  */
 @JdbcEntity(table = "user_login")
-public class UserLogin {
+public class UserLogin implements Serializable {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;

@@ -6,9 +6,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.PersonDAO;
-import ru.protei.portal.core.model.dict.En_Gender;
-import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.dao.UserLoginDAO;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.ContactQuery;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -26,6 +27,9 @@ public class ContactServiceImpl implements ContactService {
 
     @Autowired
     PersonDAO personDAO;
+
+    @Autowired
+    UserLoginDAO userLoginDAO;
 
     @Override
     public CoreResponse<List<PersonShortView>> shortViewList(ContactQuery query) {
@@ -106,5 +110,31 @@ public class ContactServiceImpl implements ContactService {
     @Override
     public CoreResponse<Long> count(ContactQuery query) {
         return new CoreResponse<Long>().success(personDAO.count(query));
+    }
+
+    @Override
+    public CoreResponse<UserLogin> getUserLogin(long id) {
+        UserLogin userLogin = userLoginDAO.findByPersonId(id);
+        return new CoreResponse<UserLogin>().success(userLogin);
+    }
+
+    @Override
+    public CoreResponse<UserLogin> saveUserLogin(UserLogin userLogin) {
+
+        if (HelperFunc.isEmpty(userLogin.getUlogin()))
+            return new CoreResponse<UserLogin>().error(En_ResultStatus.VALIDATION_ERROR);
+
+        if (userLogin.getId() == null){
+            userLogin.setCreated(new Date());
+            userLogin.setAuthTypeId(En_AuthType.LOCAL.getId());
+            userLogin.setRoleId(En_UserRole.CRM_CLIENT.getId());
+            userLogin.setAdminStateId(En_AdminState.UNLOCKED.getId());
+        }
+
+        if (userLoginDAO.saveOrUpdate(userLogin)) {
+            return new CoreResponse<UserLogin>().success(userLogin);
+        }
+
+        return new CoreResponse<UserLogin>().error(En_ResultStatus.INTERNAL_ERROR);
     }
 }
