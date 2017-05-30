@@ -10,7 +10,7 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * Created by shagaleev on 30/05/17.
+ * Предварительно подготовленный шаблон (почти готовая модель данных)
  */
 public class PreparedTemplate {
     private Configuration templateConfiguration;
@@ -24,12 +24,16 @@ public class PreparedTemplate {
         this.model = model;
     }
 
-    public String getText( Person receiver, String lang ) {
+    public String getText( String receiver, String lang ) {
         Writer writer = new StringWriter();
 
+        if ( lang == null ) {
+            lang = "ru";
+        }
+
         try {
-            model.put( "userName", receiver.getDisplayName() );
-            Template template = templateConfiguration.getTemplate( "crm.body.ftl", Locale.forLanguageTag( lang ) );
+            model.put( "userName", receiver );
+            Template template = templateConfiguration.getTemplate( "crm.body."+lang+".ftl" );
             template.process( model, writer );
             return writer.toString();
         } catch ( Exception e ) {

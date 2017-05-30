@@ -5,6 +5,7 @@ import freemarker.template.Configuration;
 import freemarker.template.TemplateExceptionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.protei.portal.core.event.CaseObjectEvent;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
@@ -31,7 +32,8 @@ public class TemplateServiceImpl implements TemplateService {
     public void onInit() {
         try {
             templateConfiguration = new Configuration( Configuration.VERSION_2_3_23 );
-            templateConfiguration.setDirectoryForTemplateLoading( new File( URI.create( "classpath:notification" ) ) );
+            templateConfiguration.setClassLoaderForTemplateLoading( ClassLoader.getSystemClassLoader(), "notification/email" );
+//            templateConfiguration.setDirectoryForTemplateLoading( new File( URI.create( "classpath:notification/" ) ) );
             templateConfiguration.setDefaultEncoding( "UTF-8" );
             templateConfiguration.setTemplateExceptionHandler( TemplateExceptionHandler.HTML_DEBUG_HANDLER );
         } catch ( Exception e ) {
@@ -41,10 +43,10 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     @Override
-    public PreparedTemplate getCrmEmailNotificationBody( CaseObject caseObject, List< CaseComment > caseComments ) {
+    public PreparedTemplate getCrmEmailNotificationBody( CaseObjectEvent caseObjectEvent, List< CaseComment > caseComments ) {
         Map<String, Object> templateModel = new HashMap<>();
         templateModel.put( "linkToIssue", "#" );
-        templateModel.put( "case", caseObject );
+        templateModel.put( "case", caseObjectEvent.getCaseObject() );
         templateModel.put( "caseComments",  caseComments.stream().map( ( comment ) -> {
             Map< String, Object > caseComment = new HashMap<>();
             caseComment.put( "created", comment.getCreated() );
