@@ -239,17 +239,18 @@ public class MainConfiguration {
     @Bean
     public EquipmentService getEquipmentService() { return new EquipmentServiceImpl(); }
 
-
     @Bean
     public EventPublisherService getEventPublisherService () {
         return new AsyncEventPublisherService();
     }
 
-
     @Bean
     public CaseSubscriptionService getCaseSubscriptionService () {
         return new CaseSubscriptionServiceImpl();
     }
+
+    @Bean
+    public TemplateService getTemplateService() { return new TemplateServiceImpl(); }
 
     /** ASPECT/INTERCEPTORS **/
     @Bean
