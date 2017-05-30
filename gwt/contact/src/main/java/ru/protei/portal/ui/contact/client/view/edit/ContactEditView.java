@@ -1,15 +1,19 @@
 package ru.protei.portal.ui.contact.client.view.edit;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.dict.GenderButtonSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
@@ -19,9 +23,8 @@ import ru.protei.portal.ui.contact.client.activity.edit.AbstractContactEditView;
 
 import java.util.Date;
 
-
 /**
- * Created by michael on 02.11.16.
+ * Представление создания и редактирования контактного лица
  */
 public class ContactEditView extends Composite implements AbstractContactEditView {
 
@@ -136,6 +139,12 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     }
 
     @Override
+    public void setContactLoginStatus(NameStatus status) {
+        this.status = status;
+        verifiableIcon.setClassName(status.getStyle());
+    }
+
+    @Override
     public HasText password() {
         return password;
     }
@@ -155,17 +164,57 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
         return lastName;
     }
 
+    @Override
+    public boolean isValidLogin() {
+        return status != null && status.equals(NameStatus.ERROR) ? false : true;
+    }
+
+    @Override
+    public void setEnabledAccount( boolean isEnabled ) {
+        login.setEnabled( isEnabled );
+        password.setEnabled( isEnabled );
+        changeButton.setVisible( !isEnabled );
+        buttonPanel.setVisible( !isEnabled );
+        infoPanel.setVisible( false );
+    }
+
+    @UiHandler( "changeButton" )
+    public void onChangeClicked( ClickEvent event ) {
+        login.setEnabled( true );
+        password.setEnabled( true );
+        changeButton.setVisible( false );
+        infoPanel.setVisible( true );
+    }
+
+    @UiHandler( "resetButton" )
+    public void onResetClicked( ClickEvent event ) {
+        login.setText( null );
+        password.setText( null );
+        login.setEnabled( true );
+        password.setEnabled( true );
+        buttonPanel.setVisible( false );
+        infoPanel.setVisible( true );
+    }
+
     @UiHandler( "saveButton" )
     public void onSaveClicked( ClickEvent event ) {
         if ( activity != null ) {
             activity.onSaveClicked();
         }
     }
+
     @UiHandler( "cancelButton" )
     public void onCancelClicked( ClickEvent event ) {
         if ( activity != null ) {
             activity.onCancelClicked();
         }
+    }
+
+    @UiHandler("login")
+    public void onChangeContactLogin( KeyUpEvent keyUpEvent ) {
+        verifiableIcon.setClassName( NameStatus.UNDEFINED.getStyle());
+        timer.cancel();
+        timer.schedule( 300 );
     }
 
     @UiField
@@ -239,6 +288,31 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
 
     @UiField
     PasswordTextBox password;
+
+    @UiField
+    Element verifiableIcon;
+
+    @UiField
+    Button changeButton;
+
+    @UiField
+    Button resetButton;
+
+    @UiField
+    HTMLPanel buttonPanel;
+    @UiField
+    HTMLPanel infoPanel;
+
+    Timer timer = new Timer() {
+        @Override
+        public void run() {
+            if ( activity != null ) {
+                activity.onChangeContactLogin();
+            }
+        }
+    };
+
+    NameStatus status;
 
     AbstractContactEditActivity activity;
 

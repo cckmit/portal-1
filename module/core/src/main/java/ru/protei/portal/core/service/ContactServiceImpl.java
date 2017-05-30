@@ -137,4 +137,29 @@ public class ContactServiceImpl implements ContactService {
 
         return new CoreResponse<UserLogin>().error(En_ResultStatus.INTERNAL_ERROR);
     }
+
+    @Override
+    public CoreResponse<Boolean> removeUserLogin(UserLogin userLogin) {
+
+        if (userLoginDAO.remove(userLogin)) {
+            return new CoreResponse<Boolean>().success(true);
+        }
+
+        return new CoreResponse<Boolean>().error(En_ResultStatus.INTERNAL_ERROR);
+    }
+
+    @Override
+    public CoreResponse<Boolean> checkUniqueUserLoginByLogin(String login, Long excludeId) {
+
+        if( login == null || login.isEmpty() )
+            return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
+
+        return new CoreResponse<Boolean>().success( checkUniqueLogin(login, excludeId));
+    }
+
+    private boolean checkUniqueLogin( String login, Long excludeId) {
+        UserLogin userLogin = userLoginDAO.checkExistsByLogin(login);
+
+        return userLogin == null || userLogin.getId().equals(excludeId);
+    }
 }

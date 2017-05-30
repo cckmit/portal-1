@@ -10,4 +10,6 @@ public interface UserLoginDAO extends PortalBaseDAO<UserLogin> {
     UserLogin findByLogin(String login);
 
     UserLogin findByPersonId(Long id);
+
+    UserLogin checkExistsByLogin(String login);
 }

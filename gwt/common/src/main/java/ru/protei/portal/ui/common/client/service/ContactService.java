@@ -38,5 +38,7 @@ public interface ContactService extends RemoteService {
 
     UserLogin getUserLogin ( long id ) throws RequestFailedException;
 
-    UserLogin saveUserLogin ( UserLogin userLogin ) throws RequestFailedException;
+    boolean saveUserLogin ( UserLogin userLogin ) throws RequestFailedException;
+
+    boolean isContactLoginUnique(String login, Long exceptId) throws RequestFailedException;
 }

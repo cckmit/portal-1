@@ -1,9 +1,10 @@
 package ru.protei.portal.ui.contact.client.activity.edit;
 
 /**
- * Created by michael on 02.11.16.
+ * Активность создания и редактирования контактного лица
  */
 public interface AbstractContactEditActivity {
     void onSaveClicked();
     void onCancelClicked();
+    void onChangeContactLogin();
 }

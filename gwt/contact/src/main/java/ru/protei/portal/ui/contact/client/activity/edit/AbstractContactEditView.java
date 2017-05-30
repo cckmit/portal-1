@@ -5,12 +5,13 @@ import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 import java.util.Date;
 
 /**
- * Created by michael on 02.11.16.
+ * Представление создания и редактирования контактного лица
  */
 public interface AbstractContactEditView extends IsWidget {
     void setActivity( AbstractContactEditActivity activity );
@@ -59,4 +60,10 @@ public interface AbstractContactEditView extends IsWidget {
     HasValidable firstNameValidator();
 
     HasValidable lastNameValidator();
+
+    void setContactLoginStatus(NameStatus status);
+
+    boolean isValidLogin();
+
+    void setEnabledAccount( boolean isEnabled );
 }

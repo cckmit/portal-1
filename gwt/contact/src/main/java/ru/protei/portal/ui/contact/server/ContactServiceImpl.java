@@ -25,7 +25,7 @@ public class ContactServiceImpl implements ContactService {
     @Override
     public List<Person> getContacts( ContactQuery query ) throws RequestFailedException {
 
-        log.debug( "getEquipments(): searchPattern={} | companyId={} | isFired={} | sortField={} | sortDir={}",
+        log.debug( "getContacts(): searchPattern={} | companyId={} | isFired={} | sortField={} | sortDir={}",
                 query.getSearchString(), query.getCompanyId(), query.getFired(), query.getSortField(), query.getSortDir() );
 
         CoreResponse<List<Person>> response = contactService.contactList( query );
@@ -70,7 +70,7 @@ public class ContactServiceImpl implements ContactService {
 
     @Override
     public Long getContactsCount( ContactQuery query ) throws RequestFailedException {
-        log.debug( "getEquipmentCount(): query={}", query );
+        log.debug( "getContactsCount(): query={}", query );
         return contactService.count( query ).getData();
     }
 
@@ -95,30 +95,59 @@ public class ContactServiceImpl implements ContactService {
 
         CoreResponse< UserLogin > response = contactService.getUserLogin( id );
 
-        log.debug( "get user login, id: {} -> {} ", id, response.isError() ? "error" : response.getData().getUlogin() );
+        log.debug( "get user login, id: {} -> {} ", id, response.isError() ? "error" : ( response.getData() == null ? null : response.getData().getUlogin() ) );
 
         return response.getData();
     }
 
     @Override
-    public UserLogin saveUserLogin( UserLogin userLogin ) throws RequestFailedException {
+    public boolean saveUserLogin( UserLogin userLogin ) throws RequestFailedException {
         if ( userLogin == null ) {
-            log.warn("null user login in request");
-            throw new RequestFailedException(En_ResultStatus.INTERNAL_ERROR);
+            log.warn( "null user login in request" );
+            throw new RequestFailedException( En_ResultStatus.INTERNAL_ERROR );
         }
 
-        log.debug( "store user login, id: {} ", HelperFunc.nvl( userLogin.getId(), "new" ) );
+        if ( userLogin.getUlogin() == null ) {
+            if ( userLogin.getId() == null ) {
+                return true;
+            } else {
+                log.debug( "remove user login, id: {} ", userLogin.getId() );
+                CoreResponse< Boolean > response = contactService.removeUserLogin( userLogin );
+                log.debug( "remove user login, result: {}", response.isOk() ? "ok" : response.getStatus() );
+                if ( response.isOk() ) {
+                    return response.getData();
+                }
 
-        CoreResponse< UserLogin > response = contactService.saveUserLogin( userLogin );
+                throw new RequestFailedException( response.getStatus() );
+            }
+        } else {
 
-        log.debug( "store user login, result: {}", response.isOk() ? "ok" : response.getStatus() );
+            log.debug( "store user login, id: {} ", HelperFunc.nvl( userLogin.getId(), "new" ) );
+            CoreResponse< UserLogin > response = contactService.saveUserLogin( userLogin );
+            log.debug( "store user login, result: {}", response.isOk() ? "ok" : response.getStatus() );
 
-        if ( response.isOk() ) {
-            log.debug( "store user login, applied id: {}", response.getData().getId() );
-            return response.getData();
+            if ( response.isOk() ) {
+                log.debug( "store user login, applied id: {}", response.getData().getId() );
+                return true;
+            }
+
+            throw new RequestFailedException( response.getStatus() );
         }
+    }
 
-        throw new RequestFailedException( response.getStatus() );
+    @Override
+    public boolean isContactLoginUnique( String login, Long excludeId ) throws RequestFailedException {
+
+        log.debug( "isContactLoginUnique(): login={}, excludeId={}", login, excludeId );
+
+        CoreResponse< Boolean > response = contactService.checkUniqueUserLoginByLogin( login, excludeId );
+
+        log.debug( "isContactLoginUnique() -> {}, {}", response.getStatus(), response.getData() != null ? response.getData() : null );
+
+        if ( response.isError() )
+            throw new RequestFailedException( response.getStatus() );
+
+        return response.getData();
     }
 
     @Autowired

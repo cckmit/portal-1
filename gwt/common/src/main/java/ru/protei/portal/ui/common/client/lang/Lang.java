@@ -456,7 +456,17 @@ public interface Lang extends Messages, ContactItemLang {
 
     String copyPostfix();
 
-    String login();
+    String contactLogin();
 
-    String password();
+    String contactPassword();
+
+    String contactPasswordNotDefinied();
+
+    String errEditContactLogin();
+
+    String contactAccount();
+
+    String buttonChange();
+
+    String contactLoginInfo();
 }

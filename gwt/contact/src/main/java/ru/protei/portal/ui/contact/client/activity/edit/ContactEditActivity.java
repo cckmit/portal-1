@@ -1,11 +1,9 @@
 package ru.protei.portal.ui.contact.client.activity.edit;
 
 
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
-import org.apache.commons.codec.digest.DigestUtils;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -14,6 +12,7 @@ import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.ui.common.client.common.MD5Utils;
+import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.ContactEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
@@ -22,7 +21,7 @@ import ru.protei.portal.ui.common.client.service.ContactServiceAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 /**
- * Created by michael on 02.11.16.
+ * Активность создания и редактирования контактного лица
  */
 public abstract class ContactEditActivity implements AbstractContactEditActivity, Activity {
 
@@ -39,11 +38,14 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
     @Event
     public void onShow( ContactEvents.Edit event ) {
 
+        initDetails.parent.clear();
+        initDetails.parent.add(view.asWidget());
+
         if(event.id == null) {
             this.fireEvent(new AppEvents.InitPanelName(lang.newContact()));
             Person newPerson = new Person();
             newPerson.setCompanyId(event.companyId);
-            fillView(newPerson, new UserLogin());
+            initialView(newPerson, new UserLogin());
         }
         else {
             contactService.getContact(event.id, new AsyncCallback<Person>() {
@@ -55,13 +57,13 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
                 @Override
                 public void onSuccess(Person person) {
                     fireEvent(new AppEvents.InitPanelName( lang.editContactHeader(person.getDisplayName())));
-                    contactService.getUserLogin( person.getId(), new RequestCallback< UserLogin >() {
+                    contactService.getUserLogin(person.getId(), new RequestCallback<UserLogin>() {
                         @Override
-                        public void onError( Throwable throwable ) {}
+                        public void onError(Throwable throwable) {}
 
                         @Override
-                        public void onSuccess( UserLogin userLogin ) {
-                            fillView( person, userLogin );
+                        public void onSuccess(UserLogin userLogin) {
+                            initialView(person, userLogin == null ? new UserLogin() : userLogin);
                         }
                     } );
                 }
@@ -74,8 +76,15 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         if (!validate ()) {
             return;
         }
-        applyChanges();
-        contactService.saveContact(contact, new AsyncCallback<Person>() {
+
+        UserLogin userLogin = applyChangesLogin();
+        if(userLogin.getUlogin() != null && !userLogin.getUlogin().isEmpty() &&
+                (userLogin.getUpass() == null || userLogin.getUpass().isEmpty())) {
+            fireEvent(new NotifyEvents.Show(lang.contactPasswordNotDefinied(), NotifyEvents.NotifyType.ERROR));
+            return;
+        }
+
+        contactService.saveContact(applyChangesContact(), new AsyncCallback<Person>() {
             @Override
             public void onFailure(Throwable throwable) {
                 fireErrorMessage(throwable.getMessage());
@@ -83,18 +92,19 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
 
             @Override
             public void onSuccess(Person person) {
-                if (userLogin.getId()==null) {
+                if (userLogin.getId() == null) {
                     userLogin.setPersonId(person.getId());
                     userLogin.setInfo(person.getDisplayName());
                 }
-                contactService.saveUserLogin(userLogin, new RequestCallback<UserLogin>() {
+                contactService.saveUserLogin(userLogin, new RequestCallback<Boolean>() {
                     @Override
-                    public void onError( Throwable throwable ) {
-                        fireErrorMessage(throwable.getMessage());
+                    public void onError(Throwable throwable) {
+                        fireErrorMessage(lang.errEditContactLogin());
+                        fireEvent(new Back());
                     }
 
                     @Override
-                    public void onSuccess( UserLogin userLogin ) {
+                    public void onSuccess(Boolean result) {
                         fireEvent(new Back());
                     }
                 } );
@@ -102,12 +112,41 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         });
     }
 
+    @Override
+    public void onChangeContactLogin() {
+        String value = view.login().getText().trim();
+
+        //isCompanyNameExists не принимает пустые строки!
+        if ( value.isEmpty() ){
+            view.setContactLoginStatus(NameStatus.NONE);
+            return;
+        }
+
+        contactService.isContactLoginUnique(
+                value,
+                account.getId(),
+                new RequestCallback<Boolean>() {
+                    @Override
+                    public void onError(Throwable throwable) {}
+
+                    @Override
+                    public void onSuccess(Boolean isUnique) {
+                        view.setContactLoginStatus(isUnique ? NameStatus.SUCCESS : NameStatus.ERROR);
+                    }
+                }
+        );
+    }
+
+    private void resetValidationStatus(){
+        view.setContactLoginStatus(NameStatus.NONE);
+    }
+
     private boolean fireErrorMessage(String msg) {
         fireEvent( new NotifyEvents.Show(msg, NotifyEvents.NotifyType.ERROR));
         return false;
     }
 
-    private void applyChanges () {
+    private Person applyChangesContact() {
         contact.setGender(view.gender().getValue());
         contact.setCompanyId(view.company().getValue().getId());
         contact.setFirstName(view.firstName().getValue());
@@ -132,22 +171,32 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         contact.setPosition(view.displayPosition().getText());
         contact.setDepartment(view.displayDepartment().getText());
 
-        if ( view.login().getText() == null || view.login().getText().trim().isEmpty() ) {
-            userLogin.setUlogin( null );
-            userLogin.setUpass( null );
+        return contact;
+    }
+
+    private UserLogin applyChangesLogin() {
+
+        if (view.login().getText() == null || view.login().getText().trim().isEmpty()) {
+            account.setUlogin(null);
+            account.setUpass(null);
         } else {
-            userLogin.setUlogin( view.login().getText() );
-            if ( userLogin.getUpass() == null || !userLogin.getUpass().equals( view.password() ) ) {
-                userLogin.setUpass( MD5Utils.getHash( view.password().getText() ) );
+            account.setUlogin(view.login().getText());
+            if (view.password().getText() == null || view.password().getText().trim().isEmpty()) {
+                account.setUpass(null);
+            } else {
+                if (account.getUpass() == null || !account.getUpass().equals(view.password().getText())) {
+                    account.setUpass(MD5Utils.getHash( view.password().getText()));
+                }
             }
         }
-        //return contact;
+        return account;
     }
 
     private boolean validate() {
         return view.companyValidator().isValid() &&
                 view.firstNameValidator().isValid() &&
-                view.lastNameValidator().isValid();
+                view.lastNameValidator().isValid() &&
+                view.isValidLogin();
     }
 
     @Override
@@ -155,11 +204,15 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         fireEvent(new Back());
     }
 
+    private void initialView(Person person, UserLogin userLogin){
+        this.contact = person;
+        this.account = userLogin;
+        fillView(contact, account);
+        resetValidationStatus();
+    }
+
 
     private void fillView(Person person, UserLogin userLogin){
-        this.contact = person;
-        initDetails.parent.clear();
-
         view.company().setValue(person.getCompany() == null ? null : person.getCompany().toEntityOption());
 //        if (person.getCompanyId() == null)
 //            view.company().setValue(null);
@@ -195,15 +248,10 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         view.displayPosition().setText(person.getPosition());
         view.displayDepartment().setText(person.getDepartment());
 
-        if( userLogin != null ) {
-            view.login().setText( userLogin.getUlogin() );
-            view.password().setText( userLogin.getUpass() );
-        } else {
-            view.login().setText( null );
-            view.password().setText( null );
-        }
+        view.login().setText( userLogin.getUlogin() );
+        view.password().setText( userLogin.getUpass() );
 
-        initDetails.parent.add(view.asWidget());
+        view.setEnabledAccount( userLogin.getUlogin() == null && userLogin.getUpass() == null );
     }
 
 
@@ -214,7 +262,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
     Lang lang;
 
     Person contact;
-    UserLogin userLogin;
+    UserLogin account;
 
     @Inject
     ContactServiceAsync contactService;
