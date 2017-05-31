@@ -36,11 +36,18 @@ public class BatchInsertTask {
 
     private MigrationEntryDAO migrationDAO;
 
+    private boolean skipEmptyEntity = false;
+
 
     public BatchInsertTask(MigrationEntryDAO migrationDAO, String entryId) {
         this.queryCmd = new Tm_BaseQueryCmd();
         this.migrationDAO = migrationDAO;
         this.withStateEntry(entryId);
+    }
+
+    public BatchInsertTask skipEmptyEntity (boolean skip) {
+        this.skipEmptyEntity = skip;
+        return this;
     }
 
     public BatchInsertTask withStateEntry (String id) {
@@ -95,11 +102,14 @@ public class BatchInsertTask {
                 records_handled++;
                 T object = adapter.createEntity(Tm_SqlHelper.fetchRowAsMap(rs));
                 /**
-                 * logic reports that we have to stop
+                 * logic reports that we have to stop or skip
                  */
-                if (object == null)
-                    break;
-
+                if (object == null) {
+                    if (skipEmptyEntity)
+                        continue;
+                    else
+                        break;
+                }
                 /**
                  * records sorted by ID, so just store the last one
                  */
@@ -107,7 +117,7 @@ public class BatchInsertTask {
 
                 insertBatchSet.add(object);
 
-                Timestamp ts = rs.getTimestamp(lastUpdateFieldName);
+                Timestamp ts = lastUpdateFieldName == null ? null : rs.getTimestamp(lastUpdateFieldName);
                 if (ts != null) {
                    java.util.Date lastUpdate = Tm_SqlHelper.timestampToDate(ts);
                    /** update only when it is younger **/

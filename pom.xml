@@ -9,13 +9,13 @@
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
 
-
     <properties>
         <project.gwt.version>2.8.0</project.gwt.version>
         <project.gin.version>2.1.2</project.gin.version>
         <project.factory.version>2.3-SNAPSHOT</project.factory.version>
         <project.winter.web.version>1.3-SNAPSHOT</project.winter.web.version>
         <project.spring.version>4.3.0.RELEASE</project.spring.version>
+        <project.winter.version>3.0-SNAPSHOT</project.winter.version>
 
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
@@ -31,6 +31,7 @@
             <modules>
                 <module>module/model</module>
                 <module>module/core</module>
+                <module>module/hpsm</module>
                 <!--<module>app/web-ui</module>-->
                 
                 <module>skin/classic</module>
@@ -47,6 +48,15 @@
                 <!--<module>app/crm</module>-->
             </modules>
         </profile>
+        <profile>
+            <id>api</id>
+            <modules>
+                <module>module/model</module>
+                <module>module/core</module>
+                <module>module/hpsm</module>
+            </modules>
+        </profile>
+
     </profiles>
 
 

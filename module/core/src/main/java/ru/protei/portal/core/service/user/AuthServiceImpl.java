@@ -122,9 +122,17 @@ public class AuthServiceImpl implements AuthService {
 
         if (login.isLDAP_Auth()) {
             // check by LDAP
-//            En_ResultStatus status = ldapAuthProvider.checkAuth(ulogin, pwd);
-//            if (status != En_ResultStatus.OK)
-//                return new CoreResponse().error(status);
+            //
+            // ATTENTION!
+            //
+            // I will cut off hands to anyone who will comment out next code again!
+            // You have to add your own personal account with authentication by password
+            //
+            //
+            //
+            En_ResultStatus status = ldapAuthProvider.checkAuth(ulogin, pwd);
+            if (status != En_ResultStatus.OK)
+                return new CoreResponse().error(status);
 
         } else {
             // check MD5

@@ -10,8 +10,8 @@ public enum En_UserRole {
     CRM_CLIENT(4),
     DN_ADMIN(5);
 
-    En_UserRole (int id) {
-        this.id = id;
+    En_UserRole (int roleId) {
+        this.id = roleId;
     }
 
     private final int id;

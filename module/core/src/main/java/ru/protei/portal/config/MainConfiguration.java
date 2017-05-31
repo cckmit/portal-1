@@ -7,7 +7,6 @@ import ru.protei.portal.core.aspect.ServiceLayerInterceptor;
 import ru.protei.portal.core.controller.auth.AuthInterceptor;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
-import ru.protei.portal.core.model.ent.CaseLocation;
 import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.user.AuthService;
 import ru.protei.portal.core.service.user.AuthServiceImpl;
@@ -44,20 +43,6 @@ public class MainConfiguration {
         return new PersonAbsenceDAO_Impl();
     }
 
-    @Bean
-    public SessionIdGen getSessionIdGenerator() {
-        return new SimpleSidGenerator();
-    }
-
-    @Bean
-    public AuthService getAuthService() {
-        return new AuthServiceImpl();
-    }
-
-    @Bean
-    public AuthInterceptor getAuthInterceptor() {
-        return new AuthInterceptor();
-    }
 
     @Bean
     public CompanyDAO getCompanyDAO() {
@@ -189,6 +174,12 @@ public class MainConfiguration {
 
     @Bean
     public DecimalNumberDAO getDecimalNumberDAO() { return new DecimalNumberDAO_Impl(); }
+
+    @Bean
+    public CompanySubscriptionDAO getCompanySubscriptionDAO () {
+        return new CompanySubscriptionDAO_Impl ();
+    }
+
 /**
  *
  *
@@ -198,6 +189,25 @@ public class MainConfiguration {
  *
  *
  **/
+    @Bean
+    public SessionIdGen getSessionIdGenerator() {
+    return new SimpleSidGenerator();
+}
+
+    @Bean
+    public AuthService getAuthService() {
+        return new AuthServiceImpl();
+    }
+
+    @Bean
+    public AuthInterceptor getAuthInterceptor() {
+        return new AuthInterceptor();
+    }
+
+    @Bean
+    public CaseControlService getCaseControlService () {
+        return new CaseControlServiceImpl();
+    }
 
     @Bean
     public EmployeeService getEmployeeService () { return new EmployeeServiceImpl(); }
@@ -229,6 +239,17 @@ public class MainConfiguration {
     @Bean
     public EquipmentService getEquipmentService() { return new EquipmentServiceImpl(); }
 
+
+    @Bean
+    public EventPublisherService getEventPublisherService () {
+        return new AsyncEventPublisherService();
+    }
+
+
+    @Bean
+    public CaseSubscriptionService getCaseSubscriptionService () {
+        return new CaseSubscriptionServiceImpl();
+    }
 
     /** ASPECT/INTERCEPTORS **/
     @Bean

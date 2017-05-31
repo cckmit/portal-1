@@ -1,0 +1,50 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet author="michael" id="26-05-2017 20:21">
+        <!--
+            create table CompanySubscription (
+              id bigint not null AUTO_INCREMENT,
+              company_id bigint not null,
+              email_addr varchar(64) not null,
+              lang_code varchar(16),
+              constraint fk_company_subscription foreign key (company_id) references Company(id) on delete cascade,
+              constraint uq_company_subscription unique(email_addr, company_id)
+            );
+        -->
+
+        <createTable tableName="CompanySubscription">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            
+            <column name="company_id" type="BIGINT">
+                <constraints nullable="false" />
+            </column>
+            
+            <column name="email_addr" type="varchar(64)">
+                <constraints nullable="false" />
+            </column>
+
+            <column name="lang_code" type="varchar(16)">
+                <constraints nullable="true" />
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="CompanySubscription"
+                                 baseColumnNames="company_id"
+                                 constraintName="fk_company_subscription"
+                                 referencedTableName="Company"
+                                 referencedColumnNames="id"
+                                 deleteCascade="true" />
+
+        <addUniqueConstraint tableName="CompanySubscription"
+                             columnNames="email_addr,company_id"
+                             constraintName="uq_company_subscription" />
+    </changeSet>
+
+
+</databaseChangeLog>
