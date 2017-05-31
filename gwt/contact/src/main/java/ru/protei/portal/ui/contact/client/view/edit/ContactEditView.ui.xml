@@ -3,8 +3,7 @@
              xmlns:single="urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.single"
              xmlns:dict="urn:import:ru.protei.portal.ui.common.client.widget.selector.dict"
              xmlns:companyselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.company'
-             xmlns:validablefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'
->
+             xmlns:validablefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'>
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel styleName="panel">

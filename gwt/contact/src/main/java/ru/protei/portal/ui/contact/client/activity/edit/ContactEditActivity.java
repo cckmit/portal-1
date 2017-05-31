@@ -116,7 +116,6 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
     public void onChangeContactLogin() {
         String value = view.login().getText().trim();
 
-        //isCompanyNameExists не принимает пустые строки!
         if ( value.isEmpty() ){
             view.setContactLoginStatus(NameStatus.NONE);
             return;
@@ -135,6 +134,11 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
                     }
                 }
         );
+    }
+
+    @Override
+    public void onCancelClicked() {
+        fireEvent(new Back());
     }
 
     private void resetValidationStatus(){
@@ -199,18 +203,12 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
                 view.isValidLogin();
     }
 
-    @Override
-    public void onCancelClicked() {
-        fireEvent(new Back());
-    }
-
     private void initialView(Person person, UserLogin userLogin){
         this.contact = person;
         this.account = userLogin;
         fillView(contact, account);
         resetValidationStatus();
     }
-
 
     private void fillView(Person person, UserLogin userLogin){
         view.company().setValue(person.getCompany() == null ? null : person.getCompany().toEntityOption());
@@ -248,12 +246,11 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         view.displayPosition().setText(person.getPosition());
         view.displayDepartment().setText(person.getDepartment());
 
-        view.login().setText( userLogin.getUlogin() );
-        view.password().setText( userLogin.getUpass() );
+        view.login().setText(userLogin.getUlogin());
+        view.password().setText(userLogin.getUpass());
 
-        view.setEnabledAccount( userLogin.getUlogin() == null && userLogin.getUpass() == null );
+        view.setEnabledAccount(userLogin.getUlogin() == null && userLogin.getUpass() == null);
     }
-
 
     @Inject
     AbstractContactEditView view;
@@ -261,13 +258,10 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
     @Inject
     Lang lang;
 
-    Person contact;
-    UserLogin account;
-
     @Inject
     ContactServiceAsync contactService;
 
-
+    private Person contact;
+    private UserLogin account;
     private AppEvents.InitDetails initDetails;
-
 }
