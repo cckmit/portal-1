@@ -7,15 +7,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Scope;
 import org.springframework.integration.mail.ImapMailReceiver;
 import org.springframework.integration.mail.MailReceivingMessageSource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import ru.protei.portal.config.MainConfiguration;
+import ru.protei.portal.core.mail.JavaMailMessageFactory;
+import ru.protei.portal.core.mail.JavaMailSendChannel;
 import ru.protei.portal.hpsm.api.HpsmMessageFactory;
-import ru.protei.portal.hpsm.api.MailMessageFactory;
-import ru.protei.portal.hpsm.api.MailSendChannel;
+import ru.protei.portal.core.mail.MailMessageFactory;
+import ru.protei.portal.core.mail.MailSendChannel;
 import ru.protei.portal.hpsm.logic.*;
 import ru.protei.portal.hpsm.service.HpsmMessageFactoryImpl;
 import ru.protei.portal.hpsm.service.HpsmService;
@@ -30,6 +34,7 @@ import java.io.IOException;
  */
 @Configuration
 @EnableScheduling
+@Import(MainConfiguration.class)
 public class HpsmConfigurationContext {
 
     public static final String HPSM_CONFIG_XML_FILE = "hpsm-config.xml";
@@ -60,34 +65,9 @@ public class HpsmConfigurationContext {
     }
 
 
-    @Bean(name = "hpsmSender")
-    public JavaMailSender mailSender () {
-
-        HpsmEnvConfig setup = getHpsmSetup ();
-
-        JavaMailSenderImpl impl = new org.springframework.mail.javamail.JavaMailSenderImpl ();
-
-        impl.setDefaultEncoding(setup.getMailServer().getDefaultCharset());
-        impl.setHost(setup.getMailServer().getHost());
-        impl.setPort(setup.getMailServer().getPort());
-
-        return impl;
-    }
-
-    @Bean(name = "hpsmMailFactory")
-    public MailMessageFactory createHpsmMailFactory() {
-        return new JavaMailMessageFactory (mailSender());
-    }
-
     @Bean
     public HpsmMessageFactory createHpsmMessageFactory() {
         return new HpsmMessageFactoryImpl();
-    }
-
-
-    @Bean(name = "hpsmSendChannel")
-    public MailSendChannel getRealMailSendChannel () {
-        return new JavaMailSendChannel(mailSender());
     }
 
 
@@ -113,19 +93,19 @@ public class HpsmConfigurationContext {
 
 
     @Bean
-    public ServiceInstanceRegistry makeInstanceRegistry (@Autowired HpsmEnvConfig setup) {
+    public ServiceInstanceRegistry makeInstanceRegistry (@Autowired HpsmEnvConfig setup, @Autowired MailSendChannel sendChannel) {
         ServiceInstanceRegistryImpl registry = new ServiceInstanceRegistryImpl();
-        setup.getInstanceList().forEach(serviceConfig -> registry.add(createServiceInstance(serviceConfig)));
+        setup.getInstanceList().forEach(serviceConfig -> registry.add(createServiceInstance(serviceConfig, sendChannel)));
         return registry;
     }
 
     @Bean
     @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-    public ServiceInstance createServiceInstance(HpsmEnvConfig.ServiceConfig config) {
+    public ServiceInstance createServiceInstance(HpsmEnvConfig.ServiceConfig config, MailSendChannel sendChannel) {
         return new ServiceInstanceImpl(config,
                 companyBranchMap(),
                 createInboundSource(config.getInboundChannel().getUrl()),
-                getRealMailSendChannel(),
+                sendChannel,
                 createHpsmMessageFactory());
     }
 

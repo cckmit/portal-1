@@ -1,4 +1,4 @@
-package ru.protei.portal.hpsm.api;
+package ru.protei.portal.core.mail;
 
 import javax.mail.internet.MimeMessage;
 

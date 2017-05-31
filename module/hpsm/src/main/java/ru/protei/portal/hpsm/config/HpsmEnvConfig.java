@@ -17,7 +17,7 @@ public class HpsmEnvConfig {
     public static final HpsmEnvConfig load(String file) throws IOException {
         return ConfigParser.parse(file, true,
                 HpsmEnvConfig.class,
-                MailServerDesc.class,
+//                MailServerDesc.class,
                 ServiceConfig.class,
                 OutboundChannel.class,
                 InboundChannel.class,
@@ -25,8 +25,8 @@ public class HpsmEnvConfig {
     }
 
 
-    @XStreamAlias("mail-server")
-    private MailServerDesc mailServer;
+//    @XStreamAlias("mail-server")
+//    private MailServerDesc mailServer;
 
     @XStreamImplicit
     @XStreamAlias("service-instance")
@@ -38,9 +38,9 @@ public class HpsmEnvConfig {
     private HpsmEnvConfig() {
     }
 
-    public MailServerDesc getMailServer() {
-        return mailServer;
-    }
+//    public MailServerDesc getMailServer() {
+//        return mailServer;
+//    }
 
     public List<ServiceConfig> getInstanceList() {
         return instanceList;
@@ -158,38 +158,38 @@ public class HpsmEnvConfig {
     }
 
 
-    public static class MailServerDesc {
-
-        @XStreamAsAttribute
-        @XStreamAlias("id")
-        String id;
-
-        @XStreamAlias("host")
-        String host;
-
-        @XStreamAlias("port")
-        int port;
-
-        @XStreamAlias("default-charset")
-        String defaultCharset;
-
-        public MailServerDesc() {
-        }
-
-        public String getId() {
-            return id;
-        }
-
-        public String getHost() {
-            return host;
-        }
-
-        public int getPort() {
-            return port;
-        }
-
-        public String getDefaultCharset() {
-            return defaultCharset;
-        }
-    }
+//    public static class MailServerDesc {
+//
+//        @XStreamAsAttribute
+//        @XStreamAlias("id")
+//        String id;
+//
+//        @XStreamAlias("host")
+//        String host;
+//
+//        @XStreamAlias("port")
+//        int port;
+//
+//        @XStreamAlias("default-charset")
+//        String defaultCharset;
+//
+//        public MailServerDesc() {
+//        }
+//
+//        public String getId() {
+//            return id;
+//        }
+//
+//        public String getHost() {
+//            return host;
+//        }
+//
+//        public int getPort() {
+//            return port;
+//        }
+//
+//        public String getDefaultCharset() {
+//            return defaultCharset;
+//        }
+//    }
 }

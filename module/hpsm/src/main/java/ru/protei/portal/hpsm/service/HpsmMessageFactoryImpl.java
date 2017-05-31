@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import ru.protei.portal.hpsm.api.HpsmMessageFactory;
 import ru.protei.portal.hpsm.api.HpsmStatus;
-import ru.protei.portal.hpsm.api.MailMessageFactory;
+import ru.protei.portal.core.mail.MailMessageFactory;
 import ru.protei.portal.hpsm.struct.HpsmMessage;
 import ru.protei.portal.hpsm.struct.HpsmMessageHeader;
 import ru.protei.portal.hpsm.struct.HpsmPingMessage;
@@ -25,7 +25,6 @@ public class HpsmMessageFactoryImpl implements HpsmMessageFactory {
     private XStream xstream;
 
     @Autowired
-    @Qualifier("hpsmMailFactory")
     private MailMessageFactory messageFactory;
 
 

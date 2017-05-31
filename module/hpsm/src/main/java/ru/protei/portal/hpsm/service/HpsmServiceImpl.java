@@ -4,14 +4,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.EventListener;
-import org.springframework.integration.mail.MailReceivingMessageSource;
 import ru.protei.portal.core.event.CaseCommentEvent;
 import ru.protei.portal.core.event.CaseObjectEvent;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.hpsm.api.HpsmMessageFactory;
-import ru.protei.portal.hpsm.api.MailSendChannel;
+import ru.protei.portal.core.mail.MailSendChannel;
 import ru.protei.portal.hpsm.config.HpsmEnvConfig;
 import ru.protei.portal.hpsm.logic.*;
 import ru.protei.portal.hpsm.struct.HpsmMessage;
@@ -22,7 +20,6 @@ import ru.protei.portal.hpsm.utils.TestServiceInstance;
 
 import javax.annotation.PostConstruct;
 import javax.mail.internet.MimeMessage;
-import java.util.HashMap;
 
 /**
  * Created by michael on 27.04.17.
@@ -32,7 +29,6 @@ public class HpsmServiceImpl implements HpsmService {
     private static Logger logger = LoggerFactory.getLogger(HpsmService.class);
 
     @Autowired
-    @Qualifier("hpsmSendChannel")
     MailSendChannel outboundChannel;
 
     @Autowired

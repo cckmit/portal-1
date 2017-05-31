@@ -5,7 +5,7 @@ import org.springframework.messaging.Message;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.hpsm.api.HpsmMessageFactory;
-import ru.protei.portal.hpsm.api.MailSendChannel;
+import ru.protei.portal.core.mail.MailSendChannel;
 import ru.protei.portal.hpsm.config.HpsmEnvConfig;
 import ru.protei.portal.hpsm.struct.HpsmMessage;
 import ru.protei.portal.hpsm.struct.HpsmMessageHeader;
