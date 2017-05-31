@@ -5,10 +5,15 @@
              xmlns:importance='urn:import:ru.protei.portal.ui.common.client.widget.selector.dict'
              xmlns:state='urn:import:ru.protei.portal.ui.issue.client.widget.state.buttonselector'
              xmlns:person='urn:import:ru.protei.portal.ui.common.client.widget.selector.person'
-             xmlns:validablefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'>
+             xmlns:fileupload='urn:import:ru.protei.portal.ui.common.client.widget.uploader'
+             xmlns:validablefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'
+             xmlns:fileuploader='urn:import:ru.protei.portal.ui.common.client.widget.uploader'
+             xmlns:attachment='urn:import:ru.protei.portal.ui.common.client.widget.attachment.list'>
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel ui:field="root" styleName="panel">
+
+        <fileupload:FileUploader ui:field="uploader"/>
 
         <div class="body">
             <div class="grid grid-indent">
@@ -72,7 +77,23 @@
                 </div>
 
 
-                <div class="form-group form-group col-xs-12">
+
+                <div class="form-group col-xs-12">
+                    <label><ui:text from="{lang.issueAttachments}"/></label>
+                    <div class="col-xs-12 col-md-12">
+                        <div class="panel">
+                            <div class="body">
+                                <div class="attach attach-add">
+                                    <fileuploader:FileUploader ui:field="fileUploader">
+                                        <i class="fa-2x ion-plus-circled"/>
+                                    </fileuploader:FileUploader>
+                                </div>
+                                <attachment:AttachmentList ui:field="attachmentContainer" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group col-xs-12" ui:field="comments">
                     <label><ui:text from="{lang.comments}"/></label>
                     <g:HTMLPanel ui:field="commentsContainer"/>
                 </div>

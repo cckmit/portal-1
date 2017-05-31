@@ -12,4 +12,14 @@ public class UserLoginDAO_Impl extends PortalBaseJdbcDAO<UserLogin> implements U
     public UserLogin findByLogin(String login) {
         return getByCondition("ulogin=?", login);
     }
+
+    @Override
+    public UserLogin findByPersonId(Long id) {
+        return getByCondition("personId=?", id);
+    }
+
+    @Override
+    public UserLogin checkExistsByLogin(String login) {
+        return getByCondition("ulogin=?", login );
+    }
 }

@@ -39,15 +39,13 @@ public interface IssueService extends RemoteService {
 
     /**
      * Удаление комментария обращения
-     *
-     * @param value
+     * Удаляет все вложения из БД и Cloud которые привязаны к комментарию
      */
     void removeIssueComment( CaseComment value ) throws RequestFailedException;
 
     /**
      * Редактирование комментария обращения
-     *
-     * @param value
+     * Удаляет все вложения из БД и Cloud которые ранее были привязаны к комментарию
      */
-    CaseComment editIssueComment( CaseComment value ) throws RequestFailedException;
+    CaseComment editIssueComment( CaseComment comment ) throws RequestFailedException;
 }

@@ -5,13 +5,15 @@ import ru.protei.winter.jdbc.annotations.JdbcColumn;
 import ru.protei.winter.jdbc.annotations.JdbcEntity;
 import ru.protei.winter.jdbc.annotations.JdbcId;
 
+import java.io.Serializable;
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * Created by michael on 24.05.16.
  */
 @JdbcEntity(table = "attachment")
-public class Attachment {
+public class Attachment implements Serializable {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -37,8 +39,11 @@ public class Attachment {
     @JdbcColumn(name = "file_name")
     private String fileName;
 
-    public Attachment () {
+    public Attachment (Long attachmentId) {
+        id = attachmentId;
+    }
 
+    public Attachment () {
     }
 
     public Long getId() {
@@ -103,5 +108,10 @@ public class Attachment {
 
     public void setFileName(String fileName) {
         this.fileName = fileName;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Attachment && Objects.equals(id, ((Attachment) obj).getId());
     }
 }
