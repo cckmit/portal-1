@@ -3,8 +3,7 @@
              xmlns:single="urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.single"
              xmlns:dict="urn:import:ru.protei.portal.ui.common.client.widget.selector.dict"
              xmlns:companyselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.company'
-             xmlns:validablefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'
->
+             xmlns:validablefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'>
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel styleName="panel">
@@ -139,11 +138,37 @@
 
                 </div>
                 <div class="grid grid-indent">
-                    <div class="form-group col-xs-12">
+                    <div class="form-group col-xs-6">
                         <label class="">
                             <ui:text from="{lang.comment}"/>
                         </label>
                         <g:TextArea ui:field="personInfo" styleName="input-field description"></g:TextArea>
+                    </div>
+                    <div class="form-group col-xs-6">
+                        <div class="form-group col-xs-12">
+                            <label class="">
+                                <ui:text from="{lang.contactLogin}"/>
+                            </label>
+                            <div class="panelField verifiable">
+                                <i ui:field="verifiableIcon"/>
+                                <g:TextBox ui:field="login" styleName="input-field"/>
+                            </div>
+                        </div>
+                        <g:HTMLPanel ui:field="infoPanel" styleName="col-xs-12 p-t-15">
+                            <ui:text from="{lang.contactLoginInfo}"/>
+                        </g:HTMLPanel>
+                        <div class="form-group col-xs-12">
+                            <label class="">
+                                <ui:text from="{lang.contactPassword}"/>
+                            </label>
+                            <g:PasswordTextBox ui:field="password" styleName="input-field"/>
+                        </div>
+                        <div class="form-group col-xs-12">
+                            <label class="">
+                                <ui:text from="{lang.contactConfirmPassword}"/>
+                            </label>
+                            <g:PasswordTextBox ui:field="confirmPassword" styleName="input-field"/>
+                        </div>
                     </div>
                 </div>
             </div>

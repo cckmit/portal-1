@@ -466,4 +466,20 @@ public interface Lang extends Messages, ContactItemLang {
 
     String attachmentsNotLoaded();
 
+
+    String contactLogin();
+
+    String contactPassword();
+
+    String contactPasswordNotDefinied();
+
+    String errEditContactLogin();
+
+    String contactAccount();
+
+    String contactLoginInfo();
+
+    String contactConfirmPassword();
+
+    String contactPasswordsNotMatch();
 }
