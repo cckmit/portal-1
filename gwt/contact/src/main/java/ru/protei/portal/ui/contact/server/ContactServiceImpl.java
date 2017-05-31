@@ -5,7 +5,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.core.model.dict.En_AdminState;
+import ru.protei.portal.core.model.dict.En_AuthType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.dict.En_UserRole;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.helper.HelperFunc;
@@ -14,6 +17,7 @@ import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.service.ContactService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -107,7 +111,7 @@ public class ContactServiceImpl implements ContactService {
             throw new RequestFailedException( En_ResultStatus.INTERNAL_ERROR );
         }
 
-        if ( userLogin.getUlogin() == null ) {
+        if ( HelperFunc.isEmpty( userLogin.getUlogin() ) ) {
             if ( userLogin.getId() == null ) {
                 return true;
             } else {
@@ -123,6 +127,14 @@ public class ContactServiceImpl implements ContactService {
         } else {
 
             log.debug( "store user login, id: {} ", HelperFunc.nvl( userLogin.getId(), "new" ) );
+
+            if( userLogin.getId() == null ) {
+                userLogin.setCreated( new Date() );
+                userLogin.setAuthTypeId( En_AuthType.LOCAL.getId() );
+                userLogin.setRoleId( En_UserRole.CRM_CLIENT.getId() );
+                userLogin.setAdminStateId( En_AdminState.UNLOCKED.getId() );
+            }
+
             CoreResponse< UserLogin > response = contactService.saveUserLogin( userLogin );
             log.debug( "store user login, result: {}", response.isOk() ? "ok" : response.getStatus() );
 
@@ -140,7 +152,7 @@ public class ContactServiceImpl implements ContactService {
 
         log.debug( "isContactLoginUnique(): login={}, excludeId={}", login, excludeId );
 
-        CoreResponse< Boolean > response = contactService.checkUniqueUserLoginByLogin( login, excludeId );
+        CoreResponse< Boolean > response = contactService.isUserLoginUnique( login, excludeId );
 
         log.debug( "isContactLoginUnique() -> {}, {}", response.getStatus(), response.getData() != null ? response.getData() : null );
 

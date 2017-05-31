@@ -4,6 +4,7 @@ package ru.protei.portal.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.DigestUtils;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dao.UserLoginDAO;
@@ -124,11 +125,16 @@ public class ContactServiceImpl implements ContactService {
         if (HelperFunc.isEmpty(userLogin.getUlogin()))
             return new CoreResponse<UserLogin>().error(En_ResultStatus.VALIDATION_ERROR);
 
-        if (userLogin.getId() == null){
-            userLogin.setCreated(new Date());
-            userLogin.setAuthTypeId(En_AuthType.LOCAL.getId());
-            userLogin.setRoleId(En_UserRole.CRM_CLIENT.getId());
-            userLogin.setAdminStateId(En_AdminState.UNLOCKED.getId());
+        userLogin.setUlogin(userLogin.getUlogin().trim());
+
+        UserLogin account = userLogin.getId() == null ? null : getUserLogin(userLogin.getPersonId()).getData();
+
+        if (HelperFunc.isEmpty(userLogin.getUpass())) {
+            if (account != null) {
+                userLogin.setUpass(account.getUpass());
+            }
+        } else {
+            userLogin.setUpass(DigestUtils.md5DigestAsHex(userLogin.getUpass().trim().getBytes()));
         }
 
         if (userLoginDAO.saveOrUpdate(userLogin)) {
@@ -149,15 +155,15 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Override
-    public CoreResponse<Boolean> checkUniqueUserLoginByLogin(String login, Long excludeId) {
+    public CoreResponse<Boolean> isUserLoginUnique(String login, Long excludeId) {
 
         if( login == null || login.isEmpty() )
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
 
-        return new CoreResponse<Boolean>().success( checkUniqueLogin(login, excludeId));
+        return new CoreResponse<Boolean>().success(checkUniqueLogin(login, excludeId));
     }
 
-    private boolean checkUniqueLogin( String login, Long excludeId) {
+    private boolean checkUniqueLogin(String login, Long excludeId) {
         UserLogin userLogin = userLoginDAO.checkExistsByLogin(login);
 
         return userLogin == null || userLogin.getId().equals(excludeId);

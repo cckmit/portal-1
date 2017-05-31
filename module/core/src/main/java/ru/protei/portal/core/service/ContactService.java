@@ -22,5 +22,5 @@ public interface ContactService {
     CoreResponse<UserLogin> getUserLogin( long id);
     CoreResponse<UserLogin> saveUserLogin(UserLogin userLogin);
     CoreResponse<Boolean> removeUserLogin(UserLogin userLogin);
-    CoreResponse<Boolean> checkUniqueUserLoginByLogin(String login, Long excludeId);
+    CoreResponse<Boolean> isUserLoginUnique(String login, Long excludeId);
 }

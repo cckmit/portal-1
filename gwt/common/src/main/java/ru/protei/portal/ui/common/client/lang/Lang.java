@@ -466,7 +466,9 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contactAccount();
 
-    String buttonChange();
-
     String contactLoginInfo();
+
+    String contactConfirmPassword();
+
+    String contactPasswordsNotMatch();
 }

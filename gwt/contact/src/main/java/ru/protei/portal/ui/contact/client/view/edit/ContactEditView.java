@@ -150,6 +150,11 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     }
 
     @Override
+    public HasText confirmPassword() {
+        return confirmPassword;
+    }
+
+    @Override
     public HasValidable companyValidator(){
         return company;
     }
@@ -170,30 +175,8 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     }
 
     @Override
-    public void setEnabledAccount( boolean isEnabled ) {
-        login.setEnabled( isEnabled );
-        password.setEnabled( isEnabled );
-        changeButton.setVisible( !isEnabled );
-        buttonPanel.setVisible( !isEnabled );
-        infoPanel.setVisible( false );
-    }
-
-    @UiHandler( "changeButton" )
-    public void onChangeClicked( ClickEvent event ) {
-        login.setEnabled( true );
-        password.setEnabled( true );
-        changeButton.setVisible( false );
-        infoPanel.setVisible( true );
-    }
-
-    @UiHandler( "resetButton" )
-    public void onResetClicked( ClickEvent event ) {
-        login.setText( null );
-        password.setText( null );
-        login.setEnabled( true );
-        password.setEnabled( true );
-        buttonPanel.setVisible( false );
-        infoPanel.setVisible( true );
+    public void showInfo( boolean isShow ) {
+        infoPanel.setVisible( isShow );
     }
 
     @UiHandler( "saveButton" )
@@ -293,15 +276,10 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     Element verifiableIcon;
 
     @UiField
-    Button changeButton;
-
-    @UiField
-    Button resetButton;
-
-    @UiField
-    HTMLPanel buttonPanel;
-    @UiField
     HTMLPanel infoPanel;
+
+    @UiField
+    PasswordTextBox confirmPassword;
 
     Timer timer = new Timer() {
         @Override
@@ -318,5 +296,4 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
 
     private static ContactViewUiBinder ourUiBinder = GWT.create(ContactViewUiBinder.class);
     interface ContactViewUiBinder extends UiBinder<HTMLPanel, ContactEditView> {}
-
 }

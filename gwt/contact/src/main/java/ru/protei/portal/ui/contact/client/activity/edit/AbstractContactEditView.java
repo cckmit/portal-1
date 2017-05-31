@@ -51,6 +51,8 @@ public interface AbstractContactEditView extends IsWidget {
 
     HasText password();
 
+    HasText confirmPassword();
+
     HasValue<EntityOption> company();
 
     HasValue<En_Gender> gender ();
@@ -65,5 +67,5 @@ public interface AbstractContactEditView extends IsWidget {
 
     boolean isValidLogin();
 
-    void setEnabledAccount( boolean isEnabled );
+    void showInfo( boolean isShow );
 }

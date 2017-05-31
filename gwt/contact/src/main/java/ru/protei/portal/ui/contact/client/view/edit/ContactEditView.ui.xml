@@ -145,8 +145,7 @@
                         <g:TextArea ui:field="personInfo" styleName="input-field description"></g:TextArea>
                     </div>
                     <div class="form-group col-xs-6">
-                        <fieldset>
-                            <legend><ui:text from="{lang.contactAccount}"/></legend>
+                        <div class="form-group col-xs-12">
                             <label class="">
                                 <ui:text from="{lang.contactLogin}"/>
                             </label>
@@ -154,18 +153,22 @@
                                 <i ui:field="verifiableIcon"/>
                                 <g:TextBox ui:field="login" styleName="input-field"/>
                             </div>
+                        </div>
+                        <g:HTMLPanel ui:field="infoPanel" styleName="col-xs-12">
+                            <ui:text from="{lang.contactLoginInfo}"/>
+                        </g:HTMLPanel>
+                        <div class="form-group col-xs-12">
                             <label class="">
                                 <ui:text from="{lang.contactPassword}"/>
                             </label>
                             <g:PasswordTextBox ui:field="password" styleName="input-field"/>
-                            <g:HTMLPanel ui:field="buttonPanel" styleName="p-t-10">
-                                <g:Button ui:field="changeButton" styleName="btn btn-white btn-sm" text="{lang.buttonChange}"/>
-                                <g:Button ui:field="resetButton" styleName="btn btn-white btn-sm" text="{lang.buttonReset}"/>
-                            </g:HTMLPanel>
-                            <g:HTMLPanel ui:field="infoPanel" styleName="p-t-5">
-                                <ui:text from="{lang.contactLoginInfo}"/>
-                            </g:HTMLPanel>
-                        </fieldset>
+                        </div>
+                        <div class="form-group col-xs-12">
+                            <label class="">
+                                <ui:text from="{lang.contactConfirmPassword}"/>
+                            </label>
+                            <g:PasswordTextBox ui:field="confirmPassword" styleName="input-field"/>
+                        </div>
                     </div>
                 </div>
             </div>

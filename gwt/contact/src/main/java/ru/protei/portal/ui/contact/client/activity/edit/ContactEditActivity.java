@@ -10,8 +10,8 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.UserLogin;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
-import ru.protei.portal.ui.common.client.common.MD5Utils;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.ContactEvents;
@@ -56,13 +56,13 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
 
                 @Override
                 public void onSuccess(Person person) {
-                    fireEvent(new AppEvents.InitPanelName( lang.editContactHeader(person.getDisplayName())));
                     contactService.getUserLogin(person.getId(), new RequestCallback<UserLogin>() {
                         @Override
                         public void onError(Throwable throwable) {}
 
                         @Override
                         public void onSuccess(UserLogin userLogin) {
+                            fireEvent(new AppEvents.InitPanelName( lang.editContactHeader(person.getDisplayName())));
                             initialView(person, userLogin == null ? new UserLogin() : userLogin);
                         }
                     } );
@@ -78,9 +78,14 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         }
 
         UserLogin userLogin = applyChangesLogin();
-        if(userLogin.getUlogin() != null && !userLogin.getUlogin().isEmpty() &&
-                (userLogin.getUpass() == null || userLogin.getUpass().isEmpty())) {
+        if(!HelperFunc.isEmpty(userLogin.getUlogin()) && HelperFunc.isEmpty(userLogin.getUpass()) && userLogin.getId() == null) {
             fireEvent(new NotifyEvents.Show(lang.contactPasswordNotDefinied(), NotifyEvents.NotifyType.ERROR));
+            return;
+        }
+
+        if(!HelperFunc.isEmpty(userLogin.getUpass()) &&
+                (HelperFunc.isEmpty(view.confirmPassword().getText()) || !userLogin.getUpass().equals(view.confirmPassword().getText()))) {
+            fireEvent(new NotifyEvents.Show(lang.contactPasswordsNotMatch(), NotifyEvents.NotifyType.ERROR));
             return;
         }
 
@@ -116,7 +121,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
     public void onChangeContactLogin() {
         String value = view.login().getText().trim();
 
-        if ( value.isEmpty() ){
+        if (value.isEmpty()){
             view.setContactLoginStatus(NameStatus.NONE);
             return;
         }
@@ -146,7 +151,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
     }
 
     private boolean fireErrorMessage(String msg) {
-        fireEvent( new NotifyEvents.Show(msg, NotifyEvents.NotifyType.ERROR));
+        fireEvent(new NotifyEvents.Show(msg, NotifyEvents.NotifyType.ERROR));
         return false;
     }
 
@@ -179,20 +184,8 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
     }
 
     private UserLogin applyChangesLogin() {
-
-        if (view.login().getText() == null || view.login().getText().trim().isEmpty()) {
-            account.setUlogin(null);
-            account.setUpass(null);
-        } else {
-            account.setUlogin(view.login().getText());
-            if (view.password().getText() == null || view.password().getText().trim().isEmpty()) {
-                account.setUpass(null);
-            } else {
-                if (account.getUpass() == null || !account.getUpass().equals(view.password().getText())) {
-                    account.setUpass(MD5Utils.getHash( view.password().getText()));
-                }
-            }
-        }
+        account.setUlogin(view.login().getText());
+        account.setUpass(view.password().getText());
         return account;
     }
 
@@ -247,9 +240,10 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         view.displayDepartment().setText(person.getDepartment());
 
         view.login().setText(userLogin.getUlogin());
-        view.password().setText(userLogin.getUpass());
+        view.password().setText("");
+        view.confirmPassword().setText("");
 
-        view.setEnabledAccount(userLogin.getUlogin() == null && userLogin.getUpass() == null);
+        view.showInfo(userLogin.getId() != null);
     }
 
     @Inject
