@@ -1,0 +1,13 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+
+    <g:HTMLPanel ui:field="inputContainer" styleName="icon-selector">
+        <g:HTMLPanel ui:field="label" tag="label" visible="false"/>
+
+        <g:Anchor ui:field="anchorIcon" styleName="status"/>
+        <g:Anchor ui:field="caretAnchor" styleName="caret-anchor">
+            <span class="caret"></span>
+        </g:Anchor>
+    </g:HTMLPanel>
+
+</ui:UiBinder>

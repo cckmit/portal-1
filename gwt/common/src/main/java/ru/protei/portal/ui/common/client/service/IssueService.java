@@ -41,7 +41,7 @@ public interface IssueService extends RemoteService {
      * Удаление комментария обращения
      * Удаляет все вложения из БД и Cloud которые привязаны к комментарию
      */
-    Boolean removeIssueComment( CaseComment value ) throws RequestFailedException;
+    void removeIssueComment( CaseComment value ) throws RequestFailedException;
 
     /**
      * Редактирование комментария обращения

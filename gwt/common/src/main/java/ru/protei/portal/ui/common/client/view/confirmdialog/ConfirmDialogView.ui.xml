@@ -1,0 +1,17 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+
+    <g:HTMLPanel styleName="confirm-alert">
+        <div class="ca-icon ca-warning pulse-warning">
+            <span class="ca-body pulse-warning-ins"></span>
+            <span class="ca-dot pulse-warning-ins"></span>
+        </div>
+        <h2 ui:field="header"/>
+        <p class="lead" ui:field="description"></p>
+        <g:HTMLPanel styleName="sa-button-container" ui:field="baseActionContainer">
+            <g:Button ui:field="confirmButton" styleName="btn btn-danger" text="{lang.buttonYes}" />
+            <g:Button ui:field="cancelButton" styleName="btn btn-white" text="{lang.buttonNo}" />
+        </g:HTMLPanel>
+    </g:HTMLPanel>
+</ui:UiBinder>

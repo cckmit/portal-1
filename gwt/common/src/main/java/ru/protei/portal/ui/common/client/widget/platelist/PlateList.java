@@ -69,6 +69,10 @@ public class PlateList extends Composite implements HasWidgets, HasAddHandlers {
         name.setInnerText( value );
     }
 
+    public void setCreateButtonVisible( Boolean value ) {
+        createButton.setVisible( value );
+    }
+
     @UiHandler( "createButton" )
     public void createButtonClick( ClickEvent event ) {
         AddEvent.fire( this );

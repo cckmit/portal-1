@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+  <include file="01-schema-autogen.xml" relativeToChangelogFile="true" />
+  <include file="02-schema-dictionary.xml" relativeToChangelogFile="true" />
+  <include file="03-sprint-10.xml" relativeToChangelogFile="true" />
+  <include file="04-sprint-11.xml" relativeToChangelogFile="true" />
+  <include file="05-regions.xml" relativeToChangelogFile="true" />
+  <include file="06-equipment.xml" relativeToChangelogFile="true" />
+  <include file="07-hpsm.xml" relativeToChangelogFile="true" />
+  <include file="08-01-fix_constraints.xml" relativeToChangelogFile="true" />
+  <include file="08-02-company_subscription.xml" relativeToChangelogFile="true" />
+
+</databaseChangeLog>

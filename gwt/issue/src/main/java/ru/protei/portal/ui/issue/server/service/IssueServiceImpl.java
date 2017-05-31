@@ -88,15 +88,13 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    public Boolean removeIssueComment( CaseComment value ) throws RequestFailedException {
+    public void removeIssueComment( CaseComment value ) throws RequestFailedException {
         log.debug( "removeIssueComment(): value={}", value );
 
-        CoreResponse<CaseComment> response = caseService.removeCaseComment( value );
+        CoreResponse<List<CaseComment>> response = caseService.removeCaseComment( value, getCurrentPerson().getId() );
         if (response.isError()) {
             throw new RequestFailedException( response.getStatus() );
         }
-
-        return response.getData() != null;
     }
 
     @Override
@@ -108,7 +106,7 @@ public class IssueServiceImpl implements IssueService {
         if ( comment.getId() == null ) {
             response = caseService.addCaseComment( comment );
         } else {
-            response = caseService.updateCaseComment( comment );
+            response = caseService.updateCaseComment( comment, getCurrentPerson().getId() );
         }
         if (response.isError()) {
             throw new RequestFailedException( response.getStatus() );
@@ -145,7 +143,6 @@ public class IssueServiceImpl implements IssueService {
 
     @Autowired
     HttpServletRequest request;
-
 
     private static final Logger log = LoggerFactory.getLogger( "web" );
 

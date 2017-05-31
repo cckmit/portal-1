@@ -3,7 +3,9 @@ package ru.protei.portal.ui.common.client.service;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import ru.protei.portal.core.model.ent.DevUnit;
+import ru.protei.portal.core.model.query.ProductDirectionQuery;
 import ru.protei.portal.core.model.query.ProductQuery;
+import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.ProductShortView;
 
 import java.util.List;
@@ -27,4 +29,11 @@ public interface ProductServiceAsync {
      * @param callback
      */
     void getProductViewList( ProductQuery query, AsyncCallback< List<ProductShortView> > callback );
+
+    /**
+     * Получение списка продуктовых направлений
+     * @param query
+     * @param callback
+     */
+    void getProductDirectionList( ProductDirectionQuery query, AsyncCallback<List<ProductDirectionInfo>> callback );
 }

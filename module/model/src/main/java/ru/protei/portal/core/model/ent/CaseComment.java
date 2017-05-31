@@ -48,6 +48,10 @@ public class CaseComment implements Serializable{
 
     public CaseComment() {}
 
+    public CaseComment(String text) {
+        this.text = text;
+    }
+
     public Long getId() {
         return id;
     }

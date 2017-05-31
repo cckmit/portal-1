@@ -44,21 +44,6 @@ public class MainConfiguration {
     }
 
     @Bean
-    public SessionIdGen getSessionIdGenerator() {
-        return new SimpleSidGenerator();
-    }
-
-    @Bean
-    public AuthService getAuthService() {
-        return new AuthServiceImpl();
-    }
-
-    @Bean
-    public AuthInterceptor getAuthInterceptor() {
-        return new AuthInterceptor();
-    }
-
-    @Bean
     public CompanyDAO getCompanyDAO() {
         return new CompanyDAO_Impl();
     }
@@ -179,6 +164,31 @@ public class MainConfiguration {
         return new AttachmentDAO_Impl();
     }
 
+    @Bean
+    public EquipmentDAO getEquipmentDAO() { return new EquipmentDAO_Impl(); }
+
+    @Bean
+    public LocationDAO getLocationDAO() {
+        return new LocationDAO_Impl();
+    }
+
+    @Bean
+    public CaseMemberDAO getCaseMemberDAO() { return new CaseMemberDAO_Impl(); }
+
+    @Bean
+    public CaseLocationDAO getCaseLocationDAO() { return new CaseLocationDAO_Impl(); }
+
+    @Bean
+    public CaseTypeDAO getCaseTypeDAO() { return new CaseTypeDAO_Impl(); }
+
+    @Bean
+    public DecimalNumberDAO getDecimalNumberDAO() { return new DecimalNumberDAO_Impl(); }
+
+    @Bean
+    public CompanySubscriptionDAO getCompanySubscriptionDAO () {
+        return new CompanySubscriptionDAO_Impl ();
+    }
+
 /**
  *
  *
@@ -188,6 +198,25 @@ public class MainConfiguration {
  *
  *
  **/
+    @Bean
+    public SessionIdGen getSessionIdGenerator() {
+        return new SimpleSidGenerator();
+    }
+
+    @Bean
+    public AuthService getAuthService() {
+        return new AuthServiceImpl();
+    }
+
+    @Bean
+    public AuthInterceptor getAuthInterceptor() {
+        return new AuthInterceptor();
+    }
+
+    @Bean
+    public CaseControlService getCaseControlService () {
+        return new CaseControlServiceImpl();
+    }
 
     @Bean
     public EmployeeService getEmployeeService () { return new EmployeeServiceImpl(); }
@@ -213,8 +242,24 @@ public class MainConfiguration {
     @Bean
     public AttachmentService getAttachmentService() { return new AttachmentServiceImpl(); }
 
+    @Bean
+    public LocationService getLocationService() { return new LocationServiceImpl(); }
 
+    @Bean
+    public ProjectService getProjectService() { return new ProjectServiceImpl(); }
 
+    @Bean
+    public EquipmentService getEquipmentService() { return new EquipmentServiceImpl(); }
+
+    @Bean
+    public EventPublisherService getEventPublisherService () {
+        return new AsyncEventPublisherService();
+    }
+
+    @Bean
+    public CaseSubscriptionService getCaseSubscriptionService () {
+        return new CaseSubscriptionServiceImpl();
+    }
 
     /** ASPECT/INTERCEPTORS **/
     @Bean

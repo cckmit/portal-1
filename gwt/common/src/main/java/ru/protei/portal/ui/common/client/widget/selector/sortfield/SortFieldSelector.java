@@ -37,10 +37,13 @@ public class SortFieldSelector extends ButtonSelector< En_SortField > {
                 addOption( sortFieldLang.getName( En_SortField.last_update ), En_SortField.last_update );
                 addOption( sortFieldLang.getName( En_SortField.issue_number ), En_SortField.issue_number );
                 break;
+            case EQUIPMENT:
+                addOption( lang.equipmentName(), En_SortField.name );
+                addOption( lang.equipmentNameBySldWrks(), En_SortField.equipment_name_sldwrks );
         }
     }
 
-    private ModuleType type;// = ModuleType.CONTACT;
+    private ModuleType type;
 
     @Inject
     private Lang lang;

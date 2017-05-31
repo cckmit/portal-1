@@ -41,5 +41,4 @@ public class EmployeeButtonSelector extends ButtonSelector<PersonShortView> impl
     }
 
     private String defaultValue = null;
-    private Boolean fired;
 }

@@ -1,0 +1,17 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet author="shagaleev" id="12-01-2017 11:19">
+        <addColumn tableName="case_attachment">
+            <column name="CCOMMENT_ID" type="BIGINT(20)" defaultValue="NULL" />
+        </addColumn>
+
+        <addForeignKeyConstraint constraintName="FK_PARENT_COMMENT" onDelete="CASCADE"
+                                 baseColumnNames="CCOMMENT_ID" baseTableName="case_attachment"
+                                 referencedColumnNames="ID" referencedTableName="case_comment"/>
+    </changeSet>
+
+</databaseChangeLog>

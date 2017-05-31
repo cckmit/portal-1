@@ -36,6 +36,11 @@ textarea.input-field {
 }
 
 
+input.input-field[disabled],
+textarea.input-field[disabled]{
+  background-color: whitesmoke;
+  cursor: not-allowed;
+}
 
   /**
      PANEL for create/edit pages
@@ -47,4 +52,20 @@ textarea.input-field {
 .panel .footer {
   text-align: right;
   padding: 0 15px 15px 15px;
+}
+
+.panel.panel-default {
+  background: white;
+}
+
+.panel legend.header {
+  display: block;
+  width: 100%;
+  padding: 0;
+  margin-bottom: 10px;
+  font-size: 18px;
+  line-height: inherit;
+  color: #333;
+  border: 0;
+  border-bottom: 1px solid #e5e5e5;
 }

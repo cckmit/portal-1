@@ -21,7 +21,7 @@ import ru.protei.portal.ui.crm.client.activity.dashboardblocks.table.AbstractDas
 import ru.protei.portal.ui.crm.client.activity.dashboardblocks.table.AbstractDashboardTableView;
 import ru.protei.portal.ui.crm.client.view.dashboardblocks.table.columns.ContactColumn;
 import ru.protei.portal.ui.crm.client.view.dashboardblocks.table.columns.ManagerColumn;
-import ru.protei.portal.ui.crm.client.widget.importance.btngroup.CustomImportanceBtnGroup;
+import ru.protei.portal.ui.crm.client.widget.importance.btngroup.CustomImportanceBtnGroupMulti;
 import ru.protei.portal.ui.issue.client.view.table.columns.InfoColumn;
 import ru.protei.portal.ui.issue.client.view.table.columns.NumberColumn;
 
@@ -134,7 +134,7 @@ public class DashboardTableView extends Composite implements AbstractDashboardTa
     SpanElement count;
     @Inject
     @UiField( provided = true )
-    CustomImportanceBtnGroup importance;
+    CustomImportanceBtnGroupMulti importance;
     @UiField
     DivElement loader;
     @UiField

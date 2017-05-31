@@ -10,10 +10,7 @@ import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.ui.common.client.common.IssueStates;
 import ru.protei.portal.ui.common.client.common.UiConstants;
-import ru.protei.portal.ui.common.client.events.ActionBarEvents;
-import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.DashboardEvents;
-import ru.protei.portal.ui.common.client.events.IssueEvents;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.winter.web.common.client.events.SectionEvents;
@@ -33,7 +30,7 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
     }
 
     @Event
-    public void onDashboardInit( DashboardEvents.Init event ) {
+    public void onDashboardInit( AuthEvents.Success event ) {
         profile = event.profile;
         activeRecordsQuery = generateActiveRecordsQuery();
         newRecordsQuery = generateNewRecordsQuery();

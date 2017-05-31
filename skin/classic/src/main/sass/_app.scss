@@ -437,3 +437,16 @@ body {
 .main-content {
   padding: 15px;
 }
+
+.signIn_block {
+  .authForm {
+    margin: 50px 40px !important;
+    .signInForm {
+      width: 200px !important;
+
+      .submitBlock > button {
+        width: 100% !important;
+      }
+    }
+  }
+}

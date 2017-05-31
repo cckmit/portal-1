@@ -297,6 +297,166 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errEditIssueCommentEmpty();
 
+    String classifier();
+
+    String equipmentName();
+
+    String equipmentOrganizationCodePAMR();
+
+    String equipmentOrganizationCodePDRA();
+
+    String equipmentDecimalNumber();
+
+    String equipmentComment();
+
+    String equipmentNameBySpecification();
+
+    String equipmentNameBySldWrks();
+
+    String equipmentOrganizationProtei();
+
+    String equipmentOrganizationProteiST();
+
+    String equipmentOrganization();
+
+    String equipmentSearchNameOrProject();
+
+    String equipmentProduct();
+
+    String regions();
+
+    String regionStateUnknown();
+
+    String regionStateRival();
+
+    String regionStateTalk();
+
+    String regionStateProjecting();
+
+    String regionStateDevelopment();
+
+    String regionStateDeployment();
+
+    String regionStateSupport();
+
+    String regionStateSupportFinished();
+
+    String regionState();
+
+    String regionDistrict();
+
+    String productDirection();
+
+    String projectDirection();
+
+    String projectInfo();
+
+    String projects();
+
+    String projectManagers();
+
+    String projectHeader( String s );
+
+    String projectCreationDate();
+
+    String projectHeadManager();
+
+    String projectDeployManagers();
+
+    String projectState();
+
+    String projectRegion();
+
+    String equipmentAttachment();
+
+    String equipmentDescription();
+
+    String equipmentTypeAssemblyUnit();
+
+    String equipmentTypeComplex();
+
+    String equipmentTypeDetail();
+
+    String equipmentTypeProduct();
+
+    String equipmentType();
+
+    String equipmentStageDraftProject();
+
+    String equipmentStageRKD_Product();
+
+    String equipmentStageRKD_Prototype();
+
+    String equipmentStageTechnicalProject();
+
+    String equipmentStage();
+
+    String equipmentPrimaryUse();
+
+    String equipmentPrimaryUseNotDefinied();
+
+    String equipmentDecimalNumberEmpty();
+
+    String equipmentDecimalNumberBusy();
+
+    String buttonImport();
+
+    String equipmentClassifierCode();
+
+    String equipmentRegisterNumber();
+
+    String equipmentCommonHeader();
+
+    String equipmentReserve();
+
+    String buttonAdd();
+
+    String equipmentRemove();
+
+    String equipmentDecimalNumberNotDefinied();
+
+    String equipmentRegisterNumberModification();
+
+    String equipmentErrorGetNextAvailableNumber();
+
+    String equipmentErrorCheckNumber();
+
+    String equipmentNextAvailableNumber();
+
+    String equipmentOrChange();
+
+    String equipmentModification();
+
+    String equipmentManager();
+
+    String equipmentProject();
+
+    String selectorAny();
+
+    String buttonYes();
+
+    String buttonNo();
+
+    String buttonCopy();
+
+    String buttonRemove();
+
+    String equipmentRemoveConfirmMessage();
+
+    String equipmentRemoveSuccessed();
+
+    String equipmentNewName();
+
+    String equipmentCopyNotFilledNewName();
+
+    String equpmentCopySuccess();
+
+    String equipmentCopyHeader();
+
+    String equipmentCopyMessage();
+
+    String copyPostfix();
+
     String attachment();
     String addAttachmentBtn();
 

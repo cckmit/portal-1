@@ -38,7 +38,7 @@ public interface IssueServiceAsync {
     /**
      * Удаление комментария обращения
      */
-    void removeIssueComment(CaseComment value, AsyncCallback<Boolean> async);
+    void removeIssueComment(CaseComment value, AsyncCallback<Void> async);
 
     /**
      * Редактирование комментария обращения

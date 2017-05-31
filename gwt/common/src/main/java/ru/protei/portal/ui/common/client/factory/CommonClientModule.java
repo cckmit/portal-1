@@ -3,6 +3,8 @@ package ru.protei.portal.ui.common.client.factory;
 import com.google.gwt.inject.client.AbstractGinModule;
 import com.google.inject.Singleton;
 import ru.protei.portal.ui.common.client.activity.actionbar.ActionBarActivity;
+import ru.protei.portal.ui.common.client.activity.confirmdialog.AbstractConfirmDialogView;
+import ru.protei.portal.ui.common.client.activity.confirmdialog.ConfirmDialogActivity;
 import ru.protei.portal.ui.common.client.activity.attachment.AbstractAttachmentView;
 import ru.protei.portal.ui.common.client.activity.contactitem.AbstractContactItemListView;
 import ru.protei.portal.ui.common.client.activity.contactitem.AbstractContactItemView;
@@ -14,6 +16,7 @@ import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.common.IssueStates;
+import ru.protei.portal.ui.common.client.view.confirmdialog.ConfirmDialogView;
 import ru.protei.portal.ui.common.client.view.attachment.AttachmentView;
 import ru.protei.portal.ui.common.client.view.contactitem.item.ContactItemView;
 import ru.protei.portal.ui.common.client.view.contactitem.list.ContactItemListView;
@@ -21,6 +24,7 @@ import ru.protei.portal.ui.common.client.view.dialogdetails.DialogDetailsView;
 import ru.protei.portal.ui.common.client.view.notify.NotifyView;
 import ru.protei.portal.ui.common.client.view.view.PagerView;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
+import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeModel;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.winter.web.common.client.activity.section.AbstractSectionItemView;
 import ru.protei.winter.web.common.client.view.section.SectionItemView;
@@ -45,6 +49,7 @@ public class CommonClientModule extends AbstractGinModule {
         bind( AbstractContactItemView.class ).to( ContactItemView.class );
 
         bind( CompanyModel.class ).asEagerSingleton();
+        bind( EmployeeModel.class ).asEagerSingleton();
 
         bind( DateFormatter.class ).in( Singleton.class );
 
@@ -53,10 +58,10 @@ public class CommonClientModule extends AbstractGinModule {
         bind( IssueStates.class ).asEagerSingleton();
         bind( AbstractAttachmentView.class ).to( AttachmentView.class );
 
+        bind( ConfirmDialogActivity.class ).asEagerSingleton();
+        bind( AbstractConfirmDialogView.class ).to( ConfirmDialogView.class ).in( Singleton.class );
+
         requestStaticInjection(RequestCallback.class);
-
-
-
     }
 }
 

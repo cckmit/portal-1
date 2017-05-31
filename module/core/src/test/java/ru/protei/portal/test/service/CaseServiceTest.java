@@ -88,7 +88,7 @@ public class CaseServiceTest {
         if (comment != null) {
             comment.setText( "Unit-test - тестовый комментарий (update)" );
 
-            result = service.updateCaseComment( comment );
+            result = service.updateCaseComment( comment, personId );
             Assert.assertNotNull( result );
             Assert.assertTrue( result.isOk() );
             Assert.assertNotNull( result.getData() );
@@ -100,7 +100,7 @@ public class CaseServiceTest {
 
         // delete
         if (comment != null) {
-            result = service.removeCaseComment( comment );
+            result = service.removeCaseComment( comment, personId );
             Assert.assertNotNull( result );
             Assert.assertTrue( result.isOk() );
             Assert.assertNotNull( result.getData() );

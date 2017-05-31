@@ -45,4 +45,16 @@ public class AppEvents {
 
         public String panelName;
     }
+
+    /**
+     * Инициализирует список страниц, доступных для авторизованного пользователя
+     */
+    public static class InitPage {
+        public InitPage( Object event ) {
+            this.event = event;
+        }
+
+        public Object event;
+    }
+
 }

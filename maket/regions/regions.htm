@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<!-- saved from url=(0039)http://127.0.0.1:8888/crm.html#products -->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="gwt:property" content="locale=ru">
+
+    <title>Protei UI :: CRM</title>
+    <link rel="stylesheet" href="./regions_files/portal-classic.css">
+    <link rel="stylesheet" href="./regions_files/animate.css">
+    <link rel="stylesheet" href="./regions_files/modal.css">
+    <link rel="stylesheet" href="./regions_files/font-awesome.min.css">
+    <link rel="stylesheet" href="./regions_files/importance.css">
+    <link rel="stylesheet" href="./regions_files/ionicons.min.css">
+    <link rel="stylesheet" href="./regions_files/datetimepicker.css">
+    <link rel="stylesheet" href="./regions_files/table-widget.css">
+    <link rel="stylesheet" href="./regions_files/pager.css">
+
+    <style>
+        .region-picture {
+            position: relative;
+            display: block;
+            left: calc( 100% - 120px );
+            top: -20px;
+            opacity: 0.3;
+        }
+
+        .region-picture > img {
+            width: 70%;
+        }
+
+        .region-picture > i {
+            position: relative;
+            display: block;
+            top: -46px;
+            left: 0px;
+
+            font-size: 10em;
+        }
+
+        .header-block {
+            overflow: hidden;
+        }
+
+        .status-group > button {
+            padding: 5px 8px;
+            border-color: #ffffff;
+        }
+        .status-group > button:hover {
+            background-color: #ffffff;
+        }
+    </style>
+</head>
+<body class="content-wrapper">
+<noscript>
+    &lt;div style="width: 22em; position: absolute; left: 50%; margin-left: -11em; color: red; background-color: white;
+    border: 1px solid red; padding: 4px; font-family: sans-serif"&gt;
+    Your web browser must have JavaScript enabled
+    in order for this application to display correctly.
+    &lt;/div&gt;
+</noscript>
+
+
+<div aria-hidden="true" style="display: none;"></div>
+<div class="global">
+    <header class="main-header"><a class="logo" href="http://protei.ru/"> <span class="logo-lg"> <img
+            src="./regions_files/logo.svg"> <b>PROTEI</b> LTD </span> <span class="logo-mini"> <img
+            src="./regions_files/logo.svg"> </span> </a>
+        <nav class="navbar"><a class="sidebar-toggle" href="http://127.0.0.1:8888/crm.html#"><span class="sr-only">Toggle navigation</span></a>
+            <ul class="nav navbar-nav navbar-left">
+                <li><a class="gwt-Anchor" href="http://127.0.0.1:8888/crm.html#"><i class="fa fa-plus"></i> <span>Создать</span></a>
+                    <span class="count" aria-hidden="true" style="display: none;"></span></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li class="nav-search" aria-hidden="true" style="display: none;"><a class="gwt-Anchor"><i
+                        class="fa fa-search"></i></a> <input type="text" class="gwt-TextBox"></li>
+                <li><a class="gwt-Anchor" href="http://127.0.0.1:8888/crm.html#" title="Выйти (you can use Ctrl+F4)"><i
+                        class="fa fa-lg fa-sign-out"></i></a></li>
+            </ul>
+        </nav>
+    </header>
+    <div class="main-sidebar">
+        <section class="sidebar">
+            <div class="user-panel">
+                <div class="pull-left image"><img class="img-circle" src="./regions_files/user-icon-m.png"></div>
+                <div class="pull-left info"><p>Денис</p> <a>portal_employee</a></div>
+            </div>
+            <ul class="sidebar-menu">
+                <li class="header">Навигация</li>
+            </ul>
+            <div class="sidebar-menu">
+                <li><a class="gwt-Anchor" href="http://127.0.0.1:8888/crm.html#"><i class="fa fa-dashboard"></i> <span>Dashboard</span></a>
+                    <span class="count" aria-hidden="true" style="display: none;"></span></li>
+                <li class=""><a class="gwt-Anchor" href="http://127.0.0.1:8888/crm.html#"><i
+                        class="icon icon-organization"></i> <span>Компании</span></a> <span class="count"
+                                                                                            aria-hidden="true"
+                                                                                            style="display: none;"></span>
+                </li>
+                <li class=""><a class="gwt-Anchor" href="http://127.0.0.1:8888/crm.html#"><i
+                        class="icon icon-product"></i> <span>Продукты</span></a> <span class="count" aria-hidden="true"
+                                                                                       style="display: none;"></span>
+                </li>
+                <li><a class="gwt-Anchor" href="http://127.0.0.1:8888/crm.html#"><i class="fa fa-group"></i> <span>Контактные лица</span></a>
+                    <span class="count" aria-hidden="true" style="display: none;"></span></li>
+                <li class=""><a class="gwt-Anchor" href="http://127.0.0.1:8888/crm.html#"><i class="fa fa-tasks"></i>
+                    <span>Обращения</span></a> <span class="count" aria-hidden="true" style="display: none;"></span>
+                </li>
+                <li class="active"><a class="gwt-Anchor" href="http://127.0.0.1:8888/crm.html#"><i class="fa fa-globe"></i>
+                    <span>Регионы</span></a> <span class="count" aria-hidden="true" style="display: none;"></span>
+                </li>
+            </div>
+        </section>
+    </div>
+
+    <div class="right-side">
+        <div class="main-content grid">
+            <div class="block low col-xs-9">
+                <ul class="plate-list">
+
+                    <li>
+                        <div class="header-block">
+                            <h2>
+                                <span class="pull-left">Алтайский край</span>
+                                <span class="pull-right">22</span>
+                            </h2>
+
+                            <p><a class="fa fa-fw fa-eye" href="http://127.0.0.1:8888/crm.html#"></a> <a
+                                    class="fa fa-fw fa-pencil" href="http://127.0.0.1:8888/crm.html#"></a> <a
+                                    class="fa fa-fw fa-heart" href="http://127.0.0.1:8888/crm.html#"></a>
+                            </p>
+                            <div class="region-info">
+                                Состояние неизвестно
+                            </div>
+                            <div class="region-picture">
+                                <!--<img src="maps/altay.png">-->
+                                <i class="fa fa-question-circle-o"></i>
+                            </div>
+                        </div>
+                        <div class="plate-list-expander"></div>
+                    </li>
+
+                    <li>
+                        <div class="header-block">
+                            <h2>
+                                <span class="pull-left">Амурская область</span>
+                                <span class="pull-right">28</span>
+                            </h2>
+
+                            <p><a class="fa fa-fw fa-eye" href="http://127.0.0.1:8888/crm.html#"></a> <a
+                                    class="fa fa-fw fa-pencil" href="http://127.0.0.1:8888/crm.html#"></a> <a
+                                    class="fa fa-fw fa-heart" href="http://127.0.0.1:8888/crm.html#"></a>
+                            </p>
+                            <div class="region-info">
+                                Стоит сфера
+                            </div>
+                            <div class="region-picture">
+                                <!--<img src="maps/altay.png">-->
+                                <i class="fa fa-times" style="color: rgb(88, 5, 5)"></i>
+                            </div>
+                        </div>
+                        <div class="plate-list-expander"></div>
+                    </li>
+
+                    <li>
+                        <div class="header-block">
+                            <h2>
+                                <span class="pull-left">Архангельская область</span>
+                                <span class="pull-right">29</span>
+                            </h2>
+
+                            <p><a class="fa fa-fw fa-eye" href="http://127.0.0.1:8888/crm.html#"></a> <a
+                                    class="fa fa-fw fa-pencil" href="http://127.0.0.1:8888/crm.html#"></a> <a
+                                    class="fa fa-fw fa-heart" href="http://127.0.0.1:8888/crm.html#"></a>
+                            </p>
+                            <div class="region-info">
+                                Вход найден
+                            </div>
+                            <div class="region-picture">
+                                <!--<img src="maps/altay.png">-->
+                                <i class="fa fa-comments-o" style="color: #88027b"></i>
+                            </div>
+                        </div>
+                        <div class="plate-list-expander"></div>
+                    </li>
+
+                    <li>
+                        <div class="header-block">
+                            <h2>
+                                <span class="pull-left">Астраханская область</span>
+                                <span class="pull-right">30</span>
+
+                            </h2>
+
+                            <p><a class="fa fa-fw fa-eye" href="http://127.0.0.1:8888/crm.html#"></a> <a
+                                    class="fa fa-fw fa-pencil" href="http://127.0.0.1:8888/crm.html#"></a> <a
+                                    class="fa fa-fw fa-heart" href="http://127.0.0.1:8888/crm.html#"></a>
+                            </p>
+                            <div class="region-info">
+                                Проектирование
+                            </div>
+                            <div class="region-picture">
+                                <!--<img src="maps/altay.png">-->
+                                <i class="fa fa-search" style="color: #0e00b9"></i>
+                            </div>
+                        </div>
+                        <div class="plate-list-expander"></div>
+                    </li>
+
+                    <li>
+                        <div class="header-block">
+                            <h2>
+                                <span class="pull-left">Белгородская область</span>
+                                <span class="pull-right">31</span>
+                            </h2>
+
+                            <p><a class="fa fa-fw fa-eye" href="http://127.0.0.1:8888/crm.html#"></a> <a
+                                    class="fa fa-fw fa-pencil" href="http://127.0.0.1:8888/crm.html#"></a> <a
+                                    class="fa fa-fw fa-heart" href="http://127.0.0.1:8888/crm.html#"></a>
+                            </p>
+                            <div class="region-info">
+                                Разработка
+                            </div>
+                            <div class="region-picture">
+                                <!--<img src="maps/altay.png">-->
+                                <i class="fa fa-file-code-o" style="color: #00a5b9"></i>
+                            </div>
+                        </div>
+                        <div class="plate-list-expander"></div>
+                    </li>
+
+                    <li>
+                        <div class="header-block">
+                            <h2>
+                                <span class="pull-left">Брянская область</span>
+                                <span class="pull-right">32</span>
+                            </h2>
+
+                            <p><a class="fa fa-fw fa-eye" href="http://127.0.0.1:8888/crm.html#"></a> <a
+                                    class="fa fa-fw fa-pencil" href="http://127.0.0.1:8888/crm.html#"></a> <a
+                                    class="fa fa-fw fa-heart" href="http://127.0.0.1:8888/crm.html#"></a>
+                            </p>
+                            <div class="region-info">
+                                Сертификация
+                            </div>
+                            <div class="region-picture">
+                                <!--<img src="maps/altay.png">-->
+                                <i class="fa fa-certificate" style="color: #b9ae00"></i>
+                            </div>
+                        </div>
+                        <div class="plate-list-expander"></div>
+                    </li>
+
+                    <li>
+                        <div class="header-block">
+                            <h2>
+                                <span class="pull-left">Владимирская область</span>
+                                <span class="pull-right">33</span>
+                            </h2>
+
+                            <p><a class="fa fa-fw fa-eye" href="http://127.0.0.1:8888/crm.html#"></a> <a
+                                    class="fa fa-fw fa-pencil" href="http://127.0.0.1:8888/crm.html#"></a> <a
+                                    class="fa fa-fw fa-heart" href="http://127.0.0.1:8888/crm.html#"></a>
+                            </p>
+                            <div class="region-info">
+                                Поддержка
+                            </div>
+                            <div class="region-picture">
+                                <!--<img src="maps/altay.png">-->
+                                <i class="fa fa-check-circle-o" style="color: #1abf00"></i>
+                            </div>
+                        </div>
+                        <div class="plate-list-expander"></div>
+                    </li>
+
+                    <li>
+                        <div class="header-block">
+                            <h2>
+                                <span class="pull-left">Волгоградская область</span>
+                                <span class="pull-right">34</span>
+                            </h2>
+
+                            <p><a class="fa fa-fw fa-eye" href="http://127.0.0.1:8888/crm.html#"></a> <a
+                                    class="fa fa-fw fa-pencil" href="http://127.0.0.1:8888/crm.html#"></a> <a
+                                    class="fa fa-fw fa-heart" href="http://127.0.0.1:8888/crm.html#"></a>
+                            </p>
+                            <div class="region-info">
+                                Поддержка завершена
+                            </div>
+                            <div class="region-picture">
+                                <!--<img src="maps/altay.png">-->
+                                <i class="fa fa-clock-o" style="color: #bf6400"></i>
+                            </div>
+                        </div>
+                        <div class="plate-list-expander"></div>
+                    </li>
+
+                </ul>
+            </div>
+            <div class="filter-container col-xs-3">
+                <div class="panel">
+                    <div class="body">
+                        <div class="form-group local-search col-xs-12">
+                            <span class="icon local-search-icon"></span>
+                            <input type="text" class="input-field" placeholder="Поиск">
+                        </div>
+
+                        <div class="form-group col-xs-12">
+                            <label>Федеральные округа</label>
+                            <div class="form-group">
+                                <label class="control-label"></label>
+                                <div class="btn-group status-group" role="group">
+                                    <button type="button" class="btn btn-white">
+                                        ЦФО
+                                    </button>
+                                    <button type="button" class="btn btn-white">
+                                        СЗФО
+                                    </button>
+                                    <button type="button" class="btn btn-white">
+                                        ЮФО
+                                    </button>
+                                    <button type="button" class="btn btn-white">
+                                        СКФО
+                                    </button>
+                                    <button type="button" class="btn btn-white">
+                                        ПФО
+                                    </button>
+                                    <button type="button" class="btn btn-white">
+                                        УФО
+                                    </button>
+                                    <button type="button" class="btn btn-white">
+                                        СФО
+                                    </button>
+                                    <button type="button" class="btn btn-white">
+                                        ДВФО
+                                    </button>
+                                    <button type="button" class="btn btn-white">
+                                        КФО
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group col-xs-12">
+                            <label>Направление</label>
+                            <div class="control-group">
+                                <div class="btn-selector">
+                                    <label></label>
+                                    <button type="button" class="btn btn-white">
+                                        <i class=""></i>
+                                        <span class="">Система 112</span>
+                                        <span class="caret"></span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group col-xs-12">
+                            <label>Статус</label>
+                            <div class="form-group">
+                                <label class="control-label"></label>
+                                <div class="btn-group status-group" role="group">
+                                    <button type="button" class="btn btn-white" style="color: #d2d2d2;" >
+                                        <i class="fa fa-question-circle-o fa-lg"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-white" style="color: #cdb4b4;" >
+                                        <i class="fa fa-times fa-lg"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-white" style="color: #dcb4d8;" >
+                                        <i class="fa fa-comments fa-lg"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-white" style="color: #b7b3ea;" >
+                                        <i class="fa fa-search fa-lg"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-white" style="color: #b3e4ea;" >
+                                        <i class="fa fa-file-code-o fa-lg"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-white" style="color: #eae7b3;" >
+                                        <i class="fa fa-certificate fa-lg"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-white" style="color: #bbecb3;" >
+                                        <i class="fa fa-check-circle-o fa-lg"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-white" style="color: #ecd1b3;" >
+                                        <i class="fa fa-clock-o fa-lg"></i>
+                                    </button>
+                                </div>
+
+                                <div class="btn-group status-group" role="group">
+                                    <button type="button" class="btn btn-white" style="background-color: #d2d2d2;" >
+                                        <i class="fa fa-question-circle-o fa-lg"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-white" style="background-color: #cdb4b4;" >
+                                        <i class="fa fa-times fa-lg"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-white" style="background-color: #dcb4d8;" >
+                                        <i class="fa fa-comments fa-lg"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-white" style="background-color: #b7b3ea;" >
+                                        <i class="fa fa-search fa-lg"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-white" style="background-color: #b3e4ea;" >
+                                        <i class="fa fa-file-code-o fa-lg"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-white" style="background-color: #eae7b3;" >
+                                        <i class="fa fa-certificate fa-lg"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-white" style="background-color: #bbecb3;" >
+                                        <i class="fa fa-check-circle-o fa-lg"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-white" style="background-color: #ecd1b3;" >
+                                        <i class="fa fa-clock-o fa-lg"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group col-xs-12">
+                            <label>Сортировать по</label>
+                            <div class="control-group">
+                                <div class="btn-selector">
+                                    <label></label>
+                                    <button type="button" class="btn btn-white">
+                                        <i class=""></i>
+                                        <span class="">Название</span>
+                                        <span class="caret"></span>
+                                    </button>
+                                </div>
+                                <div tabindex="0" class="btn btn-white sorting_button btn-down" role="button" aria-pressed="true">
+                                    <input type="text" tabindex="-1" role="presentation"
+                                           style="opacity: 0; height: 1px; width: 1px; z-index: -1; overflow: hidden; position: absolute;">
+                                    <div></div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="footer">
+                        <button type="button" class="btn btn-white">Сбросить</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="notifyPanel"></div>
+</div>
+</body>
+</html>

@@ -17,7 +17,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.company.client.activity.filter.AbstractCompanyFilterActivity;
 import ru.protei.portal.ui.company.client.activity.filter.AbstractCompanyFilterView;
-import ru.protei.portal.ui.company.client.widget.category.btngroup.CategoryBtnGroup;
+import ru.protei.portal.ui.company.client.widget.category.btngroup.CategoryBtnGroupMulti;
 import ru.protei.portal.ui.company.client.widget.group.buttonselector.GroupButtonSelector;
 
 import java.util.Set;
@@ -143,7 +143,7 @@ public class CompanyFilterView extends Composite implements AbstractCompanyFilte
 
     @Inject
     @UiField( provided = true )
-    CategoryBtnGroup categories;
+    CategoryBtnGroupMulti categories;
 
     @Inject
     @UiField( provided = true )

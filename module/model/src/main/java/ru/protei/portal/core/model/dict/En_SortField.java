@@ -53,8 +53,17 @@ public enum En_SortField {
     /**
      * issue number
      */
-    issue_number ("caseno")
-    ;
+    issue_number ("caseno"),
+
+    /**
+     * field name from location
+     */
+    name("NAME"),
+
+    /**
+     * equipment sldwrks filename
+     */
+    equipment_name_sldwrks("name_sldwrks");
 
     private String fieldName;
     private String bundleKey;

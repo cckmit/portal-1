@@ -1,0 +1,74 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="createEquipmentTable" author="ponomareva">
+        <createTable tableName="equipment">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="VARCHAR(128)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name_sldwrks" type="VARCHAR(128)"/>
+            <column name="created" type="DATETIME" defaultValueDate="CURRENT_TIMESTAMP"/>
+            <column name="type" type="VARCHAR(64)" defaultValue="DETAIL">
+                <constraints nullable="false"/>
+            </column>
+            <column name="dev_stage" type="VARCHAR(64)" defaultValue="DRAFT_PROJECT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="linked_equipment_id" type="BIGINT"/>
+            <column name="comment" type="VARCHAR(256)"/>
+            <column name="author_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="createDecimalNumberTable" author="ponomareva">
+        <createTable tableName="decimal_number">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="org_code" type="VARCHAR(4)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="classifier_code" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="reg_number" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modification_number" type="INT"/>
+            <column name="equipment_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_reserve" type="INT(1)" defaultValue="0">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addUniqueConstraint tableName="decimal_number"
+                             columnNames="org_code,classifier_code,reg_number,modification_number"
+                             constraintName="decimal_number_uk"/>
+
+        <addForeignKeyConstraint constraintName="decimal_number_equipment_id_fk"
+                                 baseTableName="decimal_number"
+                                 baseColumnNames="equipment_id"
+                                 referencedTableName="equipment"
+                                 referencedColumnNames="id"
+                                 onDelete="CASCADE"/>
+
+    </changeSet>
+
+
+    <changeSet id="addManagerAndProjectColumnToEquipmentTable" author="ponomareva">
+        <addColumn tableName="Equipment">
+            <column name="manager_id" type="BIGINT"/>
+            <column name="project" type="VARCHAR(128)"/>
+        </addColumn>
+    </changeSet>
+</databaseChangeLog>

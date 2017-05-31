@@ -24,12 +24,10 @@ public interface CaseService {
     CoreResponse<CaseObject> updateCaseObject(CaseObject p);
     CoreResponse<List<En_CaseState>> stateList(En_CaseType caseType);
     CoreResponse<List<CaseComment>> getCaseCommentList( long caseId );
-    CoreResponse<CaseComment> addCaseComment(CaseComment comment);
+    CoreResponse<CaseComment> addCaseComment( CaseComment p);
+    CoreResponse<CaseComment> updateCaseComment(CaseComment p, Long personId);
+    CoreResponse removeCaseComment( CaseComment caseComment, Long personId );
     CoreResponse<Boolean> updateCaseModified(Long caseId, Date modified);
-
-    CoreResponse<CaseComment> updateCaseComment(CaseComment p);
-    CoreResponse<CaseComment> removeCaseComment( CaseComment caseComment );
-
     CoreResponse<Long> bindAttachmentToCase(Attachment attachment, long caseId);
     boolean isExistsAttachments(Long caseId);
     CoreResponse<Boolean> updateExistsAttachmentsFlag(Long caseId, boolean flag);

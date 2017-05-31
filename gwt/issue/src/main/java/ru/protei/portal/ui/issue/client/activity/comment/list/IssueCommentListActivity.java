@@ -83,19 +83,14 @@ public abstract class IssueCommentListActivity
             return;
         }
 
-        issueService.removeIssueComment( caseComment, new RequestCallback<Boolean>() {
+        issueService.removeIssueComment( caseComment, new RequestCallback<Void>() {
             @Override
             public void onError( Throwable throwable ) {
                 fireEvent( new NotifyEvents.Show( lang.errRemoveIssueComment(), NotifyEvents.NotifyType.ERROR ) );
             }
 
             @Override
-            public void onSuccess( Boolean result ) {
-                if(!result){
-                    onError(null);
-                    return;
-                }
-
+            public void onSuccess( Void result ) {
                 Collection<Attachment> commentAttachments = itemView.attachmentContainer().getAll();
                 if(!commentAttachments.isEmpty())
                     commentAttachments.forEach(attachmentCollection::removeAttachment);

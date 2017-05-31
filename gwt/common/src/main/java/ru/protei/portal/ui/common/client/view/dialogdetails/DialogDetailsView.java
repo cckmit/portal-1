@@ -2,6 +2,7 @@ package ru.protei.portal.ui.common.client.view.dialogdetails;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.dom.client.HeadingElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
@@ -26,10 +27,8 @@ public class DialogDetailsView extends PopupPanel implements AbstractDialogDetai
         add( ourUiBinder.createAndBindUi( this ) );
         setGlassEnabled( true );
         setAutoHideEnabled( false );
-        setStyleName( "wrapper" );
-        setWidth( "800px" );
 
-        animation.setDialog( dialog, this );
+        animation.setDialog( modalDialog, this );
     }
 
     @Override
@@ -96,11 +95,11 @@ public class DialogDetailsView extends PopupPanel implements AbstractDialogDetai
     @UiField
     Anchor cancel;
     @UiField
-    SpanElement header;
+    HeadingElement header;
     @UiField
-    Label close;
+    Button close;
     @UiField
-    DivElement dialog;
+    DivElement modalDialog;
 
     AbstractDialogDetailsActivity activity;
 
