@@ -1,5 +1,6 @@
 package ru.protei.portal.tools.notifications;
 
+import oracle.ucp.common.Core;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,10 +8,10 @@ import org.springframework.context.event.EventListener;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.event.CaseObjectEvent;
 import ru.protei.portal.core.model.ent.CaseComment;
+import ru.protei.portal.core.model.ent.CaseObject;
+import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.struct.NotificationEntry;
-import ru.protei.portal.core.service.CaseService;
-import ru.protei.portal.core.service.CaseSubscriptionService;
-import ru.protei.portal.core.service.TemplateService;
+import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.template.PreparedTemplate;
 
 import java.util.List;
@@ -32,6 +33,10 @@ public class NotificationProcessor {
     @Autowired
     CaseService caseService;
 
+    @Autowired
+    EmployeeService employeeService;
+
+
     @EventListener
     public void onCaseChanged( CaseObjectEvent event ) {
         Set<NotificationEntry> notificationEntries = subscriptionService.subscribers( event );
@@ -39,13 +44,23 @@ public class NotificationProcessor {
             return;
         }
 
-        CoreResponse<List<CaseComment> > comments = caseService.getCaseCommentList( event.getCaseObject().getId() );
+        CaseObject caseObject = event.getCaseObject();
+
+        CoreResponse<List<CaseComment> > comments = caseService.getCaseCommentList( caseObject.getId() );
         if ( comments.isError() ) {
             log.error( "Failed to retrieve comments for caseId={}", event.getCaseObject().getId() );
             return;
         }
 
-        PreparedTemplate template = templateService.getCrmEmailNotificationBody( event, comments.getData() );
+        Person manager = getManager( caseObject.getManagerId() );
+        Person oldManager = manager;
+        if ( event.isManagerChanged() ) {
+            oldManager = getManager( event.getOldState().getManagerId() );
+        }
+
+        PreparedTemplate template = templateService.getCrmEmailNotificationBody(
+            event, comments.getData(), manager, oldManager
+        );
         if ( template == null ) {
             log.error( "Failed to prepare template for event {}", event );
             return;
@@ -55,5 +70,18 @@ public class NotificationProcessor {
             String messageBody = template.getText( entry.getAddress(), entry.getLangCode() );
             log.info( "Email Notification send to {} subject={} body = {}", entry.getAddress(), "", messageBody );
         } );
+    }
+
+    private Person getManager( Long managerId ) {
+        if ( managerId == null ) {
+            return null;
+        }
+        CoreResponse<Person> managerResponse = employeeService.getEmployee( managerId );
+        if ( managerResponse.isError() ) {
+            log.error( "Failed to retrieve manager {}", managerId );
+            return null;
+        }
+
+        return managerResponse.getData();
     }
 }

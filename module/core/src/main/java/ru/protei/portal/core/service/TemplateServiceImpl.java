@@ -7,8 +7,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.protei.portal.core.event.CaseObjectEvent;
 import ru.protei.portal.core.model.dict.En_CaseState;
+import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
+import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.service.template.PreparedTemplate;
 
 import javax.annotation.PostConstruct;
@@ -43,10 +45,33 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     @Override
-    public PreparedTemplate getCrmEmailNotificationBody( CaseObjectEvent caseObjectEvent, List< CaseComment > caseComments ) {
+    public PreparedTemplate getCrmEmailNotificationBody(
+        CaseObjectEvent caseObjectEvent, List< CaseComment > caseComments, Person manager, Person oldManager
+    ) {
+
+        CaseObject oldState = caseObjectEvent.getOldState();
+
         Map<String, Object> templateModel = new HashMap<>();
         templateModel.put( "linkToIssue", "#" );
+        templateModel.put( "createdByMe", false );
         templateModel.put( "case", caseObjectEvent.getCaseObject() );
+        templateModel.put( "importanceLevel", En_ImportanceLevel.getById( caseObjectEvent.getCaseObject().getImpLevel() ).getCode() );
+        templateModel.put( "manager", manager );
+        templateModel.put( "caseState", En_CaseState.getById( caseObjectEvent.getCaseObject().getStateId() ).getName() );
+
+        templateModel.put( "productChanged", caseObjectEvent.isProductChanged() );
+        templateModel.put( "oldProductName", oldState == null ? null : oldState.getProduct().getName() );
+        templateModel.put( "importanceChanged", caseObjectEvent.isCaseImportanceChanged() );
+        templateModel.put( "oldImportanceLevel", oldState == null ? null : En_ImportanceLevel.getById( oldState.getImpLevel() ).getCode() );
+        templateModel.put( "caseChanged", caseObjectEvent.isCaseStateChanged() );
+        templateModel.put( "oldCaseState", oldState == null ? null : En_CaseState.getById( oldState.getStateId() ).getName() );
+        templateModel.put( "customerChanged", caseObjectEvent.isInitiatorChanged() || caseObjectEvent.isInitiatorCompanyChanged() );
+        templateModel.put( "oldInitiator", oldState == null ? null : oldState.getInitiator() );
+        templateModel.put( "oldInitiatorCompany", oldState == null ? null : oldState.getInitiatorCompany() );
+        templateModel.put( "managerChanged", caseObjectEvent.isManagerChanged() );
+        templateModel.put( "oldManager", oldManager );
+        templateModel.put( "infoChanged", caseObjectEvent.isInfoChanged() );
+
         templateModel.put( "caseComments",  caseComments.stream().map( ( comment ) -> {
             Map< String, Object > caseComment = new HashMap<>();
             caseComment.put( "created", comment.getCreated() );

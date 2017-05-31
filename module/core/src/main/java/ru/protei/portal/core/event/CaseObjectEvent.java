@@ -4,6 +4,7 @@ import org.springframework.context.ApplicationEvent;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.service.CaseService;
+import sun.plugin.PluginURLJarFileCallBack;
 
 import java.util.Date;
 
@@ -43,6 +44,22 @@ public class CaseObjectEvent extends ApplicationEvent {
 
     public boolean isManagerChanged () {
         return isUpdateEvent() && !HelperFunc.equals(newState.getManagerId(),oldState.getManagerId());
+    }
+
+    public boolean isProductChanged() {
+        return isUpdateEvent() && !HelperFunc.equals( newState.getProductId(), oldState.getProductId() );
+    }
+
+    public boolean isInitiatorChanged() {
+        return isUpdateEvent() && !HelperFunc.equals( newState.getInitiatorId(), oldState.getInitiatorId() );
+    }
+
+    public boolean isInitiatorCompanyChanged() {
+        return isUpdateEvent() && !HelperFunc.equals( newState.getInitiatorCompanyId(), oldState.getInitiatorCompanyId() );
+    }
+
+    public boolean isInfoChanged() {
+        return isUpdateEvent() && !HelperFunc.equals( newState.getInfo(), oldState.getInfo() );
     }
 
     public Date getEventDate () {

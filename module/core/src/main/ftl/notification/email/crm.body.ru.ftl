@@ -27,9 +27,13 @@
                     </tbody>
                 </table>
                 <div style="margin:14px 0 8px 29px;font-size:13px;line-height:18.5px">
-                    <div class="wiki text">${case.info}</div>
+                    <div class="wiki text" style="
+                        <#if infoChanged>background: #dff7e2;</#if>
+                    ">
+                        ${case.info}
+                    </div>
                     <div style="margin-top: 14px;">
-                        <#if case.private == true>
+                        <#if case.privateCase == true>
                             <span style="color:#777777;font-style:italic;font-size:13px">
                                 <img style="vertical-align:text-bottom;opacity: 0.3;margin-left: -2px;" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAApUlEQVQ4jd3RPYpCQRAE4M+fTPYZiAu6F/B8G3gPr6B4H0FzXUFETMR0hWdgBzIO62PVxIaimZquqhmaF9UnRpgHRuhWFX/hByV2gRJL9KoYTEPwjXpgGNykisERs4SrYYFDOlzPGHxgk3BlcO10uJmc+9FbGCR3reg9bDPB+jhF2l/4ddnSzRcKNHLOmVcXOYN/1RsYXK9xhTE6dzR7rB8Nfl6dAU0MImYlDT68AAAAAElFTkSuQmCC">
                                 Обращение является приватным
@@ -48,17 +52,29 @@
                 <td style="vertical-align: top;padding: 5px 5px 5px 0;padding-right: 15px;font-family: sans-serif;font-size: 13px;color: #888888;">
                     Продукт
                 </td>
-                <td colspan="3" style="vertical-align: top;padding:5px;font-family: sans-serif;font-size: 13px;">
-                    <div>${case.product.name}</div>
+                <td colspan="3" style="
+                        vertical-align:top;padding:5px;font-family: sans-serif;font-size: 13px;
+                        <#if productChanged>background: #dff7e2;</#if>
+                ">
+                    <div>
+                        <#if productChanged>
+                            ${oldProductName}&npsp;--&gt;&npsp;
+                        </#if>
+                        ${case.product.name}
+                    </div>
                 </td>
             </tr>
             <tr>
-                <td style=" padding: 5px 5px 5px 0; vertical-align: top;padding-right: 15px; font-family: sans-serif; font-size:13px; color: #888888;">
+                <td style="padding: 5px 5px 5px 0; vertical-align: top;padding-right: 15px; font-family: sans-serif; font-size:13px; color: #888888;">
                     Критичность
                 </td>
-                <td style="vertical-align: top; padding: 5px; font-family:sans-serif; font-size: 13px;">
+                <td style="
+                        vertical-align: top; padding: 5px; font-family:sans-serif; font-size: 13px;
+                        <#if importanceChanged>background: #dff7e2;</#if>
+                ">
                     <div style=" background-color: #ffee9c !important;padding:2px 4px;font-size:90%; ">
                         <div style="word-wrap: break-word; overflow: hidden; color: #b45f06 !important; ">
+                            <#if importanceChanged>${oldImportanceLevel}&npsp;--&gt;&npsp;</#if>
                             ${importanceLevel}
                         </div>
                     </div>
@@ -66,9 +82,13 @@
                 <td style=" padding: 5px 5px 5px 20px; vertical-align: top; padding-right: 15px; font-family: sans-serif;font-size: 13px; color: #888888;">
                     Статус
                 </td>
-                <td style="vertical-align: top; padding: 5px; font-family:sans-serif; font-size: 13px;">
+                <td style="
+                        vertical-align: top; padding: 5px; font-family:sans-serif; font-size: 13px;
+                        <#if caseChanged>background: #dff7e2;</#if>
+                ">
                     <div style="">
                         <div style="word-wrap: break-word; overflow: hidden;">
+                            <#if caseChanged>${oldCaseState}&npsp;--&gt;&npsp;</#if>
                             ${caseState}
                         </div>
                     </div>
@@ -78,20 +98,40 @@
                 <td style=" padding: 5px 5px 5px 0; vertical-align: top;padding-right: 15px; font-family: sans-serif; font-size:13px; color: #888888;">
                     Заказчик
                 </td>
-                <td style="vertical-align: top; padding: 5px; font-family:sans-serif; font-size: 13px;">
+                <td style="
+                        vertical-align: top; padding: 5px; font-family:sans-serif; font-size: 13px;
+                        <#if customerChanged>background: #dff7e2;</#if>
+                ">
                     <div style="">
                         <div style="word-wrap: break-word; overflow: hidden;">
-                            ${case.initiator.displayName} из ${case.initiatorCompany.cname}
+                            <#if customerChanged>
+                                ${oldInitiator.displayShortName} из ${oldInitiatorCompany.cname}
+                                &npsp;--&gt;&npsp;
+                            </#if>
+                            ${case.initiator.displayShortName} из ${case.initiatorCompany.cname}
                         </div>
                     </div>
                 </td>
                 <td style=" padding: 5px 5px 5px 20px; vertical-align:top; padding-right: 15px; font-family: sans-serif;font-size: 13px; color: #888888;">
                     Менеджер
                 </td>
-                <td style="vertical-align: top; padding: 5px; font-family:sans-serif; font-size: 13px;">
+                <td style="
+                        vertical-align: top; padding: 5px; font-family:sans-serif; font-size: 13px;
+                        <#if managerChanged>background: #dff7e2;</#if>
+                ">
                     <div style="">
                         <div style="word-wrap: break-word; overflow: hidden;">
-                            ${case.manager.displayName} из ${case.manager.company.cname}
+
+                            <#if managerChanged>
+                                <#if oldManager??>
+                                    ${oldManager.displayShortName} из ${oldManager.company.cname}
+                                </#if>
+                                &npsp;--&gt;&npsp;
+                            </#if>
+
+                            <#if manager??>
+                                ${manager.displayShortName} из ${manager.company.cname}
+                            </#if>
                         </div>
                     </div>
                 </td>
@@ -106,7 +146,7 @@
                         <td style="background: #dff7e2;;border-radius:5px 0 0 5px;padding:12px;white-space:nowrap;color:gray;vertical-align:top;font-size:11px">
                             <div style="color:blue;font-size:14px;margin-bottom:5px;color:#0062ff">
                                 <#if caseComment.author??>
-                                    ${caseComment.author.displayName}
+                                    ${caseComment.author.displayShortName}
                                 </#if>
                             </div>
                         ${caseComment.created}
@@ -122,7 +162,7 @@
                         <td style="background: #dff7e2;;border-radius:5px 0 0 5px;padding:12px;white-space:nowrap;color:gray;vertical-align:top;font-size:11px">
                             <div style="color:blue;font-size:14px;margin-bottom:5px;color:#0062ff">
                                 <#if caseComment.author??>
-                                    ${caseComment.author.displayName}
+                                    ${caseComment.author.displayShortName}
                                 </#if>
                             </div>
                         ${caseComment.created}

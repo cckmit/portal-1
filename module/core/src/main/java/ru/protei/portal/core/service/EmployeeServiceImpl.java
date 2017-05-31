@@ -56,6 +56,14 @@ public class EmployeeServiceImpl implements EmployeeService {
         return new EmployeeDetailView().fill(personAbsences, isFull);
     }
 
+    @Override
+    public CoreResponse< Person > getEmployee( Long id ) {
+        Person person = personDAO.getEmployee(id);
+
+        return person != null ? new CoreResponse<Person>().success(person)
+            : new CoreResponse<Person>().error(En_ResultStatus.NOT_FOUND);
+    }
+
     private void fillAbsencesOfCreators(List<PersonAbsence> personAbsences){
         if(personAbsences.size()==0)
             return;
