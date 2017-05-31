@@ -3,6 +3,8 @@ package ru.protei.portal.test.hpsm;
 import org.junit.*;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import ru.protei.portal.core.model.dao.CaseObjectDAO;
+import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.service.CaseControlService;
 import ru.protei.portal.hpsm.api.HpsmStatus;
 import ru.protei.portal.hpsm.logic.HpsmEvent;
@@ -30,6 +32,7 @@ public class CreateEventTest {
 
         TestServiceInstance testServiceInstance = ctx.getBean(TestServiceInstance.class);
         InboundMainMessageHandler handler = ctx.getBean(InboundMainMessageHandler.class);
+        CaseObjectDAO caseObjectDAO = ctx.getBean(CaseObjectDAO.class);
 
         HpsmTestUtils testUtils = ctx.getBean(HpsmTestUtils.class);
 
@@ -52,6 +55,12 @@ public class CreateEventTest {
         Assert.assertNotNull(responseEvent.getHpsmMessage());
 
         System.out.println(responseEvent.getSubject());
+
+        CaseObject resultCase = caseObjectDAO.getByExternalAppId(HPSM_TEST_CASE_ID1);
+
+        Assert.assertNotNull(resultCase.getInitiator());
+        Assert.assertNotNull(resultCase.getInitiatorCompany());
+
     }
 
 

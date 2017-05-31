@@ -1,11 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hpsm-config>
-    <mail-server id="default">
-        <host>smtp.protei.ru</host>
-        <port>2525</port>
-        <default-charset>utf-8</default-charset>
-    </mail-server>
-
     <service-instance id="mf">
         <inbound-channel>
             <url>imaps://crm_test-user:hae7Eito@imap.protei.ru:993/INBOX</url>
@@ -16,6 +10,9 @@
             <sender-address>crm_test@protei.ru</sender-address>
             <!-- TO-field -->
             <send-to>zavedeev@protei.ru</send-to>
+
+            <default-contact-email>support@protei.ru</default-contact-email>
+            <default-contact-dname>protei.support</default-contact-dname>
         </outbound-channel>
     </service-instance>
 

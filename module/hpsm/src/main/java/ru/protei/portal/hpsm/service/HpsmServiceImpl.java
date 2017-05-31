@@ -118,6 +118,7 @@ public class HpsmServiceImpl implements HpsmService {
 
         HpsmMessageHeader header = new HpsmMessageHeader(object.getExtAppCaseId(), object.getExtId(), msg.status());
         msg.setMessage(event.getCaseComment().getText());
+        instance.fillReplyMessageAttributes(msg, object);
 
         try {
             instance.sendReply(header, msg);

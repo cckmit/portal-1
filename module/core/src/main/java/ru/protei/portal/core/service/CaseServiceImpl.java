@@ -80,7 +80,10 @@ public class CaseServiceImpl implements CaseService {
         if (caseId == null)
             return new CoreResponse().error(En_ResultStatus.NOT_CREATED);
 
-        publisherService.publishEvent(new CaseObjectEvent(this, caseObject));
+
+        // From GWT-side we get partially filled object, that's why we need to refresh state from db
+        CaseObject newState = caseObjectDAO.get(caseObject.getId());
+        publisherService.publishEvent(new CaseObjectEvent(this, newState));
 
         return new CoreResponse<CaseObject>().success( caseObject );
     }
@@ -92,14 +95,17 @@ public class CaseServiceImpl implements CaseService {
 
         caseObject.setModified(new Date());
 
-        CaseObjectEvent updateEvent = new CaseObjectEvent(this, caseObject, caseObjectDAO.get(caseObject.getId()));
+        CaseObject oldState = caseObjectDAO.get(caseObject.getId());
 
         boolean isUpdated = caseObjectDAO.merge(caseObject);
 
         if (!isUpdated)
             return new CoreResponse().error(En_ResultStatus.NOT_UPDATED);
 
-        publisherService.publishEvent(updateEvent);
+        // From GWT-side we get partially filled object, that's why we need to refresh state from db
+        CaseObject newState = caseObjectDAO.get(caseObject.getId());
+
+        publisherService.publishEvent(new CaseObjectEvent(this, newState, oldState));
 
         return new CoreResponse<CaseObject>().success( caseObject );
     }

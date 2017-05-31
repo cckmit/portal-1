@@ -17,7 +17,6 @@ public class HpsmEnvConfig {
     public static final HpsmEnvConfig load(String file) throws IOException {
         return ConfigParser.parse(file, true,
                 HpsmEnvConfig.class,
-//                MailServerDesc.class,
                 ServiceConfig.class,
                 OutboundChannel.class,
                 InboundChannel.class,
@@ -25,8 +24,6 @@ public class HpsmEnvConfig {
     }
 
 
-//    @XStreamAlias("mail-server")
-//    private MailServerDesc mailServer;
 
     @XStreamImplicit
     @XStreamAlias("service-instance")
@@ -38,9 +35,6 @@ public class HpsmEnvConfig {
     private HpsmEnvConfig() {
     }
 
-//    public MailServerDesc getMailServer() {
-//        return mailServer;
-//    }
 
     public List<ServiceConfig> getInstanceList() {
         return instanceList;
@@ -122,6 +116,14 @@ public class HpsmEnvConfig {
         @XStreamAlias("send-to")
         private String sendTo;
 
+        @XStreamAlias("default-contact-email")
+        private String defaultContactEmail;
+
+        @XStreamAlias("default-contact-dname")
+        private String defaultContactName;
+
+
+
         public OutboundChannel() {
         }
 
@@ -137,6 +139,14 @@ public class HpsmEnvConfig {
 
         public String getSendTo() {
             return sendTo;
+        }
+
+        public String getDefaultContactEmail() {
+            return defaultContactEmail;
+        }
+
+        public String getDefaultContactName() {
+            return defaultContactName;
         }
     }
 
@@ -156,40 +166,4 @@ public class HpsmEnvConfig {
             return url;
         }
     }
-
-
-//    public static class MailServerDesc {
-//
-//        @XStreamAsAttribute
-//        @XStreamAlias("id")
-//        String id;
-//
-//        @XStreamAlias("host")
-//        String host;
-//
-//        @XStreamAlias("port")
-//        int port;
-//
-//        @XStreamAlias("default-charset")
-//        String defaultCharset;
-//
-//        public MailServerDesc() {
-//        }
-//
-//        public String getId() {
-//            return id;
-//        }
-//
-//        public String getHost() {
-//            return host;
-//        }
-//
-//        public int getPort() {
-//            return port;
-//        }
-//
-//        public String getDefaultCharset() {
-//            return defaultCharset;
-//        }
-//    }
 }

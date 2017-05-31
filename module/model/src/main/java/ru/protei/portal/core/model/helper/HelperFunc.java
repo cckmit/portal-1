@@ -2,7 +2,9 @@ package ru.protei.portal.core.model.helper;
 
 import org.apache.commons.collections4.ComparatorUtils;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.stream.Collectors;
 
 /**
  * Created by michael on 06.07.16.
@@ -38,6 +40,10 @@ public class HelperFunc {
         }
 
         return true;
+    }
+
+    public static String joinNotEmpty (String delim, String... arr) {
+        return Arrays.stream(arr).filter(s -> isNotEmpty(s)).collect(Collectors.joining(delim));
     }
 
     public static boolean testAllNotEmpty (String...arr) {
