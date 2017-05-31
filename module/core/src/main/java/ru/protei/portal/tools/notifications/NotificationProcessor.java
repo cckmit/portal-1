@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.core.event.CaseCommentEvent;
 import ru.protei.portal.core.event.CaseObjectEvent;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
@@ -38,31 +39,51 @@ public class NotificationProcessor {
 
 
     @EventListener
-    public void onCaseChanged( CaseObjectEvent event ) {
+    public void onCaseObjectChanged( CaseObjectEvent event ) {
         Set<NotificationEntry> notificationEntries = subscriptionService.subscribers( event );
         if ( notificationEntries.isEmpty() ) {
             return;
         }
 
-        CaseObject caseObject = event.getCaseObject();
-
-        CoreResponse<List<CaseComment> > comments = caseService.getCaseCommentList( caseObject.getId() );
-        if ( comments.isError() ) {
-            log.error( "Failed to retrieve comments for caseId={}", event.getCaseObject().getId() );
-            return;
-        }
-
-        Person manager = getManager( caseObject.getManagerId() );
-        Person oldManager = manager;
+        Person oldManager = null;
         if ( event.isManagerChanged() ) {
             oldManager = getManager( event.getOldState().getManagerId() );
         }
 
+        performNotification( event.getCaseObject(), oldManager, event, null, notificationEntries );
+
+    }
+
+    @EventListener
+    public void onCaseCommentAdded( CaseCommentEvent event ) {
+        Set<NotificationEntry> notificationEntries = subscriptionService.subscribers( event );
+        if ( notificationEntries.isEmpty() ) {
+            return;
+        }
+
+        performNotification( event.getCaseObject(), null, null, event, notificationEntries );
+    }
+
+    private void performNotification(
+        CaseObject caseObject, Person oldManager, CaseObjectEvent caseEvent, CaseCommentEvent commentEvent,
+        Set<NotificationEntry> notificationEntries
+    ) {
+        CoreResponse<List<CaseComment> > comments = caseService.getCaseCommentList( caseObject.getId() );
+        if ( comments.isError() ) {
+            log.error( "Failed to retrieve comments for caseId={}", caseObject.getId() );
+            return;
+        }
+
+        Person manager = getManager( caseObject.getManagerId() );
+        if ( oldManager == null ) {
+            oldManager = manager;
+        }
+
         PreparedTemplate template = templateService.getCrmEmailNotificationBody(
-            event, comments.getData(), manager, oldManager
+            caseEvent, comments.getData(), manager, oldManager, commentEvent
         );
         if ( template == null ) {
-            log.error( "Failed to prepare template for event {}", event );
+            log.error( "Failed to prepare template" );
             return;
         }
 

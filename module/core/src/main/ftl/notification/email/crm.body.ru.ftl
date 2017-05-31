@@ -143,7 +143,10 @@
             <#list caseComments as caseComment>
                 <#if caseComment.caseState??>
                     <tr>
-                        <td style="background: #dff7e2;;border-radius:5px 0 0 5px;padding:12px;white-space:nowrap;color:gray;vertical-align:top;font-size:11px">
+                        <td style="
+                                border-radius:5px 0 0 5px;padding:12px;white-space:nowrap;color:gray;vertical-align:top;font-size:11px
+                                <#if caseComment.changed>background: #dff7e2;</#if>
+                        ">
                             <div style="color:blue;font-size:14px;margin-bottom:5px;color:#0062ff">
                                 <#if caseComment.author??>
                                     ${caseComment.author.displayShortName}
@@ -151,7 +154,10 @@
                             </div>
                         ${caseComment.created}
                         </td>
-                        <td style="background: #dff7e2;;border-radius:0 5px 5px 0;padding:12px;width:100%;vertical-align:top;line-height:18.5px">
+                        <td style="
+                                border-radius:0 5px 5px 0;padding:12px;width:100%;vertical-align:top;line-height:18.5px
+                                <#if caseComment.changed>background: #dff7e2;</#if>
+                        ">
                             <div class="wiki text">
                                 Изменил статус на ${caseComment.caseState}
                             </div>
@@ -159,7 +165,10 @@
                     </tr>
                 <#else>
                     <tr>
-                        <td style="background: #dff7e2;;border-radius:5px 0 0 5px;padding:12px;white-space:nowrap;color:gray;vertical-align:top;font-size:11px">
+                        <td style="
+                                border-radius:5px 0 0 5px;padding:12px;white-space:nowrap;color:gray;vertical-align:top;font-size:11px
+                                <#if caseComment.changed>background: #dff7e2;</#if>
+                        ">
                             <div style="color:blue;font-size:14px;margin-bottom:5px;color:#0062ff">
                                 <#if caseComment.author??>
                                     ${caseComment.author.displayShortName}
@@ -167,9 +176,12 @@
                             </div>
                         ${caseComment.created}
                         </td>
-                        <td style="background: #dff7e2;;border-radius:0 5px 5px 0;padding:12px;width:100%;vertical-align:top;line-height:18.5px">
+                        <td style="
+                                border-radius:0 5px 5px 0;padding:12px;width:100%;vertical-align:top;line-height:18.5px
+                                <#if caseComment.changed>background: #dff7e2;</#if>
+                        ">
                             <div class="wiki text">
-                            ${caseComment.text}
+                                ${caseComment.text}
                             </div>
                         </td>
                     </tr>
