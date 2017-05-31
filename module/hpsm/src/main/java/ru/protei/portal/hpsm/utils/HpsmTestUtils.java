@@ -3,17 +3,14 @@ package ru.protei.portal.hpsm.utils;
 import com.thoughtworks.xstream.XStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import ru.protei.portal.hpsm.api.HpsmMessageFactory;
 import ru.protei.portal.hpsm.api.HpsmStatus;
-import ru.protei.portal.hpsm.api.MailMessageFactory;
+import ru.protei.portal.core.mail.MailMessageFactory;
 import ru.protei.portal.hpsm.logic.HpsmEvent;
 import ru.protei.portal.hpsm.struct.HpsmMessage;
 import ru.protei.portal.hpsm.struct.HpsmMessageHeader;
 
 import javax.mail.internet.MimeMessage;
-
-import static ru.protei.portal.hpsm.utils.HpsmUtils.RTTS_HPSM_XML_REQUEST;
 
 /**
  * Created by Mike on 01.05.2017.
@@ -25,7 +22,6 @@ public class HpsmTestUtils {
     public static final String HPSM_MAIL_ADDRESS = "zavedeev@protei.ru";
 
     @Autowired
-    @Qualifier("hpsmMailFactory")
     MailMessageFactory messageFactory;
 
     @Autowired

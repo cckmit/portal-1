@@ -1,10 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hpsm-config>
-    <mail-server id="default">
-        <host>smtp.protei.ru</host>
-        <port>2525</port>
-        <default-charset>utf-8</default-charset>
-    </mail-server>
 
     <service-instance id="local">
         <inbound-channel>
@@ -19,6 +14,9 @@
             <!--
             <send-to>FSMPP-vendor@megafon.ru</send-to>
             -->
+
+            <default-contact-email>support@protei.ru</default-contact-email>
+            <default-contact-dname>protei.support</default-contact-dname>
         </outbound-channel>
     </service-instance>
 
