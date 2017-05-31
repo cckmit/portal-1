@@ -1,0 +1,21 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+    <g:HTMLPanel ui:field="root" styleName="attach" tag="li">
+        <div class="attach-thumb">
+            <g:Image styleName="pic" ui:field="picture"/>
+        </div>
+        <div class="attach-controls" ui:field="attachControls">
+            <g:Anchor href="javascript:void(0)" ui:field="deleteButton" styleName="attach-delete">
+                <i class="ion-android-close fa-2x"/>
+            </g:Anchor>
+        </div>
+        <div class="attach-info">
+            <g:Anchor href="javascript:void(0)" ui:field="downloadButton" styleName="attach-lnk" target="_blank">
+                <span ui:field="fileName"/>
+                <span ui:field="fileSize" class="attach-size"/>
+            </g:Anchor>
+        </div>
+
+    </g:HTMLPanel>
+
+</ui:UiBinder>

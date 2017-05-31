@@ -3,6 +3,8 @@ package ru.protei.portal.core.service.user;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * Created by michael on 29.06.16.
  */
@@ -17,4 +19,5 @@ public interface AuthService {
     public UserSessionDescriptor findSession (String appSessionId, String ip, String userAgent);
     public CoreResponse<UserSessionDescriptor> login (String appSessionID, String login, String pwd, String ip, String userAgent);
     public boolean logout (String appSessionId, String ip, String userAgent);
+    public UserSessionDescriptor getUserSessionDescriptor(HttpServletRequest request);
 }

@@ -3,11 +3,13 @@ package ru.protei.portal.core.service;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseShortView;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -25,4 +27,9 @@ public interface CaseService {
     CoreResponse<CaseComment> addCaseComment( CaseComment p);
     CoreResponse<CaseComment> updateCaseComment(CaseComment p, Long personId);
     CoreResponse removeCaseComment( CaseComment caseComment, Long personId );
+    CoreResponse<Boolean> updateCaseModified(Long caseId, Date modified);
+    CoreResponse<Long> bindAttachmentToCase(Attachment attachment, long caseId);
+    boolean isExistsAttachments(Long caseId);
+    CoreResponse<Boolean> updateExistsAttachmentsFlag(Long caseId, boolean flag);
+    CoreResponse<Boolean> updateExistsAttachmentsFlag(Long caseId);
 }

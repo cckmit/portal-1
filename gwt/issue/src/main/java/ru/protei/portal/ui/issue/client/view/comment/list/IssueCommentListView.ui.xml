@@ -1,5 +1,7 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
-             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:fileuploader='urn:import:ru.protei.portal.ui.common.client.widget.uploader'
+             xmlns:attachment='urn:import:ru.protei.portal.ui.common.client.widget.attachment.list'>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
@@ -12,6 +14,12 @@
                 <g:TextArea ui:field="comment" styleName="input-field form-group"/>
                 <span class="">
                     <g:Button styleName="btn btn-success" ui:field="send" text="{lang.commentSendMessage}"/>
+                    <fileuploader:FileUploader ui:field="fileUploader" styleName="inline-block">
+                        <span class="btn btn-white">
+                            <ui:text from='{lang.addAttachmentBtn}'/>
+                        </span>
+                    </fileuploader:FileUploader>
+                    <attachment:AttachmentList ui:field="attachmentList" simpleMode="true" styleName="inline-block attachment-list-simple"/>
                 </span>
             </div>
         </div>

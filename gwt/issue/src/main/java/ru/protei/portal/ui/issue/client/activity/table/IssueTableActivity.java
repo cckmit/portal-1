@@ -3,6 +3,7 @@ package ru.protei.portal.ui.issue.client.activity.table;
 import com.google.gwt.regexp.shared.MatchResult;
 import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -12,6 +13,7 @@ import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_SortDir;
+import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
@@ -20,7 +22,9 @@ import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
 import ru.protei.portal.ui.common.client.service.IssueServiceAsync;
+import ru.protei.portal.ui.common.client.widget.attachment.popup.AttachPopup;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterActivity;
 import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterView;
@@ -65,7 +69,6 @@ public abstract class IssueTableActivity
         initDetails.parent.add( pagerView.asWidget() );
 
         fireEvent( new ActionBarEvents.Add( CREATE_ACTION, UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.ISSUE ) );
-
         requestIssuesCount();
     }
 
@@ -129,8 +132,41 @@ public abstract class IssueTableActivity
     }
 
     @Override
+    public void updateRow(Long issueId){
+        issueService.getIssues( new CaseQuery(issueId), new RequestCallback<List<CaseShortView>>() {
+            @Override
+            public void onError( Throwable throwable ) {
+                fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
+            }
+
+            @Override
+            public void onSuccess( List<CaseShortView> caseObjects ) {
+                view.updateRow(caseObjects.get(0));
+            }
+        } );
+    }
+
+    @Override
     public void onLastClicked() {
         view.scrollTo( view.getPageCount()-1 );
+    }
+
+    @Override
+    public void onAttachClicked(CaseShortView value, IsWidget widget) {
+        attachmentService.getAttachmentsByCaseId(value.getId(), new RequestCallback<List<Attachment>>() {
+            @Override
+            public void onError(Throwable throwable) {
+                fireEvent( new NotifyEvents.Show( lang.attachmentsNotLoaded(), NotifyEvents.NotifyType.ERROR ) );
+            }
+
+            @Override
+            public void onSuccess(List<Attachment> list) {
+                if(!list.isEmpty()) {
+                    attachPopup.fill(list);
+                    attachPopup.showNear(widget);
+                }
+            }
+        });
     }
 
     private void requestIssuesCount() {
@@ -227,6 +263,12 @@ public abstract class IssueTableActivity
 
     @Inject
     AbstractPagerView pagerView;
+
+    @Inject
+    AttachPopup attachPopup;
+
+    @Inject
+    AttachmentServiceAsync attachmentService;
 
     private static String CREATE_ACTION;
     private AppEvents.InitDetails initDetails;

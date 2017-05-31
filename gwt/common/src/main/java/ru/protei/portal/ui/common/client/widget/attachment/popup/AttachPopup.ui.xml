@@ -1,0 +1,8 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:attachment='urn:import:ru.protei.portal.ui.common.client.widget.attachment.list'>
+
+    <g:HTMLPanel ui:field="root" styleName="attachment-popup">
+        <attachment:AttachmentList hiddenControls="false" ui:field="attachmentContainer"  />
+    </g:HTMLPanel>
+</ui:UiBinder>

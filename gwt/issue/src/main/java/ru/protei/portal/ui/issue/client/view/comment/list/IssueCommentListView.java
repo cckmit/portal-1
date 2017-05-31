@@ -10,6 +10,10 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
+import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
+import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
+import ru.protei.portal.ui.common.client.widget.uploader.FileUploader;
 import ru.protei.portal.ui.issue.client.activity.comment.list.AbstractIssueCommentListActivity;
 import ru.protei.portal.ui.issue.client.activity.comment.list.AbstractIssueCommentListView;
 
@@ -20,11 +24,9 @@ public class IssueCommentListView
         extends Composite
         implements AbstractIssueCommentListView {
 
-
     @Inject
-    public IssueCommentListView( Lang lang ) {
+    public void onInit( ) {
         initWidget( ourUiBinder.createAndBindUi( this ) );
-
         comment.getElement().setAttribute( "placeholder", lang.commentAddMessagePlaceholder() );
     }
 
@@ -48,6 +50,16 @@ public class IssueCommentListView
         comment.setFocus( true );
     }
 
+    @Override
+    public void setFileUploadHandler(FileUploader.FileUploadHandler handler) {
+        fileUploader.setFileUploadHandler(handler);
+    }
+
+    @Override
+    public HasAttachments attachmentContainer(){
+        return attachmentList;
+    }
+
     @UiHandler( "send" )
     public void onSendClicked( ClickEvent event ) {
         if ( activity != null ) {
@@ -66,6 +78,11 @@ public class IssueCommentListView
         }
     }
 
+    @UiHandler("attachmentList")
+    public void onRemoveAttachment(RemoveEvent event){
+        activity.removeTempAttachment(event.getAttachment());
+    }
+
     @UiField
     HTMLPanel root;
     @UiField
@@ -74,6 +91,14 @@ public class IssueCommentListView
     HTMLPanel commentsContainer;
     @UiField
     Button send;
+    @Inject
+    @UiField(provided = true)
+    AttachmentList attachmentList;
+    @Inject
+    @UiField(provided = true)
+    FileUploader fileUploader;
+    @UiField
+    Lang lang;
 
     private AbstractIssueCommentListActivity activity;
 

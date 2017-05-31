@@ -43,7 +43,6 @@ public class MainConfiguration {
         return new PersonAbsenceDAO_Impl();
     }
 
-
     @Bean
     public CompanyDAO getCompanyDAO() {
         return new CompanyDAO_Impl();
@@ -156,6 +155,16 @@ public class MainConfiguration {
     }
 
     @Bean
+    public CaseAttachmentDAO getCaseAttachmentDAO() {
+        return new CaseAttachmentDAO_Impl();
+    }
+
+    @Bean
+    public AttachmentDAO getAttachmentDAO() {
+        return new AttachmentDAO_Impl();
+    }
+
+    @Bean
     public EquipmentDAO getEquipmentDAO() { return new EquipmentDAO_Impl(); }
 
     @Bean
@@ -191,8 +200,8 @@ public class MainConfiguration {
  **/
     @Bean
     public SessionIdGen getSessionIdGenerator() {
-    return new SimpleSidGenerator();
-}
+        return new SimpleSidGenerator();
+    }
 
     @Bean
     public AuthService getAuthService() {
@@ -231,6 +240,9 @@ public class MainConfiguration {
     public CaseService getCaseService() { return new CaseServiceImpl(); }
 
     @Bean
+    public AttachmentService getAttachmentService() { return new AttachmentServiceImpl(); }
+
+    @Bean
     public LocationService getLocationService() { return new LocationServiceImpl(); }
 
     @Bean
@@ -239,12 +251,10 @@ public class MainConfiguration {
     @Bean
     public EquipmentService getEquipmentService() { return new EquipmentServiceImpl(); }
 
-
     @Bean
     public EventPublisherService getEventPublisherService () {
         return new AsyncEventPublisherService();
     }
-
 
     @Bean
     public CaseSubscriptionService getCaseSubscriptionService () {

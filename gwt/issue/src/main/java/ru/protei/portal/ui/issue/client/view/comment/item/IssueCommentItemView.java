@@ -1,12 +1,17 @@
 package ru.protei.portal.ui.issue.client.view.comment.item;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
+import com.google.inject.Inject;
+import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
+import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
+import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
 import ru.protei.portal.ui.issue.client.activity.comment.item.AbstractIssueCommentItemActivity;
 import ru.protei.portal.ui.issue.client.activity.comment.item.AbstractIssueCommentItemView;
 
@@ -17,8 +22,8 @@ public class IssueCommentItemView
         extends Composite
         implements AbstractIssueCommentItemView {
 
-
-    public IssueCommentItemView() {
+    @Inject
+    public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
     }
 
@@ -53,6 +58,19 @@ public class IssueCommentItemView
         edit.setVisible( isEnabled );
     }
 
+    @Override
+    public void showAttachments(boolean isShow){
+        if(isShow)
+            attachBlock.removeClassName("hide");
+        else
+            attachBlock.addClassName("hide");
+    }
+
+    @Override
+    public HasAttachments attachmentContainer(){
+        return attachList;
+    }
+
     @UiHandler( "remove" )
     public void onRemoveClicked( ClickEvent event ) {
         event.preventDefault();
@@ -77,8 +95,13 @@ public class IssueCommentItemView
         }
     }
 
+    @UiHandler("attachList")
+    public void onRemoveAttachment(RemoveEvent event){
+        activity.onRemoveAttachment(this, event.getAttachment());
+    }
+
     @UiField
-    Label message;
+    InlineLabel message;
     @UiField
     Anchor owner;
     @UiField
@@ -91,6 +114,11 @@ public class IssueCommentItemView
     Anchor reply;
     @UiField
     HTMLPanel root;
+    @Inject
+    @UiField(provided = true)
+    AttachmentList attachList;
+    @UiField
+    DivElement attachBlock;
 
     private AbstractIssueCommentItemActivity activity;
 

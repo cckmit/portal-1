@@ -227,6 +227,7 @@ public interface Lang extends Messages, ContactItemLang {
     String selectIssueInitiator();
     String selectIssueProduct();
     String selectIssueManager();
+    String issueAttachments();
 
     String createdCaseState();
     String openedCaseState();
@@ -455,4 +456,14 @@ public interface Lang extends Messages, ContactItemLang {
     String equipmentCopyMessage();
 
     String copyPostfix();
+
+    String attachment();
+    String addAttachmentBtn();
+
+    String uploadFileError();
+    String uploadFileSuccess();
+    String removeFileError();
+
+    String attachmentsNotLoaded();
+
 }

@@ -21,6 +21,10 @@ import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.En_CaseImportanceLang;
 import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
+import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
+import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
+import ru.protei.portal.ui.common.client.widget.uploader.FileUploader;
 import ru.protei.portal.ui.issue.client.activity.preview.AbstractIssuePreviewActivity;
 import ru.protei.portal.ui.issue.client.activity.preview.AbstractIssuePreviewView;
 
@@ -29,7 +33,8 @@ import ru.protei.portal.ui.issue.client.activity.preview.AbstractIssuePreviewVie
  */
 public class IssuePreviewView extends Composite implements AbstractIssuePreviewView {
 
-    public IssuePreviewView() {
+    @Inject
+    public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
     }
 
@@ -132,6 +137,21 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
         return commentsContainer;
     }
 
+    @Override
+    public HasAttachments attachmentsContainer(){
+        return attachmentContainer;
+    }
+
+    @Override
+    public void setCaseId(Long caseId) {
+        fileUploader.autoBindingFilesToCase(caseId);
+    }
+
+    @Override
+    public void setFileUploadHandler(FileUploader.FileUploadHandler handler){
+        fileUploader.setFileUploadHandler(handler);
+    }
+
     @UiHandler( "fullScreen" )
     public void onFullScreenClicked ( ClickEvent event) {
         event.preventDefault();
@@ -140,6 +160,12 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
             activity.onFullScreenPreviewClicked();
         }
     }
+
+    @UiHandler("attachmentContainer")
+    public void attachmentContainerRemove(RemoveEvent event) {
+        activity.removeAttachment(event.getAttachment());
+    }
+
 
     @UiField
     HTMLPanel preview;
@@ -174,13 +200,16 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     Lang lang;
     @UiField
     HTMLPanel commentsContainer;
-
+    @Inject
+    @UiField
+    FileUploader fileUploader;
+    @Inject
+    @UiField(provided = true)
+    AttachmentList attachmentContainer;
     @Inject
     En_CaseImportanceLang caseImportanceLang;
-
     @Inject
     En_CaseStateLang caseStateLang;
-
     @Inject
     FixedPositioner positioner;
 

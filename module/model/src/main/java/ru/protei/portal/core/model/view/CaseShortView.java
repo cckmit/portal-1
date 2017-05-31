@@ -74,6 +74,10 @@ public class CaseShortView implements Serializable {
             @JdbcJoinPath( table = "Person", localColumn = "MANAGER", remoteColumn = "id" ),
             @JdbcJoinPath( table = "Company", localColumn = "company_id", remoteColumn = "id" )
     })
+
+    @JdbcColumn(name = "ATTACHMENT_EXISTS")
+    private boolean isAttachmentExists;
+
     private String managerCompanyName;
 
     public CaseShortView() {
@@ -245,6 +249,19 @@ public class CaseShortView implements Serializable {
         this.modified = modified;
     }
 
+    public boolean isAttachmentExists() {
+        return isAttachmentExists;
+    }
+
+    public void setAttachmentExists(boolean attachmentExists) {
+        isAttachmentExists = attachmentExists;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof CaseShortView && id.equals(((CaseShortView) obj).getId());
+    }
+
     @Override
     public String toString() {
         return "CaseShortView{" +
@@ -268,6 +285,7 @@ public class CaseShortView implements Serializable {
                 ", managerName='" + managerName + '\'' +
                 ", managerShortName='" + managerShortName + '\'' +
                 ", managerCompanyName='" + managerCompanyName + '\'' +
+                ", isAttachmentExists='" + isAttachmentExists + '\'' +
                 '}';
     }
 }
