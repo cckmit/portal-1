@@ -154,7 +154,7 @@
                                 <g:TextBox ui:field="login" styleName="input-field"/>
                             </div>
                         </div>
-                        <g:HTMLPanel ui:field="infoPanel" styleName="col-xs-12">
+                        <g:HTMLPanel ui:field="infoPanel" styleName="col-xs-12 p-t-10 p-b-10">
                             <ui:text from="{lang.contactLoginInfo}"/>
                         </g:HTMLPanel>
                         <div class="form-group col-xs-12">
