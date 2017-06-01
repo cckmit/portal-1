@@ -102,6 +102,8 @@ public class NotificationProcessor {
             return;
         }
 
+        //http://127.0.0.1:8888/crm.html#issues/issue:id=499954;
+
         notificationEntries.stream().forEach( (entry)->{
             String messageBody = template.getText( entry.getAddress(), entry.getLangCode() );
 
