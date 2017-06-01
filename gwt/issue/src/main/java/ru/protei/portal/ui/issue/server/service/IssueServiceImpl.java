@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
@@ -97,14 +98,15 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    public CaseComment editIssueComment( CaseComment value ) throws RequestFailedException {
-        log.debug( "editIssueComment(): value={}", value );
+    @Transactional
+    public CaseComment editIssueComment(CaseComment comment ) throws RequestFailedException {
+        log.debug( "editIssueComment(): comment={}", comment );
 
         CoreResponse<CaseComment> response;
-        if ( value.getId() == null ) {
-            response = caseService.addCaseComment( value );
+        if ( comment.getId() == null ) {
+            response = caseService.addCaseComment( comment );
         } else {
-            response = caseService.updateCaseComment( value, getCurrentPerson().getId() );
+            response = caseService.updateCaseComment( comment, getCurrentPerson().getId() );
         }
         if (response.isError()) {
             throw new RequestFailedException( response.getStatus() );

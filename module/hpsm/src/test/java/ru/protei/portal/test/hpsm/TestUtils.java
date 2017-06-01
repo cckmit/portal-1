@@ -6,6 +6,9 @@ import ru.protei.portal.hpsm.api.HpsmStatus;
 import ru.protei.portal.hpsm.struct.HpsmMessageHeader;
 import ru.protei.portal.hpsm.utils.HpsmUtils;
 
+import java.text.ParseException;
+import java.util.Date;
+
 /**
  * Created by michael on 25.04.17.
  */
@@ -37,5 +40,19 @@ public class TestUtils {
 
         Assert.assertEquals(HpsmStatus.NEW, testHeader.getStatus());
 
+    }
+
+
+    @Test
+    public void testDateParsing001 () throws ParseException{
+        Date oldParsed = HpsmUtils.parseDate("25/05/2017 10:25:49");
+        Date newParsed = HpsmUtils.parseDate("2017-05-25T10:25:49+03:00");
+
+        Assert.assertNotNull(oldParsed);
+        Assert.assertNotNull(newParsed);
+
+        Assert.assertEquals(oldParsed,newParsed);
+
+//        System.out.println(HpsmUtils.formatDate(new Date()));
     }
 }

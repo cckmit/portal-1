@@ -92,6 +92,7 @@ public class LocalUpdateTest {
         Assert.assertEquals(JUNIT_TEST_COMMENT, event.getHpsmMessage().getMessage());
 
         object.setState(En_CaseState.OPENED);
+        object.setManager(testPerson);
         caseService.updateCaseObject(object);
 
         // wait event handling
@@ -105,6 +106,10 @@ public class LocalUpdateTest {
 
         Assert.assertEquals(HpsmStatus.IN_PROGRESS, event.getSubject().getStatus());
         Assert.assertTrue(HelperFunc.isNotEmpty(event.getHpsmMessage().getTxOurOpenTime()));
+
+        Assert.assertNotNull(event.getHpsmMessage().getOurManager());
+        Assert.assertNotNull(event.getHpsmMessage().getOurManagerEmail());
+
 
         object.setState(En_CaseState.DONE);
         caseService.updateCaseObject(object);
@@ -121,6 +126,8 @@ public class LocalUpdateTest {
         Assert.assertEquals(HpsmStatus.SOLVED, event.getSubject().getStatus());
         Assert.assertTrue(HelperFunc.isNotEmpty(event.getHpsmMessage().getTxOurOpenTime()));
         Assert.assertTrue(HelperFunc.isNotEmpty(event.getHpsmMessage().getTxOurSolutionTime()));
+        Assert.assertNotNull(event.getHpsmMessage().getOurManager());
+        Assert.assertNotNull(event.getHpsmMessage().getOurManagerEmail());
     }
 
 

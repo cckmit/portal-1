@@ -1,0 +1,186 @@
+.attachment-block {
+  background: rgba(243, 240, 240, 0.4);
+  padding: 6px 10px;
+  white-space: normal;
+  .attachment-list{
+    padding-left: 0;
+  }
+}
+
+.attachment-list {
+  margin: 0;
+  overflow: hidden;
+  padding-left: 23px;
+}
+
+.attachment-list-simple {
+  vertical-align: middle;
+  padding-left: 23px;
+
+  .attach:hover{
+      .attach-info{
+        width: 100%;
+      }
+      .attach-lnk{
+        background: none;
+      }
+  }
+
+}
+
+.attach {
+  display: block;
+  z-index: 0;
+  position: relative;
+  float: left;
+  border: 1px solid transparent;
+
+  +.attach{
+    margin-left: 23px;
+  }
+
+  &.attach-minimize{
+    .attach-thumb{
+      display: none;
+    }
+    .attach-controls{
+      display: inline !important;
+      vertical-align: sub;
+      position: static;
+      background: none;
+      margin-right: 3px;
+    }
+    .attach-info{
+      display: inline;
+    }
+    .attach-delete{
+      position: static;
+    }
+    .ion-android-close{
+      font-size: 1.2em;
+      //vertical-align: middle;
+    }
+  }
+  &.attach-hide-controls{
+    .attach-controls{
+      display: none;
+    }
+  }
+}
+
+
+
+.attach-add {
+  height: 70px;
+  padding-top: 11px;
+  box-sizing: border-box;
+}
+
+.attach-add i {
+  color: lightgray;
+  position: relative;
+  top: 10%;
+}
+
+.attach-info {
+  overflow: hidden;
+  text-overflow:ellipsis;
+  width: 55px;
+  font-size: 85%;
+  white-space: nowrap;
+}
+
+.attach-thumb {
+  position: relative;
+  width: 50px;
+  height: 40px;
+  margin-right: 5px;
+  margin-bottom: 2px;
+  overflow: hidden;
+  background-color: #fff;
+  border: 1px solid #fff;
+  box-shadow:0 1px 2px 0 rgba(120, 120, 120, 0.7);
+  -moz-box-shadow:0 1px 2px 0 rgba(120, 120, 120, 0.7);
+  -wbkit-box-shadow:0px 1px 2px 0 rgba(120, 120, 120, 0.7);
+}
+
+.attach-thumb .pic {
+  display: table-cell;
+  max-width: 50px;
+  max-height: 50px;
+  text-align: center;
+  vertical-align: top;
+}
+
+
+.attach-controls {
+  display: none;
+  position: absolute;
+  top: 0px;
+  width: 50px;
+  height: 40px;
+  background: rgba(255,255,255,0.7);
+}
+
+.attach-controls > a {
+  position: relative;
+  top: 15%;
+  left: 40%;
+}
+.attach:hover {
+  overflow: visible;
+  z-index: 20;
+}
+
+.attach:hover .attach-info {
+  overflow: visible;
+}
+
+.attach:hover .attach-lnk {
+  background: #fff;
+  padding-right: 3px;
+}
+
+.attach:hover .attach-controls {
+  display: block;
+}
+
+.attach-author {
+  color: #898989;
+  font-size: 80%;
+  text-align: center;
+}
+
+.attach-size {
+  color: #9ea1a5;
+}
+
+.attach-lnk {
+  white-space: nowrap;
+  color: #888 !important;
+  zoom: 1;
+}
+
+.attachment-popup{
+  top: 10px;
+  left: 0;
+  z-index: 1000;
+  max-width: 301px;
+  background: #fff;
+  box-shadow: 1px 1px 3px -1px rgba(136, 153, 178, 0.68);
+  -webkit-box-shadow: 1px 1px 3px -1px rgba(136, 153, 178, 0.68);
+  border: 1px solid #ced2d7;
+  max-height: 152px;
+  overflow-y: auto;
+
+  .attachment-list{
+    padding-top: 10px;
+      padding-left: 0;
+  }
+  .attach {
+    margin: 0 10px 10px 0;
+    &:nth-child(4n+1) {
+      margin-left: 10px;
+    }
+  }
+}

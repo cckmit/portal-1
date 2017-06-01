@@ -1,0 +1,1 @@
+ALTER TABLE case_object add ATTACHMENT_EXISTS boolean default false not null;

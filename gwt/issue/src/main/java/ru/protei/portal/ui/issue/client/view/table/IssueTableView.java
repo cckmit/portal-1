@@ -9,9 +9,9 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.AbstractColumn;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
-import ru.brainworm.factory.widget.table.client.helper.SelectionColumn;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
+import ru.protei.portal.ui.common.client.columns.AttachClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
 import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
@@ -41,6 +41,11 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
         editClickColumn.setHandler( activity );
         editClickColumn.setEditHandler( activity );
         editClickColumn.setColumnProvider( columnProvider );
+
+        attachClickColumn.setHandler(activity);
+        attachClickColumn.setAttachHandler(activity);
+        attachClickColumn.setColumnProvider(columnProvider);
+
         issueNumber.setHandler( activity );
         issueNumber.setColumnProvider( columnProvider );
         contact.setHandler( activity );
@@ -103,7 +108,14 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
         table.scrollToPage( page );
     }
 
+    @Override
+    public void updateRow(CaseShortView item) {
+        if(item != null)
+            table.updateRow(item);
+    }
+
     private void initTable () {
+        attachClickColumn = new AttachClickColumn<CaseShortView>(lang) {};
         editClickColumn = new EditClickColumn< CaseShortView>( lang ) {};
         issueNumber = new NumberColumn( lang, caseStateLang );
         contact = new ContactColumn( lang );
@@ -117,6 +129,7 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
 //        table.addColumn( manager.header, manager.values );
         hideContact = table.addColumn( contact.header, contact.values );
         hideManager = table.addColumn( manager.header, manager.values );
+        table.addColumn( attachClickColumn.header, attachClickColumn.values );
         table.addColumn( editClickColumn.header, editClickColumn.values );
 //        table.setSeparatorProvider( separator );
     }
@@ -142,8 +155,9 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
     Separator separator;
 
     ClickColumnProvider<CaseShortView> columnProvider = new ClickColumnProvider<>();
-    SelectionColumn< CaseShortView > selectionColumn = new SelectionColumn<>();
+//    SelectionColumn< CaseShortView > selectionColumn = new SelectionColumn<>();
     EditClickColumn< CaseShortView > editClickColumn;
+    AttachClickColumn< CaseShortView > attachClickColumn;
     NumberColumn issueNumber;
     ContactColumn contact;
     ManagerColumn manager;

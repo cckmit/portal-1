@@ -1,5 +1,6 @@
 package ru.protei.portal.hpsm.utils;
 
+import ru.protei.portal.core.mail.VirtualMailSendChannel;
 import ru.protei.portal.hpsm.api.HpsmMessageFactory;
 import ru.protei.portal.hpsm.config.HpsmEnvConfig;
 import ru.protei.portal.hpsm.logic.ServiceInstanceImpl;

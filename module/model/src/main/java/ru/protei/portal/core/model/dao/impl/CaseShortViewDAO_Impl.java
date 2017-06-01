@@ -43,6 +43,11 @@ public class CaseShortViewDAO_Impl extends PortalBaseJdbcDAO<CaseShortView> impl
         return new SqlCondition().build((condition, args) -> {
             condition.append("1=1");
 
+            if ( query.getId() != null ) {
+                condition.append( " and case_object.id=?" );
+                args.add( query.getId() );
+            }
+
             if ( query.getType() != null ) {
                 condition.append( " and case_type=?" );
                 args.add( query.getType().getId() );

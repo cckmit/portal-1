@@ -3,7 +3,7 @@ package ru.protei.portal.test.hpsm;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
-import ru.protei.portal.hpsm.api.MailSendChannel;
+import ru.protei.portal.core.mail.MailSendChannel;
 import ru.protei.portal.hpsm.utils.HpsmTestUtils;
 import ru.protei.portal.test.hpsm.config.HpsmTestConfiguration;
 

@@ -1,6 +1,4 @@
-package ru.protei.portal.hpsm.utils;
-
-import ru.protei.portal.hpsm.api.MailSendChannel;
+package ru.protei.portal.core.mail;
 
 import javax.mail.internet.MimeMessage;
 import java.util.ArrayDeque;

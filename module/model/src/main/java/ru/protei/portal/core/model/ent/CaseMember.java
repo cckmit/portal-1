@@ -74,11 +74,11 @@ public class CaseMember implements Serializable{
     @Override
     public String toString() {
         return "CaseMember{" +
-            "id=" + id +
-            ", member=" + member +
-            ", caseId=" + caseId +
-            ", roleId=" + roleId +
-            '}';
+                "id=" + id +
+                ", member=" + member +
+                ", caseId=" + caseId +
+                ", roleId=" + roleId +
+                '}';
     }
 
     public static CaseMember makeDeployManagerOf( CaseObject caseObject, PersonShortView person ) {

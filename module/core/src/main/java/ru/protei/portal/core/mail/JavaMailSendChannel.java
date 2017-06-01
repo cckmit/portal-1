@@ -1,9 +1,8 @@
-package ru.protei.portal.hpsm.utils;
+package ru.protei.portal.core.mail;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.mail.javamail.JavaMailSender;
-import ru.protei.portal.hpsm.api.MailSendChannel;
 
 import javax.mail.Address;
 import javax.mail.internet.MimeMessage;

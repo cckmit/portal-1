@@ -2,6 +2,7 @@ package ru.protei.portal.hpsm.logic;
 
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.hpsm.config.HpsmEnvConfig;
 import ru.protei.portal.hpsm.struct.HpsmMessage;
 import ru.protei.portal.hpsm.struct.HpsmMessageHeader;
 import ru.protei.portal.hpsm.struct.HpsmPingMessage;
@@ -19,6 +20,8 @@ public interface ServiceInstance {
 
     Company getCompanyByBranch (String branchName);
 
+    HpsmEnvConfig.ServiceConfig config ();
+
     boolean acceptCase (CaseObject object);
 
     void sendReject (HpsmEvent request, String reason) throws Exception;
@@ -29,4 +32,7 @@ public interface ServiceInstance {
     void sendReply (HpsmMessageHeader replyHeader, HpsmMessage replyMessage) throws Exception;
 
     void sendReply (String replyTo, HpsmPingMessage msg) throws Exception;
+
+
+    void fillReplyMessageAttributes(HpsmMessage message, CaseObject object);
 }

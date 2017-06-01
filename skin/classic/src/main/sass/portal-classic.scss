@@ -6,6 +6,7 @@
 @import "button";
 @import "form";
 @import "issue-comment";
+@import "attachment";
 @import "region";
 @import "confirm";
 //@import "select2";
@@ -57,6 +58,7 @@
 
   .input-group-btn .btn {
     border-left: 0;
+    max-height: 30px;
   }
 
   .input-group-addon {

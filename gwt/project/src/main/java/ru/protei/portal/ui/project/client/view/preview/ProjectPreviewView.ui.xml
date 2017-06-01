@@ -4,7 +4,7 @@
              xmlns:state="urn:import:ru.protei.portal.ui.common.client.widget.selector.state"
              xmlns:person="urn:import:ru.protei.portal.ui.common.client.widget.selector.person"
              xmlns:region="urn:import:ru.protei.portal.ui.common.client.widget.selector.region"
-        >
+>
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
     <g:HTMLPanel styleName="preview-wrapper grid with-table-pager">
         <g:HTMLPanel ui:field="preview" styleName="preview project">

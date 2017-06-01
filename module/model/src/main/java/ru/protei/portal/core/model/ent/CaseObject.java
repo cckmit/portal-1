@@ -6,6 +6,7 @@ import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -96,6 +97,10 @@ public class CaseObject implements Serializable {
     @JdbcColumn(name = "private_flag")
     private boolean privateCase;
 
+    @JdbcColumn(name = "ATTACHMENT_EXISTS")
+    private boolean isAttachmentExists;
+
+    private Collection<Long> attachmentsIds;
     @JdbcOneToMany(table = "case_location", localColumn = "id", remoteColumn = "CASE_ID" )
     private List<CaseLocation> locations;
 
@@ -111,10 +116,12 @@ public class CaseObject implements Serializable {
     @JdbcColumn(name = "EXT_APP_DATA")
     private String extAppData;
 
-
-
     public CaseObject() {
 
+    }
+
+    public CaseObject(Long id) {
+        this.id = id;
     }
 
     public String defGUID () {
@@ -348,6 +355,22 @@ public class CaseObject implements Serializable {
         this.typeId = type.getId();
     }
 
+    public Collection<Long> getAttachmentsIds() {
+        return attachmentsIds;
+    }
+
+    public void setAttachmentsIds(Collection<Long> attachmentsIds) {
+        this.attachmentsIds = attachmentsIds;
+    }
+
+    public boolean isAttachmentExists() {
+        return isAttachmentExists;
+    }
+
+    public void setAttachmentExists(boolean attachmentExists) {
+        isAttachmentExists = attachmentExists;
+    }
+
     public List<CaseLocation> getLocations() {
         return locations;
     }
@@ -402,38 +425,39 @@ public class CaseObject implements Serializable {
         return En_ImportanceLevel.getById(this.impLevel);
     }
 
+
     @Override
     public String toString() {
         return "CaseObject{" +
-            "id=" + id +
-            ", typeId=" + typeId +
-            ", caseNumber=" + caseNumber +
-            ", created=" + created +
-            ", modified=" + modified +
-            ", name='" + name + '\'' +
-            ", extId='" + extId + '\'' +
-            ", info='" + info + '\'' +
-            ", stateId=" + stateId +
-            ", impLevel=" + impLevel +
-            ", creatorId=" + creatorId +
-            ", creator=" + creator +
-            ", creatorIp='" + creatorIp + '\'' +
-            ", initiatorId=" + initiatorId +
-            ", initiator=" + initiator +
-            ", initiatorCompanyId=" + initiatorCompanyId +
-            ", initiatorCompany=" + initiatorCompany +
-            ", productId=" + productId +
-            ", product=" + product +
-            ", managerId=" + managerId +
-            ", manager=" + manager +
-            ", keywords='" + keywords + '\'' +
-            ", local=" + local +
-            ", emails='" + emails + '\'' +
-            ", creatorInfo='" + creatorInfo + '\'' +
-            ", deleted=" + deleted +
-            ", privateCase=" + privateCase +
-            ", locations=" + locations +
-            ", members=" + members +
-            '}';
+                "id=" + id +
+                ", typeId=" + typeId +
+                ", caseNumber=" + caseNumber +
+                ", created=" + created +
+                ", modified=" + modified +
+                ", name='" + name + '\'' +
+                ", extId='" + extId + '\'' +
+                ", info='" + info + '\'' +
+                ", stateId=" + stateId +
+                ", impLevel=" + impLevel +
+                ", creatorId=" + creatorId +
+                ", creator=" + creator +
+                ", creatorIp='" + creatorIp + '\'' +
+                ", initiatorId=" + initiatorId +
+                ", initiator=" + initiator +
+                ", initiatorCompanyId=" + initiatorCompanyId +
+                ", initiatorCompany=" + initiatorCompany +
+                ", productId=" + productId +
+                ", product=" + product +
+                ", managerId=" + managerId +
+                ", manager=" + manager +
+                ", keywords='" + keywords + '\'' +
+                ", local=" + local +
+                ", emails='" + emails + '\'' +
+                ", creatorInfo='" + creatorInfo + '\'' +
+                ", deleted=" + deleted +
+                ", privateCase=" + privateCase +
+                ", locations=" + locations +
+                ", members=" + members +
+                '}';
     }
 }

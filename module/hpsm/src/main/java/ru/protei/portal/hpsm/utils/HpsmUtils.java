@@ -29,14 +29,16 @@ public class HpsmUtils {
     private static Logger logger = LoggerFactory.getLogger(HpsmUtils.class);
 
 
-    public static final ThreadLocalDateFormat DATE_FMT = new ThreadLocalDateFormat("dd/MM/yyyy HH:mm:ss");
+    public static final ThreadLocalDateFormat OLD_DATE_FMT = new ThreadLocalDateFormat("dd/MM/yyyy HH:mm:ss");
+    public static final ThreadLocalDateFormat DATE_FMT = new ThreadLocalDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
+
 
     public static String formatDate(Date date) {
         return date == null ? "" : DATE_FMT.format(date);
     }
 
     public static Date parseDate(String x) throws ParseException{
-        return x == null || x.isEmpty() ? null : DATE_FMT.parse(x);
+        return x == null || x.isEmpty() ? null : x.contains("/") ? OLD_DATE_FMT.parse(x) : DATE_FMT.parse(x);
     }
 
     public static void bindCase (CaseObject object, ServiceInstance instance) {

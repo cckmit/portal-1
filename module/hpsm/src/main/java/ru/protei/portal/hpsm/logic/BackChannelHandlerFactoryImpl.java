@@ -5,10 +5,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.CaseObjectEvent;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.ent.CaseObject;
+import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.hpsm.api.HpsmSeverity;
@@ -180,16 +182,7 @@ public class BackChannelHandlerFactoryImpl implements BackChannelHandlerFactory 
 
 
     private void updateAppDataAndSend(HpsmMessage message, ServiceInstance instance, CaseObject object) throws Exception {
-        message.severity(HpsmSeverity.find(object.importanceLevel()));
-        message.setProductName(object.getProduct() != null ? object.getProduct().getName() : "");
-        message.setShortDescription(object.getName());
-        message.setDescription(object.getInfo());
-
-        if (object.getManager() != null) {
-            message.setOurManager(object.getManager().getDisplayName());
-            PlainContactInfoFacade contactInfoFacade = new PlainContactInfoFacade(object.getManager().getContactInfo());
-            message.setOurManagerEmail(contactInfoFacade.getEmail());
-        }
+        instance.fillReplyMessageAttributes(message, object);
 
         object.setExtAppData(xstream.toXML(message));
         caseObjectDAO.saveExtAppData(object);
@@ -198,4 +191,5 @@ public class BackChannelHandlerFactoryImpl implements BackChannelHandlerFactory 
 
         instance.sendReply(header, message);
     }
+
 }
