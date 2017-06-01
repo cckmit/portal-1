@@ -46,16 +46,12 @@ abstract class ValidableTextBoxBase extends TextBoxBase implements HasValidable{
     }
 
     public void setNotNull( boolean value ) {
-        if ( value ) {
-            this.regexp = notEmptyStringRegexp;
-        }
+        this.isNotNull = value;
     }
 
     private void validateValue() {
-        if ( regexp == null ) {
-            throw new NullPointerException("Validation condition is not installed");
-        }
-        setValid( isValid() );
+        boolean isValid = (!isNotNull && getValue().isEmpty()) || isValid();
+        setValid( isValid );
     }
 
     Timer validationTimer = new Timer(){
@@ -65,7 +61,7 @@ abstract class ValidableTextBoxBase extends TextBoxBase implements HasValidable{
         }
     };
 
-    private RegExp regexp = null;
-    private RegExp notEmptyStringRegexp = RegExp.compile("\\S+");
+    private RegExp regexp = RegExp.compile( "\\S+" );
+    private boolean isNotNull = true;
     private static final String REQUIRED_STYLE_NAME="required";
 }

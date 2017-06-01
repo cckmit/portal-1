@@ -10,4 +10,6 @@ import java.util.List;
 public interface CompanySubscriptionDAO extends PortalBaseDAO<CompanySubscription> {
 
     List<CompanySubscription> listByCompanyId (Long companyId);
+
+    List<Long> listIdsByCompanyId( Long companyId);
 }

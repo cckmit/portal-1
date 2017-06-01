@@ -458,14 +458,16 @@ public interface Lang extends Messages, ContactItemLang {
     String copyPostfix();
 
     String attachment();
+
     String addAttachmentBtn();
 
     String uploadFileError();
+
     String uploadFileSuccess();
+
     String removeFileError();
 
     String attachmentsNotLoaded();
-
 
     String contactLogin();
 
@@ -482,4 +484,6 @@ public interface Lang extends Messages, ContactItemLang {
     String contactConfirmPassword();
 
     String contactPasswordsNotMatch();
+
+    String companySubscription();
 }

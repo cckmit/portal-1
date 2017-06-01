@@ -10,6 +10,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.ent.CompanySubscription;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -20,6 +21,9 @@ import ru.protei.portal.ui.company.client.activity.edit.AbstractCompanyEditActiv
 import ru.protei.portal.ui.company.client.activity.edit.AbstractCompanyEditView;
 import ru.protei.portal.ui.company.client.widget.category.buttonselector.CategoryButtonSelector;
 import ru.protei.portal.ui.company.client.widget.group.buttonselector.GroupButtonSelector;
+import ru.protei.portal.ui.company.client.widget.subscription.list.SubscriptionList;
+
+import java.util.List;
 
 /**
  * Вид создания и редактирования компании
@@ -93,6 +97,11 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     }
 
     @Override
+    public HasValue<List<CompanySubscription> > companySubscriptions() {
+        return subscriptions;
+    }
+
+    @Override
     public HasWidgets phonesContainer() {
         return phonesContainer;
     }
@@ -122,7 +131,7 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     }
 
     @UiHandler("companyName")
-    public void onChangeCompanyName( KeyUpEvent keyUpEvent ) {
+    public void onChangeCompanyName( KeyUpEvent event ) {
         verifiableIcon.setClassName(NameStatus.UNDEFINED.getStyle());
         timer.cancel();
         timer.schedule( 300 );
@@ -172,6 +181,10 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     @Inject
     @UiField
     Lang lang;
+
+    @Inject
+    @UiField( provided = true )
+    SubscriptionList subscriptions;
 
     Timer timer = new Timer() {
         @Override

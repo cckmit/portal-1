@@ -10,7 +10,6 @@ public class ValidableTextBox extends ValidableTextBoxBase{
 
     public ValidableTextBox() {
         super(Document.get().createTextInputElement());
-//        setStyleName("gwt-TextBox");
     }
 
     public int getMaxLength() {
@@ -32,8 +31,4 @@ public class ValidableTextBox extends ValidableTextBoxBase{
     private InputElement getInputElement() {
         return (InputElement)this.getElement().cast();
     }
-
-
-
-
 }
