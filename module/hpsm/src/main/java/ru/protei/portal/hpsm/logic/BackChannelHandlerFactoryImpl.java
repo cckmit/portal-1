@@ -91,6 +91,9 @@ public class BackChannelHandlerFactoryImpl implements BackChannelHandlerFactory 
         @Override
         public void handle(CaseObjectEvent event, HpsmMessage message, ServiceInstance instance) throws Exception {
             message.status(HpsmStatus.INFO_REQUEST);
+            if (HelperFunc.isEmpty(message.getTxOurOpenTime())) {
+                message.setOurOpenTime(event.getEventDate());
+            }
             updateAppDataAndSend(message, instance, event.getNewState());
         }
     }
@@ -101,6 +104,10 @@ public class BackChannelHandlerFactoryImpl implements BackChannelHandlerFactory 
         @Override
         public void handle(CaseObjectEvent event, HpsmMessage message, ServiceInstance instance) throws Exception {
             message.status(HpsmStatus.WORKAROUND);
+
+            if (HelperFunc.isEmpty(message.getTxOurOpenTime())) {
+                message.setOurOpenTime(event.getEventDate());
+            }
 
             if (HelperFunc.isEmpty(message.getTxOurWorkaroundTime())) {
                 message.setOurWorkaroundTime(event.getEventDate());
