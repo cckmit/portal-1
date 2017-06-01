@@ -13,5 +13,6 @@
   <include file="07-hpsm.xml" relativeToChangelogFile="true" />
   <include file="08-01-fix_constraints.xml" relativeToChangelogFile="true" />
   <include file="08-02-company_subscription.xml" relativeToChangelogFile="true" />
+  <include file="08-03-add_case_state.xml" relativeToChangelogFile="true" />
 
 </databaseChangeLog>

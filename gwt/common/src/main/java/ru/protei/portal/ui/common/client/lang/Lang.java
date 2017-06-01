@@ -249,6 +249,8 @@ public interface Lang extends Messages, ContactItemLang {
     String solvedNoapCaseState();
     String solvedFixCaseState();
     String solvedDupCaseState();
+    String workaroundCaseState ();
+    String requestInfoCaseState ();
 
     String criticalImportance();
     String importantImportance();

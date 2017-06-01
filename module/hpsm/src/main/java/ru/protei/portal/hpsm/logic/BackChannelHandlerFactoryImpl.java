@@ -49,6 +49,8 @@ public class BackChannelHandlerFactoryImpl implements BackChannelHandlerFactory 
         stateHandlerMap.put(En_CaseState.ACTIVE, new InProcessStateHandler());
         stateHandlerMap.put(En_CaseState.TEST_LOCAL, new LocalTestStateHandler());
         stateHandlerMap.put(En_CaseState.TEST_CUST, new CustomerTestStateHandler());
+        stateHandlerMap.put(En_CaseState.WORKAROUND, new WorkAroundStateHandler());
+        stateHandlerMap.put(En_CaseState.INFO_REQUEST, new InfoRequestStateHandler());
     }
 
 
@@ -83,6 +85,31 @@ public class BackChannelHandlerFactoryImpl implements BackChannelHandlerFactory 
             updateAppDataAndSend(message, instance, event.getNewState());
         }
     }
+
+    public class InfoRequestStateHandler implements BackChannelEventHandler {
+
+        @Override
+        public void handle(CaseObjectEvent event, HpsmMessage message, ServiceInstance instance) throws Exception {
+            message.status(HpsmStatus.INFO_REQUEST);
+            updateAppDataAndSend(message, instance, event.getNewState());
+        }
+    }
+
+
+    public class WorkAroundStateHandler implements BackChannelEventHandler {
+
+        @Override
+        public void handle(CaseObjectEvent event, HpsmMessage message, ServiceInstance instance) throws Exception {
+            message.status(HpsmStatus.WORKAROUND);
+
+            if (HelperFunc.isEmpty(message.getTxOurWorkaroundTime())) {
+                message.setOurWorkaroundTime(event.getEventDate());
+            }
+
+            updateAppDataAndSend(message, instance, event.getNewState());
+        }
+    }
+
 
     public class DoneStateHandler implements BackChannelEventHandler {
 

@@ -33,6 +33,8 @@ public class En_CaseStateLang {
             case TEST_LOCAL: return lang.testLocalCaseState();
             case TEST_CUST: return lang.testCustCaseState();
             case DESIGN: return lang.designCaseState();
+            case WORKAROUND: return lang.workaroundCaseState();
+            case INFO_REQUEST: return lang.requestInfoCaseState();
             default:
                 return lang.errUnknownResult();
         }

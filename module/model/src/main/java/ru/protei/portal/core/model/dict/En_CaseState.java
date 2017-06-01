@@ -23,7 +23,10 @@ public enum En_CaseState {
     TEST(18, "test"),
     TEST_LOCAL(19, "local test"),
     TEST_CUST(20, "customer test"),
-    DESIGN(21, "design");
+    DESIGN(21, "design"),
+    WORKAROUND(22, "workaround"),
+    INFO_REQUEST(23, "info request")
+    ;
 
     public static En_CaseState getById(Long id) {
         if(id == null)
