@@ -6,6 +6,8 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 import ru.protei.portal.core.utils.ConfigParser;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -33,11 +35,12 @@ public class HpsmEnvConfig {
     private List<CompanyBranchEntry> companyMapEntries;
 
     private HpsmEnvConfig() {
+        instanceList = new ArrayList<>();
     }
 
 
     public List<ServiceConfig> getInstanceList() {
-        return instanceList;
+        return instanceList == null ? Collections.emptyList() : instanceList;
     }
 
     public List<CompanyBranchEntry> getCompanyMapEntries() {
