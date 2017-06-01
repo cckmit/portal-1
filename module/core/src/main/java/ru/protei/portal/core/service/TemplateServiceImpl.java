@@ -48,7 +48,7 @@ public class TemplateServiceImpl implements TemplateService {
     @Override
     public PreparedTemplate getCrmEmailNotificationBody(
         CaseObjectEvent caseObjectEvent, List< CaseComment > caseComments, Person manager, Person oldManager,
-        CaseCommentEvent caseCommentEvent
+        CaseCommentEvent caseCommentEvent, String urlTemplate
     ) {
         if ( caseCommentEvent == null && caseObjectEvent == null ) {
             return null;
@@ -58,7 +58,7 @@ public class TemplateServiceImpl implements TemplateService {
         CaseObject oldState = caseObjectEvent == null ? null : caseObjectEvent.getOldState();
 
         Map<String, Object> templateModel = new HashMap<>();
-        templateModel.put( "linkToIssue", "#" );
+        templateModel.put( "linkToIssue", String.format( urlTemplate, newState.getId() ) );
         templateModel.put( "createdByMe", false );
         templateModel.put( "case", newState );
         templateModel.put( "importanceLevel", En_ImportanceLevel.getById( newState.getImpLevel() ).getCode() );
@@ -88,7 +88,18 @@ public class TemplateServiceImpl implements TemplateService {
             return caseComment;
         } ).collect( toList() ) );
 
-        PreparedTemplate template = new PreparedTemplate();
+        PreparedTemplate template = new PreparedTemplate( "notification/email/crm.body.%s.ftl" );
+        template.setModel( templateModel );
+        template.setTemplateConfiguration( templateConfiguration );
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate getCrmEmailNotificationSubject( CaseObject caseObject ) {
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put( "case", caseObject );
+
+        PreparedTemplate template = new PreparedTemplate( "notification/email/crm.subject.%s.ftl" );
         template.setModel( templateModel );
         template.setTemplateConfiguration( templateConfiguration );
         return template;

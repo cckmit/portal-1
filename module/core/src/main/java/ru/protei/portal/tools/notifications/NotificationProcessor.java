@@ -94,21 +94,27 @@ public class NotificationProcessor {
             oldManager = manager;
         }
 
-        PreparedTemplate template = templateService.getCrmEmailNotificationBody(
-            caseEvent, comments.getData(), manager, oldManager, commentEvent
+        PreparedTemplate bodyTemplate = templateService.getCrmEmailNotificationBody(
+            caseEvent, comments.getData(), manager, oldManager, commentEvent,
+            config.data().getCrmCaseUrl()
         );
-        if ( template == null ) {
-            log.error( "Failed to prepare template" );
+        if ( bodyTemplate == null ) {
+            log.error( "Failed to prepare body template" );
             return;
         }
 
-        //http://127.0.0.1:8888/crm.html#issues/issue:id=499954;
+        PreparedTemplate subjectTemplate = templateService.getCrmEmailNotificationSubject( caseObject );
+        if ( subjectTemplate == null ) {
+            log.error( "Failed to prepare subject template" );
+            return;
+        }
 
         notificationEntries.stream().forEach( (entry)->{
-            String messageBody = template.getText( entry.getAddress(), entry.getLangCode() );
+            String body = bodyTemplate.getText( entry.getAddress(), entry.getLangCode() );
+            String subject = subjectTemplate.getText( entry.getAddress(), entry.getLangCode() );
 
             try {
-                MimeMessageHelper msg = prepareMessage( "Subject", messageBody );
+                MimeMessageHelper msg = prepareMessage( subject, body );
                 msg.setTo( entry.getAddress() );
                 mailSendChannel.send( msg.getMimeMessage() );
             }

@@ -16,6 +16,12 @@ public class PreparedTemplate {
     private Configuration templateConfiguration;
     private Map< String, Object > model;
 
+    private String nameTemplate = "notification/email/crm.body.%s.ftl";
+
+    public PreparedTemplate( String nameTemplate ) {
+        this.nameTemplate = nameTemplate;
+    }
+
     public void setTemplateConfiguration( Configuration templateConfiguration ) {
         this.templateConfiguration = templateConfiguration;
     }
@@ -33,7 +39,7 @@ public class PreparedTemplate {
 
         try {
             model.put( "userName", receiver );
-            Template template = templateConfiguration.getTemplate( "notification/email/crm.body."+lang+".ftl", Locale.forLanguageTag( lang ) );
+            Template template = templateConfiguration.getTemplate( String.format( nameTemplate, lang ), Locale.forLanguageTag( lang ) );
             template.process( model, writer );
             return writer.toString();
         } catch ( Exception e ) {

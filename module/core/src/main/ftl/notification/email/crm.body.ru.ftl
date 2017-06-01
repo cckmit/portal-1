@@ -15,7 +15,7 @@
                     <tr>
                         <td style="vertical-align: top;font-family:sans-serif; font-size: 13px;">
                             <a title="newproject" style="float:left; margin-right:6px; font-size:15px; color: #1466c6; text-decoration: none; " href="${linkToIssue}">
-                            ${case.name}
+                                CRM-${case.caseNumber} — ${case.name}
                             </a>
                         </td>
                         <td style="padding-left: 5px; font-size: 11px; font-family:sans-serif; text-align: right; color: #888888">
