@@ -110,12 +110,6 @@ public class CaseObject implements Serializable {
     @JdbcColumn(name = "EXT_APP")
     private String extAppType;
 
-    @JdbcColumn(name = "EXT_APP_ID")
-    private String extAppCaseId;
-
-    @JdbcColumn(name = "EXT_APP_DATA")
-    private String extAppData;
-
     public CaseObject() {
 
     }
@@ -387,22 +381,6 @@ public class CaseObject implements Serializable {
         this.members = members;
     }
 
-
-    public String getExtAppCaseId() {
-        return extAppCaseId;
-    }
-
-    public void setExtAppCaseId(String extAppCaseId) {
-        this.extAppCaseId = extAppCaseId;
-    }
-
-    public String getExtAppData() {
-        return extAppData;
-    }
-
-    public void setExtAppData(String extAppData) {
-        this.extAppData = extAppData;
-    }
 
     public String getExtAppType() {
         return extAppType;

@@ -8,8 +8,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.CaseObjectEvent;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
+import ru.protei.portal.core.model.dao.ExternalCaseAppDAO;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.ent.CaseObject;
+import ru.protei.portal.core.model.ent.ExternalCaseAppData;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
@@ -33,7 +35,7 @@ public class BackChannelHandlerFactoryImpl implements BackChannelHandlerFactory 
     private XStream xstream;
 
     @Autowired
-    CaseObjectDAO caseObjectDAO;
+    ExternalCaseAppDAO externalCaseAppDAO;
 
     private Map<En_CaseState, BackChannelEventHandler> stateHandlerMap;
 
@@ -184,15 +186,17 @@ public class BackChannelHandlerFactoryImpl implements BackChannelHandlerFactory 
     private void updateAppDataAndSend(HpsmMessage message, ServiceInstance instance, CaseObject object) throws Exception {
         instance.fillReplyMessageAttributes(message, object);
 
-        object.setExtAppData(xstream.toXML(message));
+        ExternalCaseAppData appData = externalCaseAppDAO.get(object.getId());
 
-        logger.debug("update and send hpsm data, case-id={}, ext={}, data={}", object.getId(), object.getExtAppCaseId(), object.getExtAppData());
+        appData.setExtAppData(xstream.toXML(message));
 
-        caseObjectDAO.saveExtAppData(object);
+        logger.debug("update and send hpsm data, case-id={}, ext={}, data={}", object.getId(), appData.getExtAppCaseId(), appData.getExtAppData());
 
-        HpsmMessageHeader header = new HpsmMessageHeader(object.getExtAppCaseId(), object.getExtId(), message.status());
+        externalCaseAppDAO.saveExtAppData(appData);
 
-        logger.debug("ready to send reply mail, case-id={}, ext={}, header={}", object.getId(), object.getExtAppCaseId(), header.toString());
+        HpsmMessageHeader header = new HpsmMessageHeader(appData.getExtAppCaseId(), object.getExtId(), message.status());
+
+        logger.debug("ready to send reply mail, case-id={}, ext={}, header={}", object.getId(), appData.getExtAppCaseId(), header.toString());
 
         instance.sendReply(header, message);
     }

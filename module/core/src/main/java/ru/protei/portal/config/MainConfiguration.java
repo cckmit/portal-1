@@ -206,6 +206,11 @@ public class MainConfiguration {
         return new CompanySubscriptionDAO_Impl ();
     }
 
+    @Bean
+    public ExternalCaseAppDAO getExternalCaseAppDAO () {
+        return new ExternalCaseAppDAO_Impl();
+    }
+
 /**
  *
  *
