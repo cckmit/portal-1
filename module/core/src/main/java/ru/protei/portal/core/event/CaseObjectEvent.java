@@ -4,7 +4,6 @@ import org.springframework.context.ApplicationEvent;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.service.CaseService;
-import sun.plugin.PluginURLJarFileCallBack;
 
 import java.util.Date;
 

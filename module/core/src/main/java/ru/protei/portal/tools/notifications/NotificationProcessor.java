@@ -5,9 +5,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.CaseCommentEvent;
 import ru.protei.portal.core.event.CaseObjectEvent;
+import ru.protei.portal.core.mail.MailMessageFactory;
+import ru.protei.portal.core.mail.MailSendChannel;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Person;
@@ -15,6 +19,8 @@ import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.template.PreparedTemplate;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 import java.util.List;
 import java.util.Set;
 
@@ -36,6 +42,15 @@ public class NotificationProcessor {
 
     @Autowired
     EmployeeService employeeService;
+
+    @Autowired
+    MailSendChannel mailSendChannel;
+
+    @Autowired
+    MailMessageFactory messageFactory;
+
+    @Autowired
+    PortalConfig config;
 
 
     @EventListener
@@ -89,8 +104,25 @@ public class NotificationProcessor {
 
         notificationEntries.stream().forEach( (entry)->{
             String messageBody = template.getText( entry.getAddress(), entry.getLangCode() );
-            log.info( "Email Notification send to {} subject={} body = {}", entry.getAddress(), "", messageBody );
+
+            try {
+                MimeMessageHelper msg = prepareMessage( "Subject", messageBody );
+                msg.setTo( entry.getAddress() );
+                mailSendChannel.send( msg.getMimeMessage() );
+            }
+            catch ( Exception e ) {
+                log.error( "Failed to make MimeMessage", e );
+            }
+
         } );
+    }
+
+    private MimeMessageHelper prepareMessage( String subj, String body ) throws MessagingException {
+        MimeMessageHelper helper = new MimeMessageHelper( messageFactory.createMailMessage(), true );
+        helper.setSubject( subj );
+        helper.setFrom( config.data().smtp().getFromAddress() );
+        helper.setText( body, true );
+        return helper;
     }
 
     private Person getManager( Long managerId ) {

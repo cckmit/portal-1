@@ -33,7 +33,7 @@ public class PreparedTemplate {
 
         try {
             model.put( "userName", receiver );
-            Template template = templateConfiguration.getTemplate( "crm.body."+lang+".ftl" );
+            Template template = templateConfiguration.getTemplate( "notification/email/crm.body."+lang+".ftl" );
             template.process( model, writer );
             return writer.toString();
         } catch ( Exception e ) {

@@ -19,7 +19,7 @@ public class PortalConfigData {
     }
 
 
-    static class SmtpConfig {
+    public static class SmtpConfig {
         String host;
         String defaultCharset;
         int port;

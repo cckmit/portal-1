@@ -36,7 +36,7 @@ public class TemplateServiceImpl implements TemplateService {
     public void onInit() {
         try {
             templateConfiguration = new Configuration( Configuration.VERSION_2_3_23 );
-            templateConfiguration.setClassLoaderForTemplateLoading( ClassLoader.getSystemClassLoader(), "notification/email" );
+            templateConfiguration.setClassForTemplateLoading( TemplateServiceImpl.class, "/" );
             templateConfiguration.setDefaultEncoding( "UTF-8" );
             templateConfiguration.setTemplateExceptionHandler( TemplateExceptionHandler.HTML_DEBUG_HANDLER );
         } catch ( Exception e ) {
