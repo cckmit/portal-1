@@ -1,5 +1,6 @@
 package ru.protei.portal.hpsm.service;
 
+import com.thoughtworks.xstream.XStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +49,10 @@ public class HpsmServiceImpl implements HpsmService {
 
     @Autowired
     ServiceInstanceRegistry serviceInstanceRegistry;
+
+    @Autowired
+    @Qualifier("hpsmSerializer")
+    XStream xStream;
 
     private InboundMessageHandler[] inboundHandlers;
 
@@ -119,6 +124,9 @@ public class HpsmServiceImpl implements HpsmService {
         HpsmMessageHeader header = new HpsmMessageHeader(object.getExtAppCaseId(), object.getExtId(), msg.status());
         msg.setMessage(event.getCaseComment().getText());
         instance.fillReplyMessageAttributes(msg, object);
+
+        logger.debug("ready to send mail, comment-event, case-id={}, ext={}, header={}, data={}",
+                object.getId(), object.getExtAppCaseId(), header.toString(), xStream.toXML(msg));
 
         try {
             instance.sendReply(header, msg);

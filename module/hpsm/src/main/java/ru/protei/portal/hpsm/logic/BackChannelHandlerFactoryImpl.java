@@ -185,9 +185,14 @@ public class BackChannelHandlerFactoryImpl implements BackChannelHandlerFactory 
         instance.fillReplyMessageAttributes(message, object);
 
         object.setExtAppData(xstream.toXML(message));
+
+        logger.debug("update and send hpsm data, case-id={}, ext={}, data={}", object.getId(), object.getExtAppCaseId(), object.getExtAppData());
+
         caseObjectDAO.saveExtAppData(object);
 
         HpsmMessageHeader header = new HpsmMessageHeader(object.getExtAppCaseId(), object.getExtId(), message.status());
+
+        logger.debug("ready to send reply mail, case-id={}, ext={}, header={}", object.getId(), object.getExtAppCaseId(), header.toString());
 
         instance.sendReply(header, message);
     }
