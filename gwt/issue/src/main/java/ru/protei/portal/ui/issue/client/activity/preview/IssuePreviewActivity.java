@@ -7,6 +7,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.ent.CompanySubscription;
 import ru.protei.portal.ui.common.client.common.AttachmentCollection;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.AppEvents;
@@ -20,6 +21,7 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.issue.client.activity.table.IssueTableActivity;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Активность превью обращения
@@ -104,12 +106,23 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
         view.setState( value.getStateId() );
         view.setCriticality( value.getImpLevel() );
         view.setProduct( value.getProduct() == null ? "" : value.getProduct().getName() );
-        view.setCompany( value.getInitiatorCompany() == null ? "" : value.getInitiatorCompany().getCname() );
         view.setContact( value.getInitiator() == null ? "" : value.getInitiator().getDisplayName() );
         Company ourCompany = value.getManager() == null ? null : value.getManager().getCompany();
         view.setOurCompany( ourCompany == null ? "" : ourCompany.getCname() );
         view.setManager( value.getManager() == null ? "" : value.getManager().getDisplayName() );
         view.setInfo( value.getInfo() == null ? "" : value.getInfo() );
+        Company initiator = value.getInitiatorCompany();
+        if ( initiator == null ) {
+            view.setCompany( "" );
+        } else {
+            view.setCompany( initiator.getCname() );
+            view.setSubscriptionEmails( initiator.getSubscriptions() == null
+                    ? ""
+                    : initiator.getSubscriptions()
+                    .stream()
+                    .map( CompanySubscription::getEmail )
+                    .collect( Collectors.joining(", ") ) );
+        }
 
         fireEvent( new IssueEvents.ShowComments( view.getCommentsContainer(), value.getId(), attachmentCollection ) );
     }
