@@ -29,11 +29,6 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
     }
 
     @Override
-    public CaseObject getByExternalAppId(String extAppId) {
-        return getByCondition("EXT_APP_ID=?", extAppId);
-    }
-
-    @Override
     public Long insertCase(CaseObject object) {
 
         En_CaseType type = object.getCaseType();
@@ -47,9 +42,6 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
     }
 
 
-    public boolean saveExtAppData (CaseObject object) {
-        return partialMerge(object, "EXT_APP_DATA");
-    }
 
 
     @Override

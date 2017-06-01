@@ -17,20 +17,24 @@ public abstract class IssueStates implements Activity{
     @Event
     public void onInit( AuthEvents.Init event ) {
 
-        states = new ArrayList<>(7);
+        states = new ArrayList<>(9);
         states.add(En_CaseState.CREATED);
         states.add(En_CaseState.OPENED);
         states.add(En_CaseState.ACTIVE);
+        states.add(En_CaseState.INFO_REQUEST);
+        states.add(En_CaseState.WORKAROUND);
         states.add(En_CaseState.TEST_LOCAL);
         states.add(En_CaseState.DONE);
         states.add(En_CaseState.TEST_CUST);
         states.add(En_CaseState.VERIFIED);
 
-        activeStates = new ArrayList<>(4);
+        activeStates = new ArrayList<>(6);
         activeStates.add(En_CaseState.CREATED);
         activeStates.add(En_CaseState.OPENED);
         activeStates.add(En_CaseState.ACTIVE);
         activeStates.add(En_CaseState.TEST_LOCAL);
+        activeStates.add(En_CaseState.WORKAROUND);
+        activeStates.add(En_CaseState.INFO_REQUEST);
 
         inactiveStates = new ArrayList<>(3);
         inactiveStates.add(En_CaseState.DONE);

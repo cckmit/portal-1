@@ -42,7 +42,7 @@ public class TestCaseEvents {
         object.setCreatorInfo("junit-test-events");
         object.setName("Event-publisher test");
         object.setExtAppType("junit");
-        object.setExtAppCaseId(JUNIT_EVENT_PUB_01);
+//        object.setExtAppCaseId(JUNIT_EVENT_PUB_01);
 
         CoreResponse<CaseObject> response = service.saveCaseObject(object);
 

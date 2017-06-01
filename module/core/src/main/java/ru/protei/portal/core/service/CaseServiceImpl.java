@@ -127,8 +127,9 @@ public class CaseServiceImpl implements CaseService {
 
         CaseObject oldState = caseObjectDAO.get(caseObject.getId());
 
-        // @FIXME нужно убрать прямой маппинг данных у case, инчае беда
-        caseObject.setExtAppData(oldState.getExtAppData());
+        if (caseObject.getState() == En_CaseState.CREATED && caseObject.getManager() != null) {
+            caseObject.setState(En_CaseState.OPENED);
+        }
 
         boolean isUpdated = caseObjectDAO.merge(caseObject);
 
