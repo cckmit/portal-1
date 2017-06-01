@@ -8,6 +8,7 @@
         <div class="form-group col-xs-11">
             <validatefield:ValidableTextBox ui:field="email"
                                             regexp="^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$"
+                                            notNull="false"
                                             styleName="input-field"/>
         </div>
     </g:HTMLPanel>
