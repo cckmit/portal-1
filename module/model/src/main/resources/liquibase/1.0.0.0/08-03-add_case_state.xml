@@ -7,14 +7,14 @@
     <changeSet author="michael" id="01-06-2017 22:30">
         <sql stripComments="true">
 
-            insert into case_state (id,state,info) values (22,'workaround','workaround solution');
-            insert into case_state (id,state,info) values (23,'info.request','information request');
+            insert into case_state (id,state,info) values (30,'workaround','workaround solution');
+            insert into case_state (id,state,info) values (31,'info.request','information request');
 
             insert into case_state_matrix (case_type, case_state, info, view_order)
-            values (4, 22, 'workaround solution', 4);
+            values (4, 30, 'workaround solution', 4);
 
             insert into case_state_matrix (case_type, case_state, info, view_order)
-            values (4, 23, 'request information', 4);
+            values (4, 31, 'request information', 4);
 
             commit;
         </sql>

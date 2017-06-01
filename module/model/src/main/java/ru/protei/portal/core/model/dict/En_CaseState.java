@@ -24,8 +24,8 @@ public enum En_CaseState {
     TEST_LOCAL(19, "local test"),
     TEST_CUST(20, "customer test"),
     DESIGN(21, "design"),
-    WORKAROUND(22, "workaround"),
-    INFO_REQUEST(23, "info request")
+    WORKAROUND(30, "workaround"),
+    INFO_REQUEST(31, "info request")
     ;
 
     public static En_CaseState getById(Long id) {
