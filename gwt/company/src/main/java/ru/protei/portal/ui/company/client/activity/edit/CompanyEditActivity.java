@@ -67,7 +67,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
             return;
         }
 
-        fillCompany(tempCompany);
+        fillDto(tempCompany);
 
         companyService.saveCompany(tempCompany, new RequestCallback<Boolean>() {
             @Override
@@ -147,8 +147,9 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         view.legalAddress().setValue(infoFacade.getLegalAddress());
 
         view.comment().setText(company.getInfo());
-        view.companyCategory().setValue(EntityOption.fromCompanyCategory( company.getCategory()));
+        view.companyCategory().setValue(EntityOption.fromCompanyCategory(company.getCategory()));
         view.companyGroup().setValue(EntityOption.fromCompanyGroup(company.getCompanyGroup()));
+        view.companySubscriptions().setValue(company.getSubscriptions());
 
         view.webSite().setText(infoFacade.getWebSite());
 
@@ -156,7 +157,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         fireEvent(new ContactItemEvents.ShowList(view.emailsContainer(), company.getContactInfo().getItems(), ALLOWED_EMAIL_TYPES));
     }
 
-    private void fillCompany(Company company){
+    private void fillDto(Company company){
         company.setCname(view.companyName().getValue());
 
         PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(company.getContactInfo());
@@ -166,6 +167,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         company.setInfo(view.comment().getText());
         company.setCategory(CompanyCategory.fromEntityOption(view.companyCategory().getValue()));
         company.setGroupId(view.companyGroup().getValue().getId());
+        company.setSubscriptions(view.companySubscriptions().getValue());
         infoFacade.setWebSite(view.webSite().getText());
     }
 

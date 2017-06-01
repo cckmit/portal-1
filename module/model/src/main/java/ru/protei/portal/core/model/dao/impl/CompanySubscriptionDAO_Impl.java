@@ -10,7 +10,13 @@ import java.util.List;
  */
 public class CompanySubscriptionDAO_Impl extends PortalBaseJdbcDAO<CompanySubscription> implements CompanySubscriptionDAO {
     @Override
-    public List<CompanySubscription> listByCompanyId(Long companyId) {
+    public List<CompanySubscription> listByCompanyId( Long companyId) {
         return getListByCondition("company_id=?", companyId);
+    }
+
+    @Override
+    public List<Long> listIdsByCompanyId(Long companyId) {
+        StringBuilder sql = new StringBuilder("select id from ").append(getTableName()).append( " where company_id=?" );
+        return jdbcTemplate.queryForList(sql.toString(), Long.class, companyId);
     }
 }

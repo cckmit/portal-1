@@ -7,6 +7,7 @@ import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author michael
@@ -24,7 +25,7 @@ public class Company implements Serializable, EntityOptionSupport {
     private Long groupId;
 
     @JdbcJoinedObject(localColumn = "groupId", remoteColumn = "id", updateLocalColumn = false)
-    CompanyGroup companyGroup;
+    private CompanyGroup companyGroup;
 
     @JdbcColumn(name = "cname")
     private String cname;
@@ -37,6 +38,9 @@ public class Company implements Serializable, EntityOptionSupport {
 
     @JdbcColumn(name = "created")
     private Date created;
+
+    @JdbcOneToMany(table = "CompanySubscription", localColumn = "id", remoteColumn = "company_id" )
+    private List<CompanySubscription> subscriptions;
 
     public static Company fromEntityOption(EntityOption entityOption){
         if(entityOption == null)
@@ -130,16 +134,30 @@ public class Company implements Serializable, EntityOptionSupport {
         return new EntityOption(this.cname, this.id);
     }
 
+    public void setCompanyGroup( CompanyGroup companyGroup ) {
+        this.companyGroup = companyGroup;
+    }
+
+    public List< CompanySubscription > getSubscriptions() {
+        return subscriptions;
+    }
+
+    public void setSubscriptions( List< CompanySubscription > subscriptions ) {
+        this.subscriptions = subscriptions;
+    }
+
     @Override
     public String toString() {
-        return new StringBuilder("Company{")
-                .append("id=").append(id)
-                .append(", categoryId=").append(getCategoryId())
-                .append(", groupId=").append(groupId)
-                .append(", cname='").append(cname).append('\'')
-                .append(", info='").append(info).append('\'')
-                .append(", created=").append(created)
-                .append(", group=").append(getCompanyGroup())
-                .append('}').toString();
+        return "Company{" +
+                "id=" + id +
+                ", category=" + category +
+                ", groupId=" + groupId +
+                ", companyGroup=" + companyGroup +
+                ", cname='" + cname + '\'' +
+                ", contactInfo=" + contactInfo +
+                ", info='" + info + '\'' +
+                ", created=" + created +
+                ", subscriptions=" + subscriptions +
+                '}';
     }
 }

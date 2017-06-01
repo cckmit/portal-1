@@ -2,7 +2,8 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:companygroup='urn:import:ru.protei.portal.ui.company.client.widget.group.buttonselector'
              xmlns:validablefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'
-             xmlns:companycategory='urn:import:ru.protei.portal.ui.company.client.widget.category.buttonselector'>
+             xmlns:companycategory='urn:import:ru.protei.portal.ui.company.client.widget.category.buttonselector'
+             xmlns:list="urn:import:ru.protei.portal.ui.company.client.widget.subscription.list">
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel styleName="panel">
@@ -66,6 +67,14 @@
                         </label>
                         <g:TextArea ui:field="comment" styleName="input-field description"/>
                     </div>
+
+                    <div class="form-group col-xs-12">
+                        <label class="bordered">
+                            <ui:text from="{lang.companySubscription}"/>
+                        </label>
+                        <list:SubscriptionList ui:field="subscriptions"/>
+                    </div>
+
                     <div class="form-group col-xs-12">
                         <label class="bordered">
                             <ui:text from="{lang.contacts}"/>

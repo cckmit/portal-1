@@ -1,24 +1,26 @@
 package ru.protei.portal.core.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.CompanyCategoryDAO;
 import ru.protei.portal.core.model.dao.CompanyDAO;
 import ru.protei.portal.core.model.dao.CompanyGroupDAO;
+import ru.protei.portal.core.model.dao.CompanySubscriptionDAO;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
-import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.core.model.ent.CompanyCategory;
-import ru.protei.portal.core.model.ent.CompanyGroup;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CompanyGroupQuery;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.winter.core.utils.collections.CollectionUtils;
+import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,33 +30,22 @@ import java.util.stream.Collectors;
  */
 public class CompanyServiceImpl implements CompanyService {
 
+    private static Logger log = LoggerFactory.getLogger(CompanyServiceImpl.class);
+
     @Autowired
     CompanyDAO companyDAO;
 
     @Autowired
     CompanyGroupDAO companyGroupDAO;
 
-
     @Autowired
     CompanyCategoryDAO companyCategoryDAO;
-    /**
-     * caches
-     */
 
+    @Autowired
+    CompanySubscriptionDAO companySubscriptionDAO;
 
-    /**
-     * it will be called after auto-injection
-     */
-    @PostConstruct
-    protected void init() {
-    }
-
-    /**
-     * destructor implementation
-     */
-    @PreDestroy
-    protected void destroy () {
-    }
+    @Autowired
+    JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
 
     @Override
@@ -149,6 +140,7 @@ public class CompanyServiceImpl implements CompanyService {
         }
 
         Company company = companyDAO.get(id);
+        jdbcManyRelationsHelper.fillAll( company );
 
         if (company == null) {
             return new CoreResponse().error(En_ResultStatus.NOT_FOUND);
@@ -171,6 +163,7 @@ public class CompanyServiceImpl implements CompanyService {
             return new CoreResponse().error(En_ResultStatus.NOT_CREATED);
         }
 
+        updateCompanySubscription(company);
         return new CoreResponse<Company>().success(company);
     }
 
@@ -186,6 +179,7 @@ public class CompanyServiceImpl implements CompanyService {
         if ( !result )
             new CoreResponse().error(En_ResultStatus.NOT_UPDATED);
 
+        updateCompanySubscription(company);
         return new CoreResponse<Company>().success(company);
     }
 
@@ -205,6 +199,52 @@ public class CompanyServiceImpl implements CompanyService {
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
 
         return new CoreResponse<Boolean>().success(checkGroupExists(name, excludeId));
+    }
+
+
+    private boolean updateCompanySubscription( Company company ) {
+        Long companyId = company.getId();
+        log.info( "binding update to linked company subscription for companyId = {}", companyId );
+
+        List<Long> toRemoveNumberIds = companySubscriptionDAO.listIdsByCompanyId( companyId );
+        if ( CollectionUtils.isEmpty(company.getSubscriptions()) && CollectionUtils.isEmpty(toRemoveNumberIds) ) {
+            return true;
+        }
+
+        List<CompanySubscription> newSubscriptions = new ArrayList<>();
+        List<CompanySubscription> oldSubscriptions = new ArrayList<>();
+        company.getSubscriptions().forEach( subscription -> {
+            if ( subscription.getId() == null ) {
+                subscription.setCompanyId( companyId );
+                newSubscriptions.add( subscription );
+            } else {
+                oldSubscriptions.add( subscription );
+            }
+        } );
+
+        if ( !CollectionUtils.isEmpty( newSubscriptions ) ) {
+            log.info( "persist company subscriptions = {} for companyId = {}", newSubscriptions, companyId );
+            companySubscriptionDAO.persistBatch( newSubscriptions );
+        }
+
+        if ( !CollectionUtils.isEmpty( oldSubscriptions ) ) {
+            log.info( "merge company subscriptions = {} for companyId = {}", oldSubscriptions, companyId );
+            int countMerged = companySubscriptionDAO.mergeBatch( oldSubscriptions );
+            if ( countMerged != oldSubscriptions.size() ) {
+                return false;
+            }
+        }
+
+        toRemoveNumberIds.removeAll( oldSubscriptions.stream().map(CompanySubscription::getId).collect( Collectors.toList() ) );
+        if ( !CollectionUtils.isEmpty( toRemoveNumberIds ) ) {
+            log.info( "remove company subscriptions = {} for companyId = {}", toRemoveNumberIds, companyId );
+            int countRemoved = companySubscriptionDAO.removeByKeys( toRemoveNumberIds );
+            if ( countRemoved != toRemoveNumberIds.size() ) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private boolean isValidCompany(Company company) {
