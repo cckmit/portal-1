@@ -3,6 +3,7 @@ package ru.protei.portal.core.event;
 import org.springframework.context.ApplicationEvent;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
+import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.service.CaseService;
 
 /**
@@ -12,11 +13,13 @@ public class CaseCommentEvent extends ApplicationEvent {
 
     private CaseObject caseObject;
     private CaseComment caseComment;
+    private Person person;
 
-    public CaseCommentEvent(CaseService source, CaseObject caseObject, CaseComment comment) {
+    public CaseCommentEvent( CaseService source, CaseObject caseObject, CaseComment comment, Person currentPerson ) {
         super(source);
         this.caseObject = caseObject;
         this.caseComment = comment;
+        this.person = currentPerson;
     }
 
     public CaseObject getCaseObject() {
@@ -25,5 +28,9 @@ public class CaseCommentEvent extends ApplicationEvent {
 
     public CaseComment getCaseComment() {
         return caseComment;
+    }
+
+    public Person getPerson() {
+        return person;
     }
 }

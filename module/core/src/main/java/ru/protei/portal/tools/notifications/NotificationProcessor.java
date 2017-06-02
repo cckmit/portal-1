@@ -65,7 +65,7 @@ public class NotificationProcessor {
             oldManager = getManager( event.getOldState().getManagerId() );
         }
 
-        performNotification( event.getCaseObject(), oldManager, event, null, notificationEntries );
+        performNotification( event.getCaseObject(), oldManager, event, null, notificationEntries, event.getPerson() );
 
     }
 
@@ -76,12 +76,12 @@ public class NotificationProcessor {
             return;
         }
 
-        performNotification( event.getCaseObject(), null, null, event, notificationEntries );
+        performNotification( event.getCaseObject(), null, null, event, notificationEntries, event.getPerson() );
     }
 
     private void performNotification(
         CaseObject caseObject, Person oldManager, CaseObjectEvent caseEvent, CaseCommentEvent commentEvent,
-        Set<NotificationEntry> notificationEntries
+        Set<NotificationEntry> notificationEntries, Person currentPerson
     ) {
         CoreResponse<List<CaseComment> > comments = caseService.getCaseCommentList( caseObject.getId() );
         if ( comments.isError() ) {
@@ -103,7 +103,7 @@ public class NotificationProcessor {
             return;
         }
 
-        PreparedTemplate subjectTemplate = templateService.getCrmEmailNotificationSubject( caseObject );
+        PreparedTemplate subjectTemplate = templateService.getCrmEmailNotificationSubject( caseObject, currentPerson );
         if ( subjectTemplate == null ) {
             log.error( "Failed to prepare subject template" );
             return;

@@ -16,8 +16,6 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.service.template.PreparedTemplate;
 
 import javax.annotation.PostConstruct;
-import java.io.File;
-import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -95,9 +93,12 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     @Override
-    public PreparedTemplate getCrmEmailNotificationSubject( CaseObject caseObject ) {
+    public PreparedTemplate getCrmEmailNotificationSubject( CaseObject caseObject, Person currentPerson ) {
         Map<String, Object> templateModel = new HashMap<>();
         templateModel.put( "case", caseObject );
+        templateModel.put( "author", currentPerson );
+        templateModel.put( "caseState", En_CaseState.getById( caseObject.getStateId() ).getName() );
+        templateModel.put( "importanceLevel", En_ImportanceLevel.getById( caseObject.getImpLevel() ).getCode() );
 
         PreparedTemplate template = new PreparedTemplate( "notification/email/crm.subject.%s.ftl" );
         template.setModel( templateModel );

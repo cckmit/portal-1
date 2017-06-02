@@ -60,9 +60,9 @@ public class IssueServiceImpl implements IssueService {
             caseObject.setTypeId(En_CaseType.CRM_SUPPORT.getId());
             caseObject.setCreatorId(getCurrentPerson().getId());
 
-            response = caseService.saveCaseObject(caseObject);
+            response = caseService.saveCaseObject(caseObject, getCurrentPerson());
         }else
-            response = caseService.updateCaseObject(caseObject);
+            response = caseService.updateCaseObject(caseObject, getCurrentPerson());
 
         log.debug( "saveIssue(): response.isOk()={}", response.isOk() );
         if ( response.isError() ) throw new RequestFailedException(response.getStatus());
@@ -104,9 +104,9 @@ public class IssueServiceImpl implements IssueService {
 
         CoreResponse<CaseComment> response;
         if ( comment.getId() == null ) {
-            response = caseService.addCaseComment( comment );
+            response = caseService.addCaseComment( comment, getCurrentPerson() );
         } else {
-            response = caseService.updateCaseComment( comment, getCurrentPerson().getId() );
+            response = caseService.updateCaseComment( comment, getCurrentPerson() );
         }
         if (response.isError()) {
             throw new RequestFailedException( response.getStatus() );

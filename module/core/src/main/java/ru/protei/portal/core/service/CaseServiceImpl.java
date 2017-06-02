@@ -17,10 +17,7 @@ import ru.protei.portal.core.model.dao.CaseStateMatrixDAO;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.Attachment;
-import ru.protei.portal.core.model.ent.CaseAttachment;
-import ru.protei.portal.core.model.ent.CaseComment;
-import ru.protei.portal.core.model.ent.CaseObject;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseShortView;
 
@@ -88,7 +85,7 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     @Transactional
-    public CoreResponse< CaseObject > saveCaseObject( CaseObject caseObject ) {
+    public CoreResponse< CaseObject > saveCaseObject( CaseObject caseObject, Person initiator ) {
         if (caseObject == null)
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
 
@@ -111,14 +108,14 @@ public class CaseServiceImpl implements CaseService {
 
         // From GWT-side we get partially filled object, that's why we need to refresh state from db
         CaseObject newState = caseObjectDAO.get(caseObject.getId());
-        publisherService.publishEvent(new CaseObjectEvent(this, newState));
+        publisherService.publishEvent(new CaseObjectEvent(this, newState, initiator));
 
         return new CoreResponse<CaseObject>().success( caseObject );
     }
 
     @Override
     @Transactional
-    public CoreResponse< CaseObject > updateCaseObject( CaseObject caseObject ) {
+    public CoreResponse< CaseObject > updateCaseObject( CaseObject caseObject, Person currentPerson ) {
         if (caseObject == null)
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
 
@@ -139,7 +136,7 @@ public class CaseServiceImpl implements CaseService {
         // From GWT-side we get partially filled object, that's why we need to refresh state from db
         CaseObject newState = caseObjectDAO.get(caseObject.getId());
 
-        publisherService.publishEvent(new CaseObjectEvent(this, newState, oldState));
+        publisherService.publishEvent(new CaseObjectEvent(this, newState, oldState, currentPerson));
 
         Collection<CaseAttachment> removedCaseAttachments =
                 caseAttachmentDAO.subtractDiffAndSynchronize(
@@ -177,7 +174,7 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     @Transactional
-    public CoreResponse<CaseComment> addCaseComment(CaseComment comment) {
+    public CoreResponse<CaseComment> addCaseComment( CaseComment comment, Person currentPerson ) {
         if ( comment == null )
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
 
@@ -205,18 +202,22 @@ public class CaseServiceImpl implements CaseService {
         // re-read data from db to get full-filled object
         CaseComment result = caseCommentDAO.get( commentId );
 
-        publisherService.publishEvent(new CaseCommentEvent(this, caseObjectDAO.get(result.getCaseId()), result));
+        publisherService.publishEvent(new CaseCommentEvent(this, caseObjectDAO.get(result.getCaseId()), result, currentPerson));
 
         return new CoreResponse<CaseComment>().success( result );
     }
 
     @Override
     @Transactional
-    public CoreResponse<CaseComment> updateCaseComment (CaseComment comment, Long personId) {
+    public CoreResponse<CaseComment> updateCaseComment (CaseComment comment, Person person ) {
         if (comment == null || comment.getId() == null)
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
 
-        if (!personId.equals(comment.getAuthorId()) || !isChangeAvailable ( comment.getCreated() ))
+        if (person == null) {
+            return new CoreResponse().error( En_ResultStatus.NOT_UPDATED );
+        }
+
+        if (!person.getId().equals(comment.getAuthorId()) || !isChangeAvailable ( comment.getCreated() ))
             return new CoreResponse().error( En_ResultStatus.NOT_UPDATED );
 
         boolean isCommentUpdated = caseCommentDAO.merge(comment);

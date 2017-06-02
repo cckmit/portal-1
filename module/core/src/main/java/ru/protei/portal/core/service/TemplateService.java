@@ -18,5 +18,5 @@ public interface TemplateService {
         CaseCommentEvent caseCommentEvent, String urlTemplate
     );
 
-    PreparedTemplate getCrmEmailNotificationSubject( CaseObject caseObject );
+    PreparedTemplate getCrmEmailNotificationSubject( CaseObject caseObject, Person currentPerson );
 }

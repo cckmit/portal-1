@@ -83,7 +83,7 @@ public class LocalUpdateTest {
         comment.setCreated(new Date());
         comment.setCaseId(object.getId());
 
-        caseService.addCaseComment(comment);
+        caseService.addCaseComment(comment, testPerson );
 
         // wait event handling
         Thread.sleep(200);
@@ -100,7 +100,7 @@ public class LocalUpdateTest {
 
         object.setState(En_CaseState.OPENED);
         object.setManager(testPerson);
-        caseService.updateCaseObject(object);
+        caseService.updateCaseObject(object, testPerson );
 
         // wait event handling
         Thread.sleep(200);
@@ -119,7 +119,7 @@ public class LocalUpdateTest {
 
 
         object.setState(En_CaseState.DONE);
-        caseService.updateCaseObject(object);
+        caseService.updateCaseObject(object, testPerson );
 
         // wait event handling
         Thread.sleep(200);

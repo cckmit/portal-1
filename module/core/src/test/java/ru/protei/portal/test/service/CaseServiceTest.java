@@ -72,7 +72,7 @@ public class CaseServiceTest {
 
         CaseService service = ctx.getBean(CaseService.class);
 
-        CoreResponse<CaseComment> result = service.addCaseComment( comment );
+        CoreResponse<CaseComment> result = service.addCaseComment( comment, null );
         Assert.assertNotNull(result);
         Assert.assertTrue(result.isOk());
         Assert.assertNotNull(result.getData());
@@ -88,7 +88,7 @@ public class CaseServiceTest {
         if (comment != null) {
             comment.setText( "Unit-test - тестовый комментарий (update)" );
 
-            result = service.updateCaseComment( comment, personId );
+            result = service.updateCaseComment( comment, null );
             Assert.assertNotNull( result );
             Assert.assertTrue( result.isOk() );
             Assert.assertNotNull( result.getData() );
