@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
@@ -49,6 +50,7 @@ public class InboundMainMessageHandler implements InboundMessageHandler {
 
 
     @Override
+    @Transactional
     public boolean handle(MimeMessage msg, ServiceInstance instance) {
 
         HpsmMessageHeader subject = null;
@@ -206,7 +208,6 @@ public class InboundMainMessageHandler implements InboundMessageHandler {
             }
 
 
-
             CaseObject obj = new CaseObject();
             obj.setCreated(new Date());
             obj.setModified(new Date());
@@ -233,20 +234,13 @@ public class InboundMainMessageHandler implements InboundMessageHandler {
 
             if (caseObjId != null && caseObjId > 0L) {
 
-                StringBuilder commentText = new StringBuilder();
-                if (HelperFunc.isNotEmpty(request.getHpsmMessage().getMessage())) {
-                    commentText.append(request.getHpsmMessage().getMessage());
-                }
+                CaseComment comment = createComment(request, contactPerson, obj, caseObjId);
 
-                CaseComment comment = new CaseComment();
-                comment.setCreated(new Date());
-                comment.setAuthor(contactPerson);
-                comment.setCaseId(caseObjId);
-                comment.setCaseStateId(obj.getStateId());
-                comment.setClientIp("hpsm");
-                comment.setText(appendCommentInfo (commentText, request.getHpsmMessage()).toString());
+                logger.debug("add comment to new case, case-id={}, comment={}", caseObjId, comment.getId());
 
-                commentDAO.persist(comment);
+//                if (request.hasAttachments()) {
+//                    logger.debug("process attachments for new case, id={}", caseObjId);
+//                }
 
                 HpsmMessageHeader replySubj = new HpsmMessageHeader(request.getSubject().getHpsmId(), obj.getExtId(), HpsmStatus.REGISTERED);
                 HpsmMessage replyEvent = request.getHpsmMessage().createCopy();
@@ -271,6 +265,23 @@ public class InboundMainMessageHandler implements InboundMessageHandler {
         }
     }
 
+    private CaseComment createComment(HpsmEvent request, Person contactPerson, CaseObject obj, Long caseObjId) {
+        StringBuilder commentText = new StringBuilder();
+        if (HelperFunc.isNotEmpty(request.getHpsmMessage().getMessage())) {
+            commentText.append(request.getHpsmMessage().getMessage());
+        }
+
+        CaseComment comment = new CaseComment();
+        comment.setCreated(new Date());
+        comment.setAuthor(contactPerson);
+        comment.setCaseId(caseObjId);
+        comment.setCaseStateId(obj.getStateId());
+        comment.setClientIp("hpsm");
+        comment.setText(appendCommentInfo (commentText, request.getHpsmMessage()).toString());
+
+        commentDAO.persist(comment);
+        return comment;
+    }
 
 
     class RejectHandler implements HpsmEventHandler {

@@ -5,11 +5,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import protei.utils.common.ThreadLocalDateFormat;
 import ru.protei.portal.core.model.ent.CaseObject;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.hpsm.logic.HpsmEvent;
 import ru.protei.portal.hpsm.logic.ServiceInstance;
+import ru.protei.portal.hpsm.struct.HpsmAttachment;
 import ru.protei.portal.hpsm.struct.HpsmMessage;
 import ru.protei.portal.hpsm.struct.HpsmMessageHeader;
 
+import javax.mail.BodyPart;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
@@ -108,12 +111,19 @@ public class HpsmUtils {
                 logger.debug("process part #{}", i);
                 logger.debug(" message part #{}, Content type: {}", i, mparts.getBodyPart(i).getContentType());
 
-                String fileName = mparts.getBodyPart(i).getFileName();
+                BodyPart part = mparts.getBodyPart(i);
+
+                String fileName = part.getFileName();
                 logger.debug(" message part #{}, File name: {}", i, fileName);
 
-                if (fileName != null && (fileName.equalsIgnoreCase(RTTS_HPSM_XML_REQUEST) || fileName.equalsIgnoreCase(RTTS_HPSM_XML_REPLY))) {
+                if (HelperFunc.isEmpty(fileName)) {
+                    logger.debug(" message part #{}, file name is empty, skip handling this attachment");
+                    continue;
+                }
+
+                if (fileName.equalsIgnoreCase(RTTS_HPSM_XML_REQUEST) || fileName.equalsIgnoreCase(RTTS_HPSM_XML_REPLY)) {
                     logger.debug(" message part #{}, file: {}, trying parse incoming xml-event data", i, fileName);
-                    try (InputStream contentStream = mparts.getBodyPart(i).getInputStream()) {
+                    try (InputStream contentStream = part.getInputStream()) {
                         event.assign((HpsmMessage) xstream.fromXML(contentStream));
 
                         if (event.getHpsmMessage() != null) {
@@ -123,6 +133,14 @@ public class HpsmUtils {
                             logger.debug(" >> parsing is failed");
                         }
                     }
+                }
+                else {
+                    HpsmAttachment att = new HpsmAttachment(part);
+
+                    logger.debug(" message part #{} -> add attachment f={},ct={},size={},info={}",
+                            i, att.getFileName(), att.getContentType(), att.getSize(), att.getDescription());
+
+                    event.addAttachment(att);
                 }
             }
         }

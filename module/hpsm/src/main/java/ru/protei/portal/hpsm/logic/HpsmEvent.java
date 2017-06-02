@@ -1,11 +1,14 @@
 package ru.protei.portal.hpsm.logic;
 
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.hpsm.struct.HpsmAttachment;
 import ru.protei.portal.hpsm.struct.HpsmMessage;
 import ru.protei.portal.hpsm.struct.HpsmMessageHeader;
 import ru.protei.portal.hpsm.utils.HpsmUtils;
 
 import javax.mail.internet.MimeMessage;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by michael on 28.04.17.
@@ -16,6 +19,8 @@ public class HpsmEvent {
     HpsmMessage hpsmMessage;
     MimeMessage mailMessage;
 
+    List<HpsmAttachment> attachments;
+
     String mailBodyText;
 
     Company company;
@@ -24,6 +29,21 @@ public class HpsmEvent {
         this.subject = subject;
         this.hpsmMessage = msg;
         this.mailMessage = mailMessage;
+    }
+
+    public boolean hasAttachments () {
+        return this.attachments != null && !this.attachments.isEmpty();
+    }
+
+    public void addAttachment (HpsmAttachment attachment) {
+        if (this.attachments == null)
+            this.attachments = new ArrayList<>();
+
+        this.attachments.add(attachment);
+    }
+
+    public List<HpsmAttachment> getAttachments() {
+        return attachments;
     }
 
     public HpsmEvent assign (HpsmMessage message) {
