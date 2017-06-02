@@ -19,7 +19,7 @@ public class CaseStateMatrixDAO_Impl extends PortalBaseJdbcDAO<CaseStateMatrix> 
 
         Map<Long,Long> oldToNewStateMap = new HashMap<>();
 
-        for (CaseStateMatrix me : getListByCondition("CASE_TYPE=?", caseType.getId())) {
+        for (CaseStateMatrix me : getListByCondition("CASE_TYPE=? and OLD_ID is not null", caseType.getId())) {
             oldToNewStateMap.put(me.getOldId(), me.getCaseStateId());
         }
 
@@ -31,9 +31,9 @@ public class CaseStateMatrixDAO_Impl extends PortalBaseJdbcDAO<CaseStateMatrix> 
         List<CaseStateMatrix> caseStateMatrix = getListByCondition("CASE_TYPE=? ORDER BY VIEW_ORDER", caseType.getId());
 
         List<En_CaseState> caseStateList = new ArrayList<>(caseStateMatrix.size());
-        caseStateMatrix.forEach(csm -> {
-            caseStateList.add(En_CaseState.getById(csm.getCaseStateId()));
-        });
+        caseStateMatrix.forEach(csm ->
+            caseStateList.add(En_CaseState.getById(csm.getCaseStateId()))
+        );
 
         return caseStateList;
     }
