@@ -24,6 +24,8 @@ import javax.mail.internet.MimeMessage;
 import java.util.List;
 import java.util.Set;
 
+import static java.util.stream.Collectors.toList;
+
 /**
  * Created by shagaleev on 30/05/17.
  */
@@ -94,9 +96,11 @@ public class NotificationProcessor {
             oldManager = manager;
         }
 
+        List<String> recipients = notificationEntries.stream().map( NotificationEntry::getAddress ).collect( toList() );
+
         PreparedTemplate bodyTemplate = templateService.getCrmEmailNotificationBody(
             caseEvent, comments.getData(), manager, oldManager, commentEvent,
-            config.data().getCrmCaseUrl()
+            config.data().getCrmCaseUrl(), recipients
         );
         if ( bodyTemplate == null ) {
             log.error( "Failed to prepare body template" );

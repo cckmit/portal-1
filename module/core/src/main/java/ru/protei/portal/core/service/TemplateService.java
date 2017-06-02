@@ -14,9 +14,9 @@ import java.util.List;
  */
 public interface TemplateService {
     PreparedTemplate getCrmEmailNotificationBody(
-        CaseObjectEvent caseObject, List<CaseComment> caseComments, Person manager, Person oldManager,
-        CaseCommentEvent caseCommentEvent, String urlTemplate
-    );
+        CaseObjectEvent caseObject, List< CaseComment > caseComments, Person manager, Person oldManager,
+        CaseCommentEvent caseCommentEvent, String urlTemplate,
+        List< String > recipients );
 
     PreparedTemplate getCrmEmailNotificationSubject( CaseObject caseObject, Person currentPerson );
 }

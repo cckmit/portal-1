@@ -19,6 +19,7 @@ import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static java.util.stream.Collectors.toList;
 
@@ -46,7 +47,7 @@ public class TemplateServiceImpl implements TemplateService {
     @Override
     public PreparedTemplate getCrmEmailNotificationBody(
         CaseObjectEvent caseObjectEvent, List< CaseComment > caseComments, Person manager, Person oldManager,
-        CaseCommentEvent caseCommentEvent, String urlTemplate
+        CaseCommentEvent caseCommentEvent, String urlTemplate, List< String > recipients
     ) {
         if ( caseCommentEvent == null && caseObjectEvent == null ) {
             return null;
@@ -62,6 +63,7 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put( "importanceLevel", En_ImportanceLevel.getById( newState.getImpLevel() ).getCode() );
         templateModel.put( "manager", manager );
         templateModel.put( "caseState", En_CaseState.getById( newState.getStateId() ).getName() );
+        templateModel.put( "recipients", recipients );
 
         templateModel.put( "productChanged", caseObjectEvent == null ? false : caseObjectEvent.isProductChanged() );
         templateModel.put( "oldProductName", oldState == null ? null : oldState.getProduct().getName() );

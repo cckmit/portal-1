@@ -191,7 +191,10 @@
     <div style="padding: 4px 0 8px;">
         <div style="color: #777777; font-size: 11px; font-family:sans-serif; margin: 20px 0; padding: 8px 0; border-top: 1px solid #D4D5D6;">
             Вы (<b>${userName}</b>) получили это сообщение,
-            потому что включены в список рассылки
+            потому что включены в список рассылки. Это сообщение направлено
+            <#list recipients as recipient>
+                ${recipient},
+            </#list>
         </div>
     </div>
 </div>
