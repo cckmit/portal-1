@@ -129,12 +129,16 @@ public class ContactServiceImpl implements ContactService {
 
         UserLogin account = userLogin.getId() == null ? null : getUserLogin(userLogin.getPersonId()).getData();
 
-        if (HelperFunc.isEmpty(userLogin.getUpass())) {
-            if (account != null) {
-                userLogin.setUpass(account.getUpass());
-            }
-        } else {
+        if (account == null || (account.getUpass() == null && userLogin.getUpass() != null) ||
+                (account.getUpass() != null && userLogin.getUpass() != null && !account.getUpass().equalsIgnoreCase(userLogin.getUpass().trim()))) {
             userLogin.setUpass(DigestUtils.md5DigestAsHex(userLogin.getUpass().trim().getBytes()));
+        }
+
+        if(userLogin.getId() == null) {
+            userLogin.setCreated(new Date());
+            userLogin.setAuthTypeId(En_AuthType.LOCAL.getId());
+            userLogin.setRoleId(En_UserRole.CRM_CLIENT.getId());
+            userLogin.setAdminStateId(En_AdminState.UNLOCKED.getId());
         }
 
         if (userLoginDAO.saveOrUpdate(userLogin)) {

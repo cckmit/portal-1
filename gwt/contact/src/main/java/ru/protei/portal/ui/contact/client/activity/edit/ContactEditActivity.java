@@ -73,19 +73,18 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
 
     @Override
     public void onSaveClicked() {
-        if (!validate ()) {
+        if (!validate()) {
+            return;
+        }
+
+        if(!isConfirmValidate()) {
+            fireEvent(new NotifyEvents.Show(lang.contactPasswordsNotMatch(), NotifyEvents.NotifyType.ERROR));
             return;
         }
 
         UserLogin userLogin = applyChangesLogin();
         if(!HelperFunc.isEmpty(userLogin.getUlogin()) && HelperFunc.isEmpty(userLogin.getUpass()) && userLogin.getId() == null) {
             fireEvent(new NotifyEvents.Show(lang.contactPasswordNotDefinied(), NotifyEvents.NotifyType.ERROR));
-            return;
-        }
-
-        if(!HelperFunc.isEmpty(userLogin.getUpass()) &&
-                (HelperFunc.isEmpty(view.confirmPassword().getText()) || !userLogin.getUpass().equals(view.confirmPassword().getText()))) {
-            fireEvent(new NotifyEvents.Show(lang.contactPasswordsNotMatch(), NotifyEvents.NotifyType.ERROR));
             return;
         }
 
@@ -185,7 +184,9 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
 
     private UserLogin applyChangesLogin() {
         account.setUlogin(view.login().getText());
-        account.setUpass(view.password().getText());
+        if (!HelperFunc.isEmpty(view.password().getText())) {
+            account.setUpass(view.password().getText());
+        }
         return account;
     }
 
@@ -244,6 +245,13 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         view.confirmPassword().setText("");
 
         view.showInfo(userLogin.getId() != null);
+    }
+
+    private boolean isConfirmValidate() {
+        return HelperFunc.isEmpty(view.login().getText()) ||
+                HelperFunc.isEmpty(view.password().getText()) ||
+                (!HelperFunc.isEmpty(view.confirmPassword().getText()) &&
+                        view.password().getText().equals(view.confirmPassword().getText()));
     }
 
     @Inject

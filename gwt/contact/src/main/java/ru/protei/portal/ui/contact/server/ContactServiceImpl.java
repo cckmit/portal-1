@@ -125,16 +125,7 @@ public class ContactServiceImpl implements ContactService {
                 throw new RequestFailedException( response.getStatus() );
             }
         } else {
-
             log.debug( "store user login, id: {} ", HelperFunc.nvl( userLogin.getId(), "new" ) );
-
-            if( userLogin.getId() == null ) {
-                userLogin.setCreated( new Date() );
-                userLogin.setAuthTypeId( En_AuthType.LOCAL.getId() );
-                userLogin.setRoleId( En_UserRole.CRM_CLIENT.getId() );
-                userLogin.setAdminStateId( En_AdminState.UNLOCKED.getId() );
-            }
-
             CoreResponse< UserLogin > response = contactService.saveUserLogin( userLogin );
             log.debug( "store user login, result: {}", response.isOk() ? "ok" : response.getStatus() );
 

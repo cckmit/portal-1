@@ -4,10 +4,12 @@ import org.junit.*;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
+import ru.protei.portal.core.model.dao.ExternalCaseAppDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
+import ru.protei.portal.core.model.ent.ExternalCaseAppData;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.service.CaseControlService;
@@ -43,6 +45,7 @@ public class LocalUpdateTest {
         CaseService caseService = ctx.getBean(CaseService.class);
         PersonDAO personDAO = ctx.getBean(PersonDAO.class);
         CaseObjectDAO caseObjectDAO = ctx.getBean(CaseObjectDAO.class);
+        ExternalCaseAppDAO externalCaseAppDAO = ctx.getBean(ExternalCaseAppDAO.class);
 
 
 
@@ -59,7 +62,11 @@ public class LocalUpdateTest {
 
         Assert.assertNotNull(responseMail);
 
-        CaseObject object = caseObjectDAO.getByExternalAppId(HPSM_TEST_CASE_ID1);
+        ExternalCaseAppData appData = externalCaseAppDAO.getByExternalAppId(HPSM_TEST_CASE_ID1);
+
+        Assert.assertNotNull(appData);
+
+        CaseObject object = caseObjectDAO.get(appData.getId());
 
         Assert.assertNotNull(object);
 

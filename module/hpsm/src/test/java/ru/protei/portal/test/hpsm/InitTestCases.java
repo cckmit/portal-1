@@ -4,6 +4,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.mail.MailSendChannel;
+import ru.protei.portal.core.model.dao.ExternalCaseAppDAO;
 import ru.protei.portal.hpsm.utils.HpsmTestUtils;
 import ru.protei.portal.test.hpsm.config.HpsmTestConfiguration;
 
@@ -21,9 +22,9 @@ public class InitTestCases {
 
         ApplicationContext ctx = new AnnotationConfigApplicationContext(HpsmTestConfiguration.class);
 
-        CaseObjectDAO caseObjectDAO = ctx.getBean(CaseObjectDAO.class);
+        ExternalCaseAppDAO externalCaseAppDAO = ctx.getBean(ExternalCaseAppDAO.class);
 
-        if (caseObjectDAO.getByExternalAppId(HPSM_TEST_CASE_ID1) != null)
+        if (externalCaseAppDAO.getByExternalAppId(HPSM_TEST_CASE_ID1) != null)
             return;
 
 

@@ -249,6 +249,8 @@ public interface Lang extends Messages, ContactItemLang {
     String solvedNoapCaseState();
     String solvedFixCaseState();
     String solvedDupCaseState();
+    String workaroundCaseState ();
+    String requestInfoCaseState ();
 
     String criticalImportance();
     String importantImportance();
@@ -458,14 +460,16 @@ public interface Lang extends Messages, ContactItemLang {
     String copyPostfix();
 
     String attachment();
+
     String addAttachmentBtn();
 
     String uploadFileError();
+
     String uploadFileSuccess();
+
     String removeFileError();
 
     String attachmentsNotLoaded();
-
 
     String contactLogin();
 
@@ -482,4 +486,6 @@ public interface Lang extends Messages, ContactItemLang {
     String contactConfirmPassword();
 
     String contactPasswordsNotMatch();
+
+    String companySubscription();
 }

@@ -1,5 +1,6 @@
 package ru.protei.portal.hpsm.service;
 
+import com.thoughtworks.xstream.XStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,7 +8,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.event.EventListener;
 import ru.protei.portal.core.event.CaseCommentEvent;
 import ru.protei.portal.core.event.CaseObjectEvent;
+import ru.protei.portal.core.model.dao.ExternalCaseAppDAO;
 import ru.protei.portal.core.model.ent.CaseObject;
+import ru.protei.portal.core.model.ent.ExternalCaseAppData;
 import ru.protei.portal.hpsm.api.HpsmMessageFactory;
 import ru.protei.portal.core.mail.MailSendChannel;
 import ru.protei.portal.hpsm.config.HpsmEnvConfig;
@@ -38,6 +41,9 @@ public class HpsmServiceImpl implements HpsmService {
     CompanyBranchMap companyBranchMap;
 
     @Autowired
+    ExternalCaseAppDAO externalCaseAppDAO;
+
+    @Autowired
     HpsmMessageFactory hpsmMessageFactory;
 
     @Autowired
@@ -48,6 +54,10 @@ public class HpsmServiceImpl implements HpsmService {
 
     @Autowired
     ServiceInstanceRegistry serviceInstanceRegistry;
+
+    @Autowired
+    @Qualifier("hpsmSerializer")
+    XStream xStream;
 
     private InboundMessageHandler[] inboundHandlers;
 
@@ -100,6 +110,7 @@ public class HpsmServiceImpl implements HpsmService {
     public void onCaseCommentEvent(CaseCommentEvent event) {
 
         CaseObject object = event.getCaseObject();
+        ExternalCaseAppData appData = externalCaseAppDAO.get(object.getId());
 
         logger.debug("hpsm, case-comment event, case {}, comment #{}", object.getExtId(),event.getCaseComment().getId());
         ServiceInstance instance = serviceInstanceRegistry.find(event.getCaseObject());
@@ -109,16 +120,19 @@ public class HpsmServiceImpl implements HpsmService {
             return;
         }
 
-        HpsmMessage msg = this.hpsmMessageFactory.parseMessage(object.getExtAppData());
+        HpsmMessage msg = this.hpsmMessageFactory.parseMessage(appData.getExtAppData());
 
         if (msg == null) {
             logger.error("unable to parse app-data, case {}", object.getExtId());
             return;
         }
 
-        HpsmMessageHeader header = new HpsmMessageHeader(object.getExtAppCaseId(), object.getExtId(), msg.status());
+        HpsmMessageHeader header = new HpsmMessageHeader(appData.getExtAppCaseId(), object.getExtId(), msg.status());
         msg.setMessage(event.getCaseComment().getText());
         instance.fillReplyMessageAttributes(msg, object);
+
+        logger.debug("ready to send mail, comment-event, case-id={}, ext={}, header={}, data={}",
+                object.getId(), appData.getExtAppCaseId(), header.toString(), xStream.toXML(msg));
 
         try {
             instance.sendReply(header, msg);
@@ -139,7 +153,9 @@ public class HpsmServiceImpl implements HpsmService {
             return;
         }
 
-        HpsmMessage msg = this.hpsmMessageFactory.parseMessage(event.getCaseObject().getExtAppData());
+        ExternalCaseAppData appData = externalCaseAppDAO.get(event.getCaseObject().getId());
+
+        HpsmMessage msg = this.hpsmMessageFactory.parseMessage(appData.getExtAppData());
 
         if (msg == null) {
             logger.error("unable to parse app-data, case {}", event.getCaseObject().getExtId());

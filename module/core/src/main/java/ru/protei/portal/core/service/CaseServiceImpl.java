@@ -127,6 +127,10 @@ public class CaseServiceImpl implements CaseService {
 
         CaseObject oldState = caseObjectDAO.get(caseObject.getId());
 
+        if (caseObject.getState() == En_CaseState.CREATED && caseObject.getManager() != null) {
+            caseObject.setState(En_CaseState.OPENED);
+        }
+
         boolean isUpdated = caseObjectDAO.merge(caseObject);
 
         if (!isUpdated)

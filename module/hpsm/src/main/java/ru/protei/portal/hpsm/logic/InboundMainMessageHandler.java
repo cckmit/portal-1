@@ -5,10 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import ru.protei.portal.core.model.dao.CaseCommentDAO;
-import ru.protei.portal.core.model.dao.CaseObjectDAO;
-import ru.protei.portal.core.model.dao.DevUnitDAO;
-import ru.protei.portal.core.model.dao.PersonDAO;
+import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
@@ -46,6 +43,9 @@ public class InboundMainMessageHandler implements InboundMessageHandler {
 
     @Autowired
     private CaseCommentDAO commentDAO;
+
+    @Autowired
+    private ExternalCaseAppDAO externalCaseAppDAO;
 
 
     @Override
@@ -111,7 +111,9 @@ public class InboundMainMessageHandler implements InboundMessageHandler {
         if (request.getSubject().isNewCaseRequest())
             return new CreateNewCaseHandler();
 
-        CaseObject object = caseObjectDAO.getByExternalAppId(request.getSubject().getHpsmId());
+        ExternalCaseAppData appData = externalCaseAppDAO.getByExternalAppId(request.getSubject().getHpsmId());
+
+        CaseObject object = appData == null ? null : caseObjectDAO.get(appData.getId());
 
         if (object != null && HpsmUtils.testBind(object, instance)) {
 
@@ -140,7 +142,10 @@ public class InboundMainMessageHandler implements InboundMessageHandler {
                 contactPerson = this.object.getInitiator();
             }
 
-            HpsmMessage currState = (HpsmMessage) xstream.fromXML(object.getExtAppData());
+            ExternalCaseAppData appData = externalCaseAppDAO.get(object.getId());
+
+
+            HpsmMessage currState = (HpsmMessage) xstream.fromXML(appData.getExtAppData());
 
             StringBuilder commentText = new StringBuilder();
 
@@ -151,7 +156,7 @@ public class InboundMainMessageHandler implements InboundMessageHandler {
             }
 
             currState.updateCustomerFields(request.getHpsmMessage());
-            object.setExtAppData(xstream.toXML(currState));
+            appData.setExtAppData(xstream.toXML(currState));
 
             if (!contactPerson.getId().equals(object.getInitiatorId())) {
                 object.setInitiator(contactPerson);
@@ -160,6 +165,7 @@ public class InboundMainMessageHandler implements InboundMessageHandler {
             object.setImpLevel(request.getHpsmMessage().severity().getCaseImpLevel().getId());
 
             caseObjectDAO.merge(object);
+            externalCaseAppDAO.merge(appData);
 
             if (HelperFunc.isNotEmpty(request.getHpsmMessage().getMessage())) {
                 commentText.append(request.getHpsmMessage().getMessage());
@@ -199,13 +205,14 @@ public class InboundMainMessageHandler implements InboundMessageHandler {
                 return;
             }
 
+
+
             CaseObject obj = new CaseObject();
             obj.setCreated(new Date());
             obj.setModified(new Date());
 
             HpsmUtils.bindCase(obj, instance);
 
-            obj.setExtAppCaseId(request.getHpsmMessage().getHpsmId());
 
             obj.setCaseType(En_CaseType.CRM_SUPPORT);
             obj.setProduct(product);
@@ -223,8 +230,8 @@ public class InboundMainMessageHandler implements InboundMessageHandler {
             obj.setProduct(product);
 
             Long caseObjId = caseObjectDAO.insertCase(obj);
-            if (caseObjId != null && caseObjId > 0L) {
 
+            if (caseObjId != null && caseObjId > 0L) {
 
                 StringBuilder commentText = new StringBuilder();
                 if (HelperFunc.isNotEmpty(request.getHpsmMessage().getMessage())) {
@@ -248,9 +255,13 @@ public class InboundMainMessageHandler implements InboundMessageHandler {
                 replyEvent.setOurRegistrationTime(obj.getCreated());
                 replyEvent.setOurId(obj.getExtId());
 
-                obj.setExtAppData(xstream.toXML(replyEvent));
+                ExternalCaseAppData appData = new ExternalCaseAppData(obj);
+                appData.setExtAppCaseId(request.getHpsmMessage().getHpsmId());
+                appData.setExtAppData(xstream.toXML(replyEvent));
 
-                caseObjectDAO.merge(obj);
+                logger.debug("create hpsm-case id={}, ext={}, data={}", appData.getId(), appData.getExtAppCaseId(), appData.getExtAppData());
+
+                externalCaseAppDAO.merge(appData);
 
                 instance.sendReply(request.getEmailSourceAddr(), replySubj, replyEvent);
             }
