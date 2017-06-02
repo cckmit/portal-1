@@ -1232,7 +1232,9 @@ td.info {
 .label-opened, .label-workaround, .label-info_request
 .label-technical_project,
 .option-technical_project .option-name,
-.option-opened .option-name {
+.option-opened .option-name,
+.option-workaround .option-name,
+.option-info_request .option-name {
   background-color: #42a5f5;
 }
 
