@@ -22,7 +22,7 @@ public class MigrateMain {
 
         AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(
                 CoreConfigurationContext.class, JdbcConfigurationContext.class, MainConfiguration.class,
-                MigrateConfiguration.class, NotificationConfiguration.class
+                MigrateConfiguration.class
         );
 
 
