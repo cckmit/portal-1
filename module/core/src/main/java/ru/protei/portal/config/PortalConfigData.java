@@ -15,7 +15,7 @@ public class PortalConfigData {
     public PortalConfigData (PropertiesWrapper wrapper) throws ConfigException {
         smtpConfig = new SmtpConfig(wrapper);
 
-        crmCaseUrl = wrapper.getProperty( "crm.case.url" );
+        crmCaseUrl = wrapper.getProperty( "crm.case.url", "http://127.0.0.1:8888/crm.html#issues/issue:id=%d;" );
     }
 
     public SmtpConfig smtp () {
