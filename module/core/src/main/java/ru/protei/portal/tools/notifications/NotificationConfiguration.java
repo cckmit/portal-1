@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 public class NotificationConfiguration {
 
    @Bean
-   public NotificationProcessor getNotificationProcessor() {
-      return new NotificationProcessor();
+   public MailNotificationProcessor getNotificationProcessor() {
+      return new MailNotificationProcessor();
    }
 }

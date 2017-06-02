@@ -1,6 +1,5 @@
 package ru.protei.portal.tools.notifications;
 
-import oracle.ucp.common.Core;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +19,6 @@ import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.template.PreparedTemplate;
 
 import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
 import java.util.List;
 import java.util.Set;
 
@@ -29,9 +27,9 @@ import static java.util.stream.Collectors.toList;
 /**
  * Created by shagaleev on 30/05/17.
  */
-public class NotificationProcessor {
+public class MailNotificationProcessor {
 
-    private final static Logger log = LoggerFactory.getLogger( NotificationProcessor.class );
+    private final static Logger log = LoggerFactory.getLogger( MailNotificationProcessor.class );
 
     @Autowired
     CaseSubscriptionService subscriptionService;
