@@ -3,6 +3,7 @@ package ru.protei.portal.ui.crm.client.factory;
 
 import com.google.gwt.inject.client.GinModules;
 import ru.brainworm.factory.generator.injector.client.FactoryInjector;
+import ru.protei.portal.ui.account.client.factory.AccountClientModule;
 import ru.protei.portal.ui.equipment.client.factory.EquipmentClientModule;
 import ru.protei.portal.ui.contact.client.factory.ContactClientModule;
 import ru.protei.portal.ui.common.client.factory.CommonClientModule;
@@ -18,8 +19,8 @@ import ru.protei.portal.ui.region.client.factory.RegionClientModule;
  */
 @GinModules({
         ClientModule.class, CommonClientModule.class, CompanyClientModule.class, ProductClientModule.class,
-        ContactClientModule.class, IssueClientModule.class, EquipmentClientModule.class,
-        ContactClientModule.class, IssueClientModule.class, RegionClientModule.class, ProjectClientModule.class
+        ContactClientModule.class, AccountClientModule.class, IssueClientModule.class,
+        EquipmentClientModule.class, RegionClientModule.class, ProjectClientModule.class
 })
 public interface ClientFactory
         extends FactoryInjector

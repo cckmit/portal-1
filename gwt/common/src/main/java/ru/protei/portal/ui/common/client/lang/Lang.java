@@ -488,4 +488,6 @@ public interface Lang extends Messages, ContactItemLang {
     String contactPasswordsNotMatch();
 
     String companySubscription();
+
+    String accounts();
 }

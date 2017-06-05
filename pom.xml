@@ -45,6 +45,7 @@
                 <module>gwt/project</module>
                 <module>gwt/crm</module>
                 <module>gwt/equipment</module>
+                <module>gwt/account</module>
                 <!--<module>app/crm</module>-->
             </modules>
         </profile>
