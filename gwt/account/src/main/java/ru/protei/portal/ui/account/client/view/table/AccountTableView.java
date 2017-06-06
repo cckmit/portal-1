@@ -163,7 +163,7 @@ public class AccountTableView extends Composite implements AbstractAccountTableV
                 cell.appendChild( root );
 
                 Element personElement = DOM.createDiv();
-                personElement.setInnerHTML( value.getPerson() == null ? "" : value.getPerson().getDisplayName() );
+                personElement.setInnerHTML( value.getPersonDisplayName() == null ? "" : value.getPersonDisplayName() );
                 root.appendChild( personElement );
             }
         };
@@ -201,7 +201,6 @@ public class AccountTableView extends Composite implements AbstractAccountTableV
     SelectionColumn< UserLogin > selectionColumn = new SelectionColumn<>();
     EditClickColumn< UserLogin > editClickColumn;
     List< ClickColumn > columns = new ArrayList<>();
-
 
     AbstractAccountTableActivity activity;
 
