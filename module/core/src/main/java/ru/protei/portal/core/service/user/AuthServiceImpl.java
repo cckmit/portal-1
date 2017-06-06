@@ -101,15 +101,8 @@ public class AuthServiceImpl implements AuthService {
                 descriptor = new UserSessionDescriptor();
                 descriptor.init(appSession);
 
-                List< UserRole > roles = new ArrayList<>();
-                List< LoginRoleItem > list = loginRoleItemDAO.getLoginToRoleLinks( appSession.getLoginId(), null );
-                list.forEach( loginRoleItem -> {
-                    UserRole userRole = userRoleDAO.get( Long.valueOf( loginRoleItem.getRoleId() ) );
-                    roles.add( userRole );
-                } );
-
                 descriptor.login(userLoginDAO.get(appSession.getLoginId()),
-                        roles,
+                        loginRoleItemDAO.getLoginToRoleLinks(appSession.getLoginId(), null).stream().map(LoginRoleItem::getRoleId).collect(Collectors.toList()),
                         personDAO.get(appSession.getPersonId()),
                         companyDAO.get(appSession.getCompanyId())
                 );
@@ -173,16 +166,10 @@ public class AuthServiceImpl implements AuthService {
         }
 
         Person person = personDAO.get(login.getPersonId());
-        List< UserRole > roles = new ArrayList<>();
-        List< LoginRoleItem > list = loginRoleItemDAO.getLoginToRoleLinks( login.getId(), null );
-        list.forEach( loginRoleItem -> {
-            UserRole userRole = userRoleDAO.get( Long.valueOf( loginRoleItem.getRoleId() ) );
-            roles.add( userRole );
-        } );
-
+        List<Integer> roles = loginRoleItemDAO.getLoginToRoleLinks(login.getId(), null).stream().map(LoginRoleItem::getRoleId).collect(Collectors.toList());
         Company company = companyDAO.get(person.getCompanyId());
 
-        logger.debug("Auth success for " + ulogin + " / " + roles.stream().map( UserRole::getCode ).collect( Collectors.joining("," ) ) + "/" + person.toDebugString());
+        logger.debug("Auth success for " + ulogin + " / " + roles.stream().map( Object::toString ).collect( Collectors.joining("," ) ) + "/" + person.toDebugString());
 
         UserSession s = new UserSession();
         s.setClientIp(ip);
@@ -234,5 +221,4 @@ public class AuthServiceImpl implements AuthService {
         sessionCache.remove(descriptor.getSessionId());
         descriptor.close();
     }
-
 }

@@ -10,7 +10,7 @@ public class UserSessionDescriptor {
 
     UserSession session;
     UserLogin login;
-    List< UserRole > uroles;
+    List<Integer> uroles;
     Company company;
     Person person;
 
@@ -22,7 +22,7 @@ public class UserSessionDescriptor {
         this.session = session;
     }
 
-    public void login (UserLogin login, List< UserRole > roles, Person p, Company c) {
+    public void login (UserLogin login, List<Integer> roles, Person p, Company c) {
         this.login = login;
         this.uroles = roles;
         this.company = c;
@@ -55,7 +55,7 @@ public class UserSessionDescriptor {
         return login;
     }
 
-    public List< UserRole > getUroles() {
+    public List<Integer> getUroles() {
         return uroles;
     }
 

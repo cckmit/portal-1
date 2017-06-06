@@ -10,7 +10,7 @@ import java.util.List;
  */
 public class Profile implements Serializable {
 
-    private List< UserRole > roles;
+    private List<Integer> roles;
 
     private String login;
 
@@ -18,11 +18,11 @@ public class Profile implements Serializable {
 
     private Long id;
 
-    public List< UserRole > getRoles() {
+    public List<Integer> getRoles() {
         return roles;
     }
 
-    public void setRoles( List< UserRole > roles ) {
+    public void setRoles( List<Integer> roles ) {
         this.roles = roles;
     }
 
