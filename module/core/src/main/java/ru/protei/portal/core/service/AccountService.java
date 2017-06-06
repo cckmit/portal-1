@@ -1,0 +1,17 @@
+package ru.protei.portal.core.service;
+
+import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.core.model.ent.UserLogin;
+import ru.protei.portal.core.model.query.AccountQuery;
+
+import java.util.List;
+
+/**
+ * Сервис управления учетными записями
+ */
+public interface AccountService {
+    CoreResponse< List< UserLogin > > accountList( AccountQuery query );
+    CoreResponse< Long > count( AccountQuery query );
+    CoreResponse< UserLogin > getAccount( long id );
+    CoreResponse< UserLogin > saveAccount( UserLogin userLogin );
+}

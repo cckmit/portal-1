@@ -73,7 +73,7 @@ public class MigrateClientLoginAction implements MigrateAction {
                     ulogin.setCreated(new Date());
                     ulogin.setInfo((String) row.get("strInfo"));
                     ulogin.setPersonId((Long)row.get("nPersonID"));
-                    ulogin.setRoleId(En_UserRole.CRM_CLIENT.getId());
+                    //ulogin.setRoleId(En_UserRole.CRM_CLIENT.getId());
                     ulogin.setUpass((String)row.get("strPassword"));
 
                     if (ulogin.getPersonId() == null) {

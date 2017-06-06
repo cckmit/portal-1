@@ -63,7 +63,12 @@ public enum En_SortField {
     /**
      * equipment sldwrks filename
      */
-    equipment_name_sldwrks("name_sldwrks");
+    equipment_name_sldwrks("name_sldwrks"),
+
+    /**
+     * user login
+     */
+    ulogin("ulogin");
 
     private String fieldName;
     private String bundleKey;

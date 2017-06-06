@@ -1,10 +1,7 @@
 package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_AuthType;
-import ru.protei.winter.jdbc.annotations.IdInsertMode;
-import ru.protei.winter.jdbc.annotations.JdbcColumn;
-import ru.protei.winter.jdbc.annotations.JdbcEntity;
-import ru.protei.winter.jdbc.annotations.JdbcId;
+import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -36,11 +33,16 @@ public class UserLogin implements Serializable {
     @JdbcColumn(name = "astate")
     private int adminStateId;
 
+/*
     @JdbcColumn(name = "roleId")
     private int roleId;
+*/
 
     @JdbcColumn(name = "personId")
     private Long personId;
+
+    @JdbcJoinedObject(localColumn = "personId", remoteColumn = "id", updateLocalColumn = false, sqlTableAlias = "p")
+    private Person person;
 
     @JdbcColumn(name = "authType")
     private int authTypeId;
@@ -109,6 +111,7 @@ public class UserLogin implements Serializable {
         this.adminStateId = adminStateId;
     }
 
+/*
     public int getRoleId() {
         return roleId;
     }
@@ -116,6 +119,7 @@ public class UserLogin implements Serializable {
     public void setRoleId(int roleId) {
         this.roleId = roleId;
     }
+*/
 
     public Long getPersonId() {
         return personId;
@@ -143,5 +147,13 @@ public class UserLogin implements Serializable {
 
     public boolean isLDAP_Auth () {
         return this.authTypeId == En_AuthType.LDAP.getId();
+    }
+
+    public Person getPerson() {
+        return person;
+    }
+
+    public void setPerson( Person person ) {
+        this.person = person;
     }
 }

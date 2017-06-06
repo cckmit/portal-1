@@ -53,7 +53,7 @@ public class AuthServiceImpl implements AuthService {
 
     private Profile makeProfileByDescriptor( UserSessionDescriptor sessionDescriptor ) {
         Profile profile = new Profile();
-        profile.setRole( sessionDescriptor.getUrole() );
+        profile.setRoles( sessionDescriptor.getUroles() );
         profile.setLogin( sessionDescriptor.getLogin().getUlogin() );
         profile.setName( sessionDescriptor.getPerson().getFirstName() );
         profile.setId( sessionDescriptor.getPerson().getId() );

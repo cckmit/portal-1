@@ -490,4 +490,16 @@ public interface Lang extends Messages, ContactItemLang {
     String companySubscription();
 
     String accounts();
+
+    String accountType();
+
+    String accountLDAP();
+
+    String accountLocal();
+
+    String accountLogin();
+
+    String accountPerson();
+
+    String accountAuthType();
 }

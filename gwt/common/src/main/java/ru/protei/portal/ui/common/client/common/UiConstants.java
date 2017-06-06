@@ -32,6 +32,7 @@ public class UiConstants {
         String DASHBOARD = "dashboard";
         String EQUIPMENT = "equipment";
         String PROJECT = "project";
+        String ACCOUNT = "account";
     }
 
     /**

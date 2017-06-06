@@ -1624,7 +1624,8 @@ a {
   font-size: 18px;
 }
 
-.eq-type {
+.eq-type,
+.auth-type {
   line-height: 0 !important;
   > img {
     height: 35px;
@@ -1636,4 +1637,42 @@ a {
   overflow: hidden;
   height: 55px;
   padding-top: 8px !important;
+}
+
+.locked {
+  color: #d52020;
+}
+
+.accounts {
+  table {
+    tbody {
+      tr {
+        td {
+          height: 45px;
+
+          > div {
+            height: 45px;
+            max-height: 45px;
+            white-space: pre-line;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+        }
+      }
+    }
+    .type {
+      width: 7%;
+      text-align: center;
+      > div > img {
+        height: 45px;
+        padding: 0 8px;
+      }
+    }
+    .login {
+      width: 40%;
+    }
+    .person {
+      width: 40%;
+    }
+  }
 }

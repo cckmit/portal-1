@@ -211,6 +211,10 @@ public class MainConfiguration {
         return new ExternalCaseAppDAO_Impl();
     }
 
+    @Bean
+    public LoginRoleItemDAO getLoginRoleItemDAO() {
+        return new LoginRoleItemDAO_Impl();
+    }
 /**
  *
  *
@@ -283,6 +287,10 @@ public class MainConfiguration {
         return new CaseSubscriptionServiceImpl();
     }
 
+    @Bean
+    public AccountService getAccountService() {
+        return new AccountServiceImpl();
+    }
     /**
      * Mail
      */

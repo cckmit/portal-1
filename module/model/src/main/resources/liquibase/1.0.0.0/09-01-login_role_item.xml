@@ -4,7 +4,7 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
-    <changeSet author="turik" id="05-06-2017 16:15">
+    <changeSet author="turik" id="createLoginRoleItemTable">
         <createTable tableName="login_role_item">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints primaryKey="true"/>
@@ -12,36 +12,39 @@
             <column name="login_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="role_id" type="BIGINT">
+            <column name="role_id" type="INT">
                 <constraints nullable="false"/>
             </column>
         </createTable>
-    </changeSet>
 
-    <changeSet author="turik" id="05-06-2017 16:16">
         <addUniqueConstraint columnNames="login_id, role_id" constraintName="UQ_LR_ITEM" tableName="login_role_item"/>
-    </changeSet>
 
-    <changeSet author="turik" id="05-06-2017 16:17">
         <createIndex indexName="FK_LR_LOGIN" tableName="login_role_item">
             <column name="login_id"/>
         </createIndex>
-    </changeSet>
 
-    <changeSet author="turik" id="05-06-2017 16:18">
         <addForeignKeyConstraint baseColumnNames="login_id"
                                  baseTableName="login_role_item"
                                  constraintName="FK_LR_LOGIN"
                                  referencedColumnNames="id"
                                  referencedTableName="user_login"/>
-    </changeSet>
 
-    <changeSet author="turik" id="05-06-2017 16:19">
+
         <addForeignKeyConstraint baseColumnNames="role_id"
                                  baseTableName="login_role_item"
                                  constraintName="FK_LR_ROLE"
                                  referencedColumnNames="id"
                                  referencedTableName="user_role"/>
+    </changeSet>
+
+    <changeSet author="michael" id="initLoginRoleItemTable">
+        <sql stripComments="true">
+
+            insert into login_role_item ( login_id, role_id ) select id, roleId from user_login;
+
+            commit;
+
+        </sql>
     </changeSet>
 
 </databaseChangeLog>

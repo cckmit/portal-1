@@ -137,7 +137,7 @@ public class ContactServiceImpl implements ContactService {
         if(userLogin.getId() == null) {
             userLogin.setCreated(new Date());
             userLogin.setAuthTypeId(En_AuthType.LOCAL.getId());
-            userLogin.setRoleId(En_UserRole.CRM_CLIENT.getId());
+            //userLogin.setRoleId(En_UserRole.CRM_CLIENT.getId());
             userLogin.setAdminStateId(En_AdminState.UNLOCKED.getId());
         }
 

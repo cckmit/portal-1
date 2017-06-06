@@ -7,12 +7,12 @@ import org.springframework.util.DigestUtils;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.dict.En_UserRole;
 import ru.protei.portal.core.model.ent.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by michael on 29.06.16.
@@ -35,6 +35,9 @@ public class AuthServiceImpl implements AuthService {
 
     @Autowired
     private CompanyDAO companyDAO;
+
+    @Autowired
+    private LoginRoleItemDAO loginRoleItemDAO;
 
     @Autowired
     private LDAPAuthProvider ldapAuthProvider;
@@ -97,8 +100,16 @@ public class AuthServiceImpl implements AuthService {
                 logger.debug("session " + appSessionId + " restored from database");
                 descriptor = new UserSessionDescriptor();
                 descriptor.init(appSession);
+
+                List< UserRole > roles = new ArrayList<>();
+                List< LoginRoleItem > list = loginRoleItemDAO.getLoginToRoleLinks( appSession.getLoginId(), null );
+                list.forEach( loginRoleItem -> {
+                    UserRole userRole = userRoleDAO.get( Long.valueOf( loginRoleItem.getRoleId() ) );
+                    roles.add( userRole );
+                } );
+
                 descriptor.login(userLoginDAO.get(appSession.getLoginId()),
-                        userRoleDAO.get((long) appSession.getRoleId()),
+                        roles,
                         personDAO.get(appSession.getPersonId()),
                         companyDAO.get(appSession.getCompanyId())
                 );
@@ -162,10 +173,16 @@ public class AuthServiceImpl implements AuthService {
         }
 
         Person person = personDAO.get(login.getPersonId());
-        UserRole role = userRoleDAO.get((long) login.getRoleId());
+        List< UserRole > roles = new ArrayList<>();
+        List< LoginRoleItem > list = loginRoleItemDAO.getLoginToRoleLinks( login.getId(), null );
+        list.forEach( loginRoleItem -> {
+            UserRole userRole = userRoleDAO.get( Long.valueOf( loginRoleItem.getRoleId() ) );
+            roles.add( userRole );
+        } );
+
         Company company = companyDAO.get(person.getCompanyId());
 
-        logger.debug("Auth success for " + ulogin + " / " + role.getCode() + "/" + person.toDebugString());
+        logger.debug("Auth success for " + ulogin + " / " + roles.stream().map( UserRole::getCode ).collect( Collectors.joining("," ) ) + "/" + person.toDebugString());
 
         UserSession s = new UserSession();
         s.setClientIp(ip);
@@ -178,9 +195,10 @@ public class AuthServiceImpl implements AuthService {
         descriptor.getSession().setCompanyId(person.getCompanyId());
         descriptor.getSession().setLoginId(login.getId());
         descriptor.getSession().setPersonId(login.getPersonId());
-        descriptor.getSession().setRoleId(login.getRoleId());
+        // @todo какое значение вносить?
+        descriptor.getSession().setRoleId( En_UserRole.DN_ADMIN.getId());
         descriptor.getSession().setExpired(DateUtils.addHours(new Date(), 3));
-        descriptor.login(login, role, person, company);
+        descriptor.login(login, roles, person, company);
 
         sessionDAO.removeByCondition("client_ip=? and login_id=?", descriptor.getSession().getClientIp(),
                 login.getId());
