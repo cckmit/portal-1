@@ -283,33 +283,8 @@ public class MainConfiguration {
         return new CaseSubscriptionServiceImpl();
     }
 
-    /**
-     * Mail
-     */
-    @Bean(name = "coreMailSender")
-    public JavaMailSender mailSender () throws Exception {
-
-        PortalConfigData.SmtpConfig smtp = getPortalConfig().data().smtp();
-
-        JavaMailSenderImpl impl = new org.springframework.mail.javamail.JavaMailSenderImpl ();
-
-        impl.setDefaultEncoding(smtp.getDefaultCharset());
-        impl.setHost(smtp.getHost());
-        impl.setPort(smtp.getPort());
-
-        return impl;
-    }
-
-    @Bean(name = "coreMailMessageFactory")
-    public MailMessageFactory createMailMessageFactory() throws Exception {
-        return new JavaMailMessageFactory(mailSender());
-    }
-
-    @Bean(name = "coreMailSendChannel")
-    public MailSendChannel getMailSendChannel () throws Exception {
-        return new JavaMailSendChannel(mailSender());
-    }
-
+    @Bean
+    public TemplateService getTemplateService() { return new TemplateServiceImpl(); }
 
     /** ASPECT/INTERCEPTORS **/
     @Bean

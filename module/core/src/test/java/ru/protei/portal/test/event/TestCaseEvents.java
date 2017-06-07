@@ -44,7 +44,7 @@ public class TestCaseEvents {
         object.setExtAppType("junit");
 //        object.setExtAppCaseId(JUNIT_EVENT_PUB_01);
 
-        CoreResponse<CaseObject> response = service.saveCaseObject(object);
+        CoreResponse<CaseObject> response = service.saveCaseObject(object, null);
 
         Assert.assertTrue(response.isOk());
 
@@ -56,7 +56,7 @@ public class TestCaseEvents {
         comment.setAuthorId(response.getData().getInitiatorId());
         comment.setText("A new comment, publishing test");
 
-        CoreResponse<CaseComment> r2 = service.addCaseComment(comment);
+        CoreResponse<CaseComment> r2 = service.addCaseComment(comment, null );
 
         Assert.assertTrue(r2.isOk());
 

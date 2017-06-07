@@ -17,6 +17,7 @@ public interface EmployeeService {
     CoreResponse<List<PersonShortView>> shortViewList(EmployeeQuery query);
     CoreResponse<List<WorkerView>> list(String param);
     CoreResponse<List<Person>> employeeList();
+    CoreResponse<Person> getEmployee( Long id );
     EmployeeDetailView getEmployeeProfile (Long id);
     EmployeeDetailView getEmployeeAbsences(Long id, Long tFrom, Long tTill, Boolean isFull);
 
