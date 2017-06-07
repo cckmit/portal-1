@@ -1,8 +1,10 @@
 package ru.protei.portal.ui.common.shared.model;
 
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.UserRole;
 
 import java.io.Serializable;
+import java.util.Set;
 
 /**
  * Клиентский профиль пользовател]
@@ -16,6 +18,8 @@ public class Profile implements Serializable {
     private String name;
 
     private Long id;
+
+    private Set<En_Privilege> privileges;
 
     public UserRole getRole() {
         return role;
@@ -47,5 +51,24 @@ public class Profile implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Set< En_Privilege > getPrivileges() {
+        return privileges;
+    }
+
+    public void setPrivileges( Set< En_Privilege > privileges ) {
+        this.privileges = privileges;
+    }
+
+    @Override
+    public String toString() {
+        return "Profile{" +
+            "role=" + role +
+            ", login='" + login + '\'' +
+            ", name='" + name + '\'' +
+            ", id=" + id +
+            ", privileges=" + privileges +
+            '}';
     }
 }
