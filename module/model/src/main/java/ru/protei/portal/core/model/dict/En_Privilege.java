@@ -1,0 +1,41 @@
+package ru.protei.portal.core.model.dict;
+
+/**
+ * Привилегии в системе
+ */
+public enum En_Privilege {
+    COMMON_LOGIN,
+    COMMON_PROFILE_VIEW,
+    COMMON_PROFILE_CHANGE,
+
+    ISSUE_VIEW,
+    ISSUE_EDIT,
+    ISSUE_CREATE,
+    ISSUE_REPORT,
+    ISSUE_EXPORT,
+
+    REGION_VIEW,
+    REGION_EDIT,
+    REGION_REPORT,
+    REGION_EXPORT,
+
+    PROJECT_VIEW,
+    PROJECT_EDIT,
+    PROJECT_CREATE,
+
+    COMPANY_VIEW,
+    COMPANY_EDIT,
+    COMPANY_CREATE,
+
+    PRODUCT_VIEW,
+    PRODUCT_EDIT,
+    PRODUCT_CREATE,
+
+    CONTACT_VIEW,
+    CONTACT_EDIT,
+    CONTACT_CREATE,
+
+    ACCOUNT_VIEW,
+    ACCOUNT_EDIT,
+    ACCOUNT_CREATE
+}
