@@ -61,6 +61,13 @@ public class Profile implements Serializable {
         this.privileges = privileges;
     }
 
+    public boolean hasPrivilegeFor( En_Privilege privilege ) {
+        if ( privileges == null ) {
+            return false;
+        }
+        return privileges.contains( privilege );
+    }
+
     @Override
     public String toString() {
         return "Profile{" +
