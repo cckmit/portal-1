@@ -76,9 +76,14 @@ public abstract class Selector<T>
         this.hasNullValue = hasNullValue;
     }
 
-    public void addOption( String name, T value ) {
+    public void addOption(String name, T value) {
+        addOptionWithStyle(name, value, null);
+    }
+
+    public void addOptionWithStyle(String name, T value, String styleName) {
         SelectorItem itemView = itemFactory.get();
         itemView.setName( name );
+        itemView.setStyle( styleName );
         itemView.addClickHandler( this );
         itemViewToModel.put(itemView, value);
         itemToViewModel.put(value, itemView);
