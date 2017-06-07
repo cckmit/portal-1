@@ -40,6 +40,8 @@ public interface AbstractIssueEditView extends IsWidget {
 
     void changeCompany(Company company);
 
+    void setSubscriptionEmails( String value );
+
     HasWidgets getCommentsContainer();
     HasAttachments attachmentsContainer();
     void setFileUploadHandler(FileUploader.FileUploadHandler handler);

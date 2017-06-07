@@ -139,6 +139,11 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
+    public void setSubscriptionEmails( String value ) {
+        this.subscriptions.setInnerText( value );
+    }
+
+    @Override
     public HasWidgets getCommentsContainer() {
         return commentsContainer;
     }
@@ -242,6 +247,8 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @Inject
     @UiField(provided = true)
     AttachmentList attachmentContainer;
+    @UiField
+    DivElement subscriptions;
 
 
     private AbstractIssueEditActivity activity;
