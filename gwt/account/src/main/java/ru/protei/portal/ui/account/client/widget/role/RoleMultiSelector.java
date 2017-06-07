@@ -27,5 +27,4 @@ public class RoleMultiSelector extends MultipleInputSelector< En_UserRole > {
 
     @Inject
     private En_UserRoleLang userRoleLang;
-
 }

@@ -514,4 +514,6 @@ public interface Lang extends Messages, ContactItemLang {
     String roleCRM_Client();
 
     String roleDN_Admin();
+
+    String accountRoles();
 }

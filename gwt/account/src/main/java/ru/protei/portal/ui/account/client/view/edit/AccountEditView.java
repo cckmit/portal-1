@@ -13,6 +13,7 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.account.client.activity.edit.AbstractAccountEditActivity;
 import ru.protei.portal.ui.account.client.activity.edit.AbstractAccountEditView;
+import ru.protei.portal.ui.account.client.widget.role.RoleMultiSelector;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonButtonSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
@@ -110,6 +111,10 @@ public class AccountEditView extends Composite implements AbstractAccountEditVie
 
     @UiField
     PasswordTextBox confirmPassword;
+
+    @Inject
+    @UiField( provided = true )
+    RoleMultiSelector roles;
 
     @UiField
     Button saveButton;

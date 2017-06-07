@@ -1,6 +1,7 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:personselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.person'
+             xmlns:roleselector='urn:import:ru.protei.portal.ui.account.client.widget.role'
              xmlns:validablefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'>
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
@@ -40,6 +41,10 @@
                     </div>
                 </div>
                 <div class="form-group col-xs-6">
+                    <label class="">
+                        <ui:text from="{lang.accountRoles}"/>
+                    </label>
+                    <roleselector:RoleMultiSelector ui:field="roles" styleName="multi-selector"/>
                 </div>
             </div>
         </div>
