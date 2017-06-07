@@ -14,6 +14,7 @@ import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
+import ru.protei.portal.hpsm.api.HpsmSeverity;
 import ru.protei.portal.hpsm.api.HpsmStatus;
 import ru.protei.portal.hpsm.struct.HpsmMessage;
 import ru.protei.portal.hpsm.struct.HpsmMessageHeader;
@@ -100,12 +101,15 @@ public class InboundMainMessageHandler implements InboundMessageHandler {
 
         Company company = instance.getCompanyByBranch(hpsmEvent.getHpsmMessage().getCompanyBranch());
 
-        if (company == null) {
+        if (company == null && subject.isNewCaseRequest()) {
             logger.debug("unable to map company by branch name : {}", hpsmEvent.getHpsmMessage().getCompanyBranch());
             return null;
         }
+        else {
+            hpsmEvent.assign(company);
+        }
 
-        return hpsmEvent.assign(company);
+        return hpsmEvent;
     }
 
 
@@ -119,8 +123,8 @@ public class InboundMainMessageHandler implements InboundMessageHandler {
 
         if (object != null && HpsmUtils.testBind(object, instance)) {
 
-            if (object.getInitiatorCompanyId() == null || !object.getInitiatorCompanyId().equals(request.getCompany().getId()))
-                return new RejectHandler("Wrong company");
+//            if (object.getInitiatorCompanyId() == null || !object.getInitiatorCompanyId().equals(request.getCompany().getId()))
+//                return new RejectHandler("Wrong company");
 
             return new UpdateCaseHanler(object);
         }
@@ -139,19 +143,19 @@ public class InboundMainMessageHandler implements InboundMessageHandler {
 
         @Override
         public void handle(HpsmEvent request, ServiceInstance instance) throws Exception {
-            Person contactPerson = getAssignedPerson(request.getCompany().getId(), request.getHpsmMessage());
+            Person contactPerson = request.getCompany() != null ? getAssignedPerson(request.getCompany().getId(), request.getHpsmMessage()) : null;
+
             if (contactPerson == null) {
                 contactPerson = this.object.getInitiator();
             }
 
             ExternalCaseAppData appData = externalCaseAppDAO.get(object.getId());
 
-
             HpsmMessage currState = (HpsmMessage) xstream.fromXML(appData.getExtAppData());
 
             StringBuilder commentText = new StringBuilder();
 
-            if (currState.status() != request.getSubject().getStatus()) {
+            if (request.getSubject().getStatus() != null && currState.status() != request.getSubject().getStatus()) {
                 commentText.append(currState.status()).append(" -> ").append(request.getSubject().getStatus());
 
                 currState.status(request.getSubject().getStatus());
@@ -164,7 +168,9 @@ public class InboundMainMessageHandler implements InboundMessageHandler {
                 object.setInitiator(contactPerson);
             }
 
-            object.setImpLevel(request.getHpsmMessage().severity().getCaseImpLevel().getId());
+            if (request.getHpsmMessage().severity() != null) {
+                object.setImpLevel(request.getHpsmMessage().severity().getCaseImpLevel().getId());
+            }
 
             caseObjectDAO.merge(object);
             externalCaseAppDAO.merge(appData);
@@ -223,7 +229,7 @@ public class InboundMainMessageHandler implements InboundMessageHandler {
             if (HelperFunc.isNotEmpty(request.getHpsmMessage().getContactPersonEmail()))
                 obj.setEmails(request.getHpsmMessage().getContactPersonEmail());
 
-            obj.setImpLevel(request.getHpsmMessage().severity().getCaseImpLevel().getId());
+            obj.setImpLevel(HelperFunc.nvlt(request.getHpsmMessage().severity(), HpsmSeverity.LEVEL3).getCaseImpLevel().getId());
             obj.setName(HelperFunc.nvlt(request.getHpsmMessage().getShortDescription(),request.getSubject().getHpsmId()));
             obj.setInfo(request.getHpsmMessage().getDescription());
             obj.setLocal(0);

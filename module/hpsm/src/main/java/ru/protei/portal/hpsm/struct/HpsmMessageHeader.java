@@ -1,5 +1,6 @@
 package ru.protei.portal.hpsm.struct;
 
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.hpsm.api.HpsmStatus;
 
 import java.util.regex.Matcher;
@@ -10,7 +11,7 @@ import java.util.regex.Pattern;
  */
 public class HpsmMessageHeader {
     public static final String SUBJ_FORMAT = "ID_HPSM=[%s]ID_VENDOR=[%s]STATUS=[%s]";
-    public static final Pattern SUBJ_PATTERN = Pattern.compile("^.*ID_HPSM=\\[([^\\]]+)\\]ID_VENDOR=\\[([^\\]]*)\\]STATUS=\\[([^\\]]+)\\].*");
+    public static final Pattern SUBJ_PATTERN = Pattern.compile("^.*ID_HPSM=\\[([^\\]]+)\\]ID_VENDOR=\\[([^\\]]*)\\]STATUS=\\[([^\\]]*)\\].*");
 
     private String hpsmId;
     private String ourId;
@@ -40,7 +41,7 @@ public class HpsmMessageHeader {
     }
 
     public String toString () {
-        return String.format(SUBJ_FORMAT, this.hpsmId, this.ourId, this.status.getHpsmCode());
+        return String.format(SUBJ_FORMAT, this.hpsmId, this.ourId, status != null ? status.getHpsmCode() : "");
     }
 
     public static HpsmMessageHeader parse (String subject) {
@@ -50,10 +51,10 @@ public class HpsmMessageHeader {
             return null;
 
         HpsmStatus status = HpsmStatus.parse(m.group(3));
-
-        if (status == null) {
-            return null;
-        }
+/** other side can leave it empty **/
+//        if (status == null) {
+//            return null;
+//        }
 
         return new HpsmMessageHeader(m.group(1), m.group(2), status);
     }
