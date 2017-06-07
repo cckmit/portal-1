@@ -5,4 +5,5 @@ package ru.protei.portal.core.model.view;
  */
 public interface PersonShortViewSupport {
     PersonShortView toPersonShortView();
+    PersonShortView toPersonView();
 }

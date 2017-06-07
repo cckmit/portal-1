@@ -3,6 +3,7 @@ package ru.protei.portal.core.service;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.query.AccountQuery;
+import ru.protei.portal.core.model.view.PersonShortView;
 
 import java.util.List;
 
@@ -14,4 +15,5 @@ public interface AccountService {
     CoreResponse< Long > count( AccountQuery query );
     CoreResponse< UserLogin > getAccount( long id );
     CoreResponse< UserLogin > saveAccount( UserLogin userLogin );
+    CoreResponse< Boolean > checkUniqueLogin( String login, Long excludeId );
 }

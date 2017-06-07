@@ -23,4 +23,6 @@ public interface AccountServiceAsync {
     void saveAccount ( UserLogin userLogin, AsyncCallback< UserLogin > callback );
 
     void getAccountsCount( AccountQuery query, AsyncCallback< Long > async );
+
+    void isLoginUnique( String login, Long exceptId, AsyncCallback< Boolean > async );
 }

@@ -1,0 +1,51 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:personselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.person'
+             xmlns:validablefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'>
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+
+    <g:HTMLPanel styleName="panel">
+        <div class="body">
+            <div class="grid grid-indent">
+                <div class="form-group col-xs-6">
+                    <div class="form-group col-xs-12">
+                        <label class="">
+                            <ui:text from="{lang.accountLogin}"/>
+                        </label>
+                        <div class="panelField verifiable">
+                            <i ui:field="verifiableIcon"/>
+                            <validablefield:ValidableTextBox ui:field="login" styleName="input-field" notNull="true"/>
+                        </div>
+                    </div>
+                    <div class="form-group col-xs-12">
+                        <label class="">
+                            <ui:text from="{lang.accountPerson}"/>
+                        </label>
+                        <personselector:PersonButtonSelector ui:field="person" validation="true"/>
+                    </div>
+                    <g:HTMLPanel ui:field="infoPanel" styleName="col-xs-12 p-t-10">
+                        <ui:text from="{lang.accountLoginInfo}"/>
+                    </g:HTMLPanel>
+                    <div class="form-group col-xs-12">
+                        <label class="">
+                            <ui:text from="{lang.accountPassword}"/>
+                        </label>
+                        <g:PasswordTextBox ui:field="password" styleName="input-field"/>
+                    </div>
+                    <div class="form-group col-xs-12">
+                        <label class="">
+                            <ui:text from="{lang.accountConfirmPassword}"/>
+                        </label>
+                        <g:PasswordTextBox ui:field="confirmPassword" styleName="input-field"/>
+                    </div>
+                </div>
+                <div class="form-group col-xs-6">
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            <g:Button ui:field="saveButton" styleName="btn btn-success" text="{lang.buttonSave}"/>
+            <g:Button ui:field="cancelButton" styleName="btn btn-white close_btn" text="{lang.buttonCancel}"/>
+        </div>
+    </g:HTMLPanel>
+</ui:UiBinder>

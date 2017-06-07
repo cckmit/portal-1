@@ -71,6 +71,21 @@ public class AccountServiceImpl implements AccountService {
         return accountService.count( query ).getData();
     }
 
+    @Override
+    public boolean isLoginUnique( String login, Long excludeId ) throws RequestFailedException {
+
+        log.debug( "isLoginUnique(): login={}, excludeId={}", login, excludeId );
+
+        CoreResponse< Boolean > response = accountService.checkUniqueLogin( login, excludeId );
+
+        log.debug( "isLoginUnique() -> {}, {}", response.getStatus(), response.getData() != null ? response.getData() : null );
+
+        if ( response.isError() )
+            throw new RequestFailedException( response.getStatus() );
+
+        return response.getData();
+    }
+
     @Autowired
     ru.protei.portal.core.service.AccountService accountService;
 

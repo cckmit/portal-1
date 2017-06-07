@@ -288,4 +288,9 @@ public class Person implements Serializable, PersonShortViewSupport {
     public PersonShortView toPersonShortView() {
         return new PersonShortView(this.displayShortName, this.getId(), this.isFired);
     }
+
+    @Override
+    public PersonShortView toPersonView() {
+        return new PersonShortView(this.displayName, this.getId(), this.isFired);
+    }
 }

@@ -13,7 +13,6 @@ import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.utils.EntityCache;
 import ru.protei.portal.core.utils.EntitySelector;
-import ru.protei.portal.core.utils.TypeConverters;
 import ru.protei.winter.jdbc.JdbcQueryParameters;
 import ru.protei.winter.jdbc.JdbcSort;
 
@@ -157,6 +156,12 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
         return ifPersonIsEmployee(p) ? null : p;
     }
 
+    @Override
+    public List< Person > getPersonsAll() {
+        JdbcQueryParameters parameters = new JdbcQueryParameters();
+        parameters.withSort( new JdbcSort( JdbcSort.Direction.ASC, En_SortField.person_full_name.getFieldName() ) );
+        return getList( parameters );
+    }
 
     /**
      * Query Condition builders

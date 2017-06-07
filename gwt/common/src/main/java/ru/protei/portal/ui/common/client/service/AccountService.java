@@ -27,4 +27,5 @@ public interface AccountService extends RemoteService {
 
     Long getAccountsCount( AccountQuery query ) throws RequestFailedException;
 
+    boolean isLoginUnique( String login, Long exceptId ) throws RequestFailedException;
 }

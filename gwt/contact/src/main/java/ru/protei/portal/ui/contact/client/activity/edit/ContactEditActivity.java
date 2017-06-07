@@ -78,7 +78,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         }
 
         if(!isConfirmValidate()) {
-            fireEvent(new NotifyEvents.Show(lang.contactPasswordsNotMatch(), NotifyEvents.NotifyType.ERROR));
+            fireEvent(new NotifyEvents.Show(lang.accountPasswordsNotMatch(), NotifyEvents.NotifyType.ERROR));
             return;
         }
 

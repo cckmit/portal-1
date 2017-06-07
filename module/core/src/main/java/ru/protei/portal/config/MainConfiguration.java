@@ -291,6 +291,12 @@ public class MainConfiguration {
     public AccountService getAccountService() {
         return new AccountServiceImpl();
     }
+
+    @Bean
+    public PersonService getPersonService() {
+        return new PersonServiceImpl();
+    }
+
     /**
      * Mail
      */

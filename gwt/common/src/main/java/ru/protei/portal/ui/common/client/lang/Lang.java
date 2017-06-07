@@ -471,9 +471,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String attachmentsNotLoaded();
 
-    String contactLogin();
-
-    String contactPassword();
+    String accountPassword();
 
     String contactPasswordNotDefinied();
 
@@ -481,11 +479,11 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contactAccount();
 
-    String contactLoginInfo();
+    String accountLoginInfo();
 
-    String contactConfirmPassword();
+    String accountConfirmPassword();
 
-    String contactPasswordsNotMatch();
+    String accountPasswordsNotMatch();
 
     String companySubscription();
 
@@ -502,4 +500,18 @@ public interface Lang extends Messages, ContactItemLang {
     String accountPerson();
 
     String accountAuthType();
+
+    String accountNew();
+
+    String accountEditHeader( String accountLogin );
+
+    String roleEmployee();
+
+    String roleCRM_Admin();
+
+    String roleCRM_User();
+
+    String roleCRM_Client();
+
+    String roleDN_Admin();
 }

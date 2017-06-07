@@ -41,8 +41,8 @@ public class UserLogin implements Serializable {
     @JdbcColumn(name = "personId")
     private Long personId;
 
-    @JdbcJoinedColumn( localColumn = "personId", table = "Person", remoteColumn = "id", mappedColumn = "displayname")
-    private String personDisplayName;
+    @JdbcJoinedObject(localColumn = "personId", remoteColumn = "id", updateLocalColumn = false, sqlTableAlias = "p")
+    private Person person;
 
     @JdbcColumn(name = "authType")
     private int authTypeId;
@@ -149,11 +149,11 @@ public class UserLogin implements Serializable {
         return this.authTypeId == En_AuthType.LDAP.getId();
     }
 
-    public String getPersonDisplayName() {
-        return personDisplayName;
+    public Person getPerson() {
+        return person;
     }
 
-    public void setPersonDisplayName( String personDisplayName ) {
-        this.personDisplayName = personDisplayName;
+    public void setPerson( Person person ) {
+        this.person = person;
     }
 }
