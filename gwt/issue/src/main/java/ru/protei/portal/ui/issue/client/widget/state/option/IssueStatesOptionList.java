@@ -10,7 +10,7 @@ import ru.protei.portal.ui.issue.client.widget.state.StateModel;
 import java.util.List;
 
 /**
- * Селектор списка критичности обращения
+ * Селектор списка состояний обращения
  */
 public class IssueStatesOptionList extends OptionList<En_CaseState> implements ModelSelector<En_CaseState> {
 
