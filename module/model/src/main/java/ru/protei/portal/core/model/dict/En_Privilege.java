@@ -37,5 +37,9 @@ public enum En_Privilege {
 
     ACCOUNT_VIEW,
     ACCOUNT_EDIT,
-    ACCOUNT_CREATE
+    ACCOUNT_CREATE,
+
+    EQUIPMENT_VIEW,
+    EQUIPMENT_EDIT,
+    EQUIPMENT_CREATE
 }
