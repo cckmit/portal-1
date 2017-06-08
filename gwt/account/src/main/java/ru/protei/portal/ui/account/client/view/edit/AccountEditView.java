@@ -4,17 +4,22 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.account.client.activity.edit.AbstractAccountEditActivity;
 import ru.protei.portal.ui.account.client.activity.edit.AbstractAccountEditView;
 import ru.protei.portal.ui.account.client.widget.role.RoleMultiSelector;
+import ru.protei.portal.ui.account.client.widget.role.RoleOptionList;
 import ru.protei.portal.ui.common.client.common.NameStatus;
+import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonButtonSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
@@ -72,6 +77,20 @@ public class AccountEditView extends Composite implements AbstractAccountEditVie
         infoPanel.setVisible( isShow );
     }
 
+    @Override
+    public void changeCompany( Company company ) {
+        person.updateCompany( company );
+    }
+
+    @UiHandler("company")
+    public void onChangeCompany( ValueChangeEvent< EntityOption > event ) {
+        Company company = Company.fromEntityOption( event.getValue() );
+
+        person.setEnabled( company != null );
+        changeCompany( company );
+        person.setValue( null );
+    }
+
     @UiHandler( "saveButton" )
     public void onSaveClicked( ClickEvent event ) {
         if ( activity != null ) {
@@ -114,13 +133,16 @@ public class AccountEditView extends Composite implements AbstractAccountEditVie
 
     @Inject
     @UiField( provided = true )
-    RoleMultiSelector roles;
+    RoleOptionList roles;
 
     @UiField
     Button saveButton;
 
     @UiField
     Button cancelButton;
+
+    @UiField
+    CompanySelector company;
 
     Timer timer = new Timer() {
         @Override

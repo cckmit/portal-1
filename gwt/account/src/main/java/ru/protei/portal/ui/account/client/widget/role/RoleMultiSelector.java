@@ -13,7 +13,7 @@ public class RoleMultiSelector extends MultipleInputSelector< En_UserRole > {
     @Inject
     public void init() {
         fillOptions();
-        setAddName( "Добавить" );
+        setAddName( "Список ролей" );
     }
 
     public void fillOptions() {

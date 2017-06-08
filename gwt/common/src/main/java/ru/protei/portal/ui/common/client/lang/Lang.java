@@ -516,4 +516,10 @@ public interface Lang extends Messages, ContactItemLang {
     String roleDN_Admin();
 
     String accountRoles();
+
+    String accountCompany();
+
+    String selectAccountCompany();
+
+    String selectAccountPerson();
 }

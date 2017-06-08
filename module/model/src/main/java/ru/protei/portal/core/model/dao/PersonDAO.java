@@ -4,6 +4,7 @@ import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.query.ContactQuery;
 import ru.protei.portal.core.model.query.EmployeeQuery;
+import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 
 import java.util.List;
@@ -29,12 +30,15 @@ public interface PersonDAO extends PortalBaseDAO<Person> {
 
     Person findContactByName (long companyId, String displayName);
 
-    List< Person > getPersonsAll();
+    List<Person> getPersons (PersonQuery query);
 
     @SqlConditionBuilder
     SqlCondition createContactSqlCondition(ContactQuery query);
 
     @SqlConditionBuilder
     SqlCondition createEmployeeSqlCondition(EmployeeQuery query);
+
+    @SqlConditionBuilder
+    SqlCondition createPersonSqlCondition(PersonQuery query);
 
 }

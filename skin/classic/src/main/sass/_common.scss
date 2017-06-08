@@ -1648,11 +1648,11 @@ a {
     tbody {
       tr {
         td {
-          height: 45px;
+          height: 40px;
 
           > div {
-            height: 45px;
-            max-height: 45px;
+            height: 40px;
+            max-height: 40px;
             white-space: pre-line;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -1664,7 +1664,7 @@ a {
       width: 7%;
       text-align: center;
       > div > img {
-        height: 45px;
+        height: 40px;
         padding: 0 8px;
       }
     }
@@ -1675,4 +1675,21 @@ a {
       width: 40%;
     }
   }
+}
+
+.list-item {
+  padding: 8px;
+  line-height: 1.42857143;
+  vertical-align: middle;
+  border-top: 1px solid #ddd;
+  background-color: white;
+  .option-name {
+    color: #686868;
+    font-size: 100%;
+    font-weight: normal;
+  }
+}
+
+.list-item:hover {
+  background-color: #f6f7f8;
 }

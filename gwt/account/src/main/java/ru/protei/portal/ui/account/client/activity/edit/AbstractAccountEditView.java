@@ -3,6 +3,7 @@ package ru.protei.portal.ui.account.client.activity.edit;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
+import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
@@ -29,4 +30,6 @@ public interface AbstractAccountEditView extends IsWidget {
     void showInfo( boolean isShow );
 
     void setLoginStatus( NameStatus status );
+
+    void changeCompany( Company company );
 }

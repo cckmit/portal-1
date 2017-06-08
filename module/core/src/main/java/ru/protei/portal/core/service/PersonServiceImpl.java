@@ -5,6 +5,7 @@ import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.view.PersonShortView;
 
 import java.util.List;
@@ -19,8 +20,8 @@ public class PersonServiceImpl implements PersonService {
     PersonDAO personDAO;
 
     @Override
-    public CoreResponse< List< PersonShortView > > shortViewList() {
-        List<Person> list = personDAO.getPersonsAll();
+    public CoreResponse< List< PersonShortView > > shortViewList( PersonQuery query ) {
+        List<Person> list = personDAO.getPersons( query );
 
         if ( list == null )
             new CoreResponse< List< PersonShortView > >().error( En_ResultStatus.GET_DATA_ERROR );
