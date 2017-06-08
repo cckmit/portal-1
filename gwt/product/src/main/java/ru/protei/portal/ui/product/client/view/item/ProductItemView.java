@@ -23,6 +23,11 @@ public class ProductItemView extends Composite implements AbstractProductItemVie
         this.activity = activity;
     }
 
+    @Override
+    public HasVisibility editVisibility() {
+        return edit;
+    }
+
     @UiHandler( "favorite" )
     public void onFavoriteClicked( ClickEvent event ) {
         event.preventDefault();
