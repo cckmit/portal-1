@@ -6,7 +6,9 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.DevUnit;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
@@ -32,7 +34,6 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
 
     @Event
     public void onShow (ProductEvents.Edit event) {
-
         init.parent.clear();
         init.parent.add(view.asWidget());
 
@@ -56,7 +57,6 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         //isNameUnique не принимает пустые строки!
         if ( value.isEmpty()) {
             view.setNameStatus(NameStatus.NONE);
-//            view.save().setEnabled(false);
             return;
         }
 
@@ -67,14 +67,11 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
                     @Override
                     public void onError(Throwable throwable) {
                         view.setNameStatus(NameStatus.ERROR);
-//                        view.nameValidator().setValid(true);
                     }
 
                     @Override
                     public void onSuccess(Boolean isUnique) {
                         view.setNameStatus(isUnique ? NameStatus.SUCCESS : NameStatus.ERROR);
-//                        view.save().setEnabled(isUnique);
-//                        view.nameValidator().setValid(isUnique);
                     }
                 });
     }
@@ -139,15 +136,13 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         view.name().setValue("");
         view.info().setValue("");
         view.state().setVisible(false);
-//        view.save().setEnabled(false);
     }
 
     private void fillView(DevUnit devUnit) {
         view.name().setValue(devUnit.getName());
         view.info().setValue(devUnit.getInfo());
-        view.state().setVisible(true);
-//        view.save().setEnabled(true);
-
+        view.state().setVisible( true );
+        view.save().setEnabled( policyService.hasPrivilegeFor( En_Privilege.PRODUCT_EDIT ) );
         view.setStateBtnText(devUnit.isActiveUnit() ? lang.productToArchive() : lang.productFromArchive());
     }
 
@@ -163,9 +158,10 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
     AbstractProductEditView view;
     @Inject
     Lang lang;
-
     @Inject
     ProductServiceAsync productService;
+    @Inject
+    PolicyService policyService;
 
     private Long productId;
     private DevUnit product;

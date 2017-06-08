@@ -27,5 +27,4 @@ public interface AbstractProductEditView extends IsWidget {
     HasVisibility state(  );
 
     HasEnabled save();
-
 }
