@@ -1,0 +1,83 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+
+    <g:HTMLPanel styleName="preview-wrapper grid">
+        <g:HTMLPanel ui:field="preview" styleName="preview">
+            <div class="col-xs-12">
+                <g:Anchor ui:field="fullScreen" styleName="fa fa-lg fa-external-link pull-right" href="#"/>
+            </div>
+
+            <fieldset class="header">
+                <legend><ui:text from="{lang.personalData}"/></legend>
+                <div class="col-xs-12">
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.contactLastName}"/></label>
+                    <span class="col-xs-7 col-md-7" ui:field="lastName"></span>
+                </div>
+                <div class="col-xs-12">
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.contactFirstName}"/></label>
+                    <span class="col-xs-7 col-md-7" ui:field="firstName"></span>
+                </div>
+                <div class="col-xs-12">
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.contactSecondName}"/></label>
+                    <span class="col-xs-7 col-md-7" ui:field="secondName"></span>
+                </div>
+                <div class="col-xs-12">
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.displayName}"/></label>
+                    <span class="col-xs-7 col-md-7" ui:field="displayName"></span>
+                </div>
+                <div class="col-xs-12">
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.displayShortName}"/></label>
+                    <span class="col-xs-7 col-md-7" ui:field="shortName"></span>
+                </div>
+            </fieldset>
+            <fieldset class="header">
+                <legend><ui:text from="{lang.contactInfo}"/></legend>
+                <div class="col-xs-12">
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.company}"/></label>
+                    <span class="col-xs-7 col-md-7" ui:field="company"></span>
+                </div>
+                <div class="col-xs-12">
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.contactPosition}"/></label>
+                    <span class="col-xs-7 col-md-7" ui:field="position"></span>
+                </div>
+                <div class="col-xs-12">
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.contactDepartment}"/></label>
+                    <span class="col-xs-7 col-md-7" ui:field="department"></span>
+                </div>
+                <div class="col-xs-12">
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.phone}"/></label>
+                    <span class="col-xs-7 col-md-7" ui:field="phone"></span>
+                </div>
+                <div class="col-xs-12">
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.email}"/></label>
+                    <span class="col-xs-7 col-md-7" ui:field="email"></span>
+                </div>
+                <div class="col-xs-12">
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.address}"/></label>
+                    <span class="col-xs-7 col-md-7" ui:field="address"></span>
+                </div>
+                <div class="col-xs-12">
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.homeAddress}"/></label>
+                    <span class="col-xs-7 col-md-7" ui:field="homeAddress"></span>
+                </div>
+            </fieldset>
+            <fieldset class="header">
+                <legend><ui:text from="{lang.advPersonalData}"/></legend>
+                <div class="col-xs-12">
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.gender}"/></label>
+                    <span class="col-xs-7 col-md-7" ui:field="gender"></span>
+                </div>
+                <div class="col-xs-12">
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.birthday}"/></label>
+                    <span class="col-xs-7 col-md-7" ui:field="birthday"></span>
+                </div>
+                <div class="col-xs-12">
+                    <label class="col-xs-12"><ui:text from="{lang.comment}"/></label>
+                    <span ui:field="info" class="col-xs-12 col-md-12 pre-formatted-info"></span>
+                </div>
+            </fieldset>
+        </g:HTMLPanel>
+    </g:HTMLPanel>
+</ui:UiBinder>
