@@ -7,10 +7,12 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.AttachmentCollection;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.IssueEvents;
@@ -172,6 +174,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
         view.product().setValue( ProductShortView.fromProduct(issue.getProduct()));
         view.manager().setValue(PersonShortView.fromPerson(issue.getManager()));
+        view.saveVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_EDIT ) );
     }
 
     private void fillIssueObject(CaseObject issue){
@@ -209,6 +212,8 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     AttachmentServiceAsync attachmentService;
     @Inject
     Lang lang;
+    @Inject
+    PolicyService policyService;
 
     private AttachmentCollection attachmentCollection = new AttachmentCollection() {
         @Override

@@ -46,5 +46,5 @@ public interface AbstractIssueEditView extends IsWidget {
 
     void showComments(boolean isShow);
 
-
+    HasVisibility saveVisibility();
 }
