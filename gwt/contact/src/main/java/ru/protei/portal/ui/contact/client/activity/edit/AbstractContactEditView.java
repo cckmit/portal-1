@@ -2,6 +2,7 @@ package ru.protei.portal.ui.contact.client.activity.edit;
 
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.HasValue;
+import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -68,4 +69,6 @@ public interface AbstractContactEditView extends IsWidget {
     boolean isValidLogin();
 
     void showInfo( boolean isShow );
+
+    HasVisibility saveVisibility();
 }

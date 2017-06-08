@@ -179,6 +179,11 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
         infoPanel.setVisible( isShow );
     }
 
+    @Override
+    public HasVisibility saveVisibility() {
+        return saveButton;
+    }
+
     @UiHandler( "saveButton" )
     public void onSaveClicked( ClickEvent event ) {
         if ( activity != null ) {

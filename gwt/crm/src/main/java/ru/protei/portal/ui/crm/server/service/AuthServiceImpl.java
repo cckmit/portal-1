@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.ui.common.server.service.SessionService;
 import ru.protei.portal.ui.common.server.util.SystemConstants;
@@ -13,6 +14,8 @@ import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.crm.client.service.AuthService;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Сервис авторизации
@@ -57,6 +60,10 @@ public class AuthServiceImpl implements AuthService {
         profile.setLogin( sessionDescriptor.getLogin().getUlogin() );
         profile.setName( sessionDescriptor.getPerson().getFirstName() );
         profile.setId( sessionDescriptor.getPerson().getId() );
+
+        Set<En_Privilege> privileges = new HashSet<>();
+        privileges.add( En_Privilege.CONTACT_VIEW );
+        profile.setPrivileges( privileges );
 
         return profile;
     }
