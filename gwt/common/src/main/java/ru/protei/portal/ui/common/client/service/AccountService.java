@@ -3,6 +3,7 @@ package ru.protei.portal.ui.common.client.service;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import ru.protei.portal.core.model.ent.UserLogin;
+import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.query.AccountQuery;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
@@ -28,4 +29,6 @@ public interface AccountService extends RemoteService {
     Long getAccountsCount( AccountQuery query ) throws RequestFailedException;
 
     boolean isLoginUnique( String login, Long exceptId ) throws RequestFailedException;
+
+    List< UserRole > getRoles () throws RequestFailedException;
 }

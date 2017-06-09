@@ -6,6 +6,7 @@ import ru.protei.winter.jdbc.annotations.JdbcEntity;
 import ru.protei.winter.jdbc.annotations.JdbcId;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * Created by michael on 16.06.16.
@@ -47,5 +48,21 @@ public class UserRole implements Serializable {
 
     public void setCaRoleName(String caRoleName) {
         this.caRoleName = caRoleName;
+    }
+
+    @Override
+    public boolean equals( Object obj ) {
+
+        if( !( obj instanceof UserRole ) )
+            return false;
+
+        UserRole ur = ( UserRole ) obj;
+
+        return this.id == ur.getId();
+    }
+
+    @Override
+    public int hashCode() {
+        return id;
     }
 }

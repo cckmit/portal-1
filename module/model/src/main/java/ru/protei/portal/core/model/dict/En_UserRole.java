@@ -19,4 +19,12 @@ public enum En_UserRole {
     public int getId() {
         return id;
     }
+
+    public static En_UserRole find (int id) {
+        for (En_UserRole ur : En_UserRole.values())
+            if (ur.id == id)
+                return ur;
+
+        return null;
+    }
 }

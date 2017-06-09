@@ -12,17 +12,19 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.account.client.activity.edit.AbstractAccountEditActivity;
 import ru.protei.portal.ui.account.client.activity.edit.AbstractAccountEditView;
-import ru.protei.portal.ui.account.client.widget.role.RoleMultiSelector;
 import ru.protei.portal.ui.account.client.widget.role.RoleOptionList;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonButtonSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
+
+import java.util.Set;
 
 /**
  * Представление создания и редактирования учетной записи
@@ -40,8 +42,13 @@ public class AccountEditView extends Composite implements AbstractAccountEditVie
     }
 
     @Override
-    public HasText login() {
+    public HasValue< String > login() {
         return login;
+    }
+
+    @Override
+    public HasValue< EntityOption > company() {
+        return company;
     }
 
     @Override
@@ -57,6 +64,11 @@ public class AccountEditView extends Composite implements AbstractAccountEditVie
     @Override
     public HasText confirmPassword() {
         return confirmPassword;
+    }
+
+    @Override
+    public HasValue< Set< UserRole > > roles() {
+        return roles;
     }
 
     @Override
@@ -78,11 +90,24 @@ public class AccountEditView extends Composite implements AbstractAccountEditVie
     }
 
     @Override
+    public void enabledFields( boolean isEnabled ) {
+        company.setEnabled( isEnabled );
+        person.setEnabled( isEnabled );
+        login.setEnabled( isEnabled );
+    }
+
+    @Override
+    public void enabledPassword( boolean isEnabled ) {
+        password.setEnabled( isEnabled );
+        confirmPassword.setEnabled( isEnabled );
+    }
+
+    @Override
     public void changeCompany( Company company ) {
         person.updateCompany( company );
     }
 
-    @UiHandler("company")
+    @UiHandler( "company" )
     public void onChangeCompany( ValueChangeEvent< EntityOption > event ) {
         Company company = Company.fromEntityOption( event.getValue() );
 
@@ -112,24 +137,28 @@ public class AccountEditView extends Composite implements AbstractAccountEditVie
         timer.schedule( 300 );
     }
 
-    @UiField
-    ValidableTextBox login;
-
-    @UiField
-    Element verifiableIcon;
+    @Inject
+    @UiField( provided = true )
+    CompanySelector company;
 
     @Inject
     @UiField( provided = true )
     PersonButtonSelector person;
 
     @UiField
-    HTMLPanel infoPanel;
+    ValidableTextBox login;
+
+    @UiField
+    Element verifiableIcon;
 
     @UiField
     PasswordTextBox password;
 
     @UiField
     PasswordTextBox confirmPassword;
+
+    @UiField
+    HTMLPanel infoPanel;
 
     @Inject
     @UiField( provided = true )
@@ -140,9 +169,6 @@ public class AccountEditView extends Composite implements AbstractAccountEditVie
 
     @UiField
     Button cancelButton;
-
-    @UiField
-    CompanySelector company;
 
     Timer timer = new Timer() {
         @Override

@@ -5,6 +5,8 @@ import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Created by michael on 16.06.16.
@@ -50,10 +52,10 @@ public class UserLogin implements Serializable {
     @JdbcColumn(name = "info")
     private String info;
 
+    @JdbcManyToMany( localLinkColumn = "login_id", remoteLinkColumn = "role_id", linkTable = "login_role_item" )
+    Set< UserRole > roles;
 
-    public UserLogin () {
-
-    }
+    public UserLogin () {}
 
     public Long getId() {
         return id;
@@ -155,5 +157,13 @@ public class UserLogin implements Serializable {
 
     public void setPerson( Person person ) {
         this.person = person;
+    }
+
+    public Set< UserRole > getRoles() {
+        return roles;
+    }
+
+    public void setRoles( Set< UserRole > roles ) {
+        this.roles = roles;
     }
 }

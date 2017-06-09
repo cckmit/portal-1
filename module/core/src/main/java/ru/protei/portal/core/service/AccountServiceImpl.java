@@ -3,18 +3,23 @@ package ru.protei.portal.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.DigestUtils;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dao.UserLoginDAO;
+import ru.protei.portal.core.model.dao.UserRoleDAO;
 import ru.protei.portal.core.model.dict.En_AdminState;
 import ru.protei.portal.core.model.dict.En_AuthType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.UserLogin;
+import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.AccountQuery;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.Date;
 import java.util.List;
@@ -29,9 +34,20 @@ public class AccountServiceImpl implements AccountService {
     @Autowired
     UserLoginDAO userLoginDAO;
 
+    @Autowired
+    UserRoleDAO userRoleDAO;
+
+    @Autowired
+    JdbcManyRelationsHelper jdbcManyRelationsHelper;
+
+/*
+    @Autowired
+    private TransactionTemplate transactionTemplate;
+*/
+
     @Override
-    public CoreResponse< List< UserLogin > > accountList( AccountQuery query) {
-        List< UserLogin > list = userLoginDAO.getAccounts(query);
+    public CoreResponse< List< UserLogin > > accountList( AccountQuery query ) {
+        List< UserLogin > list = userLoginDAO.getAccounts( query );
 
         if (list == null)
             new CoreResponse< List< UserLogin > >().error( En_ResultStatus.GET_DATA_ERROR );
@@ -53,11 +69,17 @@ public class AccountServiceImpl implements AccountService {
     public CoreResponse< UserLogin > getAccount( long id ) {
         UserLogin userLogin = userLoginDAO.get( id );
 
-        return userLogin != null ? new CoreResponse< UserLogin >().success( userLogin )
-                : new CoreResponse< UserLogin >().error( En_ResultStatus.NOT_FOUND );
+        if ( userLogin == null ) {
+            return  new CoreResponse< UserLogin >().error( En_ResultStatus.NOT_FOUND );
+        }
+
+        jdbcManyRelationsHelper.fill( userLogin, "roles" );
+
+        return new CoreResponse< UserLogin >().success( userLogin );
     }
 
     @Override
+    @Transactional
     public CoreResponse< UserLogin > saveAccount( UserLogin userLogin ) {
 
         if ( !isValidLogin( userLogin ) )
@@ -82,7 +104,22 @@ public class AccountServiceImpl implements AccountService {
             userLogin.setAdminStateId( En_AdminState.UNLOCKED.getId() );
         }
 
+/*
+        return new CoreResponse< UserLogin >().success( transactionTemplate.execute( transactionStatus -> {
+
+            if ( !userLoginDAO.saveOrUpdate( userLogin ) ) {
+                throw new RuntimeException();
+            }
+            jdbcManyRelationsHelper.persist( userLogin, "roles" );
+
+            return userLogin;
+        } ) );
+*/
+
         if ( userLoginDAO.saveOrUpdate( userLogin ) ) {
+
+            jdbcManyRelationsHelper.persist( userLogin, "roles" );
+
             return new CoreResponse< UserLogin >().success( userLogin );
         }
 
@@ -98,6 +135,26 @@ public class AccountServiceImpl implements AccountService {
         return new CoreResponse< Boolean >().success( isUniqueLogin( login, excludeId ) );
     }
 
+    @Override
+    public CoreResponse< Boolean > removeAccount( UserLogin userLogin ) {
+
+        if ( userLoginDAO.remove( userLogin ) ) {
+            return new CoreResponse< Boolean >().success( true );
+        }
+
+        return new CoreResponse< Boolean >().error( En_ResultStatus.INTERNAL_ERROR );
+    }
+
+    @Override
+    public CoreResponse< List< UserRole > > roleList() {
+        List< UserRole > list = userRoleDAO.getAll();
+
+        if (list == null)
+            new CoreResponse< List< UserRole > >().error( En_ResultStatus.GET_DATA_ERROR );
+
+        return new CoreResponse< List< UserRole > >().success( list );
+    }
+
     private boolean isValidLogin( UserLogin userLogin ) {
         return HelperFunc.isNotEmpty( userLogin.getUlogin() )
                 && userLogin.getPersonId() != null;
@@ -108,5 +165,4 @@ public class AccountServiceImpl implements AccountService {
 
         return userLogin == null || userLogin.getId().equals( excludeId );
     }
-
 }

@@ -19,6 +19,7 @@ import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -73,7 +74,7 @@ public class AccountFilterView extends Composite implements AbstractAccountFilte
         sortField.setValue( En_SortField.ulogin );
         sortDir.setValue( true );
         search.setText( "" );
-        types.setValue( null );
+        types.setValue( new HashSet<>() );
     }
 
     @UiHandler( "resetBtn" )

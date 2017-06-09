@@ -10,9 +10,7 @@ import ru.protei.portal.tools.migrate.tools.MigrateAction;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by michael on 01.04.16.
@@ -32,6 +30,8 @@ public class MigrateClientLoginAction implements MigrateAction {
     @Autowired
     UserLoginDAO userLoginDAO;
 
+    @Autowired
+    UserRoleDAO userRoleDAO;
 
     @Autowired
     private MigrationEntryDAO migrationEntryDAO;
@@ -47,6 +47,10 @@ public class MigrateClientLoginAction implements MigrateAction {
 
         final Map<String, UserLogin> rtUnique = new HashMap<>();
         userLoginDAO.getAll().forEach(u -> rtUnique.put(u.getUlogin().toLowerCase(), u));
+
+        UserRole employee = userRoleDAO.get(new Long(En_UserRole.EMPLOYEE.getId()));
+        Set<UserRole> roles = new HashSet<>();
+        roles.add(employee);
 
         new BatchInsertTask(migrationEntryDAO, MIGRATE_ITEM_CODE)
                 .forTable("\"resource\".Tm_CompanyLogin", "nID", null)
@@ -73,8 +77,8 @@ public class MigrateClientLoginAction implements MigrateAction {
                     ulogin.setCreated(new Date());
                     ulogin.setInfo((String) row.get("strInfo"));
                     ulogin.setPersonId((Long)row.get("nPersonID"));
-                    //ulogin.setRoleId(En_UserRole.CRM_CLIENT.getId());
                     ulogin.setUpass((String)row.get("strPassword"));
+                    ulogin.setRoles(roles);
 
                     if (ulogin.getPersonId() == null) {
                         Long companyId = (Long)row.get("nCompanyID");

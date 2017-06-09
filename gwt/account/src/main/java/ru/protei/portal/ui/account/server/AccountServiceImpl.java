@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.UserLogin;
+import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.AccountQuery;
 import ru.protei.portal.ui.common.client.service.AccountService;
@@ -52,6 +53,9 @@ public class AccountServiceImpl implements AccountService {
             throw new RequestFailedException( En_ResultStatus.INTERNAL_ERROR );
         }
 
+        if ( !isLoginUnique( userLogin.getUlogin(), userLogin.getId() ) )
+            throw new RequestFailedException ( En_ResultStatus.ALREADY_EXIST );
+
         log.debug( "store account, id: {} ", HelperFunc.nvl( userLogin.getId(), "new" ) );
 
         CoreResponse< UserLogin > response = accountService.saveAccount( userLogin );
@@ -83,6 +87,19 @@ public class AccountServiceImpl implements AccountService {
         if ( response.isError() )
             throw new RequestFailedException( response.getStatus() );
 
+        return response.getData();
+    }
+
+    @Override
+    public List< UserRole > getRoles() throws RequestFailedException {
+
+        log.debug( "getRoles()" );
+
+        CoreResponse< List< UserRole > > response = accountService.roleList();
+
+        if ( response.isError() ) {
+            throw new RequestFailedException( response.getStatus() );
+        }
         return response.getData();
     }
 

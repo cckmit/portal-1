@@ -4,10 +4,7 @@ package ru.protei.portal.tools.migrate.parts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.protei.portal.core.model.dao.CompanyGroupHomeDAO;
-import ru.protei.portal.core.model.dao.MigrationEntryDAO;
-import ru.protei.portal.core.model.dao.PersonDAO;
-import ru.protei.portal.core.model.dao.UserLoginDAO;
+import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_AdminState;
 import ru.protei.portal.core.model.dict.En_AuthType;
 import ru.protei.portal.core.model.dict.En_Gender;
@@ -15,6 +12,7 @@ import ru.protei.portal.core.model.dict.En_UserRole;
 import ru.protei.portal.core.model.ent.LoginRoleItem;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.UserLogin;
+import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.tools.migrate.tools.BatchProcess;
 import ru.protei.portal.tools.migrate.tools.MigrateAction;
@@ -50,6 +48,8 @@ public class MigratePersonAction implements MigrateAction {
     @Autowired
     CompanyGroupHomeDAO groupHomeDAO;
 
+    @Autowired
+    UserRoleDAO userRoleDAO;
 
     Map<String, String> email2loginMap;
 
@@ -126,6 +126,10 @@ public class MigratePersonAction implements MigrateAction {
             public void afterInsert(List<Person> insertedEntries) {
                 List<UserLogin> loginBatch = new ArrayList<>();
 
+                UserRole employee = userRoleDAO.get(new Long(En_UserRole.EMPLOYEE.getId()));
+                Set<UserRole> roles = new HashSet<>();
+                roles.add(employee);
+
                 for (Person p : insertedEntries) {
                     if (groupHomeDAO.checkIfHome(p.getCompanyId()) && !p.isDeleted() && !p.isFired()) {
 
@@ -135,8 +139,8 @@ public class MigratePersonAction implements MigrateAction {
                         ulogin.setCreated(new Date());
                         ulogin.setInfo(p.getDisplayName());
                         ulogin.setPersonId(p.getId());
-                        //ulogin.setRoleId(En_UserRole.EMPLOYEE.getId());
                         ulogin.setUlogin(createLogin(p));
+                        ulogin.setRoles(roles);
 
                         if (ulogin.getUlogin() == null) {
                             logger.warn("unable to create user login for person {}", p.toDebugString());

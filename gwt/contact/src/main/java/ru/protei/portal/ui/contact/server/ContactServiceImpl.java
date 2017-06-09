@@ -5,19 +5,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
-import ru.protei.portal.core.model.dict.En_AdminState;
-import ru.protei.portal.core.model.dict.En_AuthType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.dict.En_UserRole;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.ContactQuery;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.core.service.AccountService;
 import ru.protei.portal.ui.common.client.service.ContactService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -94,18 +91,7 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Override
-    public UserLogin getUserLogin( long id ) throws RequestFailedException {
-        log.debug( "get user login, id: {}", id );
-
-        CoreResponse< UserLogin > response = contactService.getUserLogin( id );
-
-        log.debug( "get user login, id: {} -> {} ", id, response.isError() ? "error" : ( response.getData() == null ? null : response.getData().getUlogin() ) );
-
-        return response.getData();
-    }
-
-    @Override
-    public boolean saveUserLogin( UserLogin userLogin ) throws RequestFailedException {
+    public boolean saveAccount( UserLogin userLogin ) throws RequestFailedException {
         if ( userLogin == null ) {
             log.warn( "null user login in request" );
             throw new RequestFailedException( En_ResultStatus.INTERNAL_ERROR );
@@ -116,7 +102,7 @@ public class ContactServiceImpl implements ContactService {
                 return true;
             } else {
                 log.debug( "remove user login, id: {} ", userLogin.getId() );
-                CoreResponse< Boolean > response = contactService.removeUserLogin( userLogin );
+                CoreResponse< Boolean > response = accountService.removeAccount( userLogin );
                 log.debug( "remove user login, result: {}", response.isOk() ? "ok" : response.getStatus() );
                 if ( response.isOk() ) {
                     return response.getData();
@@ -126,7 +112,11 @@ public class ContactServiceImpl implements ContactService {
             }
         } else {
             log.debug( "store user login, id: {} ", HelperFunc.nvl( userLogin.getId(), "new" ) );
-            CoreResponse< UserLogin > response = contactService.saveUserLogin( userLogin );
+
+            if ( !isLoginUnique( userLogin.getUlogin(), userLogin.getId() ) )
+                throw new RequestFailedException ( En_ResultStatus.ALREADY_EXIST );
+
+            CoreResponse< UserLogin > response = accountService.saveAccount( userLogin );
             log.debug( "store user login, result: {}", response.isOk() ? "ok" : response.getStatus() );
 
             if ( response.isOk() ) {
@@ -138,14 +128,13 @@ public class ContactServiceImpl implements ContactService {
         }
     }
 
-    @Override
-    public boolean isContactLoginUnique( String login, Long excludeId ) throws RequestFailedException {
+    private boolean isLoginUnique( String login, Long excludeId ) throws RequestFailedException {
 
-        log.debug( "isContactLoginUnique(): login={}, excludeId={}", login, excludeId );
+        log.debug( "isLoginUnique(): login={}, excludeId={}", login, excludeId );
 
-        CoreResponse< Boolean > response = contactService.isUserLoginUnique( login, excludeId );
+        CoreResponse< Boolean > response = accountService.checkUniqueLogin( login, excludeId );
 
-        log.debug( "isContactLoginUnique() -> {}, {}", response.getStatus(), response.getData() != null ? response.getData() : null );
+        log.debug( "isLoginUnique() -> {}, {}", response.getStatus(), response.getData() != null ? response.getData() : null );
 
         if ( response.isError() )
             throw new RequestFailedException( response.getStatus() );
@@ -155,6 +144,9 @@ public class ContactServiceImpl implements ContactService {
 
     @Autowired
     ru.protei.portal.core.service.ContactService contactService;
+
+    @Autowired
+    AccountService accountService;
 
     private static final Logger log = LoggerFactory.getLogger( "web" );
 }

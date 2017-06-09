@@ -5,11 +5,13 @@ import ru.protei.winter.jdbc.annotations.JdbcColumn;
 import ru.protei.winter.jdbc.annotations.JdbcEntity;
 import ru.protei.winter.jdbc.annotations.JdbcId;
 
+import java.io.Serializable;
+
 /**
  * Связка логин-роль
  */
 @JdbcEntity(table = "login_role_item")
-public class LoginRoleItem {
+public class LoginRoleItem implements Serializable {
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
 
