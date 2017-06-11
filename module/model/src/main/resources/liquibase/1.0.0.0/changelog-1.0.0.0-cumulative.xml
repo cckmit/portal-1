@@ -14,5 +14,6 @@
   <include file="08-01-fix_constraints.xml" relativeToChangelogFile="true" />
   <include file="08-02-company_subscription.xml" relativeToChangelogFile="true" />
   <include file="08-03-add_case_state.xml" relativeToChangelogFile="true" />
+  <include file="10-add-user_role-privileges.xml" relativeToChangelogFile="true" />
 
 </databaseChangeLog>
