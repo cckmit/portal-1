@@ -24,7 +24,7 @@ import ru.protei.portal.ui.role.client.activity.edit.AbstractRoleEditView;
 import java.util.Date;
 
 /**
- * Представление создания и редактирования контактного лица
+ * Представление создания и редактирования роли
  */
 public class RoleEditView extends Composite implements AbstractRoleEditView {
 
@@ -39,144 +39,13 @@ public class RoleEditView extends Composite implements AbstractRoleEditView {
     }
 
     @Override
-    public HasValue<String> firstName() {
-        return firstName;
+    public HasValue<String> name() {
+        return name;
     }
 
     @Override
-    public HasValue<String> lastName() {
-        return lastName;
-    }
-
-    @Override
-    public HasText secondName() {
-        return secondName;
-    }
-
-    @Override
-    public HasText displayName() {
-        return displayName;
-    }
-
-    @Override
-    public HasText shortName() {
-        return shortName;
-    }
-
-    @Override
-    public HasValue<Date> birthDay() {
-        return birthDay;
-    }
-
-    @Override
-    public HasText workPhone() {
-        return workPhone;
-    }
-
-    @Override
-    public HasText homePhone() {
-        return homePhone;
-    }
-
-    @Override
-    public HasText workEmail() {
-        return workEmail;
-    }
-
-//    @Override
-//    public HasText personalEmail() {
-//        return personalEmail;
-//    }
-
-    @Override
-    public HasText workFax() {
-        return workFax;
-    }
-
-//    @Override
-//    public HasText homeFax() {
-//        return homeFax;
-//    }
-
-    @Override
-    public HasText workAddress() {
-        return workAddress;
-    }
-
-    @Override
-    public HasText homeAddress() {
-        return homeAddress;
-    }
-
-    @Override
-    public HasText displayPosition() {
-        return displayPosition;
-    }
-
-    @Override
-    public HasText displayDepartment() {
-        return displayDepartment;
-    }
-
-    @Override
-    public HasValue<EntityOption> company() {
-        return company;
-    }
-
-    @Override
-    public HasValue<En_Gender> gender() {
-        return gender;
-    }
-
-    @Override
-    public HasText personInfo() {
-        return personInfo;
-    }
-
-    @Override
-    public HasText login() {
-        return login;
-    }
-
-    @Override
-    public void setContactLoginStatus(NameStatus status) {
-        this.status = status;
-        verifiableIcon.setClassName(status.getStyle());
-    }
-
-    @Override
-    public HasText password() {
-        return password;
-    }
-
-    @Override
-    public HasText confirmPassword() {
-        return confirmPassword;
-    }
-
-    @Override
-    public HasValidable companyValidator(){
-        return company;
-    }
-
-    @Override
-    public HasValidable firstNameValidator(){
-        return firstName;
-    }
-
-    @Override
-    public HasValidable lastNameValidator(){
-        return lastName;
-    }
-
-    @Override
-    public boolean isValidLogin() {
-        return status != null && status.equals(NameStatus.ERROR) ? false : true;
-    }
-
-    @Override
-    public void showInfo( boolean isShow ) {
-        infoPanel.setVisible( isShow );
+    public HasValue<String> description() {
+        return description;
     }
 
     @UiHandler( "saveButton" )
@@ -193,104 +62,16 @@ public class RoleEditView extends Composite implements AbstractRoleEditView {
         }
     }
 
-    @UiHandler("login")
-    public void onChangeContactLogin( KeyUpEvent keyUpEvent ) {
-        verifiableIcon.setClassName( NameStatus.UNDEFINED.getStyle());
-        timer.cancel();
-        timer.schedule( 300 );
-    }
-
     @UiField
     Button saveButton;
 
     @UiField
     Button cancelButton;
-
     @UiField
-    ValidableTextBox firstName;
-
+    ValidableTextBox name;
     @UiField
-    ValidableTextBox lastName;
+    TextBox description;
 
-    @UiField
-    TextBox secondName;
-
-    @UiField
-    TextBox displayName;
-
-    @UiField
-    TextBox shortName;
-
-    @Inject
-    @UiField(provided = true)
-    SinglePicker birthDay;
-
-    @UiField
-    TextBox workPhone;
-
-    @UiField
-    TextBox homePhone;
-
-    @UiField
-    TextBox workEmail;
-
-//    @UiField
-//    TextBox personalEmail;
-
-    @UiField
-    TextBox workFax;
-
-//    @UiField
-//    TextBox homeFax;
-
-    @UiField
-    TextArea workAddress;
-
-    @UiField
-    TextArea homeAddress;
-
-    @UiField
-    TextBox displayPosition;
-
-    @UiField
-    TextBox displayDepartment;
-
-    @UiField
-    TextArea personInfo;
-
-    @Inject
-    @UiField ( provided = true )
-    CompanySelector company;
-
-    @Inject
-    @UiField(provided = true)
-    GenderButtonSelector gender;
-
-    @UiField
-    TextBox login;
-
-    @UiField
-    PasswordTextBox password;
-
-    @UiField
-    Element verifiableIcon;
-
-    @UiField
-    HTMLPanel infoPanel;
-
-    @UiField
-    PasswordTextBox confirmPassword;
-
-    Timer timer = new Timer() {
-        @Override
-        public void run() {
-            if ( activity != null ) {
-                activity.onChangeContactLogin();
-            }
-        }
-    };
-
-    NameStatus status;
 
     AbstractRoleEditActivity activity;
 

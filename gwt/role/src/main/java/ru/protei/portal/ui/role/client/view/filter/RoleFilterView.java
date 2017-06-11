@@ -11,11 +11,8 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_SortField;
-import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
-import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.role.client.activity.filter.AbstractRoleFilterActivity;
 import ru.protei.portal.ui.role.client.activity.filter.AbstractRoleFilterView;
@@ -24,12 +21,11 @@ import ru.protei.portal.ui.role.client.activity.filter.AbstractRoleFilterView;
  * Представление фильтра роли
  */
 public class RoleFilterView extends Composite implements AbstractRoleFilterView {
+    
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
-        company.setDefaultValue( lang.selectContactCompany() );
         search.getElement().setPropertyString( "placeholder", lang.search() );
-        sortField.setType( ModuleType.CONTACT );
     }
 
     @Override
@@ -50,16 +46,6 @@ public class RoleFilterView extends Composite implements AbstractRoleFilterView 
     }
 
     @Override
-    public HasValue<EntityOption> company() {
-        return company;
-    }
-
-    @Override
-    public HasValue<Boolean> showFired() {
-        return showFired;
-    }
-
-    @Override
     public HasValue<En_SortField> sortField() {
         return sortField;
     }
@@ -76,11 +62,9 @@ public class RoleFilterView extends Composite implements AbstractRoleFilterView 
 
     @Override
     public void resetFilter() {
-        company.setValue( null );
-        showFired.setValue( false );
-        sortField.setValue( En_SortField.person_full_name );
-        sortDir.setValue( true );
         search.setText( "" );
+        sortField.setValue( En_SortField.role_name );
+        sortDir.setValue( true );
     }
 
     @UiHandler( "resetBtn" )
@@ -91,18 +75,10 @@ public class RoleFilterView extends Composite implements AbstractRoleFilterView 
         }
     }
 
-    @UiHandler( "company" )
-    public void onCompanySelected( ValueChangeEvent<EntityOption> event ) {
-        if ( activity != null ) {
-            activity.onFilterChanged();
-        }
-    }
-
-    @UiHandler( "showFired" )
-    public void onShowFireClicked( ClickEvent event ) {
-        if ( activity != null ) {
-            activity.onFilterChanged();
-        }
+    @UiHandler( "search" )
+    public void onKeyUpSearch( KeyUpEvent event ) {
+        timer.cancel();
+        timer.schedule( 300 );
     }
 
     @UiHandler( "sortField" )
@@ -119,11 +95,24 @@ public class RoleFilterView extends Composite implements AbstractRoleFilterView 
         }
     }
 
-    @UiHandler( "search" )
-    public void onKeyUpSearch( KeyUpEvent event ) {
-        timer.cancel();
-        timer.schedule( 300 );
-    }
+    @UiField
+    TextBox search;
+
+    @UiField
+    Button resetBtn;
+
+    @Inject
+    @UiField( provided = true )
+    SortFieldSelector sortField;
+
+    @UiField
+    ToggleButton sortDir;
+    @Inject
+    @UiField
+    Lang lang;
+
+    @Inject
+    FixedPositioner positioner;
 
     Timer timer = new Timer() {
         @Override
@@ -134,37 +123,9 @@ public class RoleFilterView extends Composite implements AbstractRoleFilterView 
         }
     };
 
-    @Inject
-    @UiField( provided = true )
-    CompanySelector company;
-
-    @UiField
-    CheckBox showFired;
-
-    @Inject
-    @UiField( provided = true )
-    SortFieldSelector sortField;
-
-    @UiField
-    ToggleButton sortDir;
-
-    @UiField
-    TextBox search;
-
-    @UiField
-    Button resetBtn;
-
-    @Inject
-    @UiField
-    Lang lang;
-
-    @Inject
-    FixedPositioner positioner;
-
-
     AbstractRoleFilterActivity activity;
 
-    private static RoleFilterView.ContactFilterViewUiBinder ourUiBinder = GWT.create( RoleFilterView.ContactFilterViewUiBinder.class );
-    interface ContactFilterViewUiBinder extends UiBinder<HTMLPanel, RoleFilterView > {}
+    private static RoleFilterView.RoleFilterViewUiBinder ourUiBinder = GWT.create( RoleFilterViewUiBinder.class );
+    interface RoleFilterViewUiBinder extends UiBinder<HTMLPanel, RoleFilterView > {}
 
 }

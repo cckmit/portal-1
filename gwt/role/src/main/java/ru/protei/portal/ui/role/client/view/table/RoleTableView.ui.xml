@@ -7,7 +7,7 @@
     <g:HTMLPanel styleName="main-content">
         <div class="grid">
             <g:HTMLPanel ui:field="tableContainer" styleName="global-table-container">
-                <table:InfiniteTableWidget ui:field="table" styleName="table-hover contacts"/>
+                <table:TableWidget ui:field="table" styleName="table-hover"/>
             </g:HTMLPanel>
             <g:HTMLPanel ui:field="previewContainer" styleName="preview-container no-width"/>
             <g:HTMLPanel ui:field="filterContainer" styleName="filter-container col-xs-3"/>

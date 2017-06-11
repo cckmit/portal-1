@@ -7,7 +7,7 @@ import ru.protei.portal.ui.role.client.activity.edit.RoleEditActivity;
 import ru.protei.portal.ui.role.client.activity.filter.AbstractRoleFilterView;
 import ru.protei.portal.ui.role.client.activity.page.RolePage;
 import ru.protei.portal.ui.role.client.activity.preview.AbstractRolePreviewView;
-import ru.protei.portal.ui.role.client.activity.preview.ContactPreviewActivity;
+import ru.protei.portal.ui.role.client.activity.preview.RolePreviewActivity;
 import ru.protei.portal.ui.role.client.activity.table.AbstractRoleTableView;
 import ru.protei.portal.ui.role.client.activity.table.RoleTableActivity;
 import ru.protei.portal.ui.role.client.view.edit.RoleEditView;
@@ -27,7 +27,7 @@ public class RoleClientModule extends AbstractGinModule {
         bind ( RoleTableActivity.class ).asEagerSingleton();
         bind ( AbstractRoleTableView.class ).to( RoleTableView.class ).in( Singleton.class );
 
-        bind( ContactPreviewActivity.class ).asEagerSingleton();
+        bind( RolePreviewActivity.class ).asEagerSingleton();
         bind( AbstractRolePreviewView.class ).to( RolePreviewView.class ).in( Singleton.class );
 
         bind( RoleEditActivity.class ).asEagerSingleton();

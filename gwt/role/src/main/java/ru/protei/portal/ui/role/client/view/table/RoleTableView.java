@@ -9,8 +9,9 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.AbstractColumn;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
+import ru.brainworm.factory.widget.table.client.TableWidget;
 import ru.brainworm.factory.widget.table.client.helper.SelectionColumn;
-import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
@@ -45,8 +46,6 @@ public class RoleTableView extends Composite implements AbstractRoleTableView {
             clickColumn.setHandler( activity );
             clickColumn.setColumnProvider( columnProvider );
         });
-        table.setLoadHandler( activity );
-        table.setPagerListener( activity );
     }
     
     @Override
@@ -61,111 +60,53 @@ public class RoleTableView extends Composite implements AbstractRoleTableView {
     public HasWidgets getFilterContainer () { return filterContainer; }
 
     @Override
-    public void hideElements() {
-        filterContainer.setVisible( false );
-        //hideColumn.setVisibility( false );
-        tableContainer.removeStyleName( "col-xs-9" );
-        tableContainer.addStyleName( "col-xs-12" );
-    }
-
-    @Override
-    public void showElements() {
-        filterContainer.setVisible( true );
-        //hideColumn.setVisibility( true );
-        tableContainer.removeStyleName( "col-xs-12" );
-        tableContainer.addStyleName( "col-xs-9" );
-    }
-
-    @Override
     public void clearRecords() {
-        table.clearCache();
         table.clearRows();
     }
 
     @Override
-    public void setRecordCount( Long count ) {
-        table.setTotalRecords( count.intValue() );
-    }
-
-    @Override
-    public int getPageSize() {
-        return table.getPageSize();
-    }
-
-    @Override
-    public int getPageCount() {
-        return table.getPageCount();
-    }
-
-    @Override
-    public void scrollTo( int page ) {
-        table.scrollToPage( page );
+    public void setData( List<UserRole> roles ) {
+        for ( UserRole role : roles ) {
+            table.addRow( role );
+        }
     }
 
     private void initTable () {
+        editClickColumn = new EditClickColumn<UserRole>( lang ) {};
 
-        editClickColumn = new EditClickColumn<Person>( lang ) {};
-
-        ClickColumn< Person > displayName = new ClickColumn< Person >() {
+        ClickColumn< UserRole > name = new ClickColumn< UserRole >() {
             @Override
             protected void fillColumnHeader( Element element ) {
-                element.setInnerText( lang.contactFullName() );
+                element.setInnerText( lang.roleName() );
             }
 
             @Override
-            public void fillColumnValue ( Element cell, Person value ) {
-                Element root = DOM.createDiv();
-                cell.appendChild( root );
-
-                Element fioElement = DOM.createDiv();
-                fioElement.setInnerHTML( "<b>" + value.getDisplayName() + "<b>" );
-                root.appendChild( fioElement );
-
-                PlainContactInfoFacade infoFacade = new PlainContactInfoFacade( value.getContactInfo() );
-                root.appendChild( ContactColumnBuilder.make().add( "ion-android-call", infoFacade.getWorkPhone() )
-                        .add( "ion-android-call", infoFacade.getMobilePhone() )
-                        .add( "ion-android-phone-portrait", infoFacade.getHomePhone() )
-                        .toElement() );
-
-                root.appendChild( ContactColumnBuilder.make().add( "ion-android-mail", infoFacade.getEmail() )
-                        .add( "ion-android-mail", infoFacade.getEmail_own() )
-                        .toElement() );
+            public void fillColumnValue ( Element cell, UserRole value ) {
+                cell.setInnerText( value.getCode() == null ? "" : value.getCode() );
             }
         };
-        columns.add( displayName );
+        columns.add( name );
 
-        ClickColumn< Person > company = new ClickColumn< Person >() {
+        ClickColumn< UserRole > description = new ClickColumn< UserRole >() {
             @Override
             protected void fillColumnHeader( Element element ) {
-                element.setInnerText( lang.company() );
-                element.addClassName( "company" );
+                element.setInnerText( lang.roleDescription() );
             }
 
             @Override
-            public void fillColumnValue ( Element cell, Person value ) {
-                Element root = DOM.createDiv();
-                cell.appendChild( root );
-
-                Element fioElement = DOM.createDiv();
-                fioElement.setInnerHTML( "<b>" + value.getCompany().getCname() + "<b>" );
-                root.appendChild( fioElement );
-
-                Element posElement = DOM.createDiv();
-                posElement.addClassName( "contact-position" );
-                posElement.setInnerHTML( value.getPosition() );
-                root.appendChild( posElement );
+            public void fillColumnValue ( Element cell, UserRole value ) {
+                cell.setInnerText( value.getInfo() == null ? "" : value.getInfo() );
             }
         };
-        columns.add( company );
+        columns.add( description );
 
-        //hideColumn = table.addColumn( selectionColumn.header, selectionColumn.values );
-        table.addColumn( company.header, company.values );
-        table.addColumn( displayName.header, displayName.values );
+        table.addColumn( name.header, name.values );
+        table.addColumn( description.header, description.values );
         table.addColumn( editClickColumn.header, editClickColumn.values );
     }
 
     @UiField
-    InfiniteTableWidget<Person> table;
+    TableWidget<UserRole> table;
 
     @UiField
     HTMLPanel tableContainer;
@@ -178,16 +119,9 @@ public class RoleTableView extends Composite implements AbstractRoleTableView {
     @UiField
     Lang lang;
 
-    @Inject
-    Separator separator;
-
-
-    AbstractColumn hideColumn;
-    ClickColumnProvider<Person> columnProvider = new ClickColumnProvider<>();
-    SelectionColumn< Person > selectionColumn = new SelectionColumn<>();
-    EditClickColumn<Person > editClickColumn;
+    ClickColumnProvider<UserRole> columnProvider = new ClickColumnProvider<>();
+    EditClickColumn<UserRole > editClickColumn;
     List<ClickColumn > columns = new ArrayList<>();
-
 
     AbstractRoleTableActivity activity;
 

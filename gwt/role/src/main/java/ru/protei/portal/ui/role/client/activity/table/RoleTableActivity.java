@@ -4,8 +4,11 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_DevUnitState;
+import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.UserRole;
-import ru.protei.portal.core.model.query.RoleQuery;
+import ru.protei.portal.core.model.query.ProductQuery;
+import ru.protei.portal.core.model.query.UserRoleQuery;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
@@ -47,7 +50,7 @@ public abstract class RoleTableActivity
         init.parent.clear();
         init.parent.add( view.asWidget() );
 
-        fireEvent( new ActionBarEvents.Add( CREATE_ACTION, UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.CONTACT ) );
+        fireEvent( new ActionBarEvents.Add( CREATE_ACTION, UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.ROLE ) );
 
         isShowTable = false;
 
@@ -57,7 +60,7 @@ public abstract class RoleTableActivity
 
     @Event
     public void onCreateClicked( SectionEvents.Clicked event ) {
-        if ( !UiConstants.ActionBarIdentity.CONTACT.equals( event.identity ) ) {
+        if ( !UiConstants.ActionBarIdentity.ROLE.equals( event.identity ) ) {
             return;
         }
 
@@ -124,8 +127,13 @@ public abstract class RoleTableActivity
         }
     }
 
-    private RoleQuery makeQuery() {
-        return new RoleQuery();
+    private UserRoleQuery makeQuery() {
+        query = new UserRoleQuery();
+        query.setSearchString(filterView.searchPattern().getValue());
+        query.setSortField(filterView.sortField().getValue());
+        query.setSortDir(filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
+
+        return query;
     }
 
 
@@ -146,7 +154,7 @@ public abstract class RoleTableActivity
     private boolean isShowTable = false;
 
     private AppEvents.InitDetails init;
-    private RoleQuery query;
+    private UserRoleQuery query;
 
     private static String CREATE_ACTION;
 }

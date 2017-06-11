@@ -13,11 +13,14 @@ import java.io.Serializable;
 @JdbcEntity(table = "user_role")
 public class UserRole implements Serializable {
 
-    @JdbcId(name = "id", idInsertMode = IdInsertMode.EXPLICIT)
-    private int id;
+    @JdbcId(name = "id")
+    private Long id;
 
     @JdbcColumn(name = "role_code")
     private String code;
+
+    @JdbcColumn(name = "role_info")
+    private String info;
 
     @JdbcColumn(name = "ca_role_name")
     private String caRoleName;
@@ -25,11 +28,11 @@ public class UserRole implements Serializable {
 
     public UserRole() {}
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -47,5 +50,13 @@ public class UserRole implements Serializable {
 
     public void setCaRoleName(String caRoleName) {
         this.caRoleName = caRoleName;
+    }
+
+    public String getInfo() {
+        return info;
+    }
+
+    public void setInfo( String info ) {
+        this.info = info;
     }
 }

@@ -22,13 +22,13 @@ public abstract class RolePage
 
     @PostConstruct
     public void onInit() {
-        ТAB = lang.contacts();
+        ТAB = lang.roles();
     }
 
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
         if ( PolicyUtils.isAllowedContactTab( event.profile ) ) {
-            fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.CONTACT ) );
+            fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.ROLE ) );
             fireEvent( new AppEvents.InitPage( show ) );
         }
     }

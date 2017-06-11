@@ -1,12 +1,11 @@
 package ru.protei.portal.ui.role.client.view.preview;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.LabelElement;
+import com.google.gwt.dom.client.LegendElement;
 import com.google.gwt.dom.client.SpanElement;
-import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.inject.Inject;
@@ -16,7 +15,7 @@ import ru.protei.portal.ui.role.client.activity.preview.AbstractRolePreviewActiv
 import ru.protei.portal.ui.role.client.activity.preview.AbstractRolePreviewView;
 
 /**
- * Вид превью контакта
+ * Вид превью роли
  */
 public class RolePreviewView extends Composite implements AbstractRolePreviewView {
 
@@ -42,110 +41,29 @@ public class RolePreviewView extends Composite implements AbstractRolePreviewVie
     }
 
     @Override
-    public void setLastName(String value) { this.lastName.setInnerHTML( value ); }
-
-    @Override
-    public void setFirstName(String value) { this.firstName.setInnerHTML( value ); }
-
-    @Override
-    public void setSecondName(String value) { this.secondName.setInnerHTML( value ); }
-
-    @Override
-    public void setDisplayName(String value) { this.displayName.setInnerHTML( value ); }
-
-    @Override
-    public void setShortName(String value) { this.shortName.setInnerHTML( value ); }
-
-    @Override
-    public void setGender(String value) { this.gender.setInnerText( value ); }
-
-    @Override
-    public void setBirthday(String value) { this.birthday.setInnerText( value ); }
-
-    @Override
-    public void setCompany ( String value ) { this.company.setInnerHTML( value ); }
-
-    @Override
-    public void setPosition(String value) { this.position.setInnerHTML( value ); }
-
-    @Override
-    public void setDepartment(String value) { this.department.setInnerHTML( value ); }
-
-    @Override
-    public void setPhone(String value) { this.phone.setInnerText( value ); }
-
-    @Override
-    public void setEmail(String value) { this.email.setInnerText( value ); }
-
-    @Override
-    public void setAddress(String value) { this.address.setInnerHTML( value ); }
-
-    @Override
-    public void setHomeAddress(String value) { this.homeAddress.setInnerHTML( value ); }
-
-    @Override
-    public void setInfo(String value) { this.info.setInnerHTML( value ); }
-
-    @Override
-    public void showFullScreen ( boolean value ) {
-
-        fullScreen.setVisible( !value );
-        if (value)
-            preview.addStyleName( "col-xs-12 col-lg-6" );
-        else
-            preview.setStyleName( "preview" );
+    public void setHeader( String value ) {
+        this.header.setInnerText( value );
     }
 
     @Override
-    public HTMLPanel preview () { return preview; }
-
-    @UiHandler( "fullScreen" )
-    public void onFullScreenClicked ( ClickEvent event) {
-        event.preventDefault();
-
-        if ( activity != null ) {
-            activity.onFullScreenPreviewClicked();
-        }
+    public void setName( String value ) {
+        this.name.setInnerText( value );
     }
 
-    @UiField
-    HTMLPanel preview;
-    @UiField
-    SpanElement lastName;
-    @UiField
-    SpanElement firstName;
-    @UiField
-    SpanElement secondName;
-    @UiField
-    SpanElement displayName;
-    @UiField
-    SpanElement shortName;
-    @UiField
-    SpanElement gender;
-    @UiField
-    SpanElement birthday;
-    @UiField
-    SpanElement info;
-    @UiField
-    SpanElement phone;
-    @UiField
-    SpanElement email;
-    @UiField
-    SpanElement address;
-    @UiField
-    SpanElement homeAddress;
-    @UiField
-    SpanElement company;
-    @UiField
-    SpanElement position;
-    @UiField
-    SpanElement department;
-    @UiField
-    Anchor fullScreen;
+    @Override
+    public void setDescription( String value ) {
+        this.description.setInnerText( value );
+    }
 
     @Inject
     @UiField
     Lang lang;
+    @UiField
+    SpanElement name;
+    @UiField
+    SpanElement description;
+    @UiField
+    LegendElement header;
 
     @Inject
     FixedPositioner positioner;

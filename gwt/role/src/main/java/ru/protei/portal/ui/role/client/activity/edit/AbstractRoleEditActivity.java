@@ -6,5 +6,4 @@ package ru.protei.portal.ui.role.client.activity.edit;
 public interface AbstractRoleEditActivity {
     void onSaveClicked();
     void onCancelClicked();
-    void onChangeContactLogin();
 }

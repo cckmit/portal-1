@@ -1,8 +1,7 @@
 package ru.protei.portal.ui.role.client.activity.preview;
 
 /**
- * Абстракция активности превью контакта
+ * Абстракция активности превью роли
  */
 public interface AbstractRolePreviewActivity {
-    void onFullScreenPreviewClicked ();
 }

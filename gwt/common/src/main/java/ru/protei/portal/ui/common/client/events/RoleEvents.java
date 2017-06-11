@@ -55,10 +55,10 @@ public class RoleEvents {
     @Url( value = "role" )
     public static class Edit {
 
-        public Integer id;
+        public Long id;
 
         public Edit() {}
 
-        public Edit( Integer id ) { this.id = id; }
+        public Edit( Long id ) { this.id = id; }
     }
 }
