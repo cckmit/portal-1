@@ -496,4 +496,36 @@ public interface Lang extends Messages, ContactItemLang {
     String roles();
 
     String role( Long id );
+
+    String privilegeCategoryCommon();
+
+    String privilegeCategoryIssue();
+
+    String privilegeCategoryRegion();
+
+    String privilegeCategoryProject();
+
+    String privilegeCategoryCompany();
+
+    String privilegeCategoryProduct();
+
+    String privilegeCategoryContact();
+
+    String privilegeCategoryAccount();
+
+    String privilegeCategoryEquipment();
+
+    String privilegeLogin();
+
+    String privilegeView();
+
+    String privilegeEdit();
+
+    String privilegeCreate();
+
+    String privilegeReport();
+
+    String privilegeExport();
+
+    String rolePrivileges();
 }

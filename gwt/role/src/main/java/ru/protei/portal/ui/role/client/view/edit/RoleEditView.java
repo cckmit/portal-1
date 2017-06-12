@@ -14,6 +14,7 @@ import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SingleP
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.common.NameStatus;
+import ru.protei.portal.ui.common.client.widget.privilege.list.PrivilegeList;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.dict.GenderButtonSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
@@ -71,6 +72,9 @@ public class RoleEditView extends Composite implements AbstractRoleEditView {
     ValidableTextBox name;
     @UiField
     TextBox description;
+    @Inject
+    @UiField(provided = true)
+    PrivilegeList privileges;
 
 
     AbstractRoleEditActivity activity;

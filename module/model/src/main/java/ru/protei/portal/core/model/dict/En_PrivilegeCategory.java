@@ -42,7 +42,7 @@ public enum En_PrivilegeCategory {
     }
 
     private static final En_Privilege[] commonPrivileges = {
-            COMMON_LOGIN, COMMON_PROFILE_CHANGE, COMMON_PROFILE_VIEW
+            COMMON_LOGIN, COMMON_PROFILE_EDIT, COMMON_PROFILE_VIEW
     };
 
     private static final En_Privilege[] issuePrivileges = {

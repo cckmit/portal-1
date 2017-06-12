@@ -4,7 +4,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.Set;
 
 /**
  * Created by michael on 16.06.16.
@@ -23,7 +23,7 @@ public class UserRole implements Serializable {
 
     @JdbcEnumerated(EnumType.STRING)
     @JdbcColumnCollection(name = "privileges", separator = ",")
-    private List<En_Privilege> privileges;
+    private Set<En_Privilege> privileges;
 
     public UserRole() {}
 
@@ -51,11 +51,11 @@ public class UserRole implements Serializable {
         this.info = info;
     }
 
-    public List<En_Privilege> getPrivileges() {
+    public Set<En_Privilege> getPrivileges() {
         return privileges;
     }
 
-    public void setPrivileges( List<En_Privilege> privileges ) {
+    public void setPrivileges( Set<En_Privilege> privileges ) {
         this.privileges = privileges;
     }
 }

@@ -6,7 +6,7 @@ package ru.protei.portal.core.model.dict;
 public enum En_Privilege {
     COMMON_LOGIN,
     COMMON_PROFILE_VIEW,
-    COMMON_PROFILE_CHANGE,
+    COMMON_PROFILE_EDIT,
 
     ISSUE_VIEW,
     ISSUE_EDIT,
