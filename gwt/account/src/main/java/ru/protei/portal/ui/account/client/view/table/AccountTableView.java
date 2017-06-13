@@ -172,13 +172,13 @@ public class AccountTableView extends Composite implements AbstractAccountTableV
         columns.add( login );
         columns.add( person );
 
-        table.addColumn( selectionColumn.header, selectionColumn.values );
+        //table.addColumn( selectionColumn.header, selectionColumn.values );
         table.addColumn( type.header, type.values );
         table.addColumn( login.header, login.values );
         table.addColumn( person.header, person.values );
         table.addColumn( editClickColumn.header, editClickColumn.values );
 
-        selectionColumn.setWidthColumn( 10, Style.Unit.PX );
+        //selectionColumn.setWidthColumn( 10, Style.Unit.PX );
     }
 
     @UiField
