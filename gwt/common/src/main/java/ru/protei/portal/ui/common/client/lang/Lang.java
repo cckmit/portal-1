@@ -473,7 +473,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String accountPassword();
 
-    String contactPasswordNotDefinied();
+    String accountPasswordNotDefinied();
 
     String errEditContactLogin();
 
@@ -522,4 +522,6 @@ public interface Lang extends Messages, ContactItemLang {
     String selectAccountCompany();
 
     String selectAccountPerson();
+
+    String accountRoleNotDefinied();
 }

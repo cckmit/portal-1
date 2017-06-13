@@ -85,7 +85,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
 
         UserLogin userLogin = applyChangesLogin();
         if(!HelperFunc.isEmpty(userLogin.getUlogin()) && HelperFunc.isEmpty(userLogin.getUpass()) && userLogin.getId() == null) {
-            fireEvent(new NotifyEvents.Show(lang.contactPasswordNotDefinied(), NotifyEvents.NotifyType.ERROR));
+            fireEvent(new NotifyEvents.Show(lang.accountPasswordNotDefinied(), NotifyEvents.NotifyType.ERROR));
             return;
         }
 

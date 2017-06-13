@@ -3,7 +3,6 @@ package ru.protei.portal.ui.account.client.activity.edit;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
-import ru.protei.portal.core.model.dict.En_UserRole;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.view.EntityOption;

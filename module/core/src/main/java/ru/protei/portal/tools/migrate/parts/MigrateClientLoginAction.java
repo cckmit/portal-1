@@ -48,9 +48,9 @@ public class MigrateClientLoginAction implements MigrateAction {
         final Map<String, UserLogin> rtUnique = new HashMap<>();
         userLoginDAO.getAll().forEach(u -> rtUnique.put(u.getUlogin().toLowerCase(), u));
 
-        UserRole employee = userRoleDAO.get(new Long(En_UserRole.EMPLOYEE.getId()));
+        UserRole crmClient = userRoleDAO.get(4L);
         Set<UserRole> roles = new HashSet<>();
-        roles.add(employee);
+        roles.add(crmClient);
 
         new BatchInsertTask(migrationEntryDAO, MIGRATE_ITEM_CODE)
                 .forTable("\"resource\".Tm_CompanyLogin", "nID", null)

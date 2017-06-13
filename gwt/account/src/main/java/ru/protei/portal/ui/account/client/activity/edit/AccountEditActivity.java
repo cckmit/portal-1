@@ -53,18 +53,22 @@ public abstract class AccountEditActivity implements AbstractAccountEditActivity
             return;
         }
 
+        if( !passwordValidate() ) {
+            fireEvent( new NotifyEvents.Show( lang.accountPasswordNotDefinied(), NotifyEvents.NotifyType.ERROR ) );
+            return;
+        }
+
         if( !confirmValidate() ) {
             fireEvent( new NotifyEvents.Show( lang.accountPasswordsNotMatch(), NotifyEvents.NotifyType.ERROR ) );
             return;
         }
 
-        UserLogin userLogin = applyChangesLogin();
-        if( HelperFunc.isNotEmpty( userLogin.getUlogin() ) && HelperFunc.isEmpty( userLogin.getUpass() ) && userLogin.getId() == null ) {
-            fireEvent( new NotifyEvents.Show( lang.contactPasswordNotDefinied(), NotifyEvents.NotifyType.ERROR ) );
+        if ( !roleValidate() ) {
+            fireEvent( new NotifyEvents.Show( lang.accountRoleNotDefinied(), NotifyEvents.NotifyType.ERROR ) );
             return;
         }
 
-        accountService.saveAccount( userLogin, new RequestCallback< UserLogin >() {
+        accountService.saveAccount( applyChangesLogin(), new RequestCallback< UserLogin >() {
             @Override
             public void onError( Throwable throwable ) {}
 
@@ -132,11 +136,6 @@ public abstract class AccountEditActivity implements AbstractAccountEditActivity
         return account;
     }
 
-    private boolean validate() {
-        return view.loginValidator().isValid()
-                && view.personValidator().isValid();
-    }
-
     private void initialView( UserLogin userLogin ) {
         this.account = userLogin;
         fillView( account );
@@ -156,11 +155,27 @@ public abstract class AccountEditActivity implements AbstractAccountEditActivity
         view.showInfo( userLogin.getId() != null && !userLogin.isLDAP_Auth() );
     }
 
+    private boolean validate() {
+        return view.loginValidator().isValid()
+                && view.personValidator().isValid();
+    }
+
+    private boolean passwordValidate() {
+        return account.getId() != null ||
+                HelperFunc.isNotEmpty( view.login().getValue() ) &&
+                HelperFunc.isNotEmpty( view.password().getText() );
+    }
+
     private boolean confirmValidate() {
         return HelperFunc.isEmpty( view.login().getValue() ) ||
                 HelperFunc.isEmpty( view.password().getText() ) ||
                 ( !HelperFunc.isEmpty( view.confirmPassword().getText() ) &&
                         view.password().getText().equals( view.confirmPassword().getText() ) );
+    }
+
+    private boolean roleValidate() {
+        return view.roles().getValue() != null &&
+                !view.roles().getValue().isEmpty();
     }
 
     @Inject

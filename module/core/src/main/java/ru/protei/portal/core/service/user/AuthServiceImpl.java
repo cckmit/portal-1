@@ -7,7 +7,6 @@ import org.springframework.util.DigestUtils;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.dict.En_UserRole;
 import ru.protei.portal.core.model.ent.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -182,8 +181,6 @@ public class AuthServiceImpl implements AuthService {
         descriptor.getSession().setCompanyId(person.getCompanyId());
         descriptor.getSession().setLoginId(login.getId());
         descriptor.getSession().setPersonId(login.getPersonId());
-        // @todo какое значение вносить?
-        descriptor.getSession().setRoleId( En_UserRole.DN_ADMIN.getId());
         descriptor.getSession().setExpired(DateUtils.addHours(new Date(), 3));
         descriptor.login(login, roles, person, company);
 

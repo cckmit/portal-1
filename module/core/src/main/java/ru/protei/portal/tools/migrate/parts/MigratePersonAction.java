@@ -8,8 +8,6 @@ import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_AdminState;
 import ru.protei.portal.core.model.dict.En_AuthType;
 import ru.protei.portal.core.model.dict.En_Gender;
-import ru.protei.portal.core.model.dict.En_UserRole;
-import ru.protei.portal.core.model.ent.LoginRoleItem;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.ent.UserRole;
@@ -126,7 +124,7 @@ public class MigratePersonAction implements MigrateAction {
             public void afterInsert(List<Person> insertedEntries) {
                 List<UserLogin> loginBatch = new ArrayList<>();
 
-                UserRole employee = userRoleDAO.get(new Long(En_UserRole.EMPLOYEE.getId()));
+                UserRole employee = userRoleDAO.get(1L);
                 Set<UserRole> roles = new HashSet<>();
                 roles.add(employee);
 

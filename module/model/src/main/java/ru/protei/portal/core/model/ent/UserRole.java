@@ -20,10 +20,6 @@ public class UserRole implements Serializable {
     @JdbcColumn(name = "role_code")
     private String code;
 
-    @JdbcColumn(name = "ca_role_name")
-    private String caRoleName;
-
-
     public UserRole() {}
 
     public int getId() {
@@ -40,14 +36,6 @@ public class UserRole implements Serializable {
 
     public void setCode(String code) {
         this.code = code;
-    }
-
-    public String getCaRoleName() {
-        return caRoleName;
-    }
-
-    public void setCaRoleName(String caRoleName) {
-        this.caRoleName = caRoleName;
     }
 
     @Override

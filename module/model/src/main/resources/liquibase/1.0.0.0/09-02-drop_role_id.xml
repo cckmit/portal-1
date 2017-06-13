@@ -9,4 +9,8 @@
         <dropColumn tableName="user_login" columnName="roleId"/>
     </changeSet>
 
+    <changeSet author="turik" id="deleteRoleIdFromUserSessionTable">
+        <dropColumn tableName="user_session" columnName="role_id"/>
+    </changeSet>
+
 </databaseChangeLog>

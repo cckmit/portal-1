@@ -4,19 +4,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.core.model.dao.*;
-import ru.protei.portal.core.model.dict.En_AdminState;
-import ru.protei.portal.core.model.dict.En_AuthType;
-import ru.protei.portal.core.model.dict.En_Gender;
-import ru.protei.portal.core.model.dict.En_UserRole;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanySubscription;
-import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.tools.migrate.tools.MigrateAction;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 

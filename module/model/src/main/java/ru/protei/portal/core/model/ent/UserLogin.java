@@ -35,11 +35,6 @@ public class UserLogin implements Serializable {
     @JdbcColumn(name = "astate")
     private int adminStateId;
 
-/*
-    @JdbcColumn(name = "roleId")
-    private int roleId;
-*/
-
     @JdbcColumn(name = "personId")
     private Long personId;
 
@@ -112,16 +107,6 @@ public class UserLogin implements Serializable {
     public void setAdminStateId(int adminStateId) {
         this.adminStateId = adminStateId;
     }
-
-/*
-    public int getRoleId() {
-        return roleId;
-    }
-
-    public void setRoleId(int roleId) {
-        this.roleId = roleId;
-    }
-*/
 
     public Long getPersonId() {
         return personId;
