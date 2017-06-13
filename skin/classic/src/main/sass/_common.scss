@@ -1674,6 +1674,9 @@ a {
     .person {
       width: 40%;
     }
+    .edit {
+      width: 5%;
+    }
   }
 }
 
@@ -1692,4 +1695,8 @@ a {
 
 .list-item:hover {
   background-color: #f6f7f8;
+}
+
+.fa-1-9x {
+  font-size: 1.9em !important;
 }

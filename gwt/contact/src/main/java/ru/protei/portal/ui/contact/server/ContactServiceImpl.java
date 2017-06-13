@@ -93,7 +93,7 @@ public class ContactServiceImpl implements ContactService {
     @Override
     public boolean saveAccount( UserLogin userLogin ) throws RequestFailedException {
         if ( userLogin == null ) {
-            log.warn( "null user login in request" );
+            log.warn( "null account in request" );
             throw new RequestFailedException( En_ResultStatus.INTERNAL_ERROR );
         }
 
@@ -101,9 +101,13 @@ public class ContactServiceImpl implements ContactService {
             if ( userLogin.getId() == null ) {
                 return true;
             } else {
-                log.debug( "remove user login, id: {} ", userLogin.getId() );
-                CoreResponse< Boolean > response = accountService.removeAccount( userLogin );
-                log.debug( "remove user login, result: {}", response.isOk() ? "ok" : response.getStatus() );
+
+                log.debug( "remove account, id: {} ", userLogin.getId() );
+
+                CoreResponse< Boolean > response = accountService.removeAccount( userLogin.getId() );
+
+                log.debug( "remove account, result: {}", response.isOk() ? "ok" : response.getStatus() );
+
                 if ( response.isOk() ) {
                     return response.getData();
                 }
@@ -111,16 +115,17 @@ public class ContactServiceImpl implements ContactService {
                 throw new RequestFailedException( response.getStatus() );
             }
         } else {
-            log.debug( "store user login, id: {} ", HelperFunc.nvl( userLogin.getId(), "new" ) );
+            log.debug( "store account, id: {} ", HelperFunc.nvl( userLogin.getId(), "new" ) );
 
             if ( !isLoginUnique( userLogin.getUlogin(), userLogin.getId() ) )
                 throw new RequestFailedException ( En_ResultStatus.ALREADY_EXIST );
 
             CoreResponse< UserLogin > response = accountService.saveAccount( userLogin );
-            log.debug( "store user login, result: {}", response.isOk() ? "ok" : response.getStatus() );
+
+            log.debug( "store account, result: {}", response.isOk() ? "ok" : response.getStatus() );
 
             if ( response.isOk() ) {
-                log.debug( "store user login, applied id: {}", response.getData().getId() );
+                log.debug( "store account, applied id: {}", response.getData().getId() );
                 return true;
             }
 

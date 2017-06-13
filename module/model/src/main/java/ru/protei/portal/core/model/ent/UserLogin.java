@@ -12,7 +12,7 @@ import java.util.Set;
  * Created by michael on 16.06.16.
  */
 @JdbcEntity(table = "user_login")
-public class UserLogin implements Serializable {
+public class UserLogin implements IRemovedObject, Serializable {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -150,5 +150,28 @@ public class UserLogin implements Serializable {
 
     public void setRoles( Set< UserRole > roles ) {
         this.roles = roles;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return !isLDAP_Auth();
+    }
+
+    @Override
+    public String toString() {
+        return "UserLogin{" +
+                "id=" + id +
+                ", ulogin='" + ulogin + '\'' +
+                ", upass='" + upass + '\'' +
+                ", created=" + created +
+                ", lastPwdChange=" + lastPwdChange +
+                ", pwdExpired=" + pwdExpired +
+                ", adminStateId=" + adminStateId +
+                ", personId=" + personId +
+                ", person=" + person +
+                ", authTypeId=" + authTypeId +
+                ", info='" + info + '\'' +
+                ", roles=" + roles +
+                '}';
     }
 }

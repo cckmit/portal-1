@@ -524,4 +524,10 @@ public interface Lang extends Messages, ContactItemLang {
     String selectAccountPerson();
 
     String accountRoleNotDefinied();
+
+    String accountRemoveConfirmMessage();
+
+    String remove();
+
+    String accountRemoveSuccessed();
 }

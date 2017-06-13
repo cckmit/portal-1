@@ -15,5 +15,6 @@
   <include file="08-02-company_subscription.xml" relativeToChangelogFile="true" />
   <include file="08-03-add_case_state.xml" relativeToChangelogFile="true" />
   <include file="09-01-login_role_item.xml" relativeToChangelogFile="true" />
+  <include file="09-02-fix_foreign_key.xml" relativeToChangelogFile="true" />
 
 </databaseChangeLog>

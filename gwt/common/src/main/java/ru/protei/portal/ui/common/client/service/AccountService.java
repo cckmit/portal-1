@@ -30,5 +30,7 @@ public interface AccountService extends RemoteService {
 
     boolean isLoginUnique( String login, Long exceptId ) throws RequestFailedException;
 
+    boolean removeAccount( Long accountId ) throws RequestFailedException;
+
     List< UserRole > getRoles () throws RequestFailedException;
 }

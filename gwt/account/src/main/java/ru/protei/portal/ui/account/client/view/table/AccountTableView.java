@@ -22,6 +22,7 @@ import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
+import ru.protei.portal.ui.common.client.columns.RemoveClickColumn;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
 import java.util.ArrayList;
@@ -41,13 +42,20 @@ public class AccountTableView extends Composite implements AbstractAccountTableV
     @Override
     public void setActivity( AbstractAccountTableActivity activity ) {
         this.activity = activity;
-        editClickColumn.setHandler( activity );
-        editClickColumn.setEditHandler( activity );
-        editClickColumn.setColumnProvider( columnProvider );
+
         columns.forEach( clickColumn -> {
             clickColumn.setHandler( activity );
             clickColumn.setColumnProvider( columnProvider );
         });
+
+        editClickColumn.setHandler( activity );
+        editClickColumn.setEditHandler( activity );
+        editClickColumn.setColumnProvider( columnProvider );
+
+        removeClickColumn.setHandler( activity );
+        removeClickColumn.setRemoveHandler( activity );
+        removeClickColumn.setColumnProvider( columnProvider );
+
         table.setLoadHandler( activity );
         table.setPagerListener( activity );
     }
@@ -104,8 +112,6 @@ public class AccountTableView extends Composite implements AbstractAccountTableV
     }
 
     private void initTable () {
-
-        editClickColumn = new EditClickColumn< UserLogin >( lang ) {};
 
         ClickColumn< UserLogin > type = new ClickColumn< UserLogin >() {
             @Override
@@ -168,6 +174,9 @@ public class AccountTableView extends Composite implements AbstractAccountTableV
             }
         };
 
+        editClickColumn = new EditClickColumn< UserLogin >( lang ) {};
+        removeClickColumn = new RemoveClickColumn< UserLogin >( lang ) {};
+
         columns.add( type );
         columns.add( login );
         columns.add( person );
@@ -177,7 +186,7 @@ public class AccountTableView extends Composite implements AbstractAccountTableV
         table.addColumn( login.header, login.values );
         table.addColumn( person.header, person.values );
         table.addColumn( editClickColumn.header, editClickColumn.values );
-
+        table.addColumn( removeClickColumn.header, removeClickColumn.values );
         //selectionColumn.setWidthColumn( 10, Style.Unit.PX );
     }
 
@@ -200,6 +209,7 @@ public class AccountTableView extends Composite implements AbstractAccountTableV
     ClickColumnProvider< UserLogin > columnProvider = new ClickColumnProvider<>();
     SelectionColumn< UserLogin > selectionColumn = new SelectionColumn<>();
     EditClickColumn< UserLogin > editClickColumn;
+    RemoveClickColumn< UserLogin > removeClickColumn;
     List< ClickColumn > columns = new ArrayList<>();
 
     AbstractAccountTableActivity activity;

@@ -17,7 +17,7 @@ public interface AccountService {
     CoreResponse< UserLogin > getAccount( long id );
     CoreResponse< UserLogin > saveAccount( UserLogin userLogin );
     CoreResponse< Boolean > checkUniqueLogin( String login, Long excludeId );
-    CoreResponse< Boolean > removeAccount( UserLogin userLogin );
+    CoreResponse< Boolean > removeAccount( Long accountId );
 
     CoreResponse< List< UserRole > > roleList();
 }

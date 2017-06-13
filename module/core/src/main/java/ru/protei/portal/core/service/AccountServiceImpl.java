@@ -136,9 +136,9 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public CoreResponse< Boolean > removeAccount( UserLogin userLogin ) {
+    public CoreResponse< Boolean > removeAccount( Long accountId ) {
 
-        if ( userLoginDAO.remove( userLogin ) ) {
+        if ( userLoginDAO.removeByKey( accountId ) ) {
             return new CoreResponse< Boolean >().success( true );
         }
 

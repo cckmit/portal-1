@@ -32,6 +32,11 @@ public class AccountQuery extends BaseQuery {
     public String toString() {
         return "AccountQuery{" +
                 "types=" + types +
+                ", searchString='" + searchString + '\'' +
+                ", sortField=" + sortField +
+                ", sortDir=" + sortDir +
+                ", limit=" + limit +
+                ", offset=" + offset +
                 '}';
     }
 }
