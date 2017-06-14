@@ -12,7 +12,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 public abstract class RemoveClickColumn< T > extends ClickColumn< T > {
 
     public interface RemoveHandler< T > extends AbstractColumnHandler< T > {
-        void onRemoveClicked( T value);
+        void onRemoveClicked( T value );
     }
 
     @Inject

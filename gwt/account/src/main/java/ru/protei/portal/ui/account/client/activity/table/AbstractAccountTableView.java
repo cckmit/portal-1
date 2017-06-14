@@ -11,8 +11,6 @@ public interface AbstractAccountTableView extends IsWidget {
     void setActivity( AbstractAccountTableActivity activity );
     void setAnimation ( TableAnimation animation );
 
-    void hideElements();
-    void showElements();
     void clearRecords();
     HasWidgets getPreviewContainer ();
     HasWidgets getFilterContainer ();

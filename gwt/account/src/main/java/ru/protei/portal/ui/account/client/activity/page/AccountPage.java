@@ -42,11 +42,6 @@ public abstract class AccountPage implements Activity {
     }
 
     @Event
-    public void onShowPreview( AccountEvents.ShowFullScreen event ) {
-        fireSelectTab();
-    }
-
-    @Event
     public void onClickSection( SectionEvents.Clicked event ) {
         if ( !ТAB.equals( event.identity ) ) {
             return;

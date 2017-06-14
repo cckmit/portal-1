@@ -17,7 +17,6 @@ public class AccountQuery extends BaseQuery {
     public AccountQuery( Set< En_AuthType > types, String searchString, En_SortField sortField, En_SortDir sortDir ) {
         super ( searchString, sortField, sortDir );
         this.types = types;
-        this.limit = 1000;
     }
 
     public Set<En_AuthType> getTypes() {

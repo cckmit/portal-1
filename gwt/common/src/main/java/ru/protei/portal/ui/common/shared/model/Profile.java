@@ -4,13 +4,14 @@ import ru.protei.portal.core.model.ent.UserRole;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Клиентский профиль пользовател]
  */
 public class Profile implements Serializable {
 
-    private List<Integer> roles;
+    private Set<UserRole> roles;
 
     private String login;
 
@@ -18,11 +19,11 @@ public class Profile implements Serializable {
 
     private Long id;
 
-    public List<Integer> getRoles() {
+    public Set<UserRole> getRoles() {
         return roles;
     }
 
-    public void setRoles( List<Integer> roles ) {
+    public void setRoles( Set<UserRole> roles ) {
         this.roles = roles;
     }
 

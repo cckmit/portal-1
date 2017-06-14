@@ -10,7 +10,6 @@ public class UserSessionDescriptor {
 
     UserSession session;
     UserLogin login;
-    List<Integer> uroles;
     Company company;
     Person person;
 
@@ -22,16 +21,14 @@ public class UserSessionDescriptor {
         this.session = session;
     }
 
-    public void login (UserLogin login, List<Integer> roles, Person p, Company c) {
+    public void login (UserLogin login, Person p, Company c) {
         this.login = login;
-        this.uroles = roles;
         this.company = c;
         this.person = p;
     }
 
     public void close () {
         this.session = null;
-        this.uroles = null;
         this.login = null;
         this.company = null;
         this.person = null;
@@ -55,10 +52,6 @@ public class UserSessionDescriptor {
         return login;
     }
 
-    public List<Integer> getUroles() {
-        return uroles;
-    }
-
     public Company getCompany() {
         return company;
     }
@@ -68,7 +61,7 @@ public class UserSessionDescriptor {
     }
 
     public boolean isValid () {
-        return this.session != null && this.login != null && !this.uroles.isEmpty();
+        return this.session != null && this.login != null && !this.login.getRoles().isEmpty();
     }
 
     public boolean isExpired () {

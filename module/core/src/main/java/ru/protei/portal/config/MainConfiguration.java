@@ -209,11 +209,6 @@ public class MainConfiguration {
     public ExternalCaseAppDAO getExternalCaseAppDAO () {
         return new ExternalCaseAppDAO_Impl();
     }
-
-    @Bean
-    public LoginRoleItemDAO getLoginRoleItemDAO() {
-        return new LoginRoleItemDAO_Impl();
-    }
 /**
  *
  *

@@ -35,23 +35,6 @@ public class AccountEvents {
 
     }
 
-    /**
-     * Показать превью аккаунта full screen
-     */
-    @Url( value = "account_preview", primary = true )
-    public static class ShowFullScreen {
-
-        public ShowFullScreen() {}
-
-        public ShowFullScreen ( Long id )
-        {
-            this.accountId = id;
-        }
-
-        @Name( "id" )
-        public Long accountId;
-    }
-
     @Url( value = "account", primary = false )
     public static class Edit {
 

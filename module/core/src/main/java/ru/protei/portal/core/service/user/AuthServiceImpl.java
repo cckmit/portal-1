@@ -8,6 +8,7 @@ import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
@@ -30,16 +31,13 @@ public class AuthServiceImpl implements AuthService {
     private PersonDAO personDAO;
 
     @Autowired
-    private UserRoleDAO userRoleDAO;
-
-    @Autowired
     private CompanyDAO companyDAO;
 
     @Autowired
-    private LoginRoleItemDAO loginRoleItemDAO;
+    private LDAPAuthProvider ldapAuthProvider;
 
     @Autowired
-    private LDAPAuthProvider ldapAuthProvider;
+    JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
     private Map<String, UserSessionDescriptor> sessionCache;
 
@@ -100,8 +98,10 @@ public class AuthServiceImpl implements AuthService {
                 descriptor = new UserSessionDescriptor();
                 descriptor.init(appSession);
 
-                descriptor.login(userLoginDAO.get(appSession.getLoginId()),
-                        loginRoleItemDAO.getLoginToRoleLinks(appSession.getLoginId(), null).stream().map(LoginRoleItem::getRoleId).collect(Collectors.toList()),
+                UserLogin userLogin = userLoginDAO.get(appSession.getLoginId());
+                jdbcManyRelationsHelper.fill(userLogin, "roles");
+
+                descriptor.login(userLogin,
                         personDAO.get(appSession.getPersonId()),
                         companyDAO.get(appSession.getCompanyId())
                 );
@@ -123,6 +123,8 @@ public class AuthServiceImpl implements AuthService {
             logger.debug("login [" + ulogin + "] not found, auth-failed");
             return new CoreResponse().error(En_ResultStatus.INVALID_LOGIN_OR_PWD);
         }
+
+        jdbcManyRelationsHelper.fill(login, "roles");
 
         if (login.isLDAP_Auth()) {
             // check by LDAP
@@ -165,10 +167,9 @@ public class AuthServiceImpl implements AuthService {
         }
 
         Person person = personDAO.get(login.getPersonId());
-        List<Integer> roles = loginRoleItemDAO.getLoginToRoleLinks(login.getId(), null).stream().map(LoginRoleItem::getRoleId).collect(Collectors.toList());
         Company company = companyDAO.get(person.getCompanyId());
 
-        logger.debug("Auth success for " + ulogin + " / " + roles.stream().map( Object::toString ).collect( Collectors.joining("," ) ) + "/" + person.toDebugString());
+        logger.debug("Auth success for " + ulogin + " / " + ( login.getRoles() == null ? "null" : login.getRoles().stream().map( UserRole::getCode ).collect( Collectors.joining("," ) ) ) + "/" + person.toDebugString());
 
         UserSession s = new UserSession();
         s.setClientIp(ip);
@@ -182,7 +183,7 @@ public class AuthServiceImpl implements AuthService {
         descriptor.getSession().setLoginId(login.getId());
         descriptor.getSession().setPersonId(login.getPersonId());
         descriptor.getSession().setExpired(DateUtils.addHours(new Date(), 3));
-        descriptor.login(login, roles, person, company);
+        descriptor.login(login, person, company);
 
         sessionDAO.removeByCondition("client_ip=? and login_id=?", descriptor.getSession().getClientIp(),
                 login.getId());

@@ -57,8 +57,6 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
 
         fireEvent( new ActionBarEvents.Add( CREATE_ACTION, UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.ACCOUNT ) );
 
-        view.showElements();
-
         requestTotalCount();
     }
 

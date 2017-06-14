@@ -72,20 +72,6 @@ public class AccountTableView extends Composite implements AbstractAccountTableV
     public HasWidgets getFilterContainer () { return filterContainer; }
 
     @Override
-    public void hideElements() {
-        filterContainer.setVisible( false );
-        tableContainer.removeStyleName( "col-xs-9" );
-        tableContainer.addStyleName( "col-xs-12" );
-    }
-
-    @Override
-    public void showElements() {
-        filterContainer.setVisible( true );
-        tableContainer.removeStyleName( "col-xs-12" );
-        tableContainer.addStyleName( "col-xs-9" );
-    }
-
-    @Override
     public void clearRecords() {
         table.clearCache();
         table.clearRows();
