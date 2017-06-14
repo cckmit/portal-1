@@ -5,10 +5,13 @@ import ru.protei.portal.ui.account.client.activity.edit.AbstractAccountEditView;
 import ru.protei.portal.ui.account.client.activity.edit.AccountEditActivity;
 import ru.protei.portal.ui.account.client.activity.filter.AbstractAccountFilterView;
 import ru.protei.portal.ui.account.client.activity.page.AccountPage;
+import ru.protei.portal.ui.account.client.activity.preview.AbstractAccountPreviewView;
+import ru.protei.portal.ui.account.client.activity.preview.AccountPreviewActivity;
 import ru.protei.portal.ui.account.client.activity.table.AbstractAccountTableView;
 import ru.protei.portal.ui.account.client.activity.table.AccountTableActivity;
 import ru.protei.portal.ui.account.client.view.edit.AccountEditView;
 import ru.protei.portal.ui.account.client.view.filter.AccountFilterView;
+import ru.protei.portal.ui.account.client.view.preview.AccountPreviewView;
 import ru.protei.portal.ui.account.client.view.table.AccountTableView;
 
 /**
@@ -26,5 +29,8 @@ public class AccountClientModule extends AbstractGinModule {
 
         bind( AccountEditActivity.class ).asEagerSingleton();
         bind( AbstractAccountEditView.class ).to( AccountEditView.class );
+
+        bind( AccountPreviewActivity.class ).asEagerSingleton();
+        bind( AbstractAccountPreviewView.class ).to( AccountPreviewView.class );
     }
 }

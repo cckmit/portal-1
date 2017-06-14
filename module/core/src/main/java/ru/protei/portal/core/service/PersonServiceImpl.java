@@ -26,7 +26,7 @@ public class PersonServiceImpl implements PersonService {
         if ( list == null )
             new CoreResponse< List< PersonShortView > >().error( En_ResultStatus.GET_DATA_ERROR );
 
-        List< PersonShortView > result = list.stream().map( Person::toPersonView ).collect( Collectors.toList() );
+        List< PersonShortView > result = list.stream().map( Person::toFullNameShortView ).collect( Collectors.toList() );
 
         return new CoreResponse< List< PersonShortView > >().success( result,result.size() );
     }

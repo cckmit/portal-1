@@ -1,7 +1,8 @@
 package ru.protei.portal.core.service.user;
 
 import org.apache.commons.lang3.time.DateUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.DigestUtils;
 import ru.protei.portal.api.struct.CoreResponse;
@@ -19,7 +20,7 @@ import java.util.stream.Collectors;
  */
 public class AuthServiceImpl implements AuthService {
 
-    private Logger logger = Logger.getLogger("logger-security");
+    private static Logger logger = LoggerFactory.getLogger(AuthServiceImpl.class);
 
     @Autowired
     private UserLoginDAO userLoginDAO;

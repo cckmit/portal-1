@@ -1680,6 +1680,17 @@ a {
   }
 }
 
+.short-table-view {
+  .accounts {
+    .login {
+      width: 70%;
+    }
+    .person {
+      display: none;
+    }
+  }
+}
+
 .list-item {
   padding: 8px;
   line-height: 1.42857143;

@@ -40,17 +40,13 @@ public class AccountServiceImpl implements AccountService {
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
-/*
-    @Autowired
-    private TransactionTemplate transactionTemplate;
-*/
-
     @Override
     public CoreResponse< List< UserLogin > > accountList( AccountQuery query ) {
         List< UserLogin > list = userLoginDAO.getAccounts( query );
 
         if (list == null)
             new CoreResponse< List< UserLogin > >().error( En_ResultStatus.GET_DATA_ERROR );
+        jdbcManyRelationsHelper.fill( list, "roles" );
 
         return new CoreResponse< List< UserLogin > >().success( list );
     }
@@ -103,18 +99,6 @@ public class AccountServiceImpl implements AccountService {
             userLogin.setAuthTypeId( En_AuthType.LOCAL.getId() );
             userLogin.setAdminStateId( En_AdminState.UNLOCKED.getId() );
         }
-
-/*
-        return new CoreResponse< UserLogin >().success( transactionTemplate.execute( transactionStatus -> {
-
-            if ( !userLoginDAO.saveOrUpdate( userLogin ) ) {
-                throw new RuntimeException();
-            }
-            jdbcManyRelationsHelper.persist( userLogin, "roles" );
-
-            return userLogin;
-        } ) );
-*/
 
         if ( userLoginDAO.saveOrUpdate( userLogin ) ) {
 

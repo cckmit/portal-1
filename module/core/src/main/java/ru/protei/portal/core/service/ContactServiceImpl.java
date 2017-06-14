@@ -4,13 +4,11 @@ package ru.protei.portal.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.DigestUtils;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dao.UserLoginDAO;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.ContactQuery;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -39,7 +37,7 @@ public class ContactServiceImpl implements ContactService {
         if (list == null)
             new CoreResponse<List<PersonShortView>>().error(En_ResultStatus.GET_DATA_ERROR);
 
-        List<PersonShortView> result = list.stream().map(Person::toPersonShortView).collect(Collectors.toList());
+        List<PersonShortView> result = list.stream().map(Person::toShortNameShortView ).collect(Collectors.toList());
 
         return new CoreResponse<List<PersonShortView>>().success(result,result.size());
     }

@@ -6,7 +6,7 @@ import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.helper.AbstractColumnHandler;
-import ru.protei.portal.core.model.ent.IRemovedObject;
+import ru.protei.portal.core.model.ent.Removable;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
 public abstract class RemoveClickColumn< T > extends ClickColumn< T > {
@@ -28,7 +28,7 @@ public abstract class RemoveClickColumn< T > extends ClickColumn< T > {
     @Override
     public void fillColumnValue( Element cell, T value ) {
 
-        if ( ( ( IRemovedObject )value ).isEnabled() ) {
+        if ( ( ( Removable )value ).isAllowedRemove() ) {
 
             AnchorElement a = DOM.createAnchor().cast();
             a.setHref( "#" );

@@ -477,8 +477,6 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errEditContactLogin();
 
-    String contactAccount();
-
     String accountLoginInfo();
 
     String accountConfirmPassword();
@@ -503,18 +501,6 @@ public interface Lang extends Messages, ContactItemLang {
 
     String accountNew();
 
-    String accountEditHeader( String accountLogin );
-
-    String roleEmployee();
-
-    String roleCRM_Admin();
-
-    String roleCRM_User();
-
-    String roleCRM_Client();
-
-    String roleDN_Admin();
-
     String accountRoles();
 
     String accountCompany();
@@ -530,4 +516,12 @@ public interface Lang extends Messages, ContactItemLang {
     String remove();
 
     String accountRemoveSuccessed();
+
+    String account();
+
+    String accountLastName();
+
+    String accountFirstName();
+
+    String accountSecondName();
 }
