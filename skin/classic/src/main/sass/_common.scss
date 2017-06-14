@@ -1637,3 +1637,26 @@ a {
   height: 55px;
   padding-top: 8px !important;
 }
+
+
+.privilege-entity-container, .privilege-entity-container > div {
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-flow: row wrap;
+  flex-flow: row wrap;
+}
+.privilege-entity-container > label {
+  width: 20%;
+}
+
+.privilege-entity-container > div {
+  width: 80%;
+}
+
+.privilege-entity-container > div > .checkbox, .privilege-entity-container > div > div {
+  width: 50px;
+  margin: auto;
+}

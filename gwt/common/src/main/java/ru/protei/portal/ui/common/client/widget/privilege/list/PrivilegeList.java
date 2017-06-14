@@ -9,11 +9,12 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.dict.En_PrivilegeCategory;
-import ru.protei.portal.ui.common.client.lang.En_PrivilegeCategoryLang;
-import ru.protei.portal.ui.common.client.lang.En_PrivilegeLang;
-import ru.protei.portal.ui.common.client.widget.privilege.category.PrivilegeCategory;
-import ru.protei.portal.ui.common.client.widget.privilege.privilege.Privilege;
+import ru.protei.portal.core.model.dict.En_PrivilegeAction;
+import ru.protei.portal.core.model.dict.En_PrivilegeEntity;
+import ru.protei.portal.ui.common.client.lang.En_PrivilegeActionLang;
+import ru.protei.portal.ui.common.client.lang.En_PrivilegeEntityLang;
+import ru.protei.portal.ui.common.client.widget.privilege.entity.PrivilegeEntity;
+import ru.protei.winter.web.common.client.widget.switcher.Switcher;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,7 +30,7 @@ public class PrivilegeList
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
-        fillPrivileges();
+        buildWidget();
     }
 
     @Override
@@ -56,30 +57,48 @@ public class PrivilegeList
         return addHandler( handler, ValueChangeEvent.getType() );
     }
 
-    private void fillPrivileges() {
-        for ( En_PrivilegeCategory category : En_PrivilegeCategory.values() ) {
-            PrivilegeCategory categoryItem = new PrivilegeCategory();
-            categoryItem.setHeader( categoryLang.getName( category ) );
-            container.add( categoryItem.asWidget() );
-            for ( En_Privilege privilege : En_PrivilegeCategory.getPrivileges( category ) ) {
-                Privilege privilegeItem = new Privilege();
-                privilegeItem.setHeader( privilegeLang.getName( privilege ) );
-                categoryItem.getContainer().add( privilegeItem.asWidget() );
-                modelToView.put( privilege, privilegeItem );
+    private void buildWidget() {
+        fillActionHeaders();
 
-                privilegeItem.addValueChangeHandler( valueChangeEvent -> {
-                    if ( valueChangeEvent.getValue() ) {
-                        values.add( privilege );
-                    } else {
-                        values.remove( privilege );
-                    }
-                } );
+        for ( En_PrivilegeEntity entity : En_PrivilegeEntity.values() ) {
+            PrivilegeEntity entityItem = new PrivilegeEntity();
+            entityItem.setHeader( entityLang.getName( entity ) );
+            container.add( entityItem.asWidget() );
+
+            for ( En_PrivilegeAction action : En_PrivilegeAction.values() ) {
+                En_Privilege privilege = En_Privilege.findPrivilege( entity, action );
+                Switcher privilegeItem = new Switcher();
+                privilegeItem.setForm( Switcher.Form.ROUND );
+
+                entityItem.getContainer().add( privilegeItem.asWidget() );
+                if ( privilege == null ) {
+                    privilegeItem.setEnabled( false );
+                } else {
+                    modelToView.put( privilege, privilegeItem );
+
+                    privilegeItem.addValueChangeHandler( valueChangeEvent -> {
+                        if ( valueChangeEvent.getValue() ) {
+                            values.add( privilege );
+                        } else {
+                            values.remove( privilege );
+                        }
+                    } );
+                }
             }
         }
     }
 
+    private void fillActionHeaders() {
+        PrivilegeEntity entityItem = new PrivilegeEntity();
+        container.add( entityItem );
+
+        for ( En_PrivilegeAction action : En_PrivilegeAction.values() ) {
+            entityItem.getContainer().add( new Label( actionLang.getName( action ) ) );
+        }
+    }
+
     private void fillValues() {
-        for ( Map.Entry<En_Privilege, Privilege> entry : modelToView.entrySet() ) {
+        for ( Map.Entry<En_Privilege, Switcher> entry : modelToView.entrySet() ) {
             entry.getValue().setValue( values.contains( entry.getKey() ) );
         }
     }
@@ -88,13 +107,14 @@ public class PrivilegeList
     HTMLPanel container;
 
     @Inject
-    En_PrivilegeLang privilegeLang;
+    En_PrivilegeEntityLang entityLang;
     @Inject
-    En_PrivilegeCategoryLang categoryLang;
+    En_PrivilegeActionLang actionLang;
+
 
     private Set<En_Privilege> values;
 
-    private Map<En_Privilege, Privilege> modelToView = new HashMap<>();
+    private Map<En_Privilege, Switcher> modelToView = new HashMap<>();
 
     interface PrivilegeListUiBinder extends UiBinder< HTMLPanel, PrivilegeList > {}
     private static PrivilegeListUiBinder ourUiBinder = GWT.create( PrivilegeListUiBinder.class );

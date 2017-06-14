@@ -1,15 +1,14 @@
 package ru.protei.portal.ui.common.client.lang;
 
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_PrivilegeCategory;
-import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.dict.En_PrivilegeEntity;
 
 
-public class En_PrivilegeCategoryLang {
+public class En_PrivilegeEntityLang {
 
-    public String getName( En_PrivilegeCategory value ) {
+    public String getName( En_PrivilegeEntity value ) {
         switch (value) {
-            case COMMON:
+            case PROFILE:
                 return lang.privilegeCategoryCommon();
             case ISSUE:
                 return lang.privilegeCategoryIssue();

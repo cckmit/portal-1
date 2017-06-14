@@ -1,28 +1,18 @@
-package ru.protei.portal.ui.common.client.widget.privilege.category;
+package ru.protei.portal.ui.common.client.widget.privilege.entity;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.LabelElement;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.*;
-import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.dict.En_PrivilegeCategory;
-import ru.protei.portal.ui.common.client.lang.En_PrivilegeCategoryLang;
-import ru.protei.portal.ui.common.client.lang.En_PrivilegeLang;
-
-import java.util.Set;
 
 /**
  * Виджет категории привилегий
  */
-public class PrivilegeCategory
+public class PrivilegeEntity
         extends Composite {
 
-    public PrivilegeCategory() {
+    public PrivilegeEntity() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
     }
 
@@ -39,6 +29,6 @@ public class PrivilegeCategory
     @UiField
     HTMLPanel container;
 
-    interface PrivilegeListUiBinder extends UiBinder< HTMLPanel, PrivilegeCategory> {}
+    interface PrivilegeListUiBinder extends UiBinder< HTMLPanel, PrivilegeEntity > {}
     private static PrivilegeListUiBinder ourUiBinder = GWT.create( PrivilegeListUiBinder.class );
 }

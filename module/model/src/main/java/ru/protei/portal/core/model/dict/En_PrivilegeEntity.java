@@ -5,8 +5,8 @@ import static ru.protei.portal.core.model.dict.En_Privilege.*;
 /**
  * Категории привилегий
  */
-public enum En_PrivilegeCategory {
-    COMMON,
+public enum En_PrivilegeEntity {
+    PROFILE,
     ISSUE,
     REGION,
     PROJECT,
@@ -16,10 +16,10 @@ public enum En_PrivilegeCategory {
     ACCOUNT,
     EQUIPMENT;
 
-    public static En_Privilege[] getPrivileges(En_PrivilegeCategory category) {
+    public static En_Privilege[] getPrivileges(En_PrivilegeEntity category) {
         switch ( category ) {
-            case COMMON:
-                return commonPrivileges;
+            case PROFILE:
+                return profilePrivileges;
             case ISSUE:
                 return issuePrivileges;
             case REGION:
@@ -41,7 +41,7 @@ public enum En_PrivilegeCategory {
         return null;
     }
 
-    private static final En_Privilege[] commonPrivileges = {
+    private static final En_Privilege[] profilePrivileges = {
             COMMON_LOGIN, COMMON_PROFILE_EDIT, COMMON_PROFILE_VIEW
     };
 
