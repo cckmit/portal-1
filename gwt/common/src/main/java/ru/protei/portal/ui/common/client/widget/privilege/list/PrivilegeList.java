@@ -14,7 +14,7 @@ import ru.protei.portal.core.model.dict.En_PrivilegeEntity;
 import ru.protei.portal.ui.common.client.lang.En_PrivilegeActionLang;
 import ru.protei.portal.ui.common.client.lang.En_PrivilegeEntityLang;
 import ru.protei.portal.ui.common.client.widget.privilege.entity.PrivilegeEntity;
-import ru.protei.winter.web.common.client.widget.switcher.Switcher;
+import ru.protei.portal.ui.common.client.widget.switcher.Switcher;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -68,7 +68,6 @@ public class PrivilegeList
             for ( En_PrivilegeAction action : En_PrivilegeAction.values() ) {
                 En_Privilege privilege = En_Privilege.findPrivilege( entity, action );
                 Switcher privilegeItem = new Switcher();
-                privilegeItem.setForm( Switcher.Form.ROUND );
 
                 entityItem.getContainer().add( privilegeItem.asWidget() );
                 if ( privilege == null ) {

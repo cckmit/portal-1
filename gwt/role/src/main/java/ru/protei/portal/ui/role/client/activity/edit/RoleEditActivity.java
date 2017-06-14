@@ -15,6 +15,8 @@ import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.RoleServiceAsync;
 
+import java.util.HashSet;
+
 /**
  * Активность создания и редактирования роли
  */
@@ -94,8 +96,12 @@ public abstract class RoleEditActivity implements AbstractRoleEditActivity, Acti
     }
 
     private void fillView(){
+        if ( role.getPrivileges() == null ) {
+            role.setPrivileges( new HashSet<>() );
+        }
         view.name().setValue(role.getCode());
         view.description().setValue(role.getInfo());
+        view.privileges().setValue(role.getPrivileges());
     }
 
     @Inject

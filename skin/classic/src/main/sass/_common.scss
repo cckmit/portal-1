@@ -7,7 +7,6 @@ body {
   display: inline-block;
 }
 
-
 .p-0 {
   padding: 0 !important
 }
@@ -1647,9 +1646,12 @@ a {
   display: flex;
   -webkit-flex-flow: row wrap;
   flex-flow: row wrap;
+
+  padding: 2px 0;
 }
 .privilege-entity-container > label {
   width: 20%;
+  margin-left: 10px;
 }
 
 .privilege-entity-container > div {
@@ -1659,4 +1661,18 @@ a {
 .privilege-entity-container > div > .checkbox, .privilege-entity-container > div > div {
   width: 50px;
   margin: auto;
+}
+
+ul.privileges {
+  padding: 0;
+  margin: 0;
+}
+
+
+.privilege-entity-container {
+  border-bottom: 1px solid rgba(206, 210, 215, 0.5);
+}
+
+.privilege-entity-container:first-child {
+  font-weight: bold;
 }

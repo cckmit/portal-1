@@ -3,6 +3,6 @@
 
     <g:HTMLPanel styleName="form-group">
         <label class="control-label" ui:field="header"/>
-        <g:HTMLPanel ui:field="container" tag="ul"/>
+        <g:HTMLPanel ui:field="container" tag="ul" styleName="privileges"/>
     </g:HTMLPanel>
 </ui:UiBinder>

@@ -12,6 +12,7 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
 import ru.protei.portal.core.model.dict.En_Gender;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.widget.privilege.list.PrivilegeList;
@@ -23,6 +24,7 @@ import ru.protei.portal.ui.role.client.activity.edit.AbstractRoleEditActivity;
 import ru.protei.portal.ui.role.client.activity.edit.AbstractRoleEditView;
 
 import java.util.Date;
+import java.util.Set;
 
 /**
  * Представление создания и редактирования роли
@@ -47,6 +49,11 @@ public class RoleEditView extends Composite implements AbstractRoleEditView {
     @Override
     public HasValue<String> description() {
         return description;
+    }
+
+    @Override
+    public HasValue<Set<En_Privilege>> privileges() {
+        return privileges;
     }
 
     @UiHandler( "saveButton" )

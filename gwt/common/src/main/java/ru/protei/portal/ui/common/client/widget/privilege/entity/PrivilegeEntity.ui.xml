@@ -3,6 +3,6 @@
 
     <g:HTMLPanel tag="li" styleName="privilege-entity-container">
         <label class="control-label" ui:field="header"/>
-        <g:HTMLPanel ui:field="container"/>
+        <g:HTMLPanel ui:field="container" styleName="privilege-entity"/>
     </g:HTMLPanel>
 </ui:UiBinder>
