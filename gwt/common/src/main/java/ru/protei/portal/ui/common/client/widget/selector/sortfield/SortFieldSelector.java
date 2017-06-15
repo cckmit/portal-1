@@ -40,6 +40,9 @@ public class SortFieldSelector extends ButtonSelector< En_SortField > {
             case EQUIPMENT:
                 addOption( lang.equipmentName(), En_SortField.name );
                 addOption( lang.equipmentNameBySldWrks(), En_SortField.equipment_name_sldwrks );
+                break;
+            case ROLE:
+                addOption( lang.roleName(), En_SortField.role_name );
         }
     }
 

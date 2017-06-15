@@ -16,6 +16,7 @@ public class UiConstants {
         String REGION = "fa fa-globe";
         String PROJECT = "fa fa-archive";
         String EQUIPMENT = "fa fa-server";
+        String ROLE = "fa fa-user";
     }
 
     public interface ActionBarIcons {
@@ -31,6 +32,7 @@ public class UiConstants {
         String DASHBOARD = "dashboard";
         String EQUIPMENT = "equipment";
         String PROJECT = "project";
+        String ROLE = "role";
     }
 
     /**

@@ -284,6 +284,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public UserRoleService getUserRoleService () {
+        return new UserRoleServiceImpl();
+    }
+
+    @Bean
     public TemplateService getTemplateService() { return new TemplateServiceImpl(); }
 
     /** ASPECT/INTERCEPTORS **/

@@ -7,7 +7,7 @@ import ru.protei.portal.core.model.dict.En_OrganizationCode;
 /**
  * Код организации разработчика оборудования
  */
-public class OrganizationCodeLang {
+public class En_OrganizationCodeLang {
 
     public String getName( En_OrganizationCode value ) {
         switch (value) {
