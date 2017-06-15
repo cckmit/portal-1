@@ -17,6 +17,7 @@ import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.ContactEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.AccountServiceAsync;
 import ru.protei.portal.ui.common.client.service.ContactServiceAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
@@ -56,7 +57,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
 
                 @Override
                 public void onSuccess(Person person) {
-                    contactService.getUserLogin(person.getId(), new RequestCallback<UserLogin>() {
+                    accountService.getAccount(person.getId(), new RequestCallback<UserLogin>() {
                         @Override
                         public void onError(Throwable throwable) {}
 
@@ -78,13 +79,13 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         }
 
         if(!isConfirmValidate()) {
-            fireEvent(new NotifyEvents.Show(lang.contactPasswordsNotMatch(), NotifyEvents.NotifyType.ERROR));
+            fireEvent(new NotifyEvents.Show(lang.accountPasswordsNotMatch(), NotifyEvents.NotifyType.ERROR));
             return;
         }
 
         UserLogin userLogin = applyChangesLogin();
         if(!HelperFunc.isEmpty(userLogin.getUlogin()) && HelperFunc.isEmpty(userLogin.getUpass()) && userLogin.getId() == null) {
-            fireEvent(new NotifyEvents.Show(lang.contactPasswordNotDefinied(), NotifyEvents.NotifyType.ERROR));
+            fireEvent(new NotifyEvents.Show(lang.accountPasswordNotDefinied(), NotifyEvents.NotifyType.ERROR));
             return;
         }
 
@@ -100,7 +101,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
                     userLogin.setPersonId(person.getId());
                     userLogin.setInfo(person.getDisplayName());
                 }
-                contactService.saveUserLogin(userLogin, new RequestCallback<Boolean>() {
+                contactService.saveAccount(userLogin, new RequestCallback<Boolean>() {
                     @Override
                     public void onError(Throwable throwable) {
                         fireErrorMessage(lang.errEditContactLogin());
@@ -125,7 +126,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
             return;
         }
 
-        contactService.isContactLoginUnique(
+        accountService.isLoginUnique(
                 value,
                 account.getId(),
                 new RequestCallback<Boolean>() {
@@ -262,6 +263,9 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
 
     @Inject
     ContactServiceAsync contactService;
+
+    @Inject
+    AccountServiceAsync accountService;
 
     private Person contact;
     private UserLogin account;

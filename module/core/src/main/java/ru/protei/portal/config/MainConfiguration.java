@@ -1,17 +1,10 @@
 package ru.protei.portal.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
 import ru.protei.portal.core.aspect.ServiceLayerInterceptor;
 import ru.protei.portal.core.controller.auth.AuthInterceptor;
-import ru.protei.portal.core.mail.JavaMailMessageFactory;
-import ru.protei.portal.core.mail.JavaMailSendChannel;
-import ru.protei.portal.core.mail.MailMessageFactory;
-import ru.protei.portal.core.mail.MailSendChannel;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
 import ru.protei.portal.core.service.*;
@@ -210,7 +203,6 @@ public class MainConfiguration {
     public ExternalCaseAppDAO getExternalCaseAppDAO () {
         return new ExternalCaseAppDAO_Impl();
     }
-
 /**
  *
  *
@@ -286,6 +278,16 @@ public class MainConfiguration {
     @Bean
     public UserRoleService getUserRoleService () {
         return new UserRoleServiceImpl();
+    }
+
+    @Bean
+    public AccountService getAccountService() {
+        return new AccountServiceImpl();
+    }
+
+    @Bean
+    public PersonService getPersonService() {
+        return new PersonServiceImpl();
     }
 
     @Bean

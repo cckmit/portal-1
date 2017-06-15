@@ -33,9 +33,5 @@ public interface ContactServiceAsync {
      */
     void getContactViewList( ContactQuery query, AsyncCallback< List<PersonShortView> > callback );
 
-    void getUserLogin ( long id, AsyncCallback< UserLogin > callback );
-
-    void saveUserLogin ( UserLogin userLogin, AsyncCallback< Boolean > callback );
-
-    void isContactLoginUnique(String login, Long exceptId, AsyncCallback<Boolean> async);
+    void saveAccount ( UserLogin userLogin, AsyncCallback< Boolean > callback );
 }

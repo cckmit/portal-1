@@ -14,8 +14,15 @@ public enum En_AdminState {
 
     private final int id;
 
-
     public int getId() {
         return id;
+    }
+
+    public static En_AdminState find (int id) {
+        for (En_AdminState as : En_AdminState.values())
+            if (as.id == id)
+                return as;
+
+        return null;
     }
 }

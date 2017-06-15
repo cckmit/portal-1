@@ -11,7 +11,7 @@ import java.util.Set;
  */
 public class Profile implements Serializable {
 
-    private UserRole role;
+    private Set<UserRole> roles;
 
     private String login;
 
@@ -21,12 +21,12 @@ public class Profile implements Serializable {
 
     private Set<En_Privilege> privileges;
 
-    public UserRole getRole() {
-        return role;
+    public Set<UserRole> getRoles() {
+        return roles;
     }
 
-    public void setRole( UserRole role ) {
-        this.role = role;
+    public void setRoles( Set<UserRole> roles ) {
+        this.roles = roles;
     }
 
     public String getLogin() {
@@ -71,7 +71,7 @@ public class Profile implements Serializable {
     @Override
     public String toString() {
         return "Profile{" +
-            "role=" + role +
+            "roles=" + roles +
             ", login='" + login + '\'' +
             ", name='" + name + '\'' +
             ", id=" + id +

@@ -1,11 +1,8 @@
 package ru.protei.portal.ui.common.client.events;
 
 import com.google.gwt.user.client.ui.HasWidgets;
-import ru.brainworm.factory.context.client.annotation.Name;
 import ru.brainworm.factory.context.client.annotation.Url;
-import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.UserRole;
-import ru.protei.portal.core.model.view.EntityOption;
 
 /**
  * Created by turik on 28.10.16.
@@ -13,7 +10,7 @@ import ru.protei.portal.core.model.view.EntityOption;
 public class RoleEvents {
 
     /**
-     * Показать контакты
+     * Показать роли
      */
     @Url( value = "roles", primary = true )
     public static class Show {
@@ -23,7 +20,7 @@ public class RoleEvents {
     }
 
     /**
-     * Показать таблицу котактов
+     * Показать таблицу ролей
      */
     public static class ShowTable {
 
@@ -37,7 +34,7 @@ public class RoleEvents {
     }
 
     /**
-     * Показать превью контакта
+     * Показать превью роли
      */
     public static class ShowPreview {
 
@@ -61,4 +58,9 @@ public class RoleEvents {
 
         public Edit( Long id ) { this.id = id; }
     }
+
+    /**
+     * Добавление / изменение / удаление ролей
+     */
+    public static class ChangeModel {}
 }

@@ -66,6 +66,11 @@ public enum En_SortField {
     equipment_name_sldwrks("name_sldwrks"),
 
     /**
+     * user login
+     */
+    ulogin("ulogin"),
+
+    /**
      * role name
      */
     role_name("role_code");

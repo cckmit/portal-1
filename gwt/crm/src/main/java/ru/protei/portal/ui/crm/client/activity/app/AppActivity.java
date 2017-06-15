@@ -43,7 +43,7 @@ public abstract class AppActivity
         init.parent.clear();
         init.parent.add( view.asWidget() );
 
-        view.setUsername( event.profile.getName(), event.profile.getRole().getCode() );
+        view.setUsername( event.profile.getName(), null );
 
         Scheduler.get().scheduleDeferred( (Command) () -> {
             if(initialToken == null || initialToken.isEmpty() || initialToken.equals(UiConstants.LOGIN_PAGE)){

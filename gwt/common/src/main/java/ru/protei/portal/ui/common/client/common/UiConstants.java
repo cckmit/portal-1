@@ -9,13 +9,14 @@ public class UiConstants {
      */
     public interface TabIcons {
         String COMPANY = "icon icon-organization";
-        String CONTACT = "fa fa-group";
+        String CONTACT = "fa fa-address-book";
         String PRODUCT = "icon icon-product";
         String ISSUE = "fa fa-tasks";
         String DASHBOARD = "fa fa-dashboard";
         String REGION = "fa fa-globe";
         String PROJECT = "fa fa-archive";
         String EQUIPMENT = "fa fa-server";
+        String ACCOUNT = "fa fa-group";
         String ROLE = "fa fa-user";
     }
 
@@ -32,6 +33,7 @@ public class UiConstants {
         String DASHBOARD = "dashboard";
         String EQUIPMENT = "equipment";
         String PROJECT = "project";
+        String ACCOUNT = "account";
         String ROLE = "role";
     }
 

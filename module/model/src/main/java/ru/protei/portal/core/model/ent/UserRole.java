@@ -58,4 +58,29 @@ public class UserRole implements Serializable {
     public void setPrivileges( Set<En_Privilege> privileges ) {
         this.privileges = privileges;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof UserRole) {
+            Long oid = ((UserRole)obj).getId();
+            return this.id == null ? oid == null : oid != null && this.id.equals(oid);
+        }
+
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
+    }
+
+    @Override
+    public String toString () {
+        return "UserRole{" +
+                "id=" + id +
+                ", code='" + code + '\'' +
+                ", info='" + info + '\'' +
+                ", privileges=" + privileges +
+                '}';
+    }
 }

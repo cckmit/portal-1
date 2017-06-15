@@ -38,7 +38,7 @@ public class AppView extends Composite
     @Override
     public void setUsername( String username, String role) {
         this.username.setInnerText( username );
-        this.role.setInnerText( role );
+        //this.role.setInnerText( role );
     }
 
     @Override

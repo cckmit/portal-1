@@ -18,9 +18,4 @@ public interface ContactService {
     CoreResponse<List<Person>> contactList(ContactQuery query);
     CoreResponse<Person> getContact(long id);
     CoreResponse<Person> saveContact(Person p);
-
-    CoreResponse<UserLogin> getUserLogin( long id);
-    CoreResponse<UserLogin> saveUserLogin(UserLogin userLogin);
-    CoreResponse<Boolean> removeUserLogin(UserLogin userLogin);
-    CoreResponse<Boolean> isUserLoginUnique(String login, Long excludeId);
 }
