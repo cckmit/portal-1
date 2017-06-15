@@ -8,8 +8,6 @@ public class En_PrivilegeLang {
 
     public String getName( En_Privilege value ) {
         switch (value) {
-            case COMMON_LOGIN:
-                return lang.privilegeLogin();
             case COMMON_PROFILE_VIEW:
                 return lang.privilegeView();
             case COMMON_PROFILE_EDIT:

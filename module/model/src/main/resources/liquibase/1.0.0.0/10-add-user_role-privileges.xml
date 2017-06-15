@@ -13,5 +13,4 @@
     <changeSet id="dropUserRoleCaRoleNameColumn" author="ponomareva">
         <dropColumn tableName="user_role" columnName="ca_role_name"/>
     </changeSet>
-
 </databaseChangeLog>

@@ -1644,23 +1644,23 @@ a {
   display: -ms-flexbox;
   display: -webkit-flex;
   display: flex;
-  -webkit-flex-flow: row wrap;
-  flex-flow: row wrap;
-
-  padding: 2px 0;
+  -webkit-flex-flow: row nowrap;
+  flex-flow: row nowrap;
 }
 .privilege-entity-container > label {
   width: 20%;
   margin-left: 10px;
+  border-right: 1px solid lightgray;
 }
 
 .privilege-entity-container > div {
-  width: 80%;
+  width: 79%;
 }
 
 .privilege-entity-container > div > .checkbox, .privilege-entity-container > div > div {
-  width: 50px;
   margin: auto;
+  width: 50px;
+  text-align: center;
 }
 
 ul.privileges {
@@ -1675,4 +1675,33 @@ ul.privileges {
 
 .privilege-entity-container:first-child {
   font-weight: bold;
+}
+
+.btn.privilege-btn {
+  padding: 0;
+  min-width: 30px;
+  border-left: 0;
+  height: 40px;
+  font-size: 2.3em;
+}
+
+.btn.privilege-btn.btn-down:after,
+.btn.privilege-btn.btn-up-hovering:after {
+  font-family: "Ionicons";
+  content: "\f383";
+  color: teal !important;
+}
+
+.btn.privilege-btn.btn-up:after,
+.btn.privilege-btn.btn-down-hovering:after {
+  font-family: "Ionicons";
+  content: "\f2d7";
+  color: #cc2424 !important;
+}
+
+.btn.privilege-btn.btn-up-disabled:after,
+.btn.privilege-btn.btn-down-disabled:after {
+  font-family: "Ionicons";
+  content: "\f2f4";
+  color: rgb(218, 217, 217) !important;
 }

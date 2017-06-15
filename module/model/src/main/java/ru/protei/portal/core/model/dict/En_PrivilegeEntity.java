@@ -9,12 +9,12 @@ public enum En_PrivilegeEntity {
     PROFILE,
     ISSUE,
     REGION,
-    PROJECT,
-    COMPANY,
     PRODUCT,
+    PROJECT,
+    EQUIPMENT,
+    COMPANY,
     CONTACT,
-    ACCOUNT,
-    EQUIPMENT;
+    ACCOUNT;
 
     public static En_Privilege[] getPrivileges(En_PrivilegeEntity category) {
         switch ( category ) {
@@ -42,7 +42,7 @@ public enum En_PrivilegeEntity {
     }
 
     private static final En_Privilege[] profilePrivileges = {
-            COMMON_LOGIN, COMMON_PROFILE_EDIT, COMMON_PROFILE_VIEW
+            COMMON_PROFILE_EDIT, COMMON_PROFILE_VIEW
     };
 
     private static final En_Privilege[] issuePrivileges = {

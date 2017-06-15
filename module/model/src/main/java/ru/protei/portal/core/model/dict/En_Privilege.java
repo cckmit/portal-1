@@ -7,7 +7,6 @@ import static ru.protei.portal.core.model.dict.En_PrivilegeEntity.*;
  * Привилегии в системе
  */
 public enum En_Privilege {
-    COMMON_LOGIN (PROFILE, LOGIN),
     COMMON_PROFILE_VIEW (PROFILE, VIEW),
     COMMON_PROFILE_EDIT (PROFILE, EDIT),
 

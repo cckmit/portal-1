@@ -14,7 +14,6 @@ import ru.protei.portal.core.model.dict.En_PrivilegeEntity;
 import ru.protei.portal.ui.common.client.lang.En_PrivilegeActionLang;
 import ru.protei.portal.ui.common.client.lang.En_PrivilegeEntityLang;
 import ru.protei.portal.ui.common.client.widget.privilege.entity.PrivilegeEntity;
-import ru.protei.portal.ui.common.client.widget.switcher.Switcher;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -67,7 +66,8 @@ public class PrivilegeList
 
             for ( En_PrivilegeAction action : En_PrivilegeAction.values() ) {
                 En_Privilege privilege = En_Privilege.findPrivilege( entity, action );
-                Switcher privilegeItem = new Switcher();
+                ToggleButton privilegeItem = new ToggleButton();
+                privilegeItem.setStyleName( "btn privilege-btn" );
 
                 entityItem.getContainer().add( privilegeItem.asWidget() );
                 if ( privilege == null ) {
@@ -97,7 +97,7 @@ public class PrivilegeList
     }
 
     private void fillValues() {
-        for ( Map.Entry<En_Privilege, Switcher> entry : modelToView.entrySet() ) {
+        for ( Map.Entry<En_Privilege, ToggleButton> entry : modelToView.entrySet() ) {
             entry.getValue().setValue( values.contains( entry.getKey() ) );
         }
     }
@@ -113,7 +113,7 @@ public class PrivilegeList
 
     private Set<En_Privilege> values;
 
-    private Map<En_Privilege, Switcher> modelToView = new HashMap<>();
+    private Map<En_Privilege, ToggleButton> modelToView = new HashMap<>();
 
     interface PrivilegeListUiBinder extends UiBinder< HTMLPanel, PrivilegeList > {}
     private static PrivilegeListUiBinder ourUiBinder = GWT.create( PrivilegeListUiBinder.class );

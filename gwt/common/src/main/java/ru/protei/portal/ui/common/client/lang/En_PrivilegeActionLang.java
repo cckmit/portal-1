@@ -8,8 +8,6 @@ public class En_PrivilegeActionLang {
 
     public String getName( En_PrivilegeAction value ) {
         switch (value) {
-            case LOGIN:
-                return lang.privilegeLogin();
             case VIEW:
                 return lang.privilegeView();
             case EDIT:
