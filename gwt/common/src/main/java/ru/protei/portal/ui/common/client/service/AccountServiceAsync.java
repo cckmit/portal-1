@@ -28,6 +28,4 @@ public interface AccountServiceAsync {
     void isLoginUnique( String login, Long exceptId, AsyncCallback< Boolean > async );
 
     void removeAccount( Long accountId, AsyncCallback< Boolean > async );
-
-    void getRoles( AsyncCallback< List< UserRole > > async );
 }

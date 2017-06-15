@@ -60,6 +60,7 @@ public abstract class RoleEditActivity implements AbstractRoleEditActivity, Acti
 
             @Override
             public void onSuccess(UserRole role) {
+                fireEvent(new RoleEvents.ChangeModel());
                 fireEvent(new Back());
             }
         });

@@ -103,19 +103,6 @@ public class AccountServiceImpl implements AccountService {
         throw new RequestFailedException(response.getStatus());
     }
 
-    @Override
-    public List< UserRole > getRoles() throws RequestFailedException {
-
-        log.debug( "getRoles()" );
-
-        CoreResponse< List< UserRole > > response = accountService.roleList();
-
-        if ( response.isError() ) {
-            throw new RequestFailedException( response.getStatus() );
-        }
-        return response.getData();
-    }
-
     @Autowired
     ru.protei.portal.core.service.AccountService accountService;
 
