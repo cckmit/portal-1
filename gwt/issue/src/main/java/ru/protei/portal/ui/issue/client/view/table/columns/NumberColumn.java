@@ -29,18 +29,24 @@ public class NumberColumn extends ClickColumn<CaseShortView> {
 
     @Override
     public void fillColumnValue( Element cell, CaseShortView value ) {
-        cell.addClassName( "number" );
+        if ( value == null ) {
+            return;
+        }
 
+        cell.addClassName( "number" );
         com.google.gwt.dom.client.Element divElement = DOM.createDiv();
 
-        com.google.gwt.dom.client.Element i = DOM.createElement( "i" );
-        i.addClassName( "importance importance-lg " + En_ImportanceLevel.find( value.getImpLevel() ).toString().toLowerCase() );
-        CriticalityStyleBuilder.make().addClassName( i, En_ImportanceLevel.find( value.getImpLevel() ) );
-        divElement.appendChild( i );
+        if ( value.getImpLevel() != null ) {
+            com.google.gwt.dom.client.Element i = DOM.createElement( "i" );
+            i.addClassName( "importance importance-lg " + En_ImportanceLevel.find( value.getImpLevel() ).toString().toLowerCase() );
+            CriticalityStyleBuilder.make().addClassName( i, En_ImportanceLevel.find( value.getImpLevel() ) );
+            divElement.appendChild( i );
+        }
+
 
         com.google.gwt.dom.client.Element numberElement = DOM.createElement( "p" );
         numberElement.addClassName( "number-size" );
-        numberElement.setInnerText( value == null ? "" : value.getCaseNumber().toString() );
+        numberElement.setInnerText( value.getCaseNumber().toString() );
         divElement.appendChild( numberElement );
 
         com.google.gwt.dom.client.Element stateElement = DOM.createElement( "p" );

@@ -87,7 +87,9 @@
         margin-left: 10px;
         padding: 15px;
         background: white;
-        display: inline-block;
+        display: table;
+        width: calc(100% - 40px);
+        table-layout: fixed;
 
         fieldset {
             margin-top: 0;

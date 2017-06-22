@@ -77,6 +77,13 @@
                 </div>
 
 
+                <div class="form-group col-xs-12">
+                    <label>
+                        <ui:text from="{lang.companySubscription}"/>
+                    </label>
+                    <div ui:field="subscriptions"/>
+                </div>
+
 
                 <div class="form-group col-xs-12">
                     <label><ui:text from="{lang.issueAttachments}"/></label>

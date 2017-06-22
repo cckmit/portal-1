@@ -15,12 +15,5 @@
 
        <task:scheduler id="winter-task-scheduler" pool-size="10"/>
 
-       <context:component-scan base-package="ru.protei.portal.ui.crm" />
-       <context:component-scan base-package="ru.protei.portal.ui.product" />
-       <context:component-scan base-package="ru.protei.portal.ui.company" />
-       <context:component-scan base-package="ru.protei.portal.ui.contact" />
-       <context:component-scan base-package="ru.protei.portal.ui.issue" />
-       <context:component-scan base-package="ru.protei.portal.ui.common" />
-       <context:component-scan base-package="ru.protei.portal.ui.region" />
-       <context:component-scan base-package="ru.protei.portal.ui.equipment" />
+       <context:component-scan base-package="ru.protei.portal.ui" />
 </beans>

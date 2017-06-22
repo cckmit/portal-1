@@ -1,7 +1,7 @@
 package ru.protei.portal.ui.equipment.client.widget.organization;
 
 import com.google.inject.Inject;
-import ru.protei.portal.ui.common.client.lang.OrganizationCodeLang;
+import ru.protei.portal.ui.common.client.lang.En_OrganizationCodeLang;
 import ru.protei.portal.ui.common.client.widget.togglebtn.group.ToggleBtnGroupMulti;
 import ru.protei.portal.core.model.dict.En_OrganizationCode;
 
@@ -25,5 +25,5 @@ public class OrganizationBtnGroupMulti extends ToggleBtnGroupMulti< En_Organizat
     }
 
     @Inject
-    OrganizationCodeLang codeLang;
+    En_OrganizationCodeLang codeLang;
 }

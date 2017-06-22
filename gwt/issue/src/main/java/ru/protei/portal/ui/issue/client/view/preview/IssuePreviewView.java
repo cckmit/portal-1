@@ -123,6 +123,11 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     }
 
     @Override
+    public void setSubscriptionEmails( String value ) {
+        this.subscriptions.setInnerText( value );
+    }
+
+    @Override
     public void showFullScreen( boolean value ) {
         this.fullScreen.setVisible( !value );
         if ( value ) {
@@ -206,6 +211,8 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     @Inject
     @UiField(provided = true)
     AttachmentList attachmentContainer;
+    @UiField
+    DivElement subscriptions;
     @Inject
     En_CaseImportanceLang caseImportanceLang;
     @Inject

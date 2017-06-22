@@ -18,7 +18,7 @@ import ru.protei.portal.ui.common.client.widget.platelist.events.AddEvent;
 import ru.protei.portal.ui.common.client.widget.platelist.events.AddHandler;
 import ru.protei.portal.ui.common.client.widget.platelist.events.HasAddHandlers;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
-import ru.protei.portal.ui.company.client.widget.subscription.lang.LangButtonSelector;
+import ru.protei.portal.ui.company.client.widget.subscription.locale.LocaleButtonSelector;
 
 
 /**
@@ -91,7 +91,7 @@ public class SubscriptionItem
     ValidableTextBox email;
     @Inject
     @UiField(provided = true)
-    LangButtonSelector locale;
+    LocaleButtonSelector locale;
 
     private CompanySubscription value;
 

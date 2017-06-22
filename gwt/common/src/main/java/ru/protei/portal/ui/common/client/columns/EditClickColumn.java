@@ -24,7 +24,7 @@ public abstract class EditClickColumn< T > extends ru.protei.portal.ui.common.cl
 
     @Override
     protected void fillColumnHeader(Element element) {
-
+        element.addClassName( "edit" );
     }
 
     @Override

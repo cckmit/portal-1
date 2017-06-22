@@ -1,0 +1,8 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+
+    <g:HTMLPanel tag="li" styleName="privilege-entity-container">
+        <label class="control-label" ui:field="header"/>
+        <g:HTMLPanel ui:field="container" styleName="privilege-entity"/>
+    </g:HTMLPanel>
+</ui:UiBinder>

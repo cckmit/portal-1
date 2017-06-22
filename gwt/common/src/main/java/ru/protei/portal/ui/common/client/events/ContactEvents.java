@@ -7,7 +7,7 @@ import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.view.EntityOption;
 
 /**
- * Created by turik on 28.10.16.
+ * События по контактным лицам
  */
 public class ContactEvents {
 

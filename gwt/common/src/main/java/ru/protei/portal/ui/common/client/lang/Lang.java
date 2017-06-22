@@ -471,21 +471,98 @@ public interface Lang extends Messages, ContactItemLang {
 
     String attachmentsNotLoaded();
 
-    String contactLogin();
+    String accountPassword();
 
-    String contactPassword();
-
-    String contactPasswordNotDefinied();
+    String accountPasswordNotDefinied();
 
     String errEditContactLogin();
 
-    String contactAccount();
+    String accountLoginInfo();
 
-    String contactLoginInfo();
+    String accountConfirmPassword();
 
-    String contactConfirmPassword();
-
-    String contactPasswordsNotMatch();
+    String accountPasswordsNotMatch();
 
     String companySubscription();
+
+    String accounts();
+
+    String accountType();
+
+    String accountLDAP();
+
+    String accountLocal();
+
+    String accountLogin();
+
+    String accountPerson();
+
+    String accountAuthType();
+
+    String accountNew();
+
+    String accountRoles();
+
+    String accountCompany();
+
+    String selectAccountCompany();
+
+    String selectAccountPerson();
+
+    String accountRoleNotDefinied();
+
+    String accountRemoveConfirmMessage();
+
+    String remove();
+
+    String accountRemoveSuccessed();
+
+    String account();
+
+    String accountLastName();
+
+    String accountFirstName();
+
+    String accountSecondName();
+
+    String roleName();
+
+    String roleDescription();
+
+    String roles();
+
+    String role( Long id );
+
+    String privilegeCategoryCommon();
+
+    String privilegeCategoryIssue();
+
+    String privilegeCategoryRegion();
+
+    String privilegeCategoryProject();
+
+    String privilegeCategoryCompany();
+
+    String privilegeCategoryProduct();
+
+    String privilegeCategoryContact();
+
+    String privilegeCategoryAccount();
+
+    String privilegeCategoryEquipment();
+
+    String privilegeLogin();
+
+    String privilegeView();
+
+    String privilegeEdit();
+
+    String privilegeCreate();
+
+    String privilegeReport();
+
+    String privilegeExport();
+
+    String rolePrivileges();
+
 }

@@ -1,25 +1,26 @@
 package ru.protei.portal.core.service.user;
 
 import org.apache.commons.lang3.time.DateUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.DigestUtils;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by michael on 29.06.16.
  */
 public class AuthServiceImpl implements AuthService {
 
-    private Logger logger = Logger.getLogger("logger-security");
+    private static Logger logger = LoggerFactory.getLogger(AuthServiceImpl.class);
 
     @Autowired
     private UserLoginDAO userLoginDAO;
@@ -31,13 +32,13 @@ public class AuthServiceImpl implements AuthService {
     private PersonDAO personDAO;
 
     @Autowired
-    private UserRoleDAO userRoleDAO;
-
-    @Autowired
     private CompanyDAO companyDAO;
 
     @Autowired
     private LDAPAuthProvider ldapAuthProvider;
+
+    @Autowired
+    JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
     private Map<String, UserSessionDescriptor> sessionCache;
 
@@ -97,8 +98,11 @@ public class AuthServiceImpl implements AuthService {
                 logger.debug("session " + appSessionId + " restored from database");
                 descriptor = new UserSessionDescriptor();
                 descriptor.init(appSession);
-                descriptor.login(userLoginDAO.get(appSession.getLoginId()),
-                        userRoleDAO.get((long) appSession.getRoleId()),
+
+                UserLogin userLogin = userLoginDAO.get(appSession.getLoginId());
+                jdbcManyRelationsHelper.fill(userLogin, "roles");
+
+                descriptor.login(userLogin,
                         personDAO.get(appSession.getPersonId()),
                         companyDAO.get(appSession.getCompanyId())
                 );
@@ -120,6 +124,8 @@ public class AuthServiceImpl implements AuthService {
             logger.debug("login [" + ulogin + "] not found, auth-failed");
             return new CoreResponse().error(En_ResultStatus.INVALID_LOGIN_OR_PWD);
         }
+
+        jdbcManyRelationsHelper.fill(login, "roles");
 
         if (login.isLDAP_Auth()) {
             // check by LDAP
@@ -162,10 +168,9 @@ public class AuthServiceImpl implements AuthService {
         }
 
         Person person = personDAO.get(login.getPersonId());
-        UserRole role = userRoleDAO.get((long) login.getRoleId());
         Company company = companyDAO.get(person.getCompanyId());
 
-        logger.debug("Auth success for " + ulogin + " / " + role.getCode() + "/" + person.toDebugString());
+        logger.debug("Auth success for " + ulogin + " / " + ( login.getRoles() == null ? "null" : login.getRoles().stream().map( UserRole::getCode ).collect( Collectors.joining("," ) ) ) + "/" + person.toDebugString());
 
         UserSession s = new UserSession();
         s.setClientIp(ip);
@@ -178,9 +183,8 @@ public class AuthServiceImpl implements AuthService {
         descriptor.getSession().setCompanyId(person.getCompanyId());
         descriptor.getSession().setLoginId(login.getId());
         descriptor.getSession().setPersonId(login.getPersonId());
-        descriptor.getSession().setRoleId(login.getRoleId());
         descriptor.getSession().setExpired(DateUtils.addHours(new Date(), 3));
-        descriptor.login(login, role, person, company);
+        descriptor.login(login, person, company);
 
         sessionDAO.removeByCondition("client_ip=? and login_id=?", descriptor.getSession().getClientIp(),
                 login.getId());
@@ -216,5 +220,4 @@ public class AuthServiceImpl implements AuthService {
         sessionCache.remove(descriptor.getSessionId());
         descriptor.close();
     }
-
 }

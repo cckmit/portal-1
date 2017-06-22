@@ -26,6 +26,7 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * Активность создания и редактирования обращения
@@ -171,6 +172,14 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         view.company().setValue(EntityOption.fromCompany(initiatorCompany));
         view.changeCompany(initiatorCompany);
         view.initiator().setValue( PersonShortView.fromPerson(issue.getInitiator()));
+        if ( issue.getInitiatorCompany() != null ) {
+            view.setSubscriptionEmails( issue.getInitiatorCompany().getSubscriptions() == null
+                    ? ""
+                    : issue.getInitiatorCompany().getSubscriptions()
+                    .stream()
+                    .map( CompanySubscription::getEmail )
+                    .collect( Collectors.joining(", ") ) );
+        }
 
         view.product().setValue( ProductShortView.fromProduct(issue.getProduct()));
         view.manager().setValue(PersonShortView.fromPerson(issue.getManager()));

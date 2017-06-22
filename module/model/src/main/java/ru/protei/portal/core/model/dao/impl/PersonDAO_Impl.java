@@ -10,10 +10,10 @@ import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.ContactQuery;
 import ru.protei.portal.core.model.query.EmployeeQuery;
+import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.utils.EntityCache;
 import ru.protei.portal.core.utils.EntitySelector;
-import ru.protei.portal.core.utils.TypeConverters;
 import ru.protei.winter.jdbc.JdbcQueryParameters;
 import ru.protei.winter.jdbc.JdbcSort;
 
@@ -157,6 +157,11 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
         return ifPersonIsEmployee(p) ? null : p;
     }
 
+    @Override
+    public List<Person> getPersons(PersonQuery query) {
+
+        return listByQuery( query );
+    }
 
     /**
      * Query Condition builders
@@ -197,6 +202,27 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
             if (query.getFired() != null) {
                 condition.append(" and Person.isfired=?");
                 args.add(query.getFired() ? 1 : 0);
+            }
+
+            if (HelperFunc.isLikeRequired(query.getSearchString())) {
+                condition.append(" and (Person.displayName like ? or Person.contactInfo like ?)");
+                String likeArg = HelperFunc.makeLikeArg(query.getSearchString(), true);
+
+                args.add(likeArg);
+                args.add(likeArg);
+            }
+        });
+    }
+
+    @Override
+    @SqlConditionBuilder
+    public SqlCondition createPersonSqlCondition(PersonQuery query) {
+        return new SqlCondition().build((condition, args) -> {
+            condition.append("1=1");
+
+            if (query.getCompanyId() != null) {
+                condition.append(" and Person.company_id = ?");
+                args.add(query.getCompanyId());
             }
 
             if (HelperFunc.isLikeRequired(query.getSearchString())) {

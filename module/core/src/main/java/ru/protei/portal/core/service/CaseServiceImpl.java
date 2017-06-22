@@ -20,6 +20,7 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseShortView;
+import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -30,6 +31,9 @@ import java.util.stream.Collectors;
 public class CaseServiceImpl implements CaseService {
 
     private static Logger log = LoggerFactory.getLogger(CaseServiceImpl.class);
+
+    @Autowired
+    JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
     @Autowired
     CaseObjectDAO caseObjectDAO;
@@ -72,6 +76,7 @@ public class CaseServiceImpl implements CaseService {
         if(caseObject == null)
             return new CoreResponse().error(En_ResultStatus.NOT_FOUND);
 
+        jdbcManyRelationsHelper.fillAll( caseObject.getInitiatorCompany() );
         caseObject.setAttachmentsIds(
                 caseAttachmentDAO
                         .getListByCaseId(id)
