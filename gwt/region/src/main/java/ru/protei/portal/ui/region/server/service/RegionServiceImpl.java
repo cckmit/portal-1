@@ -5,6 +5,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.query.DistrictQuery;
 import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.struct.DistrictInfo;
@@ -30,9 +32,11 @@ public class RegionServiceImpl implements RegionService {
     @Override
     public List< RegionInfo > getRegionList( ProjectQuery query ) throws RequestFailedException {
         log.debug( "getRegionList(): search={} | showDeprecated={} | sortField={} | order={}",
-            query.getSearchString(), query.getStates(), query.getSortField(), query.getSortDir() );
+                query.getSearchString(), query.getStates(), query.getSortField(), query.getSortDir() );
 
-        CoreResponse<List<RegionInfo>> response = projectService.listRegions( query );
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
+        CoreResponse< List< RegionInfo > > response = projectService.listRegions( query, descriptor.getLogin().getRoles() );
         if ( response.isError() )
             throw new RequestFailedException( response.getStatus() );
 
@@ -40,9 +44,10 @@ public class RegionServiceImpl implements RegionService {
     }
 
     @Override
-    public List<DistrictInfo> getDistrictList() throws RequestFailedException {
+    public List< DistrictInfo > getDistrictList() throws RequestFailedException {
 
-        CoreResponse<List<DistrictInfo>> result = locationService.districtList( new DistrictQuery() );
+        //TODO кажется для получения локэйшнов нет привилегий
+        CoreResponse< List< DistrictInfo > > result = locationService.districtList( new DistrictQuery() );
 
         if ( result.isError() )
             throw new RequestFailedException( result.getStatus() );
@@ -52,7 +57,9 @@ public class RegionServiceImpl implements RegionService {
 
     @Override
     public List< EntityOption > getRegionList() throws RequestFailedException {
-        CoreResponse<List<EntityOption>> result = locationService.regionShortList();
+
+        //TODO кажется для получения локэйшнов по с типом регион нет привилегий
+        CoreResponse< List< EntityOption > > result = locationService.regionShortList( );
 
         if ( result.isError() )
             throw new RequestFailedException( result.getStatus() );
@@ -61,11 +68,13 @@ public class RegionServiceImpl implements RegionService {
     }
 
     @Override
-    public Map<String, List<ProjectInfo>> getProjectsByRegions( ProjectQuery query ) throws RequestFailedException {
+    public Map< String, List< ProjectInfo > > getProjectsByRegions( ProjectQuery query ) throws RequestFailedException {
         log.debug( "getProjectsByRegions(): search={} | showDeprecated={} | sortField={} | order={}",
                 query.getSearchString(), query.getStates(), query.getSortField(), query.getSortDir() );
 
-        CoreResponse<Map<String, List<ProjectInfo>>> response = projectService.listProjectsByRegions( query );
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
+        CoreResponse< Map< String, List< ProjectInfo > > > response = projectService.listProjectsByRegions( query, descriptor.getLogin().getRoles() );
         if ( response.isError() )
             throw new RequestFailedException( response.getStatus() );
 
@@ -76,7 +85,9 @@ public class RegionServiceImpl implements RegionService {
     public ProjectInfo getProject( Long id ) throws RequestFailedException {
         log.debug( "getProject(): id={}", id );
 
-        CoreResponse<ProjectInfo> response = projectService.getProject( id );
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
+        CoreResponse< ProjectInfo > response = projectService.getProject( id, descriptor.getLogin().getRoles() );
         if ( response.isError() ) {
             throw new RequestFailedException( response.getStatus() );
         }
@@ -88,7 +99,9 @@ public class RegionServiceImpl implements RegionService {
     public void saveProject( ProjectInfo project ) throws RequestFailedException {
         log.debug( "saveProject(): project={}", project );
 
-        CoreResponse response = projectService.saveProject( project );
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
+        CoreResponse response = projectService.saveProject( project, descriptor.getLogin().getRoles() );
         if ( response.isError() ) {
             throw new RequestFailedException( response.getStatus() );
         }
@@ -100,12 +113,25 @@ public class RegionServiceImpl implements RegionService {
     public long createNewProject() throws RequestFailedException {
         log.debug( "createNewProject()" );
 
-        CoreResponse<Long> response = projectService.createProject( sessionService.getUserSessionDescriptor( httpServletRequest ).getPerson().getId() );
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+        Long personId = sessionService.getUserSessionDescriptor( httpServletRequest ).getPerson().getId();
+
+        CoreResponse< Long > response = projectService.createProject( personId, descriptor.getLogin().getRoles() );
         if ( response.isError() ) {
             throw new RequestFailedException( response.getStatus() );
         }
 
         return response.getData();
+    }
+
+    private UserSessionDescriptor getDescriptorAndCheckSession() throws RequestFailedException {
+        UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor( httpServletRequest );
+        log.info( "userSessionDescriptor={}", descriptor );
+        if ( descriptor == null ) {
+            throw new RequestFailedException( En_ResultStatus.SESSION_NOT_FOUND );
+        }
+
+        return descriptor;
     }
 
     @Autowired
@@ -164,7 +190,6 @@ public class RegionServiceImpl implements RegionService {
 //            }
 //        }
 //    }
-
 
 
     private static final Logger log = LoggerFactory.getLogger( "web" );

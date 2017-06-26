@@ -7,10 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.*;
-import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
-import ru.protei.portal.core.model.dict.En_LocationType;
-import ru.protei.portal.core.model.dict.En_RegionState;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.LocationQuery;
@@ -21,6 +18,7 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
+import javax.inject.Inject;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -30,7 +28,7 @@ import java.util.stream.Collectors;
  */
 public class ProjectServiceImpl implements ProjectService {
 
-    private static Logger log = LoggerFactory.getLogger(ProjectServiceImpl.class);
+    private static Logger log = LoggerFactory.getLogger( ProjectServiceImpl.class );
 
     @Autowired
     CaseObjectDAO caseObjectDAO;
@@ -51,11 +49,16 @@ public class ProjectServiceImpl implements ProjectService {
     CaseTypeDAO caseTypeDAO;
 
     @Override
-    public CoreResponse<List<RegionInfo>> listRegions( ProjectQuery query ) {
+    public CoreResponse< List< RegionInfo > > listRegions( ProjectQuery query, Set< UserRole > roles ) {
+
+        if ( !policyService.hasPrivilegeFor( En_Privilege.REGION_VIEW, roles ) ) {
+            return new CoreResponse().error( En_ResultStatus.PERMISSION_DENIED );
+        }
+
         LocationQuery locationQuery = new LocationQuery();
         locationQuery.setType( En_LocationType.REGION );
-        List<Location> regions = locationDAO.listByQuery( locationQuery );
-        Map<Long, RegionInfo > regionInfos = regions.stream().collect(
+        List< Location > regions = locationDAO.listByQuery( locationQuery );
+        Map< Long, RegionInfo > regionInfos = regions.stream().collect(
                 Collectors.toMap( Location::getId, Location::toRegionInfo )
         );
 
@@ -67,16 +70,16 @@ public class ProjectServiceImpl implements ProjectService {
 //        );
         caseQuery.setProductId( query.getDirectionId() );
 
-        List<CaseObject> projects = caseObjectDAO.listByQuery( caseQuery );
-        projects.forEach( (project)->{
-            iterateAllLocations( project, (location)->{
+        List< CaseObject > projects = caseObjectDAO.listByQuery( caseQuery );
+        projects.forEach( ( project ) -> {
+            iterateAllLocations( project, ( location ) -> {
                 applyCaseToRegionInfo( project, location, regionInfos );
             } );
         } );
 
 
-        List<RegionInfo> result = regionInfos.values().stream()
-                .filter( (regionInfo)->{
+        List< RegionInfo > result = regionInfos.values().stream()
+                .filter( ( regionInfo ) -> {
                     if ( query.getStates() == null || query.getStates().isEmpty() ) {
                         return true;
                     }
@@ -85,41 +88,56 @@ public class ProjectServiceImpl implements ProjectService {
                 } )
                 .collect( Collectors.toList() );
 
-        return new CoreResponse<List<RegionInfo>>().success( result );
+        return new CoreResponse< List< RegionInfo > >().success( result );
     }
 
     @Override
-    public CoreResponse<Map<String, List<ProjectInfo>>> listProjectsByRegions( ProjectQuery query ) {
-        Map<String, List<ProjectInfo>> regionToProjectMap = new HashMap<>();
+    public CoreResponse< Map< String, List< ProjectInfo > > > listProjectsByRegions( ProjectQuery query, Set< UserRole > roles ) {
+
+        if ( !policyService.hasPrivilegeFor( En_Privilege.PROJECT_VIEW, roles ) ) {
+            return new CoreResponse().error( En_ResultStatus.PERMISSION_DENIED );
+        }
+
+        Map< String, List< ProjectInfo > > regionToProjectMap = new HashMap<>();
         CaseQuery caseQuery = new CaseQuery();
         caseQuery.setType( En_CaseType.PROJECT );
         caseQuery.setStateIds( query.getStates().stream()
-                .map( (state) -> new Long(state.getId()).intValue() )
+                .map( ( state ) -> new Long( state.getId() ).intValue() )
                 .collect( Collectors.toList() )
         );
         caseQuery.setProductId( query.getDirectionId() );
 
-        List<CaseObject> projects = caseObjectDAO.listByQuery( caseQuery );
-        projects.forEach( (project)->{
+        List< CaseObject > projects = caseObjectDAO.listByQuery( caseQuery );
+        projects.forEach( ( project ) -> {
             iterateAllLocations( project, ( location ) -> {
                 applyCaseToProjectInfo( project, location, regionToProjectMap );
             } );
         } );
 
-        return new CoreResponse<Map<String, List<ProjectInfo>>>().success( regionToProjectMap );
+        return new CoreResponse< Map< String, List< ProjectInfo > > >().success( regionToProjectMap );
     }
 
     @Override
-    public CoreResponse<ProjectInfo> getProject( Long id ) {
+    public CoreResponse< ProjectInfo > getProject( Long id, Set< UserRole > roles ) {
+
+        if ( !policyService.hasPrivilegeFor( En_Privilege.PROJECT_VIEW, roles ) ) {
+            return new CoreResponse().error( En_ResultStatus.PERMISSION_DENIED );
+        }
+
         CaseObject caseObject = caseObjectDAO.get( id );
         helper.fillAll( caseObject );
 
-        return new CoreResponse<ProjectInfo>().success( ProjectInfo.fromCaseObject( caseObject ) );
+        return new CoreResponse< ProjectInfo >().success( ProjectInfo.fromCaseObject( caseObject ) );
     }
 
     @Override
     @Transactional
-    public CoreResponse saveProject( ProjectInfo project ) {
+    public CoreResponse saveProject( ProjectInfo project, Set< UserRole > roles ) {
+
+        if ( !policyService.hasPrivilegeFor( En_Privilege.PROJECT_EDIT, roles ) ) {
+            return new CoreResponse().error( En_ResultStatus.PERMISSION_DENIED );
+        }
+
         CaseObject caseObject = caseObjectDAO.get( project.getId() );
         helper.fillAll( caseObject );
 
@@ -129,8 +147,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         if ( project.getProductDirection() == null ) {
             caseObject.setProductId( null );
-        }
-        else {
+        } else {
             caseObject.setProductId( project.getProductDirection().getId() );
         }
 
@@ -144,10 +161,15 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     @Transactional
-    public CoreResponse< Long > createProject( Long creatorId ) {
+    public CoreResponse< Long > createProject( Long creatorId, Set< UserRole > roles ) {
+
+        if ( !policyService.hasPrivilegeFor( En_Privilege.PROJECT_CREATE, roles ) ) {
+            return new CoreResponse().error( En_ResultStatus.PERMISSION_DENIED );
+        }
+
         CaseType type = caseTypeDAO.get( new Long( En_CaseType.PROJECT.getId() ) );
         Long id = type.getNextId();
-        type.setNextId( id+1 );
+        type.setNextId( id + 1 );
         caseTypeDAO.merge( type );
 
         CaseObject caseObject = new CaseObject();
@@ -160,28 +182,25 @@ public class ProjectServiceImpl implements ProjectService {
         caseObject.setCreatorId( creatorId );
 
         Long newId = caseObjectDAO.persist( caseObject );
-        return new CoreResponse<Long>().success( newId );
+        return new CoreResponse< Long >().success( newId );
     }
 
-    private void updateManagers( CaseObject caseObject, PersonShortView headManager, List<PersonShortView> deployManagers ) {
+    private void updateManagers( CaseObject caseObject, PersonShortView headManager, List< PersonShortView > deployManagers ) {
         for ( CaseMember member : caseObject.getMembers() ) {
             if ( member.getRole().equals( En_DevUnitPersonRoleType.HEAD_MANAGER ) ) {
                 if ( headManager == null ) {
                     caseMemberDAO.removeByKey( member.getId() );
                     continue;
-                }
-                else {
+                } else {
                     member.setMemberId( headManager.getId() );
                     caseMemberDAO.merge( member );
                     continue;
                 }
-            }
-            else if ( member.getRole().equals( En_DevUnitPersonRoleType.DEPLOY_MANAGER ) ) {
+            } else if ( member.getRole().equals( En_DevUnitPersonRoleType.DEPLOY_MANAGER ) ) {
                 int nPos = deployManagers.indexOf( PersonShortView.fromPerson( member.getMember() ) );
                 if ( nPos == -1 ) {
                     caseMemberDAO.removeByKey( member.getId() );
-                }
-                else {
+                } else {
                     deployManagers.remove( nPos );
                 }
             }
@@ -218,25 +237,25 @@ public class ProjectServiceImpl implements ProjectService {
 
     }
 
-    private void iterateAllLocations( CaseObject project, Consumer<Location> handler ) {
+    private void iterateAllLocations( CaseObject project, Consumer< Location > handler ) {
         if ( project == null ) {
             return;
         }
 
         helper.fillAll( project );
 
-        List<CaseLocation> locations = project.getLocations();
+        List< CaseLocation > locations = project.getLocations();
         if ( locations == null || locations.isEmpty() ) {
             handler.accept( null );
             return;
         }
 
-        locations.forEach( (location)->{
+        locations.forEach( ( location ) -> {
             handler.accept( location.getLocation() );
         } );
     }
 
-    private void applyCaseToRegionInfo( CaseObject project, Location location, Map<Long, RegionInfo> regions ) {
+    private void applyCaseToRegionInfo( CaseObject project, Location location, Map< Long, RegionInfo > regions ) {
         RegionInfo region = findRegionByLocation( regions, location );
         if ( region == null ) {
             return;
@@ -248,7 +267,7 @@ public class ProjectServiceImpl implements ProjectService {
         }
     }
 
-    private RegionInfo findRegionByLocation( Map<Long, RegionInfo> regions, Location location ) {
+    private RegionInfo findRegionByLocation( Map< Long, RegionInfo > regions, Location location ) {
         if ( location == null ) {
             return null;
         }
@@ -266,14 +285,14 @@ public class ProjectServiceImpl implements ProjectService {
         return null;
     }
 
-    private void applyCaseToProjectInfo( CaseObject project, Location location, Map<String, List<ProjectInfo>> projects ) {
+    private void applyCaseToProjectInfo( CaseObject project, Location location, Map< String, List< ProjectInfo > > projects ) {
 
         String locationName = ""; // name for empty location
         if ( location != null ) {
             locationName = location.getName();
         }
 
-        List<ProjectInfo> projectInfos = projects.get( locationName );
+        List< ProjectInfo > projectInfos = projects.get( locationName );
         if ( projectInfos == null ) {
             projectInfos = new ArrayList<>();
             projects.put( locationName, projectInfos );
@@ -282,4 +301,7 @@ public class ProjectServiceImpl implements ProjectService {
         ProjectInfo projectInfo = ProjectInfo.fromCaseObject( project );
         projectInfos.add( projectInfo );
     }
+
+    @Inject
+    private PolicyService policyService;
 }

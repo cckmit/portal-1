@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.ui.common.server.service.SessionService;
 import ru.protei.portal.ui.common.server.util.SystemConstants;
@@ -36,7 +37,7 @@ public class AuthServiceImpl implements AuthService {
 
         log.debug( "authentificate: login={}", login );
 
-        CoreResponse<UserSessionDescriptor> result = authService.login( httpRequest.getSession().getId(), login, password, httpRequest.getRemoteAddr(), httpRequest.getHeader( SystemConstants.USER_AGENT_HEADER ) );
+        CoreResponse< UserSessionDescriptor > result = authService.login( httpRequest.getSession().getId(), login, password, httpRequest.getRemoteAddr(), httpRequest.getHeader( SystemConstants.USER_AGENT_HEADER ) );
         if ( result.isError() ) {
             throw new RequestFailedException( result.getStatus() );
         }
@@ -48,7 +49,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public void logout() {
         UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor( httpRequest );
-        if ( descriptor != null )  {
+        if ( descriptor != null ) {
             authService.logout( httpRequest.getSession().getId(), httpRequest.getRemoteAddr(), httpRequest.getHeader( SystemConstants.USER_AGENT_HEADER ) );
             sessionService.setUserSessionDescriptor( httpRequest, null );
         }
@@ -56,16 +57,23 @@ public class AuthServiceImpl implements AuthService {
 
     private Profile makeProfileByDescriptor( UserSessionDescriptor sessionDescriptor ) {
         Profile profile = new Profile();
-        profile.setRoles( sessionDescriptor.getLogin().getRoles() );
+        Set< UserRole > roles = sessionDescriptor.getLogin().getRoles();
+        profile.setRoles( roles );
         profile.setLogin( sessionDescriptor.getLogin().getUlogin() );
         profile.setName( sessionDescriptor.getPerson().getFirstName() );
         profile.setId( sessionDescriptor.getPerson().getId() );
-
-        Set<En_Privilege> privileges = new HashSet<>();
-        privileges.add( En_Privilege.CONTACT_VIEW );
-        profile.setPrivileges( privileges );
+        profile.setPrivileges( getAllPrivileges( roles ) );
 
         return profile;
+    }
+
+    private Set< En_Privilege > getAllPrivileges( Set< UserRole > roles ) {
+        Set< En_Privilege > privileges = new HashSet<>();
+        for ( UserRole role : roles ) {
+            privileges.addAll( role.getPrivileges() );
+        }
+
+        return privileges;
     }
 
     @Autowired
