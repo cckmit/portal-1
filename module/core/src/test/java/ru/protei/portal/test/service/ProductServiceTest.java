@@ -10,14 +10,18 @@ import ru.protei.portal.config.MainConfiguration;
 import ru.protei.portal.core.model.dao.DevUnitDAO;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.DevUnit;
+import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.core.service.ProductService;
 import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by michael on 11.10.16.
@@ -47,10 +51,16 @@ public class ProductServiceTest {
         product.setStateId(En_DevUnitState.ACTIVE.getId());
         product.setTypeId(En_DevUnitType.PRODUCT.getId());
 
+        Set< UserRole > roles = new HashSet<>();
+        UserRole role = new UserRole();
+        role.setId( 1L );
+        Set<En_Privilege > privileges = new HashSet<>();
+        privileges.add( En_Privilege.PRODUCT_VIEW );
+        role.setPrivileges( privileges );
+
         Assert.assertNotNull(ctx.getBean(DevUnitDAO.class).persist(product));
 
-
-        CoreResponse<List<DevUnit>> result = ctx.getBean(ProductService.class).productList( new ProductQuery(), descriptor.getLogin().getRoles() );
+        CoreResponse<List<DevUnit>> result = ctx.getBean(ProductService.class).productList( new ProductQuery(), roles );
 
         Assert.assertNotNull(result);
         Assert.assertTrue(result.getDataAmountTotal() > 0);

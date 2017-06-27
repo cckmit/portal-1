@@ -10,8 +10,10 @@ import ru.protei.portal.config.MainConfiguration;
 import ru.protei.portal.core.model.dao.CompanyDAO;
 import ru.protei.portal.core.model.dao.CompanyGroupDAO;
 import ru.protei.portal.core.model.dao.CompanyGroupItemDAO;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanyGroup;
+import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.service.CompanyService;
@@ -19,7 +21,9 @@ import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by michael on 11.10.16.
@@ -39,9 +43,16 @@ public class CompanyServiceTest {
 
         CompanyService service = ctx.getBean(CompanyService.class);
 
+        Set< UserRole > roles = new HashSet<>();
+        UserRole role = new UserRole();
+        role.setId( 1L );
+        Set<En_Privilege > privileges = new HashSet<>();
+        privileges.add( En_Privilege.COMPANY_VIEW );
+        role.setPrivileges( privileges );
+
         Assert.assertNotNull(service);
 
-        CoreResponse<List<Company>> result = service.companyList(new CompanyQuery());
+        CoreResponse<List<Company>> result = service.companyList(new CompanyQuery(), roles );
 
         Assert.assertNotNull(result);
         Assert.assertNotNull(result.getData());
@@ -107,7 +118,16 @@ public class CompanyServiceTest {
 
             company.setGroupId( group.getId() );
 
-            CoreResponse<Company> response = service.createCompany(company);
+            Set< UserRole > roles = new HashSet<>();
+            UserRole role = new UserRole();
+            role.setId( 1L );
+            Set<En_Privilege > privileges = new HashSet<>();
+            privileges.add( En_Privilege.COMPANY_CREATE );
+            privileges.add( En_Privilege.COMPANY_VIEW );
+            privileges.add( En_Privilege.COMPANY_EDIT );
+            role.setPrivileges( privileges );
+
+            CoreResponse<Company> response = service.createCompany(company, roles );
             Assert.assertTrue(response.isOk());
             Assert.assertNotNull(response.getData());
 
@@ -121,11 +141,11 @@ public class CompanyServiceTest {
                 Assert.assertEquals(dupCompany.getId(), company.getId());
             }
 
-            response = service.getCompany( company.getId() );
+            response = service.getCompany( company.getId(), roles );
             Assert.assertNotNull(response.getData());
 
             company.setCname("Моя тестовая компания");
-            response =  service.updateCompany(company);
+            response =  service.updateCompany(company, roles );
             Assert.assertTrue(response.isOk());
             Assert.assertNotNull(response.getData());
 

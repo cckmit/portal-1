@@ -5,16 +5,20 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanyGroup;
+import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.query.CompanyGroupQuery;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.service.CompanyService;
+import ru.protei.portal.ui.common.server.service.SessionService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -28,11 +32,13 @@ public class CompanyServiceImpl implements CompanyService {
 
         List< Long > categoryIds = companyQuery.getCategoryIds();
 
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
         log.debug( "getCompanies(): searchPattern={} | categories={} | group={} | sortField={} | sortDir={}",
                 companyQuery.getSearchString(), categoryIds, companyQuery.getGroupId(),
                 companyQuery.getSortField(), companyQuery.getSortDir() );
 
-        CoreResponse< List<Company>> result = companyService.companyList(companyQuery);
+        CoreResponse< List<Company>> result = companyService.companyList(companyQuery, descriptor.getLogin().getRoles());
 
         if (result.isError())
             throw new RequestFailedException(result.getStatus());
@@ -59,15 +65,18 @@ public class CompanyServiceImpl implements CompanyService {
     public Boolean saveCompany( Company company ) throws RequestFailedException {
 
         log.debug( "saveCompany(): company={}", company );
+
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
         if (isCompanyNameExists(company.getCname(), company.getId()))
             throw new RequestFailedException();
         
         CoreResponse< Company > response;
 
         if ( company.getId() == null )
-            response = companyService.createCompany( company );
+            response = companyService.createCompany( company, descriptor.getLogin().getRoles() );
         else
-            response = companyService.updateCompany( company );
+            response = companyService.updateCompany( company, descriptor.getLogin().getRoles() );
 
         log.debug( "saveCompany(): response.isOk()={}", response.isOk() );
 
@@ -109,7 +118,10 @@ public class CompanyServiceImpl implements CompanyService {
     public Company getCompany( long id ) throws RequestFailedException {
         log.debug( "getCompany(): id={}", id );
 
-        CoreResponse<Company> response = companyService.getCompany( id );
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+        //TODO используется для отображения карточки компании, думаю проверка роли COMPANY_VIEW логична
+
+        CoreResponse<Company> response = companyService.getCompany( id, descriptor.getLogin().getRoles() );
 
         log.debug( "getCompany(): response.isOk()={} | response.getData()", response.isOk(), response.getData() );
 
@@ -122,6 +134,8 @@ public class CompanyServiceImpl implements CompanyService {
     public List< EntityOption > getCompanyOptionList() throws RequestFailedException {
 
         log.debug( "getCompanyOptionList()" );
+
+        //TODO используется в Селектор списка компаний CompanySelector, считаю что привилегия COMPANY_VIEW не для этого
 
         CoreResponse< List< EntityOption > > result = companyService.companyOptionList();
 
@@ -138,6 +152,8 @@ public class CompanyServiceImpl implements CompanyService {
 
         log.debug( "getGroupOptionList()" );
 
+        //TODO используется в Селектор списка групп компаний GroupButtonSelector/GroupInputSelector, считаю что привилегия COMPANY_VIEW не для этого
+
         CoreResponse< List< EntityOption > > result = companyService.groupOptionList();
 
         log.debug( "result status: {}, data-amount: {}", result.getStatus(), result.isOk() ? result.getDataAmountTotal() : 0 );
@@ -153,6 +169,8 @@ public class CompanyServiceImpl implements CompanyService {
 
         log.debug( "getCategoryOptionList()" );
 
+        //TODO используется в Селектор списка категорий CategoryBtnGroupMulti/CategoryButtonSelector, считаю что привилегия COMPANY_VIEW не для этого
+
         CoreResponse< List< EntityOption > > result = companyService.categoryOptionList();
 
         log.debug( "result status: {}, data-amount: {}", result.getStatus(), result.isOk() ? result.getDataAmountTotal() : 0 );
@@ -163,8 +181,24 @@ public class CompanyServiceImpl implements CompanyService {
         return result.getData();
     }
 
+    private UserSessionDescriptor getDescriptorAndCheckSession() throws RequestFailedException {
+        UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor( httpServletRequest );
+        log.info( "userSessionDescriptor={}", descriptor );
+        if ( descriptor == null ) {
+            throw new RequestFailedException( En_ResultStatus.SESSION_NOT_FOUND );
+        }
+
+        return descriptor;
+    }
+
     @Autowired
     private ru.protei.portal.core.service.CompanyService companyService;
+
+    @Autowired
+    SessionService sessionService;
+
+    @Autowired
+    HttpServletRequest httpServletRequest;
 
     private static final Logger log = LoggerFactory.getLogger( "web" );
 

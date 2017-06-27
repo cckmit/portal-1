@@ -46,6 +46,8 @@ public class ContactServiceImpl implements ContactService {
     public Person getContact(long id) throws RequestFailedException {
         log.debug("get contact, id: {}", id);
 
+        //TODO используется для отображения карточки контакта, думаю проверка роли CONTACT_VIEW логична
+
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
         CoreResponse<Person> response = contactService.getContact(id, descriptor.getLogin().getRoles());
