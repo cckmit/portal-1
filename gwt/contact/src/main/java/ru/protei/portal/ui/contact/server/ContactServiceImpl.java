@@ -8,13 +8,16 @@ import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.UserLogin;
+import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.ContactQuery;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.service.AccountService;
 import ru.protei.portal.ui.common.client.service.ContactService;
+import ru.protei.portal.ui.common.server.service.SessionService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -25,6 +28,8 @@ public class ContactServiceImpl implements ContactService {
 
     @Override
     public List<Person> getContacts( ContactQuery query ) throws RequestFailedException {
+
+        //TODO используется в cелектор сотрудников любой компании ContactButtonSelector, считаю что привилегия PERSON_VIEW не для этого
 
         log.debug( "getContacts(): searchPattern={} | companyId={} | isFired={} | sortField={} | sortDir={}",
                 query.getSearchString(), query.getCompanyId(), query.getFired(), query.getSortField(), query.getSortDir() );
@@ -41,7 +46,9 @@ public class ContactServiceImpl implements ContactService {
     public Person getContact(long id) throws RequestFailedException {
         log.debug("get contact, id: {}", id);
 
-        CoreResponse<Person> response = contactService.getContact(id);
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
+        CoreResponse<Person> response = contactService.getContact(id, descriptor.getLogin().getRoles());
 
         log.debug("get contact, id: {} -> {} ", id, response.isError() ? "error" : response.getData().getDisplayName());
 
@@ -57,7 +64,9 @@ public class ContactServiceImpl implements ContactService {
 
         log.debug("store contact, id: {} ", HelperFunc.nvl(p.getId(), "new"));
 
-        CoreResponse<Person> response = contactService.saveContact(p);
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
+        CoreResponse<Person> response = contactService.saveContact(p, descriptor.getLogin().getRoles());
 
         log.debug("store contact, result: {}", response.isOk() ? "ok" : response.getStatus());
 
@@ -97,6 +106,8 @@ public class ContactServiceImpl implements ContactService {
             throw new RequestFailedException( En_ResultStatus.INTERNAL_ERROR );
         }
 
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
         if ( HelperFunc.isEmpty( userLogin.getUlogin() ) ) {
             if ( userLogin.getId() == null ) {
                 return true;
@@ -104,7 +115,7 @@ public class ContactServiceImpl implements ContactService {
 
                 log.debug( "remove account, id: {} ", userLogin.getId() );
 
-                CoreResponse< Boolean > response = accountService.removeAccount( userLogin.getId() );
+                CoreResponse< Boolean > response = accountService.removeAccount( userLogin.getId(), descriptor.getLogin().getRoles() );
 
                 log.debug( "remove account, result: {}", response.isOk() ? "ok" : response.getStatus() );
 
@@ -120,7 +131,7 @@ public class ContactServiceImpl implements ContactService {
             if ( !isLoginUnique( userLogin.getUlogin(), userLogin.getId() ) )
                 throw new RequestFailedException ( En_ResultStatus.ALREADY_EXIST );
 
-            CoreResponse< UserLogin > response = accountService.saveAccount( userLogin );
+            CoreResponse< UserLogin > response = accountService.saveAccount( userLogin, descriptor.getLogin().getRoles() );
 
             log.debug( "store account, result: {}", response.isOk() ? "ok" : response.getStatus() );
 
@@ -147,11 +158,27 @@ public class ContactServiceImpl implements ContactService {
         return response.getData();
     }
 
+    private UserSessionDescriptor getDescriptorAndCheckSession() throws RequestFailedException {
+        UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor( httpServletRequest );
+        log.info( "userSessionDescriptor={}", descriptor );
+        if ( descriptor == null ) {
+            throw new RequestFailedException( En_ResultStatus.SESSION_NOT_FOUND );
+        }
+
+        return descriptor;
+    }
+
     @Autowired
     ru.protei.portal.core.service.ContactService contactService;
 
     @Autowired
     AccountService accountService;
+
+    @Autowired
+    SessionService sessionService;
+
+    @Autowired
+    HttpServletRequest httpServletRequest;
 
     private static final Logger log = LoggerFactory.getLogger( "web" );
 }

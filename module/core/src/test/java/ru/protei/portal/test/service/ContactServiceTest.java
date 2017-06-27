@@ -37,7 +37,7 @@ public class ContactServiceTest {
         Assert.assertNotNull(service);
 
 
-        CoreResponse<Person> response = service.getContact(1001L);
+        CoreResponse<Person> response = service.getContact(1001L, descriptor.getLogin().getRoles() );
 
         Assert.assertTrue(response.isOk());
 
@@ -62,7 +62,7 @@ public class ContactServiceTest {
         Assert.assertTrue(result.getData().size() > 0);
 
         for (Person person : result.getData()) {
-            CoreResponse<Person> x = service.getContact( person.getId() );
+            CoreResponse<Person> x = service.getContact( person.getId(), descriptor.getLogin().getRoles() );
             Assert.assertTrue(x.isOk());
             Assert.assertEquals(person.getId(), x.getData().getId());
             Assert.assertEquals(person.getDisplayName(), x.getData().getDisplayName());

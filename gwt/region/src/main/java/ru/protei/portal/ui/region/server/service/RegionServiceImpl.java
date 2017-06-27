@@ -46,6 +46,8 @@ public class RegionServiceImpl implements RegionService {
     @Override
     public List< DistrictInfo > getDistrictList() throws RequestFailedException {
 
+        //TODO используется в Селектор состояния региона DistrictBtnGroupMulti, считаю что привилегия REGION_VIEW не для этого
+
         CoreResponse< List< DistrictInfo > > result = locationService.districtList( new DistrictQuery() );
 
         if ( result.isError() )
@@ -57,7 +59,7 @@ public class RegionServiceImpl implements RegionService {
     @Override
     public List< EntityOption > getRegionList() throws RequestFailedException {
 
-        //TODO используется в селекторе регионов RegionButtonSelector, считаю что привилегия Region_VIEW не для этого
+        //TODO используется в селекторе регионов RegionButtonSelector, считаю что привилегия REGION_VIEW не для этого
         CoreResponse< List< EntityOption > > result = locationService.regionShortList( );
 
         if ( result.isError() )

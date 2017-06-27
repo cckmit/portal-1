@@ -9,12 +9,15 @@ import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dao.UserLoginDAO;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.ContactQuery;
 import ru.protei.portal.core.model.view.PersonShortView;
 
+import javax.inject.Inject;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -29,6 +32,9 @@ public class ContactServiceImpl implements ContactService {
 
     @Autowired
     UserLoginDAO userLoginDAO;
+
+    @Inject
+    private PolicyService policyService;
 
     @Override
     public CoreResponse<List<PersonShortView>> shortViewList(ContactQuery query) {
@@ -53,7 +59,12 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Override
-    public CoreResponse<Person> getContact(long id) {
+    public CoreResponse<Person> getContact( long id, Set< UserRole > roles ) {
+
+        if ( !policyService.hasPrivilegeFor( En_Privilege.CONTACT_VIEW, roles ) ) {
+            return new CoreResponse().error( En_ResultStatus.PERMISSION_DENIED );
+        }
+
         Person person = personDAO.getContact(id);
 
         return person != null ? new CoreResponse<Person>().success(person)
@@ -62,10 +73,14 @@ public class ContactServiceImpl implements ContactService {
 
 
     @Override
-    public CoreResponse<Person> saveContact(Person p) {
+    public CoreResponse<Person> saveContact( Person p, Set< UserRole > roles ) {
         if (personDAO.isEmployee(p)) {
             log.warn("person with id = {} is employee",p.getId());
             return new CoreResponse<Person>().error(En_ResultStatus.VALIDATION_ERROR);
+        }
+
+        if ( !policyService.hasPrivilegeFor( En_Privilege.CONTACT_EDIT, roles ) ) {
+            return new CoreResponse().error( En_ResultStatus.PERMISSION_DENIED );
         }
 
         if (HelperFunc.isEmpty(p.getFirstName()) || HelperFunc.isEmpty(p.getLastName())

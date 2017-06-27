@@ -4,26 +4,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.DigestUtils;
 import ru.protei.portal.api.struct.CoreResponse;
-import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dao.UserLoginDAO;
 import ru.protei.portal.core.model.dao.UserRoleDAO;
 import ru.protei.portal.core.model.dict.En_AdminState;
 import ru.protei.portal.core.model.dict.En_AuthType;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.AccountQuery;
-import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
+import javax.inject.Inject;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 /**
  * Реализация сервиса управления учетными записями
@@ -39,6 +37,9 @@ public class AccountServiceImpl implements AccountService {
 
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
+
+    @Inject
+    private PolicyService policyService;
 
     @Override
     public CoreResponse< List< UserLogin > > accountList( AccountQuery query ) {
@@ -76,7 +77,11 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional
-    public CoreResponse< UserLogin > saveAccount( UserLogin userLogin ) {
+    public CoreResponse< UserLogin > saveAccount( UserLogin userLogin, Set< UserRole > roles ) {
+
+        if ( !policyService.hasPrivilegeFor( En_Privilege.ACCOUNT_EDIT, roles ) ) {
+            return new CoreResponse().error( En_ResultStatus.PERMISSION_DENIED );
+        }
 
         if ( !isValidLogin( userLogin ) )
             return new CoreResponse< UserLogin >().error( En_ResultStatus.VALIDATION_ERROR );
@@ -120,7 +125,11 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public CoreResponse< Boolean > removeAccount( Long accountId ) {
+    public CoreResponse< Boolean > removeAccount( Long accountId, Set< UserRole > roles ) {
+
+        if ( !policyService.hasPrivilegeFor( En_Privilege.ACCOUNT_REMOVE, roles ) ) {
+            return new CoreResponse().error( En_ResultStatus.PERMISSION_DENIED );
+        }
 
         if ( userLoginDAO.removeByKey( accountId ) ) {
             return new CoreResponse< Boolean >().success( true );

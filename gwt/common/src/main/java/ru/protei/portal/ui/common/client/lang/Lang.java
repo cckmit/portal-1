@@ -570,4 +570,6 @@ public interface Lang extends Messages, ContactItemLang {
     String errSessionNotFound();
 
     String privilegeCategoryRole();
+
+    String privilegeRemove();
 }

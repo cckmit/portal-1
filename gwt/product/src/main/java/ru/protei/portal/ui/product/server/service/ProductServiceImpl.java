@@ -118,7 +118,7 @@ public class ProductServiceImpl implements ProductService {
 
         log.debug( "getProductDirectionList(): query={}", query );
 
-        //TODO используется в Button селектор с продуктами ProductDirectionInputSelector, считаю что привилегия Product_VIEW не для этого
+        //TODO используется в Button селектор с продуктами ProductDirectionInputSelector, считаю что привилегия PRODUCT_VIEW не для этого
 
         String[] names = new String[] {
                 "Система 112", "Call Center", "Видеонаблюдение", "Видеоаналитика"

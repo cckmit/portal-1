@@ -7,8 +7,6 @@ import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.UserLogin;
-import ru.protei.portal.core.model.ent.UserRole;
-import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.AccountQuery;
 import ru.protei.portal.ui.common.client.service.AccountService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
@@ -56,7 +54,7 @@ public class AccountServiceImpl implements AccountService {
         if ( !isLoginUnique( userLogin.getUlogin(), userLogin.getId() ) )
             throw new RequestFailedException ( En_ResultStatus.ALREADY_EXIST );
 
-        CoreResponse< UserLogin > response = accountService.saveAccount( userLogin );
+        CoreResponse< UserLogin > response = accountService.saveAccount( userLogin, descriptor.getLogin().getRoles() );
 
         log.debug( "saveAccount(): result={}", response.isOk() ? "ok" : response.getStatus() );
 
@@ -93,7 +91,7 @@ public class AccountServiceImpl implements AccountService {
     public boolean removeAccount( Long accountId ) throws RequestFailedException {
         log.debug( "removeAccount(): id={}", accountId );
 
-        CoreResponse< Boolean > response = accountService.removeAccount( accountId );
+        CoreResponse< Boolean > response = accountService.removeAccount( accountId, descriptor.getLogin().getRoles() );
         log.debug( "removeAccount(): result={}", response.isOk() ? "ok" : response.getStatus() );
 
         if (response.isOk()) {
