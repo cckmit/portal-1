@@ -18,7 +18,6 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.AccountQuery;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
-import javax.inject.Inject;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -38,8 +37,8 @@ public class AccountServiceImpl implements AccountService {
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
-    @Inject
-    private PolicyService policyService;
+    @Autowired
+    PolicyService policyService;
 
     @Override
     public CoreResponse< List< UserLogin > > accountList( AccountQuery query ) {

@@ -32,8 +32,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     DevUnitDAO devUnitDAO;
-    @Inject
-    private PolicyService policyService;
+
+    @Autowired
+    PolicyService policyService;
 
     @Override
     public CoreResponse<List<ProductShortView>> shortViewList( ProductQuery query, Set< UserRole > roles ) {

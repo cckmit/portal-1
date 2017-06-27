@@ -7,10 +7,13 @@ import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.UserLogin;
+import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.query.AccountQuery;
 import ru.protei.portal.ui.common.client.service.AccountService;
+import ru.protei.portal.ui.common.server.service.SessionService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -46,6 +49,8 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public UserLogin saveAccount( UserLogin userLogin ) throws RequestFailedException {
         log.debug( "saveAccount(): account={} ", userLogin );
+
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
         if ( userLogin == null ) {
             throw new RequestFailedException( En_ResultStatus.INTERNAL_ERROR );
@@ -91,6 +96,8 @@ public class AccountServiceImpl implements AccountService {
     public boolean removeAccount( Long accountId ) throws RequestFailedException {
         log.debug( "removeAccount(): id={}", accountId );
 
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
         CoreResponse< Boolean > response = accountService.removeAccount( accountId, descriptor.getLogin().getRoles() );
         log.debug( "removeAccount(): result={}", response.isOk() ? "ok" : response.getStatus() );
 
@@ -101,8 +108,24 @@ public class AccountServiceImpl implements AccountService {
         throw new RequestFailedException(response.getStatus());
     }
 
+    private UserSessionDescriptor getDescriptorAndCheckSession() throws RequestFailedException {
+        UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor( httpServletRequest );
+        log.info( "userSessionDescriptor={}", descriptor );
+        if ( descriptor == null ) {
+            throw new RequestFailedException( En_ResultStatus.SESSION_NOT_FOUND );
+        }
+
+        return descriptor;
+    }
+
     @Autowired
     ru.protei.portal.core.service.AccountService accountService;
+
+    @Autowired
+    SessionService sessionService;
+
+    @Autowired
+    HttpServletRequest httpServletRequest;
 
     private static final Logger log = LoggerFactory.getLogger( "web" );
 }

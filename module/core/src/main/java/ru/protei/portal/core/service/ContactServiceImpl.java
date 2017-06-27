@@ -14,7 +14,6 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.ContactQuery;
 import ru.protei.portal.core.model.view.PersonShortView;
 
-import javax.inject.Inject;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -33,8 +32,8 @@ public class ContactServiceImpl implements ContactService {
     @Autowired
     UserLoginDAO userLoginDAO;
 
-    @Inject
-    private PolicyService policyService;
+    @Autowired
+    PolicyService policyService;
 
     @Override
     public CoreResponse<List<PersonShortView>> shortViewList(ContactQuery query) {

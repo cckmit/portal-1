@@ -7,15 +7,19 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.config.MainConfiguration;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.query.ContactQuery;
 import ru.protei.portal.core.service.ContactService;
 import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by michael on 11.10.16.
@@ -36,8 +40,14 @@ public class ContactServiceTest {
 
         Assert.assertNotNull(service);
 
+        Set< UserRole > roles = new HashSet<>();
+        UserRole role = new UserRole();
+        role.setId( 1L );
+        Set<En_Privilege > privileges = new HashSet<>();
+        privileges.add( En_Privilege.CONTACT_VIEW );
+        role.setPrivileges( privileges );
 
-        CoreResponse<Person> response = service.getContact(1001L, descriptor.getLogin().getRoles() );
+        CoreResponse<Person> response = service.getContact(1001L, roles );
 
         Assert.assertTrue(response.isOk());
 
@@ -52,6 +62,13 @@ public class ContactServiceTest {
 
         ContactService service = ctx.getBean(ContactService.class);
 
+        Set< UserRole > roles = new HashSet<>();
+        UserRole role = new UserRole();
+        role.setId( 1L );
+        Set<En_Privilege > privileges = new HashSet<>();
+        privileges.add( En_Privilege.CONTACT_VIEW );
+        role.setPrivileges( privileges );
+
         Assert.assertNotNull(service);
 
         CoreResponse<List<Person>> result = service.contactList(new ContactQuery((Long)null, null, "Михаил", En_SortField.person_full_name, En_SortDir.ASC));
@@ -62,7 +79,7 @@ public class ContactServiceTest {
         Assert.assertTrue(result.getData().size() > 0);
 
         for (Person person : result.getData()) {
-            CoreResponse<Person> x = service.getContact( person.getId(), descriptor.getLogin().getRoles() );
+            CoreResponse<Person> x = service.getContact( person.getId(), roles );
             Assert.assertTrue(x.isOk());
             Assert.assertEquals(person.getId(), x.getData().getId());
             Assert.assertEquals(person.getDisplayName(), x.getData().getDisplayName());

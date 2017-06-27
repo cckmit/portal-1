@@ -16,6 +16,7 @@ import ru.protei.portal.core.model.dao.CaseShortViewDAO;
 import ru.protei.portal.core.model.dao.CaseStateMatrixDAO;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseQuery;
@@ -59,8 +60,16 @@ public class CaseServiceImpl implements CaseService {
     @Autowired
     AttachmentService attachmentService;
 
+    @Autowired
+    PolicyService policyService;
+
     @Override
-    public CoreResponse<List<CaseShortView>> caseObjectList( CaseQuery query) {
+    public CoreResponse<List<CaseShortView>> caseObjectList( CaseQuery query, Set< UserRole > roles ) {
+
+        if ( !policyService.hasPrivilegeFor( En_Privilege.ISSUE_VIEW, roles ) ) {
+            return new CoreResponse().error( En_ResultStatus.PERMISSION_DENIED );
+        }
+
         List<CaseShortView> list = caseShortViewDAO.getCases( query );
 
         if ( list == null )
@@ -70,7 +79,12 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
-    public CoreResponse<CaseObject> getCaseObject(long id) {
+    public CoreResponse<CaseObject> getCaseObject( long id, Set< UserRole > roles ) {
+
+        if ( !policyService.hasPrivilegeFor( En_Privilege.ISSUE_VIEW, roles ) ) {
+            return new CoreResponse().error( En_ResultStatus.PERMISSION_DENIED );
+        }
+
         CaseObject caseObject = caseObjectDAO.get( id );
 
         if(caseObject == null)
@@ -90,7 +104,12 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     @Transactional
-    public CoreResponse< CaseObject > saveCaseObject( CaseObject caseObject, Person initiator ) {
+    public CoreResponse< CaseObject > saveCaseObject( CaseObject caseObject, Person initiator, Set< UserRole > roles ) {
+
+        if ( !policyService.hasPrivilegeFor( En_Privilege.ISSUE_EDIT, roles ) ) {
+            return new CoreResponse().error( En_ResultStatus.PERMISSION_DENIED );
+        }
+
         if (caseObject == null)
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
 
@@ -120,7 +139,12 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     @Transactional
-    public CoreResponse< CaseObject > updateCaseObject( CaseObject caseObject, Person currentPerson ) {
+    public CoreResponse< CaseObject > updateCaseObject( CaseObject caseObject, Person currentPerson, Set< UserRole > roles ) {
+
+        if ( !policyService.hasPrivilegeFor( En_Privilege.ISSUE_EDIT, roles ) ) {
+            return new CoreResponse().error( En_ResultStatus.PERMISSION_DENIED );
+        }
+
         if (caseObject == null)
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
 
@@ -179,7 +203,12 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     @Transactional
-    public CoreResponse<CaseComment> addCaseComment( CaseComment comment, Person currentPerson ) {
+    public CoreResponse<CaseComment> addCaseComment( CaseComment comment, Person currentPerson, Set< UserRole > roles ) {
+
+        if ( !policyService.hasEveryPrivilegeOf( roles, En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT ) ) {
+            return new CoreResponse().error( En_ResultStatus.PERMISSION_DENIED );
+        }
+
         if ( comment == null )
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
 
@@ -214,7 +243,12 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     @Transactional
-    public CoreResponse<CaseComment> updateCaseComment (CaseComment comment, Person person ) {
+    public CoreResponse<CaseComment> updateCaseComment( CaseComment comment, Person person, Set< UserRole > roles ) {
+
+        if ( !policyService.hasEveryPrivilegeOf( roles, En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT ) ) {
+            return new CoreResponse().error( En_ResultStatus.PERMISSION_DENIED );
+        }
+
         if (comment == null || comment.getId() == null)
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
 
@@ -254,7 +288,12 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     @Transactional
-    public CoreResponse removeCaseComment( CaseComment caseComment, Long personId ) {
+    public CoreResponse removeCaseComment( CaseComment caseComment, Long personId, Set< UserRole > roles ) {
+
+        if ( !policyService.hasEveryPrivilegeOf( roles, En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT ) ) {
+            return new CoreResponse().error( En_ResultStatus.PERMISSION_DENIED );
+        }
+
         if (caseComment == null || caseComment.getId() == null || personId == null)
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
 

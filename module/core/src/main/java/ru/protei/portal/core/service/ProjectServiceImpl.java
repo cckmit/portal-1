@@ -18,7 +18,6 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
-import javax.inject.Inject;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -48,8 +47,8 @@ public class ProjectServiceImpl implements ProjectService {
     @Autowired
     CaseTypeDAO caseTypeDAO;
 
-    @Inject
-    private PolicyService policyService;
+    @Autowired
+    PolicyService policyService;
 
     @Override
     public CoreResponse< List< RegionInfo > > listRegions( ProjectQuery query, Set< UserRole > roles ) {
