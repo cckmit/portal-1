@@ -43,7 +43,11 @@ public enum En_Privilege {
 
     EQUIPMENT_VIEW (EQUIPMENT, VIEW),
     EQUIPMENT_EDIT (EQUIPMENT, EDIT),
-    EQUIPMENT_CREATE (EQUIPMENT, CREATE);
+    EQUIPMENT_CREATE (EQUIPMENT, CREATE),
+
+    ROLE_VIEW (ROLE, VIEW),
+    ROLE_EDIT (ROLE, EDIT),
+    ROLE_CREATE (ROLE, CREATE);
 
     private final En_PrivilegeEntity entity;
     private final En_PrivilegeAction action;

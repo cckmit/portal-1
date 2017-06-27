@@ -568,4 +568,6 @@ public interface Lang extends Messages, ContactItemLang {
     String errPermissionDenied();
 
     String errSessionNotFound();
+
+    String privilegeCategoryRole();
 }
