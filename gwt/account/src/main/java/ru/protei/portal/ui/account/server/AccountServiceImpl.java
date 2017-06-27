@@ -27,7 +27,9 @@ public class AccountServiceImpl implements AccountService {
 
         log.debug( "getAccounts(): query={}", query);
 
-        CoreResponse< List< UserLogin > > response = accountService.accountList( query );
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
+        CoreResponse< List< UserLogin > > response = accountService.accountList( query, descriptor.getLogin().getRoles() );
 
         if ( response.isError() ) {
             throw new RequestFailedException( response.getStatus() );
@@ -39,7 +41,10 @@ public class AccountServiceImpl implements AccountService {
     public UserLogin getAccount( long id ) throws RequestFailedException {
         log.debug( "getAccount(): id={}", id );
 
-        CoreResponse< UserLogin > response = accountService.getAccount( id );
+        //TODO используется для отображения карточки аккаунта, думаю проверка роли ACCOUNT_VIEW логична
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
+        CoreResponse< UserLogin > response = accountService.getAccount( id, descriptor.getLogin().getRoles() );
 
         log.debug( "getAccount(): id={} -> {} ", id, response.isError() ? "error" : response.getData().getUlogin() );
 

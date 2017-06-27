@@ -12,9 +12,9 @@ import java.util.Set;
  * Сервис управления учетными записями
  */
 public interface AccountService {
-    CoreResponse< List< UserLogin > > accountList( AccountQuery query );
+    CoreResponse< List< UserLogin > > accountList( AccountQuery query, Set< UserRole > roles );
     CoreResponse< Long > count( AccountQuery query );
-    CoreResponse< UserLogin > getAccount( long id );
+    CoreResponse< UserLogin > getAccount( long id, Set< UserRole > roles );
     CoreResponse< UserLogin > saveAccount( UserLogin userLogin, Set< UserRole > roles );
     CoreResponse< Boolean > checkUniqueLogin( String login, Long excludeId );
     CoreResponse< Boolean > removeAccount( Long accountId, Set< UserRole > roles );

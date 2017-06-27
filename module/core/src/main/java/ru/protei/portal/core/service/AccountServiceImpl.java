@@ -41,7 +41,12 @@ public class AccountServiceImpl implements AccountService {
     PolicyService policyService;
 
     @Override
-    public CoreResponse< List< UserLogin > > accountList( AccountQuery query ) {
+    public CoreResponse< List< UserLogin > > accountList( AccountQuery query, Set< UserRole > roles ) {
+
+        if ( !policyService.hasPrivilegeFor( En_Privilege.ACCOUNT_VIEW, roles ) ) {
+            return new CoreResponse().error( En_ResultStatus.PERMISSION_DENIED );
+        }
+
         List< UserLogin > list = userLoginDAO.getAccounts( query );
 
         if (list == null)
@@ -62,7 +67,12 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public CoreResponse< UserLogin > getAccount( long id ) {
+    public CoreResponse< UserLogin > getAccount( long id, Set< UserRole > roles ) {
+
+        if ( !policyService.hasPrivilegeFor( En_Privilege.ACCOUNT_VIEW, roles ) ) {
+            return new CoreResponse().error( En_ResultStatus.PERMISSION_DENIED );
+        }
+
         UserLogin userLogin = userLoginDAO.get( id );
 
         if ( userLogin == null ) {
@@ -91,7 +101,7 @@ public class AccountServiceImpl implements AccountService {
 
         userLogin.setUlogin( userLogin.getUlogin().trim() );
 
-        UserLogin account = userLogin.getId() == null ? null : getAccount( userLogin.getId() ).getData();
+        UserLogin account = userLogin.getId() == null ? null : getAccount( userLogin.getId(), roles ).getData();
 
         if ( account == null || ( account.getUpass() == null && userLogin.getUpass() != null ) ||
                 ( account.getUpass() != null && userLogin.getUpass() != null && !account.getUpass().equalsIgnoreCase( userLogin.getUpass().trim() ) ) ) {
