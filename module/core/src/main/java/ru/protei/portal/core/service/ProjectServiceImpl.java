@@ -48,6 +48,9 @@ public class ProjectServiceImpl implements ProjectService {
     @Autowired
     CaseTypeDAO caseTypeDAO;
 
+    @Inject
+    private PolicyService policyService;
+
     @Override
     public CoreResponse< List< RegionInfo > > listRegions( ProjectQuery query, Set< UserRole > roles ) {
 
@@ -301,7 +304,4 @@ public class ProjectServiceImpl implements ProjectService {
         ProjectInfo projectInfo = ProjectInfo.fromCaseObject( project );
         projectInfos.add( projectInfo );
     }
-
-    @Inject
-    private PolicyService policyService;
 }

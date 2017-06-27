@@ -5,14 +5,18 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.DevUnit;
+import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.query.ProductDirectionQuery;
 import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.service.ProductService;
+import ru.protei.portal.ui.common.server.service.SessionService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -56,11 +60,13 @@ public class ProductServiceImpl implements ProductService {
 
         log.debug( "saveProduct(): product={}", product );
 
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
         if ( !isNameUnique( product.getName(), product.getId() ) )
             throw new RequestFailedException ();
 
         CoreResponse response = product.getId() == null ?
-                productService.createProduct( product ) : productService.updateProduct( product );
+                productService.createProduct( product ) : productService.updateProduct( product, descriptor.getLogin().getRoles() );
 
         if ( response.isError() )
             throw new RequestFailedException( response.getStatus() );
@@ -95,7 +101,9 @@ public class ProductServiceImpl implements ProductService {
         log.debug( "getProductViewList(): searchPattern={} | showDeprecated={} | sortField={} | sortDir={}",
                 query.getSearchString(), query.getState(), query.getSortField(), query.getSortDir() );
 
-        CoreResponse< List<ProductShortView> > result = productService.shortViewList( query );
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
+        CoreResponse< List<ProductShortView> > result = productService.shortViewList( query, descriptor.getLogin().getRoles() );
 
         log.debug( "result status: {}, data-amount: {}", result.getStatus(), result.isOk() ? result.getDataAmountTotal() : 0 );
 
@@ -110,6 +118,8 @@ public class ProductServiceImpl implements ProductService {
 
         log.debug( "getProductDirectionList(): query={}", query );
 
+        //TODO используется в Button селектор с продуктами ProductDirectionInputSelector, считаю что привилегия Product_VIEW не для этого
+
         String[] names = new String[] {
                 "Система 112", "Call Center", "Видеонаблюдение", "Видеоаналитика"
         };
@@ -122,8 +132,22 @@ public class ProductServiceImpl implements ProductService {
         return result.getData();
     }
 
+    private UserSessionDescriptor getDescriptorAndCheckSession() throws RequestFailedException {
+        UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor( httpServletRequest );
+        log.info( "userSessionDescriptor={}", descriptor );
+        if ( descriptor == null ) {
+            throw new RequestFailedException( En_ResultStatus.SESSION_NOT_FOUND );
+        }
+
+        return descriptor;
+    }
+
     @Autowired
     ru.protei.portal.core.service.ProductService productService;
+    @Autowired
+    SessionService sessionService;
+    @Autowired
+    HttpServletRequest httpServletRequest;
 
     private static final Logger log = LoggerFactory.getLogger( "web" );
 }

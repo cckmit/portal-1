@@ -5,15 +5,19 @@ import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.DevUnitDAO;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.DevUnit;
+import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.query.ProductDirectionQuery;
 import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.ProductShortView;
 
+import javax.inject.Inject;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -28,9 +32,15 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     DevUnitDAO devUnitDAO;
+    @Inject
+    private PolicyService policyService;
 
     @Override
-    public CoreResponse<List<ProductShortView>> shortViewList(ProductQuery query) {
+    public CoreResponse<List<ProductShortView>> shortViewList( ProductQuery query, Set< UserRole > roles ) {
+
+        if ( !policyService.hasPrivilegeFor( En_Privilege.PRODUCT_VIEW, roles ) ) {
+            return new CoreResponse().error( En_ResultStatus.PERMISSION_DENIED );
+        }
 
         List<DevUnit> list = devUnitDAO.listByQuery(query);
 
@@ -55,6 +65,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public CoreResponse<List<ProductDirectionInfo>> productDirectionList( ProductDirectionQuery query ) {
+
         List<DevUnit> list = devUnitDAO.listByQuery(query);
 
         if (list == null)
@@ -103,7 +114,11 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public CoreResponse<Boolean> updateProduct(DevUnit product) {
+    public CoreResponse<Boolean> updateProduct( DevUnit product, Set< UserRole > roles ) {
+
+        if ( !policyService.hasPrivilegeFor( En_Privilege.PRODUCT_EDIT, roles ) ) {
+            return new CoreResponse().error( En_ResultStatus.PERMISSION_DENIED );
+        }
 
         if( product == null || product.getId() == null )
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
