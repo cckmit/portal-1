@@ -31,7 +31,9 @@ public class EquipmentServiceImpl implements EquipmentService {
                 query.getSearchString(), query.getTypes(), query.getStages(), query.getOrganizationCodes(), query.getClassifierCode(),
                 query.getRegisterNumber() );
 
-        CoreResponse<List<Equipment>> response = equipmentService.equipmentList( query );
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
+        CoreResponse<List<Equipment>> response = equipmentService.equipmentList( query, descriptor.getLogin().getRoles() );
 
         if ( response.isError() ) {
             throw new RequestFailedException( response.getStatus() );
@@ -43,7 +45,10 @@ public class EquipmentServiceImpl implements EquipmentService {
     public Equipment getEquipment(long id) throws RequestFailedException {
         log.debug("get equipment, id: {}", id);
 
-        CoreResponse<Equipment> response = equipmentService.getEquipment(id);
+        //TODO используется для отображения карточки оборудования, думаю проверка роли EQUIPMENT_VIEW логична
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
+        CoreResponse<Equipment> response = equipmentService.getEquipment(id, descriptor.getLogin().getRoles());
         log.debug("get equipment, id: {} -> {} ", id, response.isError() ? "error" : response.getData());
 
         if (response.isOk()) {
@@ -56,6 +61,9 @@ public class EquipmentServiceImpl implements EquipmentService {
 
     @Override
     public Equipment saveEquipment(Equipment eq) throws RequestFailedException {
+
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
         if (eq == null) {
             log.warn("null equipment in request");
             throw new RequestFailedException(En_ResultStatus.INTERNAL_ERROR);
@@ -67,7 +75,7 @@ public class EquipmentServiceImpl implements EquipmentService {
         }
         log.debug("store equipment, id: {} ", HelperFunc.nvl(eq.getId(), "new"));
 
-        CoreResponse<Equipment> response = equipmentService.saveEquipment(eq);
+        CoreResponse<Equipment> response = equipmentService.saveEquipment(eq, descriptor.getLogin().getRoles());
         log.debug("store equipment, result: {}", response.isOk() ? "ok" : response.getStatus());
 
         if (response.isOk()) {
@@ -82,10 +90,13 @@ public class EquipmentServiceImpl implements EquipmentService {
     public Long copyEquipment( Long equipmentId, String newName ) throws RequestFailedException {
         log.debug( "copy equipment: id: {}, newName = {}", equipmentId, newName );
 
+        //TODO используется для копирования оборудования, думаю проверка роли EQUIPMENT_CREATE логична
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
         UserSessionDescriptor session = sessionService.getUserSessionDescriptor( httpRequest );
         Long authorId = session.getPerson() == null ? 0 : session.getPerson().getId();
 
-        CoreResponse<Long> response = equipmentService.copyEquipment(equipmentId, newName, authorId);
+        CoreResponse<Long> response = equipmentService.copyEquipment(equipmentId, newName, authorId, descriptor.getLogin().getRoles());
         log.debug( "copy equipment: result: {}", response.isOk() ? "ok" : response.getStatus() );
 
         if (response.isOk()) {
@@ -100,7 +111,9 @@ public class EquipmentServiceImpl implements EquipmentService {
     public boolean removeEquipment( Long equipmentId ) throws RequestFailedException {
         log.debug( "remove equipment: id={}", equipmentId );
 
-        CoreResponse<Boolean> response = equipmentService.removeEquipment(equipmentId);
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
+        CoreResponse<Boolean> response = equipmentService.removeEquipment(equipmentId, descriptor.getLogin().getRoles());
         log.debug( "remove equipment: result: {}", response.isOk() ? "ok" : response.getStatus() );
 
         if (response.isOk()) {
@@ -170,6 +183,16 @@ public class EquipmentServiceImpl implements EquipmentService {
         }
 
         throw new RequestFailedException(response.getStatus());
+    }
+
+    private UserSessionDescriptor getDescriptorAndCheckSession() throws RequestFailedException {
+        UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor( httpRequest );
+        log.info( "userSessionDescriptor={}", descriptor );
+        if ( descriptor == null ) {
+            throw new RequestFailedException( En_ResultStatus.SESSION_NOT_FOUND );
+        }
+
+        return descriptor;
     }
 
     @Autowired

@@ -8,17 +8,19 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.DecimalNumberDAO;
 import ru.protei.portal.core.model.dao.EquipmentDAO;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.Equipment;
+import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.query.EquipmentQuery;
 import ru.protei.winter.core.utils.collections.CollectionUtils;
-import ru.protei.winter.core.utils.result.ResultWrapperException;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -37,8 +39,16 @@ public class EquipmentServiceImpl implements EquipmentService {
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
+    @Autowired
+    PolicyService policyService;
+
     @Override
-    public CoreResponse<List<Equipment>> equipmentList(EquipmentQuery query) {
+    public CoreResponse<List<Equipment>> equipmentList( EquipmentQuery query, Set< UserRole > roles ) {
+
+        if ( !policyService.hasPrivilegeFor( En_Privilege.EQUIPMENT_VIEW, roles ) ) {
+            return new CoreResponse().error( En_ResultStatus.PERMISSION_DENIED );
+        }
+
         List<Equipment> list = equipmentDAO.getListByQuery(query);
 
         if (list == null)
@@ -49,7 +59,12 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
-    public CoreResponse<Equipment> getEquipment(long id) {
+    public CoreResponse<Equipment> getEquipment( long id, Set< UserRole > roles ) {
+
+        if ( !policyService.hasPrivilegeFor( En_Privilege.EQUIPMENT_VIEW, roles ) ) {
+            return new CoreResponse().error( En_ResultStatus.PERMISSION_DENIED );
+        }
+
         Equipment equipment = equipmentDAO.get(id);
         jdbcManyRelationsHelper.fillAll( equipment );
 
@@ -59,7 +74,12 @@ public class EquipmentServiceImpl implements EquipmentService {
 
     @Override
     @Transactional
-    public CoreResponse<Equipment> saveEquipment(Equipment equipment) {
+    public CoreResponse<Equipment> saveEquipment( Equipment equipment, Set< UserRole > roles ) {
+
+        if ( !policyService.hasPrivilegeFor( En_Privilege.EQUIPMENT_EDIT, roles ) ) {
+            return new CoreResponse().error( En_ResultStatus.PERMISSION_DENIED );
+        }
+
         if ( CollectionUtils.isEmpty( equipment.getDecimalNumbers() ) ) {
             return new CoreResponse<Equipment>().error( En_ResultStatus.INCORRECT_PARAMS );
         }
@@ -120,7 +140,12 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
-    public CoreResponse<Long> copyEquipment( Long equipmentId, String newName, Long authorId ) {
+    public CoreResponse<Long> copyEquipment( Long equipmentId, String newName, Long authorId, Set< UserRole > roles ) {
+
+        if ( !policyService.hasPrivilegeFor( En_Privilege.EQUIPMENT_CREATE, roles ) ) {
+            return new CoreResponse().error( En_ResultStatus.PERMISSION_DENIED );
+        }
+
         if (equipmentId == null || newName == null) {
             return new CoreResponse<Long>().error(En_ResultStatus.INCORRECT_PARAMS);
         }
@@ -144,7 +169,12 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
-    public CoreResponse<Boolean> removeEquipment( Long equipmentId ) {
+    public CoreResponse<Boolean> removeEquipment( Long equipmentId, Set< UserRole > roles ) {
+
+        if ( !policyService.hasPrivilegeFor( En_Privilege.EQUIPMENT_REMOVE, roles ) ) {
+            return new CoreResponse().error( En_ResultStatus.PERMISSION_DENIED );
+        }
+
         if (equipmentId == null) {
             return new CoreResponse<Boolean>().error(En_ResultStatus.INCORRECT_PARAMS);
         }

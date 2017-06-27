@@ -14,7 +14,6 @@ import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.ProductShortView;
 
-import javax.inject.Inject;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -37,11 +36,7 @@ public class ProductServiceImpl implements ProductService {
     PolicyService policyService;
 
     @Override
-    public CoreResponse<List<ProductShortView>> shortViewList( ProductQuery query, Set< UserRole > roles ) {
-
-        if ( !policyService.hasPrivilegeFor( En_Privilege.PRODUCT_VIEW, roles ) ) {
-            return new CoreResponse().error( En_ResultStatus.PERMISSION_DENIED );
-        }
+    public CoreResponse<List<ProductShortView>> shortViewList( ProductQuery query ) {
 
         List<DevUnit> list = devUnitDAO.listByQuery(query);
 
@@ -54,7 +49,11 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public CoreResponse<List<DevUnit>> productList(ProductQuery query) {
+    public CoreResponse<List<DevUnit>> productList( ProductQuery query, Set< UserRole > roles ) {
+
+        if ( !policyService.hasPrivilegeFor( En_Privilege.PRODUCT_VIEW, roles ) ) {
+            return new CoreResponse().error( En_ResultStatus.PERMISSION_DENIED );
+        }
 
         List<DevUnit> list = devUnitDAO.listByQuery(query);
 
@@ -78,7 +77,11 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public CoreResponse<DevUnit> getProduct(Long id) {
+    public CoreResponse<DevUnit> getProduct( Long id, Set< UserRole > roles ) {
+
+        if ( !policyService.hasPrivilegeFor( En_Privilege.PRODUCT_VIEW, roles ) ) {
+            return new CoreResponse().error( En_ResultStatus.PERMISSION_DENIED );
+        }
 
         if (id == null)
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);

@@ -31,7 +31,9 @@ public class ProductServiceImpl implements ProductService {
         log.debug( "getProductList(): search={} | showDeprecated={} | sortField={} | order={}",
                 productQuery.getSearchString(), productQuery.getState(), productQuery.getSortField(), productQuery.getSortDir() );
 
-        CoreResponse < List< DevUnit > > result = productService.productList( productQuery );
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
+        CoreResponse < List< DevUnit > > result = productService.productList( productQuery, descriptor.getLogin().getRoles() );
 
         if ( result.isError() )
             throw new RequestFailedException( result.getStatus() );
@@ -45,7 +47,10 @@ public class ProductServiceImpl implements ProductService {
 
         log.debug( "getProduct(): id={}", productId );
 
-        CoreResponse< DevUnit > response = productService.getProduct( productId );
+        //TODO используется для отображения карточки продукта, думаю проверка роли PRODUCT_VIEW логична
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
+        CoreResponse< DevUnit > response = productService.getProduct( productId, descriptor.getLogin().getRoles() );
 
         if ( response.isError() )
             throw new RequestFailedException( response.getStatus() );
@@ -101,9 +106,9 @@ public class ProductServiceImpl implements ProductService {
         log.debug( "getProductViewList(): searchPattern={} | showDeprecated={} | sortField={} | sortDir={}",
                 query.getSearchString(), query.getState(), query.getSortField(), query.getSortDir() );
 
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+        //TODO используется в Button селектор с продуктами ProductButtonSelector, считаю что привилегия PRODUCT_VIEW не для этого
 
-        CoreResponse< List<ProductShortView> > result = productService.shortViewList( query, descriptor.getLogin().getRoles() );
+        CoreResponse< List<ProductShortView> > result = productService.shortViewList( query );
 
         log.debug( "result status: {}, data-amount: {}", result.getStatus(), result.isOk() ? result.getDataAmountTotal() : 0 );
 

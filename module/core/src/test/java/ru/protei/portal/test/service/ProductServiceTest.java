@@ -50,7 +50,7 @@ public class ProductServiceTest {
         Assert.assertNotNull(ctx.getBean(DevUnitDAO.class).persist(product));
 
 
-        CoreResponse<List<DevUnit>> result = ctx.getBean(ProductService.class).productList( new ProductQuery() );
+        CoreResponse<List<DevUnit>> result = ctx.getBean(ProductService.class).productList( new ProductQuery(), descriptor.getLogin().getRoles() );
 
         Assert.assertNotNull(result);
         Assert.assertTrue(result.getDataAmountTotal() > 0);

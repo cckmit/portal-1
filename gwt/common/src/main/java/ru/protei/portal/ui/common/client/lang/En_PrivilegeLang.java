@@ -67,12 +67,23 @@ public class En_PrivilegeLang {
                 return lang.privilegeEdit();
             case ACCOUNT_CREATE:
                 return lang.privilegeCreate();
+            case ACCOUNT_REMOVE:
+                return lang.privilegeRemove();
 
             case EQUIPMENT_VIEW:
                 return lang.privilegeView();
             case EQUIPMENT_EDIT:
                 return lang.privilegeEdit();
             case EQUIPMENT_CREATE:
+                return lang.privilegeCreate();
+            case EQUIPMENT_REMOVE:
+                return lang.privilegeRemove();
+
+            case ROLE_VIEW:
+                return lang.privilegeView();
+            case ROLE_EDIT:
+                return lang.privilegeEdit();
+            case ROLE_CREATE:
                 return lang.privilegeCreate();
 
             default:

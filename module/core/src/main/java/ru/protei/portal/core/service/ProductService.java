@@ -17,9 +17,9 @@ import java.util.Set;
 public interface ProductService {
 
     CoreResponse<Long> count(ProductQuery query);
-    CoreResponse<List<ProductShortView>> shortViewList( ProductQuery query, Set< UserRole > roles );
-    CoreResponse<List<DevUnit>> productList(ProductQuery query);
-    CoreResponse<DevUnit> getProduct(Long id);
+    CoreResponse<List<ProductShortView>> shortViewList( ProductQuery query );
+    CoreResponse<List<DevUnit>> productList( ProductQuery query, Set< UserRole > roles );
+    CoreResponse<DevUnit> getProduct( Long id, Set< UserRole > roles );
     CoreResponse<Long> createProduct(DevUnit product);
     CoreResponse<Boolean> updateProduct( DevUnit product, Set< UserRole > roles );
     CoreResponse<Boolean> checkUniqueProductByName(String name, Long id);
