@@ -326,7 +326,12 @@ public class CaseServiceImpl implements CaseService {
 
 
     @Override
-    public CoreResponse<Long> count(CaseQuery query) {
+    public CoreResponse<Long> count( CaseQuery query, Set< UserRole > roles ) {
+
+        if ( !policyService.hasPrivilegeFor( En_Privilege.ISSUE_VIEW, roles ) ) {
+            return new CoreResponse().error( En_ResultStatus.PERMISSION_DENIED );
+        }
+
         Long count = caseObjectDAO.count(query);
 
         if (count == null)

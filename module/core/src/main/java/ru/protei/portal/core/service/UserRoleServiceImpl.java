@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.UserRoleQuery;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Реализация сервиса управления ролями
@@ -22,8 +23,16 @@ public class UserRoleServiceImpl implements UserRoleService {
     @Autowired
     UserRoleDAO userRoleDAO;
 
+    @Autowired
+    PolicyService policyService;
+
     @Override
-    public CoreResponse<List<UserRole>> userRoleList(UserRoleQuery query) {
+    public CoreResponse<List<UserRole>> userRoleList( UserRoleQuery query, Set< UserRole > roles ) {
+
+        if ( !policyService.hasPrivilegeFor( En_Privilege.ROLE_VIEW, roles ) ) {
+            return new CoreResponse().error( En_ResultStatus.PERMISSION_DENIED );
+        }
+
         List<UserRole> list = userRoleDAO.listByQuery(query);
 
         if (list == null)
@@ -33,7 +42,12 @@ public class UserRoleServiceImpl implements UserRoleService {
     }
 
     @Override
-    public CoreResponse<UserRole> getUserRole(Long id) {
+    public CoreResponse<UserRole> getUserRole( Long id, Set< UserRole > roles ) {
+
+        if ( !policyService.hasPrivilegeFor( En_Privilege.ROLE_VIEW, roles ) ) {
+            return new CoreResponse().error( En_ResultStatus.PERMISSION_DENIED );
+        }
+
         UserRole person = userRoleDAO.get(id);
 
         return person != null ? new CoreResponse<UserRole>().success(person)
@@ -42,7 +56,12 @@ public class UserRoleServiceImpl implements UserRoleService {
 
 
     @Override
-    public CoreResponse<UserRole> saveUserRole(UserRole role) {
+    public CoreResponse<UserRole> saveUserRole( UserRole role, Set< UserRole > roles ) {
+
+//        if ( !policyService.hasEveryPrivilegeOf( roles, En_Privilege.ROLE_CREATE, En_Privilege.ROLE_EDIT ) ) {
+//            return new CoreResponse().error( En_ResultStatus.PERMISSION_DENIED );
+//        }
+
         if (HelperFunc.isEmpty(role.getCode())) {
             return new CoreResponse<UserRole>().error(En_ResultStatus.VALIDATION_ERROR);
         }

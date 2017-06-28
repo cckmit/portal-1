@@ -82,8 +82,11 @@ public class ContactServiceImpl implements ContactService {
 
     @Override
     public Long getContactsCount( ContactQuery query ) throws RequestFailedException {
+
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
         log.debug( "getContactsCount(): query={}", query );
-        return contactService.count( query ).getData();
+        return contactService.count( query, descriptor.getLogin().getRoles() ).getData();
     }
 
     public List<PersonShortView> getContactViewList( ContactQuery query ) throws RequestFailedException {

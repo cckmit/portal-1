@@ -16,7 +16,7 @@ import java.util.Set;
  */
 public interface CaseService {
 
-    CoreResponse<Long> count( CaseQuery query );
+    CoreResponse<Long> count( CaseQuery query, Set< UserRole > roles );
     CoreResponse<List<CaseShortView>> caseObjectList( CaseQuery query, Set< UserRole > roles );
     CoreResponse<CaseObject> getCaseObject( long id, Set< UserRole > roles );
     CoreResponse<CaseObject> saveCaseObject( CaseObject p, Person initiator, Set< UserRole > roles );

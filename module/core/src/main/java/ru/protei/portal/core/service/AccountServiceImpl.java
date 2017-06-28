@@ -57,7 +57,12 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public CoreResponse< Long > count( AccountQuery query ) {
+    public CoreResponse< Long > count( AccountQuery query, Set< UserRole > roles ) {
+
+        if ( !policyService.hasPrivilegeFor( En_Privilege.ACCOUNT_VIEW, roles ) ) {
+            return new CoreResponse().error( En_ResultStatus.PERMISSION_DENIED );
+        }
+
         Long count = userLoginDAO.count( query );
 
         if ( count == null )

@@ -121,7 +121,12 @@ public class ContactServiceImpl implements ContactService {
 
 
     @Override
-    public CoreResponse<Long> count(ContactQuery query) {
+    public CoreResponse<Long> count( ContactQuery query, Set< UserRole > roles ) {
+
+        if ( !policyService.hasPrivilegeFor( En_Privilege.CONTACT_VIEW, roles ) ) {
+            return new CoreResponse().error( En_ResultStatus.PERMISSION_DENIED );
+        }
+
         return new CoreResponse<Long>().success(personDAO.count(query));
     }
 }

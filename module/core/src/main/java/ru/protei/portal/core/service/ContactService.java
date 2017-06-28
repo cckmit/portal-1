@@ -15,7 +15,7 @@ import java.util.Set;
 public interface ContactService {
 
     CoreResponse<List<PersonShortView>> shortViewList(ContactQuery query);
-    CoreResponse<Long> count(ContactQuery query);
+    CoreResponse<Long> count( ContactQuery query, Set< UserRole > roles );
     CoreResponse<List<Person>> contactList(ContactQuery query);
     CoreResponse<Person> getContact( long id, Set< UserRole > roles );
     CoreResponse<Person> saveContact( Person p, Set< UserRole > roles );

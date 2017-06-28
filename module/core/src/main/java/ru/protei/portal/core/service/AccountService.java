@@ -13,7 +13,7 @@ import java.util.Set;
  */
 public interface AccountService {
     CoreResponse< List< UserLogin > > accountList( AccountQuery query, Set< UserRole > roles );
-    CoreResponse< Long > count( AccountQuery query );
+    CoreResponse< Long > count( AccountQuery query, Set< UserRole > roles );
     CoreResponse< UserLogin > getAccount( long id, Set< UserRole > roles );
     CoreResponse< UserLogin > saveAccount( UserLogin userLogin, Set< UserRole > roles );
     CoreResponse< Boolean > checkUniqueLogin( String login, Long excludeId );

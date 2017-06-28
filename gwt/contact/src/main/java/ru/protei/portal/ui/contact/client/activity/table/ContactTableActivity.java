@@ -5,12 +5,14 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.query.ContactQuery;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
@@ -58,7 +60,10 @@ public abstract class ContactTableActivity
         init.parent.add( view.asWidget() );
         init.parent.add( pagerView.asWidget() );
 
-        fireEvent( new ActionBarEvents.Add( CREATE_ACTION, UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.CONTACT ) );
+        fireEvent( policyService.hasPrivilegeFor( En_Privilege.CONTACT_CREATE ) ?
+                new ActionBarEvents.Add( CREATE_ACTION, UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.CONTACT ) :
+                new ActionBarEvents.Clear()
+        );
 
         view.showElements();
         isShowTable = false;
@@ -203,6 +208,9 @@ public abstract class ContactTableActivity
 
     @Inject
     AbstractPagerView pagerView;
+
+    @Inject
+    PolicyService policyService;
 
     private boolean isShowTable = false;
 

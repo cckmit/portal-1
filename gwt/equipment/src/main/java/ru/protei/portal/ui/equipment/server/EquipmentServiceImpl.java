@@ -125,8 +125,11 @@ public class EquipmentServiceImpl implements EquipmentService {
 
     @Override
     public Long getEquipmentCount( EquipmentQuery query ) throws RequestFailedException {
+
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
         log.debug( "get equipment count(): query={}", query );
-        return equipmentService.count( query ).getData();
+        return equipmentService.count( query, descriptor.getLogin().getRoles() ).getData();
     }
 
     @Override

@@ -81,8 +81,11 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public long getIssuesCount( CaseQuery query ) throws RequestFailedException {
+
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
         log.debug( "getIssuesCount(): query={}", query );
-        return caseService.count( query ).getData();
+        return caseService.count( query, descriptor.getLogin().getRoles() ).getData();
     }
 
     @Override

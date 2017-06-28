@@ -14,7 +14,7 @@ import java.util.Set;
  */
 public interface EquipmentService {
 
-    CoreResponse< Long > count( EquipmentQuery query );
+    CoreResponse< Long > count( EquipmentQuery query, Set< UserRole > roles );
 
     CoreResponse< List< Equipment > > equipmentList( EquipmentQuery query, Set< UserRole > roles );
 

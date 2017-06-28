@@ -8,12 +8,14 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CompanyCategory;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanyCategory;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.PlateListAnimation;
 import ru.protei.portal.ui.common.client.common.PeriodicTaskService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
@@ -58,7 +60,10 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
         init.parent.clear();
         init.parent.add(view.asWidget());
 
-        fireEvent( new ActionBarEvents.Add( CREATE_ACTION, UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.COMPANY ) );
+        fireEvent( policyService.hasPrivilegeFor( En_Privilege.COMPANY_CREATE ) ?
+                new ActionBarEvents.Add( CREATE_ACTION, UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.COMPANY ) :
+                new ActionBarEvents.Clear()
+        );
 
         query = makeQuery();
         requestCompanies();
@@ -196,7 +201,8 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
     CompanyServiceAsync companyService;
     @Inject
     PlateListAnimation animation;
-
+    @Inject
+    PolicyService policyService;
     @Inject
     PeriodicTaskService taskService;
     PeriodicTaskService.PeriodicTaskHandler fillViewHandler;

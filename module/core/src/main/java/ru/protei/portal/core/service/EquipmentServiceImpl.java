@@ -184,7 +184,12 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
-    public CoreResponse<Long> count(EquipmentQuery query) {
+    public CoreResponse<Long> count( EquipmentQuery query, Set< UserRole > roles ) {
+
+        if ( !policyService.hasPrivilegeFor( En_Privilege.EQUIPMENT_VIEW, roles ) ) {
+            return new CoreResponse().error( En_ResultStatus.PERMISSION_DENIED );
+        }
+
         return new CoreResponse<Long>().success(equipmentDAO.countByQuery(query));
     }
 

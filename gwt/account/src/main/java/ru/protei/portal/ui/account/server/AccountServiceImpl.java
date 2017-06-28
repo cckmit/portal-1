@@ -78,8 +78,11 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public Long getAccountsCount( AccountQuery query ) throws RequestFailedException {
+
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
         log.debug( "getAccountsCount(): query={}", query );
-        return accountService.count( query ).getData();
+        return accountService.count( query, descriptor.getLogin().getRoles() ).getData();
     }
 
     @Override
