@@ -116,6 +116,7 @@ public abstract class ProductListActivity implements AbstractProductListActivity
         }
 
         view.getChildContainer().clear();
+        view.setListCreateBtnVisible(policyService.hasPrivilegeFor( En_Privilege.PRODUCT_CREATE ));
         itemViewToModel.clear();
 
         productService.getProductList(query,

@@ -32,6 +32,11 @@ public class RegionListView extends Composite implements AbstractRegionListView 
     @Override
     public HasWidgets getFilterContainer () { return filterContainer; }
 
+    @Override
+    public void setListCreateBtnVisible( boolean isVisible ) {
+        childContainer.setCreateButtonVisible( isVisible );
+    }
+
     @UiField
     PlateList childContainer;
     @UiField

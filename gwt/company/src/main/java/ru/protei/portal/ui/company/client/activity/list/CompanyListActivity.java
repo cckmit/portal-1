@@ -125,6 +125,7 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
         }
 
         view.getChildContainer().clear();
+        view.setListCreateBtnVisible(policyService.hasPrivilegeFor( En_Privilege.COMPANY_CREATE ));
         itemViewToModel.clear();
 
         companyService.getCompanies(query, new RequestCallback< List < Company > >() {

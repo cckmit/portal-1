@@ -11,4 +11,6 @@ public interface AbstractProductListView extends IsWidget {
     void setActivity( AbstractProductListActivity activity );
     HasWidgets getChildContainer();
     HasWidgets getFilterContainer ();
+
+    void setListCreateBtnVisible( boolean visibility );
 }
