@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.product.client.activity.item;
 
-import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 
@@ -17,5 +16,5 @@ public interface AbstractProductItemView extends IsWidget {
 
     HasWidgets getPreviewContainer();
 
-    HasVisibility editVisibility();
+    void setEditEnabled( boolean value );
 }

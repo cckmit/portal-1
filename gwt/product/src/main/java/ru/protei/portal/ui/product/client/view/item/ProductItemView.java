@@ -23,11 +23,6 @@ public class ProductItemView extends Composite implements AbstractProductItemVie
         this.activity = activity;
     }
 
-    @Override
-    public HasVisibility editVisibility() {
-        return edit;
-    }
-
     @UiHandler( "favorite" )
     public void onFavoriteClicked( ClickEvent event ) {
         event.preventDefault();
@@ -72,6 +67,15 @@ public class ProductItemView extends Composite implements AbstractProductItemVie
     @Override
     public HasWidgets getPreviewContainer() {
         return previewContainer;
+    }
+
+    @Override
+    public void setEditEnabled( boolean isEnabled ) {
+        if (isEnabled) {
+            edit.removeStyleName( "anchor-disabled" );
+        } else {
+            edit.addStyleName( "anchor-disabled" );
+        }
     }
 
     @UiField

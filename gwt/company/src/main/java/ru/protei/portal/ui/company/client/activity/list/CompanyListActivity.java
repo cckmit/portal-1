@@ -163,6 +163,7 @@ public abstract class CompanyListActivity implements AbstractCompanyListActivity
         AbstractCompanyItemView itemView = factory.get();
         itemView.setActivity( this );
         itemView.setName( company.getCname() );
+        itemView.setEditEnabled( policyService.hasPrivilegeFor( En_Privilege.COMPANY_EDIT ) );
 
         PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(company.getContactInfo());
 

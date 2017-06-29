@@ -9,10 +9,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.Anchor;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.HasWidgets;
+import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.ui.region.client.activity.item.AbstractRegionItemActivity;
 import ru.protei.portal.ui.region.client.activity.item.AbstractRegionItemView;
 
@@ -73,6 +70,15 @@ public class RegionItemView extends Composite implements AbstractRegionItemView 
     @Override
     public void setState( String value ) {
         state.setClassName( value );
+    }
+
+    @Override
+    public void setEditEnabled( boolean isEnabled ) {
+        if (isEnabled) {
+            edit.removeStyleName( "anchor-disabled" );
+        } else {
+            edit.addStyleName( "anchor-disabled" );
+        }
     }
 
     @Override

@@ -40,4 +40,6 @@ public interface AbstractCompanyItemView extends IsWidget {
      * Установить сайт
      */
     void setWebsite( String value );
+
+    void setEditEnabled( boolean isEnabled );
 }

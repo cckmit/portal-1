@@ -14,6 +14,7 @@ import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.brainworm.factory.widget.table.client.helper.SelectionColumn;
 import ru.protei.portal.core.model.dict.En_AdminState;
 import ru.protei.portal.core.model.dict.En_AuthType;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.ui.account.client.activity.table.AbstractAccountTableActivity;
 import ru.protei.portal.ui.account.client.activity.table.AbstractAccountTableView;
@@ -33,9 +34,13 @@ import java.util.List;
 public class AccountTableView extends Composite implements AbstractAccountTableView {
 
     @Inject
-    public void onInit() {
+    public void onInit(EditClickColumn< UserLogin > editClickColumn,
+                       RemoveClickColumn< UserLogin > removeClickColumn) {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+        this.editClickColumn = editClickColumn;
+        this.removeClickColumn = removeClickColumn;
         initTable();
+
     }
 
     @Override
@@ -159,8 +164,8 @@ public class AccountTableView extends Composite implements AbstractAccountTableV
             }
         };
 
-        editClickColumn = new EditClickColumn< UserLogin >( lang ) {};
-        removeClickColumn = new RemoveClickColumn< UserLogin >( lang ) {};
+        editClickColumn.setPrivilege( En_Privilege.ACCOUNT_EDIT );
+        removeClickColumn.setPrivilege( En_Privilege.ACCOUNT_REMOVE );
 
         columns.add( type );
         columns.add( login );
