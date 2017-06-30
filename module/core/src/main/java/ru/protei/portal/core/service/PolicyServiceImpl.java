@@ -16,10 +16,8 @@ public class PolicyServiceImpl implements PolicyService {
         if ( roles == null ) {
             return false;
         }
-        //TODO напрягает каждый запрос на ядро итерироваться в поиске привилегии по каждой роли юзера
-        //TODO тут выход только расширить/пересмотреть UserSessionDescriptor и писать туда одну коллекцию из всех привилегий как в AuthServiceImpl.makeProfileByDescriptor()
         for ( UserRole role : roles ) {
-            if ( role.getPrivileges().contains( privilege ) ) {
+            if ( role.hasPrivilege( privilege ) ) {
                 return true;
             }
         }
@@ -31,15 +29,11 @@ public class PolicyServiceImpl implements PolicyService {
         if ( roles == null ) {
             return false;
         }
-        //TODO напрягает каждый запрос на ядро итерироваться в поиске привилегии по каждой роли юзера
-        //TODO тут выход только расширить/пересмотреть UserSessionDescriptor и писать туда одну коллекцию из всех привилегий как в AuthServiceImpl.makeProfileByDescriptor()
-
         for ( En_Privilege privilege : privileges ) {
             if ( !getAllPrivileges(roles).contains( privilege ) ) {
                 return false;
             }
         }
-
         return true;
     }
 
@@ -48,16 +42,11 @@ public class PolicyServiceImpl implements PolicyService {
         if ( roles == null ) {
             return false;
         }
-
-        //TODO напрягает каждый запрос на ядро итерироваться в поиске привилегии по каждой роли юзера
-        //TODO тут выход только расширить/пересмотреть UserSessionDescriptor и писать туда одну коллекцию из всех привилегий как в AuthServiceImpl.makeProfileByDescriptor()
-
         for ( En_Privilege privilege : privileges ) {
             if ( getAllPrivileges(roles).contains( privilege ) ) {
                 return true;
             }
         }
-
         return false;
     }
 
@@ -66,7 +55,6 @@ public class PolicyServiceImpl implements PolicyService {
         for ( UserRole role : roles ) {
             privileges.addAll( role.getPrivileges() );
         }
-
         return privileges;
     }
 }
