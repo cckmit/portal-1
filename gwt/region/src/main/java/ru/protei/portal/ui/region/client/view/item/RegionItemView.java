@@ -75,9 +75,9 @@ public class RegionItemView extends Composite implements AbstractRegionItemView 
     @Override
     public void setEditEnabled( boolean isEnabled ) {
         if (isEnabled) {
-            edit.removeStyleName( "anchor-disabled" );
+            edit.removeStyleName( "link-disabled" );
         } else {
-            edit.addStyleName( "anchor-disabled" );
+            edit.addStyleName( "link-disabled" );
         }
     }
 

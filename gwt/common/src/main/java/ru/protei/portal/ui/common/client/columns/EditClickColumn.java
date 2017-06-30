@@ -72,9 +72,9 @@ public class EditClickColumn< T > extends ru.protei.portal.ui.common.client.colu
         }
 
         if ( policyService.hasPrivilegeFor( privilege ) ) {
-            a.removeClassName( "anchor-disabled" );
+            a.removeClassName( "link-disabled" );
         } else {
-            a.addClassName( "anchor-disabled" );
+            a.addClassName( "link-disabled" );
         }
     }
 

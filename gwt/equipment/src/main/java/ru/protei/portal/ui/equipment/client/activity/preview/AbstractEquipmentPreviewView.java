@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.equipment.client.activity.preview;
 
+import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
 
 /**
@@ -28,4 +29,8 @@ public interface AbstractEquipmentPreviewView extends IsWidget {
     void setProject( String value );
 
     void setManager( String value );
+
+    void setCopyBtnEnabledStyle( boolean isEnabled );
+
+    void setRemoveBtnEnabledStyle( boolean isEnabled );
 }

@@ -72,9 +72,9 @@ public class ProductItemView extends Composite implements AbstractProductItemVie
     @Override
     public void setEditEnabled( boolean isEnabled ) {
         if (isEnabled) {
-            edit.removeStyleName( "anchor-disabled" );
+            edit.removeStyleName( "link-disabled" );
         } else {
-            edit.addStyleName( "anchor-disabled" );
+            edit.addStyleName( "link-disabled" );
         }
     }
 

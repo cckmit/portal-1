@@ -73,9 +73,9 @@ public class RemoveClickColumn< T > extends ClickColumn< T > {
         }
 
         if ( policyService.hasPrivilegeFor( privilege ) ) {
-            a.removeClassName( "anchor-disabled" );
+            a.removeClassName( "link-disabled" );
         } else {
-            a.addClassName( "anchor-disabled" );
+            a.addClassName( "link-disabled" );
         }
     }
 

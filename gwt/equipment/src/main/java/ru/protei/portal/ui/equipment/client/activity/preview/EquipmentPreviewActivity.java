@@ -4,7 +4,9 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Equipment;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.ConfirmDialogEvents;
 import ru.protei.portal.ui.common.client.events.EquipmentEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
@@ -79,6 +81,8 @@ public abstract class EquipmentPreviewActivity implements Activity, AbstractEqui
         view.setStage( stageLang.getName( value.getStage() ), value.getStage().name().toLowerCase() );
         view.setProject( value.getProject() == null ? "" : value.getProject() );
         view.setManager( value.getManagerShortName() == null ? "" : value.getManagerShortName() );
+        view.setCopyBtnEnabledStyle( policyService.hasPrivilegeFor( En_Privilege.EQUIPMENT_CREATE ) );
+        view.setRemoveBtnEnabledStyle( policyService.hasPrivilegeFor( En_Privilege.EQUIPMENT_REMOVE ) );
 
         if( value.getDecimalNumbers() != null ) {
             view.setDecimalNumbers( value.getDecimalNumbers().stream().map( EquipmentUtils::formatNumber ).collect( Collectors.joining(", ")) );
@@ -118,7 +122,8 @@ public abstract class EquipmentPreviewActivity implements Activity, AbstractEqui
     En_EquipmentTypeLang typeLang;
     @Inject
     En_EquipmentStageLang stageLang;
-
+    @Inject
+    PolicyService policyService;
     @Inject
     EquipmentServiceAsync equipmentService;
 

@@ -65,9 +65,9 @@ public class CompanyItemView extends Composite implements AbstractCompanyItemVie
     @Override
     public void setEditEnabled( boolean isEnabled ) {
         if (isEnabled) {
-            edit.removeStyleName( "anchor-disabled" );
+            edit.removeStyleName( "link-disabled" );
         } else {
-            edit.addStyleName( "anchor-disabled" );
+            edit.addStyleName( "link-disabled" );
         }
     }
 
