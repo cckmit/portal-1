@@ -142,7 +142,6 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         view.name().setValue(devUnit.getName());
         view.info().setValue(devUnit.getInfo());
         view.state().setVisible( true );
-        view.save().setEnabled( policyService.hasPrivilegeFor( En_Privilege.PRODUCT_EDIT ) );
         view.setStateBtnText(devUnit.isActiveUnit() ? lang.productToArchive() : lang.productFromArchive());
     }
 

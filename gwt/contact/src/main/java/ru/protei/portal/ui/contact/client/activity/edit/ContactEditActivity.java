@@ -237,8 +237,6 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         view.confirmPassword().setText("");
 
         view.showInfo(userLogin.getId() != null);
-
-        view.saveVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.CONTACT_EDIT ) );
     }
 
     private boolean isConfirmValidate() {
