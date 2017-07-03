@@ -56,9 +56,10 @@ package ru.protei.portal.ui.common.client.common;
  * 4.0.27.27 - CRM-10 Добавить отображение списка подписчиков для рассылки в превью компании, обращение
  * 4.0.28.27 - CRM-11 Управление ролями
  * 4.0.29.27 - CRM-12 Управление аккаунтами
+ * 4.0.29.28 - CRM-19 Не отображаются комментарии заказчиков
  */
 public class Version {
     public static String getVersion() {
-        return "4.0.29.27";
+        return "4.0.29.28";
     }
 }

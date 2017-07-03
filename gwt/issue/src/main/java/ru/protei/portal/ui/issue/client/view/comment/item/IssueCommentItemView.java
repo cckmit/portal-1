@@ -2,13 +2,15 @@ package ru.protei.portal.ui.issue.client.view.comment.item;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
-import com.google.gwt.dom.client.SpanElement;
+import com.google.gwt.dom.client.LIElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.dict.En_CaseState;
+import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
@@ -39,17 +41,25 @@ public class IssueCommentItemView
 
     @Override
     public void setOwner( String value ) {
-        this.owner.setText( value );
+        this.owner.setInnerText( value );
     }
 
     @Override
     public void setMessage( String value ) {
         this.message.getElement().setInnerHTML( value );
+        this.messageBlock.removeClassName( "hide" );
     }
 
     @Override
     public void setMine() {
         root.setStyleName( "right" );
+    }
+
+    @Override
+    public void setStatus( En_CaseState value ) {
+        status.setClassName( "case-" + value.name().toLowerCase() );
+        this.status.setInnerText( stateLang.getStateName( value ) );
+        this.info.removeClassName( "hide" );
     }
 
     @Override
@@ -103,10 +113,6 @@ public class IssueCommentItemView
     @UiField
     InlineLabel message;
     @UiField
-    Anchor owner;
-    @UiField
-    SpanElement date;
-    @UiField
     Anchor remove;
     @UiField
     Anchor edit;
@@ -119,6 +125,18 @@ public class IssueCommentItemView
     AttachmentList attachList;
     @UiField
     DivElement attachBlock;
+    @UiField
+    DivElement messageBlock;
+    @UiField
+    LIElement date;
+    @UiField
+    LIElement owner;
+    @UiField
+    LIElement info;
+    @UiField
+    LIElement status;
+    @Inject
+    En_CaseStateLang stateLang;
 
     private AbstractIssueCommentItemActivity activity;
 

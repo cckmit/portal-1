@@ -1780,3 +1780,12 @@ ul.privileges {
 .fa-1-9x {
   font-size: 1.9em !important;
 }
+
+.list-inline {
+  padding-left: 0;
+  list-style: none;
+}
+
+.list-inline>li {
+  display: inline-block;
+}

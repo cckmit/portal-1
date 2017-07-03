@@ -6,36 +6,39 @@
 
     <g:HTMLPanel tag="li" ui:field="root" styleName="left">
 
-        <div>
-            <span class="date-time" ui:field="date"></span>
-            <g:Anchor href="#" ui:field="owner" styleName="name"/>
+        <ul class="list-inline m-b-5">
+            <li ui:field="date" class="date-time"></li>
+            <li ui:field="owner" class="name"></li>
+            <li ui:field="info" class="hide"><ui:text from="{lang.issueCommentChangeStatusTo}"/></li>
+            <li ui:field="status"></li>
+            <li>
+                <span class="options">
+                    <g:Anchor href="javascript:;" ui:field="reply">
+                        <i class="fa fa-reply"></i>
+                    </g:Anchor>
+                    <g:Anchor href="javascript:;" ui:field="edit">
+                        <i class="fa fa-pencil"></i>
+                    </g:Anchor>
+                    <g:Anchor href="javascript:;" ui:field="remove">
+                        <i class="fa fa-trash"></i>
+                    </g:Anchor>
+                </span>
+            </li>
+        </ul>
 
-            <span class="options">
-                <g:Anchor href="javascript:;" ui:field="reply">
-                    <i class="fa fa-reply"></i>
-                </g:Anchor>
-                <g:Anchor href="javascript:;" ui:field="edit">
-                    <i class="fa fa-pencil"></i>
-                </g:Anchor>
-                <g:Anchor href="javascript:;" ui:field="remove">
-                    <i class="fa fa-trash"></i>
-                </g:Anchor>
-            </span>
-        </div>
+        <div ui:field="messageBlock" class="hide">
+            <a href="javascript:;" class="image"><img alt="" src="./images/user-icon-m.png"></img></a>
 
-        <a href="javascript:;" class="image"><img alt="" src="./images/user-icon-m.png"></img></a>
+            <div class="message">
+                <g:InlineLabel ui:field="message"/>
 
-        <div class="message">
-            <g:InlineLabel ui:field="message"/>
-
-            <div class="attachment-block" ui:field="attachBlock">
-                <label style="font-size: 11px;font-weight: bold;">
-                    <ui:text from="{lang.issueAttachments}"/>
-                </label>
-                <attachment:AttachmentList ui:field="attachList"/>
+                <div class="attachment-block" ui:field="attachBlock">
+                    <label style="font-size: 11px;font-weight: bold;">
+                        <ui:text from="{lang.issueAttachments}"/>
+                    </label>
+                    <attachment:AttachmentList ui:field="attachList"/>
+                </div>
             </div>
         </div>
-
-
     </g:HTMLPanel>
 </ui:UiBinder>
