@@ -3,7 +3,6 @@ package ru.protei.portal.ui.crm.client.activity.app;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.History;
-import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -11,7 +10,6 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.ui.common.client.common.PageService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
-import ru.protei.winter.web.common.client.events.HeaderEvents;
 import ru.protei.winter.web.common.client.events.MenuEvents;
 
 /**
@@ -62,6 +60,11 @@ public abstract class AppActivity
         fireEvent( new MenuEvents.Clear() );
 
         view.getDetailsContainer().clear();
+    }
+
+    @Override
+    public void onLocaleClicked() {
+        fireEvent( new AppEvents.ShowLocaleList( view.getLocaleView() ) );
     }
 
     private void initApp() {

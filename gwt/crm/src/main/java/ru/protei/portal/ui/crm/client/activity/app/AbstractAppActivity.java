@@ -8,4 +8,6 @@ public interface AbstractAppActivity {
     void onUserClicked();
 
     void onLogoutClicked();
+
+    void onLocaleClicked();
 }

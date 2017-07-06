@@ -29,7 +29,11 @@
                 <ul class="nav navbar-nav navbar-right">
                     <navsearch:NavSearchBox ui:field="search"/>
                     <li>
-
+                        <g:Anchor ui:field="locale" title="{lang.buttonLocale}" href="#">
+                            <i class="fa fa-lg fa-globe"></i>
+                        </g:Anchor>
+                    </li>
+                    <li>
                         <g:Anchor ui:field="logout" title="{lang.buttonLogout} (you can use Ctrl+F4)" href="#">
                             <i class="fa fa-lg fa-sign-out"></i>
                         </g:Anchor>

@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.events;
 
 import com.google.gwt.user.client.ui.HasWidgets;
+import com.google.gwt.user.client.ui.IsWidget;
 
 /**
  * Событие для App
@@ -34,6 +35,18 @@ public class AppEvents {
         }
 
         public HasWidgets parent;
+    }
+
+    /**
+     * Показать список языков
+     */
+    public static class ShowLocaleList {
+
+        public ShowLocaleList(IsWidget parent) {
+            this.parent = parent;
+        }
+
+        public IsWidget parent;
     }
 
     public static class InitPanelName {

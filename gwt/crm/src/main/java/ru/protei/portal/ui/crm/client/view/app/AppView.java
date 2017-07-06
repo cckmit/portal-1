@@ -61,6 +61,19 @@ public class AppView extends Composite
         return actionBarContainer;
     }
 
+    @Override
+    public IsWidget getLocaleView() {
+        return locale;
+    }
+
+    @UiHandler("locale")
+    public void onLocaleClicked(ClickEvent event) {
+        event.preventDefault();
+        if ( activity != null ) {
+            activity.onLocaleClicked();
+        }
+    }
+
     @UiHandler("logout")
     public void onLogoutClicked(ClickEvent event) {
         event.preventDefault();
@@ -98,6 +111,8 @@ public class AppView extends Composite
     Anchor toggleButton;
     @UiField
     NavSearchBox search;
+    @UiField
+    Anchor locale;
     @UiField
     Anchor logout;
 

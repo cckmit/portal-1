@@ -18,4 +18,6 @@ public interface AbstractAppView extends IsWidget {
     HasWidgets getNotifyContainer();
 
     HasWidgets getActionBarContainer();
+
+    IsWidget getLocaleView();
 }
