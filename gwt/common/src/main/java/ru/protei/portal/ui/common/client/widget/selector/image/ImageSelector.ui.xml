@@ -3,7 +3,7 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel ui:field="inputContainer">
+    <g:HTMLPanel tag="li" ui:field="inputContainer">
 
         <g:Anchor ui:field="anchor" href="#">
             <i ui:field="icon"/>

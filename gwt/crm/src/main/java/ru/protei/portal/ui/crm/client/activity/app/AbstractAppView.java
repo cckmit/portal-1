@@ -22,8 +22,6 @@ public interface AbstractAppView extends IsWidget {
 
     HasWidgets getActionBarContainer();
 
-    IsWidget getLocaleView();
-
     void setLocaleList( List< LocaleImagesHelper.ImageModel > langModelList );
 
     void setCurrentLocaleLabel( String currentLang );

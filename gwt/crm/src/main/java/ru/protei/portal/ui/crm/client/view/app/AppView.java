@@ -68,11 +68,6 @@ public class AppView extends Composite
     }
 
     @Override
-    public IsWidget getLocaleView() {
-        return null;
-    }
-
-    @Override
     public void setLocaleList( List< LocaleImagesHelper.ImageModel > langModelList ) {
         locale.fillOptions( langModelList );
     }
