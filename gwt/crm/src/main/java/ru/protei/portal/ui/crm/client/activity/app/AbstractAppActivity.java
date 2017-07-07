@@ -9,5 +9,5 @@ public interface AbstractAppActivity {
 
     void onLogoutClicked();
 
-    void onLocaleClicked();
+    void onLocaleClicked( String value );
 }

@@ -37,18 +37,6 @@ public class AppEvents {
         public HasWidgets parent;
     }
 
-    /**
-     * Показать список языков
-     */
-    public static class ShowLocaleList {
-
-        public ShowLocaleList(IsWidget parent) {
-            this.parent = parent;
-        }
-
-        public IsWidget parent;
-    }
-
     public static class InitPanelName {
 
         public InitPanelName (String panelName) {

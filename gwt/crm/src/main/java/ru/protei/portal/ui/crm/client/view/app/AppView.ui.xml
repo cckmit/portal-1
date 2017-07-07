@@ -1,9 +1,9 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:navsearch="urn:import:ru.protei.portal.ui.crm.client.widget.navsearch">
+             xmlns:navsearch="urn:import:ru.protei.portal.ui.crm.client.widget.navsearch"
+             xmlns:locale="urn:import:ru.protei.portal.ui.crm.client.widget.localeselector">
 
-    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
-
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
 
     <g:HTMLPanel styleName="global">
@@ -11,7 +11,8 @@
             <a href="http://protei.ru" class="logo">
                 <span class="logo-lg">
                     <img src="./images/logo.svg"/>
-                    <b>PROTEI</b> LTD
+                    <b>PROTEI</b>
+                    LTD
                 </span>
 
                 <span class="logo-mini">
@@ -29,9 +30,7 @@
                 <ul class="nav navbar-nav navbar-right">
                     <navsearch:NavSearchBox ui:field="search"/>
                     <li>
-                        <g:Anchor ui:field="locale" title="{lang.buttonLocale}" href="#">
-                            <i class="fa fa-lg fa-globe"></i>
-                        </g:Anchor>
+                        <locale:LocaleSelector ui:field="locale" anchorTitle="{lang.buttonLocale}" icon="fa fa-lg fa-globe"/>
                     </li>
                     <li>
                         <g:Anchor ui:field="logout" title="{lang.buttonLogout} (you can use Ctrl+F4)" href="#">
@@ -55,7 +54,9 @@
                     </div>
                 </div>
                 <ul class="sidebar-menu">
-                    <li class="header"><ui:text from="{lang.appNavHeader}"/></li>
+                    <li class="header">
+                        <ui:text from="{lang.appNavHeader}"/>
+                    </li>
                 </ul>
 
                 <g:HTMLPanel styleName="sidebar-menu" ui:field="menuContainer"/>
@@ -64,7 +65,7 @@
 
         <g:HTMLPanel ui:field="container" styleName="right-side"/>
 
-        <g:HTMLPanel ui:field="notifyContainer"  styleName="notifyPanel"/>
+        <g:HTMLPanel ui:field="notifyContainer" styleName="notifyPanel"/>
 
     </g:HTMLPanel>
 

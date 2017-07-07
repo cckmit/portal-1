@@ -1,9 +1,0 @@
-<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
-             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
-    <g:HTMLPanel ui:field="root" tag="li">
-        <g:Anchor ui:field="anchor" href='#'>
-            <img ui:field="image" src=""/>
-            <span ui:field="name"></span>
-        </g:Anchor>
-    </g:HTMLPanel>
-</ui:UiBinder>
