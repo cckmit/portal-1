@@ -565,4 +565,5 @@ public interface Lang extends Messages, ContactItemLang {
 
     String rolePrivileges();
 
+    String buttonLocale();
 }

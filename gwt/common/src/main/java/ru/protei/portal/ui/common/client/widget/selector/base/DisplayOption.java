@@ -8,6 +8,7 @@ public class DisplayOption {
     private String name;
     private String style;
     private String icon;
+    private String imageSrc;
 
     public DisplayOption() {}
 
@@ -19,6 +20,11 @@ public class DisplayOption {
         this.icon = icon;
         this.name = name;
         this.style = style;
+    }
+
+    public DisplayOption( String name, String imageSrc ) {
+        this.name = name;
+        this.imageSrc = imageSrc;
     }
 
     public String getName() {
@@ -43,5 +49,13 @@ public class DisplayOption {
 
     public void setStyle( String style ) {
         this.style = style;
+    }
+
+    public String getImageSrc() {
+        return imageSrc;
+    }
+
+    public void setImageSrc( String imageSrc ) {
+        this.imageSrc = imageSrc;
     }
 }
