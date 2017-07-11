@@ -16,11 +16,9 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.ui.crm.client.activity.app.AbstractAppActivity;
 import ru.protei.portal.ui.crm.client.activity.app.AbstractAppView;
-import ru.protei.portal.ui.crm.client.widget.localeselector.LocaleImagesHelper;
+import ru.protei.portal.ui.crm.client.widget.localeselector.LocaleImage;
 import ru.protei.portal.ui.crm.client.widget.localeselector.LocaleSelector;
 import ru.protei.portal.ui.crm.client.widget.navsearch.NavSearchBox;
-
-import java.util.List;
 
 /**
  * Вид основной формы приложения
@@ -48,6 +46,11 @@ public class AppView extends Composite
     }
 
     @Override
+    public HasValue< LocaleImage > locale() {
+        return locale;
+    }
+
+    @Override
     public HasWidgets getDetailsContainer() {
         return container;
     }
@@ -67,16 +70,6 @@ public class AppView extends Composite
         return actionBarContainer;
     }
 
-    @Override
-    public void setLocaleList( List< LocaleImagesHelper.ImageModel > langModelList ) {
-        locale.fillOptions( langModelList );
-    }
-
-    @Override
-    public void setCurrentLocaleLabel( String currentLang ) {
-        locale.setLabel( currentLang );
-    }
-
     @UiHandler( "logout" )
     public void onLogoutClicked( ClickEvent event ) {
         event.preventDefault();
@@ -86,9 +79,9 @@ public class AppView extends Composite
     }
 
     @UiHandler( "locale" )
-    public void onLocaleClicked( ValueChangeEvent< LocaleImagesHelper.ImageModel > event ) {
+    public void onLocaleClicked( ValueChangeEvent<LocaleImage> event ) {
         if ( activity != null ) {
-            activity.onLocaleClicked( event.getValue().value );
+            activity.onLocaleChanged( event.getValue().getLocale() );
         }
     }
 
@@ -145,8 +138,7 @@ public class AppView extends Composite
 
     AbstractAppActivity activity;
 
-    interface AppViewUiBinder extends UiBinder< Widget, AppView > {
-    }
+    interface AppViewUiBinder extends UiBinder< Widget, AppView > {}
 
     private static AppViewUiBinder ourUiBinder = GWT.create( AppViewUiBinder.class );
 }

@@ -2,6 +2,7 @@ package ru.protei.portal.ui.common.client.widget.selector.image;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -21,9 +22,9 @@ import java.util.Map;
 /**
  * Селектор картинок с текстом
  */
-public class ImageSelector< T > extends Selector< T > implements HasEnabled {
+public class NavImageSelector< T > extends Selector< T > implements HasEnabled {
 
-    public ImageSelector() {
+    public NavImageSelector() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
     }
 
@@ -52,33 +53,12 @@ public class ImageSelector< T > extends Selector< T > implements HasEnabled {
 
     @Override
     public void fillSelectorView( DisplayOption selectedValue ) {
-        T selected = getValue();
-        String name = itemModelToIcon.get( selected );
-        if ( selected != null ) {
-            label.setInnerText( name );
-        }
+        image.setSrc( selectedValue.getImageSrc() );
     }
 
     public void addOption( String name, T value, String img ) {
-        super.addOption( name, value );
-        itemModelToIcon.put( value, name );
-
-        SelectorItem selectorItem = itemToViewModel.get( value );
-        if ( selectorItem != null ) {
-            selectorItem.setImage( img );
-        }
-    }
-
-    public void setLabel( String value ) {
-        label.setInnerText( value );
-    }
-
-    public void setAnchorTitle( String value ) {
-        anchor.setTitle( value );
-    }
-
-    public void setIcon( String value ) {
-        icon.setClassName( value );
+        DisplayOption option = new DisplayOption( name, img );
+        super.addOption( option, value );
     }
 
     @UiField
@@ -86,17 +66,13 @@ public class ImageSelector< T > extends Selector< T > implements HasEnabled {
     @UiField
     SpanElement label;
     @UiField
-    Element icon;
+    ImageElement image;
     @UiField
     HTMLPanel inputContainer;
 
     @UiField
     Lang lang;
 
-    private Map< T, String > itemModelToIcon = new HashMap<>();
-
-    interface ImageSelectorUiBinder extends UiBinder< HTMLPanel, ImageSelector > {
-    }
-
+    interface ImageSelectorUiBinder extends UiBinder< HTMLPanel, NavImageSelector > {}
     private static ImageSelectorUiBinder ourUiBinder = GWT.create( ImageSelectorUiBinder.class );
 }

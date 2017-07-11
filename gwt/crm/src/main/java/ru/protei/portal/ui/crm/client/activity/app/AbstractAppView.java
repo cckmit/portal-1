@@ -1,8 +1,9 @@
 package ru.protei.portal.ui.crm.client.activity.app;
 
+import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
-import ru.protei.portal.ui.crm.client.widget.localeselector.LocaleImagesHelper;
+import ru.protei.portal.ui.crm.client.widget.localeselector.LocaleImage;
 
 import java.util.List;
 
@@ -22,7 +23,5 @@ public interface AbstractAppView extends IsWidget {
 
     HasWidgets getActionBarContainer();
 
-    void setLocaleList( List< LocaleImagesHelper.ImageModel > langModelList );
-
-    void setCurrentLocaleLabel( String currentLang );
+    HasValue<LocaleImage> locale();
 }

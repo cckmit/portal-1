@@ -103,6 +103,7 @@ public abstract class Selector<T>
         itemView.setName( option.getName() );
         itemView.setStyle( option.getStyle() );
         itemView.setIcon( option.getIcon() );
+        itemView.setImage( option.getImageSrc() );
         itemView.addClickHandler( this );
         itemViewToModel.put(itemView, value);
         itemToViewModel.put(value, itemView);
@@ -111,7 +112,6 @@ public abstract class Selector<T>
             nullItemView = itemView;
         }
         else {
-
             itemToDisplayOptionModel.put( value, option );
         }
 

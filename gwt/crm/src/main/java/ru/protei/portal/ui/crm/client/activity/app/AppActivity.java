@@ -12,11 +12,8 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.ui.common.client.common.PageService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
-import ru.protei.portal.ui.crm.client.widget.localeselector.LocaleImagesHelper;
+import ru.protei.portal.ui.crm.client.widget.localeselector.LocaleImage;
 import ru.protei.winter.web.common.client.events.MenuEvents;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Активность приложения
@@ -37,7 +34,6 @@ public abstract class AppActivity
 
         initApp();
 
-        // запомнить токен
         initialToken = History.getToken();
         fireEvent( new AuthEvents.Show() );
     }
@@ -48,9 +44,8 @@ public abstract class AppActivity
         init.parent.add( view.asWidget() );
 
         view.setUsername( event.profile.getName(), null );
-        fillLocales( LocaleInfo.getAvailableLocaleNames() );
         String currentLocale = LocaleInfo.getCurrentLocale().getLocaleName();
-        view.setCurrentLocaleLabel( LocaleImagesHelper.firstCharInUpperCase( currentLocale ) );
+        view.locale().setValue( LocaleImage.findByLocale( currentLocale ));
 
         Scheduler.get().scheduleDeferred( (Command) () -> {
             if ( initialToken == null || initialToken.isEmpty() || initialToken.equals( UiConstants.LOGIN_PAGE ) ) {
@@ -62,8 +57,8 @@ public abstract class AppActivity
     }
 
     @Override
-    public void onLocaleClicked( String locale ) {
-        changeLang( locale );
+    public void onLocaleChanged( String locale ) {
+        changeLocale( locale );
     }
 
     public void onUserClicked() {
@@ -83,29 +78,12 @@ public abstract class AppActivity
         fireEvent( new ActionBarEvents.Init( view.getActionBarContainer() ) );
     }
 
-    private void fillLocales( String[] languages ) {
-        List< LocaleImagesHelper.ImageModel > localeList = new ArrayList<>();
-        for ( String language : languages ) {
-            LocaleImagesHelper.ImageModel model = LocaleImagesHelper.getModel( language );
-            if ( model == null ) {
-                continue;
-            }
-            localeList.add( model );
-
-        }
-        view.setLocaleList( localeList );
-    }
-
-    private void changeLang( String language ) {
+    private void changeLocale( String language ) {
         String href = Window.Location.getHref();
         String newHref;
 
         if ( !href.contains( "locale" ) ) {
-            if ( href.contains( "#" ) ) {
-                newHref = href.replace( "#", "?locale=" + language + "#" );
-            } else {
-                newHref = href + "?locale=" + language;
-            }
+            newHref = href.contains( "#" ) ? href.replace( "#", "?locale=" + language + "#" ) : href + "?locale=" + language;
         } else {
             String locale = LocaleInfo.getCurrentLocale().getLocaleName();
             if ( locale.isEmpty() )
