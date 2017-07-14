@@ -29,7 +29,7 @@ public class AccountServiceImpl implements AccountService {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse< List< UserLogin > > response = accountService.accountList( query, descriptor.getLogin().getRoles() );
+        CoreResponse< List< UserLogin > > response = accountService.accountList( descriptor.makeAuthToken(), query );
 
         if ( response.isError() ) {
             throw new RequestFailedException( response.getStatus() );
@@ -44,7 +44,7 @@ public class AccountServiceImpl implements AccountService {
         //TODO используется для отображения карточки аккаунта, думаю проверка роли ACCOUNT_VIEW логична
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse< UserLogin > response = accountService.getAccount( id, descriptor.getLogin().getRoles() );
+        CoreResponse< UserLogin > response = accountService.getAccount( descriptor.makeAuthToken(), id );
 
         log.debug( "getAccount(): id={} -> {} ", id, response.isError() ? "error" : response.getData().getUlogin() );
 
@@ -64,7 +64,7 @@ public class AccountServiceImpl implements AccountService {
         if ( !isLoginUnique( userLogin.getUlogin(), userLogin.getId() ) )
             throw new RequestFailedException ( En_ResultStatus.ALREADY_EXIST );
 
-        CoreResponse< UserLogin > response = accountService.saveAccount( userLogin, descriptor.getLogin().getRoles() );
+        CoreResponse< UserLogin > response = accountService.saveAccount( descriptor.makeAuthToken(), userLogin );
 
         log.debug( "saveAccount(): result={}", response.isOk() ? "ok" : response.getStatus() );
 
@@ -82,7 +82,7 @@ public class AccountServiceImpl implements AccountService {
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
         log.debug( "getAccountsCount(): query={}", query );
-        return accountService.count( query, descriptor.getLogin().getRoles() ).getData();
+        return accountService.count( descriptor.makeAuthToken(), query ).getData();
     }
 
     @Override
@@ -106,7 +106,7 @@ public class AccountServiceImpl implements AccountService {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse< Boolean > response = accountService.removeAccount( accountId, descriptor.getLogin().getRoles() );
+        CoreResponse< Boolean > response = accountService.removeAccount( descriptor.makeAuthToken(), accountId );
         log.debug( "removeAccount(): result={}", response.isOk() ? "ok" : response.getStatus() );
 
         if (response.isOk()) {

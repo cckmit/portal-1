@@ -7,6 +7,7 @@ import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.query.ProductDirectionQuery;
@@ -36,7 +37,7 @@ public class ProductServiceImpl implements ProductService {
     PolicyService policyService;
 
     @Override
-    public CoreResponse<List<ProductShortView>> shortViewList( ProductQuery query ) {
+    public CoreResponse<List<ProductShortView>> shortViewList(AuthToken token, ProductQuery query ) {
 
         List<DevUnit> list = devUnitDAO.listByQuery(query);
 
@@ -49,11 +50,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public CoreResponse<List<DevUnit>> productList( ProductQuery query, Set< UserRole > roles ) {
-
-        if ( !policyService.hasPrivilegeFor( En_Privilege.PRODUCT_VIEW, roles ) ) {
-            return new CoreResponse().error( En_ResultStatus.PERMISSION_DENIED );
-        }
+    public CoreResponse<List<DevUnit>> productList( AuthToken token, ProductQuery query ) {
 
         List<DevUnit> list = devUnitDAO.listByQuery(query);
 
@@ -64,7 +61,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public CoreResponse<List<ProductDirectionInfo>> productDirectionList( ProductDirectionQuery query ) {
+    public CoreResponse<List<ProductDirectionInfo>> productDirectionList( AuthToken token, ProductDirectionQuery query ) {
 
         List<DevUnit> list = devUnitDAO.listByQuery(query);
 
@@ -77,11 +74,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public CoreResponse<DevUnit> getProduct( Long id, Set< UserRole > roles ) {
-
-        if ( !policyService.hasPrivilegeFor( En_Privilege.PRODUCT_VIEW, roles ) ) {
-            return new CoreResponse().error( En_ResultStatus.PERMISSION_DENIED );
-        }
+    public CoreResponse<DevUnit> getProduct( AuthToken token, Long id ) {
 
         if (id == null)
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
@@ -96,7 +89,7 @@ public class ProductServiceImpl implements ProductService {
 
 
     @Override
-    public CoreResponse<Long> createProduct(DevUnit product) {
+    public CoreResponse<Long> createProduct( AuthToken token, DevUnit product) {
 
         if (product == null)
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
@@ -118,11 +111,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public CoreResponse<Boolean> updateProduct( DevUnit product, Set< UserRole > roles ) {
-
-        if ( !policyService.hasPrivilegeFor( En_Privilege.PRODUCT_EDIT, roles ) ) {
-            return new CoreResponse().error( En_ResultStatus.PERMISSION_DENIED );
-        }
+    public CoreResponse<Boolean> updateProduct( AuthToken token, DevUnit product ) {
 
         if( product == null || product.getId() == null )
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
@@ -138,7 +127,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public CoreResponse<Boolean> checkUniqueProductByName(String name, Long excludeId) {
+    public CoreResponse<Boolean> checkUniqueProductByName( AuthToken token, String name, Long excludeId) {
 
         if( name == null || name.isEmpty() )
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
@@ -158,7 +147,7 @@ public class ProductServiceImpl implements ProductService {
 
 
     @Override
-    public CoreResponse<Long> count(ProductQuery query) {
+    public CoreResponse<Long> count(AuthToken token, ProductQuery query) {
         return new CoreResponse<Long>().success(devUnitDAO.count(query));
     }
 }

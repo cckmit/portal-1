@@ -33,7 +33,7 @@ public class ProductServiceImpl implements ProductService {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse < List< DevUnit > > result = productService.productList( productQuery, descriptor.getLogin().getRoles() );
+        CoreResponse < List< DevUnit > > result = productService.productList( descriptor.makeAuthToken(), productQuery );
 
         if ( result.isError() )
             throw new RequestFailedException( result.getStatus() );
@@ -50,7 +50,7 @@ public class ProductServiceImpl implements ProductService {
         //TODO используется для отображения карточки продукта, думаю проверка роли PRODUCT_VIEW логична
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse< DevUnit > response = productService.getProduct( productId, descriptor.getLogin().getRoles() );
+        CoreResponse< DevUnit > response = productService.getProduct( descriptor.makeAuthToken(), productId );
 
         if ( response.isError() )
             throw new RequestFailedException( response.getStatus() );
@@ -70,8 +70,9 @@ public class ProductServiceImpl implements ProductService {
         if ( !isNameUnique( product.getName(), product.getId() ) )
             throw new RequestFailedException ();
 
-        CoreResponse response = product.getId() == null ?
-                productService.createProduct( product ) : productService.updateProduct( product, descriptor.getLogin().getRoles() );
+        CoreResponse response = product.getId() == null
+                ? productService.createProduct( descriptor.makeAuthToken(), product )
+                : productService.updateProduct( descriptor.makeAuthToken(), product );
 
         if ( response.isError() )
             throw new RequestFailedException( response.getStatus() );
@@ -90,7 +91,7 @@ public class ProductServiceImpl implements ProductService {
         if ( name == null || name.isEmpty() )
             throw new RequestFailedException ();
 
-        CoreResponse< Boolean > response = productService.checkUniqueProductByName( name, excludeId );
+        CoreResponse< Boolean > response = productService.checkUniqueProductByName( getDescriptorAndCheckSession().makeAuthToken(), name, excludeId );
 
         if ( response.isError() )
             throw new RequestFailedException( response.getStatus() );
@@ -108,7 +109,7 @@ public class ProductServiceImpl implements ProductService {
 
         //TODO используется в Button селектор с продуктами ProductButtonSelector, считаю что привилегия PRODUCT_VIEW не для этого
 
-        CoreResponse< List<ProductShortView> > result = productService.shortViewList( query );
+        CoreResponse< List<ProductShortView> > result = productService.shortViewList( getDescriptorAndCheckSession().makeAuthToken(), query );
 
         log.debug( "result status: {}, data-amount: {}", result.getStatus(), result.isOk() ? result.getDataAmountTotal() : 0 );
 
@@ -129,7 +130,7 @@ public class ProductServiceImpl implements ProductService {
                 "Система 112", "Call Center", "Видеонаблюдение", "Видеоаналитика"
         };
 
-        CoreResponse< List< ProductDirectionInfo > > result = productService.productDirectionList( query );
+        CoreResponse< List< ProductDirectionInfo > > result = productService.productDirectionList( getDescriptorAndCheckSession().makeAuthToken(), query );
 
         if ( result.isError() )
             throw new RequestFailedException( result.getStatus() );

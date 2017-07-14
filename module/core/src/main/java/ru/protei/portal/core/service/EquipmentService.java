@@ -1,6 +1,9 @@
 package ru.protei.portal.core.service;
 
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.core.model.annotations.Privileged;
+import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.ent.UserRole;
@@ -14,21 +17,29 @@ import java.util.Set;
  */
 public interface EquipmentService {
 
-    CoreResponse< Long > count( EquipmentQuery query, Set< UserRole > roles );
+    @Privileged( En_Privilege.EQUIPMENT_VIEW )
+    CoreResponse< Long > count(AuthToken token, EquipmentQuery query );
 
-    CoreResponse< List< Equipment > > equipmentList( EquipmentQuery query, Set< UserRole > roles );
+    @Privileged( En_Privilege.EQUIPMENT_VIEW )
+    CoreResponse< List< Equipment > > equipmentList( AuthToken token, EquipmentQuery query );
 
-    CoreResponse< Equipment > getEquipment( long id, Set< UserRole > roles );
+    @Privileged( En_Privilege.EQUIPMENT_VIEW )
+    CoreResponse< Equipment > getEquipment( AuthToken token, long id );
 
-    CoreResponse< Equipment > saveEquipment( Equipment equipment, Set< UserRole > roles );
+    @Privileged( requireAny = { En_Privilege.EQUIPMENT_CREATE, En_Privilege.EQUIPMENT_EDIT })
+    CoreResponse< Equipment > saveEquipment( AuthToken token, Equipment equipment );
 
-    CoreResponse< DecimalNumber > getNextAvailableDecimalNumber( DecimalNumber number );
+    @Privileged( requireAny = { En_Privilege.EQUIPMENT_CREATE, En_Privilege.EQUIPMENT_EDIT })
+    CoreResponse< DecimalNumber > getNextAvailableDecimalNumber( AuthToken token, DecimalNumber number );
 
-    CoreResponse< DecimalNumber > getNextAvailableDecimalNumberModification( DecimalNumber number );
+    @Privileged( requireAny = { En_Privilege.EQUIPMENT_CREATE, En_Privilege.EQUIPMENT_EDIT })
+    CoreResponse< DecimalNumber > getNextAvailableDecimalNumberModification( AuthToken token, DecimalNumber number );
 
     CoreResponse< Boolean > checkIfExistDecimalNumber( DecimalNumber number );
 
-    CoreResponse<Long> copyEquipment( Long equipmentId, String newName, Long authorId, Set< UserRole > roles );
+    @Privileged( requireAny = { En_Privilege.EQUIPMENT_CREATE, En_Privilege.EQUIPMENT_EDIT })
+    CoreResponse<Long> copyEquipment( AuthToken token, Long equipmentId, String newName, Long authorId );
 
-    CoreResponse<Boolean> removeEquipment( Long equipmentId, Set< UserRole > roles );
+    @Privileged( En_Privilege.EQUIPMENT_REMOVE )
+    CoreResponse<Boolean> removeEquipment( AuthToken token, Long equipmentId );
 }

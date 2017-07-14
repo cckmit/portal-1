@@ -51,16 +51,9 @@ public class ProductServiceTest {
         product.setStateId(En_DevUnitState.ACTIVE.getId());
         product.setTypeId(En_DevUnitType.PRODUCT.getId());
 
-        Set< UserRole > roles = new HashSet<>();
-        UserRole role = new UserRole();
-        role.setId( 1L );
-        Set<En_Privilege > privileges = new HashSet<>();
-        privileges.add( En_Privilege.PRODUCT_VIEW );
-        role.setPrivileges( privileges );
-
         Assert.assertNotNull(ctx.getBean(DevUnitDAO.class).persist(product));
 
-        CoreResponse<List<DevUnit>> result = ctx.getBean(ProductService.class).productList( new ProductQuery(), roles );
+        CoreResponse<List<DevUnit>> result = ctx.getBean(ProductService.class).productList( null, new ProductQuery() );
 
         Assert.assertNotNull(result);
         Assert.assertTrue(result.getDataAmountTotal() > 0);
@@ -84,7 +77,7 @@ public class ProductServiceTest {
 
         System.out.println(" product with " + name + " is not exist | product " + product);
 
-        CoreResponse<Boolean> result = ctx.getBean(ProductService.class).checkUniqueProductByName(name, new Long(1));
+        CoreResponse<Boolean> result = ctx.getBean(ProductService.class).checkUniqueProductByName( null, name, new Long(1));
 
         Assert.assertFalse(result.isError());
         Assert.assertTrue(result.isOk());
@@ -99,7 +92,7 @@ public class ProductServiceTest {
 
         System.out.println(" product with " + name + " is not exist");
 
-        result = ctx.getBean(ProductService.class).checkUniqueProductByName(name, null);
+        result = ctx.getBean(ProductService.class).checkUniqueProductByName( null, name, null);
 
         Assert.assertFalse(result.isError());
         Assert.assertTrue(result.isOk());

@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.dao.DecimalNumberDAO;
 import ru.protei.portal.core.model.dao.EquipmentDAO;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.ent.UserRole;
@@ -43,11 +44,7 @@ public class EquipmentServiceImpl implements EquipmentService {
     PolicyService policyService;
 
     @Override
-    public CoreResponse<List<Equipment>> equipmentList( EquipmentQuery query, Set< UserRole > roles ) {
-
-        if ( !policyService.hasPrivilegeFor( En_Privilege.EQUIPMENT_VIEW, roles ) ) {
-            return new CoreResponse().error( En_ResultStatus.PERMISSION_DENIED );
-        }
+    public CoreResponse<List<Equipment>> equipmentList(AuthToken token, EquipmentQuery query ) {
 
         List<Equipment> list = equipmentDAO.getListByQuery(query);
 
@@ -59,11 +56,7 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
-    public CoreResponse<Equipment> getEquipment( long id, Set< UserRole > roles ) {
-
-        if ( !policyService.hasPrivilegeFor( En_Privilege.EQUIPMENT_VIEW, roles ) ) {
-            return new CoreResponse().error( En_ResultStatus.PERMISSION_DENIED );
-        }
+    public CoreResponse<Equipment> getEquipment( AuthToken token, long id) {
 
         Equipment equipment = equipmentDAO.get(id);
         jdbcManyRelationsHelper.fillAll( equipment );
@@ -74,11 +67,7 @@ public class EquipmentServiceImpl implements EquipmentService {
 
     @Override
     @Transactional
-    public CoreResponse<Equipment> saveEquipment( Equipment equipment, Set< UserRole > roles ) {
-
-        if ( !policyService.hasPrivilegeFor( En_Privilege.EQUIPMENT_EDIT, roles ) ) {
-            return new CoreResponse().error( En_ResultStatus.PERMISSION_DENIED );
-        }
+    public CoreResponse<Equipment> saveEquipment( AuthToken token, Equipment equipment ) {
 
         if ( CollectionUtils.isEmpty( equipment.getDecimalNumbers() ) ) {
             return new CoreResponse<Equipment>().error( En_ResultStatus.INCORRECT_PARAMS );
@@ -95,7 +84,7 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
-    public CoreResponse<DecimalNumber> getNextAvailableDecimalNumber( DecimalNumber number ) {
+    public CoreResponse<DecimalNumber> getNextAvailableDecimalNumber( AuthToken token, DecimalNumber number ) {
         Integer maxNum = decimalNumberDAO.getMaxRegisterNumber( number );
         number.setModification( null );
 
@@ -115,7 +104,7 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
-    public CoreResponse<DecimalNumber> getNextAvailableDecimalNumberModification( DecimalNumber number ) {
+    public CoreResponse<DecimalNumber> getNextAvailableDecimalNumberModification( AuthToken token, DecimalNumber number ) {
         Integer maxNum = decimalNumberDAO.getMaxModification( number );
 
         if ( maxNum == null ) {
@@ -140,11 +129,7 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
-    public CoreResponse<Long> copyEquipment( Long equipmentId, String newName, Long authorId, Set< UserRole > roles ) {
-
-        if ( !policyService.hasPrivilegeFor( En_Privilege.EQUIPMENT_CREATE, roles ) ) {
-            return new CoreResponse().error( En_ResultStatus.PERMISSION_DENIED );
-        }
+    public CoreResponse<Long> copyEquipment( AuthToken token, Long equipmentId, String newName, Long authorId ) {
 
         if (equipmentId == null || newName == null) {
             return new CoreResponse<Long>().error(En_ResultStatus.INCORRECT_PARAMS);
@@ -169,11 +154,7 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
-    public CoreResponse<Boolean> removeEquipment( Long equipmentId, Set< UserRole > roles ) {
-
-        if ( !policyService.hasPrivilegeFor( En_Privilege.EQUIPMENT_REMOVE, roles ) ) {
-            return new CoreResponse().error( En_ResultStatus.PERMISSION_DENIED );
-        }
+    public CoreResponse<Boolean> removeEquipment( AuthToken token, Long equipmentId ) {
 
         if (equipmentId == null) {
             return new CoreResponse<Boolean>().error(En_ResultStatus.INCORRECT_PARAMS);
@@ -184,11 +165,7 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
-    public CoreResponse<Long> count( EquipmentQuery query, Set< UserRole > roles ) {
-
-        if ( !policyService.hasPrivilegeFor( En_Privilege.EQUIPMENT_VIEW, roles ) ) {
-            return new CoreResponse().error( En_ResultStatus.PERMISSION_DENIED );
-        }
+    public CoreResponse<Long> count( AuthToken token, EquipmentQuery query ) {
 
         return new CoreResponse<Long>().success(equipmentDAO.countByQuery(query));
     }

@@ -48,15 +48,7 @@ public class TestCaseEvents {
         object.setExtAppType("junit");
 //        object.setExtAppCaseId(JUNIT_EVENT_PUB_01);
 
-        Set< UserRole > roles = new HashSet<>();
-        UserRole role = new UserRole();
-        role.setId( 1L );
-        Set<En_Privilege > privileges = new HashSet<>();
-        privileges.add( En_Privilege.ISSUE_VIEW );
-        privileges.add( En_Privilege.ISSUE_EDIT );
-        role.setPrivileges( privileges );
-
-        CoreResponse<CaseObject> response = service.saveCaseObject(object, null, roles );
+        CoreResponse<CaseObject> response = service.saveCaseObject(null, object, null );
 
         Assert.assertTrue(response.isOk());
 
@@ -68,7 +60,7 @@ public class TestCaseEvents {
         comment.setAuthorId(response.getData().getInitiatorId());
         comment.setText("A new comment, publishing test");
 
-        CoreResponse<CaseComment> r2 = service.addCaseComment(comment, null, roles );
+        CoreResponse<CaseComment> r2 = service.addCaseComment( null, comment, null );
 
         Assert.assertTrue(r2.isOk());
 

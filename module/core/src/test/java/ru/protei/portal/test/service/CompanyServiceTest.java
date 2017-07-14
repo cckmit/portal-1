@@ -43,16 +43,9 @@ public class CompanyServiceTest {
 
         CompanyService service = ctx.getBean(CompanyService.class);
 
-        Set< UserRole > roles = new HashSet<>();
-        UserRole role = new UserRole();
-        role.setId( 1L );
-        Set<En_Privilege > privileges = new HashSet<>();
-        privileges.add( En_Privilege.COMPANY_VIEW );
-        role.setPrivileges( privileges );
-
         Assert.assertNotNull(service);
 
-        CoreResponse<List<Company>> result = service.companyList(new CompanyQuery(), roles );
+        CoreResponse<List<Company>> result = service.companyList(null, new CompanyQuery() );
 
         Assert.assertNotNull(result);
         Assert.assertNotNull(result.getData());
@@ -118,16 +111,7 @@ public class CompanyServiceTest {
 
             company.setGroupId( group.getId() );
 
-            Set< UserRole > roles = new HashSet<>();
-            UserRole role = new UserRole();
-            role.setId( 1L );
-            Set<En_Privilege > privileges = new HashSet<>();
-            privileges.add( En_Privilege.COMPANY_CREATE );
-            privileges.add( En_Privilege.COMPANY_VIEW );
-            privileges.add( En_Privilege.COMPANY_EDIT );
-            role.setPrivileges( privileges );
-
-            CoreResponse<Company> response = service.createCompany(company, roles );
+            CoreResponse<Company> response = service.createCompany( null, company );
             Assert.assertTrue(response.isOk());
             Assert.assertNotNull(response.getData());
 
@@ -141,11 +125,11 @@ public class CompanyServiceTest {
                 Assert.assertEquals(dupCompany.getId(), company.getId());
             }
 
-            response = service.getCompany( company.getId(), roles );
+            response = service.getCompany( null, company.getId() );
             Assert.assertNotNull(response.getData());
 
             company.setCname("Моя тестовая компания");
-            response =  service.updateCompany(company, roles );
+            response =  service.updateCompany( null, company );
             Assert.assertTrue(response.isOk());
             Assert.assertNotNull(response.getData());
 

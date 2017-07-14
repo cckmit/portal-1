@@ -83,15 +83,7 @@ public class LocalUpdateTest {
         comment.setCreated(new Date());
         comment.setCaseId(object.getId());
 
-        Set< UserRole > roles = new HashSet<>();
-        UserRole role = new UserRole();
-        role.setId( 1L );
-        Set<En_Privilege > privileges = new HashSet<>();
-        privileges.add( En_Privilege.ISSUE_VIEW );
-        privileges.add( En_Privilege.ISSUE_EDIT );
-        role.setPrivileges( privileges );
-
-        caseService.addCaseComment(comment, testPerson, roles );
+        caseService.addCaseComment(null, comment, testPerson );
 
         // wait event handling
         Thread.sleep(200);
@@ -108,7 +100,7 @@ public class LocalUpdateTest {
 
         object.setState(En_CaseState.OPENED);
         object.setManager(testPerson);
-        caseService.updateCaseObject(object, testPerson, roles );
+        caseService.updateCaseObject( null, object, testPerson );
 
         // wait event handling
         Thread.sleep(200);
@@ -127,7 +119,7 @@ public class LocalUpdateTest {
 
 
         object.setState(En_CaseState.DONE);
-        caseService.updateCaseObject(object, testPerson, roles );
+        caseService.updateCaseObject( null, object, testPerson );
 
         // wait event handling
         Thread.sleep(200);

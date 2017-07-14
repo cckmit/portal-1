@@ -36,7 +36,7 @@ public class RegionServiceImpl implements RegionService {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse< List< RegionInfo > > response = projectService.listRegions( query, descriptor.getLogin().getRoles() );
+        CoreResponse< List< RegionInfo > > response = projectService.listRegions( descriptor.makeAuthToken(), query );
         if ( response.isError() )
             throw new RequestFailedException( response.getStatus() );
 
@@ -48,7 +48,7 @@ public class RegionServiceImpl implements RegionService {
 
         //TODO используется в Селектор состояния региона DistrictBtnGroupMulti, считаю что привилегия REGION_VIEW не для этого
 
-        CoreResponse< List< DistrictInfo > > result = locationService.districtList( new DistrictQuery() );
+        CoreResponse< List< DistrictInfo > > result = locationService.districtList( getDescriptorAndCheckSession().makeAuthToken(), new DistrictQuery() );
 
         if ( result.isError() )
             throw new RequestFailedException( result.getStatus() );
@@ -60,7 +60,7 @@ public class RegionServiceImpl implements RegionService {
     public List< EntityOption > getRegionList() throws RequestFailedException {
 
         //TODO используется в селекторе регионов RegionButtonSelector, считаю что привилегия REGION_VIEW не для этого
-        CoreResponse< List< EntityOption > > result = locationService.regionShortList( );
+        CoreResponse< List< EntityOption > > result = locationService.regionShortList( getDescriptorAndCheckSession().makeAuthToken() );
 
         if ( result.isError() )
             throw new RequestFailedException( result.getStatus() );
@@ -75,7 +75,7 @@ public class RegionServiceImpl implements RegionService {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse< Map< String, List< ProjectInfo > > > response = projectService.listProjectsByRegions( query, descriptor.getLogin().getRoles() );
+        CoreResponse< Map< String, List< ProjectInfo > > > response = projectService.listProjectsByRegions( descriptor.makeAuthToken(), query );
         if ( response.isError() )
             throw new RequestFailedException( response.getStatus() );
 
@@ -89,7 +89,7 @@ public class RegionServiceImpl implements RegionService {
         //TODO используется для отображения карточки проекта, думаю проверка роли PROJECT_VIEW логична
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse< ProjectInfo > response = projectService.getProject( id, descriptor.getLogin().getRoles() );
+        CoreResponse< ProjectInfo > response = projectService.getProject( descriptor.makeAuthToken(), id );
         if ( response.isError() ) {
             throw new RequestFailedException( response.getStatus() );
         }
@@ -103,7 +103,7 @@ public class RegionServiceImpl implements RegionService {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse response = projectService.saveProject( project, descriptor.getLogin().getRoles() );
+        CoreResponse response = projectService.saveProject( descriptor.makeAuthToken(), project );
         if ( response.isError() ) {
             throw new RequestFailedException( response.getStatus() );
         }
@@ -118,7 +118,7 @@ public class RegionServiceImpl implements RegionService {
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
         Long personId = sessionService.getUserSessionDescriptor( httpServletRequest ).getPerson().getId();
 
-        CoreResponse< Long > response = projectService.createProject( personId, descriptor.getLogin().getRoles() );
+        CoreResponse< Long > response = projectService.createProject( descriptor.makeAuthToken(), personId );
         if ( response.isError() ) {
             throw new RequestFailedException( response.getStatus() );
         }
@@ -147,52 +147,6 @@ public class RegionServiceImpl implements RegionService {
 
     @Autowired
     HttpServletRequest httpServletRequest;
-
-
-//        CaseQuery caseQuery = new CaseQuery();
-//        caseQuery.setType(  En_CaseType.PROJECT );
-//        caseQuery.setStateIds( query.getStates().stream().map( En_RegionState::getId ).collect( Collectors.toList() ) );
-//    CoreResponse<List<CaseShortView>> projectResults = caseService.caseObjectList( caseQuery );
-//
-//    String[] names = new String[]{
-//            "Алтайский край", "Амурская область", "Архангельская область", "Астраханская область",
-//            "Белгородская область", "Брянская область", "Владимирская область", "Волгоградская область"
-//    };
-//
-//    Integer[] numbers = new Integer[] {
-//            22, 28, 29, 30, 31, 32, 33, 34
-//    };
-//
-//    En_RegionState[] states = new En_RegionState[] {
-//            En_RegionState.UNKNOWN, En_RegionState.RIVAL, En_RegionState.TALK, En_RegionState.PROJECTING,
-//            En_RegionState.DEVELOPMENT, En_RegionState.DEPLOYMENT, En_RegionState.SUPPORT, En_RegionState.SUPPORT_FINISHED
-//    };
-//
-//    List<RegionInfo> result = new ArrayList<>();
-//        for ( int i = 0; i < 8; i++ ) {
-//        RegionInfo info = new RegionInfo();
-//        info.id = new Long( i );
-//        info.name = names[i];
-//        info.state = states[i];
-//        info.number = numbers[i];
-//
-//        if ( info.state.equals( En_RegionState.RIVAL ) ) {
-//            info.details = "Сфера";
-//        }
-//        else if ( info.state.equals( En_RegionState.DEPLOYMENT ) ) {
-//            info.details = "Сертификация";
-//        }
-//
-//        if ( query.getStates() == null || query.getStates().isEmpty() ) {
-//            result.add( info );
-//        }
-//        else {
-//            if ( query.getStates().contains( info.state ) ) {
-//                result.add( info );
-//            }
-//        }
-//    }
-
 
     private static final Logger log = LoggerFactory.getLogger( "web" );
 }

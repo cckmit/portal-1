@@ -77,15 +77,7 @@ public class MailNotificationProcessorTest {
         object.setExtAppType( "junit" );
         object.setProductId( 18827L ); // космос
 
-        Set< UserRole > roles = new HashSet<>();
-        UserRole role = new UserRole();
-        role.setId( 1L );
-        Set<En_Privilege > privileges = new HashSet<>();
-        privileges.add( En_Privilege.ISSUE_VIEW );
-        privileges.add( En_Privilege.ISSUE_EDIT );
-        role.setPrivileges( privileges );
-
-        CoreResponse<CaseObject> response = caseService.saveCaseObject( object, initiator, roles );
+        CoreResponse<CaseObject> response = caseService.saveCaseObject(null, object, initiator );
 
         // wait 500ms for async event
         Thread.sleep(1000);
@@ -101,7 +93,7 @@ public class MailNotificationProcessorTest {
         comment.setAuthorId(response.getData().getInitiatorId());
         comment.setText("A new comment, publishing test");
 
-        CoreResponse<CaseComment> r2 = caseService.addCaseComment(comment, initiator, roles );
+        CoreResponse<CaseComment> r2 = caseService.addCaseComment( null, comment, initiator );
 
         Assert.assertTrue(r2.isOk());
 

@@ -66,7 +66,6 @@ public class MailNotificationProcessor {
         }
 
         performNotification( event.getCaseObject(), oldManager, event, null, notificationEntries, event.getPerson() );
-
     }
 
     @EventListener
@@ -83,7 +82,7 @@ public class MailNotificationProcessor {
         CaseObject caseObject, Person oldManager, CaseObjectEvent caseEvent, CaseCommentEvent commentEvent,
         Set<NotificationEntry> notificationEntries, Person currentPerson
     ) {
-        CoreResponse<List<CaseComment> > comments = caseService.getCaseCommentList( caseObject.getId() );
+        CoreResponse<List<CaseComment> > comments = caseService.getCaseCommentList( null, caseObject.getId() );
         if ( comments.isError() ) {
             log.error( "Failed to retrieve comments for caseId={}", caseObject.getId() );
             return;

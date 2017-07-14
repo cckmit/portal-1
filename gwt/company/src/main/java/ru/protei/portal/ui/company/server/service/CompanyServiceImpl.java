@@ -38,7 +38,7 @@ public class CompanyServiceImpl implements CompanyService {
                 companyQuery.getSearchString(), categoryIds, companyQuery.getGroupId(),
                 companyQuery.getSortField(), companyQuery.getSortDir() );
 
-        CoreResponse< List<Company>> result = companyService.companyList(companyQuery, descriptor.getLogin().getRoles());
+        CoreResponse< List<Company>> result = companyService.companyList( descriptor.makeAuthToken(), companyQuery );
 
         if (result.isError())
             throw new RequestFailedException(result.getStatus());
@@ -74,9 +74,9 @@ public class CompanyServiceImpl implements CompanyService {
         CoreResponse< Company > response;
 
         if ( company.getId() == null )
-            response = companyService.createCompany( company, descriptor.getLogin().getRoles() );
+            response = companyService.createCompany( descriptor.makeAuthToken(), company );
         else
-            response = companyService.updateCompany( company, descriptor.getLogin().getRoles() );
+            response = companyService.updateCompany( descriptor.makeAuthToken(), company );
 
         log.debug( "saveCompany(): response.isOk()={}", response.isOk() );
 
@@ -121,7 +121,7 @@ public class CompanyServiceImpl implements CompanyService {
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
         //TODO используется для отображения карточки компании, думаю проверка роли COMPANY_VIEW логична
 
-        CoreResponse<Company> response = companyService.getCompany( id, descriptor.getLogin().getRoles() );
+        CoreResponse<Company> response = companyService.getCompany( descriptor.makeAuthToken(),  id );
 
         log.debug( "getCompany(): response.isOk()={} | response.getData()", response.isOk(), response.getData() );
 

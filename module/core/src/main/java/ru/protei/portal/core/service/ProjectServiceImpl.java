@@ -51,11 +51,7 @@ public class ProjectServiceImpl implements ProjectService {
     PolicyService policyService;
 
     @Override
-    public CoreResponse< List< RegionInfo > > listRegions( ProjectQuery query, Set< UserRole > roles ) {
-
-        if ( !policyService.hasPrivilegeFor( En_Privilege.REGION_VIEW, roles ) ) {
-            return new CoreResponse().error( En_ResultStatus.PERMISSION_DENIED );
-        }
+    public CoreResponse< List< RegionInfo > > listRegions( AuthToken token, ProjectQuery query ) {
 
         LocationQuery locationQuery = new LocationQuery();
         locationQuery.setType( En_LocationType.REGION );
@@ -94,11 +90,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public CoreResponse< Map< String, List< ProjectInfo > > > listProjectsByRegions( ProjectQuery query, Set< UserRole > roles ) {
-
-        if ( !policyService.hasPrivilegeFor( En_Privilege.PROJECT_VIEW, roles ) ) {
-            return new CoreResponse().error( En_ResultStatus.PERMISSION_DENIED );
-        }
+    public CoreResponse< Map< String, List< ProjectInfo > > > listProjectsByRegions( AuthToken token, ProjectQuery query ) {
 
         Map< String, List< ProjectInfo > > regionToProjectMap = new HashMap<>();
         CaseQuery caseQuery = new CaseQuery();
@@ -120,11 +112,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public CoreResponse< ProjectInfo > getProject( Long id, Set< UserRole > roles ) {
-
-        if ( !policyService.hasPrivilegeFor( En_Privilege.PROJECT_VIEW, roles ) ) {
-            return new CoreResponse().error( En_ResultStatus.PERMISSION_DENIED );
-        }
+    public CoreResponse< ProjectInfo > getProject( AuthToken token, Long id ) {
 
         CaseObject caseObject = caseObjectDAO.get( id );
         helper.fillAll( caseObject );
@@ -134,11 +122,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     @Transactional
-    public CoreResponse saveProject( ProjectInfo project, Set< UserRole > roles ) {
-
-        if ( !policyService.hasPrivilegeFor( En_Privilege.PROJECT_EDIT, roles ) ) {
-            return new CoreResponse().error( En_ResultStatus.PERMISSION_DENIED );
-        }
+    public CoreResponse saveProject( AuthToken token, ProjectInfo project ) {
 
         CaseObject caseObject = caseObjectDAO.get( project.getId() );
         helper.fillAll( caseObject );
@@ -163,11 +147,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     @Transactional
-    public CoreResponse< Long > createProject( Long creatorId, Set< UserRole > roles ) {
-
-        if ( !policyService.hasPrivilegeFor( En_Privilege.PROJECT_CREATE, roles ) ) {
-            return new CoreResponse().error( En_ResultStatus.PERMISSION_DENIED );
-        }
+    public CoreResponse< Long > createProject( AuthToken token, Long creatorId ) {
 
         CaseType type = caseTypeDAO.get( new Long( En_CaseType.PROJECT.getId() ) );
         Long id = type.getNextId();

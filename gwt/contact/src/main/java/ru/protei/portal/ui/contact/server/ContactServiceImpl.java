@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
@@ -34,7 +35,7 @@ public class ContactServiceImpl implements ContactService {
         log.debug( "getContacts(): searchPattern={} | companyId={} | isFired={} | sortField={} | sortDir={}",
                 query.getSearchString(), query.getCompanyId(), query.getFired(), query.getSortField(), query.getSortDir() );
 
-        CoreResponse<List<Person>> response = contactService.contactList( query );
+        CoreResponse<List<Person>> response = contactService.contactList( getDescriptorAndCheckSession().makeAuthToken(), query );
 
         if ( response.isError() ) {
             throw new RequestFailedException( response.getStatus() );
@@ -50,7 +51,7 @@ public class ContactServiceImpl implements ContactService {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse<Person> response = contactService.getContact(id, descriptor.getLogin().getRoles());
+        CoreResponse<Person> response = contactService.getContact( descriptor.makeAuthToken(), id );
 
         log.debug("get contact, id: {} -> {} ", id, response.isError() ? "error" : response.getData().getDisplayName());
 
@@ -68,7 +69,7 @@ public class ContactServiceImpl implements ContactService {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse<Person> response = contactService.saveContact(p, descriptor.getLogin().getRoles());
+        CoreResponse<Person> response = contactService.saveContact( descriptor.makeAuthToken(), p );
 
         log.debug("store contact, result: {}", response.isOk() ? "ok" : response.getStatus());
 
@@ -86,7 +87,7 @@ public class ContactServiceImpl implements ContactService {
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
         log.debug( "getContactsCount(): query={}", query );
-        return contactService.count( query, descriptor.getLogin().getRoles() ).getData();
+        return contactService.count( descriptor.makeAuthToken(), query ).getData();
     }
 
     public List<PersonShortView> getContactViewList( ContactQuery query ) throws RequestFailedException {
@@ -94,7 +95,7 @@ public class ContactServiceImpl implements ContactService {
         log.debug( "getContactViewList(): searchPattern={} | companyId={} | isFired={} | sortField={} | sortDir={}",
                 query.getSearchString(), query.getCompanyId(), query.getFired(), query.getSortField(), query.getSortDir() );
 
-        CoreResponse< List<PersonShortView> > result = contactService.shortViewList( query );
+        CoreResponse< List<PersonShortView> > result = contactService.shortViewList( getDescriptorAndCheckSession().makeAuthToken(), query );
 
         log.debug( "result status: {}, data-amount: {}", result.getStatus(), result.isOk() ? result.getDataAmountTotal() : 0 );
 
@@ -116,27 +117,27 @@ public class ContactServiceImpl implements ContactService {
         if ( HelperFunc.isEmpty( userLogin.getUlogin() ) ) {
             if ( userLogin.getId() == null ) {
                 return true;
-            } else {
-
-                log.debug( "remove account, id: {} ", userLogin.getId() );
-
-                CoreResponse< Boolean > response = accountService.removeAccount( userLogin.getId(), descriptor.getLogin().getRoles() );
-
-                log.debug( "remove account, result: {}", response.isOk() ? "ok" : response.getStatus() );
-
-                if ( response.isOk() ) {
-                    return response.getData();
-                }
-
-                throw new RequestFailedException( response.getStatus() );
             }
+
+            log.debug( "remove account, id: {} ", userLogin.getId() );
+
+            CoreResponse< Boolean > response = accountService.removeAccount( descriptor.makeAuthToken(), userLogin.getId() );
+
+            log.debug( "remove account, result: {}", response.isOk() ? "ok" : response.getStatus() );
+
+            if ( response.isOk() ) {
+                return response.getData();
+            }
+
+            throw new RequestFailedException( response.getStatus() );
+
         } else {
             log.debug( "store account, id: {} ", HelperFunc.nvl( userLogin.getId(), "new" ) );
 
             if ( !isLoginUnique( userLogin.getUlogin(), userLogin.getId() ) )
                 throw new RequestFailedException ( En_ResultStatus.ALREADY_EXIST );
 
-            CoreResponse< UserLogin > response = accountService.saveAccount( userLogin, descriptor.getLogin().getRoles() );
+            CoreResponse< UserLogin > response = accountService.saveAccount( descriptor.makeAuthToken(), userLogin );
 
             log.debug( "store account, result: {}", response.isOk() ? "ok" : response.getStatus() );
 

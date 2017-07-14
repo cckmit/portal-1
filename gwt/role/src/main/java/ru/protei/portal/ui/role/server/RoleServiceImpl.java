@@ -31,7 +31,7 @@ public class RoleServiceImpl implements RoleService {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse<List<UserRole>> response = roleService.userRoleList( query, descriptor.getLogin().getRoles() );
+        CoreResponse<List<UserRole>> response = roleService.userRoleList( descriptor.makeAuthToken(), query );
 
         if ( response.isError() ) {
             throw new RequestFailedException( response.getStatus() );
@@ -46,7 +46,7 @@ public class RoleServiceImpl implements RoleService {
         //TODO используется для отображения карточки роли, думаю проверка роли ROLE_VIEW логична
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse<UserRole> response = roleService.getUserRole(id, descriptor.getLogin().getRoles());
+        CoreResponse<UserRole> response = roleService.getUserRole( descriptor.makeAuthToken(), id );
 
         log.debug("get role, id: {} -> {} ", id, response.isError() ? "error" : response.getData());
 
@@ -64,7 +64,7 @@ public class RoleServiceImpl implements RoleService {
 
         log.debug("store role, id: {} ", HelperFunc.nvl(role.getId(), "new"));
 
-        CoreResponse<UserRole> response = roleService.saveUserRole(role, descriptor.getLogin().getRoles());
+        CoreResponse<UserRole> response = roleService.saveUserRole( descriptor.makeAuthToken(), role );
 
         log.debug("store role, result: {}", response.isOk() ? "ok" : response.getStatus());
 

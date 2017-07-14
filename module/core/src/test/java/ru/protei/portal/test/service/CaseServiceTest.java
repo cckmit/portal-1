@@ -43,7 +43,7 @@ public class CaseServiceTest {
 
         CaseService service = ctx.getBean(CaseService.class);
         Assert.assertNotNull(service);
-        CoreResponse<List<CaseComment>> result = service.getCaseCommentList(testCaseId);
+        CoreResponse<List<CaseComment>> result = service.getCaseCommentList(null, testCaseId);
 
         Assert.assertNotNull(result);
         Assert.assertTrue(result.isOk());
@@ -74,24 +74,16 @@ public class CaseServiceTest {
         comment.setCreated( new Date() );
         comment.setText( "Unit-test - тестовый комментарий" );
 
-        Set< UserRole > roles = new HashSet<>();
-        UserRole role = new UserRole();
-        role.setId( 1L );
-        Set<En_Privilege> privileges = new HashSet<>();
-        privileges.add( En_Privilege.ISSUE_VIEW );
-        privileges.add( En_Privilege.ISSUE_EDIT );
-        role.setPrivileges( privileges );
-
         CaseService service = ctx.getBean(CaseService.class);
 
-        CoreResponse<CaseComment> result = service.addCaseComment( comment, null, roles );
+        CoreResponse<CaseComment> result = service.addCaseComment( null, comment, null );
         Assert.assertNotNull(result);
         Assert.assertTrue(result.isOk());
         Assert.assertNotNull(result.getData());
 
         System.out.println( result.getData() );
 
-        CoreResponse<List<CaseComment>> resultList = service.getCaseCommentList(testCaseId);
+        CoreResponse<List<CaseComment>> resultList = service.getCaseCommentList(null, testCaseId);
         System.out.println(" size after add = " + resultList.getData().size());
 
         // update
@@ -100,26 +92,26 @@ public class CaseServiceTest {
         if (comment != null) {
             comment.setText( "Unit-test - тестовый комментарий (update)" );
 
-            result = service.updateCaseComment( comment, null, roles );
+            result = service.updateCaseComment( null, comment, null );
             Assert.assertNotNull( result );
             Assert.assertTrue( result.isOk() );
             Assert.assertNotNull( result.getData() );
 
             System.out.println( result.getData() );
         }
-        resultList = service.getCaseCommentList(testCaseId);
+        resultList = service.getCaseCommentList(null, testCaseId);
         System.out.println(" size after update = " + resultList.getData().size());
 
         // delete
         if (comment != null) {
-            result = service.removeCaseComment( comment, personId, roles );
+            result = service.removeCaseComment( null, comment, personId );
             Assert.assertNotNull( result );
             Assert.assertTrue( result.isOk() );
             Assert.assertNotNull( result.getData() );
 
             System.out.println( result.getData() );
         }
-        resultList = service.getCaseCommentList(testCaseId);
+        resultList = service.getCaseCommentList(null, testCaseId);
         System.out.println(" size after remove = " + resultList.getData().size());
 
     }

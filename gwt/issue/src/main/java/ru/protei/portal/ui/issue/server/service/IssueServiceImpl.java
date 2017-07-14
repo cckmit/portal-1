@@ -36,7 +36,7 @@ public class IssueServiceImpl implements IssueService {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse<List<CaseShortView>> response = caseService.caseObjectList( query, descriptor.getLogin().getRoles() );
+        CoreResponse<List<CaseShortView>> response = caseService.caseObjectList( descriptor.makeAuthToken(), query );
         if (response.isError()) {
             throw new RequestFailedException( response.getStatus() );
         }
@@ -49,7 +49,7 @@ public class IssueServiceImpl implements IssueService {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse<CaseObject> response = caseService.getCaseObject( id, descriptor.getLogin().getRoles() );
+        CoreResponse<CaseObject> response = caseService.getCaseObject( descriptor.makeAuthToken(), id );
         log.debug("getIssue(), id: {} -> {} ", id, response.isError() ? "error" : response.getData().getCaseNumber());
 
         if (response.isError()) {
@@ -70,9 +70,10 @@ public class IssueServiceImpl implements IssueService {
             caseObject.setTypeId(En_CaseType.CRM_SUPPORT.getId());
             caseObject.setCreatorId(getCurrentPerson().getId());
 
-            response = caseService.saveCaseObject(caseObject, getCurrentPerson(), descriptor.getLogin().getRoles());
-        }else
-            response = caseService.updateCaseObject(caseObject, getCurrentPerson(), descriptor.getLogin().getRoles());
+            response = caseService.saveCaseObject( descriptor.makeAuthToken(), caseObject, getCurrentPerson() );
+        }
+        else
+            response = caseService.updateCaseObject( descriptor.makeAuthToken(), caseObject, getCurrentPerson() );
 
         log.debug( "saveIssue(): response.isOk()={}", response.isOk() );
         if ( response.isError() ) throw new RequestFailedException(response.getStatus());
@@ -85,14 +86,14 @@ public class IssueServiceImpl implements IssueService {
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
         log.debug( "getIssuesCount(): query={}", query );
-        return caseService.count( query, descriptor.getLogin().getRoles() ).getData();
+        return caseService.count( descriptor.makeAuthToken(), query ).getData();
     }
 
     @Override
     public List<CaseComment> getIssueComments( Long caseId ) throws RequestFailedException {
         log.debug( "getIssueComments(): caseId={}", caseId );
 
-        CoreResponse<List<CaseComment>> response = caseService.getCaseCommentList( caseId );
+        CoreResponse<List<CaseComment>> response = caseService.getCaseCommentList( getDescriptorAndCheckSession().makeAuthToken(), caseId );
         if (response.isError()) {
             throw new RequestFailedException( response.getStatus() );
         }
@@ -106,7 +107,7 @@ public class IssueServiceImpl implements IssueService {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse<List<CaseComment>> response = caseService.removeCaseComment( value, getCurrentPerson().getId(), descriptor.getLogin().getRoles() );
+        CoreResponse<List<CaseComment>> response = caseService.removeCaseComment( descriptor.makeAuthToken(), value, getCurrentPerson().getId() );
         if (response.isError()) {
             throw new RequestFailedException( response.getStatus() );
         }
@@ -121,9 +122,9 @@ public class IssueServiceImpl implements IssueService {
 
         CoreResponse<CaseComment> response;
         if ( comment.getId() == null ) {
-            response = caseService.addCaseComment( comment, getCurrentPerson(), descriptor.getLogin().getRoles() );
+            response = caseService.addCaseComment( descriptor.makeAuthToken(), comment, getCurrentPerson() );
         } else {
-            response = caseService.updateCaseComment( comment, getCurrentPerson(), descriptor.getLogin().getRoles() );
+            response = caseService.updateCaseComment( descriptor.makeAuthToken(), comment, getCurrentPerson() );
         }
         if (response.isError()) {
             throw new RequestFailedException( response.getStatus() );

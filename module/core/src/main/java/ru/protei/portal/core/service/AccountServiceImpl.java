@@ -12,6 +12,7 @@ import ru.protei.portal.core.model.dict.En_AdminState;
 import ru.protei.portal.core.model.dict.En_AuthType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.helper.HelperFunc;
@@ -41,12 +42,7 @@ public class AccountServiceImpl implements AccountService {
     PolicyService policyService;
 
     @Override
-    public CoreResponse< List< UserLogin > > accountList( AccountQuery query, Set< UserRole > roles ) {
-
-        if ( !policyService.hasPrivilegeFor( En_Privilege.ACCOUNT_VIEW, roles ) ) {
-            return new CoreResponse().error( En_ResultStatus.PERMISSION_DENIED );
-        }
-
+    public CoreResponse< List< UserLogin > > accountList(AuthToken token, AccountQuery query ) {
         List< UserLogin > list = userLoginDAO.getAccounts( query );
 
         if (list == null)
@@ -57,12 +53,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public CoreResponse< Long > count( AccountQuery query, Set< UserRole > roles ) {
-
-        if ( !policyService.hasPrivilegeFor( En_Privilege.ACCOUNT_VIEW, roles ) ) {
-            return new CoreResponse().error( En_ResultStatus.PERMISSION_DENIED );
-        }
-
+    public CoreResponse< Long > count( AuthToken authToken, AccountQuery query ) {
         Long count = userLoginDAO.count( query );
 
         if ( count == null )
@@ -72,12 +63,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public CoreResponse< UserLogin > getAccount( long id, Set< UserRole > roles ) {
-
-        if ( !policyService.hasPrivilegeFor( En_Privilege.ACCOUNT_VIEW, roles ) ) {
-            return new CoreResponse().error( En_ResultStatus.PERMISSION_DENIED );
-        }
-
+    public CoreResponse< UserLogin > getAccount( AuthToken token, long id ) {
         UserLogin userLogin = userLoginDAO.get( id );
 
         if ( userLogin == null ) {
@@ -91,12 +77,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional
-    public CoreResponse< UserLogin > saveAccount( UserLogin userLogin, Set< UserRole > roles ) {
-
-        if ( !policyService.hasPrivilegeFor( En_Privilege.ACCOUNT_EDIT, roles ) ) {
-            return new CoreResponse().error( En_ResultStatus.PERMISSION_DENIED );
-        }
-
+    public CoreResponse< UserLogin > saveAccount( AuthToken token, UserLogin userLogin ) {
         if ( !isValidLogin( userLogin ) )
             return new CoreResponse< UserLogin >().error( En_ResultStatus.VALIDATION_ERROR );
 
@@ -106,7 +87,7 @@ public class AccountServiceImpl implements AccountService {
 
         userLogin.setUlogin( userLogin.getUlogin().trim() );
 
-        UserLogin account = userLogin.getId() == null ? null : getAccount( userLogin.getId(), roles ).getData();
+        UserLogin account = userLogin.getId() == null ? null : getAccount( token, userLogin.getId() ).getData();
 
         if ( account == null || ( account.getUpass() == null && userLogin.getUpass() != null ) ||
                 ( account.getUpass() != null && userLogin.getUpass() != null && !account.getUpass().equalsIgnoreCase( userLogin.getUpass().trim() ) ) ) {
@@ -139,11 +120,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public CoreResponse< Boolean > removeAccount( Long accountId, Set< UserRole > roles ) {
-
-        if ( !policyService.hasPrivilegeFor( En_Privilege.ACCOUNT_REMOVE, roles ) ) {
-            return new CoreResponse().error( En_ResultStatus.PERMISSION_DENIED );
-        }
+    public CoreResponse< Boolean > removeAccount( AuthToken token, Long accountId ) {
 
         if ( userLoginDAO.removeByKey( accountId ) ) {
             return new CoreResponse< Boolean >().success( true );
@@ -152,15 +129,15 @@ public class AccountServiceImpl implements AccountService {
         return new CoreResponse< Boolean >().error( En_ResultStatus.INTERNAL_ERROR );
     }
 
-    @Override
-    public CoreResponse< List< UserRole > > roleList() {
-        List< UserRole > list = userRoleDAO.getAll();
-
-        if (list == null)
-            new CoreResponse< List< UserRole > >().error( En_ResultStatus.GET_DATA_ERROR );
-
-        return new CoreResponse< List< UserRole > >().success( list );
-    }
+//    @Override
+//    public CoreResponse< List< UserRole > > roleList() {
+//        List< UserRole > list = userRoleDAO.getAll();
+//
+//        if (list == null)
+//            new CoreResponse< List< UserRole > >().error( En_ResultStatus.GET_DATA_ERROR );
+//
+//        return new CoreResponse< List< UserRole > >().success( list );
+//    }
 
     private boolean isValidLogin( UserLogin userLogin ) {
         return HelperFunc.isNotEmpty( userLogin.getUlogin() )

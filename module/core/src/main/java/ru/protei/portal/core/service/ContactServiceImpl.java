@@ -8,6 +8,7 @@ import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dao.UserLoginDAO;
 import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.helper.HelperFunc;
@@ -36,7 +37,7 @@ public class ContactServiceImpl implements ContactService {
     PolicyService policyService;
 
     @Override
-    public CoreResponse<List<PersonShortView>> shortViewList(ContactQuery query) {
+    public CoreResponse<List<PersonShortView>> shortViewList(AuthToken token, ContactQuery query) {
         List<Person> list = personDAO.getContacts(query);
 
         if (list == null)
@@ -48,7 +49,7 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Override
-    public CoreResponse<List<Person>> contactList(ContactQuery query) {
+    public CoreResponse<List<Person>> contactList(AuthToken token, ContactQuery query) {
         List<Person> list = personDAO.getContacts(query);
 
         if (list == null)
@@ -58,11 +59,7 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Override
-    public CoreResponse<Person> getContact( long id, Set< UserRole > roles ) {
-
-        if ( !policyService.hasPrivilegeFor( En_Privilege.CONTACT_VIEW, roles ) ) {
-            return new CoreResponse().error( En_ResultStatus.PERMISSION_DENIED );
-        }
+    public CoreResponse<Person> getContact( AuthToken token, long id ) {
 
         Person person = personDAO.getContact(id);
 
@@ -72,14 +69,10 @@ public class ContactServiceImpl implements ContactService {
 
 
     @Override
-    public CoreResponse<Person> saveContact( Person p, Set< UserRole > roles ) {
+    public CoreResponse<Person> saveContact( AuthToken token, Person p ) {
         if (personDAO.isEmployee(p)) {
             log.warn("person with id = {} is employee",p.getId());
             return new CoreResponse<Person>().error(En_ResultStatus.VALIDATION_ERROR);
-        }
-
-        if ( !policyService.hasPrivilegeFor( En_Privilege.CONTACT_EDIT, roles ) ) {
-            return new CoreResponse().error( En_ResultStatus.PERMISSION_DENIED );
         }
 
         if (HelperFunc.isEmpty(p.getFirstName()) || HelperFunc.isEmpty(p.getLastName())
@@ -121,11 +114,7 @@ public class ContactServiceImpl implements ContactService {
 
 
     @Override
-    public CoreResponse<Long> count( ContactQuery query, Set< UserRole > roles ) {
-
-        if ( !policyService.hasPrivilegeFor( En_Privilege.CONTACT_VIEW, roles ) ) {
-            return new CoreResponse().error( En_ResultStatus.PERMISSION_DENIED );
-        }
+    public CoreResponse<Long> count( AuthToken token, ContactQuery query ) {
 
         return new CoreResponse<Long>().success(personDAO.count(query));
     }

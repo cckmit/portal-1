@@ -1,6 +1,9 @@
 package ru.protei.portal.core.service;
 
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.core.model.annotations.Privileged;
+import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.struct.ProjectInfo;
@@ -18,35 +21,35 @@ public interface ProjectService {
     /**
      * Возвращает проектную информацию по регионам
      * @param query    параметры запроса
-     * @param roles
      */
-    CoreResponse<List<RegionInfo>> listRegions( ProjectQuery query, Set< UserRole > roles );
+    @Privileged( En_Privilege.REGION_VIEW )
+    CoreResponse<List<RegionInfo>> listRegions(AuthToken token, ProjectQuery query );
 
     /**
      * Возвращает список проектов сгруппированных по регионам
      * @param query    параметры запроса
-     * @param roles
      */
-    CoreResponse<Map<String, List<ProjectInfo>>> listProjectsByRegions( ProjectQuery query, Set< UserRole > roles );
+    @Privileged({ En_Privilege.PROJECT_VIEW, En_Privilege.REGION_VIEW })
+    CoreResponse<Map<String, List<ProjectInfo>>> listProjectsByRegions( AuthToken token, ProjectQuery query );
 
     /**
      * Получает информацию о проекте
      * @param id
-     * @param roles
      */
-    CoreResponse<ProjectInfo> getProject( Long id, Set< UserRole > roles );
+    @Privileged( En_Privilege.PROJECT_VIEW )
+    CoreResponse<ProjectInfo> getProject( AuthToken token, Long id );
 
     /**
      * Изменяем проект
-     * @param roles
      * @param project    проект
      */
-    CoreResponse saveProject( ProjectInfo project, Set< UserRole > roles );
+    @Privileged( En_Privilege.PRODUCT_EDIT )
+    CoreResponse saveProject( AuthToken token, ProjectInfo project );
 
     /**
      * Создает новый проект
      * @param creatorId
-     * @param roles
      */
-    CoreResponse<Long> createProject( Long creatorId, Set< UserRole > roles );
+    @Privileged( En_Privilege.PROJECT_CREATE )
+    CoreResponse<Long> createProject( AuthToken token, Long creatorId );
 }

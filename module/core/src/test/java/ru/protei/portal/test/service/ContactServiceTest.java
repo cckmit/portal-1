@@ -40,14 +40,7 @@ public class ContactServiceTest {
 
         Assert.assertNotNull(service);
 
-        Set< UserRole > roles = new HashSet<>();
-        UserRole role = new UserRole();
-        role.setId( 1L );
-        Set<En_Privilege > privileges = new HashSet<>();
-        privileges.add( En_Privilege.CONTACT_VIEW );
-        role.setPrivileges( privileges );
-
-        CoreResponse<Person> response = service.getContact(1001L, roles );
+        CoreResponse<Person> response = service.getContact( null, 1001L );
 
         Assert.assertTrue(response.isOk());
 
@@ -62,16 +55,9 @@ public class ContactServiceTest {
 
         ContactService service = ctx.getBean(ContactService.class);
 
-        Set< UserRole > roles = new HashSet<>();
-        UserRole role = new UserRole();
-        role.setId( 1L );
-        Set<En_Privilege > privileges = new HashSet<>();
-        privileges.add( En_Privilege.CONTACT_VIEW );
-        role.setPrivileges( privileges );
-
         Assert.assertNotNull(service);
 
-        CoreResponse<List<Person>> result = service.contactList(new ContactQuery((Long)null, null, "Михаил", En_SortField.person_full_name, En_SortDir.ASC));
+        CoreResponse<List<Person>> result = service.contactList( null, new ContactQuery((Long)null, null, "Михаил", En_SortField.person_full_name, En_SortDir.ASC));
 
         Assert.assertNotNull(result);
         Assert.assertTrue(result.isOk());
@@ -79,7 +65,7 @@ public class ContactServiceTest {
         Assert.assertTrue(result.getData().size() > 0);
 
         for (Person person : result.getData()) {
-            CoreResponse<Person> x = service.getContact( person.getId(), roles );
+            CoreResponse<Person> x = service.getContact( null, person.getId() );
             Assert.assertTrue(x.isOk());
             Assert.assertEquals(person.getId(), x.getData().getId());
             Assert.assertEquals(person.getDisplayName(), x.getData().getDisplayName());

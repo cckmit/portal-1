@@ -33,7 +33,7 @@ public class EquipmentServiceImpl implements EquipmentService {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse<List<Equipment>> response = equipmentService.equipmentList( query, descriptor.getLogin().getRoles() );
+        CoreResponse<List<Equipment>> response = equipmentService.equipmentList( descriptor.makeAuthToken(), query );
 
         if ( response.isError() ) {
             throw new RequestFailedException( response.getStatus() );
@@ -48,7 +48,7 @@ public class EquipmentServiceImpl implements EquipmentService {
         //TODO используется для отображения карточки оборудования, думаю проверка роли EQUIPMENT_VIEW логична
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse<Equipment> response = equipmentService.getEquipment(id, descriptor.getLogin().getRoles());
+        CoreResponse<Equipment> response = equipmentService.getEquipment( descriptor.makeAuthToken(), id );
         log.debug("get equipment, id: {} -> {} ", id, response.isError() ? "error" : response.getData());
 
         if (response.isOk()) {
@@ -75,7 +75,7 @@ public class EquipmentServiceImpl implements EquipmentService {
         }
         log.debug("store equipment, id: {} ", HelperFunc.nvl(eq.getId(), "new"));
 
-        CoreResponse<Equipment> response = equipmentService.saveEquipment(eq, descriptor.getLogin().getRoles());
+        CoreResponse<Equipment> response = equipmentService.saveEquipment( descriptor.makeAuthToken(), eq );
         log.debug("store equipment, result: {}", response.isOk() ? "ok" : response.getStatus());
 
         if (response.isOk()) {
@@ -96,7 +96,7 @@ public class EquipmentServiceImpl implements EquipmentService {
         UserSessionDescriptor session = sessionService.getUserSessionDescriptor( httpRequest );
         Long authorId = session.getPerson() == null ? 0 : session.getPerson().getId();
 
-        CoreResponse<Long> response = equipmentService.copyEquipment(equipmentId, newName, authorId, descriptor.getLogin().getRoles());
+        CoreResponse<Long> response = equipmentService.copyEquipment( session.makeAuthToken(), equipmentId, newName, authorId );
         log.debug( "copy equipment: result: {}", response.isOk() ? "ok" : response.getStatus() );
 
         if (response.isOk()) {
@@ -113,7 +113,7 @@ public class EquipmentServiceImpl implements EquipmentService {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse<Boolean> response = equipmentService.removeEquipment(equipmentId, descriptor.getLogin().getRoles());
+        CoreResponse<Boolean> response = equipmentService.removeEquipment( descriptor.makeAuthToken(), equipmentId );
         log.debug( "remove equipment: result: {}", response.isOk() ? "ok" : response.getStatus() );
 
         if (response.isOk()) {
@@ -129,7 +129,7 @@ public class EquipmentServiceImpl implements EquipmentService {
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
         log.debug( "get equipment count(): query={}", query );
-        return equipmentService.count( query, descriptor.getLogin().getRoles() ).getData();
+        return equipmentService.count( descriptor.makeAuthToken(), query ).getData();
     }
 
     @Override
@@ -160,7 +160,7 @@ public class EquipmentServiceImpl implements EquipmentService {
         log.debug( "get next available decimal number: organizationCode={}, classifierCode={}, regNum={}",
                 number.getOrganizationCode(), number.getClassifierCode(), number.getRegisterNumber() );
 
-        CoreResponse<DecimalNumber> response = equipmentService.getNextAvailableDecimalNumber( number );
+        CoreResponse<DecimalNumber> response = equipmentService.getNextAvailableDecimalNumber( getDescriptorAndCheckSession().makeAuthToken(), number );
         if (response.isOk()) {
             log.debug("get next available decimal number, result: {}", response.getData());
             return number;
@@ -179,7 +179,7 @@ public class EquipmentServiceImpl implements EquipmentService {
         log.debug( "get next available decimal number modification: organizationCode={}, classifierCode={}, regNum={}",
                 number.getOrganizationCode(), number.getClassifierCode(), number.getRegisterNumber() );
 
-        CoreResponse<DecimalNumber> response = equipmentService.getNextAvailableDecimalNumberModification( number );
+        CoreResponse<DecimalNumber> response = equipmentService.getNextAvailableDecimalNumberModification( getDescriptorAndCheckSession().makeAuthToken(), number );
         if (response.isOk()) {
             log.debug("get next available decimal number, result: {}", response.getData());
             return number;

@@ -95,11 +95,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public CoreResponse<List<Company>> companyList( CompanyQuery query, Set< UserRole > roles ) {
-
-        if ( !policyService.hasPrivilegeFor( En_Privilege.COMPANY_VIEW, roles ) ) {
-            return new CoreResponse().error( En_ResultStatus.PERMISSION_DENIED );
-        }
+    public CoreResponse<List<Company>> companyList( AuthToken token, CompanyQuery query ) {
 
         List<Company> list = companyDAO.getListByQuery(query);
 
@@ -141,11 +137,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public CoreResponse<Company> getCompany( Long id, Set< UserRole > roles ) {
-
-        if ( !policyService.hasPrivilegeFor( En_Privilege.COMPANY_VIEW, roles ) ) {
-            return new CoreResponse().error( En_ResultStatus.PERMISSION_DENIED );
-        }
+    public CoreResponse<Company> getCompany( AuthToken token, Long id ) {
 
         if (id == null) {
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
@@ -162,11 +154,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public CoreResponse<Company> createCompany( Company company, Set< UserRole > roles ) {
-
-        if ( !policyService.hasPrivilegeFor( En_Privilege.COMPANY_CREATE, roles ) ) {
-            return new CoreResponse().error( En_ResultStatus.PERMISSION_DENIED );
-        }
+    public CoreResponse<Company> createCompany( AuthToken token, Company company ) {
 
         if (!isValidCompany(company)) {
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
@@ -184,11 +172,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public CoreResponse<Company> updateCompany( Company company, Set< UserRole > roles ) {
-
-        if ( !policyService.hasPrivilegeFor( En_Privilege.COMPANY_EDIT, roles ) ) {
-            return new CoreResponse().error( En_ResultStatus.PERMISSION_DENIED );
-        }
+    public CoreResponse<Company> updateCompany( AuthToken token, Company company ) {
 
         if (!isValidCompany(company)) {
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);

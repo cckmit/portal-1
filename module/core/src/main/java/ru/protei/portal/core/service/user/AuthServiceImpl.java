@@ -83,6 +83,10 @@ public class AuthServiceImpl implements AuthService {
         return null;
     }
 
+    public UserSessionDescriptor findSession (AuthToken token) {
+        return findSession( token.getSid(), token.getIp(), "" );
+    }
+
     private UserSessionDescriptor getSessionDescriptor(String appSessionId) {
         // get from cache
         UserSessionDescriptor descriptor = sessionCache.get(appSessionId);

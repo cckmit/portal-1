@@ -67,4 +67,8 @@ public class UserSessionDescriptor {
     public boolean isExpired () {
         return this.session != null && this.session.checkIsExpired();
     }
+
+    public AuthToken makeAuthToken() {
+        return new AuthToken( getSessionId(), session.getClientIp() );
+    }
 }

@@ -69,8 +69,16 @@ public class AuthServiceImpl implements AuthService {
 
     private Set< En_Privilege > getAllPrivileges( Set< UserRole > roles ) {
         Set< En_Privilege > privileges = new HashSet<>();
+        if ( roles == null ) {
+            return privileges;
+        }
+
         for ( UserRole role : roles ) {
-            privileges.addAll( role.getPrivileges() );
+            if ( role.getPrivileges() == null ) {
+                continue;
+            }
+
+            privileges.addAll(role.getPrivileges());
         }
 
         return privileges;
