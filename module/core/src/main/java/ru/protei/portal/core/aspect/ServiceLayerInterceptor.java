@@ -25,6 +25,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.sql.SQLDataException;
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -36,6 +38,7 @@ public class ServiceLayerInterceptor {
     private static Logger logger = Logger.getLogger(ServiceLayerInterceptor.class);
 
     @Pointcut("execution(public ru.protei.portal.api.struct.CoreResponse *(..))")
+//    @Pointcut("call(public ru.protei.portal.api.struct.CoreResponse *(..))")
     private void coreResponseMethod() {}
 
 
@@ -109,7 +112,6 @@ public class ServiceLayerInterceptor {
     }
 
     private void checkRequireAnyPrivileges( ProceedingJoinPoint pjp ) {
-        Class clazz = pjp.getSignature().getDeclaringType();
         Method method = ((MethodSignature)pjp.getSignature()).getMethod();
         Privileged privileges = method.getDeclaredAnnotation(Privileged.class);
 
@@ -129,6 +131,12 @@ public class ServiceLayerInterceptor {
     }
 
     private AuthToken findAuthToken( ProceedingJoinPoint pjp ) {
+        // try to check if method is called from core (in this case, we allow NULL to be passed in authToken)
+        Optional<String> firstCoreStackTraceElement = Arrays.asList( Thread.currentThread().getStackTrace() ).stream()
+                .map( StackTraceElement::toString )
+                .filter( (item)-> item.trim().startsWith( "ru.protei.portal.core.service" ) )
+                .findFirst();
+
         Method method = ((MethodSignature)pjp.getSignature()).getMethod();
         Parameter[] params = method.getParameters();
         for (int i = 0; i < params.length; i++) {
@@ -137,11 +145,16 @@ public class ServiceLayerInterceptor {
             }
 
             Object arg = pjp.getArgs()[ i ];
-            if ( arg == null ) {
-                throw new InvalidAuthTokenException();
+            if ( arg != null ) {
+                return (AuthToken) arg;
             }
 
-            return (AuthToken) arg;
+            if ( firstCoreStackTraceElement.isPresent() ) {
+                return null;
+            }
+
+            throw new InvalidAuthTokenException();
+
         }
 
         return null;
