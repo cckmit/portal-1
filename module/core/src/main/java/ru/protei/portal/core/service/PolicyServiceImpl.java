@@ -53,6 +53,10 @@ public class PolicyServiceImpl implements PolicyService {
     private Set< En_Privilege > getAllPrivileges( Set< UserRole > roles ) {
         Set< En_Privilege > privileges = new HashSet<>();
         for ( UserRole role : roles ) {
+            if ( role.getPrivileges() == null ) {
+                continue;
+            }
+
             privileges.addAll( role.getPrivileges() );
         }
         return privileges;

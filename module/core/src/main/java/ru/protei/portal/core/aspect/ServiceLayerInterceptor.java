@@ -125,7 +125,7 @@ public class ServiceLayerInterceptor {
         }
 
         UserSessionDescriptor descriptor = authService.findSession( token );
-        if ( !policyService.hasAnyPrivilegeOf( descriptor.getLogin().getRoles(), privileges.value() ) ) {
+        if ( !policyService.hasAnyPrivilegeOf( descriptor.getLogin().getRoles(), privileges.requireAny() ) ) {
             throw new InsufficientPrivilegesException();
         }
     }
