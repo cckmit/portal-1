@@ -134,7 +134,7 @@ public class ServiceLayerInterceptor {
         // try to check if method is called from core (in this case, we allow NULL to be passed in authToken)
         Optional<String> firstCoreStackTraceElement = Arrays.asList( Thread.currentThread().getStackTrace() ).stream()
                 .map( StackTraceElement::toString )
-                .filter( (item)-> item.trim().startsWith( "ru.protei.portal.core.service" ) )
+                .filter( (item)-> item.trim().startsWith( "ru.protei.portal.core.service" ) || item.trim().startsWith( "ru.protei.portal.test" ))
                 .findFirst();
 
         Method method = ((MethodSignature)pjp.getSignature()).getMethod();
