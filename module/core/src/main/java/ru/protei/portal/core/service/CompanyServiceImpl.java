@@ -8,6 +8,7 @@ import ru.protei.portal.core.model.dao.CompanyCategoryDAO;
 import ru.protei.portal.core.model.dao.CompanyDAO;
 import ru.protei.portal.core.model.dao.CompanyGroupDAO;
 import ru.protei.portal.core.model.dao.CompanySubscriptionDAO;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
@@ -23,6 +24,7 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -47,6 +49,8 @@ public class CompanyServiceImpl implements CompanyService {
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
+    @Autowired
+    PolicyService policyService;
 
     @Override
     public CoreResponse<Long> countCompanies(CompanyQuery query) {
@@ -91,7 +95,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public CoreResponse<List<Company>> companyList(CompanyQuery query) {
+    public CoreResponse<List<Company>> companyList( AuthToken token, CompanyQuery query ) {
 
         List<Company> list = companyDAO.getListByQuery(query);
 
@@ -133,7 +137,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public CoreResponse<Company> getCompany( Long id ) {
+    public CoreResponse<Company> getCompany( AuthToken token, Long id ) {
 
         if (id == null) {
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
@@ -150,7 +154,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public CoreResponse<Company> createCompany(Company company) {
+    public CoreResponse<Company> createCompany( AuthToken token, Company company ) {
 
         if (!isValidCompany(company)) {
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
@@ -168,7 +172,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public CoreResponse<Company> updateCompany(Company company) {
+    public CoreResponse<Company> updateCompany( AuthToken token, Company company ) {
 
         if (!isValidCompany(company)) {
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);

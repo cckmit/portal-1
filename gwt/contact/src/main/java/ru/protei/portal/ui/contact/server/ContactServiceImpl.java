@@ -6,15 +6,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.UserLogin;
+import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.ContactQuery;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.service.AccountService;
 import ru.protei.portal.ui.common.client.service.ContactService;
+import ru.protei.portal.ui.common.server.service.SessionService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -26,10 +30,12 @@ public class ContactServiceImpl implements ContactService {
     @Override
     public List<Person> getContacts( ContactQuery query ) throws RequestFailedException {
 
+        //TODO используется в cелектор сотрудников любой компании ContactButtonSelector, считаю что привилегия PERSON_VIEW не для этого
+
         log.debug( "getContacts(): searchPattern={} | companyId={} | isFired={} | sortField={} | sortDir={}",
                 query.getSearchString(), query.getCompanyId(), query.getFired(), query.getSortField(), query.getSortDir() );
 
-        CoreResponse<List<Person>> response = contactService.contactList( query );
+        CoreResponse<List<Person>> response = contactService.contactList( getDescriptorAndCheckSession().makeAuthToken(), query );
 
         if ( response.isError() ) {
             throw new RequestFailedException( response.getStatus() );
@@ -41,7 +47,11 @@ public class ContactServiceImpl implements ContactService {
     public Person getContact(long id) throws RequestFailedException {
         log.debug("get contact, id: {}", id);
 
-        CoreResponse<Person> response = contactService.getContact(id);
+        //TODO используется для отображения карточки контакта, думаю проверка роли CONTACT_VIEW логична
+
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
+        CoreResponse<Person> response = contactService.getContact( descriptor.makeAuthToken(), id );
 
         log.debug("get contact, id: {} -> {} ", id, response.isError() ? "error" : response.getData().getDisplayName());
 
@@ -57,7 +67,9 @@ public class ContactServiceImpl implements ContactService {
 
         log.debug("store contact, id: {} ", HelperFunc.nvl(p.getId(), "new"));
 
-        CoreResponse<Person> response = contactService.saveContact(p);
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
+        CoreResponse<Person> response = contactService.saveContact( descriptor.makeAuthToken(), p );
 
         log.debug("store contact, result: {}", response.isOk() ? "ok" : response.getStatus());
 
@@ -71,8 +83,11 @@ public class ContactServiceImpl implements ContactService {
 
     @Override
     public Long getContactsCount( ContactQuery query ) throws RequestFailedException {
+
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
         log.debug( "getContactsCount(): query={}", query );
-        return contactService.count( query ).getData();
+        return contactService.count( descriptor.makeAuthToken(), query ).getData();
     }
 
     public List<PersonShortView> getContactViewList( ContactQuery query ) throws RequestFailedException {
@@ -80,7 +95,7 @@ public class ContactServiceImpl implements ContactService {
         log.debug( "getContactViewList(): searchPattern={} | companyId={} | isFired={} | sortField={} | sortDir={}",
                 query.getSearchString(), query.getCompanyId(), query.getFired(), query.getSortField(), query.getSortDir() );
 
-        CoreResponse< List<PersonShortView> > result = contactService.shortViewList( query );
+        CoreResponse< List<PersonShortView> > result = contactService.shortViewList( getDescriptorAndCheckSession().makeAuthToken(), query );
 
         log.debug( "result status: {}, data-amount: {}", result.getStatus(), result.isOk() ? result.getDataAmountTotal() : 0 );
 
@@ -97,30 +112,32 @@ public class ContactServiceImpl implements ContactService {
             throw new RequestFailedException( En_ResultStatus.INTERNAL_ERROR );
         }
 
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
         if ( HelperFunc.isEmpty( userLogin.getUlogin() ) ) {
             if ( userLogin.getId() == null ) {
                 return true;
-            } else {
-
-                log.debug( "remove account, id: {} ", userLogin.getId() );
-
-                CoreResponse< Boolean > response = accountService.removeAccount( userLogin.getId() );
-
-                log.debug( "remove account, result: {}", response.isOk() ? "ok" : response.getStatus() );
-
-                if ( response.isOk() ) {
-                    return response.getData();
-                }
-
-                throw new RequestFailedException( response.getStatus() );
             }
+
+            log.debug( "remove account, id: {} ", userLogin.getId() );
+
+            CoreResponse< Boolean > response = accountService.removeAccount( descriptor.makeAuthToken(), userLogin.getId() );
+
+            log.debug( "remove account, result: {}", response.isOk() ? "ok" : response.getStatus() );
+
+            if ( response.isOk() ) {
+                return response.getData();
+            }
+
+            throw new RequestFailedException( response.getStatus() );
+
         } else {
             log.debug( "store account, id: {} ", HelperFunc.nvl( userLogin.getId(), "new" ) );
 
             if ( !isLoginUnique( userLogin.getUlogin(), userLogin.getId() ) )
                 throw new RequestFailedException ( En_ResultStatus.ALREADY_EXIST );
 
-            CoreResponse< UserLogin > response = accountService.saveAccount( userLogin );
+            CoreResponse< UserLogin > response = accountService.saveAccount( descriptor.makeAuthToken(), userLogin );
 
             log.debug( "store account, result: {}", response.isOk() ? "ok" : response.getStatus() );
 
@@ -147,11 +164,27 @@ public class ContactServiceImpl implements ContactService {
         return response.getData();
     }
 
+    private UserSessionDescriptor getDescriptorAndCheckSession() throws RequestFailedException {
+        UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor( httpServletRequest );
+        log.info( "userSessionDescriptor={}", descriptor );
+        if ( descriptor == null ) {
+            throw new RequestFailedException( En_ResultStatus.SESSION_NOT_FOUND );
+        }
+
+        return descriptor;
+    }
+
     @Autowired
     ru.protei.portal.core.service.ContactService contactService;
 
     @Autowired
     AccountService accountService;
+
+    @Autowired
+    SessionService sessionService;
+
+    @Autowired
+    HttpServletRequest httpServletRequest;
 
     private static final Logger log = LoggerFactory.getLogger( "web" );
 }

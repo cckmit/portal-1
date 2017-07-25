@@ -16,6 +16,7 @@ import ru.protei.portal.core.model.dao.CaseShortViewDAO;
 import ru.protei.portal.core.model.dao.CaseStateMatrixDAO;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseQuery;
@@ -59,8 +60,12 @@ public class CaseServiceImpl implements CaseService {
     @Autowired
     AttachmentService attachmentService;
 
+    @Autowired
+    PolicyService policyService;
+
     @Override
-    public CoreResponse<List<CaseShortView>> caseObjectList( CaseQuery query) {
+    public CoreResponse<List<CaseShortView>> caseObjectList( AuthToken token, CaseQuery query ) {
+
         List<CaseShortView> list = caseShortViewDAO.getCases( query );
 
         if ( list == null )
@@ -70,7 +75,8 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
-    public CoreResponse<CaseObject> getCaseObject(long id) {
+    public CoreResponse<CaseObject> getCaseObject( AuthToken token, long id ) {
+
         CaseObject caseObject = caseObjectDAO.get( id );
 
         if(caseObject == null)
@@ -90,7 +96,8 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     @Transactional
-    public CoreResponse< CaseObject > saveCaseObject( CaseObject caseObject, Person initiator ) {
+    public CoreResponse< CaseObject > saveCaseObject( AuthToken token, CaseObject caseObject, Person initiator ) {
+
         if (caseObject == null)
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
 
@@ -120,7 +127,8 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     @Transactional
-    public CoreResponse< CaseObject > updateCaseObject( CaseObject caseObject, Person currentPerson ) {
+    public CoreResponse< CaseObject > updateCaseObject( AuthToken token, CaseObject caseObject, Person currentPerson ) {
+
         if (caseObject == null)
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
 
@@ -150,7 +158,7 @@ public class CaseServiceImpl implements CaseService {
                 );
 
         if(!removedCaseAttachments.isEmpty())
-            removeAttachments(removedCaseAttachments);
+            removeAttachments( token, removedCaseAttachments);
 
         return new CoreResponse<CaseObject>().success( caseObject );
     }
@@ -166,7 +174,7 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
-    public CoreResponse<List<CaseComment>> getCaseCommentList( long caseId ) {
+    public CoreResponse<List<CaseComment>> getCaseCommentList( AuthToken token, long caseId ) {
         List<CaseComment> list = caseCommentDAO.getCaseComments( caseId );
 
         if ( list == null )
@@ -179,7 +187,8 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     @Transactional
-    public CoreResponse<CaseComment> addCaseComment( CaseComment comment, Person currentPerson ) {
+    public CoreResponse<CaseComment> addCaseComment( AuthToken token, CaseComment comment, Person currentPerson ) {
+
         if ( comment == null )
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
 
@@ -199,7 +208,7 @@ public class CaseServiceImpl implements CaseService {
             );
         }
 
-        boolean isCaseChanged = updateCaseModified ( comment.getCaseId(), comment.getCreated() ).getData();
+        boolean isCaseChanged = updateCaseModified ( token, comment.getCaseId(), comment.getCreated() ).getData();
 
         if (!isCaseChanged)
             throw new RuntimeException( "failed to update case modifiedDate " );
@@ -214,7 +223,8 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     @Transactional
-    public CoreResponse<CaseComment> updateCaseComment (CaseComment comment, Person person ) {
+    public CoreResponse<CaseComment> updateCaseComment( AuthToken token, CaseComment comment, Person person ) {
+
         if (comment == null || comment.getId() == null)
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
 
@@ -238,12 +248,12 @@ public class CaseServiceImpl implements CaseService {
                 );
 
         if (!removedCaseAttachments.isEmpty()) {
-            removeAttachments(removedCaseAttachments);
+            removeAttachments( token, removedCaseAttachments);
         }
 
         boolean isCaseChanged =
                 updateExistsAttachmentsFlag(comment.getCaseId()).getData()
-                && updateCaseModified ( comment.getCaseId(), new Date() ).getData();
+                && updateCaseModified ( token, comment.getCaseId(), new Date() ).getData();
 
         if (!isCaseChanged)
             throw new RuntimeException( "failed to update case modifiedDate " );
@@ -251,10 +261,10 @@ public class CaseServiceImpl implements CaseService {
         return new CoreResponse<CaseComment>().success( comment );
     }
 
-
     @Override
     @Transactional
-    public CoreResponse removeCaseComment( CaseComment caseComment, Long personId ) {
+    public CoreResponse removeCaseComment( AuthToken token, CaseComment caseComment, Long personId ) {
+
         if (caseComment == null || caseComment.getId() == null || personId == null)
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
 
@@ -270,24 +280,23 @@ public class CaseServiceImpl implements CaseService {
 
         if(CollectionUtils.isNotEmpty(caseComment.getAttachmentsIds())){
             caseAttachmentDAO.removeByCommentId(caseId);
-            caseComment.getAttachmentsIds().forEach(attachmentService::removeAttachment);
+            caseComment.getAttachmentsIds().forEach( (item)->{ attachmentService.removeAttachment( token, item ); } );
 
             if(!isExistsAttachments(caseComment.getCaseId()))
                 updateExistsAttachmentsFlag(caseComment.getCaseId(), false);
         }
 
-        boolean isCaseChanged = updateCaseModified(caseId, new Date()).getData();
+        boolean isCaseChanged = updateCaseModified( token, caseId, new Date()).getData();
 
-        if (!isCaseChanged)
+        if ( !isCaseChanged )
             throw new RuntimeException( "failed to update case modifiedDate " );
 
         return new CoreResponse<Boolean>().success(isRemoved);
     }
 
-
-
     @Override
-    public CoreResponse<Long> count(CaseQuery query) {
+    public CoreResponse<Long> count( AuthToken token, CaseQuery query ) {
+
         Long count = caseObjectDAO.count(query);
 
         if (count == null)
@@ -297,7 +306,7 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
-    public CoreResponse<Boolean> updateCaseModified(Long caseId, Date modified) {
+    public CoreResponse<Boolean> updateCaseModified( AuthToken token, Long caseId, Date modified) {
         if(caseId == null || !caseObjectDAO.checkExistsByKey(caseId))
             return new CoreResponse<Boolean>().error(En_ResultStatus.INCORRECT_PARAMS);
 
@@ -331,7 +340,7 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     @Transactional
-    public CoreResponse<Long> bindAttachmentToCase(Attachment attachment, long caseId) {
+    public CoreResponse<Long> bindAttachmentToCase( AuthToken token, Attachment attachment, long caseId) {
         CaseAttachment caseAttachment = new CaseAttachment(caseId, attachment.getId());
         Long caseAttachId = caseAttachmentDAO.persist(caseAttachment);
 
@@ -363,8 +372,8 @@ public class CaseServiceImpl implements CaseService {
         return current - checked < CHANGE_LIMIT_TIME;
     }
 
-    private void removeAttachments(Collection<CaseAttachment> list){
-        list.forEach(ca -> attachmentService.removeAttachment(ca.getAttachmentId()));
+    private void removeAttachments( AuthToken token, Collection<CaseAttachment> list){
+        list.forEach(ca -> attachmentService.removeAttachment( token, ca.getAttachmentId()));
     }
 
     private void fillAttachmentsIntoComments(Collection<CaseComment> comments, Collection<CaseAttachment> caseAttachments){

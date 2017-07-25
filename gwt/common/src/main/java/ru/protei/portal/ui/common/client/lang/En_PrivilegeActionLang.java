@@ -18,6 +18,8 @@ public class En_PrivilegeActionLang {
                 return lang.privilegeReport();
             case EXPORT:
                 return lang.privilegeExport();
+            case REMOVE:
+                return lang.privilegeRemove();
 
             default:
                 return lang.unknownField();

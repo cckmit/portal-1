@@ -12,6 +12,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -93,6 +94,24 @@ public class EquipmentPreviewView extends Composite implements AbstractEquipment
     @Override
     public void setManager( String value ) {
         manager.setInnerText( value );
+    }
+
+    @Override
+    public void setCopyBtnEnabledStyle( boolean isEnabled ){
+        if (isEnabled) {
+            copy.removeStyleName( "link-disabled" );
+        } else {
+            copy.addStyleName( "link-disabled" );
+        }
+    }
+
+    @Override
+    public void setRemoveBtnEnabledStyle( boolean isEnabled ){
+        if (isEnabled) {
+            remove.removeStyleName( "link-disabled" );
+        } else {
+            remove.addStyleName( "link-disabled" );
+        }
     }
 
     @UiHandler( "copy" )

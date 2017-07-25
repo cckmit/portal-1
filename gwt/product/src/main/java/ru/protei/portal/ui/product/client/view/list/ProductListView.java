@@ -34,6 +34,11 @@ public class ProductListView extends Composite implements AbstractProductListVie
     @Override
     public HasWidgets getFilterContainer () { return filterContainer; }
 
+    @Override
+    public void setListCreateBtnVisible( boolean isVisible ) {
+        childContainer.setCreateButtonVisible( isVisible );
+    }
+
     @UiHandler( "childContainer" )
     public void onAddClicked( AddEvent event ) {
         if ( activity != null ) {

@@ -3,8 +3,6 @@ package ru.protei.portal.test.notification;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ru.protei.portal.api.struct.CoreResponse;
@@ -13,15 +11,16 @@ import ru.protei.portal.core.mail.VirtualMailSendChannel;
 import ru.protei.portal.core.model.dao.CompanySubscriptionDAO;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.service.CaseControlService;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.service.CompanyService;
-import ru.protei.portal.test.event.EventHandlerRegistry;
-import ru.protei.portal.test.event.TestEventConfiguration;
 
 import javax.mail.internet.MimeMessage;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Тесты для
@@ -78,7 +77,7 @@ public class MailNotificationProcessorTest {
         object.setExtAppType( "junit" );
         object.setProductId( 18827L ); // космос
 
-        CoreResponse<CaseObject> response = caseService.saveCaseObject( object, initiator );
+        CoreResponse<CaseObject> response = caseService.saveCaseObject(null, object, initiator );
 
         // wait 500ms for async event
         Thread.sleep(1000);
@@ -94,7 +93,7 @@ public class MailNotificationProcessorTest {
         comment.setAuthorId(response.getData().getInitiatorId());
         comment.setText("A new comment, publishing test");
 
-        CoreResponse<CaseComment> r2 = caseService.addCaseComment(comment, initiator );
+        CoreResponse<CaseComment> r2 = caseService.addCaseComment( null, comment, initiator );
 
         Assert.assertTrue(r2.isOk());
 

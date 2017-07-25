@@ -69,7 +69,7 @@ public class FileController {
                         Attachment attachment = saveAttachment(item, creatorId);
 
                         if(caseId != null) {
-                            CoreResponse<Long> caseAttachId = caseService.bindAttachmentToCase(attachment, caseId);
+                            CoreResponse<Long> caseAttachId = caseService.bindAttachmentToCase( ud.makeAuthToken(), attachment, caseId);
                             if(caseAttachId.isError())
                                 break;
                         }

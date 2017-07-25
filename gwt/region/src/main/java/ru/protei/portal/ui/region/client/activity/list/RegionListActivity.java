@@ -6,9 +6,11 @@ import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.struct.RegionInfo;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.PlateListAnimation;
 import ru.protei.portal.ui.common.client.common.PeriodicTaskService;
 import ru.protei.portal.ui.common.client.events.*;
@@ -145,6 +147,8 @@ public abstract class RegionListActivity
         itemView.setActivity(this);
         itemView.setState( stateLang.getStateIcon( region.state ) );
 
+        itemView.setEditEnabled( policyService.hasPrivilegeFor( En_Privilege.REGION_EDIT ) );
+
         return itemView;
     }
 
@@ -186,7 +190,8 @@ public abstract class RegionListActivity
 
     @Inject
     Provider<AbstractRegionItemView > factory;
-
+    @Inject
+    PolicyService policyService;
     @Inject
     RegionServiceAsync regionService;
     @Inject

@@ -565,5 +565,13 @@ public interface Lang extends Messages, ContactItemLang {
 
     String rolePrivileges();
 
+    String errPermissionDenied();
+
+    String errSessionNotFound();
+
+    String privilegeCategoryRole();
+
+    String privilegeRemove();
+
     String buttonLocale();
 }

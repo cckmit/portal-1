@@ -3,23 +3,17 @@ package ru.protei.portal.ui.role.client.view.table;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import ru.brainworm.factory.widget.table.client.AbstractColumn;
-import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.brainworm.factory.widget.table.client.TableWidget;
-import ru.brainworm.factory.widget.table.client.helper.SelectionColumn;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.UserRole;
-import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
-import ru.protei.portal.ui.common.client.common.ContactColumnBuilder;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.separator.Separator;
 import ru.protei.portal.ui.role.client.activity.table.AbstractRoleTableActivity;
 import ru.protei.portal.ui.role.client.activity.table.AbstractRoleTableView;
 
@@ -31,14 +25,16 @@ import java.util.List;
  */
 public class RoleTableView extends Composite implements AbstractRoleTableView {
     @Inject
-    public void onInit() {
+    public void onInit(EditClickColumn<UserRole> editClickColumn) {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+        this.editClickColumn = editClickColumn;
         initTable();
     }
 
     @Override
     public void setActivity( AbstractRoleTableActivity activity ) {
         this.activity = activity;
+
         editClickColumn.setHandler( activity );
         editClickColumn.setEditHandler( activity );
         editClickColumn.setColumnProvider( columnProvider );
@@ -72,7 +68,7 @@ public class RoleTableView extends Composite implements AbstractRoleTableView {
     }
 
     private void initTable () {
-        editClickColumn = new EditClickColumn<UserRole>( lang ) {};
+        editClickColumn.setPrivilege( En_Privilege.ROLE_EDIT );
 
         ClickColumn< UserRole > name = new ClickColumn< UserRole >() {
             @Override

@@ -14,7 +14,8 @@ public enum En_PrivilegeEntity {
     EQUIPMENT,
     COMPANY,
     CONTACT,
-    ACCOUNT;
+    ACCOUNT,
+    ROLE;
 
     public static En_Privilege[] getPrivileges(En_PrivilegeEntity category) {
         switch ( category ) {
@@ -36,6 +37,8 @@ public enum En_PrivilegeEntity {
                 return accountPrivileges;
             case EQUIPMENT:
                 return equipmentPrivileges;
+            case ROLE:
+                return rolePrivileges;
         }
 
         return null;
@@ -75,5 +78,9 @@ public enum En_PrivilegeEntity {
 
     private static final En_Privilege[] equipmentPrivileges = {
             EQUIPMENT_CREATE, EQUIPMENT_EDIT, EQUIPMENT_VIEW
+    };
+
+    private static final En_Privilege[] rolePrivileges = {
+            ROLE_CREATE, ROLE_EDIT, ROLE_VIEW
     };
 }

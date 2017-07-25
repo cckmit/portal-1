@@ -1,26 +1,45 @@
 package ru.protei.portal.core.service;
 
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.core.model.annotations.Privileged;
+import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.DevUnit;
+import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.query.ProductDirectionQuery;
 import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.ProductShortView;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Сервис управления продуктами
  */
 public interface ProductService {
 
-    CoreResponse<Long> count(ProductQuery query);
-    CoreResponse<List<ProductShortView>> shortViewList(ProductQuery query);
-    CoreResponse<List<DevUnit>> productList(ProductQuery query);
-    CoreResponse<DevUnit> getProduct(Long id);
-    CoreResponse<Long> createProduct(DevUnit product);
-    CoreResponse<Boolean> updateProduct(DevUnit product);
-    CoreResponse<Boolean> checkUniqueProductByName(String name, Long id);
+    @Privileged( En_Privilege.PRODUCT_VIEW )
+    CoreResponse<Long> count(AuthToken token, ProductQuery query);
 
-    CoreResponse<List<ProductDirectionInfo>> productDirectionList( ProductDirectionQuery query );
+    @Privileged( En_Privilege.PRODUCT_VIEW )
+    CoreResponse<List<ProductShortView>> shortViewList( AuthToken token, ProductQuery query );
+
+    @Privileged( En_Privilege.PRODUCT_VIEW )
+    CoreResponse<List<DevUnit>> productList( AuthToken token, ProductQuery query );
+
+    @Privileged( En_Privilege.PRODUCT_VIEW )
+    CoreResponse<DevUnit> getProduct( AuthToken token, Long id );
+
+    @Privileged( En_Privilege.PRODUCT_CREATE )
+    CoreResponse<Long> createProduct( AuthToken token, DevUnit product);
+
+    @Privileged( En_Privilege.PRODUCT_EDIT )
+    CoreResponse<Boolean> updateProduct( AuthToken token, DevUnit product );
+
+    @Privileged( En_Privilege.PRODUCT_VIEW )
+    CoreResponse<Boolean> checkUniqueProductByName( AuthToken token, String name, Long id);
+
+    @Privileged( En_Privilege.PRODUCT_VIEW )
+    CoreResponse<List<ProductDirectionInfo>> productDirectionList( AuthToken token, ProductDirectionQuery query );
 }

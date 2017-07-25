@@ -5,25 +5,28 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.inject.Inject;
+import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.brainworm.factory.widget.table.client.helper.AbstractColumnHandler;
+import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
 /**
  * Колонка редактирования контакта.
  */
-public abstract class EditClickColumn< T > extends ru.protei.portal.ui.common.client.columns.ClickColumn< T > {
+public class EditClickColumn< T > extends ru.protei.portal.ui.common.client.columns.ClickColumn< T > {
 
     public interface EditHandler< T > extends AbstractColumnHandler< T > {
-        void onEditClicked(T value);
+        void onEditClicked( T value );
     }
 
     @Inject
-    public EditClickColumn ( Lang lang ) {
+    public EditClickColumn( Lang lang ) {
         this.lang = lang;
     }
 
     @Override
-    protected void fillColumnHeader(Element element) {
+    protected void fillColumnHeader( Element element ) {
         element.addClassName( "edit" );
     }
 
@@ -33,10 +36,11 @@ public abstract class EditClickColumn< T > extends ru.protei.portal.ui.common.cl
         a.setHref( "#" );
         a.addClassName( "fa-2x ion-compose" );
         a.setTitle( lang.edit() );
+        setEditEnabled( a );
         cell.appendChild( a );
 
         DOM.sinkEvents( a, Event.ONCLICK );
-        DOM.setEventListener( a, (event) -> {
+        DOM.setEventListener( a, ( event ) -> {
             if ( event.getTypeInt() != Event.ONCLICK ) {
                 return;
             }
@@ -50,14 +54,34 @@ public abstract class EditClickColumn< T > extends ru.protei.portal.ui.common.cl
             if ( editHandler != null ) {
                 editHandler.onEditClicked( value );
             }
-        });
+        } );
+    }
+
+    public void setPrivilege( En_Privilege privilege ) {
+        this.privilege = privilege;
     }
 
     public void setEditHandler( EditHandler< T > editHandler ) {
         this.editHandler = editHandler;
     }
 
-    Lang lang;
+    private void setEditEnabled( AnchorElement a ) {
 
+        if ( privilege == null ) {
+            return;
+        }
+
+        if ( policyService.hasPrivilegeFor( privilege ) ) {
+            a.removeClassName( "link-disabled" );
+        } else {
+            a.addClassName( "link-disabled" );
+        }
+    }
+
+    @Inject
+    PolicyService policyService;
+
+    Lang lang;
+    En_Privilege privilege;
     EditHandler< T > editHandler;
 }

@@ -19,4 +19,6 @@ public interface AbstractRegionItemView extends IsWidget {
     void setDetails( String details );
 
     void setState( String value );
+
+    void setEditEnabled( boolean isEnabled );
 }

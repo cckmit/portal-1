@@ -11,4 +11,6 @@ public interface AbstractRegionListView extends IsWidget {
     void setActivity( AbstractRegionListActivity activity );
     HasWidgets getChildContainer();
     HasWidgets getFilterContainer();
+
+    void setListCreateBtnVisible( boolean isVisible );
 }

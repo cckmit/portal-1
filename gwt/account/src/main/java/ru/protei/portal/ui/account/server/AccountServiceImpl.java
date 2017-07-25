@@ -7,12 +7,13 @@ import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.UserLogin;
-import ru.protei.portal.core.model.ent.UserRole;
-import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.query.AccountQuery;
 import ru.protei.portal.ui.common.client.service.AccountService;
+import ru.protei.portal.ui.common.server.service.SessionService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -26,7 +27,9 @@ public class AccountServiceImpl implements AccountService {
 
         log.debug( "getAccounts(): query={}", query);
 
-        CoreResponse< List< UserLogin > > response = accountService.accountList( query );
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
+        CoreResponse< List< UserLogin > > response = accountService.accountList( descriptor.makeAuthToken(), query );
 
         if ( response.isError() ) {
             throw new RequestFailedException( response.getStatus() );
@@ -38,7 +41,10 @@ public class AccountServiceImpl implements AccountService {
     public UserLogin getAccount( long id ) throws RequestFailedException {
         log.debug( "getAccount(): id={}", id );
 
-        CoreResponse< UserLogin > response = accountService.getAccount( id );
+        //TODO используется для отображения карточки аккаунта, думаю проверка роли ACCOUNT_VIEW логична
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
+        CoreResponse< UserLogin > response = accountService.getAccount( descriptor.makeAuthToken(), id );
 
         log.debug( "getAccount(): id={} -> {} ", id, response.isError() ? "error" : response.getData().getUlogin() );
 
@@ -49,6 +55,8 @@ public class AccountServiceImpl implements AccountService {
     public UserLogin saveAccount( UserLogin userLogin ) throws RequestFailedException {
         log.debug( "saveAccount(): account={} ", userLogin );
 
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
         if ( userLogin == null ) {
             throw new RequestFailedException( En_ResultStatus.INTERNAL_ERROR );
         }
@@ -56,7 +64,7 @@ public class AccountServiceImpl implements AccountService {
         if ( !isLoginUnique( userLogin.getUlogin(), userLogin.getId() ) )
             throw new RequestFailedException ( En_ResultStatus.ALREADY_EXIST );
 
-        CoreResponse< UserLogin > response = accountService.saveAccount( userLogin );
+        CoreResponse< UserLogin > response = accountService.saveAccount( descriptor.makeAuthToken(), userLogin );
 
         log.debug( "saveAccount(): result={}", response.isOk() ? "ok" : response.getStatus() );
 
@@ -70,8 +78,11 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public Long getAccountsCount( AccountQuery query ) throws RequestFailedException {
+
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
         log.debug( "getAccountsCount(): query={}", query );
-        return accountService.count( query ).getData();
+        return accountService.count( descriptor.makeAuthToken(), query ).getData();
     }
 
     @Override
@@ -93,7 +104,9 @@ public class AccountServiceImpl implements AccountService {
     public boolean removeAccount( Long accountId ) throws RequestFailedException {
         log.debug( "removeAccount(): id={}", accountId );
 
-        CoreResponse< Boolean > response = accountService.removeAccount( accountId );
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
+        CoreResponse< Boolean > response = accountService.removeAccount( descriptor.makeAuthToken(), accountId );
         log.debug( "removeAccount(): result={}", response.isOk() ? "ok" : response.getStatus() );
 
         if (response.isOk()) {
@@ -103,8 +116,24 @@ public class AccountServiceImpl implements AccountService {
         throw new RequestFailedException(response.getStatus());
     }
 
+    private UserSessionDescriptor getDescriptorAndCheckSession() throws RequestFailedException {
+        UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor( httpServletRequest );
+        log.info( "userSessionDescriptor={}", descriptor );
+        if ( descriptor == null ) {
+            throw new RequestFailedException( En_ResultStatus.SESSION_NOT_FOUND );
+        }
+
+        return descriptor;
+    }
+
     @Autowired
     ru.protei.portal.core.service.AccountService accountService;
+
+    @Autowired
+    SessionService sessionService;
+
+    @Autowired
+    HttpServletRequest httpServletRequest;
 
     private static final Logger log = LoggerFactory.getLogger( "web" );
 }

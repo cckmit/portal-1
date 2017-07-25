@@ -59,6 +59,10 @@ public class UserRole implements Serializable {
         this.privileges = privileges;
     }
 
+    public boolean hasPrivilege( En_Privilege privilege ){
+        return privileges.contains( privilege );
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof UserRole) {

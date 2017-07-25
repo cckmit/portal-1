@@ -158,6 +158,11 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         fileUploader.setFileUploadHandler(handler);
     }
 
+    @Override
+    public HasVisibility saveVisibility() {
+        return saveButton;
+    }
+
     @UiHandler("company")
     public void onChangeCompany(ValueChangeEvent<EntityOption> event){
         Company company = Company.fromEntityOption(event.getValue());

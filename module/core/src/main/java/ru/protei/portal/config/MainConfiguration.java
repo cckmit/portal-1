@@ -293,6 +293,9 @@ public class MainConfiguration {
     @Bean
     public TemplateService getTemplateService() { return new TemplateServiceImpl(); }
 
+    @Bean
+    public PolicyService getPolicyService() { return new PolicyServiceImpl(); }
+
     /** ASPECT/INTERCEPTORS **/
     @Bean
     public ServiceLayerInterceptor getServiceLayerInterceptor () {

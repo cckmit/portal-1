@@ -5,8 +5,11 @@ import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.En_CaseState;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.CaseComment;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.ui.common.client.common.AttachmentCollection;
 import ru.protei.portal.ui.common.client.common.AttachmentCollectionImpl;
@@ -275,6 +278,7 @@ public abstract class IssueCommentListActivity
     private void fillView( List<CaseComment> comments ){
         itemViewToModel.clear();
         view.getCommentsContainer().clear();
+        view.enabledNewComment( policyService.hasEveryPrivilegeOf( En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT ) );
 
         for ( CaseComment value : comments ) {
             AbstractIssueCommentItemView itemView = makeCommentView( value );
@@ -287,10 +291,10 @@ public abstract class IssueCommentListActivity
         itemView.setActivity( this );
         itemView.setDate( DateFormatter.formatDateTime( value.getCreated() ) );
         itemView.setOwner( value.getAuthor() == null ? "Unknown" : value.getAuthor().getDisplayName() );
-
         if ( HelperFunc.isNotEmpty( value.getText() ) ) {
             itemView.setMessage( value.getText() );
         }
+        itemView.enabledEdit( policyService.hasEveryPrivilegeOf( En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT ) );
 
         if ( value.getCaseStateId() != null ) {
             En_CaseState caseState = En_CaseState.getById( value.getCaseStateId() );
@@ -386,6 +390,8 @@ public abstract class IssueCommentListActivity
     Provider<AbstractIssueCommentItemView> issueProvider;
     @Inject
     AttachmentServiceAsync attachmentService;
+    @Inject
+    PolicyService policyService;
 
     private CaseComment comment;
     private AbstractIssueCommentItemView lastCommentView;

@@ -60,6 +60,12 @@ public class IssueCommentListView
         return attachmentList;
     }
 
+    @Override
+    public void enabledNewComment( boolean value ) {
+        comment.setVisible( value );
+        send.setVisible( value );
+    }
+
     @UiHandler( "send" )
     public void onSendClicked( ClickEvent event ) {
         if ( activity != null ) {

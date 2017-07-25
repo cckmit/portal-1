@@ -5,10 +5,12 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.core.model.query.UserRoleQuery;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
@@ -50,7 +52,10 @@ public abstract class RoleTableActivity
         init.parent.clear();
         init.parent.add( view.asWidget() );
 
-        fireEvent( new ActionBarEvents.Add( CREATE_ACTION, UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.ROLE ) );
+        fireEvent( policyService.hasPrivilegeFor( En_Privilege.ROLE_CREATE ) ?
+                new ActionBarEvents.Add( CREATE_ACTION, UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.ROLE ) :
+                new ActionBarEvents.Clear()
+        );
 
         isShowTable = false;
 
@@ -150,6 +155,9 @@ public abstract class RoleTableActivity
 
     @Inject
     TableAnimation animation;
+
+    @Inject
+    PolicyService policyService;
 
     private boolean isShowTable = false;
 

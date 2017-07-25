@@ -10,6 +10,7 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.AbstractColumn;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.helper.HTMLHelper;
@@ -33,8 +34,9 @@ import java.util.stream.Collectors;
  */
 public class EquipmentTableView extends Composite implements AbstractEquipmentTableView {
     @Inject
-    public void onInit() {
+    public void onInit(EditClickColumn<Equipment> editClickColumn) {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+        this.editClickColumn = editClickColumn;
         initTable();
     }
 
@@ -102,7 +104,7 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
     }
 
     private void initTable () {
-        editClickColumn = new EditClickColumn<Equipment>( lang ) {};
+        editClickColumn.setPrivilege( En_Privilege.EQUIPMENT_EDIT );
 
         ClickColumn< Equipment > name = new ClickColumn< Equipment >() {
             @Override

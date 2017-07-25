@@ -10,14 +10,18 @@ import ru.protei.portal.config.MainConfiguration;
 import ru.protei.portal.core.model.dao.DevUnitDAO;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.DevUnit;
+import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.core.service.ProductService;
 import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by michael on 11.10.16.
@@ -49,8 +53,7 @@ public class ProductServiceTest {
 
         Assert.assertNotNull(ctx.getBean(DevUnitDAO.class).persist(product));
 
-
-        CoreResponse<List<DevUnit>> result = ctx.getBean(ProductService.class).productList( new ProductQuery() );
+        CoreResponse<List<DevUnit>> result = ctx.getBean(ProductService.class).productList( null, new ProductQuery() );
 
         Assert.assertNotNull(result);
         Assert.assertTrue(result.getDataAmountTotal() > 0);
@@ -74,7 +77,7 @@ public class ProductServiceTest {
 
         System.out.println(" product with " + name + " is not exist | product " + product);
 
-        CoreResponse<Boolean> result = ctx.getBean(ProductService.class).checkUniqueProductByName(name, new Long(1));
+        CoreResponse<Boolean> result = ctx.getBean(ProductService.class).checkUniqueProductByName( null, name, new Long(1));
 
         Assert.assertFalse(result.isError());
         Assert.assertTrue(result.isOk());
@@ -89,7 +92,7 @@ public class ProductServiceTest {
 
         System.out.println(" product with " + name + " is not exist");
 
-        result = ctx.getBean(ProductService.class).checkUniqueProductByName(name, null);
+        result = ctx.getBean(ProductService.class).checkUniqueProductByName( null, name, null);
 
         Assert.assertFalse(result.isError());
         Assert.assertTrue(result.isOk());

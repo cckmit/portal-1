@@ -8,7 +8,9 @@ import ru.protei.portal.core.model.dao.AttachmentDAO;
 import ru.protei.portal.core.model.dao.CaseAttachmentDAO;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.Attachment;
+import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CaseAttachment;
+import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 
 import java.util.Date;
 import java.util.List;
@@ -32,20 +34,20 @@ public class AttachmentServiceImpl implements AttachmentService {
      */
     @Override
     @Transactional
-    public CoreResponse<Boolean> removeAttachmentEverywhere(Long id) {
+    public CoreResponse<Boolean> removeAttachmentEverywhere( AuthToken token, Long id) {
         CaseAttachment ca = caseAttachmentDAO.getByAttachmentId(id);
         if (ca != null) {
             boolean isDeleted = caseAttachmentDAO.removeByKey(ca.getId());
             if(!isDeleted)
                 return new CoreResponse<Boolean>().error(En_ResultStatus.NOT_REMOVED);
 
-            caseService.updateCaseModified(ca.getCaseId(), new Date());
+            caseService.updateCaseModified( token, ca.getCaseId(), new Date() );
 
             if (!caseService.isExistsAttachments(ca.getCaseId()))
                 caseService.updateExistsAttachmentsFlag(ca.getCaseId(), false);
         }
 
-        return removeAttachment(id);
+        return removeAttachment( token, id);
     }
 
     /**
@@ -53,7 +55,7 @@ public class AttachmentServiceImpl implements AttachmentService {
      */
     @Override
     @Transactional
-    public CoreResponse<Boolean> removeAttachment(Long id) {
+    public CoreResponse<Boolean> removeAttachment(AuthToken token, Long id) {
         Attachment attachment = attachmentDAO.partialGet(id, "ext_link");
         if(attachment == null)
             return new CoreResponse<Boolean>().error(En_ResultStatus.NOT_FOUND);
@@ -67,7 +69,7 @@ public class AttachmentServiceImpl implements AttachmentService {
     }
 
     @Override
-    public CoreResponse<List<Attachment>> getAttachmentsByCaseId(Long caseId) {
+    public CoreResponse<List<Attachment>> getAttachmentsByCaseId(AuthToken token, Long caseId) {
         List<Attachment> list = attachmentDAO.getListByCondition(
                 "ID in (Select ATT_ID from case_attachment where CASE_ID = ?)", caseId
         );
@@ -79,7 +81,7 @@ public class AttachmentServiceImpl implements AttachmentService {
     }
 
     @Override
-    public CoreResponse<List<Attachment>> getAttachments(List<Long> ids) {
+    public CoreResponse<List<Attachment>> getAttachments( AuthToken token, List<Long> ids) {
         List<Attachment> list = attachmentDAO.getListByKeys(ids);
 
         if(list == null)

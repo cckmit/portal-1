@@ -8,13 +8,16 @@ import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dao.UserLoginDAO;
 import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.ContactQuery;
 import ru.protei.portal.core.model.view.PersonShortView;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -30,8 +33,11 @@ public class ContactServiceImpl implements ContactService {
     @Autowired
     UserLoginDAO userLoginDAO;
 
+    @Autowired
+    PolicyService policyService;
+
     @Override
-    public CoreResponse<List<PersonShortView>> shortViewList(ContactQuery query) {
+    public CoreResponse<List<PersonShortView>> shortViewList(AuthToken token, ContactQuery query) {
         List<Person> list = personDAO.getContacts(query);
 
         if (list == null)
@@ -43,7 +49,7 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Override
-    public CoreResponse<List<Person>> contactList(ContactQuery query) {
+    public CoreResponse<List<Person>> contactList(AuthToken token, ContactQuery query) {
         List<Person> list = personDAO.getContacts(query);
 
         if (list == null)
@@ -53,7 +59,8 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Override
-    public CoreResponse<Person> getContact(long id) {
+    public CoreResponse<Person> getContact( AuthToken token, long id ) {
+
         Person person = personDAO.getContact(id);
 
         return person != null ? new CoreResponse<Person>().success(person)
@@ -62,7 +69,7 @@ public class ContactServiceImpl implements ContactService {
 
 
     @Override
-    public CoreResponse<Person> saveContact(Person p) {
+    public CoreResponse<Person> saveContact( AuthToken token, Person p ) {
         if (personDAO.isEmployee(p)) {
             log.warn("person with id = {} is employee",p.getId());
             return new CoreResponse<Person>().error(En_ResultStatus.VALIDATION_ERROR);
@@ -107,7 +114,8 @@ public class ContactServiceImpl implements ContactService {
 
 
     @Override
-    public CoreResponse<Long> count(ContactQuery query) {
+    public CoreResponse<Long> count( AuthToken token, ContactQuery query ) {
+
         return new CoreResponse<Long>().success(personDAO.count(query));
     }
 }

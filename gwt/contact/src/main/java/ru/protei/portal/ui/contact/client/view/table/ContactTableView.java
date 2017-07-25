@@ -3,17 +3,15 @@ package ru.protei.portal.ui.contact.client.view.table;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.AbstractColumn;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.brainworm.factory.widget.table.client.helper.SelectionColumn;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.model.helper.HTMLHelper;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
@@ -32,15 +30,18 @@ import java.util.List;
  * Представление таблицы контактов
  */
 public class ContactTableView extends Composite implements AbstractContactTableView {
+
     @Inject
-    public void onInit() {
+    public void onInit(EditClickColumn<Person> editClickColumn) {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+        this.editClickColumn = editClickColumn;
         initTable();
     }
 
     @Override
     public void setActivity( AbstractContactTableActivity activity ) {
         this.activity = activity;
+
         editClickColumn.setHandler( activity );
         editClickColumn.setEditHandler( activity );
         editClickColumn.setColumnProvider( columnProvider );
@@ -107,7 +108,7 @@ public class ContactTableView extends Composite implements AbstractContactTableV
 
     private void initTable () {
 
-        editClickColumn = new EditClickColumn<Person>( lang ) {};
+        editClickColumn.setPrivilege( En_Privilege.CONTACT_EDIT );
 
         ClickColumn< Person > displayName = new ClickColumn< Person >() {
             @Override
