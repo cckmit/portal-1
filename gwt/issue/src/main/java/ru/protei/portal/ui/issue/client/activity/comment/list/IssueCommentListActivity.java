@@ -9,6 +9,8 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.ui.common.client.common.AttachmentCollection;
 import ru.protei.portal.ui.common.client.common.AttachmentCollectionImpl;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
@@ -23,7 +25,6 @@ import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.issue.client.activity.comment.item.AbstractIssueCommentItemActivity;
 import ru.protei.portal.ui.issue.client.activity.comment.item.AbstractIssueCommentItemView;
-import ru.protei.portal.ui.issue.client.activity.comment.label.AbstractIssueCommentLabelView;
 import ru.protei.portal.ui.issue.client.util.IssueCommentUtils;
 import ru.protei.portal.ui.issue.client.view.comment.item.IssueCommentItemView;
 
@@ -280,13 +281,8 @@ public abstract class IssueCommentListActivity
         view.enabledNewComment( policyService.hasEveryPrivilegeOf( En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT ) );
 
         for ( CaseComment value : comments ) {
-            if ( value.getCaseStateId() != null ) {
-                AbstractIssueCommentLabelView labelView = makeLabelView( value );
-                view.getCommentsContainer().add( labelView.asWidget() );
-            } else {
-                AbstractIssueCommentItemView itemView = makeCommentView( value );
-                view.getCommentsContainer().add( itemView.asWidget() );
-            }
+            AbstractIssueCommentItemView itemView = makeCommentView( value );
+            view.getCommentsContainer().add( itemView.asWidget() );
         }
     }
 
@@ -295,8 +291,15 @@ public abstract class IssueCommentListActivity
         itemView.setActivity( this );
         itemView.setDate( DateFormatter.formatDateTime( value.getCreated() ) );
         itemView.setOwner( value.getAuthor() == null ? "Unknown" : value.getAuthor().getDisplayName() );
-        itemView.setMessage( value.getText() );
+        if ( HelperFunc.isNotEmpty( value.getText() ) ) {
+            itemView.setMessage( value.getText() );
+        }
         itemView.enabledEdit( policyService.hasEveryPrivilegeOf( En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT ) );
+
+        if ( value.getCaseStateId() != null ) {
+            En_CaseState caseState = En_CaseState.getById( value.getCaseStateId() );
+            itemView.setStatus( caseState );
+        }
 
         bindAttachmentsToComment( itemView, value.getAttachmentsIds() );
 
@@ -336,16 +339,6 @@ public abstract class IssueCommentListActivity
         if(undefinedAttachmentIds != null){
             requestAttachments(undefinedAttachmentIds, itemView.attachmentContainer()::add);
         }
-    }
-
-    private AbstractIssueCommentLabelView makeLabelView( CaseComment value ) {
-        AbstractIssueCommentLabelView labelView = issueLabelProvider.get();
-        En_CaseState caseState = En_CaseState.getById( value.getCaseStateId() );
-        labelView.setDate( DateFormatter.formatDateTime( value.getCreated() ) );
-        labelView.setOwner( value.getAuthor() == null ? "Unknown" : value.getAuthor().getDisplayName()  );
-        labelView.setStatus( caseState );
-
-        return labelView;
     }
 
     private void initCaseCommentByUser() {
@@ -395,8 +388,6 @@ public abstract class IssueCommentListActivity
     AbstractIssueCommentListView view;
     @Inject
     Provider<AbstractIssueCommentItemView> issueProvider;
-    @Inject
-    Provider<AbstractIssueCommentLabelView> issueLabelProvider;
     @Inject
     AttachmentServiceAsync attachmentService;
     @Inject

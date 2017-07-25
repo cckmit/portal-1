@@ -4,6 +4,8 @@
         <g:Anchor ui:field="anchor" href='#'>
             <i ui:field="icon"/>
             <span ui:field="text"/>
+            <link rel="icon"/>
+            <img ui:field="image" src=""/>
         </g:Anchor>
     </g:HTMLPanel>
 </ui:UiBinder>

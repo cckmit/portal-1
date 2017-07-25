@@ -1786,3 +1786,12 @@ ul.privileges {
   cursor: default;
   opacity: 0.3;
 }
+
+.list-inline {
+  padding-left: 0;
+  list-style: none;
+}
+
+.list-inline>li {
+  display: inline-block;
+}
