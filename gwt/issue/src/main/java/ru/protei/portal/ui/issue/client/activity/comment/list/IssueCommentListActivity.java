@@ -7,16 +7,15 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.CaseComment;
-import ru.protei.portal.ui.common.client.common.AttachmentCollection;
-import ru.protei.portal.ui.common.client.common.AttachmentCollectionImpl;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
+import ru.protei.portal.ui.common.client.events.AttachmentEvents;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.IssueEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
 import ru.protei.portal.ui.common.client.service.IssueServiceAsync;
-import ru.protei.portal.ui.common.client.widget.uploader.FileUploader;
+import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.issue.client.activity.comment.item.AbstractIssueCommentItemActivity;
@@ -38,7 +37,7 @@ public abstract class IssueCommentListActivity
     @Inject
     public void onInit() {
         view.setActivity( this );
-        view.setFileUploadHandler(new FileUploader.FileUploadHandler() {
+        view.setFileUploadHandler(new AttachmentUploader.FileUploadHandler() {
             @Override
             public void onSuccess(Attachment attachment) {
                 addTempAttachment(attachment);
@@ -61,11 +60,6 @@ public abstract class IssueCommentListActivity
 
         event.parent.clear();
         event.parent.add(view.asWidget());
-        if(event.attachmentCollection != null)
-            attachmentCollection = event.attachmentCollection;
-        else
-            attachmentCollection = new AttachmentCollectionImpl();
-
         view.message().setValue( null );
         view.attachmentContainer().clear();
         view.getCommentsContainer().clear();
@@ -93,7 +87,7 @@ public abstract class IssueCommentListActivity
             public void onSuccess( Void result ) {
                 Collection<Attachment> commentAttachments = itemView.attachmentContainer().getAll();
                 if(!commentAttachments.isEmpty())
-                    commentAttachments.forEach(attachmentCollection::removeAttachment);
+                    fireEvent(new AttachmentEvents.Remove(show.caseId, commentAttachments));
 
                 view.getCommentsContainer().remove( itemView.asWidget() );
                 itemViewToModel.remove(itemView);
@@ -119,7 +113,7 @@ public abstract class IssueCommentListActivity
 
         Collection<Attachment> commentAttachments = itemView.attachmentContainer().getAll();
         if(!commentAttachments.isEmpty()) {
-            commentAttachments.forEach(view.attachmentContainer()::add);
+            view.attachmentContainer().add(commentAttachments);
             tempAttachments.addAll(commentAttachments);
         }
 
@@ -179,16 +173,14 @@ public abstract class IssueCommentListActivity
                     if(!(prevAttachments.isEmpty() && tempAttachments.isEmpty())){
                         synchronizeAttachments(prevAttachments, tempAttachments);
                         lastCommentView.attachmentContainer().clear();
-                        tempAttachments.forEach(lastCommentView.attachmentContainer()::add);
+                        lastCommentView.attachmentContainer().add(tempAttachments);
                         lastCommentView.showAttachments(!tempAttachments.isEmpty());
                     }
                 } else {
-                    tempAttachments.forEach(attachmentCollection::addAttachment);
-
+                    fireEvent(new AttachmentEvents.Add(show.caseId, tempAttachments));
                     AbstractIssueCommentItemView itemView = makeCommentView( result );
                     lastCommentView = itemView;
                     view.getCommentsContainer().add( itemView.asWidget() );
-
                 }
 
                 comment = null;
@@ -227,7 +219,8 @@ public abstract class IssueCommentListActivity
     @Override
     public void onRemoveAttachment(IssueCommentItemView itemView, Attachment attachment) {
         removeAttachment(attachment.getId(), () -> {
-            attachmentCollection.removeAttachment(attachment);
+            fireEvent(new AttachmentEvents.Remove(show.caseId, Collections.singletonList(attachment)));
+
             itemView.attachmentContainer().remove(attachment);
             if(itemView.attachmentContainer().getAll().size() == 0){
                 itemView.showAttachments(false);
@@ -314,24 +307,7 @@ public abstract class IssueCommentListActivity
         }
         itemView.showAttachments(true);
 
-
-        List<Long> undefinedAttachmentIds = null;
-        for(Long attachId: attachmentsIds){
-            if(attachmentCollection.containsKey(attachId)) {
-                itemView.attachmentContainer().add(
-                        attachmentCollection.get(attachId)
-                );
-            }else {
-                if(undefinedAttachmentIds == null)
-                    undefinedAttachmentIds = new ArrayList<>();
-
-                undefinedAttachmentIds.add(attachId);
-            }
-        }
-
-        if(undefinedAttachmentIds != null){
-            requestAttachments(undefinedAttachmentIds, itemView.attachmentContainer()::add);
-        }
+        requestAttachments(attachmentsIds, itemView.attachmentContainer()::add);
     }
 
     private AbstractIssueCommentLabelView makeLabelView( CaseComment value ) {
@@ -350,7 +326,7 @@ public abstract class IssueCommentListActivity
         comment.setCaseId( show.caseId );
     }
 
-    private void requestAttachments(List<Long> ids, Consumer<Attachment> addAction){
+    private void requestAttachments(List<Long> ids, Consumer<Collection<Attachment>> addAction){
 
         attachmentService.getAttachments(ids, new RequestCallback<List<Attachment>>() {
             @Override
@@ -364,22 +340,19 @@ public abstract class IssueCommentListActivity
                     onError(null);
                     return;
                 }
-                list.forEach(addAction);
+                addAction.accept(list);
             }
         });
     }
 
     private void synchronizeAttachments(Collection<Attachment> oldAttachments, Collection<Attachment> newAttachments){
-        if(oldAttachments.size() == newAttachments.size() && oldAttachments.containsAll(newAttachments))
+        if(oldAttachments.containsAll(newAttachments))
             return;
 
-        for(Attachment attach: oldAttachments)
-            if(!newAttachments.contains(attach))
-                attachmentCollection.removeAttachment(attach);
-
-        for(Attachment attach: newAttachments)
-            if(!oldAttachments.contains(attach))
-                attachmentCollection.addAttachment(attach);
+        if(!oldAttachments.isEmpty())
+            fireEvent(new AttachmentEvents.Remove(show.caseId, oldAttachments));
+        if(!newAttachments.isEmpty())
+            fireEvent(new AttachmentEvents.Add(show.caseId, newAttachments));
     }
 
 
@@ -403,6 +376,4 @@ public abstract class IssueCommentListActivity
     private IssueEvents.ShowComments show;
     private Map<AbstractIssueCommentItemView, CaseComment> itemViewToModel = new HashMap<>();
     private Collection<Attachment> tempAttachments = new ArrayList<>();
-
-    private AttachmentCollection attachmentCollection;
 }

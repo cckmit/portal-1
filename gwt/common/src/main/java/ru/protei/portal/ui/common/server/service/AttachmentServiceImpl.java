@@ -37,11 +37,6 @@ public class AttachmentServiceImpl implements AttachmentService{
     }
 
     @Override
-    public List<Attachment> getAttachmentsByCommentId(Long caseId) {
-        return null;
-    }
-
-    @Override
     public boolean removeAttachmentEverywhere(Long attachmentId) throws RequestFailedException{
         CoreResponse<Boolean> response =  attachmentService.removeAttachmentEverywhere(attachmentId);
 
@@ -49,11 +44,6 @@ public class AttachmentServiceImpl implements AttachmentService{
             throw new RequestFailedException( response.getStatus() );
 
         return response.getData();
-    }
-
-    @Override
-    public boolean bindAttachmentToCase(List<Attachment> attachments, Long caseId) {
-        return false;
     }
 
     @Autowired

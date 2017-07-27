@@ -8,7 +8,7 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
-import ru.protei.portal.ui.common.client.widget.uploader.FileUploader;
+import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 /**
@@ -44,9 +44,9 @@ public interface AbstractIssueEditView extends IsWidget {
 
     HasWidgets getCommentsContainer();
     HasAttachments attachmentsContainer();
-    void setFileUploadHandler(FileUploader.FileUploadHandler handler);
+    void setFileUploadHandler(AttachmentUploader.FileUploadHandler handler);
 
     void showComments(boolean isShow);
-
+    boolean isAttached();
 
 }

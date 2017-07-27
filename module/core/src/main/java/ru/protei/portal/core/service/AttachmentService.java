@@ -24,4 +24,6 @@ public interface AttachmentService {
 
     CoreResponse<List<Attachment>> getAttachments(List<Long> ids);
 
+    CoreResponse<Long> saveAttachment(Attachment attachment);
+
 }

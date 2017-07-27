@@ -24,7 +24,7 @@ import ru.protei.portal.ui.common.client.widget.selector.dict.ImportanceButtonSe
 import ru.protei.portal.ui.common.client.widget.selector.person.ContactButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.ProductButtonSelector;
-import ru.protei.portal.ui.common.client.widget.uploader.FileUploader;
+import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditActivity;
@@ -154,8 +154,8 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
-    public void setFileUploadHandler(FileUploader.FileUploadHandler handler){
-        fileUploader.setFileUploadHandler(handler);
+    public void setFileUploadHandler(AttachmentUploader.FileUploadHandler handler){
+        fileUploader.setUploadHandler(handler);
     }
 
     @UiHandler("company")
@@ -238,12 +238,10 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @UiField
     HTMLPanel commentsContainer;
     @UiField
-    FileUploader uploader;
-    @UiField
     DivElement comments;
     @Inject
     @UiField
-    FileUploader fileUploader;
+    AttachmentUploader fileUploader;
     @Inject
     @UiField(provided = true)
     AttachmentList attachmentContainer;

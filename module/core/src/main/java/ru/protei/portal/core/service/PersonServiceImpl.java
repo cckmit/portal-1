@@ -8,7 +8,7 @@ import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.view.PersonShortView;
 
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -24,10 +24,22 @@ public class PersonServiceImpl implements PersonService {
         List<Person> list = personDAO.getPersons( query );
 
         if ( list == null )
-            new CoreResponse< List< PersonShortView > >().error( En_ResultStatus.GET_DATA_ERROR );
+            return new CoreResponse< List< PersonShortView > >().error( En_ResultStatus.GET_DATA_ERROR );
 
         List< PersonShortView > result = list.stream().map( Person::toFullNameShortView ).collect( Collectors.toList() );
 
         return new CoreResponse< List< PersonShortView > >().success( result,result.size() );
+    }
+
+    @Override
+    public CoreResponse<Map<Long, String>> getPersonNames(Collection<Long> ids) {
+        Collection<Person> list = personDAO.partialGetListByKeys(ids, "id", "displayname");
+
+        if ( list == null )
+            return new CoreResponse().error( En_ResultStatus.GET_DATA_ERROR );
+
+        Map<Long, String> names = new HashMap<>(list.size());
+        list.forEach(a -> names.put(a.getId(), a.getDisplayName()));
+        return new CoreResponse<Map<Long, String>>().success( names );
     }
 }

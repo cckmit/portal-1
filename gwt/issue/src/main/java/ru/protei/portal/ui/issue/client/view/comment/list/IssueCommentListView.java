@@ -4,6 +4,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -12,8 +13,10 @@ import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
+import ru.protei.portal.ui.common.client.widget.attachment.list.events.HasAttachmentListHandlers;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
-import ru.protei.portal.ui.common.client.widget.uploader.FileUploader;
+import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveHandler;
+import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.issue.client.activity.comment.list.AbstractIssueCommentListActivity;
 import ru.protei.portal.ui.issue.client.activity.comment.list.AbstractIssueCommentListView;
 
@@ -22,7 +25,7 @@ import ru.protei.portal.ui.issue.client.activity.comment.list.AbstractIssueComme
  */
 public class IssueCommentListView
         extends Composite
-        implements AbstractIssueCommentListView {
+        implements AbstractIssueCommentListView, HasAttachmentListHandlers {
 
     @Inject
     public void onInit( ) {
@@ -51,8 +54,8 @@ public class IssueCommentListView
     }
 
     @Override
-    public void setFileUploadHandler(FileUploader.FileUploadHandler handler) {
-        fileUploader.setFileUploadHandler(handler);
+    public void setFileUploadHandler(AttachmentUploader.FileUploadHandler handler) {
+        fileUploader.setUploadHandler(handler);
     }
 
     @Override
@@ -80,7 +83,13 @@ public class IssueCommentListView
 
     @UiHandler("attachmentList")
     public void onRemoveAttachment(RemoveEvent event){
+        RemoveEvent.fire(this, event.getAttachment());
         activity.removeTempAttachment(event.getAttachment());
+    }
+
+    @Override
+    public HandlerRegistration addRemoveHandler(RemoveHandler handler) {
+        return addHandler( handler, RemoveEvent.getType() );
     }
 
     @UiField
@@ -96,7 +105,7 @@ public class IssueCommentListView
     AttachmentList attachmentList;
     @Inject
     @UiField(provided = true)
-    FileUploader fileUploader;
+    AttachmentUploader fileUploader;
     @UiField
     Lang lang;
 

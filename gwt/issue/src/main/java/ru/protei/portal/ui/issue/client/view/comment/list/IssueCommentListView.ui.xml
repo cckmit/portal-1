@@ -14,11 +14,13 @@
                 <g:TextArea ui:field="comment" styleName="input-field form-group"/>
                 <span class="">
                     <g:Button styleName="btn btn-success" ui:field="send" text="{lang.commentSendMessage}"/>
-                    <fileuploader:FileUploader ui:field="fileUploader" styleName="inline-block">
-                        <span class="btn btn-white">
+                    <fileuploader:AttachmentUploader ui:field="fileUploader" styleName="inline-block">
+                        <span class="btn btn-white attach-add-btn">
                             <ui:text from='{lang.addAttachmentBtn}'/>
+                            <i class="ion-plus"/>
+                            <i class="icon-verifiable"/>
                         </span>
-                    </fileuploader:FileUploader>
+                    </fileuploader:AttachmentUploader>
                     <attachment:AttachmentList ui:field="attachmentList" simpleMode="true" styleName="inline-block attachment-list-simple"/>
                 </span>
             </div>

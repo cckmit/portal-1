@@ -4,7 +4,9 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.view.PersonShortView;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Асинхронный сервис управления person
@@ -17,4 +19,6 @@ public interface PersonServiceAsync {
      * @param callback
      */
     void getPersonViewList( PersonQuery query, AsyncCallback< List< PersonShortView > > callback );
+
+    void getPersonNames(Collection<Long> ids, AsyncCallback<Map<Long, String>> async);
 }

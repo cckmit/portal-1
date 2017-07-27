@@ -100,7 +100,9 @@ public class CaseObject implements Serializable {
     @JdbcColumn(name = "ATTACHMENT_EXISTS")
     private boolean isAttachmentExists;
 
-    private Collection<Long> attachmentsIds;
+    @JdbcManyToMany(linkTable = "case_attachment", localLinkColumn = "case_id", remoteLinkColumn = "att_id")
+    private Collection<Attachment> attachments;
+
     @JdbcOneToMany(table = "case_location", localColumn = "id", remoteColumn = "CASE_ID" )
     private List<CaseLocation> locations;
 
@@ -349,12 +351,12 @@ public class CaseObject implements Serializable {
         this.typeId = type.getId();
     }
 
-    public Collection<Long> getAttachmentsIds() {
-        return attachmentsIds;
+    public Collection<Attachment> getAttachments() {
+        return attachments;
     }
 
-    public void setAttachmentsIds(Collection<Long> attachmentsIds) {
-        this.attachmentsIds = attachmentsIds;
+    public void setAttachments(Collection<Attachment> attachments) {
+        this.attachments = attachments;
     }
 
     public boolean isAttachmentExists() {

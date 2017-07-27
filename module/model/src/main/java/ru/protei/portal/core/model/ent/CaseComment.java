@@ -44,6 +44,7 @@ public class CaseComment implements Serializable{
     @JdbcColumn(name="old_id")
     private Long oldId;
 
+//    @JdbcOneToMany(table = "case_attachment", remoteColumn = "ccomment_id")
     private List<Long> attachmentsIds;
 
     public CaseComment() {}

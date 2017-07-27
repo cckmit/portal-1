@@ -15,5 +15,4 @@ public interface AbstractIssueTableActivity
         InfiniteLoadHandler<CaseShortView>, InfiniteTableWidget.PagerListener, AttachClickColumn.AttachHandler<CaseShortView>
 {
     void onEditClicked( CaseShortView value );
-    void updateRow( Long issueId );
 }

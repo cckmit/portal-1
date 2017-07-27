@@ -471,6 +471,10 @@ public interface Lang extends Messages, ContactItemLang {
 
     String attachmentsNotLoaded();
 
+    String attachmentRemoveConfirmMessage();
+
+    String attachmentAuthor();
+
     String accountPassword();
 
     String accountPasswordNotDefinied();
@@ -564,5 +568,4 @@ public interface Lang extends Messages, ContactItemLang {
     String privilegeExport();
 
     String rolePrivileges();
-
 }

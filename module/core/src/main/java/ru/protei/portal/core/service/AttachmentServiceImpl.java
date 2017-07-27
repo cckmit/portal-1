@@ -27,6 +27,9 @@ public class AttachmentServiceImpl implements AttachmentService {
     @Autowired
     CaseService caseService;
 
+    @Autowired
+    FileStorage fileStorage;
+
     /**
      * remove attachment from fileStorage, DataBase (item and relations)
      */
@@ -58,7 +61,7 @@ public class AttachmentServiceImpl implements AttachmentService {
         if(attachment == null)
             return new CoreResponse<Boolean>().error(En_ResultStatus.NOT_FOUND);
 
-        boolean result = FileStorage.getDefault().deleteFile(attachment.getExtLink()) && attachmentDAO.removeByKey(id);
+        boolean result = fileStorage.deleteFile(attachment.getExtLink()) && attachmentDAO.removeByKey(id);
 
         if (!result)
             return new CoreResponse<Boolean>().error(En_ResultStatus.NOT_REMOVED);
@@ -86,5 +89,15 @@ public class AttachmentServiceImpl implements AttachmentService {
             return new CoreResponse().error(En_ResultStatus.GET_DATA_ERROR);
 
         return new CoreResponse<List<Attachment>>().success(list);
+    }
+
+    @Override
+    public CoreResponse<Long> saveAttachment(Attachment attachment) {
+        attachment.setCreated(new Date());
+        Long id = attachmentDAO.persist(attachment);
+        if(id == null)
+            return new CoreResponse().error(En_ResultStatus.NOT_CREATED);
+
+        return new CoreResponse<Long>().success(id);
     }
 }
