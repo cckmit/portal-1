@@ -21,6 +21,8 @@ import ru.protei.portal.ui.common.client.service.IssueServiceAsync;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -36,7 +38,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         view.setFileUploadHandler(new AttachmentUploader.FileUploadHandler() {
             @Override
             public void onSuccess(Attachment attachment) {
-                view.attachmentsContainer().add(Collections.singleton(attachment));
+                addAttachmentsToCase(Collections.singleton(attachment));
             }
             @Override
             public void onError() {
@@ -66,14 +68,18 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
     @Event
     public void onAddingAttachments( AttachmentEvents.Add event ) {
-        if(view.isAttached() && issue.getId().equals(event.caseId))
-            view.attachmentsContainer().add(event.attachments);
+        if(view.isAttached() && issue.getId().equals(event.caseId)) {
+            addAttachmentsToCase(event.attachments);
+        }
     }
 
     @Event
     public void onRemovingAttachments( AttachmentEvents.Remove event ) {
-        if(view.isAttached() && issue.getId().equals(event.caseId))
+        if(view.isAttached() && issue.getId().equals(event.caseId)) {
             event.attachments.forEach(view.attachmentsContainer()::remove);
+            issue.getAttachments().removeAll(event.attachments);
+            issue.setAttachmentExists(!issue.getAttachments().isEmpty());
+        }
     }
 
     @Override
@@ -119,6 +125,8 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                 }
 
                 view.attachmentsContainer().remove(attachment);
+                issue.getAttachments().remove(attachment);
+                issue.setAttachmentExists(!issue.getAttachments().isEmpty());
                 if(issue.getId() != null)
                     fireEvent( new IssueEvents.ShowComments( view.getCommentsContainer(), issue.getId() ) );
 
@@ -150,6 +158,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
     private void fillView(CaseObject issue) {
         view.attachmentsContainer().clear();
+        view.setCaseId(issue.getId());
 
         if ( issue.getId() != null ) {
             view.showComments(true);
@@ -197,8 +206,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
         issue.setProduct(DevUnit.fromProductShortView(view.product().getValue()));
         issue.setManager(Person.fromPersonShortView( view.manager().getValue()));
-
-        issue.setAttachments(view.attachmentsContainer().getAll());
     }
 
     private boolean validateFieldsAndGetResult(){
@@ -209,6 +216,15 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                 view.initiatorValidator().isValid() &&
                 view.productValidator().isValid() &&
                 view.managerValidator().isValid();
+    }
+
+    private void addAttachmentsToCase(Collection<Attachment> attachments){
+        view.attachmentsContainer().add(attachments);
+        if(issue.getAttachments() == null)
+            issue.setAttachments(new ArrayList<>());
+
+        issue.getAttachments().addAll(attachments);
+        issue.setAttachmentExists(true);
     }
 
     @Inject

@@ -83,7 +83,6 @@ public class IssueCommentListView
 
     @UiHandler("attachmentList")
     public void onRemoveAttachment(RemoveEvent event){
-        RemoveEvent.fire(this, event.getAttachment());
         activity.removeTempAttachment(event.getAttachment());
     }
 

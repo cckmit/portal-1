@@ -6,7 +6,6 @@ import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -101,7 +100,7 @@ public class CaseObject implements Serializable {
     private boolean isAttachmentExists;
 
     @JdbcManyToMany(linkTable = "case_attachment", localLinkColumn = "case_id", remoteLinkColumn = "att_id")
-    private Collection<Attachment> attachments;
+    private List<Attachment> attachments;
 
     @JdbcOneToMany(table = "case_location", localColumn = "id", remoteColumn = "CASE_ID" )
     private List<CaseLocation> locations;
@@ -351,11 +350,11 @@ public class CaseObject implements Serializable {
         this.typeId = type.getId();
     }
 
-    public Collection<Attachment> getAttachments() {
+    public List<Attachment> getAttachments() {
         return attachments;
     }
 
-    public void setAttachments(Collection<Attachment> attachments) {
+    public void setAttachments(List<Attachment> attachments) {
         this.attachments = attachments;
     }
 
