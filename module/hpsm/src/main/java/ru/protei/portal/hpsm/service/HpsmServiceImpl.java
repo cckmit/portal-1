@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.event.EventListener;
+import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.CaseCommentEvent;
 import ru.protei.portal.core.event.CaseObjectEvent;
 import ru.protei.portal.core.model.dao.ExternalCaseAppDAO;
@@ -146,6 +147,11 @@ public class HpsmServiceImpl implements HpsmService {
     @Override
     @EventListener
     public void onCaseObjectEvent(CaseObjectEvent event) {
+
+        if (event.getServiceModule() == ServiceModule.HPSM) {
+            logger.debug("skip handle self-published event for {}", event.getCaseObject().getExtId());
+            return;
+        }
 
         ServiceInstance instance = serviceInstanceRegistry.find(event.getCaseObject());
         if (instance == null) {

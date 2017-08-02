@@ -86,7 +86,8 @@ public class IssueServiceImpl implements IssueService {
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
         log.debug( "getIssuesCount(): query={}", query );
-        return caseService.count( descriptor.makeAuthToken(), query ).getData();
+        CoreResponse<Long> result = caseService.count( descriptor.makeAuthToken(), query );
+        return result.isOk() ? result.getData() : 0L;
     }
 
     @Override

@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import ru.protei.portal.config.CoreMailConfiguration;
 import ru.protei.portal.config.MainConfiguration;
 import ru.protei.portal.hpsm.api.HpsmMessageFactory;
 import ru.protei.portal.hpsm.config.HpsmConfigurationContext;
@@ -18,7 +19,7 @@ import ru.protei.winter.jdbc.JdbcConfigurationContext;
  * Created by michael on 19.04.17.
  */
 @Configuration
-@Import({CoreConfigurationContext.class, JdbcConfigurationContext.class, MainConfiguration.class, HpsmConfigurationContext.class})
+@Import({CoreConfigurationContext.class, JdbcConfigurationContext.class, MainConfiguration.class, HpsmConfigurationContext.class, CoreMailConfiguration.class})
 public class HpsmTestConfiguration {
 
     @Bean

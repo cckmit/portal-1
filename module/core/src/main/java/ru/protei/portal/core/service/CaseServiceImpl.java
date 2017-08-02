@@ -300,7 +300,7 @@ public class CaseServiceImpl implements CaseService {
         Long count = caseObjectDAO.count(query);
 
         if (count == null)
-            return new CoreResponse<Long>().error(En_ResultStatus.GET_DATA_ERROR);
+            return new CoreResponse<Long>().error(En_ResultStatus.GET_DATA_ERROR, 0L);
 
         return new CoreResponse<Long>().success(count);
     }

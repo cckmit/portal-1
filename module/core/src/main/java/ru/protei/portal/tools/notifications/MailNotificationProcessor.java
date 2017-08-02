@@ -15,6 +15,7 @@ import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.struct.NotificationEntry;
+import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.template.PreparedTemplate;
 
@@ -94,6 +95,7 @@ public class MailNotificationProcessor {
         }
 
         List<String> recipients = notificationEntries.stream().map( NotificationEntry::getAddress ).collect( toList() );
+        recipients.add( new PlainContactInfoFacade( currentPerson.getContactInfo() ).getEmail() );
 
         PreparedTemplate bodyTemplate = templateService.getCrmEmailNotificationBody(
             caseEvent, comments.getData(), manager, oldManager, commentEvent,

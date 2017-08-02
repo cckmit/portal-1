@@ -1,4 +1,4 @@
-package ru.protei.portal.test.hpsm;
+package ru.protei.portal.test.hpsm.helpers;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
