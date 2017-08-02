@@ -1,14 +1,16 @@
-package ru.protei.portal.webui.controller.ws.service;
+package ru.protei.portal.api.service;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import protei.sql.query.Tm_SqlQueryHelper;
 import ru.protei.portal.core.model.dao.*;
+import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.webui.controller.ws.WSConfig;
-import ru.protei.portal.webui.controller.ws.model.*;
-import ru.protei.portal.webui.controller.ws.tools.migrate.WSMigrationManager;
-import ru.protei.portal.webui.controller.ws.utils.HelperService;
+import ru.protei.portal.api.config.WSConfig;
+import ru.protei.portal.api.model.*;
+import ru.protei.portal.api.tools.migrate.WSMigrationManager;
+import ru.protei.portal.api.utils.HelperService;
+import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.winter.jdbc.JdbcSort;
 
 import javax.jws.WebService;
@@ -25,7 +27,7 @@ import java.util.List;
 /**
  * Created by turik on 18.08.16.
  */
-@WebService(endpointInterface = "ru.protei.portal.webui.controller.ws.service.WorkerService", serviceName = "WorkerService")
+@WebService(endpointInterface = "ru.protei.portal.api.service.WorkerService", serviceName = "WorkerService")
 public class WorkerServiceImpl implements WorkerService {
 
     private static Logger logger = Logger.getLogger(WorkerServiceImpl.class);
@@ -541,20 +543,23 @@ public class WorkerServiceImpl implements WorkerService {
         person.setSecondName (rec.getSecondName () != null && rec.getSecondName ().trim ().length () > 0 ? rec.getSecondName ().trim () : null);
         person.setDisplayName (HelperService.generateDisplayName (person.getFirstName (), person.getLastName (), person.getSecondName ()));
         person.setDisplayShortName (HelperService.generateDisplayShortName (person.getFirstName (), person.getLastName (), person.getSecondName ()));
-        person.setSex (rec.getSex () == null ? "-" : rec.getSex () == 1 ? "M" : "F");
+        person.setGender (rec.getSex () == null ? En_Gender.UNDEFINED : rec.getSex () == 1 ? En_Gender.MALE : En_Gender.FEMALE);
         person.setBirthday (rec.getBirthday() != null && rec.getBirthday().trim ().length () > 0 ? HelperService.DATE.parse(rec.getBirthday()) : null);
         person.setIpAddress (rec.getIpAddress () != null && rec.getIpAddress ().trim ().length () > 0 ? rec.getIpAddress ().trim () : null);
-        person.setWorkPhone (rec.getPhoneWork () != null && rec.getPhoneWork ().trim ().length () > 0 ? rec.getPhoneWork ().trim () : null);
-        person.setMobilePhone (rec.getPhoneMobile () != null && rec.getPhoneMobile ().trim ().length () > 0 ? rec.getPhoneMobile ().trim () : null);
-        person.setHomePhone (rec.getPhoneHome () != null && rec.getPhoneHome ().trim ().length () > 0 ? rec.getPhoneHome ().trim () : null);
         person.setPassportInfo (rec.getPassportInfo () != null && rec.getPassportInfo ().trim ().length () > 0 ? rec.getPassportInfo ().trim () : null);
         person.setInfo (rec.getInfo () != null && rec.getInfo ().trim ().length () > 0 ? rec.getInfo ().trim () : null);
-        person.setAddress (rec.getAddress () != null && rec.getAddress ().trim ().length () > 0 ? rec.getAddress ().trim () : null);
-        person.setAddressHome (rec.getAddressHome () != null && rec.getAddressHome ().trim ().length () > 0 ? rec.getAddressHome ().trim () : null);
-        person.setEmail (rec.getEmail () != null && rec.getEmail ().trim ().length () > 0 ? rec.getEmail ().trim () : null);
-        person.setEmail_own (rec.getEmailOwn () != null && rec.getEmailOwn ().trim ().length () > 0 ? rec.getEmailOwn ().trim () : null);
-        person.setFax (rec.getFax () != null && rec.getFax ().trim ().length () > 0 ? rec.getFax ().trim () : null);
         person.setDeleted (rec.isDeleted ());
+
+        PlainContactInfoFacade contactInfoFacade = new PlainContactInfoFacade(person.getContactInfo());
+        contactInfoFacade.setWorkPhone (rec.getPhoneWork () != null && rec.getPhoneWork ().trim ().length () > 0 ? rec.getPhoneWork ().trim () : null);
+        contactInfoFacade.setMobilePhone (rec.getPhoneMobile () != null && rec.getPhoneMobile ().trim ().length () > 0 ? rec.getPhoneMobile ().trim () : null);
+        contactInfoFacade.setHomePhone (rec.getPhoneHome () != null && rec.getPhoneHome ().trim ().length () > 0 ? rec.getPhoneHome ().trim () : null);
+        contactInfoFacade.setLegalAddress (rec.getAddress () != null && rec.getAddress ().trim ().length () > 0 ? rec.getAddress ().trim () : null);
+        contactInfoFacade.setHomeAddress (rec.getAddressHome () != null && rec.getAddressHome ().trim ().length () > 0 ? rec.getAddressHome ().trim () : null);
+        contactInfoFacade.setEmail (rec.getEmail () != null && rec.getEmail ().trim ().length () > 0 ? rec.getEmail ().trim () : null);
+        contactInfoFacade.setEmail_own (rec.getEmailOwn () != null && rec.getEmailOwn ().trim ().length () > 0 ? rec.getEmailOwn ().trim () : null);
+        contactInfoFacade.setFax (rec.getFax () != null && rec.getFax ().trim ().length () > 0 ? rec.getFax ().trim () : null);
+
         //person.setDepartment ();
         //person.setPosition ();
 

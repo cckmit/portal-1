@@ -1,4 +1,4 @@
-package ru.protei.portal.webui.controller.ws;
+package ru.protei.portal.api.config;
 
 import org.apache.log4j.Logger;
 

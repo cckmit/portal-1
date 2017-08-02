@@ -1,4 +1,4 @@
-package ru.protei.portal.webui.controller.ws.utils;
+package ru.protei.portal.api.utils;
 
 import java.text.SimpleDateFormat;
 

@@ -1,7 +1,8 @@
-package ru.protei.portal.webui.controller.ws.model;
+package ru.protei.portal.api.model;
 
 import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.webui.controller.ws.utils.HelperService;
+import ru.protei.portal.api.utils.HelperService;
+import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 
 /**
  * Created by turik on 17.08.16.
@@ -287,19 +288,20 @@ public class WorkerRecord {
         setFirstName (p.getFirstName ());
         setLastName (p.getLastName ());
         setSecondName (p.getSecondName ());
-        setSex (p.getSex () != null ? p.getSex ().equals ("M") ? new Integer (1) : p.getSex ().equals ("F") ? new Integer (2) : null : null);
+        setSex (p.getGender() != null ? p.getGender().equals ("M") ? new Integer (1) : p.getGender().equals ("F") ? new Integer (2) : null : null);
         setBirthday (p.getBirthday () != null ? HelperService.DATE.format (p.getBirthday ()) : null);
         setIpAddress (p.getIpAddress ());
-        setPhoneWork (p.getWorkPhone ());
-        setPhoneMobile (p.getMobilePhone ());
-        setPhoneHome (p.getHomePhone ());
+        PlainContactInfoFacade contactInfoFacade = new PlainContactInfoFacade(p.getContactInfo());
+        setPhoneWork (contactInfoFacade.getWorkPhone ());
+        setPhoneMobile (contactInfoFacade.getMobilePhone ());
+        setPhoneHome (contactInfoFacade.getHomePhone ());
         setPassportInfo (p.getPassportInfo ());
         setInfo (p.getInfo ());
-        setAddress (p.getAddress ());
-        setAddressHome (p.getAddressHome ());
-        setEmail (p.getEmail ());
-        setEmailOwn (p.getEmail_own ());
-        setFax (p.getFax ());
+        setAddress (contactInfoFacade.getLegalAddress());
+        setAddressHome (contactInfoFacade.getHomeAddress());
+        setEmail (contactInfoFacade.getEmail ());
+        setEmailOwn (contactInfoFacade.getEmail_own ());
+        setFax (contactInfoFacade.getFax ());
         setDeleted (p.isDeleted ());
     }
 

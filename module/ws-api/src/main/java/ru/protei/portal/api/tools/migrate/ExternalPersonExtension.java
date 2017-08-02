@@ -1,9 +1,10 @@
-package ru.protei.portal.webui.controller.ws.tools.migrate;
+package ru.protei.portal.api.tools.migrate;
 
 import protei.sql.Column;
 import protei.sql.PrimaryKey;
 import protei.sql.Table;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 
 import java.util.Date;
 
@@ -58,14 +59,15 @@ public class ExternalPersonExtension {
         setPersonId (person.getId ());
         setDepartmentId (null);
         setPositionId (null);
-        setEmail (person.getEmail ());
-        setOtherEmail (person.getEmail_own ());
-        setFax (person.getFax ());
-        setHomeTel (person.getHomePhone ());
-        setMobileTel (person.getMobilePhone ());
-        setWorkTel (person.getWorkPhone ());
-        setActualAddress (person.getAddressHome ());
-        setOfficialAddress (person.getAddress ());
+        PlainContactInfoFacade contactInfoFacade = new PlainContactInfoFacade(person.getContactInfo());
+        setEmail (contactInfoFacade.getEmail ());
+        setOtherEmail (contactInfoFacade.getEmail_own ());
+        setFax (contactInfoFacade.getFax ());
+        setHomeTel (contactInfoFacade.getHomePhone ());
+        setMobileTel (contactInfoFacade.getMobilePhone ());
+        setWorkTel (contactInfoFacade.getWorkPhone ());
+        setActualAddress (contactInfoFacade.getHomeAddress ());
+        setOfficialAddress (contactInfoFacade.getLegalAddress());
         setRetired (person.isFired ());
         setIpAddress (person.getIpAddress ());
         setRetireOrder ("");

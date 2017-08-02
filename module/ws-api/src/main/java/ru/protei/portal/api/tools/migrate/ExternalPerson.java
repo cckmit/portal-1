@@ -1,4 +1,4 @@
-package ru.protei.portal.webui.controller.ws.tools.migrate;
+package ru.protei.portal.api.tools.migrate;
 
 import protei.sql.Column;
 import protei.sql.PrimaryKey;
@@ -44,7 +44,7 @@ public class ExternalPerson {
         setPassportInfo (person.getPassportInfo ());
         setInfo (person.getInfo ());
         setBirthday (person.getBirthday ());
-        setSex (person.getSex () != null ? person.getSex ().equals ("M") ? new Integer (1) : person.getSex ().equals ("F") ? new Integer (2) : null : null);
+        setSex (person.getGender() != null ? person.getGender().equals ("M") ? new Integer (1) : person.getGender().equals ("F") ? new Integer (2) : null : null);
         setDeleted (person.isDeleted ());
     }
 

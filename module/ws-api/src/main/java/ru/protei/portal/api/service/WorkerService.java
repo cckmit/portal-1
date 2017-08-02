@@ -1,9 +1,9 @@
-package ru.protei.portal.webui.controller.ws.service;
+package ru.protei.portal.api.service;
 
-import ru.protei.portal.webui.controller.ws.model.DepartmentRecord;
-import ru.protei.portal.webui.controller.ws.model.Photo;
-import ru.protei.portal.webui.controller.ws.model.ServiceResult;
-import ru.protei.portal.webui.controller.ws.model.WorkerRecord;
+import ru.protei.portal.api.model.DepartmentRecord;
+import ru.protei.portal.api.model.Photo;
+import ru.protei.portal.api.model.ServiceResult;
+import ru.protei.portal.api.model.WorkerRecord;
 
 import javax.jws.WebService;
 import java.util.List;

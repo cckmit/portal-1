@@ -1,4 +1,4 @@
-package ru.protei.portal.webui.controller.ws.model;
+package ru.protei.portal.api.model;
 
 /**
  * Created by turik on 18.08.16.

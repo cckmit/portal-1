@@ -1,4 +1,4 @@
-package ru.protei.portal.webui.controller.ws.tools.migrate;
+package ru.protei.portal.api.tools.migrate;
 
 import protei.sql.Column;
 import protei.sql.PrimaryKey;

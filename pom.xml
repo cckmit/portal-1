@@ -32,7 +32,7 @@
                 <module>module/model</module>
                 <module>module/core</module>
                 <module>module/hpsm</module>
-                <!--<module>app/web-ui</module>-->
+                <module>module/ws-api</module>
                 
                 <module>skin/classic</module>
 
