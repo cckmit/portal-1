@@ -184,7 +184,7 @@ public class InboundMainMessageHandler implements InboundMessageHandler {
             comment.setClientIp("hpsm");
 
             if (request.getSubject().getStatus() != null && currState.status() != request.getSubject().getStatus()) {
-                commentText.append(currState.status()).append(" -> ").append(request.getSubject().getStatus());
+                commentText.append(currState.status()).append(" -> ").append(request.getSubject().getStatus()).append("\n");
 
                 logger.debug("change case {} state from {} to {}", appData.getExtAppCaseId(), currState.status(), request.getSubject().getStatus());
 
