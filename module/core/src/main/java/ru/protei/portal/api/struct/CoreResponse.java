@@ -53,6 +53,12 @@ public class CoreResponse<T> {
         return this;
     }
 
+    public CoreResponse<T> error (En_ResultStatus status, T errData) {
+        this.status = status;
+        this.data = errData;
+        return this;
+    }
+
     public CoreResponse<T> redirect (String to) {
         return this;
     }
