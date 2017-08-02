@@ -113,6 +113,10 @@ public class BackChannelHandlerFactoryImpl implements BackChannelHandlerFactory 
                 message.setOurWorkaroundTime(event.getEventDate());
             }
 
+            if (HelperFunc.isEmpty(message.getTxWorkaroundTime())) {
+                message.setWorkaroundTime(event.getEventDate());
+            }
+
             updateAppDataAndSend(message, instance, event.getNewState());
         }
     }

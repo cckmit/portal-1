@@ -5,6 +5,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import ru.protei.portal.core.ServiceModule;
+import ru.protei.portal.core.event.CaseObjectEvent;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
@@ -13,6 +15,8 @@ import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
+import ru.protei.portal.core.service.CaseService;
+import ru.protei.portal.core.service.EventPublisherService;
 import ru.protei.portal.hpsm.api.HpsmSeverity;
 import ru.protei.portal.hpsm.api.HpsmStatus;
 import ru.protei.portal.hpsm.struct.HpsmMessage;
@@ -47,6 +51,12 @@ public class InboundMainMessageHandler implements InboundMessageHandler {
 
     @Autowired
     private ExternalCaseAppDAO externalCaseAppDAO;
+
+    @Autowired
+    private EventPublisherService eventPublisherService;
+
+    @Autowired
+    private CaseService caseService;
 
 
     @Override
@@ -131,7 +141,7 @@ public class InboundMainMessageHandler implements InboundMessageHandler {
 //                return new RejectHandler("Wrong company");
 
             logger.debug("return update handler");
-            return new UpdateCaseHanler(object);
+            return new UpdateCaseHanler(object, caseObjectDAO.get(object.getId()));
         }
         else {
             logger.debug("case {} is not bound to service instance {}", request.getSubject().getHpsmId(), instance.id());
@@ -144,15 +154,16 @@ public class InboundMainMessageHandler implements InboundMessageHandler {
     class UpdateCaseHanler implements HpsmEventHandler {
 
         CaseObject object;
+        final CaseObject oldState;
 
-        public UpdateCaseHanler(CaseObject object) {
+        public UpdateCaseHanler(CaseObject object, CaseObject oldState) {
             this.object = object;
+            this.oldState = oldState;
         }
 
         @Override
         public void handle(HpsmEvent request, ServiceInstance instance) throws Exception {
             Person contactPerson = request.getCompany() != null ? getAssignedPerson(request.getCompany().getId(), request.getHpsmMessage()) : null;
-
 
             if (contactPerson == null) {
                 contactPerson = this.object.getInitiator();
@@ -180,31 +191,33 @@ public class InboundMainMessageHandler implements InboundMessageHandler {
                 currState.status(request.getSubject().getStatus());
             }
 
-            switch (request.getSubject().getStatus()){
-                case WAIT_SOLUTION:
-                case REJECT_WA:
-                    if (object.getState() != En_CaseState.OPENED) {
-                        object.setState(En_CaseState.OPENED);
-                        comment.setCaseStateId(object.getStateId());
-                    }
-                    break;
 
-                case CLOSED:
-                    if (object.getState() != En_CaseState.VERIFIED) {
-                        object.setState(En_CaseState.VERIFIED);
-                        comment.setCaseStateId(object.getStateId());
-                    }
-                    break;
+            if (request.getSubject().getStatus() != null) {
+                switch (request.getSubject().getStatus()) {
+                    case WAIT_SOLUTION:
+                    case REJECT_WA:
+                        if (object.getState() != En_CaseState.OPENED) {
+                            object.setState(En_CaseState.OPENED);
+                            comment.setCaseStateId(object.getStateId());
+                        }
+                        break;
 
-                case TEST_SOLUTION:
-                case TEST_WA:
-                    if (object.getState() != En_CaseState.TEST_CUST) {
-                        object.setState(En_CaseState.TEST_CUST);
-                        comment.setCaseStateId(object.getStateId());
-                    }
-                    break;
+                    case CLOSED:
+                        if (object.getState() != En_CaseState.VERIFIED) {
+                            object.setState(En_CaseState.VERIFIED);
+                            comment.setCaseStateId(object.getStateId());
+                        }
+                        break;
+
+                    case TEST_SOLUTION:
+                    case TEST_WA:
+                        if (object.getState() != En_CaseState.TEST_CUST) {
+                            object.setState(En_CaseState.TEST_CUST);
+                            comment.setCaseStateId(object.getStateId());
+                        }
+                        break;
+                }
             }
-
 
             currState.updateCustomerFields(request.getHpsmMessage());
             appData.setExtAppData(xstream.toXML(currState));
@@ -237,6 +250,10 @@ public class InboundMainMessageHandler implements InboundMessageHandler {
             Long commentId = commentDAO.persist(comment);
 
             logger.debug("comment added in db, id={}", commentId);
+
+            logger.debug("publish event on update case id={}, ext={}", object.getId(), object.getExtId());
+
+            eventPublisherService.publishEvent(new CaseObjectEvent(ServiceModule.HPSM, caseService, object, oldState, contactPerson));
         }
     }
 
@@ -311,6 +328,10 @@ public class InboundMainMessageHandler implements InboundMessageHandler {
                 logger.debug("create hpsm-case id={}, ext={}, data={}", appData.getId(), appData.getExtAppCaseId(), appData.getExtAppData());
 
                 externalCaseAppDAO.merge(appData);
+
+                logger.debug("publish event on create case id={}, ext={}", obj.getId(), obj.getExtId());
+
+                eventPublisherService.publishEvent(new CaseObjectEvent(ServiceModule.HPSM, caseService, obj, null, contactPerson));
 
                 instance.sendReply(request.getEmailSourceAddr(), replySubj, replyEvent);
             }
