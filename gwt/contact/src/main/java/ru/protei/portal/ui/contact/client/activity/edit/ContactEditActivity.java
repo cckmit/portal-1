@@ -8,15 +8,18 @@ import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.ContactEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.AccountServiceAsync;
 import ru.protei.portal.ui.common.client.service.ContactServiceAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
@@ -56,7 +59,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
 
                 @Override
                 public void onSuccess(Person person) {
-                    contactService.getUserLogin(person.getId(), new RequestCallback<UserLogin>() {
+                    accountService.getAccount(person.getId(), new RequestCallback<UserLogin>() {
                         @Override
                         public void onError(Throwable throwable) {}
 
@@ -78,13 +81,13 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         }
 
         if(!isConfirmValidate()) {
-            fireEvent(new NotifyEvents.Show(lang.contactPasswordsNotMatch(), NotifyEvents.NotifyType.ERROR));
+            fireEvent(new NotifyEvents.Show(lang.accountPasswordsNotMatch(), NotifyEvents.NotifyType.ERROR));
             return;
         }
 
         UserLogin userLogin = applyChangesLogin();
         if(!HelperFunc.isEmpty(userLogin.getUlogin()) && HelperFunc.isEmpty(userLogin.getUpass()) && userLogin.getId() == null) {
-            fireEvent(new NotifyEvents.Show(lang.contactPasswordNotDefinied(), NotifyEvents.NotifyType.ERROR));
+            fireEvent(new NotifyEvents.Show(lang.accountPasswordNotDefinied(), NotifyEvents.NotifyType.ERROR));
             return;
         }
 
@@ -100,7 +103,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
                     userLogin.setPersonId(person.getId());
                     userLogin.setInfo(person.getDisplayName());
                 }
-                contactService.saveUserLogin(userLogin, new RequestCallback<Boolean>() {
+                contactService.saveAccount(userLogin, new RequestCallback<Boolean>() {
                     @Override
                     public void onError(Throwable throwable) {
                         fireErrorMessage(lang.errEditContactLogin());
@@ -125,7 +128,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
             return;
         }
 
-        contactService.isContactLoginUnique(
+        accountService.isLoginUnique(
                 value,
                 account.getId(),
                 new RequestCallback<Boolean>() {
@@ -206,15 +209,6 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
 
     private void fillView(Person person, UserLogin userLogin){
         view.company().setValue(person.getCompany() == null ? null : person.getCompany().toEntityOption());
-//        if (person.getCompanyId() == null)
-//            view.company().setValue(null);
-//        else {
-//            view.company().findAndSelectValue(
-//                    company ->  company != null && person.getCompanyId().equals(company.getId()),
-//                    true
-//            );
-//        }
-
         view.gender().setValue(person.getGender());
         view.firstName().setValue(person.getFirstName());
         view.lastName().setValue(person.getLastName());
@@ -231,12 +225,10 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         view.homePhone().setText(infoFacade.getHomePhone());
 
         view.workEmail().setText(infoFacade.getEmail());
-//        view.personalEmail().setText(person.getEmail_own());
         view.workAddress().setText(infoFacade.getFactAddress());
         view.homeAddress().setText(infoFacade.getHomeAddress());
 
         view.workFax().setText(infoFacade.getFax());
-//        view.homeFax().setText(person.getFaxHome());
         view.displayPosition().setText(person.getPosition());
         view.displayDepartment().setText(person.getDepartment());
 
@@ -256,12 +248,15 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
 
     @Inject
     AbstractContactEditView view;
-
     @Inject
     Lang lang;
-
     @Inject
     ContactServiceAsync contactService;
+    @Inject
+    PolicyService policyService;
+
+    @Inject
+    AccountServiceAsync accountService;
 
     private Person contact;
     private UserLogin account;

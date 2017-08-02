@@ -7,10 +7,8 @@ import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.ExternalCaseAppDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dict.En_CaseState;
-import ru.protei.portal.core.model.ent.CaseComment;
-import ru.protei.portal.core.model.ent.CaseObject;
-import ru.protei.portal.core.model.ent.ExternalCaseAppData;
-import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.service.CaseControlService;
 import ru.protei.portal.core.service.CaseService;
@@ -23,6 +21,8 @@ import ru.protei.portal.test.hpsm.config.HpsmTestConfiguration;
 
 import javax.mail.internet.MimeMessage;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by Mike on 01.05.2017.
@@ -83,7 +83,7 @@ public class LocalUpdateTest {
         comment.setCreated(new Date());
         comment.setCaseId(object.getId());
 
-        caseService.addCaseComment(comment);
+        caseService.addCaseComment(null, comment, testPerson );
 
         // wait event handling
         Thread.sleep(200);
@@ -100,7 +100,7 @@ public class LocalUpdateTest {
 
         object.setState(En_CaseState.OPENED);
         object.setManager(testPerson);
-        caseService.updateCaseObject(object);
+        caseService.updateCaseObject( null, object, testPerson );
 
         // wait event handling
         Thread.sleep(200);
@@ -119,7 +119,7 @@ public class LocalUpdateTest {
 
 
         object.setState(En_CaseState.DONE);
-        caseService.updateCaseObject(object);
+        caseService.updateCaseObject( null, object, testPerson );
 
         // wait event handling
         Thread.sleep(200);

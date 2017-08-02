@@ -1,7 +1,19 @@
 package ru.protei.portal.core.model.dao.impl;
 
+import org.apache.commons.lang3.StringUtils;
+import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.UserLoginDAO;
+import ru.protei.portal.core.model.dict.En_AuthType;
 import ru.protei.portal.core.model.ent.UserLogin;
+import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.query.AccountQuery;
+import ru.protei.portal.core.model.query.SqlCondition;
+import ru.protei.portal.core.utils.TypeConverters;
+import ru.protei.winter.core.utils.collections.CollectionUtils;
+import ru.protei.winter.jdbc.JdbcQueryParameters;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by michael on 16.06.16.
@@ -21,5 +33,65 @@ public class UserLoginDAO_Impl extends PortalBaseJdbcDAO<UserLogin> implements U
     @Override
     public UserLogin checkExistsByLogin(String login) {
         return getByCondition("ulogin=?", login );
+    }
+
+    @Override
+    public List< UserLogin > getAccounts( AccountQuery query) {
+        return listByQuery( query );
+    }
+
+    private List< UserLogin > listByQuery( AccountQuery query ) {
+        SqlCondition where = createSqlCondition( query );
+
+        JdbcQueryParameters parameters = new JdbcQueryParameters();
+
+        if ( where.isConditionDefined() ) {
+            parameters.withCondition(where.condition, where.args);
+        }
+
+        if ( StringUtils.isNotEmpty( query.getSearchString() ) ) {
+            parameters.withJoins( "LEFT JOIN person ON user_login.personId = person.id" );
+        }
+
+        parameters.withOffset( query.getOffset() );
+        parameters.withLimit( query.getLimit() );
+        parameters.withSort( TypeConverters.createSort( query ) );
+        return getList( parameters );
+    }
+
+    @Override
+    public Long count( AccountQuery query ) {
+        String join = null;
+        boolean distinct = false;
+
+        if ( StringUtils.isNotEmpty( query.getSearchString() ) ) {
+            join = "LEFT JOIN person ON user_login.personId = person.id";
+            distinct = true;
+        }
+
+        SqlCondition where = createSqlCondition( query );
+
+        return (long) getObjectsCount( where.condition, where.args, join, distinct );
+    }
+
+    @SqlConditionBuilder
+    public SqlCondition createSqlCondition( AccountQuery query ) {
+        return new SqlCondition().build(( condition, args ) -> {
+            condition.append( "1=1" ) ;
+
+            if ( CollectionUtils.isNotEmpty( query.getTypes() ) ) {
+                condition.append(" and user_login.authType in (" +
+                        query.getTypes().stream().map( En_AuthType::getId ).collect( Collectors.toList() )
+                                .stream().map( Object::toString ).collect( Collectors.joining("," ) ) + ")");
+            }
+
+            if ( StringUtils.isNotEmpty( query.getSearchString() ) ) {
+                condition.append( " and (user_login.ulogin like ? or person.displayname like ?)" );
+
+                String likeArg = HelperFunc.makeLikeArg( query.getSearchString(), true );
+                args.add( likeArg );
+                args.add( likeArg );
+            }
+        });
     }
 }

@@ -17,10 +17,10 @@ public class NotificationEntry implements Serializable {
     public NotificationEntry() {
     }
 
-    public NotificationEntry(String address, En_ContactItemType contactItemType, String landCode) {
+    public NotificationEntry(String address, En_ContactItemType contactItemType, String langCode) {
         this.address = address;
         this.contactItemType = contactItemType;
-        this.langCode = landCode;
+        this.langCode = langCode;
     }
 
     public String getAddress() {

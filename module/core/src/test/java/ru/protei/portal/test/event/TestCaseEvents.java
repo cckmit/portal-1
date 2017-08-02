@@ -6,12 +6,16 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
+import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.service.CaseControlService;
 import ru.protei.portal.core.service.CaseService;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by michael on 04.05.17.
@@ -44,7 +48,7 @@ public class TestCaseEvents {
         object.setExtAppType("junit");
 //        object.setExtAppCaseId(JUNIT_EVENT_PUB_01);
 
-        CoreResponse<CaseObject> response = service.saveCaseObject(object);
+        CoreResponse<CaseObject> response = service.saveCaseObject(null, object, null );
 
         Assert.assertTrue(response.isOk());
 
@@ -56,7 +60,7 @@ public class TestCaseEvents {
         comment.setAuthorId(response.getData().getInitiatorId());
         comment.setText("A new comment, publishing test");
 
-        CoreResponse<CaseComment> r2 = service.addCaseComment(comment);
+        CoreResponse<CaseComment> r2 = service.addCaseComment( null, comment, null );
 
         Assert.assertTrue(r2.isOk());
 

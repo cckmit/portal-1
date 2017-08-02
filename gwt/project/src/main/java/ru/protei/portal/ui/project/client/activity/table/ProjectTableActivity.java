@@ -5,9 +5,11 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.struct.ProjectInfo;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
@@ -52,7 +54,10 @@ public abstract class ProjectTableActivity
         initDetails.parent.clear();
         initDetails.parent.add( view.asWidget() );
 
-        fireEvent( new ActionBarEvents.Add( CREATE_ACTION, UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.PROJECT ) );
+        fireEvent( policyService.hasPrivilegeFor( En_Privilege.PROJECT_CREATE ) ?
+            new ActionBarEvents.Add( CREATE_ACTION, UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.PROJECT ) :
+            new ActionBarEvents.Clear()
+        );
 
         requestProjects();
     }
@@ -74,8 +79,6 @@ public abstract class ProjectTableActivity
                 updateListAndSelect( aLong );
             }
         });
-//
-//        fireEvent( new ProjectEvents.Edit() );
     }
 
     @Event
@@ -176,32 +179,20 @@ public abstract class ProjectTableActivity
         query.setSortDir(filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
 
         return query;
-
-//        query.setCompanyId( filterView.company().getValue() == null ? null : filterView.company().getValue().getId() );
-//        query.setManagerId( filterView.manager().getValue() == null ? null : filterView.manager().getValue().getId() );
-
-//        DateInterval interval = filterView.dateRange().getValue();
-//        if(interval != null) {
-//            query.setFrom( interval.from );
-//            query.setTo( interval.to );
-//        }
-//
-//        return query;
     }
 
     @Inject
     Lang lang;
-
     @Inject
     AbstractProjectTableView view;
     @Inject
     AbstractProjectFilterView filterView;
-
     @Inject
     RegionServiceAsync regionService;
-
     @Inject
     TableAnimation animation;
+    @Inject
+    PolicyService policyService;
 
     private static String CREATE_ACTION;
     private AppEvents.InitDetails initDetails;

@@ -1,10 +1,11 @@
 package ru.protei.portal.core.event;
 
 import org.springframework.context.ApplicationEvent;
-import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
+import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.service.CaseService;
+import ru.protei.portal.core.service.CaseServiceImpl;
 
 import java.util.Date;
 
@@ -15,15 +16,17 @@ public class CaseObjectEvent extends ApplicationEvent {
 
     private CaseObject newState;
     private CaseObject oldState;
+    private Person person;
 
-    public CaseObjectEvent(CaseService source, CaseObject newState) {
-        this (source, newState, null);
+    public CaseObjectEvent( CaseService source, CaseObject newState, Person initiator ) {
+        this( source, newState, null, initiator );
     }
 
-    public CaseObjectEvent(CaseService source, CaseObject newState, CaseObject oldState) {
-        super(source);
+    public CaseObjectEvent( CaseService caseService, CaseObject newState, CaseObject oldState, Person currentPerson ) {
+        super( caseService );
         this.newState = newState;
         this.oldState = oldState;
+        this.person = currentPerson;
     }
 
     public boolean isCreateEvent () {
@@ -46,6 +49,22 @@ public class CaseObjectEvent extends ApplicationEvent {
         return isUpdateEvent() && !HelperFunc.equals(newState.getManagerId(),oldState.getManagerId());
     }
 
+    public boolean isProductChanged() {
+        return isUpdateEvent() && !HelperFunc.equals( newState.getProductId(), oldState.getProductId() );
+    }
+
+    public boolean isInitiatorChanged() {
+        return isUpdateEvent() && !HelperFunc.equals( newState.getInitiatorId(), oldState.getInitiatorId() );
+    }
+
+    public boolean isInitiatorCompanyChanged() {
+        return isUpdateEvent() && !HelperFunc.equals( newState.getInitiatorCompanyId(), oldState.getInitiatorCompanyId() );
+    }
+
+    public boolean isInfoChanged() {
+        return isUpdateEvent() && !HelperFunc.equals( newState.getInfo(), oldState.getInfo() );
+    }
+
     public Date getEventDate () {
         return new Date(getTimestamp());
     }
@@ -64,5 +83,9 @@ public class CaseObjectEvent extends ApplicationEvent {
 
     public CaseService getCaseService () {
         return (CaseService) getSource();
+    }
+
+    public Person getPerson() {
+        return person;
     }
 }

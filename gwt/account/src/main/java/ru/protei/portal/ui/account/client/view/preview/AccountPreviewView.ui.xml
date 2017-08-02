@@ -1,0 +1,38 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+
+    <g:HTMLPanel styleName="preview-wrapper grid">
+        <div class="preview">
+            <fieldset class="header">
+                <legend><ui:text from="{lang.account}"/></legend>
+                <div class="col-xs-12">
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.accountLogin}"/></label>
+                    <span class="col-xs-7 col-md-7" ui:field="login"></span>
+                </div>
+                <div class="col-xs-12">
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.accountLastName}"/></label>
+                    <span class="col-xs-7 col-md-7" ui:field="lastName"></span>
+                </div>
+                <div class="col-xs-12">
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.accountFirstName}"/></label>
+                    <span class="col-xs-7 col-md-7" ui:field="firstName"></span>
+                </div>
+                <div class="col-xs-12">
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.accountSecondName}"/></label>
+                    <span class="col-xs-7 col-md-7" ui:field="secondName"></span>
+                </div>
+                <div class="col-xs-12">
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.accountCompany}"/></label>
+                    <span class="col-xs-7 col-md-7" ui:field="company"></span>
+                </div>
+            </fieldset>
+            <fieldset class="header">
+                <legend><ui:text from="{lang.accountRoles}"/></legend>
+                <div class="col-xs-12">
+                    <span class="col-xs-12 col-md-12" ui:field="roles"></span>
+                </div>
+            </fieldset>
+        </div>
+    </g:HTMLPanel>
+</ui:UiBinder>

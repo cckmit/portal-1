@@ -5,6 +5,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.ui.common.server.service.SessionService;
 import ru.protei.portal.ui.common.server.util.SystemConstants;
@@ -13,6 +15,8 @@ import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.crm.client.service.AuthService;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Сервис авторизации
@@ -33,7 +37,7 @@ public class AuthServiceImpl implements AuthService {
 
         log.debug( "authentificate: login={}", login );
 
-        CoreResponse<UserSessionDescriptor> result = authService.login( httpRequest.getSession().getId(), login, password, httpRequest.getRemoteAddr(), httpRequest.getHeader( SystemConstants.USER_AGENT_HEADER ) );
+        CoreResponse< UserSessionDescriptor > result = authService.login( httpRequest.getSession().getId(), login, password, httpRequest.getRemoteAddr(), httpRequest.getHeader( SystemConstants.USER_AGENT_HEADER ) );
         if ( result.isError() ) {
             throw new RequestFailedException( result.getStatus() );
         }
@@ -45,7 +49,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public void logout() {
         UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor( httpRequest );
-        if ( descriptor != null )  {
+        if ( descriptor != null ) {
             authService.logout( httpRequest.getSession().getId(), httpRequest.getRemoteAddr(), httpRequest.getHeader( SystemConstants.USER_AGENT_HEADER ) );
             sessionService.setUserSessionDescriptor( httpRequest, null );
         }
@@ -53,12 +57,31 @@ public class AuthServiceImpl implements AuthService {
 
     private Profile makeProfileByDescriptor( UserSessionDescriptor sessionDescriptor ) {
         Profile profile = new Profile();
-        profile.setRole( sessionDescriptor.getUrole() );
+        Set< UserRole > roles = sessionDescriptor.getLogin().getRoles();
+        profile.setRoles( roles );
         profile.setLogin( sessionDescriptor.getLogin().getUlogin() );
         profile.setName( sessionDescriptor.getPerson().getFirstName() );
         profile.setId( sessionDescriptor.getPerson().getId() );
+        profile.setPrivileges( getAllPrivileges( roles ) );
 
         return profile;
+    }
+
+    private Set< En_Privilege > getAllPrivileges( Set< UserRole > roles ) {
+        Set< En_Privilege > privileges = new HashSet<>();
+        if ( roles == null ) {
+            return privileges;
+        }
+
+        for ( UserRole role : roles ) {
+            if ( role.getPrivileges() == null ) {
+                continue;
+            }
+
+            privileges.addAll(role.getPrivileges());
+        }
+
+        return privileges;
     }
 
     @Autowired

@@ -8,13 +8,17 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.config.MainConfiguration;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.CaseComment;
+import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by michael on 11.10.16.
@@ -39,7 +43,7 @@ public class CaseServiceTest {
 
         CaseService service = ctx.getBean(CaseService.class);
         Assert.assertNotNull(service);
-        CoreResponse<List<CaseComment>> result = service.getCaseCommentList(testCaseId);
+        CoreResponse<List<CaseComment>> result = service.getCaseCommentList(null, testCaseId);
 
         Assert.assertNotNull(result);
         Assert.assertTrue(result.isOk());
@@ -72,14 +76,14 @@ public class CaseServiceTest {
 
         CaseService service = ctx.getBean(CaseService.class);
 
-        CoreResponse<CaseComment> result = service.addCaseComment( comment );
+        CoreResponse<CaseComment> result = service.addCaseComment( null, comment, null );
         Assert.assertNotNull(result);
         Assert.assertTrue(result.isOk());
         Assert.assertNotNull(result.getData());
 
         System.out.println( result.getData() );
 
-        CoreResponse<List<CaseComment>> resultList = service.getCaseCommentList(testCaseId);
+        CoreResponse<List<CaseComment>> resultList = service.getCaseCommentList(null, testCaseId);
         System.out.println(" size after add = " + resultList.getData().size());
 
         // update
@@ -88,26 +92,26 @@ public class CaseServiceTest {
         if (comment != null) {
             comment.setText( "Unit-test - тестовый комментарий (update)" );
 
-            result = service.updateCaseComment( comment, personId );
+            result = service.updateCaseComment( null, comment, null );
             Assert.assertNotNull( result );
             Assert.assertTrue( result.isOk() );
             Assert.assertNotNull( result.getData() );
 
             System.out.println( result.getData() );
         }
-        resultList = service.getCaseCommentList(testCaseId);
+        resultList = service.getCaseCommentList(null, testCaseId);
         System.out.println(" size after update = " + resultList.getData().size());
 
         // delete
         if (comment != null) {
-            result = service.removeCaseComment( comment, personId );
+            result = service.removeCaseComment( null, comment, personId );
             Assert.assertNotNull( result );
             Assert.assertTrue( result.isOk() );
             Assert.assertNotNull( result.getData() );
 
             System.out.println( result.getData() );
         }
-        resultList = service.getCaseCommentList(testCaseId);
+        resultList = service.getCaseCommentList(null, testCaseId);
         System.out.println(" size after remove = " + resultList.getData().size());
 
     }

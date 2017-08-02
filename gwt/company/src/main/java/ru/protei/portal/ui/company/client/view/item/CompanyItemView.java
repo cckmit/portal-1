@@ -62,6 +62,15 @@ public class CompanyItemView extends Composite implements AbstractCompanyItemVie
         website.setHref( value == null ? "#" : value  );
     }
 
+    @Override
+    public void setEditEnabled( boolean isEnabled ) {
+        if (isEnabled) {
+            edit.removeStyleName( "link-disabled" );
+        } else {
+            edit.addStyleName( "link-disabled" );
+        }
+    }
+
     @UiHandler( "edit" )
     public void onEditClicked( ClickEvent event ) {
         event.preventDefault();

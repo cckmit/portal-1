@@ -83,5 +83,15 @@ public enum En_ResultStatus {
     /**
      * Ошибка взаимодействия с базой данных
      */
-    DB_COMMON_ERROR
+    DB_COMMON_ERROR,
+
+    /**
+     * ошибка прав доступа
+     */
+    PERMISSION_DENIED,
+
+    /**
+     * ошибка сессии
+     */
+    SESSION_NOT_FOUND
 }

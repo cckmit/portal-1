@@ -7,13 +7,17 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.*;
+import com.google.inject.Inject;
 import ru.protei.portal.ui.crm.client.activity.app.AbstractAppActivity;
 import ru.protei.portal.ui.crm.client.activity.app.AbstractAppView;
+import ru.protei.portal.ui.crm.client.widget.localeselector.LocaleImage;
+import ru.protei.portal.ui.crm.client.widget.localeselector.LocaleSelector;
 import ru.protei.portal.ui.crm.client.widget.navsearch.NavSearchBox;
 
 /**
@@ -21,10 +25,10 @@ import ru.protei.portal.ui.crm.client.widget.navsearch.NavSearchBox;
  */
 public class AppView extends Composite
         implements AbstractAppView,
-        KeyUpHandler
-{
-    public AppView() {
-        initWidget(ourUiBinder.createAndBindUi(this));
+        KeyUpHandler {
+    @Inject
+    public void onInit() {
+        initWidget( ourUiBinder.createAndBindUi( this ) );
         initHandlers();
         // todo temporary set invisible
         search.setVisible( false );
@@ -36,9 +40,14 @@ public class AppView extends Composite
     }
 
     @Override
-    public void setUsername( String username, String role) {
+    public void setUsername( String username, String role ) {
         this.username.setInnerText( username );
-        this.role.setInnerText( role );
+        //this.role.setInnerText( role );
+    }
+
+    @Override
+    public HasValue< LocaleImage > locale() {
+        return locale;
     }
 
     @Override
@@ -61,16 +70,23 @@ public class AppView extends Composite
         return actionBarContainer;
     }
 
-    @UiHandler("logout")
-    public void onLogoutClicked(ClickEvent event) {
+    @UiHandler( "logout" )
+    public void onLogoutClicked( ClickEvent event ) {
         event.preventDefault();
         if ( activity != null ) {
             activity.onLogoutClicked();
         }
     }
 
+    @UiHandler( "locale" )
+    public void onLocaleClicked( ValueChangeEvent<LocaleImage> event ) {
+        if ( activity != null ) {
+            activity.onLocaleChanged( event.getValue().getLocale() );
+        }
+    }
+
     @UiHandler( "toggleButton" )
-    public void onToggleButtonClicked( ClickEvent event) {
+    public void onToggleButtonClicked( ClickEvent event ) {
         event.preventDefault();
         boolean isCollapsed = RootPanel.get().getStyleName().contains( "sidebar-collapse" );
         if ( isCollapsed ) {
@@ -82,22 +98,25 @@ public class AppView extends Composite
     }
 
     @Override
-    public void onKeyUp (KeyUpEvent event) {
-        if (event.getNativeKeyCode() == KeyCodes.KEY_F4 && event.isAnyModifierKeyDown() && event.isControlKeyDown()) {
+    public void onKeyUp( KeyUpEvent event ) {
+        if ( event.getNativeKeyCode() == KeyCodes.KEY_F4 && event.isAnyModifierKeyDown() && event.isControlKeyDown() ) {
             event.preventDefault();
             activity.onLogoutClicked();
         }
     }
 
     private void initHandlers() {
-        RootPanel.get().sinkEvents(Event.ONKEYUP);
-        RootPanel.get().addHandler(this, KeyUpEvent.getType());
+        RootPanel.get().sinkEvents( Event.ONKEYUP );
+        RootPanel.get().addHandler( this, KeyUpEvent.getType() );
     }
 
     @UiField
     Anchor toggleButton;
     @UiField
     NavSearchBox search;
+    @Inject
+    @UiField( provided = true )
+    LocaleSelector locale;
     @UiField
     Anchor logout;
 
@@ -119,6 +138,7 @@ public class AppView extends Composite
 
     AbstractAppActivity activity;
 
-    interface AppViewUiBinder extends UiBinder<Widget, AppView> {}
-    private static  AppViewUiBinder ourUiBinder = GWT.create(  AppViewUiBinder.class );
+    interface AppViewUiBinder extends UiBinder< Widget, AppView > {}
+
+    private static AppViewUiBinder ourUiBinder = GWT.create( AppViewUiBinder.class );
 }

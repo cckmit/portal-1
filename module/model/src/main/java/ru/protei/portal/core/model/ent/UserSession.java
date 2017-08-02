@@ -28,9 +28,6 @@ public class UserSession {
     @JdbcColumn(name = "client_ip")
     private String clientIp;
 
-    @JdbcColumn(name = "role_id")
-    private int roleId;
-
     @JdbcColumn(name = "person_id")
     private Long personId;
 
@@ -73,14 +70,6 @@ public class UserSession {
 
     public void setClientIp(String clientIp) {
         this.clientIp = clientIp;
-    }
-
-    public int getRoleId() {
-        return roleId;
-    }
-
-    public void setRoleId(int roleId) {
-        this.roleId = roleId;
     }
 
     public Long getPersonId() {

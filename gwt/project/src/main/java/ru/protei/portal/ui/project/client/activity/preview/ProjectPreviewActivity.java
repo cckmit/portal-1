@@ -4,10 +4,12 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
@@ -65,6 +67,10 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
 
     @Override
     public void onProjectChanged() {
+        if ( !policyService.hasPrivilegeFor( En_Privilege.PROJECT_EDIT ) ) {
+            return;
+        }
+
         readView();
         regionService.saveProject( project, new RequestCallback<Void>(){
             @Override
@@ -110,8 +116,6 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         view.deployManagers().setValue( new HashSet<>( value.getManagers() ) );
         view.details().setText( value.getDetails() == null ? "" : value.getDetails() );
         view.region().setValue( value.getRegion() );
-
-//        fireEvent( new IssueEvents.ShowComments( view.getCommentsContainer(), value.getId() ) );
     }
 
     private void readView() {
@@ -126,12 +130,12 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
 
     @Inject
     Lang lang;
-
     @Inject
     AbstractProjectPreviewView view;
-
     @Inject
     RegionServiceAsync regionService;
+    @Inject
+    PolicyService policyService;
 
     private Long projectId;
     ProjectInfo project;

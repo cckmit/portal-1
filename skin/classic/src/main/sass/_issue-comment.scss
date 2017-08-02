@@ -20,7 +20,6 @@
 
 .chats .name {
   color: #333;
-  margin-bottom: 5px;
   font-weight: 600;
   text-decoration: none
 }
@@ -91,7 +90,7 @@
 }
 
 .chats .right .name {
-  text-align: right
+  float: right
 }
 
 .chats .right .date-time {

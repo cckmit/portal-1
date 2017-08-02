@@ -10,16 +10,23 @@ public class PortalConfigData {
 
     private SmtpConfig smtpConfig;
 
+    private final String crmCaseUrl;
+
     public PortalConfigData (PropertiesWrapper wrapper) throws ConfigException {
         smtpConfig = new SmtpConfig(wrapper);
+
+        crmCaseUrl = wrapper.getProperty( "crm.case.url", "http://127.0.0.1:8888/crm.html#issues/issue:id=%d;" );
     }
 
     public SmtpConfig smtp () {
         return this.smtpConfig;
     }
 
+    public String getCrmCaseUrl() {
+        return crmCaseUrl;
+    }
 
-    static class SmtpConfig {
+    public static class SmtpConfig {
         String host;
         String defaultCharset;
         int port;

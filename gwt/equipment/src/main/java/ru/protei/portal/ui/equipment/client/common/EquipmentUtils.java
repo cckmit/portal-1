@@ -2,7 +2,7 @@ package ru.protei.portal.ui.equipment.client.common;
 
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.inject.Inject;
-import ru.protei.portal.ui.common.client.lang.OrganizationCodeLang;
+import ru.protei.portal.ui.common.client.lang.En_OrganizationCodeLang;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 
 /**
@@ -30,5 +30,5 @@ public class EquipmentUtils {
     }
 
     @Inject
-    static OrganizationCodeLang lang;
+    static En_OrganizationCodeLang lang;
 }

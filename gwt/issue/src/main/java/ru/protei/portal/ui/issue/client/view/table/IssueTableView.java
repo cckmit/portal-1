@@ -9,6 +9,7 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.AbstractColumn;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.AttachClickColumn;
@@ -30,14 +31,16 @@ import ru.protei.portal.ui.issue.client.view.table.columns.NumberColumn;
  */
 public class IssueTableView extends Composite implements AbstractIssueTableView {
     @Inject
-    public void onInit() {
+    public void onInit(EditClickColumn< CaseShortView> editClickColumn) {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+        this.editClickColumn = editClickColumn;
         initTable();
     }
 
     @Override
     public void setActivity( AbstractIssueTableActivity activity ) {
         this.activity = activity;
+
         editClickColumn.setHandler( activity );
         editClickColumn.setEditHandler( activity );
         editClickColumn.setColumnProvider( columnProvider );
@@ -116,7 +119,7 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
 
     private void initTable () {
         attachClickColumn = new AttachClickColumn<CaseShortView>(lang) {};
-        editClickColumn = new EditClickColumn< CaseShortView>( lang ) {};
+        editClickColumn.setPrivilege( En_Privilege.ISSUE_EDIT );
         issueNumber = new NumberColumn( lang, caseStateLang );
         contact = new ContactColumn( lang );
         manager = new ManagerColumn( lang );

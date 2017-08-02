@@ -13,6 +13,7 @@ import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDe
 import ru.protei.portal.ui.common.client.activity.notify.AbstractNotifyView;
 import ru.protei.portal.ui.common.client.activity.notify.NotifyActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.common.IssueStates;
@@ -60,6 +61,8 @@ public class CommonClientModule extends AbstractGinModule {
 
         bind( ConfirmDialogActivity.class ).asEagerSingleton();
         bind( AbstractConfirmDialogView.class ).to( ConfirmDialogView.class ).in( Singleton.class );
+
+        bind( PolicyService.class ).asEagerSingleton();
 
         requestStaticInjection(RequestCallback.class);
     }

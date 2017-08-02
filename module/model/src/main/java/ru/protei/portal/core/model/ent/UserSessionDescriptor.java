@@ -1,6 +1,8 @@
 package ru.protei.portal.core.model.ent;
 
 
+import java.util.List;
+
 /**
  * Created by michael on 23.06.16.
  */
@@ -8,7 +10,6 @@ public class UserSessionDescriptor {
 
     UserSession session;
     UserLogin login;
-    UserRole urole;
     Company company;
     Person person;
 
@@ -20,16 +21,14 @@ public class UserSessionDescriptor {
         this.session = session;
     }
 
-    public void login (UserLogin login, UserRole role, Person p, Company c) {
+    public void login (UserLogin login, Person p, Company c) {
         this.login = login;
-        this.urole = role;
         this.company = c;
         this.person = p;
     }
 
     public void close () {
         this.session = null;
-        this.urole = null;
         this.login = null;
         this.company = null;
         this.person = null;
@@ -53,10 +52,6 @@ public class UserSessionDescriptor {
         return login;
     }
 
-    public UserRole getUrole() {
-        return urole;
-    }
-
     public Company getCompany() {
         return company;
     }
@@ -66,10 +61,14 @@ public class UserSessionDescriptor {
     }
 
     public boolean isValid () {
-        return this.session != null && this.login != null && this.urole != null;
+        return this.session != null && this.login != null && !this.login.getRoles().isEmpty();
     }
 
     public boolean isExpired () {
         return this.session != null && this.session.checkIsExpired();
+    }
+
+    public AuthToken makeAuthToken() {
+        return new AuthToken( getSessionId(), session.getClientIp() );
     }
 }

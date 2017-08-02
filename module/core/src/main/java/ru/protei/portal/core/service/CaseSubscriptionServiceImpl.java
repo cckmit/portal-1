@@ -40,12 +40,12 @@ public class CaseSubscriptionServiceImpl implements CaseSubscriptionService {
         return result;
     }
 
-    private List<CompanySubscription> safeGetByComapny (Long companyId) {
+    private List<CompanySubscription> safeGetByCompany( Long companyId) {
         return companyId == null ? Collections.emptyList() : companySubscriptionDAO.listByCompanyId(companyId);
     }
 
     private void appendCompanySubscriptions(Long companyId, Set<NotificationEntry> result) {
-        safeGetByComapny(companyId)
+        safeGetByCompany(companyId)
                 .forEach(s -> result.add(NotificationEntry.email(s.getEmail(), s.getLangCode())));
     }
 }

@@ -4,19 +4,20 @@ package ru.protei.portal.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.DigestUtils;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dao.UserLoginDAO;
 import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.model.ent.UserLogin;
+import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.ContactQuery;
 import ru.protei.portal.core.model.view.PersonShortView;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -32,20 +33,23 @@ public class ContactServiceImpl implements ContactService {
     @Autowired
     UserLoginDAO userLoginDAO;
 
+    @Autowired
+    PolicyService policyService;
+
     @Override
-    public CoreResponse<List<PersonShortView>> shortViewList(ContactQuery query) {
+    public CoreResponse<List<PersonShortView>> shortViewList(AuthToken token, ContactQuery query) {
         List<Person> list = personDAO.getContacts(query);
 
         if (list == null)
             new CoreResponse<List<PersonShortView>>().error(En_ResultStatus.GET_DATA_ERROR);
 
-        List<PersonShortView> result = list.stream().map(Person::toPersonShortView).collect(Collectors.toList());
+        List<PersonShortView> result = list.stream().map(Person::toShortNameShortView ).collect(Collectors.toList());
 
         return new CoreResponse<List<PersonShortView>>().success(result,result.size());
     }
 
     @Override
-    public CoreResponse<List<Person>> contactList(ContactQuery query) {
+    public CoreResponse<List<Person>> contactList(AuthToken token, ContactQuery query) {
         List<Person> list = personDAO.getContacts(query);
 
         if (list == null)
@@ -55,7 +59,8 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Override
-    public CoreResponse<Person> getContact(long id) {
+    public CoreResponse<Person> getContact( AuthToken token, long id ) {
+
         Person person = personDAO.getContact(id);
 
         return person != null ? new CoreResponse<Person>().success(person)
@@ -64,7 +69,7 @@ public class ContactServiceImpl implements ContactService {
 
 
     @Override
-    public CoreResponse<Person> saveContact(Person p) {
+    public CoreResponse<Person> saveContact( AuthToken token, Person p ) {
         if (personDAO.isEmployee(p)) {
             log.warn("person with id = {} is employee",p.getId());
             return new CoreResponse<Person>().error(En_ResultStatus.VALIDATION_ERROR);
@@ -109,67 +114,8 @@ public class ContactServiceImpl implements ContactService {
 
 
     @Override
-    public CoreResponse<Long> count(ContactQuery query) {
+    public CoreResponse<Long> count( AuthToken token, ContactQuery query ) {
+
         return new CoreResponse<Long>().success(personDAO.count(query));
-    }
-
-    @Override
-    public CoreResponse<UserLogin> getUserLogin(long id) {
-        UserLogin userLogin = userLoginDAO.findByPersonId(id);
-        return new CoreResponse<UserLogin>().success(userLogin);
-    }
-
-    @Override
-    public CoreResponse<UserLogin> saveUserLogin(UserLogin userLogin) {
-
-        if (HelperFunc.isEmpty(userLogin.getUlogin()))
-            return new CoreResponse<UserLogin>().error(En_ResultStatus.VALIDATION_ERROR);
-
-        userLogin.setUlogin(userLogin.getUlogin().trim());
-
-        UserLogin account = userLogin.getId() == null ? null : getUserLogin(userLogin.getPersonId()).getData();
-
-        if (account == null || (account.getUpass() == null && userLogin.getUpass() != null) ||
-                (account.getUpass() != null && userLogin.getUpass() != null && !account.getUpass().equalsIgnoreCase(userLogin.getUpass().trim()))) {
-            userLogin.setUpass(DigestUtils.md5DigestAsHex(userLogin.getUpass().trim().getBytes()));
-        }
-
-        if(userLogin.getId() == null) {
-            userLogin.setCreated(new Date());
-            userLogin.setAuthTypeId(En_AuthType.LOCAL.getId());
-            userLogin.setRoleId(En_UserRole.CRM_CLIENT.getId());
-            userLogin.setAdminStateId(En_AdminState.UNLOCKED.getId());
-        }
-
-        if (userLoginDAO.saveOrUpdate(userLogin)) {
-            return new CoreResponse<UserLogin>().success(userLogin);
-        }
-
-        return new CoreResponse<UserLogin>().error(En_ResultStatus.INTERNAL_ERROR);
-    }
-
-    @Override
-    public CoreResponse<Boolean> removeUserLogin(UserLogin userLogin) {
-
-        if (userLoginDAO.remove(userLogin)) {
-            return new CoreResponse<Boolean>().success(true);
-        }
-
-        return new CoreResponse<Boolean>().error(En_ResultStatus.INTERNAL_ERROR);
-    }
-
-    @Override
-    public CoreResponse<Boolean> isUserLoginUnique(String login, Long excludeId) {
-
-        if( login == null || login.isEmpty() )
-            return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
-
-        return new CoreResponse<Boolean>().success(checkUniqueLogin(login, excludeId));
-    }
-
-    private boolean checkUniqueLogin(String login, Long excludeId) {
-        UserLogin userLogin = userLoginDAO.checkExistsByLogin(login);
-
-        return userLogin == null || userLogin.getId().equals(excludeId);
     }
 }

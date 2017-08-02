@@ -166,6 +166,12 @@ public class InboundMainMessageHandler implements InboundMessageHandler {
 
             StringBuilder commentText = new StringBuilder();
 
+            CaseComment comment = new CaseComment();
+            comment.setCreated(new Date());
+            comment.setAuthor(contactPerson);
+            comment.setCaseId(object.getId());
+            comment.setClientIp("hpsm");
+
             if (request.getSubject().getStatus() != null && currState.status() != request.getSubject().getStatus()) {
                 commentText.append(currState.status()).append(" -> ").append(request.getSubject().getStatus());
 
@@ -173,6 +179,32 @@ public class InboundMainMessageHandler implements InboundMessageHandler {
 
                 currState.status(request.getSubject().getStatus());
             }
+
+            switch (request.getSubject().getStatus()){
+                case WAIT_SOLUTION:
+                case REJECT_WA:
+                    if (object.getState() != En_CaseState.OPENED) {
+                        object.setState(En_CaseState.OPENED);
+                        comment.setCaseStateId(object.getStateId());
+                    }
+                    break;
+
+                case CLOSED:
+                    if (object.getState() != En_CaseState.VERIFIED) {
+                        object.setState(En_CaseState.VERIFIED);
+                        comment.setCaseStateId(object.getStateId());
+                    }
+                    break;
+
+                case TEST_SOLUTION:
+                case TEST_WA:
+                    if (object.getState() != En_CaseState.TEST_CUST) {
+                        object.setState(En_CaseState.TEST_CUST);
+                        comment.setCaseStateId(object.getStateId());
+                    }
+                    break;
+            }
+
 
             currState.updateCustomerFields(request.getHpsmMessage());
             appData.setExtAppData(xstream.toXML(currState));
@@ -201,14 +233,7 @@ public class InboundMainMessageHandler implements InboundMessageHandler {
 
             logger.debug("case {}, add comment: {}", appData.getExtAppCaseId(), commentText.toString());
 
-            CaseComment comment = new CaseComment();
-            comment.setCreated(new Date());
-            comment.setAuthor(contactPerson);
-            comment.setCaseId(object.getId());
-            comment.setCaseStateId(object.getStateId());
-            comment.setClientIp("hpsm");
             comment.setText(commentText.toString());
-
             Long commentId = commentDAO.persist(comment);
 
             logger.debug("comment added in db, id={}", commentId);

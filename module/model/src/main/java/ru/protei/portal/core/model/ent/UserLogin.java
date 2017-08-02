@@ -1,19 +1,17 @@
 package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_AuthType;
-import ru.protei.winter.jdbc.annotations.IdInsertMode;
-import ru.protei.winter.jdbc.annotations.JdbcColumn;
-import ru.protei.winter.jdbc.annotations.JdbcEntity;
-import ru.protei.winter.jdbc.annotations.JdbcId;
+import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Set;
 
 /**
  * Created by michael on 16.06.16.
  */
 @JdbcEntity(table = "user_login")
-public class UserLogin implements Serializable {
+public class UserLogin implements Removable, Serializable {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -36,11 +34,11 @@ public class UserLogin implements Serializable {
     @JdbcColumn(name = "astate")
     private int adminStateId;
 
-    @JdbcColumn(name = "roleId")
-    private int roleId;
-
     @JdbcColumn(name = "personId")
     private Long personId;
+
+    @JdbcJoinedObject(localColumn = "personId", remoteColumn = "id", updateLocalColumn = false, sqlTableAlias = "p")
+    private Person person;
 
     @JdbcColumn(name = "authType")
     private int authTypeId;
@@ -48,10 +46,10 @@ public class UserLogin implements Serializable {
     @JdbcColumn(name = "info")
     private String info;
 
+    @JdbcManyToMany( localLinkColumn = "login_id", remoteLinkColumn = "role_id", linkTable = "login_role_item" )
+    Set< UserRole > roles;
 
-    public UserLogin () {
-
-    }
+    public UserLogin () {}
 
     public Long getId() {
         return id;
@@ -109,14 +107,6 @@ public class UserLogin implements Serializable {
         this.adminStateId = adminStateId;
     }
 
-    public int getRoleId() {
-        return roleId;
-    }
-
-    public void setRoleId(int roleId) {
-        this.roleId = roleId;
-    }
-
     public Long getPersonId() {
         return personId;
     }
@@ -143,5 +133,44 @@ public class UserLogin implements Serializable {
 
     public boolean isLDAP_Auth () {
         return this.authTypeId == En_AuthType.LDAP.getId();
+    }
+
+    public Person getPerson() {
+        return person;
+    }
+
+    public void setPerson( Person person ) {
+        this.person = person;
+    }
+
+    public Set< UserRole > getRoles() {
+        return roles;
+    }
+
+    public void setRoles( Set< UserRole > roles ) {
+        this.roles = roles;
+    }
+
+    @Override
+    public boolean isAllowedRemove() {
+        return !isLDAP_Auth();
+    }
+
+    @Override
+    public String toString() {
+        return "UserLogin{" +
+                "id=" + id +
+                ", ulogin='" + ulogin + '\'' +
+                ", upass='" + upass + '\'' +
+                ", created=" + created +
+                ", lastPwdChange=" + lastPwdChange +
+                ", pwdExpired=" + pwdExpired +
+                ", adminStateId=" + adminStateId +
+                ", personId=" + personId +
+                ", person=" + person +
+                ", authTypeId=" + authTypeId +
+                ", info='" + info + '\'' +
+                ", roles=" + roles +
+                '}';
     }
 }

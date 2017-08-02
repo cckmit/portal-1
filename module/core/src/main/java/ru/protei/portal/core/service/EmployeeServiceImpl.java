@@ -56,6 +56,14 @@ public class EmployeeServiceImpl implements EmployeeService {
         return new EmployeeDetailView().fill(personAbsences, isFull);
     }
 
+    @Override
+    public CoreResponse< Person > getEmployee( Long id ) {
+        Person person = personDAO.getEmployee(id);
+
+        return person != null ? new CoreResponse<Person>().success(person)
+            : new CoreResponse<Person>().error(En_ResultStatus.NOT_FOUND);
+    }
+
     private void fillAbsencesOfCreators(List<PersonAbsence> personAbsences){
         if(personAbsences.size()==0)
             return;
@@ -100,7 +108,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         if (list == null)
             new CoreResponse<List<PersonShortView>>().error(En_ResultStatus.GET_DATA_ERROR);
 
-        List<PersonShortView> result = list.stream().map(Person::toPersonShortView).collect(Collectors.toList());
+        List<PersonShortView> result = list.stream().map(Person::toShortNameShortView ).collect(Collectors.toList());
 
         return new CoreResponse<List<PersonShortView>>().success(result,result.size());
     }

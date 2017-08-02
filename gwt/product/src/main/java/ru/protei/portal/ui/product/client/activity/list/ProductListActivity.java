@@ -8,9 +8,11 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.query.ProductQuery;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.PlateListAnimation;
 import ru.protei.portal.ui.common.client.common.PeriodicTaskService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
@@ -54,7 +56,10 @@ public abstract class ProductListActivity implements AbstractProductListActivity
         init.parent.clear();
         init.parent.add(view.asWidget());
 
-        fireEvent( new ActionBarEvents.Add( CREATE_ACTION, UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.PRODUCT ) );
+        fireEvent( policyService.hasPrivilegeFor( En_Privilege.PRODUCT_CREATE ) ?
+            new ActionBarEvents.Add( CREATE_ACTION, UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.PRODUCT ) :
+            new ActionBarEvents.Clear()
+        );
 
         query = makeQuery();
         requestProducts();
@@ -111,6 +116,7 @@ public abstract class ProductListActivity implements AbstractProductListActivity
         }
 
         view.getChildContainer().clear();
+        view.setListCreateBtnVisible(policyService.hasPrivilegeFor( En_Privilege.PRODUCT_CREATE ));
         itemViewToModel.clear();
 
         productService.getProductList(query,
@@ -143,6 +149,7 @@ public abstract class ProductListActivity implements AbstractProductListActivity
         itemView.setName(product.getName());
         itemView.setDeprecated(product.getStateId() > 1);
         itemView.setActivity(this);
+        itemView.setEditEnabled( policyService.hasPrivilegeFor( En_Privilege.PRODUCT_EDIT ) );
 
         return itemView;
     }
@@ -163,17 +170,16 @@ public abstract class ProductListActivity implements AbstractProductListActivity
     AbstractProductFilterView filterView;
     @Inject
     Lang lang;
-
     @Inject
     Provider<AbstractProductItemView> factory;
-
     @Inject
     ProductServiceAsync productService;
     @Inject
     PlateListAnimation animation;
-
     @Inject
     PeriodicTaskService taskService;
+    @Inject
+    PolicyService policyService;
     PeriodicTaskService.PeriodicTaskHandler fillViewHandler;
 
     private Map<AbstractProductItemView, DevUnit > itemViewToModel = new HashMap<AbstractProductItemView, DevUnit>();

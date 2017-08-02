@@ -47,6 +47,12 @@
                     <span class="col-xs-12 col-md-12" ui:field="manager"></span>
                 </div>
             </fieldset>
+
+            <fieldset class="header">
+                <legend><ui:text from="{lang.companySubscription}"/></legend>
+                <div class="col-xs-12" ui:field="subscriptions"></div>
+            </fieldset>
+
             <fieldset class="header">
                 <legend><ui:text from="{lang.issueInfoHeader}"/></legend>
                 <div class="col-xs-12">

@@ -69,6 +69,15 @@ public class ProductItemView extends Composite implements AbstractProductItemVie
         return previewContainer;
     }
 
+    @Override
+    public void setEditEnabled( boolean isEnabled ) {
+        if (isEnabled) {
+            edit.removeStyleName( "link-disabled" );
+        } else {
+            edit.addStyleName( "link-disabled" );
+        }
+    }
+
     @UiField
     HeadingElement name;
     @UiField

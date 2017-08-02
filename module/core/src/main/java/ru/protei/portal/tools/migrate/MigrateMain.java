@@ -3,6 +3,7 @@ package ru.protei.portal.tools.migrate;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import ru.protei.portal.config.MainConfiguration;
 import ru.protei.portal.tools.migrate.tools.MigrateAction;
+import ru.protei.portal.tools.notifications.NotificationConfiguration;
 import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
@@ -21,7 +22,8 @@ public class MigrateMain {
 
         AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(
                 CoreConfigurationContext.class, JdbcConfigurationContext.class, MainConfiguration.class,
-                MigrateConfiguration.class);
+                MigrateConfiguration.class
+        );
 
 
         MigrateSetup setup = ctx.getBean(MigrateSetup.class);

@@ -8,7 +8,7 @@ public enum En_AuthType {
     LOCAL(1),
     LDAP(2);
 
-    private En_AuthType (int id) {
+    En_AuthType (int id) {
         this.id = id;
     }
 
@@ -16,5 +16,13 @@ public enum En_AuthType {
 
     public int getId() {
         return id;
+    }
+
+    public static En_AuthType find (int id) {
+        for (En_AuthType at : En_AuthType.values())
+            if (at.id == id)
+                return at;
+
+        return null;
     }
 }

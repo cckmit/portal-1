@@ -14,11 +14,9 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.lang.OrganizationCodeLang;
 import ru.protei.portal.ui.common.client.widget.mask.MaskedTextBox;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.dict.En_OrganizationCode;
-import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.event.HasRemoveHandlers;
 import ru.protei.portal.ui.common.client.widget.selector.event.RemoveEvent;
 import ru.protei.portal.ui.common.client.widget.selector.event.RemoveHandler;
@@ -27,7 +25,6 @@ import ru.protei.portal.ui.equipment.client.provider.AbstractDecimalNumberDataPr
 import ru.protei.portal.ui.equipment.client.widget.selector.OrganizationCodeSelector;
 import ru.protei.winter.web.common.client.common.DisplayStyle;
 
-import java.util.List;
 import java.util.Set;
 
 /**

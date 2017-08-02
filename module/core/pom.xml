@@ -43,6 +43,26 @@
             </plugin>
 
         </plugins>
+
+        <resources>
+            <resource>
+                <directory>src/main/ftl</directory>
+                <includes>
+                    <include>*.ftl</include>
+                    <include>**/*.ftl</include>
+                </includes>
+            </resource>
+        </resources>
+
+        <testResources>
+            <testResource>
+                <directory>src/main/ftl</directory>
+                <includes>
+                    <include>*.ftl</include>
+                    <include>**/*.ftl</include>
+                </includes>
+            </testResource>
+        </testResources>
     </build>
 
 
@@ -108,11 +128,23 @@
             <version>4.3.0.RELEASE</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.freemarker</groupId>
+            <artifactId>freemarker</artifactId>
+            <version>2.3.23</version>
+        </dependency>
+
 
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
             <version>4.3.0.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>4.3.0.RELEASE</version>
+            <scope>test</scope>
         </dependency>
 
         <dependency>

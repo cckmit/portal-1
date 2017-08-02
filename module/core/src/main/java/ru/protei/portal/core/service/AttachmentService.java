@@ -1,7 +1,10 @@
 package ru.protei.portal.core.service;
 
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.core.model.annotations.Privileged;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Attachment;
+import ru.protei.portal.core.model.ent.AuthToken;
 
 import java.util.List;
 
@@ -16,12 +19,16 @@ public interface AttachmentService {
      * {@link ru.protei.portal.core.model.ent.CaseAttachment}
      * и из облака
      */
-    CoreResponse<Boolean> removeAttachmentEverywhere(Long attachmentId);
+    @Privileged( En_Privilege.ISSUE_EDIT )
+    CoreResponse<Boolean> removeAttachmentEverywhere( AuthToken token, Long attachmentId);
 
-    CoreResponse<Boolean> removeAttachment(Long id);
+    @Privileged( En_Privilege.ISSUE_EDIT )
+    CoreResponse<Boolean> removeAttachment( AuthToken token, Long id);
 
-    CoreResponse<List<Attachment>> getAttachmentsByCaseId(Long caseId);
+    @Privileged( En_Privilege.ISSUE_VIEW )
+    CoreResponse<List<Attachment>> getAttachmentsByCaseId( AuthToken token, Long caseId);
 
-    CoreResponse<List<Attachment>> getAttachments(List<Long> ids);
+    @Privileged( En_Privilege.ISSUE_VIEW )
+    CoreResponse<List<Attachment>> getAttachments( AuthToken token, List<Long> ids);
 
 }

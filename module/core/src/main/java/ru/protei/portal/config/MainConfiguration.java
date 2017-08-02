@@ -1,17 +1,10 @@
 package ru.protei.portal.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
 import ru.protei.portal.core.aspect.ServiceLayerInterceptor;
 import ru.protei.portal.core.controller.auth.AuthInterceptor;
-import ru.protei.portal.core.mail.JavaMailMessageFactory;
-import ru.protei.portal.core.mail.JavaMailSendChannel;
-import ru.protei.portal.core.mail.MailMessageFactory;
-import ru.protei.portal.core.mail.MailSendChannel;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
 import ru.protei.portal.core.service.*;
@@ -210,7 +203,6 @@ public class MainConfiguration {
     public ExternalCaseAppDAO getExternalCaseAppDAO () {
         return new ExternalCaseAppDAO_Impl();
     }
-
 /**
  *
  *
@@ -283,33 +275,26 @@ public class MainConfiguration {
         return new CaseSubscriptionServiceImpl();
     }
 
-    /**
-     * Mail
-     */
-    @Bean(name = "coreMailSender")
-    public JavaMailSender mailSender () throws Exception {
-
-        PortalConfigData.SmtpConfig smtp = getPortalConfig().data().smtp();
-
-        JavaMailSenderImpl impl = new org.springframework.mail.javamail.JavaMailSenderImpl ();
-
-        impl.setDefaultEncoding(smtp.getDefaultCharset());
-        impl.setHost(smtp.getHost());
-        impl.setPort(smtp.getPort());
-
-        return impl;
+    @Bean
+    public UserRoleService getUserRoleService () {
+        return new UserRoleServiceImpl();
     }
 
-    @Bean(name = "coreMailMessageFactory")
-    public MailMessageFactory createMailMessageFactory() throws Exception {
-        return new JavaMailMessageFactory(mailSender());
+    @Bean
+    public AccountService getAccountService() {
+        return new AccountServiceImpl();
     }
 
-    @Bean(name = "coreMailSendChannel")
-    public MailSendChannel getMailSendChannel () throws Exception {
-        return new JavaMailSendChannel(mailSender());
+    @Bean
+    public PersonService getPersonService() {
+        return new PersonServiceImpl();
     }
 
+    @Bean
+    public TemplateService getTemplateService() { return new TemplateServiceImpl(); }
+
+    @Bean
+    public PolicyService getPolicyService() { return new PolicyServiceImpl(); }
 
     /** ASPECT/INTERCEPTORS **/
     @Bean

@@ -1624,7 +1624,8 @@ a {
   font-size: 18px;
 }
 
-.eq-type {
+.eq-type,
+.auth-type {
   line-height: 0 !important;
   > img {
     height: 35px;
@@ -1636,4 +1637,161 @@ a {
   overflow: hidden;
   height: 55px;
   padding-top: 8px !important;
+}
+
+
+.privilege-entity-container, .privilege-entity-container > div {
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-flow: row nowrap;
+  flex-flow: row nowrap;
+}
+.privilege-entity-container > label {
+  width: 20%;
+  margin-left: 10px;
+  border-right: 1px solid lightgray;
+}
+
+.privilege-entity-container > div {
+  width: 79%;
+}
+
+.privilege-entity-container > div > .checkbox, .privilege-entity-container > div > div {
+  margin: auto;
+  width: 50px;
+  text-align: center;
+}
+
+ul.privileges {
+  padding: 0;
+  margin: 0;
+}
+
+
+.privilege-entity-container {
+  border-bottom: 1px solid rgba(206, 210, 215, 0.5);
+}
+
+.privilege-entity-container:first-child {
+  font-weight: bold;
+}
+
+.btn.privilege-btn {
+  padding: 0;
+  min-width: 30px;
+  border-left: 0;
+  height: 40px;
+  font-size: 2.3em;
+}
+
+.btn.privilege-btn.btn-down:after,
+.btn.privilege-btn.btn-up-hovering:after {
+  font-family: "Ionicons";
+  content: "\f383";
+  color: teal !important;
+}
+
+.btn.privilege-btn.btn-up:after,
+.btn.privilege-btn.btn-down-hovering:after {
+  font-family: "Ionicons";
+  content: "\f2d7";
+  color: #cc2424 !important;
+}
+
+.btn.privilege-btn.btn-up-disabled:after,
+.btn.privilege-btn.btn-down-disabled:after {
+  font-family: "Ionicons";
+  content: "\f2f4";
+  color: rgb(218, 217, 217) !important;
+}
+
+.locked {
+  color: #d52020;
+}
+
+.accounts {
+  table {
+    tbody {
+      tr {
+        td {
+          height: 35px;
+
+          > div {
+            height: 35px;
+            max-height: 35px;
+            white-space: pre-line;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+        }
+      }
+    }
+    .type {
+      width: 7%;
+      text-align: center;
+      > div > img {
+        height: 35px;
+        padding: 0 8px;
+      }
+    }
+    .login {
+      width: 40%;
+    }
+    .person {
+      width: 40%;
+    }
+    .edit {
+      width: 5%;
+    }
+  }
+}
+
+.short-table-view {
+  .accounts {
+    .login {
+      width: 70%;
+    }
+    .person {
+      display: none;
+    }
+  }
+}
+
+.list-item {
+  padding: 8px;
+  line-height: 1.42857143;
+  vertical-align: middle;
+  border-top: 1px solid #ddd;
+  background-color: white;
+  .option-name {
+    color: #686868;
+    font-size: 100%;
+    font-weight: normal;
+  }
+}
+
+.list-item:hover {
+  background-color: #f6f7f8;
+}
+
+.fa-1-9x {
+  font-size: 1.9em !important;
+}
+
+.link-disabled {
+  pointer-events: none;
+  cursor: default;
+  opacity: 0.3;
+}
+
+.list-inline {
+  padding-left: 0;
+  list-style: none;
+}
+
+.list-inline>li {
+  display: inline-block;
 }

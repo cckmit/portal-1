@@ -11,4 +11,6 @@ public interface AbstractCompanyListView extends IsWidget {
     void setActivity( AbstractCompanyListActivity activity );
     HasWidgets getChildContainer();
     HasWidgets getFilterContainer ();
+
+    void setListCreateBtnVisible( boolean isVisible );
 }
