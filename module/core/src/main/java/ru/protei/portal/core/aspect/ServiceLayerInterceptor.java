@@ -3,7 +3,6 @@ package ru.protei.portal.core.aspect;
 import org.apache.log4j.Logger;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
-import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
@@ -12,22 +11,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.exception.InsufficientPrivilegesException;
 import ru.protei.portal.core.exception.InvalidAuthTokenException;
+import ru.protei.portal.core.model.annotations.Auditable;
 import ru.protei.portal.core.model.annotations.Privileged;
-import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dict.En_AuditType;
+import ru.protei.portal.core.model.dict.En_PrivilegeEntity;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.ent.AuditObject;
 import ru.protei.portal.core.model.ent.AuthToken;
+import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.service.PolicyService;
 import ru.protei.portal.core.service.user.AuthService;
 import ru.protei.winter.jdbc.JdbcHelper;
 
+import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.sql.SQLDataException;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Optional;
-import java.util.Set;
 
 /**
  * Created by Mike on 06.11.2016.
@@ -51,7 +54,9 @@ public class ServiceLayerInterceptor {
 
         try {
             checkPrivileges( pjp );
-            return pjp.proceed();
+            Object result = pjp.proceed();
+            createAudit( pjp );
+            return result;
         }
         catch (Throwable e) {
             logger.debug("service layer unhandled exception", e);
@@ -85,6 +90,57 @@ public class ServiceLayerInterceptor {
         }
 
         return null;
+    }
+
+    /**
+     * Если требуется аудит, оповещаем подписчика
+     */
+    private void createAudit( ProceedingJoinPoint pjp ) {
+
+        //TODO CRM-16: если CoreResponse != En_ResultStatus.OK то выходим
+
+        logger.debug("--------->>> CRM-16 Interceptor createAudit");
+        Method method = ((MethodSignature)pjp.getSignature()).getMethod();
+        Auditable auditable = method.getDeclaredAnnotation(Auditable.class);
+
+        if ( auditable == null || auditable.value() == null ) {
+            logger.debug("--------->>> CRM-16 Return: do not need Audit");
+            return;
+        }
+
+        //TODO CRM-16: оповестить создателя Аудита
+//        publisherService.publishEvent(new CaseObjectEvent(this, newState, initiator));
+
+        fillAuditParams(pjp, auditable);
+    }
+
+    private void fillAuditParams( ProceedingJoinPoint pjp, Auditable auditable ) {
+
+        AuthToken token = findAuthToken( pjp );
+        if ( token == null ) {
+            return;
+        }
+        UserSessionDescriptor descriptor = authService.findSession( token );
+
+        Serializable object = findAuditableObject( pjp );
+        if ( object == null ) {
+            return;
+        }
+
+        AuditObject auditObject = new AuditObject();
+        auditObject.setCreated( new Date() );
+
+        En_AuditType auditType = auditable.value();
+        auditObject.setTypeId( auditType.getId() );
+
+        auditObject.setCreatorId( descriptor.getPerson().getId() );
+        auditObject.setEntryInfo( object );
+
+        logger.debug("--------->>> CRM-16 Interceptor fill Audit params:");
+        logger.debug("--------->>> CRM-16 Date: " + auditObject.getCreated());
+        logger.debug("--------->>> CRM-16 Type: " + auditObject.getTypeId());
+        logger.debug("--------->>> CRM-16 PersonId: " + auditObject.getCreatorId());
+        logger.debug("--------->>> CRM-16 Object: " + auditObject.getEntryInfo());
     }
 
     private void checkPrivileges( ProceedingJoinPoint pjp ) {
@@ -157,6 +213,28 @@ public class ServiceLayerInterceptor {
 
         }
 
+        return null;
+    }
+
+    private Serializable findAuditableObject( ProceedingJoinPoint pjp ) {
+        Method method = ((MethodSignature)pjp.getSignature()).getMethod();
+        Parameter[] params = method.getParameters();
+
+        for (int i = 0; i < params.length; i++) {
+
+            //TODO CRM-16: нельзя завязываться на Serializable
+            if ( !(pjp.getArgs()[ i ] instanceof Serializable) ) {
+                continue;
+            }
+
+            Object arg = pjp.getArgs()[ i ];
+            if ( arg != null ) {
+                return (Serializable) arg;
+            }
+
+            //TODO CRM-16: создать свое исключение
+            throw new InvalidAuthTokenException();
+        }
         return null;
     }
 

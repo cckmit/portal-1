@@ -1,0 +1,158 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+    <property name="now" value="CURRENT_TIMESTAMP" dbms="mysql"/>
+
+    <changeSet author="butusov" id="03-08-2017 17:24">
+        <createTable tableName="audit_type">
+            <column name="id" type="INT">
+                <constraints primaryKey="true" primaryKeyName="pk_audit_type"/>
+            </column>
+            <column name="code" type="VARCHAR(16)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="info" type="VARCHAR(128)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="butusov" id="03-08-2017 17:29">
+        <insert tableName="audit_type">
+            <column name="id" value="1"/>
+            <column name="code" value="ISSUE_MODIFY"/>
+            <column name="info" type="Изменение обращения"/>
+        </insert>
+        <insert tableName="audit_type">
+            <column name="id" value="2"/>
+            <column name="code" value="ISSUE_CREATE"/>
+            <column name="info" type="Создание обращения"/>
+        </insert>
+        <insert tableName="audit_type">
+            <column name="id" value="3"/>
+            <column name="code" value="ISSUE_REPORT"/>
+            <column name="info" type="Создание отчета по обращениям"/>
+        </insert>
+        <insert tableName="audit_type">
+            <column name="id" value="4"/>
+            <column name="code" value="ISSUE_EXPORT"/>
+            <column name="info" type="Экспорт обращений"/>
+        </insert>
+        <insert tableName="audit_type">
+            <column name="id" value="5"/>
+            <column name="code" value="REGION_MODIFY"/>
+            <column name="info" type="Изменение региона"/>
+        </insert>
+        <insert tableName="audit_type">
+            <column name="id" value="6"/>
+            <column name="code" value="REGION_REPORT"/>
+            <column name="info" type="Создание отчета по регионам"/>
+        </insert>
+        <insert tableName="audit_type">
+            <column name="id" value="7"/>
+            <column name="code" value="REGION_EXPORT"/>
+            <column name="info" type="Экспорт регионов"/>
+        </insert>
+        <insert tableName="audit_type">
+            <column name="id" value="8"/>
+            <column name="code" value="PROJECT_MODIFY"/>
+            <column name="info" type="Изменение проекта"/>
+        </insert>
+        <insert tableName="audit_type">
+            <column name="id" value="9"/>
+            <column name="code" value="PROJECT_CREATE"/>
+            <column name="info" type="Создание проекта"/>
+        </insert>
+        <insert tableName="audit_type">
+            <column name="id" value="10"/>
+            <column name="code" value="COMPANY_MODIFY"/>
+            <column name="info" type="Изменение компании"/>
+        </insert>
+        <insert tableName="audit_type">
+            <column name="id" value="11"/>
+            <column name="code" value="COMPANY_CREATE"/>
+            <column name="info" type="Создание компании"/>
+        </insert>
+        <insert tableName="audit_type">
+            <column name="id" value="12"/>
+            <column name="code" value="PRODUCT_MODIFY"/>
+            <column name="info" type="Изменение продукта"/>
+        </insert>
+        <insert tableName="audit_type">
+            <column name="id" value="13"/>
+            <column name="code" value="PRODUCT_CREATE"/>
+            <column name="info" type="Создание продукта"/>
+        </insert>
+        <insert tableName="audit_type">
+            <column name="id" value="14"/>
+            <column name="code" value="CONTACT_MODIFY"/>
+            <column name="info" type="Изменение контактного лица"/>
+        </insert>
+        <insert tableName="audit_type">
+            <column name="id" value="15"/>
+            <column name="code" value="CONTACT_CREATE"/>
+            <column name="info" type="Создание контактного лица"/>
+        </insert>
+        <insert tableName="audit_type">
+            <column name="id" value="16"/>
+            <column name="code" value="ACCOUNT_MODIFY"/>
+            <column name="info" type="Изменение учетной записи"/>
+        </insert>
+        <insert tableName="audit_type">
+            <column name="id" value="17"/>
+            <column name="code" value="ACCOUNT_CREATE"/>
+            <column name="info" type="Создание учетной записи"/>
+        </insert>
+        <insert tableName="audit_type">
+            <column name="id" value="18"/>
+            <column name="code" value="ACCOUNT_REMOVE"/>
+            <column name="info" type="Удаление учетной записи"/>
+        </insert>
+        <insert tableName="audit_type">
+            <column name="id" value="19"/>
+            <column name="code" value="EQUIPMENT_MODIFY"/>
+            <column name="info" type="Изменение оборудования"/>
+        </insert>
+        <insert tableName="audit_type">
+            <column name="id" value="20"/>
+            <column name="code" value="EQUIPMENT_CREATE"/>
+            <column name="info" type="Создание оборудования"/>
+        </insert>
+        <insert tableName="audit_type">
+            <column name="id" value="21"/>
+            <column name="code" value="EQUIPMENT_REMOVE"/>
+            <column name="info" type="Удаление оборудования"/>
+        </insert>
+        <insert tableName="audit_type">
+            <column name="id" value="22"/>
+            <column name="code" value="ROLE_MODIFY"/>
+            <column name="info" type="Изменение роли"/>
+        </insert>
+        <insert tableName="audit_type">
+            <column name="id" value="23"/>
+            <column name="code" value="ROLE_CREATE"/>
+            <column name="info" type="Создание роли"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="butusov" id="03-08-2017 17:34">
+        <createTable tableName="audit">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="type" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="creator" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="entry_info" type="MEDIUMTEXT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>

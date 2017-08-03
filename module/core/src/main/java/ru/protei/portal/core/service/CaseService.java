@@ -1,7 +1,9 @@
 package ru.protei.portal.core.service;
 
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.core.model.annotations.Auditable;
 import ru.protei.portal.core.model.annotations.Privileged;
+import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
@@ -11,7 +13,6 @@ import ru.protei.portal.core.model.view.CaseShortView;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Сервис управления обращениями
@@ -31,6 +32,7 @@ public interface CaseService {
     CoreResponse<CaseObject> saveCaseObject( AuthToken token, CaseObject p, Person initiator );
 
     @Privileged({ En_Privilege.ISSUE_CREATE })
+    @Auditable( En_AuditType.ISSUE_MODIFY )
     CoreResponse<CaseObject> updateCaseObject( AuthToken token, CaseObject p, Person currentPerson );
 
     CoreResponse<List<En_CaseState>> stateList(En_CaseType caseType);
