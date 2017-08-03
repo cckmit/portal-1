@@ -42,8 +42,10 @@ public class Main {
             webapp.addEventListener(new ContextLoaderListener(context));
 
             // SPRING servlet-dispatcher
+/*
             ServletHolder springHolder = springServletHolder(context);
             webapp.addServlet(springHolder, MAPPING_URL);
+*/
 
             // CXF servlet-dispatcher
             webapp.addServlet(new ServletHolder("cxf", new CXFServlet()), API_URL);
@@ -54,7 +56,6 @@ public class Main {
 
             server.start();
             server.join();
-
 
         } catch (Exception e) {
             logger.debug("error", e);

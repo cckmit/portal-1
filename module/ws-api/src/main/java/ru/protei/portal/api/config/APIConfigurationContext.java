@@ -8,18 +8,49 @@ import org.apache.cxf.jaxws.support.JaxWsServiceFactoryBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import ru.protei.portal.config.MainConfiguration;
 import ru.protei.portal.api.service.WorkerService;
 import ru.protei.portal.api.service.WorkerServiceImpl;
 import ru.protei.portal.api.tools.migrate.WSMigrationManager;
+import ru.protei.portal.core.model.dao.*;
+import ru.protei.portal.core.model.dao.impl.*;
+import ru.protei.winter.core.CoreConfigurationContext;
+import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import javax.xml.ws.Endpoint;
 
 @Configuration
-@EnableScheduling
-@Import(MainConfiguration.class)
+@Import({CoreConfigurationContext.class, JdbcConfigurationContext.class})
 public class APIConfigurationContext {
+
+    @Bean
+    public CompanyGroupHomeDAO getCompanyGroupHomeDAO() {
+        return new CompanyGroupHomeDAO_Impl();
+    }
+
+    @Bean
+    public CompanyDAO getCompanyDAO() {
+        return new CompanyDAO_Impl();
+    }
+
+    @Bean
+    public PersonDAO getPersonDAO() {
+        return new PersonDAO_Impl();
+    }
+
+    @Bean
+    public CompanyDepartmentDAO getCompanyDepartmentDAO() {
+        return new CompanyDepartmentDAO_Impl();
+    }
+
+    @Bean
+    public WorkerPositionDAO getWorkerPositionDAO() {
+        return new WorkerPositionDAO_Impl();
+    }
+
+    @Bean
+    public WorkerEntryDAO getWorkerEntryDAO() {
+        return new WorkerEntryDAO_Impl();
+    }
 
     @Bean
     public WSMigrationManager getWSMigrationManager () { return new WSMigrationManager (); }
