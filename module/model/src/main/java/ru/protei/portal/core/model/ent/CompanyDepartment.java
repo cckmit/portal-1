@@ -31,13 +31,13 @@ public class CompanyDepartment {
     @JdbcColumn(name = "dep_info")
     private String info;
 
-    //@JdbcColumn(name = "parent_department")
+    @JdbcColumn(name = "parent_dep")
     private Long parentId;
 
-    //@JdbcColumn(name = "head_id")
+    @JdbcColumn(name = "head_id")
     private Long headId;
 
-    //@JdbcColumn(name = "dep_extId")
+    @JdbcColumn(name = "dep_extId")
     private Long externalId;
 
     public CompanyDepartment() {

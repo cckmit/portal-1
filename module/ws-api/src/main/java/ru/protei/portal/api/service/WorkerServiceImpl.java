@@ -47,8 +47,8 @@ public class WorkerServiceImpl implements WorkerService {
     @Autowired
     private WorkerEntryDAO workerEntryDAO;
 
-    @Autowired
-    private WSMigrationManager wsMigrationManager;
+    //@Autowired
+    //private WSMigrationManager wsMigrationManager;
 
     @Override
     public WorkerRecord getWorker(Long id) {
@@ -151,7 +151,7 @@ public class WorkerServiceImpl implements WorkerService {
 
             workerEntryDAO.persist (worker);
 
-            wsMigrationManager.persistPerson (person);
+            //wsMigrationManager.persistPerson (person);
 
             return ServiceResult.successResult (person.getId ());
 
@@ -235,7 +235,7 @@ public class WorkerServiceImpl implements WorkerService {
 
             workerEntryDAO.merge (worker);
 
-            wsMigrationManager.mergePerson (person);
+            //wsMigrationManager.mergePerson (person);
 
             return ServiceResult.successResult (person.getId ());
 
@@ -295,7 +295,7 @@ public class WorkerServiceImpl implements WorkerService {
                 Person person = personDAO.get (personId);
                 person.setDeleted (true);
                 personDAO.merge (person);
-                wsMigrationManager.removePerson (person);
+                //wsMigrationManager.removePerson (person);
             }
 
             return ServiceResult.successResult (worker.getExternalId ());
