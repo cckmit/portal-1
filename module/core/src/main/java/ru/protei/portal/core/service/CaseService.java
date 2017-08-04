@@ -3,6 +3,7 @@ package ru.protei.portal.core.service;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.annotations.Auditable;
 import ru.protei.portal.core.model.annotations.Privileged;
+import ru.protei.portal.core.model.annotations.Stored;
 import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
@@ -33,7 +34,7 @@ public interface CaseService {
 
     @Privileged({ En_Privilege.ISSUE_CREATE })
     @Auditable( En_AuditType.ISSUE_MODIFY )
-    CoreResponse<CaseObject> updateCaseObject( AuthToken token, CaseObject p, Person currentPerson );
+    CoreResponse<CaseObject> updateCaseObject( AuthToken token, @Stored CaseObject p );
 
     CoreResponse<List<En_CaseState>> stateList(En_CaseType caseType);
 

@@ -100,7 +100,7 @@ public class LocalUpdateTest {
 
         object.setState(En_CaseState.OPENED);
         object.setManager(testPerson);
-        caseService.updateCaseObject( null, object, testPerson );
+        caseService.updateCaseObject( null, object );
 
         // wait event handling
         Thread.sleep(200);
@@ -119,7 +119,7 @@ public class LocalUpdateTest {
 
 
         object.setState(En_CaseState.DONE);
-        caseService.updateCaseObject( null, object, testPerson );
+        caseService.updateCaseObject( null, object );
 
         // wait event handling
         Thread.sleep(200);

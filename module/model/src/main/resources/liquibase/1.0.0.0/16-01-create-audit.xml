@@ -155,4 +155,11 @@
         </createTable>
     </changeSet>
 
+    <changeSet author="butusov" id="04-08-2017 17:39">
+        <addColumn tableName="audit">
+            <column name="creator_shortname" type="VARCHAR(128)"/>
+            <column name="creator_ip" type="VARCHAR(32)"/>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

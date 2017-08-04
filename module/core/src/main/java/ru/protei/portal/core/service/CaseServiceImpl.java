@@ -21,6 +21,7 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseShortView;
+import ru.protei.portal.core.service.user.AuthService;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
@@ -62,6 +63,9 @@ public class CaseServiceImpl implements CaseService {
 
     @Autowired
     PolicyService policyService;
+
+    @Autowired
+    AuthService authService;
 
     @Override
     public CoreResponse<List<CaseShortView>> caseObjectList( AuthToken token, CaseQuery query ) {
@@ -127,10 +131,12 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     @Transactional
-    public CoreResponse< CaseObject > updateCaseObject( AuthToken token, CaseObject caseObject, Person currentPerson ) {
+    public CoreResponse< CaseObject > updateCaseObject( AuthToken token, CaseObject caseObject ) {
 
         if (caseObject == null)
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
+
+        UserSessionDescriptor descriptor = authService.findSession( token );
 
         caseObject.setModified(new Date());
         caseObject.setAttachmentExists(CollectionUtils.isNotEmpty(caseObject.getAttachmentsIds()));
@@ -149,7 +155,7 @@ public class CaseServiceImpl implements CaseService {
         // From GWT-side we get partially filled object, that's why we need to refresh state from db
         CaseObject newState = caseObjectDAO.get(caseObject.getId());
 
-        publisherService.publishEvent(new CaseObjectEvent(this, newState, oldState, currentPerson));
+        publisherService.publishEvent(new CaseObjectEvent(this, newState, oldState, descriptor.getPerson()));
 
         Collection<CaseAttachment> removedCaseAttachments =
                 caseAttachmentDAO.subtractDiffAndSynchronize(

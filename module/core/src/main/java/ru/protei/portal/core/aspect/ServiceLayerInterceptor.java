@@ -10,9 +10,11 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.exception.InsufficientPrivilegesException;
+import ru.protei.portal.core.exception.InvalidAuditableObjectException;
 import ru.protei.portal.core.exception.InvalidAuthTokenException;
 import ru.protei.portal.core.model.annotations.Auditable;
 import ru.protei.portal.core.model.annotations.Privileged;
+import ru.protei.portal.core.model.annotations.Stored;
 import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_PrivilegeEntity;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
@@ -20,6 +22,7 @@ import ru.protei.portal.core.model.ent.AuditObject;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
+import ru.protei.portal.core.service.AuditService;
 import ru.protei.portal.core.service.PolicyService;
 import ru.protei.portal.core.service.user.AuthService;
 import ru.protei.winter.jdbc.JdbcHelper;
@@ -55,7 +58,7 @@ public class ServiceLayerInterceptor {
         try {
             checkPrivileges( pjp );
             Object result = pjp.proceed();
-            createAudit( pjp );
+            createAudit( pjp, result );
             return result;
         }
         catch (Throwable e) {
@@ -95,16 +98,16 @@ public class ServiceLayerInterceptor {
     /**
      * Если требуется аудит, оповещаем подписчика
      */
-    private void createAudit( ProceedingJoinPoint pjp ) {
+    private void createAudit( ProceedingJoinPoint pjp, Object result ) {
 
-        //TODO CRM-16: если CoreResponse != En_ResultStatus.OK то выходим
+        if ( result instanceof CoreResponse && !((CoreResponse)result).getStatus().equals( En_ResultStatus.OK ) ){
+            return;
+        }
 
-        logger.debug("--------->>> CRM-16 Interceptor createAudit");
         Method method = ((MethodSignature)pjp.getSignature()).getMethod();
         Auditable auditable = method.getDeclaredAnnotation(Auditable.class);
 
         if ( auditable == null || auditable.value() == null ) {
-            logger.debug("--------->>> CRM-16 Return: do not need Audit");
             return;
         }
 
@@ -134,13 +137,20 @@ public class ServiceLayerInterceptor {
         auditObject.setTypeId( auditType.getId() );
 
         auditObject.setCreatorId( descriptor.getPerson().getId() );
+        auditObject.setCreatorIp( descriptor.getPerson().getIpAddress() );
+        auditObject.setCreatorShortName( descriptor.getPerson().getDisplayShortName() );
+
         auditObject.setEntryInfo( object );
 
         logger.debug("--------->>> CRM-16 Interceptor fill Audit params:");
         logger.debug("--------->>> CRM-16 Date: " + auditObject.getCreated());
         logger.debug("--------->>> CRM-16 Type: " + auditObject.getTypeId());
         logger.debug("--------->>> CRM-16 PersonId: " + auditObject.getCreatorId());
+        logger.debug("--------->>> CRM-16 Person short name: " + auditObject.getCreatorShortName());
+        logger.debug("--------->>> CRM-16 Person Ip: " + auditObject.getCreatorIp());
         logger.debug("--------->>> CRM-16 Object: " + auditObject.getEntryInfo());
+
+        auditService.saveAuditObject( token, auditObject );
     }
 
     private void checkPrivileges( ProceedingJoinPoint pjp ) {
@@ -222,8 +232,7 @@ public class ServiceLayerInterceptor {
 
         for (int i = 0; i < params.length; i++) {
 
-            //TODO CRM-16: нельзя завязываться на Serializable
-            if ( !(pjp.getArgs()[ i ] instanceof Serializable) ) {
+            if ( !params[ i ].isAnnotationPresent( Stored.class ) ) {
                 continue;
             }
 
@@ -232,8 +241,7 @@ public class ServiceLayerInterceptor {
                 return (Serializable) arg;
             }
 
-            //TODO CRM-16: создать свое исключение
-            throw new InvalidAuthTokenException();
+            throw new InvalidAuditableObjectException();
         }
         return null;
     }
@@ -243,4 +251,7 @@ public class ServiceLayerInterceptor {
 
     @Autowired
     PolicyService policyService;
+
+    @Autowired
+    AuditService auditService;
 }

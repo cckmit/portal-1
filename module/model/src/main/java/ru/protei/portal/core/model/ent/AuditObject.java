@@ -8,22 +8,31 @@ import java.util.Date;
 /**
  * Created by butusov on 03.08.17.
  */
-@JdbcEntity(table = "audit_object")
+@JdbcEntity( table = "audit" )
 public class AuditObject implements Serializable {
 
-    @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
+    @JdbcId( name = "id", idInsertMode = IdInsertMode.AUTO )
     private Long id;
 
-    @JdbcColumn(name = "type")
+    @JdbcColumn( name = "type" )
     private int typeId;
 
-    @JdbcColumn(name = "created")
+    @JdbcColumn( name = "created" )
     private Date created;
 
-    @JdbcColumn(name = "creator")
+    @JdbcColumn( name = "creator" )
     private Long creatorId;
 
-    @JdbcColumn(name = "entry_info", converterType = ConverterType.JSON)
+    @JdbcJoinedObject( localColumn = "creator", remoteColumn = "id", updateLocalColumn = false )
+    private Person creator;
+
+    @JdbcColumn(name = "creator_ip")
+    private String creatorIp;
+
+    @JdbcColumn(name = "creator_shortname")
+    private String creatorShortName;
+
+    @JdbcColumn( name = "entry_info", converterType = ConverterType.JSON )
     private Serializable entryInfo;
 
     public Long getId() {
@@ -56,6 +65,26 @@ public class AuditObject implements Serializable {
 
     public void setCreatorId( Long creatorId ) {
         this.creatorId = creatorId;
+    }
+
+    public Person getCreator() {
+        return creator;
+    }
+
+    public String getCreatorIp() {
+        return creatorIp;
+    }
+
+    public void setCreatorIp( String creatorIp ) {
+        this.creatorIp = creatorIp;
+    }
+
+    public String getCreatorShortName() {
+        return creatorShortName;
+    }
+
+    public void setCreatorShortName( String creatorShortName ) {
+        this.creatorShortName = creatorShortName;
     }
 
     public Serializable getEntryInfo() {
