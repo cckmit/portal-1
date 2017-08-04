@@ -8,6 +8,14 @@ import org.apache.cxf.jaxws.support.JaxWsServiceFactoryBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.xml.MarshallingHttpMessageConverter;
+import org.springframework.oxm.jaxb.Jaxb2Marshaller;
+import org.springframework.oxm.xstream.XStreamMarshaller;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import ru.protei.portal.api.model.DepartmentRecord;
+import ru.protei.portal.api.model.ServiceResult;
+import ru.protei.portal.api.model.WorkerRecord;
 import ru.protei.portal.api.service.WorkerService;
 import ru.protei.portal.api.service.WorkerServiceImpl;
 import ru.protei.portal.api.tools.migrate.WSMigrationManager;
@@ -17,10 +25,11 @@ import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import javax.xml.ws.Endpoint;
+import java.util.List;
 
 @Configuration
 @Import({CoreConfigurationContext.class, JdbcConfigurationContext.class})
-public class APIConfigurationContext {
+public class APIConfigurationContext extends WebMvcConfigurerAdapter {
 
     @Bean
     public CompanyGroupHomeDAO getCompanyGroupHomeDAO() {
@@ -73,5 +82,14 @@ public class APIConfigurationContext {
         endpoint.setServiceFactory (b);
         endpoint.publish ("/worker");
         return endpoint;
+    }
+
+    @Override
+    public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+        Jaxb2Marshaller oxmMarshaller = new Jaxb2Marshaller();
+        //oxmMarshaller.setClassesToBeBound(WorkerRecord.class, DepartmentRecord.class, ServiceResult.class);
+        MarshallingHttpMessageConverter marshallingHttpMessageConverter = new MarshallingHttpMessageConverter(oxmMarshaller);
+
+        converters.add(marshallingHttpMessageConverter);
     }
 }
