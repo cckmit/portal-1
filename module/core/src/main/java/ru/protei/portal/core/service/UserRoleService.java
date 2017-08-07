@@ -1,7 +1,10 @@
 package ru.protei.portal.core.service;
 
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.core.model.annotations.Auditable;
 import ru.protei.portal.core.model.annotations.Privileged;
+import ru.protei.portal.core.model.annotations.Stored;
+import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.UserRole;
@@ -21,5 +24,6 @@ public interface UserRoleService {
     CoreResponse<UserRole> getUserRole( AuthToken authToken, Long id );
 
     @Privileged( requireAny = { En_Privilege.ROLE_EDIT, En_Privilege.ROLE_CREATE } )
-    CoreResponse<UserRole> saveUserRole( AuthToken authToken, UserRole userRole );
+    @Auditable( En_AuditType.ROLE_MODIFY )
+    CoreResponse<UserRole> saveUserRole( AuthToken authToken, @Stored UserRole userRole );
 }

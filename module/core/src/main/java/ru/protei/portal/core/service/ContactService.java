@@ -1,7 +1,10 @@
 package ru.protei.portal.core.service;
 
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.core.model.annotations.Auditable;
 import ru.protei.portal.core.model.annotations.Privileged;
+import ru.protei.portal.core.model.annotations.Stored;
+import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Person;
@@ -30,5 +33,6 @@ public interface ContactService {
     CoreResponse<Person> getContact( AuthToken token, long id );
 
     @Privileged( requireAny = { En_Privilege.CONTACT_EDIT, En_Privilege.CONTACT_CREATE })
-    CoreResponse<Person> saveContact( AuthToken token, Person p );
+    @Auditable( En_AuditType.COMPANY_MODIFY )
+    CoreResponse<Person> saveContact( AuthToken token, @Stored Person p );
 }

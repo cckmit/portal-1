@@ -34,7 +34,15 @@ public enum En_AuditType {
     EQUIPMENT_REMOVE( 21 ),
 
     ROLE_MODIFY( 22 ),
-    ROLE_CREATE( 23 );
+    ROLE_CREATE( 23 ),
+
+    ISSUE_COMMENT_CREATE( 24 ),
+    ISSUE_COMMENT_MODIFY( 25 ),
+    ISSUE_COMMENT_REMOVE( 26 ),
+
+    ATTACHMENT_REMOVE( 27 ),
+
+    EQUIPMENT_COPY( 28 );
 
     En_AuditType( int id ) {
         this.id = id;

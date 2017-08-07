@@ -1,7 +1,10 @@
 package ru.protei.portal.core.service;
 
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.core.model.annotations.Auditable;
 import ru.protei.portal.core.model.annotations.Privileged;
+import ru.protei.portal.core.model.annotations.Stored;
+import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.UserLogin;
@@ -25,10 +28,12 @@ public interface AccountService {
     CoreResponse< UserLogin > getAccount( AuthToken authToken, long id );
 
     @Privileged( requireAny = { En_Privilege.ACCOUNT_EDIT, En_Privilege.ACCOUNT_CREATE })
-    CoreResponse< UserLogin > saveAccount( AuthToken token, UserLogin userLogin );
+    @Auditable( En_AuditType.ACCOUNT_MODIFY )
+    CoreResponse< UserLogin > saveAccount( AuthToken token, @Stored UserLogin userLogin );
 
     CoreResponse< Boolean > checkUniqueLogin( String login, Long excludeId );
 
     @Privileged({ En_Privilege.ACCOUNT_REMOVE })
-    CoreResponse< Boolean > removeAccount( AuthToken authToken, Long accountId );
+    @Auditable( En_AuditType.ACCOUNT_MODIFY )
+    CoreResponse< Boolean > removeAccount( AuthToken authToken, @Stored Long accountId );
 }

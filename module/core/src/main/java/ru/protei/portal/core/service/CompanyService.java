@@ -1,7 +1,10 @@
 package ru.protei.portal.core.service;
 
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.core.model.annotations.Auditable;
 import ru.protei.portal.core.model.annotations.Privileged;
+import ru.protei.portal.core.model.annotations.Stored;
+import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Company;
@@ -33,10 +36,12 @@ public interface CompanyService {
     CoreResponse<Company> getCompany(AuthToken token, Long id );
 
     @Privileged( En_Privilege.COMPANY_CREATE )
-    CoreResponse<Company> createCompany( AuthToken token, Company company );
+    @Auditable( En_AuditType.COMPANY_CREATE )
+    CoreResponse<Company> createCompany( AuthToken token, @Stored Company company );
 
     @Privileged( En_Privilege.COMPANY_EDIT )
-    CoreResponse<Company> updateCompany( AuthToken token, Company company );
+    @Auditable( En_AuditType.COMPANY_MODIFY )
+    CoreResponse<Company> updateCompany( AuthToken token, @Stored Company company );
 
     CoreResponse<Boolean> isCompanyNameExists(String name, Long excludeId);
     CoreResponse<Boolean> isGroupNameExists(String name, Long excludeId);

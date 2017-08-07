@@ -162,4 +162,133 @@
         </addColumn>
     </changeSet>
 
+    <changeSet author="butusov" id="07-08-2017 18:49">
+
+        <modifyDataType tableName="audit_type" columnName="code" newDataType="VARCHAR(32)"/>
+
+        <insert tableName="audit_type">
+            <column name="id" value="24"/>
+            <column name="code" value="ISSUE_COMMENT_CREATE"/>
+            <column name="info" value="Создание описания для обращения"/>
+        </insert>
+        <insert tableName="audit_type">
+            <column name="id" value="25"/>
+            <column name="code" value="ISSUE_COMMENT_MODIFY"/>
+            <column name="info" value="Изменение описания для обращения"/>
+        </insert>
+        <insert tableName="audit_type">
+            <column name="id" value="26"/>
+            <column name="code" value="ISSUE_COMMENT_REMOVE"/>
+            <column name="info" value="Удаление описания для обращения"/>
+        </insert>
+        <insert tableName="audit_type">
+            <column name="id" value="27"/>
+            <column name="code" value="ATTACHMENT_REMOVE"/>
+            <column name="info" value="Удаление вложения"/>
+        </insert>
+        <insert tableName="audit_type">
+            <column name="id" value="28"/>
+            <column name="code" value="EQUIPMENT_COPY"/>
+            <column name="info" value="Копирование оборудования"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="butusov" id="07-08-2017 19:38">
+        <update tableName="audit_type">
+            <column name="info" value="Изменение обращения"/>
+            <where>id = 1</where>
+        </update>
+    </changeSet>
+
+    <changeSet author="butusov" id="07-08-2017 19:54">
+        <update tableName="audit_type">
+            <column name="info" value="Создание обращения"/>
+            <where>id = 2</where>
+        </update>
+        <update tableName="audit_type">
+            <column name="info" value="Создание отчета по обращениям"/>
+            <where>id = 3</where>
+        </update>
+        <update tableName="audit_type">
+            <column name="info" value="Экспорт обращений"/>
+            <where>id = 4</where>
+        </update>
+        <update tableName="audit_type">
+            <column name="info" value="Изменение региона"/>
+            <where>id = 5</where>
+        </update>
+        <update tableName="audit_type">
+            <column name="info" value="Создание отчета по регионам"/>
+            <where>id = 6</where>
+        </update>
+        <update tableName="audit_type">
+            <column name="info" value="Экспорт регионов"/>
+            <where>id = 7</where>
+        </update>
+        <update tableName="audit_type">
+            <column name="info" value="Изменение проекта"/>
+            <where>id = 8</where>
+        </update>
+        <update tableName="audit_type">
+            <column name="info" value="Создание проекта"/>
+            <where>id = 9</where>
+        </update>
+        <update tableName="audit_type">
+            <column name="info" value="Изменение компании"/>
+            <where>id = 10</where>
+        </update>
+        <update tableName="audit_type">
+            <column name="info" value="Создание компании"/>
+            <where>id = 11</where>
+        </update>
+        <update tableName="audit_type">
+            <column name="info" value="Изменение продукта"/>
+            <where>id = 12</where>
+        </update>
+        <update tableName="audit_type">
+            <column name="info" value="Создание продукта"/>
+            <where>id = 13</where>
+        </update>
+        <update tableName="audit_type">
+            <column name="info" value="Изменение контактного лица"/>
+            <where>id = 14</where>
+        </update>
+        <update tableName="audit_type">
+            <column name="info" value="Создание контактного лица"/>
+            <where>id = 15</where>
+        </update>
+        <update tableName="audit_type">
+            <column name="info" value="Изменение учетной записи"/>
+            <where>id = 16</where>
+        </update>
+        <update tableName="audit_type">
+            <column name="info" value="Создание учетной записи"/>
+            <where>id = 17</where>
+        </update>
+        <update tableName="audit_type">
+            <column name="info" value="Удаление учетной записи"/>
+            <where>id = 18</where>
+        </update>
+        <update tableName="audit_type">
+            <column name="info" value="Изменение оборудования"/>
+            <where>id = 19</where>
+        </update>
+        <update tableName="audit_type">
+            <column name="info" value="Создание оборудования"/>
+            <where>id = 20</where>
+        </update>
+        <update tableName="audit_type">
+            <column name="info" value="Удаление оборудования"/>
+            <where>id = 21</where>
+        </update>
+        <update tableName="audit_type">
+            <column name="info" value="Изменение роли"/>
+            <where>id = 22</where>
+        </update>
+        <update tableName="audit_type">
+            <column name="info" value="Создание роли"/>
+            <where>id = 23</where>
+        </update>
+    </changeSet>
+
 </databaseChangeLog>

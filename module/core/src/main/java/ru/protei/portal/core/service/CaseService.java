@@ -30,7 +30,8 @@ public interface CaseService {
     CoreResponse<CaseObject> getCaseObject( AuthToken token, long id );
 
     @Privileged({ En_Privilege.ISSUE_CREATE })
-    CoreResponse<CaseObject> saveCaseObject( AuthToken token, CaseObject p, Person initiator );
+    @Auditable( En_AuditType.ISSUE_CREATE )
+    CoreResponse<CaseObject> saveCaseObject( AuthToken token, @Stored CaseObject p, Person initiator );
 
     @Privileged({ En_Privilege.ISSUE_CREATE })
     @Auditable( En_AuditType.ISSUE_MODIFY )
@@ -42,13 +43,16 @@ public interface CaseService {
     CoreResponse<List<CaseComment>> getCaseCommentList( AuthToken token, long caseId );
 
     @Privileged({ En_Privilege.ISSUE_EDIT, En_Privilege.ISSUE_VIEW })
-    CoreResponse<CaseComment> addCaseComment( AuthToken token, CaseComment p, Person currentPerson );
+    @Auditable( En_AuditType.ISSUE_COMMENT_CREATE )
+    CoreResponse<CaseComment> addCaseComment( AuthToken token, @Stored CaseComment p, Person currentPerson );
 
     @Privileged({ En_Privilege.ISSUE_EDIT, En_Privilege.ISSUE_VIEW })
-    CoreResponse<CaseComment> updateCaseComment( AuthToken token, CaseComment p, Person person );
+    @Auditable( En_AuditType.ISSUE_COMMENT_MODIFY )
+    CoreResponse<CaseComment> updateCaseComment( AuthToken token, @Stored CaseComment p, Person person );
 
     @Privileged({ En_Privilege.ISSUE_EDIT, En_Privilege.ISSUE_VIEW })
-    CoreResponse removeCaseComment( AuthToken token, CaseComment caseComment, Long personId );
+    @Auditable( En_AuditType.ISSUE_COMMENT_REMOVE )
+    CoreResponse removeCaseComment( AuthToken token, @Stored CaseComment caseComment, Long personId );
 
     @Privileged( En_Privilege.ISSUE_EDIT )
     CoreResponse<Boolean> updateCaseModified( AuthToken token, Long caseId, Date modified);

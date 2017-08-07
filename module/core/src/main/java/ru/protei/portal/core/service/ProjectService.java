@@ -1,7 +1,10 @@
 package ru.protei.portal.core.service;
 
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.core.model.annotations.Auditable;
 import ru.protei.portal.core.model.annotations.Privileged;
+import ru.protei.portal.core.model.annotations.Stored;
+import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.UserRole;
@@ -44,12 +47,15 @@ public interface ProjectService {
      * @param project    проект
      */
     @Privileged( En_Privilege.PRODUCT_EDIT )
-    CoreResponse saveProject( AuthToken token, ProjectInfo project );
+    @Auditable( En_AuditType.PROJECT_MODIFY )
+    CoreResponse saveProject( AuthToken token, @Stored ProjectInfo project );
 
     /**
      * Создает новый проект
      * @param creatorId
      */
     @Privileged( En_Privilege.PROJECT_CREATE )
+    @Auditable( En_AuditType.PROJECT_CREATE )
+    //TODO CRM-16: какой объект пишем в аудит?
     CoreResponse<Long> createProject( AuthToken token, Long creatorId );
 }

@@ -1,7 +1,10 @@
 package ru.protei.portal.core.service;
 
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.core.model.annotations.Auditable;
 import ru.protei.portal.core.model.annotations.Privileged;
+import ru.protei.portal.core.model.annotations.Stored;
+import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.DevUnit;
@@ -32,10 +35,12 @@ public interface ProductService {
     CoreResponse<DevUnit> getProduct( AuthToken token, Long id );
 
     @Privileged( En_Privilege.PRODUCT_CREATE )
-    CoreResponse<Long> createProduct( AuthToken token, DevUnit product);
+    @Auditable( En_AuditType.PRODUCT_CREATE )
+    CoreResponse<Long> createProduct( AuthToken token, @Stored DevUnit product);
 
     @Privileged( En_Privilege.PRODUCT_EDIT )
-    CoreResponse<Boolean> updateProduct( AuthToken token, DevUnit product );
+    @Auditable( En_AuditType.PRODUCT_MODIFY )
+    CoreResponse<Boolean> updateProduct( AuthToken token, @Stored DevUnit product );
 
     @Privileged( En_Privilege.PRODUCT_VIEW )
     CoreResponse<Boolean> checkUniqueProductByName( AuthToken token, String name, Long id);
