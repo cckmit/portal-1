@@ -15,6 +15,7 @@ public class Main {
 
     private static Logger logger = Logger.getLogger(Main.class);
     private static final int DEFAULT_PORT = 8090;
+    private static final String MAPPING_URL = "/*";
     private static final String API_URL = "/api/*";
 
     public static void main(String[] args) {
@@ -37,8 +38,13 @@ public class Main {
 
             webapp.addEventListener(new ContextLoaderListener(context));
 
+            // SPRING servlet-dispatcher
+            ServletHolder springHolder = new ServletHolder("dispatcher", new DispatcherServlet(context));
+            springHolder.setInitOrder(2);
+            webapp.addServlet(springHolder, MAPPING_URL);
+
             // CXF servlet-dispatcher
-            webapp.addServlet(new ServletHolder("cxf", new CXFServlet()), API_URL);
+            //webapp.addServlet(new ServletHolder("cxf", new CXFServlet()), API_URL);
 
             server.setHandler(webapp);
 

@@ -2,8 +2,10 @@ package ru.protei.portal.api.controller;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import protei.sql.query.Tm_SqlQueryHelper;
+import ru.protei.portal.api.config.WSConfig;
 import ru.protei.portal.api.model.DepartmentRecord;
 import ru.protei.portal.api.model.En_ErrorCode;
 import ru.protei.portal.api.model.ServiceResult;
@@ -15,9 +17,13 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.winter.jdbc.JdbcSort;
 
+import java.awt.*;
 import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.io.BufferedOutputStream;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.net.Inet4Address;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -46,7 +52,8 @@ public class WorkerController {
     private WorkerEntryDAO workerEntryDAO;
 
     @RequestMapping(method = RequestMethod.GET, value = "/get.worker")
-    public @ResponseBody WorkerRecord getWorker(@RequestParam(name = "id") Long id) {
+    @ResponseBody
+    public WorkerRecord getWorker(@RequestParam(name = "id") Long id) {
 
         logger.debug("=== getWorker ===");
         logger.debug("=== id = " + id);
@@ -61,6 +68,21 @@ public class WorkerController {
         return null;
     }
 
+    @RequestMapping(method = RequestMethod.GET, value = "/get.department")
+    @ResponseBody
+    public DepartmentRecord getDepartment() {
+
+        logger.debug("=== getDepartment ===");
+
+        DepartmentRecord departmentRecord = new DepartmentRecord();
+        departmentRecord.setDepartmentId(1L);
+        departmentRecord.setDepartmentName("DepartmentName");
+        departmentRecord.setHeadId(1L);
+        departmentRecord.setParentId(null);
+        return departmentRecord;
+    }
+
+/*
     @RequestMapping(method = RequestMethod.GET, value = "/get.workers")
     public @ResponseBody List<WorkerRecord> getWorkers(@RequestParam(name = "expr") String expr) {
 
@@ -79,6 +101,7 @@ public class WorkerController {
 
         return workers;
     }
+*/
 
     @RequestMapping(method = RequestMethod.POST, value = "/add.worker")
     public @ResponseBody ServiceResult addWorker(@RequestBody WorkerRecord rec) {
@@ -241,6 +264,7 @@ public class WorkerController {
         return ServiceResult.failResult (En_ErrorCode.NOT_UPDATE.getCode (), En_ErrorCode.NOT_UPDATE.getCode (), null);
     }
 
+/*
     @RequestMapping(method = RequestMethod.PUT, value = "/update.workers")
     public @ResponseBody List<ServiceResult> updateWorkers(@RequestBody List<WorkerRecord> list) {
 
@@ -254,6 +278,7 @@ public class WorkerController {
 
         return results;
     }
+*/
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/delete.worker")
     public @ResponseBody ServiceResult deleteWorker(@RequestBody WorkerRecord rec) {
@@ -300,6 +325,45 @@ public class WorkerController {
         }
 
         return ServiceResult.failResult (En_ErrorCode.NOT_DELETE.getCode (), En_ErrorCode.NOT_DELETE.getMessage (), null);
+    }
+
+    @RequestMapping(method = RequestMethod.PUT, value = "/update.photo")
+    public ServiceResult updatePhoto(@RequestParam(name = "id") Long id, @RequestBody byte[] buf) {
+
+        logger.debug("=== updatePhoto ===");
+        logger.debug("=== properties from 1C ===");
+        logger.debug("personId = " + id);
+        logger.debug("photo's length = " + (buf != null ? buf.length : null));
+        logger.debug("==========================");
+
+        OutputStream out = null;
+
+        try {
+
+            if (id == null || id < 0)
+                return ServiceResult.failResult (En_ErrorCode.EMPTY_PER_ID.getCode (), En_ErrorCode.EMPTY_PER_ID.getMessage (), id);
+
+            if (buf == null)
+                return ServiceResult.failResult (En_ErrorCode.EMPTY_PHOTO.getCode (), En_ErrorCode.EMPTY_PHOTO.getMessage (), id);
+
+            String fileName = WSConfig.getInstance ().getDirPhotos () + id + ".jpg";
+            logger.debug("=== fileName = " + fileName);
+
+            out = new BufferedOutputStream(new FileOutputStream(fileName));
+            out.write (buf);
+
+            return ServiceResult.successResult (id);
+
+        } catch (Exception e) {
+            logger.error ("error while update photo", e);
+        } finally {
+            try {
+                if (out != null)
+                    out.close();
+            } catch (Exception e) {}
+        }
+
+        return ServiceResult.failResult (En_ErrorCode.NOT_UPDATE.getCode (), En_ErrorCode.NOT_UPDATE.getMessage (), id);
     }
 
     @RequestMapping(method = RequestMethod.PUT, value = "/update.department")
@@ -355,7 +419,7 @@ public class WorkerController {
         return ServiceResult.failResult (En_ErrorCode.NOT_UPDATE.getCode (), En_ErrorCode.NOT_UPDATE.getMessage (), null);
     }
 
-    @RequestMapping(method = RequestMethod.PUT, value = "/update.department")
+    @RequestMapping(method = RequestMethod.DELETE, value = "/delete.department")
     public @ResponseBody ServiceResult deleteDepartment(@RequestBody DepartmentRecord rec) {
 
         logger.debug("=== deleteDepartment ===");
@@ -490,6 +554,4 @@ public class WorkerController {
         }
         return position;
     }
-
-
 }

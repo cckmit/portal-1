@@ -21,9 +21,9 @@ import java.util.Properties;
 /**
  * Created by turik on 02.09.16.
  */
-public class TestService {
+public class TestSoapService {
 
-    private static Logger logger = Logger.getLogger(TestService.class);
+    private static Logger logger = Logger.getLogger(TestSoapService.class);
 
     private static JaxWsProxyFactoryBean factory;
     private static WorkerService client;
@@ -41,7 +41,7 @@ public class TestService {
 
         try {
 
-            is = TestService.class.getResourceAsStream("/service.properties");
+            is = TestSoapService.class.getResourceAsStream("/service.properties");
             Properties props = new Properties();
             props.load(is);
 

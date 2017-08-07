@@ -6,12 +6,16 @@ import org.apache.cxf.bus.spring.SpringBus;
 import org.apache.cxf.jaxws.EndpointImpl;
 import org.apache.cxf.jaxws.support.JaxWsServiceFactoryBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.http.converter.xml.MarshallingHttpMessageConverter;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.oxm.xstream.XStreamMarshaller;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import ru.protei.portal.api.model.DepartmentRecord;
 import ru.protei.portal.api.model.ServiceResult;
@@ -25,9 +29,12 @@ import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import javax.xml.ws.Endpoint;
+import java.util.Arrays;
 import java.util.List;
 
+@EnableWebMvc
 @Configuration
+@ComponentScan(basePackages = "ru.protei.portal.api.controller")
 @Import({CoreConfigurationContext.class, JdbcConfigurationContext.class})
 public class APIConfigurationContext extends WebMvcConfigurerAdapter {
 
@@ -69,6 +76,7 @@ public class APIConfigurationContext extends WebMvcConfigurerAdapter {
         return new WorkerServiceImpl ();
     }
 
+/*
     @Bean(name= Bus.DEFAULT_BUS_ID)
     public SpringBus springBus() {
         return new SpringBus();
@@ -83,13 +91,22 @@ public class APIConfigurationContext extends WebMvcConfigurerAdapter {
         endpoint.publish ("/worker");
         return endpoint;
     }
+*/
 
     @Override
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+/*
         Jaxb2Marshaller oxmMarshaller = new Jaxb2Marshaller();
-        //oxmMarshaller.setClassesToBeBound(WorkerRecord.class, DepartmentRecord.class, ServiceResult.class);
+        oxmMarshaller.setClassesToBeBound(WorkerRecord.class, DepartmentRecord.class, ServiceResult.class);
         MarshallingHttpMessageConverter marshallingHttpMessageConverter = new MarshallingHttpMessageConverter(oxmMarshaller);
 
         converters.add(marshallingHttpMessageConverter);
+*/
+
+        XStreamMarshaller xstreamMarshaller = new XStreamMarshaller();
+        MarshallingHttpMessageConverter xmlConverter = new MarshallingHttpMessageConverter(xstreamMarshaller);
+
+        converters.add(xmlConverter);
+        converters.add(new MappingJackson2HttpMessageConverter());
     }
 }

@@ -1,15 +1,27 @@
 package ru.protei.portal.api.model;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * Created by turik on 17.08.16.
  */
+@XmlRootElement(name = "department")
 public class DepartmentRecord {
 
+    @XmlElement(name = "company-code")
     private String companyCode;
 
+    @XmlElement(name = "id")
     private long departmentId;
+
+    @XmlElement(name = "name")
     private String departmentName;
+
+    @XmlElement(name = "parent-id", nillable = true)
     private Long parentId;
+
+    @XmlElement(name = "head-id", nillable = true)
     private Long headId;
 
     public String getCompanyCode() {
