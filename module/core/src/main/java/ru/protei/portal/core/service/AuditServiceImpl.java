@@ -21,7 +21,7 @@ public class AuditServiceImpl implements AuditService {
     AuditObjectDAO auditObjectDAO;
 
     @Override
-    public CoreResponse< AuditObject > getAuditObject( AuthToken token, long id ) {
+    public CoreResponse< AuditObject > getAuditObject( long id ) {
 
         AuditObject auditObject = auditObjectDAO.get( id );
 
@@ -32,7 +32,7 @@ public class AuditServiceImpl implements AuditService {
     }
 
     @Override
-    public CoreResponse< List< AuditObject > > auditObjectList( AuthToken token, AuditQuery query ) {
+    public CoreResponse< List< AuditObject > > auditObjectList( AuditQuery query ) {
 
         List< AuditObject > list = auditObjectDAO.getAuditObjectList( query );
 
@@ -43,7 +43,7 @@ public class AuditServiceImpl implements AuditService {
     }
 
     @Override
-    public CoreResponse< AuditObject > saveAuditObject( AuthToken token, AuditObject auditObject ) {
+    public CoreResponse< AuditObject > saveAuditObject( AuditObject auditObject ) {
 
         if (auditObject == null)
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
@@ -53,6 +53,7 @@ public class AuditServiceImpl implements AuditService {
         if (auditId == null)
             return new CoreResponse().error(En_ResultStatus.NOT_CREATED);
 
+        log.debug( "Audit object with id = {} successfully created", auditId );
         return new CoreResponse<AuditObject>().success( auditObject );
     }
 }

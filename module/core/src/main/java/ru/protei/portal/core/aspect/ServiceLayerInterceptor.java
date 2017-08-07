@@ -9,20 +9,18 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.core.event.CreateAuditObjectEvent;
 import ru.protei.portal.core.exception.InsufficientPrivilegesException;
 import ru.protei.portal.core.exception.InvalidAuditableObjectException;
 import ru.protei.portal.core.exception.InvalidAuthTokenException;
 import ru.protei.portal.core.model.annotations.Auditable;
 import ru.protei.portal.core.model.annotations.Privileged;
 import ru.protei.portal.core.model.annotations.Stored;
-import ru.protei.portal.core.model.dict.En_AuditType;
-import ru.protei.portal.core.model.dict.En_PrivilegeEntity;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuditObject;
 import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
-import ru.protei.portal.core.service.AuditService;
+import ru.protei.portal.core.service.EventPublisherService;
 import ru.protei.portal.core.service.PolicyService;
 import ru.protei.portal.core.service.user.AuthService;
 import ru.protei.winter.jdbc.JdbcHelper;
@@ -58,7 +56,7 @@ public class ServiceLayerInterceptor {
         try {
             checkPrivileges( pjp );
             Object result = pjp.proceed();
-            createAudit( pjp, result );
+            checkAuditableAndCreate( pjp, result );
             return result;
         }
         catch (Throwable e) {
@@ -95,10 +93,7 @@ public class ServiceLayerInterceptor {
         return null;
     }
 
-    /**
-     * Если требуется аудит, оповещаем подписчика
-     */
-    private void createAudit( ProceedingJoinPoint pjp, Object result ) {
+    private void checkAuditableAndCreate( ProceedingJoinPoint pjp, Object result ) {
 
         if ( result instanceof CoreResponse && !((CoreResponse)result).getStatus().equals( En_ResultStatus.OK ) ){
             return;
@@ -110,14 +105,6 @@ public class ServiceLayerInterceptor {
         if ( auditable == null || auditable.value() == null ) {
             return;
         }
-
-        //TODO CRM-16: оповестить создателя Аудита
-//        publisherService.publishEvent(new CaseObjectEvent(this, newState, initiator));
-
-        fillAuditParams(pjp, auditable);
-    }
-
-    private void fillAuditParams( ProceedingJoinPoint pjp, Auditable auditable ) {
 
         AuthToken token = findAuthToken( pjp );
         if ( token == null ) {
@@ -132,25 +119,13 @@ public class ServiceLayerInterceptor {
 
         AuditObject auditObject = new AuditObject();
         auditObject.setCreated( new Date() );
-
-        En_AuditType auditType = auditable.value();
-        auditObject.setTypeId( auditType.getId() );
-
+        auditObject.setTypeId( auditable.value().getId() );
         auditObject.setCreatorId( descriptor.getPerson().getId() );
         auditObject.setCreatorIp( descriptor.getPerson().getIpAddress() );
         auditObject.setCreatorShortName( descriptor.getPerson().getDisplayShortName() );
-
         auditObject.setEntryInfo( object );
 
-        logger.debug("--------->>> CRM-16 Interceptor fill Audit params:");
-        logger.debug("--------->>> CRM-16 Date: " + auditObject.getCreated());
-        logger.debug("--------->>> CRM-16 Type: " + auditObject.getTypeId());
-        logger.debug("--------->>> CRM-16 PersonId: " + auditObject.getCreatorId());
-        logger.debug("--------->>> CRM-16 Person short name: " + auditObject.getCreatorShortName());
-        logger.debug("--------->>> CRM-16 Person Ip: " + auditObject.getCreatorIp());
-        logger.debug("--------->>> CRM-16 Object: " + auditObject.getEntryInfo());
-
-        auditService.saveAuditObject( token, auditObject );
+        publisherService.publishEvent(new CreateAuditObjectEvent( this, auditObject ));
     }
 
     private void checkPrivileges( ProceedingJoinPoint pjp ) {
@@ -253,5 +228,5 @@ public class ServiceLayerInterceptor {
     PolicyService policyService;
 
     @Autowired
-    AuditService auditService;
+    EventPublisherService publisherService;
 }
