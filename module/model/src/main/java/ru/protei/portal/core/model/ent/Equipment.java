@@ -13,7 +13,7 @@ import java.util.List;
  * Оборудование
  */
 @JdbcEntity(table = "Equipment")
-public class Equipment implements Serializable {
+public class Equipment extends AuditableObject implements Serializable {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;

@@ -13,7 +13,7 @@ import java.util.List;
  * @author michael
  */
 @JdbcEntity(table = "Company")
-public class Company implements Serializable, EntityOptionSupport {
+public class Company extends AuditableObject implements Serializable, EntityOptionSupport {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;

@@ -18,6 +18,7 @@ import ru.protei.portal.core.model.annotations.Privileged;
 import ru.protei.portal.core.model.annotations.Stored;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuditObject;
+import ru.protei.portal.core.model.ent.AuditableObject;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.service.EventPublisherService;
@@ -25,7 +26,6 @@ import ru.protei.portal.core.service.PolicyService;
 import ru.protei.portal.core.service.user.AuthService;
 import ru.protei.winter.jdbc.JdbcHelper;
 
-import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.sql.SQLException;
@@ -112,8 +112,8 @@ public class ServiceLayerInterceptor {
         }
         UserSessionDescriptor descriptor = authService.findSession( token );
 
-        Serializable object = findAuditableObject( pjp );
-        if ( object == null ) {
+        AuditableObject auditableObject = findAuditableObject( pjp );
+        if ( auditableObject == null ) {
             return;
         }
 
@@ -123,7 +123,7 @@ public class ServiceLayerInterceptor {
         auditObject.setCreatorId( descriptor.getPerson().getId() );
         auditObject.setCreatorIp( descriptor.getPerson().getIpAddress() );
         auditObject.setCreatorShortName( descriptor.getPerson().getDisplayShortName() );
-        auditObject.setEntryInfo( object );
+        auditObject.setEntryInfo( auditableObject );
 
         publisherService.publishEvent(new CreateAuditObjectEvent( this, auditObject ));
     }
@@ -201,7 +201,7 @@ public class ServiceLayerInterceptor {
         return null;
     }
 
-    private Serializable findAuditableObject( ProceedingJoinPoint pjp ) {
+    private AuditableObject findAuditableObject( ProceedingJoinPoint pjp ) {
         Method method = ((MethodSignature)pjp.getSignature()).getMethod();
         Parameter[] params = method.getParameters();
 
@@ -211,9 +211,17 @@ public class ServiceLayerInterceptor {
                 continue;
             }
 
+            AuditableObject auditableObject;
             Object arg = pjp.getArgs()[ i ];
             if ( arg != null ) {
-                return (Serializable) arg;
+                if ( arg instanceof Long ){
+                    auditableObject = new AuditableObject();
+                    auditableObject.setAuditableId( (Long)arg );
+                    return auditableObject;
+                }
+                auditableObject = (AuditableObject) arg;
+                auditableObject.setAuditableId( auditableObject.getId() );
+                return auditableObject;
             }
 
             throw new InvalidAuditableObjectException();

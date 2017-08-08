@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Аннотация для получения параметра из метода изменения объекта
+ * Аннотация для получения аудируемого объекта из метода сервиса по его изменению
  */
 @Retention( RetentionPolicy.RUNTIME )
 @Target( ElementType.PARAMETER )

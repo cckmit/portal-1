@@ -9,11 +9,9 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.Equipment;
-import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.query.EquipmentQuery;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * Сервис управления оборудованием

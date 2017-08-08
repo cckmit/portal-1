@@ -1,7 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
 import ru.protei.winter.jdbc.annotations.*;
-
 import java.io.Serializable;
 import java.util.Date;
 
@@ -33,7 +32,7 @@ public class AuditObject implements Serializable {
     private String creatorShortName;
 
     @JdbcColumn( name = "entry_info", converterType = ConverterType.JSON )
-    private Serializable entryInfo;
+    private AuditableObject entryInfo;
 
     public Long getId() {
         return id;
@@ -87,11 +86,11 @@ public class AuditObject implements Serializable {
         this.creatorShortName = creatorShortName;
     }
 
-    public Serializable getEntryInfo() {
+    public AuditableObject getEntryInfo() {
         return entryInfo;
     }
 
-    public void setEntryInfo( Serializable entryInfo ) {
+    public void setEntryInfo( AuditableObject entryInfo ) {
         this.entryInfo = entryInfo;
     }
 }

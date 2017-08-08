@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.dao.impl;
 
+import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.AuditObjectDAO;
 import ru.protei.portal.core.model.ent.AuditObject;
 import ru.protei.portal.core.model.helper.HelperFunc;
@@ -22,7 +23,7 @@ public class AuditObjectDAO_Impl extends PortalBaseJdbcDAO<AuditObject> implemen
         return persist(object);
     }
 
-    @Override
+    @SqlConditionBuilder
     public SqlCondition auditQueryCondition( AuditQuery query ) {
         return new SqlCondition().build((condition, args) -> {
             condition.append("1=1");

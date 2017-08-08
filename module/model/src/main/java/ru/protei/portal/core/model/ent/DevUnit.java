@@ -18,7 +18,7 @@ import java.util.Date;
  * Created by michael on 23.05.16.
  */
 @JdbcEntity(table = "dev_unit")
-public class DevUnit implements Serializable, ProductShortViewSupport {
+public class DevUnit extends AuditableObject implements Serializable, ProductShortViewSupport {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;

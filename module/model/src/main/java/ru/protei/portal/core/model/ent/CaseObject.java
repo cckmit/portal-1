@@ -14,7 +14,7 @@ import java.util.List;
  * Created by michael on 19.05.16.
  */
 @JdbcEntity(table = "case_object")
-public class CaseObject implements Serializable {
+public class CaseObject extends AuditableObject implements Serializable {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;

@@ -11,7 +11,6 @@ import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.query.UserRoleQuery;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * Сервис управления ролями

@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
  * Created by michael on 19.05.16.
  */
 @JdbcEntity(table = "case_comment")
-public class CaseComment implements Serializable{
+public class CaseComment extends AuditableObject implements Serializable{
 
     @JdbcId(name="id" , idInsertMode = IdInsertMode.AUTO)
     private Long id;

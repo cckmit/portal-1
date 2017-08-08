@@ -10,7 +10,7 @@ import java.util.Set;
  * Created by michael on 16.06.16.
  */
 @JdbcEntity(table = "user_role")
-public class UserRole implements Serializable {
+public class UserRole extends AuditableObject implements Serializable {
 
     @JdbcId(name = "id")
     private Long id;

@@ -2,6 +2,7 @@ package ru.protei.portal.core.model.struct;
 
 import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
 import ru.protei.portal.core.model.dict.En_RegionState;
+import ru.protei.portal.core.model.ent.AuditableObject;
 import ru.protei.portal.core.model.ent.CaseLocation;
 import ru.protei.portal.core.model.ent.CaseMember;
 import ru.protei.portal.core.model.ent.CaseObject;
@@ -16,7 +17,7 @@ import java.util.List;
 /**
  * Информация о проекте в регионе
  */
-public class ProjectInfo implements Serializable {
+public class ProjectInfo extends AuditableObject implements Serializable {
 
     /**
      * Идентификатор записи о проекте
