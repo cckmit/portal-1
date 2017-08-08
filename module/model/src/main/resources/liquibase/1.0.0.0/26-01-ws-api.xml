@@ -38,4 +38,11 @@
         </createIndex>
 
     </changeSet>
+
+    <changeSet author="turik" id="dropDefaultValueFromCompanyDep">
+        <dropDefaultValue columnDataType="bigint"
+                          columnName="dep_extId"
+                          tableName="company_dep"/>
+    </changeSet>
+
 </databaseChangeLog>

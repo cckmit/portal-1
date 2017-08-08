@@ -19,5 +19,7 @@
   <include file="10-add-user_role-privileges.xml" relativeToChangelogFile="true" />
   <include file="09-03-drop_role_id.xml" relativeToChangelogFile="true" />
   <include file="26-01-ws-api.xml" relativeToChangelogFile="true" />
+  <include file="26-02-ws-api.xml" relativeToChangelogFile="true" />
+  <include file="26-03-ws-api.xml" relativeToChangelogFile="true" />
 
 </databaseChangeLog>

@@ -4,9 +4,13 @@ import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.api.utils.HelperService;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * Created by turik on 17.08.16.
  */
+@XmlRootElement(name = "worker")
 public class WorkerRecord {
 
     private String companyCode;
@@ -51,6 +55,7 @@ public class WorkerRecord {
         copy (p);
     }
 
+    @XmlElement(name = "company-code", required = true)
     public String getCompanyCode() {
         return companyCode;
     }
@@ -59,6 +64,7 @@ public class WorkerRecord {
         this.companyCode = companyCode;
     }
 
+    @XmlElement(name = "id")
     public Long getId() {
         return id;
     }
@@ -67,6 +73,7 @@ public class WorkerRecord {
         this.id = id;
     }
 
+    @XmlElement(name = "first-name", required = true)
     public String getFirstName() {
         return firstName;
     }
@@ -75,6 +82,7 @@ public class WorkerRecord {
         this.firstName = firstName;
     }
 
+    @XmlElement(name = "last-name", required = true)
     public String getLastName() {
         return lastName;
     }
@@ -83,6 +91,7 @@ public class WorkerRecord {
         this.lastName = lastName;
     }
 
+    @XmlElement(name = "second-name")
     public String getSecondName() {
         return secondName;
     }
@@ -91,6 +100,7 @@ public class WorkerRecord {
         this.secondName = secondName;
     }
 
+    @XmlElement(name = "gender", required = true)
     public Integer getSex() {
         return sex;
     }
@@ -99,6 +109,7 @@ public class WorkerRecord {
         this.sex = sex;
     }
 
+    @XmlElement(name = "birthday")
     public String getBirthday() {
         return birthday;
     }
@@ -107,6 +118,7 @@ public class WorkerRecord {
         this.birthday = birthday;
     }
 
+    @XmlElement(name = "phone-work")
     public String getPhoneWork() {
         return phoneWork;
     }
@@ -115,6 +127,7 @@ public class WorkerRecord {
         this.phoneWork = phoneWork;
     }
 
+    @XmlElement(name = "phone-home")
     public String getPhoneHome() {
         return phoneHome;
     }
@@ -123,6 +136,7 @@ public class WorkerRecord {
         this.phoneHome = phoneHome;
     }
 
+    @XmlElement(name = "phone-mobile")
     public String getPhoneMobile() {
         return phoneMobile;
     }
@@ -131,6 +145,7 @@ public class WorkerRecord {
         this.phoneMobile = phoneMobile;
     }
 
+    @XmlElement(name = "email")
     public String getEmail() {
         return email;
     }
@@ -139,6 +154,7 @@ public class WorkerRecord {
         this.email = email;
     }
 
+    @XmlElement(name = "email-own")
     public String getEmailOwn() {
         return emailOwn;
     }
@@ -147,6 +163,7 @@ public class WorkerRecord {
         this.emailOwn = emailOwn;
     }
 
+    @XmlElement(name = "fax")
     public String getFax() {
         return fax;
     }
@@ -155,6 +172,7 @@ public class WorkerRecord {
         this.fax = fax;
     }
 
+    @XmlElement(name = "address")
     public String getAddress() {
         return address;
     }
@@ -163,6 +181,7 @@ public class WorkerRecord {
         this.address = address;
     }
 
+    @XmlElement(name = "address-home")
     public String getAddressHome() {
         return addressHome;
     }
@@ -171,6 +190,7 @@ public class WorkerRecord {
         this.addressHome = addressHome;
     }
 
+    @XmlElement(name = "passport-info")
     public String getPassportInfo() {
         return passportInfo;
     }
@@ -179,6 +199,7 @@ public class WorkerRecord {
         this.passportInfo = passportInfo;
     }
 
+    @XmlElement(name = "info")
     public String getInfo() {
         return info;
     }
@@ -187,6 +208,7 @@ public class WorkerRecord {
         this.info = info;
     }
 
+    @XmlElement(name = "ip")
     public String getIpAddress() {
         return ipAddress;
     }
@@ -195,6 +217,7 @@ public class WorkerRecord {
         this.ipAddress = ipAddress;
     }
 
+    @XmlElement(name = "deleted", required = true)
     public boolean isDeleted() {
         return isDeleted;
     }
@@ -203,6 +226,7 @@ public class WorkerRecord {
         this.isDeleted = isDeleted;
     }
 
+    @XmlElement(name = "fired", required = true)
     public boolean isFired() {
         return isFired;
     }
@@ -211,6 +235,7 @@ public class WorkerRecord {
         this.isFired = isFired;
     }
 
+    @XmlElement(name = "worker-id", required = true)
     public long getWorkerId() {
         return workerId;
     }
@@ -219,6 +244,7 @@ public class WorkerRecord {
         this.workerId = workerId;
     }
 
+    @XmlElement(name = "department-id", required = true)
     public long getDepartmentId() {
         return departmentId;
     }
@@ -227,6 +253,7 @@ public class WorkerRecord {
         this.departmentId = departmentId;
     }
 
+    @XmlElement(name = "position-id", required = true)
     public long getPositionId() {
         return positionId;
     }
@@ -235,6 +262,7 @@ public class WorkerRecord {
         this.positionId = positionId;
     }
 
+    @XmlElement(name = "hire-date")
     public String getHireDate() {
         return hireDate;
     }
@@ -243,6 +271,7 @@ public class WorkerRecord {
         this.hireDate = hireDate;
     }
 
+    @XmlElement(name = "fire-date")
     public String getFireDate() {
         return fireDate;
     }
@@ -251,6 +280,7 @@ public class WorkerRecord {
         this.fireDate = fireDate;
     }
 
+    @XmlElement(name = "hire-order")
     public String getHireOrderNo() {
         return hireOrderNo;
     }
@@ -259,6 +289,7 @@ public class WorkerRecord {
         this.hireOrderNo = hireOrderNo;
     }
 
+    @XmlElement(name = "fire-order")
     public String getFireOrderNo() {
         return fireOrderNo;
     }
@@ -267,6 +298,7 @@ public class WorkerRecord {
         this.fireOrderNo = fireOrderNo;
     }
 
+    @XmlElement(name = "active", required = true)
     public int getActive() {
         return active;
     }
@@ -275,6 +307,7 @@ public class WorkerRecord {
         this.active = active;
     }
 
+    @XmlElement(name = "position-name")
     public String getPositionName() {
         return positionName;
     }
@@ -304,5 +337,4 @@ public class WorkerRecord {
         setFax (contactInfoFacade.getFax ());
         setDeleted (p.isDeleted ());
     }
-
 }

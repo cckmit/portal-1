@@ -15,6 +15,7 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.http.converter.xml.MarshallingHttpMessageConverter;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.oxm.xstream.XStreamMarshaller;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import ru.protei.portal.api.model.DepartmentRecord;
@@ -95,18 +96,18 @@ public class APIConfigurationContext extends WebMvcConfigurerAdapter {
 
     @Override
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-/*
         Jaxb2Marshaller oxmMarshaller = new Jaxb2Marshaller();
         oxmMarshaller.setClassesToBeBound(WorkerRecord.class, DepartmentRecord.class, ServiceResult.class);
         MarshallingHttpMessageConverter marshallingHttpMessageConverter = new MarshallingHttpMessageConverter(oxmMarshaller);
 
         converters.add(marshallingHttpMessageConverter);
-*/
 
+/*
         XStreamMarshaller xstreamMarshaller = new XStreamMarshaller();
         MarshallingHttpMessageConverter xmlConverter = new MarshallingHttpMessageConverter(xstreamMarshaller);
 
         converters.add(xmlConverter);
         converters.add(new MappingJackson2HttpMessageConverter());
+*/
     }
 }

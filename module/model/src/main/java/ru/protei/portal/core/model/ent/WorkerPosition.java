@@ -23,9 +23,7 @@ public class WorkerPosition {
     @JdbcColumn(name="pos_extId")
     private Long externalId;
 
-    public WorkerPosition () {
-
-    }
+    public WorkerPosition () {}
 
     public Long getId() {
         return id;

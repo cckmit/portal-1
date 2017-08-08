@@ -474,7 +474,7 @@ public class WorkerServiceImpl implements WorkerService {
             if (department == null)
                 return ServiceResult.failResult (En_ErrorCode.UNKNOWN_DEP.getCode (), En_ErrorCode.UNKNOWN_DEP.getMessage (), null);
 
-            if (companyDepartmentDAO.checkExistsByCondition ("parent_department=?", department.getId ()))
+            if (companyDepartmentDAO.checkExistsByCondition ("parent_dep=?", department.getId ()))
                 return ServiceResult.failResult (En_ErrorCode.EXIST_CHILD_DEP.getCode (), En_ErrorCode.EXIST_CHILD_DEP.getMessage (), null);
 
             if (workerEntryDAO.checkExistsByCondition ("dep_id=?", department.getId ()))

@@ -152,7 +152,7 @@ public class WorkerController {
             WorkerPosition position = getValidPosition (rec.getPositionId (), rec.getPositionName (), item.getCompanyId ());
 
             if (workerEntryDAO.checkExistsByCondition ("worker_extId=? and companyId=?", rec.getWorkerId (), item.getCompanyId ()))
-                return ServiceResult.failResult (En_ErrorCode.EXIST_WOR.getCode (), En_ErrorCode.EXIST_WOR.getMessage (), null);
+                return ServiceResult.failResult (En_ErrorCode.EXIST_WOR.getCode (), En_ErrorCode.EXIST_WOR.getMessage (), person.getId());
 
             WorkerEntry worker = new WorkerEntry ();
             worker.setCreated (new Date ());
@@ -327,6 +327,7 @@ public class WorkerController {
         return ServiceResult.failResult (En_ErrorCode.NOT_DELETE.getCode (), En_ErrorCode.NOT_DELETE.getMessage (), null);
     }
 
+/*
     @RequestMapping(method = RequestMethod.PUT, value = "/update.photo")
     public ServiceResult updatePhoto(@RequestParam(name = "id") Long id, @RequestBody byte[] buf) {
 
@@ -365,6 +366,7 @@ public class WorkerController {
 
         return ServiceResult.failResult (En_ErrorCode.NOT_UPDATE.getCode (), En_ErrorCode.NOT_UPDATE.getMessage (), id);
     }
+*/
 
     @RequestMapping(method = RequestMethod.PUT, value = "/update.department")
     public @ResponseBody ServiceResult updateDepartment(@RequestBody DepartmentRecord rec) {
@@ -445,7 +447,7 @@ public class WorkerController {
             if (department == null)
                 return ServiceResult.failResult (En_ErrorCode.UNKNOWN_DEP.getCode (), En_ErrorCode.UNKNOWN_DEP.getMessage (), null);
 
-            if (companyDepartmentDAO.checkExistsByCondition ("parent_department=?", department.getId ()))
+            if (companyDepartmentDAO.checkExistsByCondition ("parent_dep=?", department.getId ()))
                 return ServiceResult.failResult (En_ErrorCode.EXIST_CHILD_DEP.getCode (), En_ErrorCode.EXIST_CHILD_DEP.getMessage (), null);
 
             if (workerEntryDAO.checkExistsByCondition ("dep_id=?", department.getId ()))

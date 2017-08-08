@@ -1,0 +1,52 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet author="turik" id="addCompanyIdToWorkerPosition">
+        <addColumn tableName="worker_position">
+            <column name="company_id" type="bigint(20)">
+                <constraints nullable="false" unique="false" />
+            </column>
+        </addColumn>
+
+        <addForeignKeyConstraint baseColumnNames="company_id"
+                                 baseTableName="worker_position"
+                                 constraintName="FK_COMPANY_POS"
+                                 referencedColumnNames="id"
+                                 referencedTableName="company"/>
+    </changeSet>
+
+    <changeSet author="turik" id="addAutoIncrementToWorkerPosition">
+        <dropForeignKeyConstraint baseTableName="worker_entry" constraintName="FK_WORKER_POS"/>
+        <addAutoIncrement columnDataType="bigint"
+                          columnName="id"
+                          incrementBy="1"
+                          tableName="worker_position"/>
+        <addForeignKeyConstraint baseColumnNames="positionId"
+                                 baseTableName="worker_entry"
+                                 constraintName="FK_WORKER_POS"
+                                 referencedColumnNames="id"
+                                 referencedTableName="worker_position"/>
+    </changeSet>
+
+    <changeSet author="turik" id="dropPosCodeFromWorkerPosition">
+        <dropColumn tableName="worker_position" columnName="pos_code"/>
+    </changeSet>
+
+    <changeSet author="turik" id="dropDefaultValueFromWorkerPosition">
+        <dropDefaultValue columnDataType="bigint"
+                          columnName="pos_extId"
+                          tableName="worker_position"/>
+    </changeSet>
+
+    <changeSet author="turik" id="createIndexWorkerPosition">
+        <createIndex indexName="uq_ext_pos" tableName="worker_position">
+            <column name="company_id"/>
+            <column name="pos_extId"/>
+        </createIndex>
+    </changeSet>
+
+
+</databaseChangeLog>

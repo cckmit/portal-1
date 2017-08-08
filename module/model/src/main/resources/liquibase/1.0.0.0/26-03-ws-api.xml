@@ -1,0 +1,19 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet author="turik" id="addWorkerExtIdToWorkerEntry">
+        <addColumn tableName="worker_entry">
+            <column name="worker_extId" type="bigint(20)">
+                <constraints nullable="false" unique="false"/>
+            </column>
+        </addColumn>
+
+        <createIndex indexName="uq_ext_worker" tableName="worker_entry">
+            <column name="companyId"/>
+            <column name="worker_extId"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>

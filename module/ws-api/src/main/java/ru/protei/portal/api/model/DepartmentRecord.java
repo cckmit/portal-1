@@ -9,21 +9,17 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "department")
 public class DepartmentRecord {
 
-    @XmlElement(name = "company-code")
     private String companyCode;
 
-    @XmlElement(name = "id")
     private long departmentId;
 
-    @XmlElement(name = "name")
     private String departmentName;
 
-    @XmlElement(name = "parent-id", nillable = true)
     private Long parentId;
 
-    @XmlElement(name = "head-id", nillable = true)
     private Long headId;
 
+    @XmlElement(name = "company-code", required = true)
     public String getCompanyCode() {
         return companyCode;
     }
@@ -32,6 +28,7 @@ public class DepartmentRecord {
         this.companyCode = companyCode;
     }
 
+    @XmlElement(name = "id", required = true)
     public long getDepartmentId() {
         return departmentId;
     }
@@ -40,6 +37,7 @@ public class DepartmentRecord {
         this.departmentId = departmentId;
     }
 
+    @XmlElement(name = "name", required = true)
     public String getDepartmentName() {
         return departmentName;
     }
@@ -48,6 +46,7 @@ public class DepartmentRecord {
         this.departmentName = departmentName;
     }
 
+    @XmlElement(name = "parent-id")
     public Long getParentId() {
         return parentId;
     }
@@ -56,6 +55,7 @@ public class DepartmentRecord {
         this.parentId = parentId;
     }
 
+    @XmlElement(name = "head-id")
     public Long getHeadId() {
         return headId;
     }

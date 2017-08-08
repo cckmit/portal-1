@@ -1,8 +1,12 @@
 package ru.protei.portal.api.model;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * Created by turik on 18.08.16.
  */
+@XmlRootElement(name = "result")
 public class ServiceResult {
 
     private String errCode;
@@ -31,6 +35,7 @@ public class ServiceResult {
         return x;
     }
 
+    @XmlElement(name = "err-code")
     public String getErrCode() {
         return errCode;
     }
@@ -39,6 +44,7 @@ public class ServiceResult {
         this.errCode = errCode;
     }
 
+    @XmlElement(name = "err-info")
     public String getErrInfo() {
         return errInfo;
     }
@@ -47,6 +53,7 @@ public class ServiceResult {
         this.errInfo = errInfo;
     }
 
+    @XmlElement(name = "id")
     public Long getId() {
         return id;
     }
@@ -55,6 +62,7 @@ public class ServiceResult {
         this.id = id;
     }
 
+    @XmlElement(name = "success")
     public boolean isSuccess() {
         return isSuccess;
     }
