@@ -29,7 +29,7 @@ public class AuditObjectDAO_Impl extends PortalBaseJdbcDAO<AuditObject> implemen
             condition.append("1=1");
 
             if ( query.getId() != null ) {
-                condition.append( " and audit_object.id=?" );
+                condition.append( " and audit.id=?" );
                 args.add( query.getId() );
             }
 
@@ -55,7 +55,7 @@ public class AuditObjectDAO_Impl extends PortalBaseJdbcDAO<AuditObject> implemen
 
             //TODO CRM-16: какие параметры кроме логина и хоста создателя могут быть в строке поиска?
             if (query.getSearchString() != null && !query.getSearchString().trim().isEmpty()) {
-                condition.append( " and ( creator_login like ? or creator_ip like ?)" );
+                condition.append( " and ( creator_shortname like ? or creator_ip like ?)" );
                 String likeArg = HelperFunc.makeLikeArg(query.getSearchString(), true);
                 args.add(likeArg);
                 args.add(likeArg);

@@ -17,7 +17,7 @@ import java.util.List;
 /**
  * Информация о проекте в регионе
  */
-public class ProjectInfo extends AuditableObject implements Serializable {
+public class ProjectInfo extends AuditableObject {
 
     /**
      * Идентификатор записи о проекте
@@ -164,6 +164,11 @@ public class ProjectInfo extends AuditableObject implements Serializable {
             projectInfo.setRegion( EntityOption.fromLocation( locations.get( 0 ).getLocation() ) );
         }
         return projectInfo;
+    }
+
+    @Override
+    public String getAuditType() {
+        return "ProjectInfo";
     }
 
     @Override

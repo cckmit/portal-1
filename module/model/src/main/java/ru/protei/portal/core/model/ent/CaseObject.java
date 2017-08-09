@@ -14,7 +14,7 @@ import java.util.List;
  * Created by michael on 19.05.16.
  */
 @JdbcEntity(table = "case_object")
-public class CaseObject extends AuditableObject implements Serializable {
+public class CaseObject extends AuditableObject {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -403,6 +403,10 @@ public class CaseObject extends AuditableObject implements Serializable {
         return En_ImportanceLevel.getById(this.impLevel);
     }
 
+    @Override
+    public String getAuditType() {
+        return "CaseObject";
+    }
 
     @Override
     public String toString() {

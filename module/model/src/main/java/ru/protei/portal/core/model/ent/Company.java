@@ -13,7 +13,7 @@ import java.util.List;
  * @author michael
  */
 @JdbcEntity(table = "Company")
-public class Company extends AuditableObject implements Serializable, EntityOptionSupport {
+public class Company extends AuditableObject implements EntityOptionSupport {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -144,6 +144,11 @@ public class Company extends AuditableObject implements Serializable, EntityOpti
 
     public void setSubscriptions( List< CompanySubscription > subscriptions ) {
         this.subscriptions = subscriptions;
+    }
+
+    @Override
+    public String getAuditType() {
+        return "Company";
     }
 
     @Override

@@ -17,10 +17,7 @@ import ru.protei.portal.core.model.annotations.Auditable;
 import ru.protei.portal.core.model.annotations.Privileged;
 import ru.protei.portal.core.model.annotations.Stored;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.AuditObject;
-import ru.protei.portal.core.model.ent.AuditableObject;
-import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.ent.UserSessionDescriptor;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.service.EventPublisherService;
 import ru.protei.portal.core.service.PolicyService;
 import ru.protei.portal.core.service.user.AuthService;
@@ -215,12 +212,11 @@ public class ServiceLayerInterceptor {
             Object arg = pjp.getArgs()[ i ];
             if ( arg != null ) {
                 if ( arg instanceof Long ){
-                    auditableObject = new AuditableObject();
-                    auditableObject.setAuditableId( (Long)arg );
-                    return auditableObject;
+                    LongAuditableObject longAuditableObject = new LongAuditableObject();
+                    longAuditableObject.setId( (Long)arg );
+                    return longAuditableObject;
                 }
                 auditableObject = (AuditableObject) arg;
-                auditableObject.setAuditableId( auditableObject.getId() );
                 return auditableObject;
             }
 

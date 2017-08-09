@@ -18,7 +18,7 @@ import java.util.Date;
  * Created by michael on 23.05.16.
  */
 @JdbcEntity(table = "dev_unit")
-public class DevUnit extends AuditableObject implements Serializable, ProductShortViewSupport {
+public class DevUnit extends AuditableObject implements ProductShortViewSupport {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -162,6 +162,11 @@ public class DevUnit extends AuditableObject implements Serializable, ProductSho
 
     public En_DevUnitType getType () {
         return En_DevUnitType.forId(this.typeId);
+    }
+
+    @Override
+    public String getAuditType() {
+        return "DevUnit";
     }
 
     @Override

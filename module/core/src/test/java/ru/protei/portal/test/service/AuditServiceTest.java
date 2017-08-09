@@ -58,10 +58,12 @@ public class AuditServiceTest {
         Long id = ctx.getBean( AuditObjectDAO.class ).insertAudit( auditObject );
         Assert.assertNotNull( id );
 
-        CoreResponse< List< AuditObject > > result = ctx.getBean( AuditService.class ).auditObjectList( new AuditQuery(  ) );
+        AuditQuery auditQuery = new AuditQuery(  );
+        auditQuery.setId( id );
+        CoreResponse< List< AuditObject > > result = ctx.getBean( AuditService.class ).auditObjectList( auditQuery );
 
         Assert.assertNotNull( result );
-//        Assert.assertTrue( result.getDataAmountTotal() > 0 );
+        Assert.assertTrue( result.getDataAmountTotal() > 0 );
 
         Assert.assertNotNull( result.getData() );
         Assert.assertTrue( result.getData().size() > 0 );

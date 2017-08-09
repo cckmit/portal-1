@@ -11,7 +11,7 @@ import java.util.Set;
  * Created by michael on 16.06.16.
  */
 @JdbcEntity(table = "user_login")
-public class UserLogin implements Removable, Serializable {
+public class UserLogin extends AuditableObject implements Removable {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -50,6 +50,14 @@ public class UserLogin implements Removable, Serializable {
     Set< UserRole > roles;
 
     public UserLogin () {}
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getUlogin() {
         return ulogin;
@@ -141,6 +149,11 @@ public class UserLogin implements Removable, Serializable {
 
     public void setRoles( Set< UserRole > roles ) {
         this.roles = roles;
+    }
+
+    @Override
+    public String getAuditType() {
+        return "UserLogin";
     }
 
     @Override

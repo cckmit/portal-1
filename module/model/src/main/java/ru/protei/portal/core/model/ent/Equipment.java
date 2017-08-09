@@ -13,7 +13,7 @@ import java.util.List;
  * Оборудование
  */
 @JdbcEntity(table = "Equipment")
-public class Equipment extends AuditableObject implements Serializable {
+public class Equipment extends AuditableObject {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -217,6 +217,11 @@ public class Equipment extends AuditableObject implements Serializable {
 
     public void setProject( String project ) {
         this.project = project;
+    }
+
+    @Override
+    public String getAuditType() {
+        return "Equipment";
     }
 
     @Override

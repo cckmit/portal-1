@@ -43,7 +43,7 @@ public interface EquipmentService {
     @Auditable( En_AuditType.EQUIPMENT_COPY )
     CoreResponse<Long> copyEquipment( AuthToken token, @Stored Long equipmentId, String newName, Long authorId );
 
-    @Privileged( En_Privilege.EQUIPMENT_REMOVE )
+//    @Privileged( En_Privilege.EQUIPMENT_REMOVE )
     @Auditable( En_AuditType.EQUIPMENT_REMOVE )
     CoreResponse<Boolean> removeEquipment( AuthToken token, @Stored Long equipmentId );
 }

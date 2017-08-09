@@ -13,7 +13,7 @@ import java.util.Date;
  * Created by michael on 30.03.16.
  */
 @JdbcEntity(table = "Person")
-public class Person extends AuditableObject implements Serializable, PersonShortViewSupport {
+public class Person extends AuditableObject implements PersonShortViewSupport {
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
 
@@ -282,6 +282,11 @@ public class Person extends AuditableObject implements Serializable, PersonShort
 
     public void setGender (En_Gender gender) {
         this.genderCode = gender.getCode();
+    }
+
+    @Override
+    public String getAuditType() {
+        return "Person";
     }
 
     @Override
