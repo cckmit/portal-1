@@ -3,9 +3,9 @@ package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_EquipmentStage;
 import ru.protei.portal.core.model.dict.En_EquipmentType;
+import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.winter.jdbc.annotations.*;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -13,7 +13,7 @@ import java.util.List;
  * Оборудование
  */
 @JdbcEntity(table = "Equipment")
-public class Equipment implements Serializable {
+public class Equipment extends AuditableObject {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -217,6 +217,11 @@ public class Equipment implements Serializable {
 
     public void setProject( String project ) {
         this.project = project;
+    }
+
+    @Override
+    public String getAuditType() {
+        return "Equipment";
     }
 
     @Override

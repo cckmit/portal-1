@@ -105,7 +105,7 @@ public class LiveSampleTest {
 
         resultCase.setState(En_CaseState.OPENED);
         resultCase.setManager(testPerson);
-        caseService.updateCaseObject(null, resultCase, testPerson);
+        caseService.updateCaseObject(null, resultCase);
 
         // wait event handling
         Thread.sleep(500);

@@ -1,16 +1,16 @@
 package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.winter.jdbc.annotations.*;
 
-import java.io.Serializable;
 import java.util.Set;
 
 /**
  * Created by michael on 16.06.16.
  */
 @JdbcEntity(table = "user_role")
-public class UserRole implements Serializable {
+public class UserRole extends AuditableObject {
 
     @JdbcId(name = "id")
     private Long id;
@@ -61,6 +61,11 @@ public class UserRole implements Serializable {
 
     public boolean hasPrivilege( En_Privilege privilege ){
         return privileges.contains( privilege );
+    }
+
+    @Override
+    public String getAuditType() {
+        return "UserRole";
     }
 
     @Override

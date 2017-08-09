@@ -1,17 +1,17 @@
 package ru.protei.portal.core.service;
 
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.core.model.annotations.Auditable;
 import ru.protei.portal.core.model.annotations.Privileged;
+import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.struct.RegionInfo;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Сервис управления проектами
@@ -44,6 +44,7 @@ public interface ProjectService {
      * @param project    проект
      */
     @Privileged( En_Privilege.PRODUCT_EDIT )
+    @Auditable( En_AuditType.PROJECT_MODIFY )
     CoreResponse saveProject( AuthToken token, ProjectInfo project );
 
     /**

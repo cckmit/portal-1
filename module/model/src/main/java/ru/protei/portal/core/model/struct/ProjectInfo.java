@@ -8,7 +8,6 @@ import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -16,7 +15,7 @@ import java.util.List;
 /**
  * Информация о проекте в регионе
  */
-public class ProjectInfo implements Serializable {
+public class ProjectInfo extends AuditableObject {
 
     /**
      * Идентификатор записи о проекте
@@ -163,6 +162,11 @@ public class ProjectInfo implements Serializable {
             projectInfo.setRegion( EntityOption.fromLocation( locations.get( 0 ).getLocation() ) );
         }
         return projectInfo;
+    }
+
+    @Override
+    public String getAuditType() {
+        return "ProjectInfo";
     }
 
     @Override

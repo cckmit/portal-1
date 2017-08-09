@@ -114,6 +114,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public AuditObjectDAO getAuditDAO() {
+        return new AuditObjectDAO_Impl();
+    }
+
+    @Bean
     public UserSessionDAO getUserSessionDAO() {
         return new UserSessionDAO_Impl();
     }
@@ -252,6 +257,11 @@ public class MainConfiguration {
 
     @Bean
     public CaseService getCaseService() { return new CaseServiceImpl(); }
+
+    @Bean
+    public AuditService getAuditService() {
+        return new AuditServiceImpl();
+    }
 
     @Bean
     public AttachmentService getAttachmentService() { return new AttachmentServiceImpl(); }
