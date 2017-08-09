@@ -15,9 +15,10 @@ import ru.protei.portal.core.exception.InvalidAuditableObjectException;
 import ru.protei.portal.core.exception.InvalidAuthTokenException;
 import ru.protei.portal.core.model.annotations.Auditable;
 import ru.protei.portal.core.model.annotations.Privileged;
-import ru.protei.portal.core.model.annotations.Stored;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.struct.AuditObject;
+import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.service.EventPublisherService;
 import ru.protei.portal.core.service.PolicyService;
 import ru.protei.portal.core.service.user.AuthService;
@@ -53,7 +54,7 @@ public class ServiceLayerInterceptor {
         try {
             checkPrivileges( pjp );
             Object result = pjp.proceed();
-            checkAuditableAndCreate( pjp, result );
+            tryDoAudit( pjp, result );
             return result;
         }
         catch (Throwable e) {
@@ -90,7 +91,7 @@ public class ServiceLayerInterceptor {
         return null;
     }
 
-    private void checkAuditableAndCreate( ProceedingJoinPoint pjp, Object result ) {
+    private void tryDoAudit( ProceedingJoinPoint pjp, Object result ) {
 
         if ( result instanceof CoreResponse && !((CoreResponse)result).getStatus().equals( En_ResultStatus.OK ) ){
             return;
@@ -204,20 +205,18 @@ public class ServiceLayerInterceptor {
 
         for (int i = 0; i < params.length; i++) {
 
-            if ( !params[ i ].isAnnotationPresent( Stored.class ) ) {
+            Object arg = pjp.getArgs()[ i ];
+            if ( !( arg instanceof AuditableObject ) ) {
                 continue;
             }
 
-            AuditableObject auditableObject;
-            Object arg = pjp.getArgs()[ i ];
             if ( arg != null ) {
                 if ( arg instanceof Long ){
                     LongAuditableObject longAuditableObject = new LongAuditableObject();
                     longAuditableObject.setId( (Long)arg );
                     return longAuditableObject;
                 }
-                auditableObject = (AuditableObject) arg;
-                return auditableObject;
+                return (AuditableObject) arg;
             }
 
             throw new InvalidAuditableObjectException();

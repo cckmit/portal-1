@@ -1,7 +1,7 @@
 package ru.protei.portal.core.model.dao;
 
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
-import ru.protei.portal.core.model.ent.AuditObject;
+import ru.protei.portal.core.model.struct.AuditObject;
 import ru.protei.portal.core.model.query.AuditQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 

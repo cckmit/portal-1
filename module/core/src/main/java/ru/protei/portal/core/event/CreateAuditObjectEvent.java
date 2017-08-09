@@ -2,7 +2,7 @@ package ru.protei.portal.core.event;
 
 import org.springframework.context.ApplicationEvent;
 import ru.protei.portal.core.aspect.ServiceLayerInterceptor;
-import ru.protei.portal.core.model.ent.AuditObject;
+import ru.protei.portal.core.model.struct.AuditObject;
 
 /**
  * Created by butusov on 07.08.17.

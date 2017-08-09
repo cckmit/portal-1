@@ -6,8 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.AuditObjectDAO;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.AuditQuery;
+import ru.protei.portal.core.model.struct.AuditObject;
+
 import java.util.List;
 
 /**

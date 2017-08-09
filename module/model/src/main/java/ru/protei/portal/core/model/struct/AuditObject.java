@@ -1,5 +1,6 @@
-package ru.protei.portal.core.model.ent;
+package ru.protei.portal.core.model.struct;
 
+import ru.protei.portal.core.model.ent.Person;
 import ru.protei.winter.jdbc.annotations.*;
 import java.io.Serializable;
 import java.util.Date;

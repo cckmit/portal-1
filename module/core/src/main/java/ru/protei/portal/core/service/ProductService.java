@@ -3,7 +3,6 @@ package ru.protei.portal.core.service;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.annotations.Auditable;
 import ru.protei.portal.core.model.annotations.Privileged;
-import ru.protei.portal.core.model.annotations.Stored;
 import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.AuthToken;
@@ -34,11 +33,11 @@ public interface ProductService {
 
     @Privileged( En_Privilege.PRODUCT_CREATE )
     @Auditable( En_AuditType.PRODUCT_CREATE )
-    CoreResponse<Long> createProduct( AuthToken token, @Stored DevUnit product);
+    CoreResponse<Long> createProduct( AuthToken token, DevUnit product);
 
     @Privileged( En_Privilege.PRODUCT_EDIT )
     @Auditable( En_AuditType.PRODUCT_MODIFY )
-    CoreResponse<Boolean> updateProduct( AuthToken token, @Stored DevUnit product );
+    CoreResponse<Boolean> updateProduct( AuthToken token, DevUnit product );
 
     @Privileged( En_Privilege.PRODUCT_VIEW )
     CoreResponse<Boolean> checkUniqueProductByName( AuthToken token, String name, Long id);

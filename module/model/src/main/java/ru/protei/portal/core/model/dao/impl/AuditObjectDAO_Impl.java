@@ -2,7 +2,7 @@ package ru.protei.portal.core.model.dao.impl;
 
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.AuditObjectDAO;
-import ru.protei.portal.core.model.ent.AuditObject;
+import ru.protei.portal.core.model.struct.AuditObject;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.AuditQuery;
 import ru.protei.portal.core.model.query.SqlCondition;

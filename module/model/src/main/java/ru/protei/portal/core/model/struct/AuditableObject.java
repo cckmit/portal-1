@@ -1,9 +1,9 @@
-package ru.protei.portal.core.model.ent;
+package ru.protei.portal.core.model.struct;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import ru.protei.portal.core.model.struct.ProjectInfo;
+import ru.protei.portal.core.model.ent.*;
 
 import java.io.Serializable;
 

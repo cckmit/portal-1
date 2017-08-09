@@ -11,7 +11,7 @@ import ru.protei.portal.core.model.dao.AuditObjectDAO;
 import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
-import ru.protei.portal.core.model.ent.AuditObject;
+import ru.protei.portal.core.model.struct.AuditObject;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.query.AuditQuery;
 import ru.protei.portal.core.service.AuditService;
@@ -66,7 +66,11 @@ public class AuditServiceTest {
         Assert.assertTrue( result.getDataAmountTotal() > 0 );
 
         Assert.assertNotNull( result.getData() );
-        Assert.assertTrue( result.getData().size() > 0 );
+        Assert.assertTrue( result.getData().size() == 1 );
+
+        Assert.assertTrue( result.getData().get( 0 ).getEntryInfo() instanceof DevUnit );
+
+        Assert.assertTrue( ((DevUnit)result.getData().get( 0 ).getEntryInfo()).getName().equals( "Test Product" ) );
 
         System.out.println( result.getData().get( 0 ).getEntryInfo() );
 

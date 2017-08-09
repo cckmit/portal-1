@@ -2,14 +2,12 @@ package ru.protei.portal.core.model.struct;
 
 import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
 import ru.protei.portal.core.model.dict.En_RegionState;
-import ru.protei.portal.core.model.ent.AuditableObject;
 import ru.protei.portal.core.model.ent.CaseLocation;
 import ru.protei.portal.core.model.ent.CaseMember;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;

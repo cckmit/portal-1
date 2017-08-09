@@ -3,7 +3,6 @@ package ru.protei.portal.core.service;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.annotations.Auditable;
 import ru.protei.portal.core.model.annotations.Privileged;
-import ru.protei.portal.core.model.annotations.Stored;
 import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.AuthToken;
@@ -29,7 +28,7 @@ public interface EquipmentService {
 
     @Privileged( requireAny = { En_Privilege.EQUIPMENT_CREATE, En_Privilege.EQUIPMENT_EDIT })
     @Auditable( En_AuditType.EQUIPMENT_MODIFY )
-    CoreResponse< Equipment > saveEquipment( AuthToken token, @Stored Equipment equipment );
+    CoreResponse< Equipment > saveEquipment( AuthToken token, Equipment equipment );
 
     @Privileged( requireAny = { En_Privilege.EQUIPMENT_CREATE, En_Privilege.EQUIPMENT_EDIT })
     CoreResponse< DecimalNumber > getNextAvailableDecimalNumber( AuthToken token, DecimalNumber number );
@@ -41,9 +40,9 @@ public interface EquipmentService {
 
     @Privileged( requireAny = { En_Privilege.EQUIPMENT_CREATE, En_Privilege.EQUIPMENT_EDIT })
     @Auditable( En_AuditType.EQUIPMENT_COPY )
-    CoreResponse<Long> copyEquipment( AuthToken token, @Stored Long equipmentId, String newName, Long authorId );
+    CoreResponse<Long> copyEquipment( AuthToken token, Long equipmentId, String newName, Long authorId );
 
-//    @Privileged( En_Privilege.EQUIPMENT_REMOVE )
+    @Privileged( En_Privilege.EQUIPMENT_REMOVE )
     @Auditable( En_AuditType.EQUIPMENT_REMOVE )
-    CoreResponse<Boolean> removeEquipment( AuthToken token, @Stored Long equipmentId );
+    CoreResponse<Boolean> removeEquipment( AuthToken token, Long equipmentId );
 }

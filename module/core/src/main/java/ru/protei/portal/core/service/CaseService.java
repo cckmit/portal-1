@@ -3,7 +3,6 @@ package ru.protei.portal.core.service;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.annotations.Auditable;
 import ru.protei.portal.core.model.annotations.Privileged;
-import ru.protei.portal.core.model.annotations.Stored;
 import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
@@ -31,11 +30,11 @@ public interface CaseService {
 
     @Privileged({ En_Privilege.ISSUE_CREATE })
     @Auditable( En_AuditType.ISSUE_CREATE )
-    CoreResponse<CaseObject> saveCaseObject( AuthToken token, @Stored CaseObject p, Person initiator );
+    CoreResponse<CaseObject> saveCaseObject( AuthToken token, CaseObject p, Person initiator );
 
     @Privileged({ En_Privilege.ISSUE_CREATE })
     @Auditable( En_AuditType.ISSUE_MODIFY )
-    CoreResponse<CaseObject> updateCaseObject( AuthToken token, @Stored CaseObject p );
+    CoreResponse<CaseObject> updateCaseObject( AuthToken token, CaseObject p );
 
     CoreResponse<List<En_CaseState>> stateList(En_CaseType caseType);
 
@@ -44,15 +43,15 @@ public interface CaseService {
 
     @Privileged({ En_Privilege.ISSUE_EDIT, En_Privilege.ISSUE_VIEW })
     @Auditable( En_AuditType.ISSUE_COMMENT_CREATE )
-    CoreResponse<CaseComment> addCaseComment( AuthToken token, @Stored CaseComment p, Person currentPerson );
+    CoreResponse<CaseComment> addCaseComment( AuthToken token, CaseComment p, Person currentPerson );
 
     @Privileged({ En_Privilege.ISSUE_EDIT, En_Privilege.ISSUE_VIEW })
     @Auditable( En_AuditType.ISSUE_COMMENT_MODIFY )
-    CoreResponse<CaseComment> updateCaseComment( AuthToken token, @Stored CaseComment p, Person person );
+    CoreResponse<CaseComment> updateCaseComment( AuthToken token, CaseComment p, Person person );
 
     @Privileged({ En_Privilege.ISSUE_EDIT, En_Privilege.ISSUE_VIEW })
     @Auditable( En_AuditType.ISSUE_COMMENT_REMOVE )
-    CoreResponse removeCaseComment( AuthToken token, @Stored CaseComment caseComment, Long personId );
+    CoreResponse removeCaseComment( AuthToken token, CaseComment caseComment, Long personId );
 
     @Privileged( En_Privilege.ISSUE_EDIT )
     CoreResponse<Boolean> updateCaseModified( AuthToken token, Long caseId, Date modified);
