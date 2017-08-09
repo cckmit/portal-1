@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<FIELDS>
+<ID_HPSM>hpsm-live-test1642</ID_HPSM>
+<STATUS />
+<ID_VENDOR>generated-case-ext-id</ID_VENDOR>
+<ASSIGNMENT />
+<ASSIGNMENT_EMAIL />
+<FILIAL />
+<REGION />
+<CITY />
+<ADDRESS />
+<SITE_NAME />
+<PRODUCT_TYPE />
+<MANUFACTURER />
+<MODEL />
+<LOGICAL_NAME />
+<SOFT_VERSION />
+<SEVERITY />
+<BRIEF_DESCRIPTION />
+<DESCRIPTION />
+<MESSAGE>Алексей, контактное лицо есть и  статус &quot;в работе&quot; )))</MESSAGE>
+<DISPUTE />
+<REGISTRATION_TIME />
+<TO_WORK_TIME />
+<WORKAROUND_TIME />
+<RESOLUTION_TIME />
+<ACCEPT_WORKAROUND_TIME />
+</FIELDS>

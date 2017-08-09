@@ -67,7 +67,7 @@ public class HpsmMessage implements Cloneable,Serializable {
     String version;
 
     @XStreamAlias("SEVERITY")
-    int severity;
+    String severity;
 
     @XStreamAlias("BRIEF_DESCRIPTION")
     String shortDescription;
@@ -233,14 +233,6 @@ public class HpsmMessage implements Cloneable,Serializable {
 
     public void setVersion(String version) {
         this.version = version;
-    }
-
-    public int getSeverity() {
-        return severity;
-    }
-
-    public void setSeverity(int severity) {
-        this.severity = severity;
     }
 
     public String getShortDescription() {
@@ -417,7 +409,8 @@ public class HpsmMessage implements Cloneable,Serializable {
 
 
     public void updateCustomerFields (HpsmMessage custState) {
-        this.severity = custState.severity;
+        this.severity = custState.severity != null ? custState.severity : this.severity;
+
         this.txAcceptWorkaroundTime = custState.txAcceptWorkaroundTime;
         this.txOpenTime = custState.txOpenTime;
         this.txSolutionTime = custState.txSolutionTime;
@@ -442,11 +435,20 @@ public class HpsmMessage implements Cloneable,Serializable {
     }
 
     public HpsmSeverity severity () {
-        return HpsmSeverity.find(this.severity);
+        if (HelperFunc.isEmpty(this.severity))
+            return null;
+
+        try {
+            int parsed = Integer.parseInt(this.severity, 10);
+            return HpsmSeverity.find(parsed);
+        }
+        catch (Throwable e) {
+            throw new RuntimeException("invalid severity format", e);
+        }
     }
 
     public HpsmSeverity severity (HpsmSeverity sv) {
-        this.severity = sv.getHpsmLevel();
+        this.severity = String.valueOf(sv.getHpsmLevel());
         return sv;
     }
 
