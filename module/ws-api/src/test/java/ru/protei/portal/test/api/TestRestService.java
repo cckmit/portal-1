@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.http.*;
+import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.http.converter.xml.MarshallingHttpMessageConverter;
@@ -15,12 +16,11 @@ import org.springframework.oxm.xstream.XStreamMarshaller;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.util.UriComponentsBuilder;
-import ru.protei.portal.api.model.DepartmentRecord;
-import ru.protei.portal.api.model.ServiceResult;
-import ru.protei.portal.api.model.WorkerRecord;
+import ru.protei.portal.api.config.WSConfig;
+import ru.protei.portal.api.model.*;
 import ru.protei.portal.api.service.WorkerService;
 
-import java.io.InputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -142,8 +142,7 @@ public class TestRestService {
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_XML));
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
-        ResponseEntity<DepartmentRecord> response =
-                restTemplate.exchange(URI, HttpMethod.GET, entity, DepartmentRecord.class);
+        ResponseEntity<DepartmentRecord> response = restTemplate.exchange(URI, HttpMethod.GET, entity, DepartmentRecord.class);
         DepartmentRecord dr = response.getBody();
 
         Assert.assertNotNull ("Result of get.department is null!", dr);
@@ -165,8 +164,7 @@ public class TestRestService {
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_XML));
         HttpEntity<DepartmentRecord> entity = new HttpEntity<>(origDepartment, headers);
 
-        ResponseEntity<ServiceResult> response =
-                restTemplate.exchange(URI, HttpMethod.PUT, entity, ServiceResult.class);
+        ResponseEntity<ServiceResult> response = restTemplate.exchange(URI, HttpMethod.PUT, entity, ServiceResult.class);
         ServiceResult sr = response.getBody();
 
         Assert.assertNotNull(sr);
@@ -187,8 +185,7 @@ public class TestRestService {
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_XML));
         HttpEntity<WorkerRecord> entity = new HttpEntity<>(origWorker, headers);
 
-        ResponseEntity<ServiceResult> response =
-                restTemplate.exchange(URI, HttpMethod.POST, entity, ServiceResult.class);
+        ResponseEntity<ServiceResult> response = restTemplate.exchange(URI, HttpMethod.POST, entity, ServiceResult.class);
         ServiceResult sr = response.getBody();
 
         Assert.assertNotNull ("Result add.worker is null!", sr);
@@ -208,8 +205,7 @@ public class TestRestService {
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_XML));
         HttpEntity<WorkerRecord> entity = new HttpEntity<>(origWorker, headers);
 
-        ResponseEntity<ServiceResult> response =
-                restTemplate.exchange(URI, HttpMethod.PUT, entity, ServiceResult.class);
+        ResponseEntity<ServiceResult> response = restTemplate.exchange(URI, HttpMethod.PUT, entity, ServiceResult.class);
         ServiceResult sr = response.getBody();
 
         Assert.assertNotNull ("Result update.worker is null!", sr);
@@ -229,14 +225,77 @@ public class TestRestService {
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_XML));
         HttpEntity<WorkerRecord> entity = new HttpEntity<>(origWorker, headers);
 
-        ResponseEntity<ServiceResult> response =
-                restTemplate.exchange(URI, HttpMethod.DELETE, entity, ServiceResult.class);
+        ResponseEntity<ServiceResult> response = restTemplate.exchange(URI, HttpMethod.DELETE, entity, ServiceResult.class);
         ServiceResult sr = response.getBody();
 
         Assert.assertNotNull ("Result delete.worker is null!", sr);
         Assert.assertEquals ("delete.worker is not success! " + sr.getErrInfo (), true, sr.isSuccess ());
         Assert.assertTrue ("delete.worker must return not null identifer!", (sr.getId () != null && sr.getId () > 0));
         logger.debug ("The worker is deleted. id = " + sr.getId ());
+    }
+
+    @Test
+    public void testUpdatePhoto() {
+
+        Long id = new Long (149);
+        byte[] buf = read (id);
+        logger.debug ("personId = " + id);
+        logger.debug ("photo = " + buf);
+        logger.debug("photo's length = " + (buf != null ? buf.length : null));
+
+        String URI = BASE_URI + "update.photo";
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.setMessageConverters(getMessageConverters());
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(Arrays.asList(MediaType.APPLICATION_XML));
+        HttpEntity<byte[]> entity = new HttpEntity<>(buf, headers);
+
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(URI).queryParam("id", 148L);
+        String uriBuilder = builder.build().encode().toUriString();
+
+        ResponseEntity<ServiceResult> response = restTemplate.exchange(uriBuilder, HttpMethod.PUT, entity, ServiceResult.class);
+        ServiceResult sr = response.getBody();
+
+        Assert.assertNotNull ("Result updatePhoto() is null!", sr);
+        Assert.assertEquals ("updatePhoto() is not success! " + sr.getErrInfo (), true, sr.isSuccess ());
+        Assert.assertTrue ("updatePhoto() must return not null identifer!", (sr.getId () != null && sr.getId () > 0));
+        File newFile = new File (WSConfig.getInstance ().getDirPhotos () + sr.getId () + ".jpg");
+        Assert.assertEquals ("New file not exist", true, (newFile.exists () && (newFile.length () > 0)));
+        logger.debug ("The photo of worker is updated. id = " + sr.getId ());
+    }
+
+    private byte[] read(Long id) {
+
+        ByteArrayOutputStream out = null;
+        InputStream input = null;
+
+        try {
+            String fileName = dirPhotos + id + ".jpg";
+            logger.debug("=== fileName = " + fileName);
+            File file = new File(fileName);
+            if (file.exists()) {
+
+                out = new ByteArrayOutputStream();
+                input = new BufferedInputStream(new FileInputStream(file));
+                int data = 0;
+                while ((data = input.read()) != -1){
+                    out.write(data);
+                }
+                logger.debug("=== file exists");
+            } else {
+                logger.debug ("=== file doesn't exist");
+            }
+        } catch (Exception e) {
+            logger.error ("error while update photo", e);
+        }
+        finally{
+            try {
+                input.close();
+                out.close ();
+            } catch (Exception e) {}
+        }
+        return out.toByteArray();
     }
 
     @Test
@@ -250,8 +309,7 @@ public class TestRestService {
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_XML));
         HttpEntity<DepartmentRecord> entity = new HttpEntity<>(origDepartment, headers);
 
-        ResponseEntity<ServiceResult> response =
-                restTemplate.exchange(URI, HttpMethod.DELETE, entity, ServiceResult.class);
+        ResponseEntity<ServiceResult> response = restTemplate.exchange(URI, HttpMethod.DELETE, entity, ServiceResult.class);
         ServiceResult sr = response.getBody();
 
         Assert.assertNotNull ("Result delete.department is null!", sr);
@@ -262,11 +320,13 @@ public class TestRestService {
 
     private List<HttpMessageConverter<?>> getMessageConverters() {
         Jaxb2Marshaller oxmMarshaller = new Jaxb2Marshaller();
-        oxmMarshaller.setClassesToBeBound(WorkerRecord.class, DepartmentRecord.class, ServiceResult.class);
+        oxmMarshaller.setClassesToBeBound(WorkerRecord.class, WorkerRecordList.class,
+                DepartmentRecord.class, ServiceResult.class, ServiceResultList.class);
         MarshallingHttpMessageConverter marshallingConverter = new MarshallingHttpMessageConverter(oxmMarshaller);
 
         List<HttpMessageConverter<?>> converters = new ArrayList<>();
         converters.add(marshallingConverter);
+        converters.add(new ByteArrayHttpMessageConverter());
 
 /*
         XStreamMarshaller xstreamMarshaller = new XStreamMarshaller();

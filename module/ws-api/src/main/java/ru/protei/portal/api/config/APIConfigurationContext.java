@@ -5,11 +5,9 @@ import org.apache.cxf.aegis.databinding.AegisDatabinding;
 import org.apache.cxf.bus.spring.SpringBus;
 import org.apache.cxf.jaxws.EndpointImpl;
 import org.apache.cxf.jaxws.support.JaxWsServiceFactoryBean;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.*;
 import org.springframework.http.MediaType;
+import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.http.converter.xml.MarshallingHttpMessageConverter;
@@ -18,9 +16,7 @@ import org.springframework.oxm.xstream.XStreamMarshaller;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
-import ru.protei.portal.api.model.DepartmentRecord;
-import ru.protei.portal.api.model.ServiceResult;
-import ru.protei.portal.api.model.WorkerRecord;
+import ru.protei.portal.api.model.*;
 import ru.protei.portal.api.service.WorkerService;
 import ru.protei.portal.api.service.WorkerServiceImpl;
 import ru.protei.portal.api.tools.migrate.WSMigrationManager;
@@ -33,6 +29,8 @@ import javax.xml.ws.Endpoint;
 import java.util.Arrays;
 import java.util.List;
 
+@EnableTransactionManagement
+@EnableAspectJAutoProxy
 @EnableWebMvc
 @Configuration
 @ComponentScan(basePackages = "ru.protei.portal.api.controller")
@@ -97,10 +95,12 @@ public class APIConfigurationContext extends WebMvcConfigurerAdapter {
     @Override
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
         Jaxb2Marshaller oxmMarshaller = new Jaxb2Marshaller();
-        oxmMarshaller.setClassesToBeBound(WorkerRecord.class, DepartmentRecord.class, ServiceResult.class);
+        oxmMarshaller.setClassesToBeBound(WorkerRecord.class, WorkerRecordList.class,
+                DepartmentRecord.class, ServiceResult.class, ServiceResultList.class);
         MarshallingHttpMessageConverter marshallingHttpMessageConverter = new MarshallingHttpMessageConverter(oxmMarshaller);
 
         converters.add(marshallingHttpMessageConverter);
+        converters.add(new ByteArrayHttpMessageConverter());
 
 /*
         XStreamMarshaller xstreamMarshaller = new XStreamMarshaller();

@@ -2,22 +2,20 @@ package ru.protei.portal.api.controller;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.bind.annotation.*;
 import protei.sql.query.Tm_SqlQueryHelper;
 import ru.protei.portal.api.config.WSConfig;
-import ru.protei.portal.api.model.DepartmentRecord;
-import ru.protei.portal.api.model.En_ErrorCode;
-import ru.protei.portal.api.model.ServiceResult;
-import ru.protei.portal.api.model.WorkerRecord;
+import ru.protei.portal.api.model.*;
 import ru.protei.portal.api.utils.HelperService;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_Gender;
+import ru.protei.portal.core.model.dict.En_SortDir;
+import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
-import ru.protei.winter.jdbc.JdbcSort;
 
-import java.awt.*;
 import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
@@ -26,7 +24,6 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.net.Inet4Address;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -51,57 +48,69 @@ public class WorkerController {
     @Autowired
     private WorkerEntryDAO workerEntryDAO;
 
+    @Autowired
+    TransactionTemplate transactionTemplate;
+
     @RequestMapping(method = RequestMethod.GET, value = "/get.worker")
-    @ResponseBody
-    public WorkerRecord getWorker(@RequestParam(name = "id") Long id) {
+    public @ResponseBody WorkerRecord getWorker(@RequestParam(name = "id") Long id) {
 
         logger.debug("=== getWorker ===");
         logger.debug("=== id = " + id);
 
-        if (id != null) {
-            Person person = personDAO.get (id);
-            if (person != null) {
-                return new WorkerRecord (person);
+        try {
+            if (id != null) {
+                Person person = personDAO.get (id);
+                if (person != null && person.getExternalCode() != null) {
+                    return new WorkerRecord(person);
+                }
             }
+        } catch (Exception e) {
+            logger.error ("error while get worker", e);
         }
 
         return null;
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/get.department")
-    @ResponseBody
-    public DepartmentRecord getDepartment() {
+    public @ResponseBody DepartmentRecord getDepartment() {
 
         logger.debug("=== getDepartment ===");
 
         DepartmentRecord departmentRecord = new DepartmentRecord();
+        departmentRecord.setCompanyCode("protei");
         departmentRecord.setDepartmentId(1L);
-        departmentRecord.setDepartmentName("DepartmentName");
+        departmentRecord.setDepartmentName("Department Name");
         departmentRecord.setHeadId(1L);
         departmentRecord.setParentId(null);
         return departmentRecord;
     }
 
-/*
     @RequestMapping(method = RequestMethod.GET, value = "/get.workers")
-    public @ResponseBody List<WorkerRecord> getWorkers(@RequestParam(name = "expr") String expr) {
+    public @ResponseBody WorkerRecordList getWorkers(@RequestParam(name = "expr") String expr) {
 
         logger.debug("=== getWorkers ===");
 
-        List<WorkerRecord> workers = new ArrayList<>();
-        expr = Tm_SqlQueryHelper.makeLikeArgEx (expr);
+        WorkerRecordList workers = new WorkerRecordList();
 
-        logger.debug("=== expr = " + expr);
+        try {
+            expr = Tm_SqlQueryHelper.makeLikeArgEx (expr);
+            logger.debug("=== expr = " + expr);
 
-        List<Person> persons = personDAO.getListByCondition ("isdeleted=0 and (firstname like ? or lastname like ? or secondname like ?)",
-                new JdbcSort(JdbcSort.Direction.ASC,"lastname,firstname,secondname"), expr, expr, expr);
-        if (persons != null && !persons.isEmpty ())
-            for (Person p : persons)
-                workers.add (new WorkerRecord (p));
+            EmployeeQuery query = new EmployeeQuery(null, false, expr,
+                    En_SortField.person_full_name, En_SortDir.ASC);
+            query.setSearchByContactInfo(false);
+            List<Person> persons = personDAO.getEmployees(query);
+
+            persons.forEach(person ->
+                    workers.getWorkerRecords().add(new WorkerRecord(person))
+            );
+
+        } catch (Exception e) {
+            logger.error ("error while get workers", e);
+        }
 
         return workers;
     }
-*/
 
     @RequestMapping(method = RequestMethod.POST, value = "/add.worker")
     public @ResponseBody ServiceResult addWorker(@RequestBody WorkerRecord rec) {
@@ -118,66 +127,77 @@ public class WorkerController {
             }
             logger.debug("==========================");
 
-            ServiceResult isValid = isValidWorkerRecord (rec);
-            if (!isValid.isSuccess ())
-                return isValid;
+            return transactionTemplate.execute(transactionStatus -> {
 
-            CompanyHomeGroupItem item = companyGroupHomeDAO.getByCondition ("external_code=?", rec.getCompanyCode ().trim ());
-            if (item == null)
-                return ServiceResult.failResult (En_ErrorCode.UNKNOWN_COMP.getCode (), En_ErrorCode.UNKNOWN_COMP.getMessage (), rec.getId ());
+                try {
 
-            CompanyDepartment department = companyDepartmentDAO.getByCondition ("dep_extId=? and company_id=?", rec.getDepartmentId (), item.getCompanyId ());
-            if (department == null)
-                return ServiceResult.failResult (En_ErrorCode.UNKNOWN_DEP.getCode (), En_ErrorCode.UNKNOWN_DEP.getMessage (), null);
+                    ServiceResult isValid = isValidWorkerRecord (rec);
+                    if (!isValid.isSuccess ())
+                        return isValid;
 
-            Person person = null;
-            if (rec.getId () != null) {
-                person = personDAO.get (rec.getId ());
-            }
+                    CompanyHomeGroupItem item = companyGroupHomeDAO.getByExternalCode(rec.getCompanyCode().trim());
+                    if (item == null)
+                        return ServiceResult.failResult (En_ErrorCode.UNKNOWN_COMP.getCode (), En_ErrorCode.UNKNOWN_COMP.getMessage (), rec.getId ());
 
-            if (person == null) {
-                person = new Person ();
-                person.setCreated (new Date());
-                person.setCreator ("portal-api@" + Inet4Address.getLocalHost ().getHostAddress());
-                person.setCompanyId (item.getCompanyId ());
-            }
+                    CompanyDepartment department = companyDepartmentDAO.getByExternalId(rec.getDepartmentId (), item.getCompanyId ());
+                    if (department == null)
+                        return ServiceResult.failResult (En_ErrorCode.UNKNOWN_DEP.getCode (), En_ErrorCode.UNKNOWN_DEP.getMessage (), null);
 
-            copy (rec, person);
+                    if (workerEntryDAO.checkExistsByExternalId(rec.getWorkerId (), item.getCompanyId ()))
+                        return ServiceResult.failResult (En_ErrorCode.EXIST_WOR.getCode (), En_ErrorCode.EXIST_WOR.getMessage (), null);
 
-            if (person.getId () == null)
-                personDAO.persist (person);
-            else
-                personDAO.merge (person);
+                    Person person = null;
+                    if (rec.getId () != null) {
+                        person = personDAO.get (rec.getId ());
+                    }
 
-            WorkerPosition position = getValidPosition (rec.getPositionId (), rec.getPositionName (), item.getCompanyId ());
+                    if (person == null) {
+                        person = new Person ();
+                        person.setCreated (new Date());
+                        person.setCreator ("portal-api@" + Inet4Address.getLocalHost ().getHostAddress());
+                        person.setCompanyId (item.getCompanyId ());
+                    }
 
-            if (workerEntryDAO.checkExistsByCondition ("worker_extId=? and companyId=?", rec.getWorkerId (), item.getCompanyId ()))
-                return ServiceResult.failResult (En_ErrorCode.EXIST_WOR.getCode (), En_ErrorCode.EXIST_WOR.getMessage (), person.getId());
+                    copy (rec, person);
 
-            WorkerEntry worker = new WorkerEntry ();
-            worker.setCreated (new Date ());
-            worker.setPersonId (person.getId ());
-            worker.setCompanyId (item.getCompanyId ());
-            worker.setDepartmentId (department.getId ());
-            worker.setPositionId (position.getId ());
-            worker.setHireDate (rec.getHireDate () != null && rec.getHireDate ().trim ().length () > 0 ? HelperService.DATE.parse (rec.getHireDate ()) : null);
-            worker.setHireOrderNo (rec.getHireOrderNo () != null && rec.getHireOrderNo ().trim ().length () > 0 ? rec.getHireOrderNo ().trim () : null);
-            worker.setFireDate (rec.getFireDate () != null && rec.getFireDate ().trim ().length () > 0 ? HelperService.DATE.parse (rec.getFireDate ()) : null);
-            worker.setFireOrderNo (rec.getFireOrderNo () != null && rec.getFireOrderNo ().trim ().length () > 0 ? rec.getFireOrderNo ().trim () : null);
-            worker.setActiveFlag (rec.getActive ());
-            worker.setExternalId (rec.getWorkerId ());
+                    if (person.getId () == null) {
+                        personDAO.persist(person);
+                    } else {
+                        personDAO.merge(person);
+                    }
 
-            workerEntryDAO.persist (worker);
+                    WorkerPosition position = getValidPosition (rec.getPositionId (), rec.getPositionName (), item.getCompanyId ());
 
-            //wsMigrationManager.persistPerson (person);
+                    WorkerEntry worker = new WorkerEntry ();
+                    worker.setCreated (new Date ());
+                    worker.setPersonId (person.getId ());
+                    worker.setCompanyId (item.getCompanyId ());
+                    worker.setDepartmentId (department.getId ());
+                    worker.setPositionId (position.getId ());
+                    worker.setHireDate (rec.getHireDate () != null && rec.getHireDate ().trim ().length () > 0 ? HelperService.DATE.parse (rec.getHireDate ()) : null);
+                    worker.setHireOrderNo (rec.getHireOrderNo () != null && rec.getHireOrderNo ().trim ().length () > 0 ? rec.getHireOrderNo ().trim () : null);
+                    worker.setFireDate (rec.getFireDate () != null && rec.getFireDate ().trim ().length () > 0 ? HelperService.DATE.parse (rec.getFireDate ()) : null);
+                    worker.setFireOrderNo (rec.getFireOrderNo () != null && rec.getFireOrderNo ().trim ().length () > 0 ? rec.getFireOrderNo ().trim () : null);
+                    worker.setActiveFlag (rec.getActive ());
+                    worker.setExternalId (rec.getWorkerId ());
 
-            return ServiceResult.successResult (person.getId ());
+                    workerEntryDAO.persist (worker);
+
+                    //wsMigrationManager.persistPerson (person);
+
+                    return ServiceResult.successResult (person.getId ());
+
+                } catch (Exception e) {
+                    logger.error ("error while transaction execution", e);
+                    throw new RuntimeException();
+                }
+            });
+
 
         } catch (Exception e) {
             logger.error ("error while add worker's record", e);
+            return ServiceResult.failResult (En_ErrorCode.NOT_CREATE.getCode (), En_ErrorCode.NOT_CREATE.getMessage (), null);
         }
-
-        return ServiceResult.failResult (En_ErrorCode.NOT_CREATE.getCode (), En_ErrorCode.NOT_CREATE.getMessage (), null);
     }
 
     @RequestMapping(method = RequestMethod.PUT, value = "/update.worker")
@@ -195,90 +215,96 @@ public class WorkerController {
             }
             logger.debug("==========================");
 
-            ServiceResult isValid = isValidWorkerRecord (rec);
-            if (!isValid.isSuccess ())
-                return isValid;
+            return transactionTemplate.execute(transactionStatus -> {
 
-            if (rec.getId () == null || rec.getId () < 0)
-                return ServiceResult.failResult (En_ErrorCode.EMPTY_PER_ID.getCode (), En_ErrorCode.EMPTY_PER_ID.getMessage (), rec.getId ());
+                try {
+                    ServiceResult isValid = isValidWorkerRecord (rec);
+                    if (!isValid.isSuccess ())
+                        return isValid;
 
-            CompanyHomeGroupItem item = companyGroupHomeDAO.getByCondition ("external_code=?", rec.getCompanyCode ().trim ());
-            if (item == null)
-                return ServiceResult.failResult (En_ErrorCode.UNKNOWN_COMP.getCode (), En_ErrorCode.UNKNOWN_COMP.getMessage (), rec.getId ());
+                    if (rec.getId () == null || rec.getId () < 0)
+                        return ServiceResult.failResult (En_ErrorCode.EMPTY_PER_ID.getCode (), En_ErrorCode.EMPTY_PER_ID.getMessage (), rec.getId ());
 
-            CompanyDepartment department = companyDepartmentDAO.getByCondition ("dep_extId=? and company_id=?", rec.getDepartmentId (), item.getCompanyId ());
-            if (department == null)
-                return ServiceResult.failResult (En_ErrorCode.UNKNOWN_DEP.getCode (), En_ErrorCode.UNKNOWN_DEP.getMessage (), null);
+                    CompanyHomeGroupItem item = companyGroupHomeDAO.getByExternalCode(rec.getCompanyCode ().trim ());
+                    if (item == null)
+                        return ServiceResult.failResult (En_ErrorCode.UNKNOWN_COMP.getCode (), En_ErrorCode.UNKNOWN_COMP.getMessage (), rec.getId ());
 
-            Person person = personDAO.get (rec.getId ());
-            if (person == null)
-                return ServiceResult.failResult (En_ErrorCode.UNKNOWN_PER.getCode (), En_ErrorCode.UNKNOWN_PER.getMessage (), null);
+                    CompanyDepartment department = companyDepartmentDAO.getByExternalId(rec.getDepartmentId (), item.getCompanyId ());
+                    if (department == null)
+                        return ServiceResult.failResult (En_ErrorCode.UNKNOWN_DEP.getCode (), En_ErrorCode.UNKNOWN_DEP.getMessage (), null);
 
-            copy (rec, person);
+                    Person person = personDAO.get (rec.getId ());
+                    if (person == null)
+                        return ServiceResult.failResult (En_ErrorCode.UNKNOWN_PER.getCode (), En_ErrorCode.UNKNOWN_PER.getMessage (), null);
 
-            personDAO.merge (person);
+                    WorkerEntry worker = workerEntryDAO.getByExternalId(rec.getWorkerId (), item.getCompanyId ());
+                    if (worker == null || worker.getPersonId() != person.getId ())
+                        return ServiceResult.failResult (En_ErrorCode.UNKNOWN_WOR.getCode (), En_ErrorCode.UNKNOWN_WOR.getMessage (), null);
 
-            if (rec.isFired ()) {
+                    copy (rec, person);
 
-                logger.debug("=== fireWorker ===");
-
-                WorkerEntry worker = workerEntryDAO.getByCondition ("worker_extId=? and companyId=? and personId=?", rec.getWorkerId (), item.getCompanyId (), person.getId ());
-
-                if (worker != null) {
-                    workerEntryDAO.remove (worker);
-                }
-
-                List<WorkerEntry> list = workerEntryDAO.getListByCondition ("personId=? and companyId=?", person.getId (), item.getCompanyId ());
-                if (list == null || list.isEmpty ()) {
-                    person.setFired (true);
                     personDAO.merge (person);
+
+                    if (rec.isFired ()) {
+
+                        logger.debug("=== fireWorker ===");
+
+                        workerEntryDAO.remove (worker);
+
+                        if (!workerEntryDAO.checkExistsByPersonId(person.getId())) {
+                            person.setFired (true);
+                            personDAO.merge (person);
+                        }
+
+                        return ServiceResult.successResult (person.getId ());
+                    }
+
+                    WorkerPosition position = getValidPosition (rec.getPositionId (), rec.getPositionName (), item.getCompanyId ());
+
+                    worker.setDepartmentId (department.getId ());
+                    worker.setPositionId (position.getId ());
+                    worker.setHireDate (rec.getHireDate () != null && rec.getHireDate ().trim ().length () > 0 ? HelperService.DATE.parse (rec.getHireDate ()) : null);
+                    worker.setHireOrderNo (rec.getHireOrderNo () != null && rec.getHireOrderNo ().trim ().length () > 0 ? rec.getHireOrderNo ().trim () : null);
+                    worker.setFireDate (rec.getFireDate () != null && rec.getFireDate ().trim ().length () > 0 ? HelperService.DATE.parse (rec.getFireDate ()) : null);
+                    worker.setFireOrderNo (rec.getFireOrderNo () != null && rec.getFireOrderNo ().trim ().length () > 0 ? rec.getFireOrderNo ().trim () : null);
+                    worker.setActiveFlag (rec.getActive ());
+
+                    workerEntryDAO.merge (worker);
+
+                    //wsMigrationManager.mergePerson (person);
+
+                    return ServiceResult.successResult (person.getId ());
+
+                } catch (Exception e) {
+                    logger.error ("error while transaction execution", e);
+                    throw new RuntimeException();
                 }
-
-                return ServiceResult.successResult (person.getId ());
-            }
-
-            WorkerPosition position = getValidPosition (rec.getPositionId (), rec.getPositionName (), item.getCompanyId ());
-
-            WorkerEntry worker = workerEntryDAO.getByCondition ("worker_extId=? and companyId=? and personId=?", rec.getWorkerId (), item.getCompanyId (), person.getId ());
-            if (worker == null)
-                return ServiceResult.failResult (En_ErrorCode.UNKNOWN_WOR.getCode (), En_ErrorCode.UNKNOWN_WOR.getMessage (), null);
-
-            worker.setDepartmentId (department.getId ());
-            worker.setPositionId (position.getId ());
-            worker.setHireDate (rec.getHireDate () != null && rec.getHireDate ().trim ().length () > 0 ? HelperService.DATE.parse (rec.getHireDate ()) : null);
-            worker.setHireOrderNo (rec.getHireOrderNo () != null && rec.getHireOrderNo ().trim ().length () > 0 ? rec.getHireOrderNo ().trim () : null);
-            worker.setFireDate (rec.getFireDate () != null && rec.getFireDate ().trim ().length () > 0 ? HelperService.DATE.parse (rec.getFireDate ()) : null);
-            worker.setFireOrderNo (rec.getFireOrderNo () != null && rec.getFireOrderNo ().trim ().length () > 0 ? rec.getFireOrderNo ().trim () : null);
-            worker.setActiveFlag (rec.getActive ());
-
-            workerEntryDAO.merge (worker);
-
-            //wsMigrationManager.mergePerson (person);
-
-            return ServiceResult.successResult (person.getId ());
+            });
 
         } catch (Exception e) {
             logger.error ("error while update worker's record", e);
+            return ServiceResult.failResult (En_ErrorCode.NOT_UPDATE.getCode (), En_ErrorCode.NOT_UPDATE.getCode (), null);
         }
-
-        return ServiceResult.failResult (En_ErrorCode.NOT_UPDATE.getCode (), En_ErrorCode.NOT_UPDATE.getCode (), null);
     }
 
-/*
     @RequestMapping(method = RequestMethod.PUT, value = "/update.workers")
-    public @ResponseBody List<ServiceResult> updateWorkers(@RequestBody List<WorkerRecord> list) {
+    public @ResponseBody ServiceResultList updateWorkers(@RequestBody WorkerRecordList list) {
 
         logger.debug("=== updateWorkers ===");
 
-        List<ServiceResult> results = new ArrayList<> ();
+        ServiceResultList results = new ServiceResultList();
 
-        if (list != null && !list.isEmpty ())
-            for (WorkerRecord wr : list)
-                results.add (updateWorker (wr));
-
+        try {
+            if (list != null && list.getWorkerRecords() != null && !list.getWorkerRecords().isEmpty ()) {
+                for (WorkerRecord wr : list.getWorkerRecords()) {
+                    results.getServiceResults().add(updateWorker(wr));
+                }
+            }
+        } catch (Exception e) {
+            logger.error ("error while update workers", e);
+        }
         return results;
     }
-*/
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/delete.worker")
     public @ResponseBody ServiceResult deleteWorker(@RequestBody WorkerRecord rec) {
@@ -295,39 +321,44 @@ public class WorkerController {
             }
             logger.debug("==========================");
 
-            if (rec.getWorkerId () < 0)
-                return ServiceResult.failResult (En_ErrorCode.EMPTY_WOR_ID.getCode (), En_ErrorCode.EMPTY_WOR_ID.getMessage (), rec.getWorkerId ());
+            return transactionTemplate.execute(transactionStatus -> {
+                try {
+                    if (rec.getWorkerId () < 0)
+                        return ServiceResult.failResult (En_ErrorCode.EMPTY_WOR_ID.getCode (), En_ErrorCode.EMPTY_WOR_ID.getMessage (), rec.getWorkerId ());
 
-            CompanyHomeGroupItem item = companyGroupHomeDAO.getByCondition ("external_code=?", rec.getCompanyCode ().trim ());
-            if (item == null)
-                return ServiceResult.failResult (En_ErrorCode.UNKNOWN_COMP.getCode (), En_ErrorCode.UNKNOWN_COMP.getMessage (), rec.getId ());
+                    CompanyHomeGroupItem item = companyGroupHomeDAO.getByExternalCode(rec.getCompanyCode ().trim ());
+                    if (item == null)
+                        return ServiceResult.failResult (En_ErrorCode.UNKNOWN_COMP.getCode (), En_ErrorCode.UNKNOWN_COMP.getMessage (), rec.getId ());
 
-            WorkerEntry worker = workerEntryDAO.getByCondition ("worker_extId=? and companyId=?", rec.getWorkerId (), item.getCompanyId ());
-            if (worker == null)
-                return ServiceResult.failResult (En_ErrorCode.UNKNOWN_WOR.getCode (), En_ErrorCode.UNKNOWN_WOR.getMessage (), null);
+                    WorkerEntry worker = workerEntryDAO.getByExternalId(rec.getWorkerId (), item.getCompanyId ());
+                    if (worker == null)
+                        return ServiceResult.failResult (En_ErrorCode.UNKNOWN_WOR.getCode (), En_ErrorCode.UNKNOWN_WOR.getMessage (), null);
 
-            Long personId = worker.getPersonId ();
+                    Long personId = worker.getPersonId ();
 
-            workerEntryDAO.remove (worker);
+                    workerEntryDAO.remove (worker);
 
-            List<WorkerEntry> list = workerEntryDAO.getListByCondition ("personId=?",personId);
-            if (list == null || list.isEmpty ()){
-                Person person = personDAO.get (personId);
-                person.setDeleted (true);
-                personDAO.merge (person);
-                //wsMigrationManager.removePerson (person);
-            }
+                    if (!workerEntryDAO.checkExistsByPersonId(personId)){
+                        Person person = personDAO.get (personId);
+                        person.setDeleted (true);
+                        personDAO.merge (person);
+                        //wsMigrationManager.removePerson (person);
+                    }
 
-            return ServiceResult.successResult (worker.getExternalId ());
+                    return ServiceResult.successResult (worker.getExternalId ());
+
+                } catch (Exception e) {
+                    logger.error ("error while transaction execution", e);
+                    throw new RuntimeException();
+                }
+            });
 
         } catch (Exception e) {
             logger.error ("error while remove worker's record", e);
+            return ServiceResult.failResult (En_ErrorCode.NOT_DELETE.getCode (), En_ErrorCode.NOT_DELETE.getMessage (), null);
         }
-
-        return ServiceResult.failResult (En_ErrorCode.NOT_DELETE.getCode (), En_ErrorCode.NOT_DELETE.getMessage (), null);
     }
 
-/*
     @RequestMapping(method = RequestMethod.PUT, value = "/update.photo")
     public ServiceResult updatePhoto(@RequestParam(name = "id") Long id, @RequestBody byte[] buf) {
 
@@ -366,7 +397,6 @@ public class WorkerController {
 
         return ServiceResult.failResult (En_ErrorCode.NOT_UPDATE.getCode (), En_ErrorCode.NOT_UPDATE.getMessage (), id);
     }
-*/
 
     @RequestMapping(method = RequestMethod.PUT, value = "/update.department")
     public @ResponseBody ServiceResult updateDepartment(@RequestBody DepartmentRecord rec) {
@@ -387,14 +417,14 @@ public class WorkerController {
             if (!isValid.isSuccess ())
                 return isValid;
 
-            CompanyHomeGroupItem item = companyGroupHomeDAO.getByCondition ("external_code=?", rec.getCompanyCode ().trim ());
+            CompanyHomeGroupItem item = companyGroupHomeDAO.getByExternalCode(rec.getCompanyCode ().trim ());
             if (item == null)
                 return ServiceResult.failResult (En_ErrorCode.EMPTY_COMP_CODE.getCode (), En_ErrorCode.EMPTY_COMP_CODE.getMessage (), rec.getDepartmentId ());
 
-            if (rec.getParentId () != null && !companyDepartmentDAO.checkExistsByCondition ("dep_extId=? and company_id=?", rec.getParentId (), item.getCompanyId ()))
+            if (rec.getParentId () != null && !companyDepartmentDAO.checkExistsByExternalId(rec.getParentId (), item.getCompanyId ()))
                 return ServiceResult.failResult (En_ErrorCode.UNKNOWN_PAR_DEP.getCode (), En_ErrorCode.UNKNOWN_PAR_DEP.getMessage (), null);
 
-            CompanyDepartment department = companyDepartmentDAO.getByCondition ("dep_extId=? and company_id=?", rec.getDepartmentId (), item.getCompanyId ());
+            CompanyDepartment department = companyDepartmentDAO.getByExternalId(rec.getDepartmentId (), item.getCompanyId ());
             if (department == null) {
                 department = new CompanyDepartment ();
                 department.setCreated (new Date ());
@@ -439,18 +469,18 @@ public class WorkerController {
             if (rec.getDepartmentId () < 0)
                 return ServiceResult.failResult (En_ErrorCode.EMPTY_DEP_ID.getCode (), En_ErrorCode.EMPTY_DEP_ID.getMessage (), rec.getDepartmentId ());
 
-            CompanyHomeGroupItem item = companyGroupHomeDAO.getByCondition ("external_code=?", rec.getCompanyCode ().trim ());
+            CompanyHomeGroupItem item = companyGroupHomeDAO.getByExternalCode(rec.getCompanyCode ().trim ());
             if (item == null)
                 return ServiceResult.failResult (En_ErrorCode.EMPTY_COMP_CODE.getCode (), En_ErrorCode.EMPTY_COMP_CODE.getMessage (), rec.getDepartmentId ());
 
-            CompanyDepartment department = companyDepartmentDAO.getByCondition ("dep_extId=? and company_id=?", rec.getDepartmentId (), item.getCompanyId ());
+            CompanyDepartment department = companyDepartmentDAO.getByExternalId(rec.getDepartmentId (), item.getCompanyId ());
             if (department == null)
                 return ServiceResult.failResult (En_ErrorCode.UNKNOWN_DEP.getCode (), En_ErrorCode.UNKNOWN_DEP.getMessage (), null);
 
-            if (companyDepartmentDAO.checkExistsByCondition ("parent_dep=?", department.getId ()))
+            if (companyDepartmentDAO.checkExistsByParentId(department.getId ()))
                 return ServiceResult.failResult (En_ErrorCode.EXIST_CHILD_DEP.getCode (), En_ErrorCode.EXIST_CHILD_DEP.getMessage (), null);
 
-            if (workerEntryDAO.checkExistsByCondition ("dep_id=?", department.getId ()))
+            if (workerEntryDAO.checkExistsByDepId(department.getId ()))
                 return ServiceResult.failResult (En_ErrorCode.EXIST_DEP_WOR.getCode (), En_ErrorCode.EXIST_DEP_WOR.getMessage (), null);
 
             companyDepartmentDAO.remove (department);
@@ -540,7 +570,7 @@ public class WorkerController {
 
     private WorkerPosition getValidPosition(Long positionId, String positionName, Long companyId) {
 
-        WorkerPosition position = workerPositionDAO.getByCondition ("pos_extId=? and company_id=?", positionId, companyId);
+        WorkerPosition position = workerPositionDAO.getByExternalId(positionId, companyId);
 
         if (position == null) {
             position = new WorkerPosition ();

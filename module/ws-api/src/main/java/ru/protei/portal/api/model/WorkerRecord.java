@@ -317,6 +317,8 @@ public class WorkerRecord {
     }
 
     public void copy (Person p) {
+        setCompanyCode(p.getExternalCode());
+
         setId (p.getId ());
         setFirstName (p.getFirstName ());
         setLastName (p.getLastName ());

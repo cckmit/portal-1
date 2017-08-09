@@ -12,4 +12,8 @@ public class CompanyGroupHomeDAO_Impl extends PortalBaseJdbcDAO<CompanyHomeGroup
         return  getByCondition("companyId=?", id) != null;
     }
 
+    @Override
+    public CompanyHomeGroupItem getByExternalCode(String externalCode) {
+        return getByCondition ("external_code=?", externalCode);
+    }
 }

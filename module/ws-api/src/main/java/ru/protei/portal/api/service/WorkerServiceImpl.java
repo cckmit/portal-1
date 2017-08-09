@@ -50,6 +50,8 @@ public class WorkerServiceImpl implements WorkerService {
     //@Autowired
     //private WSMigrationManager wsMigrationManager;
 
+    /* todo: transaction + dao-methods + try-catch*/
+
     @Override
     public WorkerRecord getWorker(Long id) {
 
@@ -210,7 +212,7 @@ public class WorkerServiceImpl implements WorkerService {
                     workerEntryDAO.remove (worker);
                 }
 
-                List<WorkerEntry> list = workerEntryDAO.getListByCondition ("personId=? and companyId=?", person.getId (), item.getCompanyId ());
+                List<WorkerEntry> list = workerEntryDAO.getListByCondition ("personId=?", person.getId ());
                 if (list == null || list.isEmpty ()) {
                     person.setFired (true);
                     personDAO.merge (person);

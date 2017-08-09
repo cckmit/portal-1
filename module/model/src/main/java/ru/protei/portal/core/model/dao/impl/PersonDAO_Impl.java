@@ -204,11 +204,22 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
                 args.add(query.getFired() ? 1 : 0);
             }
 
+            if (query.getDeleted() != null) {
+                condition.append(" and Person.isdeleted=?");
+                args.add(query.getDeleted() ? 1 : 0);
+            }
+
             if (HelperFunc.isLikeRequired(query.getSearchString())) {
-                condition.append(" and (Person.displayName like ? or Person.contactInfo like ?)");
+                condition.append(" and (Person.displayName like ?");
+
                 String likeArg = HelperFunc.makeLikeArg(query.getSearchString(), true);
 
-                args.add(likeArg);
+                if (query.getSearchByContactInfo()) {
+                    condition.append(" or Person.contactInfo like ?)");
+                    args.add(likeArg);
+                } else {
+                    condition.append(")");
+                }
                 args.add(likeArg);
             }
         });
