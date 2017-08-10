@@ -19,9 +19,7 @@ import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
-import java.io.BufferedOutputStream;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.Inet4Address;
 import java.text.ParseException;
 import java.util.Date;
@@ -71,6 +69,7 @@ public class WorkerController {
         return null;
     }
 
+/*
     @RequestMapping(method = RequestMethod.GET, value = "/get.department")
     public @ResponseBody DepartmentRecord getDepartment() {
 
@@ -84,6 +83,54 @@ public class WorkerController {
         departmentRecord.setParentId(null);
         return departmentRecord;
     }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/get.result")
+    public @ResponseBody ServiceResult getServiceResult() {
+
+        return ServiceResult.failResult (En_ErrorCode.NOT_CREATE.getCode (), En_ErrorCode.NOT_CREATE.getMessage (), 0L);
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/get.results")
+    public @ResponseBody ServiceResultList getServiceResultList() {
+
+        ServiceResultList serviceResultList = new ServiceResultList();
+        serviceResultList.getServiceResults().add(ServiceResult.failResult (En_ErrorCode.NOT_CREATE.getCode (), En_ErrorCode.NOT_CREATE.getMessage (), 0L));
+        serviceResultList.getServiceResults().add(ServiceResult.successResult(1L));
+        return serviceResultList;
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/get.photo")
+    public @ResponseBody Photo getPhoto() {
+
+        Photo photo = new Photo();
+        photo.setId(2L);
+        byte[] bytes = { 0, 0, 0, 25 };
+        photo.setPhoto(bytes);
+        return photo;
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/get.photos")
+    public @ResponseBody PhotoList getPhotos() {
+
+        PhotoList photoList = new PhotoList();
+        Photo photo = new Photo();
+        photo.setId(2L);
+        byte[] bytes = { 0, 0, 0, 25 };
+        photo.setPhoto(bytes);
+        photoList.getPhotos().add(photo);
+        return photoList;
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/get.ids")
+    public @ResponseBody IdList getIds() {
+
+        IdList list = new IdList();
+        list.getIds().add(1L);
+        list.getIds().add(2L);
+        list.getIds().add(3L);
+        return list;
+    }
+*/
 
     @RequestMapping(method = RequestMethod.GET, value = "/get.workers")
     public @ResponseBody WorkerRecordList getWorkers(@RequestParam(name = "expr") String expr) {
@@ -359,8 +406,8 @@ public class WorkerController {
         }
     }
 
-    @RequestMapping(method = RequestMethod.PUT, value = "/update.photo")
-    public ServiceResult updatePhoto(@RequestParam(name = "id") Long id, @RequestBody byte[] buf) {
+    @RequestMapping(method = RequestMethod.PUT, value = "/update.photo", headers = "Content-Type=image/jpeg")
+    public @ResponseBody ServiceResult updatePhoto(@RequestParam(name = "id") Long id, @RequestBody byte[] buf) {
 
         logger.debug("=== updatePhoto ===");
         logger.debug("=== properties from 1C ===");
@@ -396,6 +443,55 @@ public class WorkerController {
         }
 
         return ServiceResult.failResult (En_ErrorCode.NOT_UPDATE.getCode (), En_ErrorCode.NOT_UPDATE.getMessage (), id);
+    }
+
+    @RequestMapping(method = RequestMethod.POST, value = "/get.photos")
+    public @ResponseBody PhotoList getPhotos(@RequestBody IdList list) {
+
+        logger.debug("=== getPhotos ===");
+        logger.debug("=== properties from 1C ===");
+        logger.debug("list = " + list);
+        logger.debug("==========================");
+
+        InputStream in = null;
+        PhotoList photos = new PhotoList();
+
+        try {
+
+            for (Long id : list.getIds()) {
+
+                Photo photo = new Photo ();
+
+                logger.debug("=== personId = " + id);
+                String fileName = WSConfig.getInstance ().getDirPhotos () + id + ".jpg";
+                logger.debug("=== fileName = " + fileName);
+                File file = new File(fileName);
+                if (file.exists()) {
+                    in = new BufferedInputStream(new FileInputStream(file));
+                    Long size = file.length();
+                    byte[] buf = new byte[size.intValue()];
+                    in.read(buf);
+                    photo.setPhoto (buf);
+                    logger.debug("=== file exists");
+                    logger.debug("=== photo's length = " + (buf != null ? buf.length : null));
+                } else {
+                    photo.setPhoto (null);
+                    logger.debug ("=== file doesn't exist");
+                }
+                photo.setId (id);
+                photos.getPhotos().add (photo);
+            }
+
+        } catch (Exception e) {
+            logger.error ("error while get photos", e);
+        } finally {
+            try {
+                if (in != null)
+                    in.close();
+            } catch (Exception e) {}
+        }
+
+        return photos;
     }
 
     @RequestMapping(method = RequestMethod.PUT, value = "/update.department")

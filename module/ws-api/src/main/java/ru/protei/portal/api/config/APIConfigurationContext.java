@@ -6,13 +6,10 @@ import org.apache.cxf.bus.spring.SpringBus;
 import org.apache.cxf.jaxws.EndpointImpl;
 import org.apache.cxf.jaxws.support.JaxWsServiceFactoryBean;
 import org.springframework.context.annotation.*;
-import org.springframework.http.MediaType;
 import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.http.converter.xml.MarshallingHttpMessageConverter;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
-import org.springframework.oxm.xstream.XStreamMarshaller;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
@@ -26,6 +23,7 @@ import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import javax.xml.ws.Endpoint;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -94,20 +92,22 @@ public class APIConfigurationContext extends WebMvcConfigurerAdapter {
 
     @Override
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+
+        converters.add(getMarshallingHttpMessageConverter());
+        converters.add(getByteArrayHttpMessageConverter());
+    }
+
+    private MarshallingHttpMessageConverter getMarshallingHttpMessageConverter() {
         Jaxb2Marshaller oxmMarshaller = new Jaxb2Marshaller();
-        oxmMarshaller.setClassesToBeBound(WorkerRecord.class, WorkerRecordList.class,
-                DepartmentRecord.class, ServiceResult.class, ServiceResultList.class);
-        MarshallingHttpMessageConverter marshallingHttpMessageConverter = new MarshallingHttpMessageConverter(oxmMarshaller);
+        oxmMarshaller.setClassesToBeBound(
+                WorkerRecord.class, WorkerRecordList.class,
+                DepartmentRecord.class, IdList.class,
+                Photo.class, PhotoList.class,
+                ServiceResult.class, ServiceResultList.class);
+        return new MarshallingHttpMessageConverter(oxmMarshaller);
+    }
 
-        converters.add(marshallingHttpMessageConverter);
-        converters.add(new ByteArrayHttpMessageConverter());
-
-/*
-        XStreamMarshaller xstreamMarshaller = new XStreamMarshaller();
-        MarshallingHttpMessageConverter xmlConverter = new MarshallingHttpMessageConverter(xstreamMarshaller);
-
-        converters.add(xmlConverter);
-        converters.add(new MappingJackson2HttpMessageConverter());
-*/
+    private ByteArrayHttpMessageConverter getByteArrayHttpMessageConverter() {
+        return new ByteArrayHttpMessageConverter();
     }
 }

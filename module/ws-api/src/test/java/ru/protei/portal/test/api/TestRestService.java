@@ -1,24 +1,18 @@
 package ru.protei.portal.test.api;
 
 import junit.framework.Assert;
-import org.apache.cxf.aegis.databinding.AegisDatabinding;
-import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
 import org.apache.log4j.Logger;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.http.*;
 import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.http.converter.xml.MarshallingHttpMessageConverter;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
-import org.springframework.oxm.xstream.XStreamMarshaller;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.util.UriComponentsBuilder;
 import ru.protei.portal.api.config.WSConfig;
 import ru.protei.portal.api.model.*;
-import ru.protei.portal.api.service.WorkerService;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -237,7 +231,7 @@ public class TestRestService {
     @Test
     public void testUpdatePhoto() {
 
-        Long id = new Long (149);
+        Long id = new Long (148);
         byte[] buf = read (id);
         logger.debug ("personId = " + id);
         logger.debug ("photo = " + buf);
@@ -249,10 +243,13 @@ public class TestRestService {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_XML));
+        headers.setContentType(MediaType.IMAGE_JPEG);
         HttpEntity<byte[]> entity = new HttpEntity<>(buf, headers);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(URI).queryParam("id", 148L);
         String uriBuilder = builder.build().encode().toUriString();
+
+        logger.debug (headers.getAccept());
 
         ResponseEntity<ServiceResult> response = restTemplate.exchange(uriBuilder, HttpMethod.PUT, entity, ServiceResult.class);
         ServiceResult sr = response.getBody();
@@ -299,6 +296,30 @@ public class TestRestService {
     }
 
     @Test
+    public void testGetPhotos() {
+        IdList list = new IdList ();
+        list.getIds().add (new Long (148));
+        list.getIds().add (new Long (149));
+
+        String URI = BASE_URI + "get.photos";
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.setMessageConverters(getMessageConverters());
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(Arrays.asList(MediaType.APPLICATION_XML));
+        HttpEntity<IdList> entity = new HttpEntity<>(list, headers);
+
+        ResponseEntity<PhotoList> response = restTemplate.exchange(URI, HttpMethod.POST, entity, PhotoList.class);
+        PhotoList pl = response.getBody();
+
+        Assert.assertNotNull ("Result getPhotos() is null!", pl);
+        for (Photo p : pl.getPhotos()) {
+            Assert.assertNotNull ("Photo for id = " + p.getId () + " not exist!", p.getPhoto ());
+            logger.debug ("Photo for id = " + p.getId () + " exist. Length of photo = " + p.getPhoto ().length);
+        }
+    }
+
+    @Test
     public void testDeleteDepartment() {
 
         String URI = BASE_URI + "delete.department";
@@ -319,23 +340,24 @@ public class TestRestService {
     }
 
     private List<HttpMessageConverter<?>> getMessageConverters() {
-        Jaxb2Marshaller oxmMarshaller = new Jaxb2Marshaller();
-        oxmMarshaller.setClassesToBeBound(WorkerRecord.class, WorkerRecordList.class,
-                DepartmentRecord.class, ServiceResult.class, ServiceResultList.class);
-        MarshallingHttpMessageConverter marshallingConverter = new MarshallingHttpMessageConverter(oxmMarshaller);
-
         List<HttpMessageConverter<?>> converters = new ArrayList<>();
-        converters.add(marshallingConverter);
-        converters.add(new ByteArrayHttpMessageConverter());
-
-/*
-        XStreamMarshaller xstreamMarshaller = new XStreamMarshaller();
-        MarshallingHttpMessageConverter xmlConverter = new MarshallingHttpMessageConverter(xstreamMarshaller);
-
-        List<HttpMessageConverter<?>> converters = new ArrayList<>();
-        converters.add(xmlConverter);
-        converters.add(new MappingJackson2HttpMessageConverter());
-*/
+        converters.add(getMarshallingHttpMessageConverter());
+        converters.add(getByteArrayHttpMessageConverter());
         return converters;
+    }
+
+    private MarshallingHttpMessageConverter getMarshallingHttpMessageConverter() {
+        Jaxb2Marshaller oxmMarshaller = new Jaxb2Marshaller();
+        oxmMarshaller.setClassesToBeBound(
+                WorkerRecord.class, WorkerRecordList.class,
+                DepartmentRecord.class, IdList.class,
+                Photo.class, PhotoList.class,
+                ServiceResult.class, ServiceResultList.class);
+        MarshallingHttpMessageConverter marshallingHttpMessageConverter = new MarshallingHttpMessageConverter(oxmMarshaller);
+        return marshallingHttpMessageConverter;
+    }
+
+    private ByteArrayHttpMessageConverter getByteArrayHttpMessageConverter() {
+        return new ByteArrayHttpMessageConverter();
     }
 }

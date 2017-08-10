@@ -19,5 +19,4 @@ public class ServiceResultList {
     public void setServiceResults(List<ServiceResult> serviceResults) {
         this.serviceResults = serviceResults;
     }
-
 }
