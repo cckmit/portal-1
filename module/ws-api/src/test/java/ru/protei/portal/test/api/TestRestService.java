@@ -264,7 +264,12 @@ public class TestRestService {
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_XML));
         HttpEntity<WorkerRecord> entity = new HttpEntity<>(origWorker, headers);
 
-        ResponseEntity<ServiceResult> response = restTemplate.exchange(URI, HttpMethod.DELETE, entity, ServiceResult.class);
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(URI)
+                .queryParam("externalId", origWorker.getWorkerId())
+                .queryParam("companyCode", origWorker.getCompanyCode());
+        String uriBuilder = builder.build().encode().toUriString();
+
+        ResponseEntity<ServiceResult> response = restTemplate.exchange(uriBuilder, HttpMethod.DELETE, entity, ServiceResult.class);
         ServiceResult sr = response.getBody();
 
         Assert.assertNotNull ("Result delete.worker is null!", sr);
@@ -373,7 +378,12 @@ public class TestRestService {
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_XML));
         HttpEntity<DepartmentRecord> entity = new HttpEntity<>(origDepartment, headers);
 
-        ResponseEntity<ServiceResult> response = restTemplate.exchange(URI, HttpMethod.DELETE, entity, ServiceResult.class);
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(URI)
+                .queryParam("externalId", origDepartment.getDepartmentId())
+                .queryParam("companyCode", origDepartment.getCompanyCode());
+        String uriBuilder = builder.build().encode().toUriString();
+
+        ResponseEntity<ServiceResult> response = restTemplate.exchange(uriBuilder, HttpMethod.DELETE, entity, ServiceResult.class);
         ServiceResult sr = response.getBody();
 
         Assert.assertNotNull ("Result delete.department is null!", sr);

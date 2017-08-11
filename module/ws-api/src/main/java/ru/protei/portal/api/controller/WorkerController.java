@@ -378,30 +378,24 @@ public class WorkerController {
     }
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/delete.worker")
-    public @ResponseBody ServiceResult deleteWorker(@RequestBody WorkerRecord rec) {
+    public @ResponseBody ServiceResult deleteWorker(@RequestParam(name = "externalId") Long externalId, @RequestParam(name = "companyCode") String companyCode) {
 
         logger.debug("=== deleteWorker ===");
+        logger.debug("=== externalId = " + externalId);
+        logger.debug("=== companyCode = " + companyCode);
 
         try {
 
-            BeanInfo infoRec = Introspector.getBeanInfo(rec.getClass());
-
-            logger.debug("=== properties from 1C ===");
-            for (PropertyDescriptor pl : infoRec.getPropertyDescriptors()) {
-                logger.debug(pl.getDisplayName() + " = " + (pl.getReadMethod() != null ? pl.getReadMethod().invoke(rec,null) : null));
-            }
-            logger.debug("==========================");
-
             return transactionTemplate.execute(transactionStatus -> {
                 try {
-                    if (rec.getWorkerId () < 0)
-                        return ServiceResult.failResult (En_ErrorCode.EMPTY_WOR_ID.getCode (), En_ErrorCode.EMPTY_WOR_ID.getMessage (), rec.getWorkerId ());
+                    if (externalId < 0)
+                        return ServiceResult.failResult (En_ErrorCode.EMPTY_WOR_ID.getCode (), En_ErrorCode.EMPTY_WOR_ID.getMessage (), externalId);
 
-                    CompanyHomeGroupItem item = companyGroupHomeDAO.getByExternalCode(rec.getCompanyCode ().trim ());
+                    CompanyHomeGroupItem item = companyGroupHomeDAO.getByExternalCode(companyCode.trim ());
                     if (item == null)
-                        return ServiceResult.failResult (En_ErrorCode.UNKNOWN_COMP.getCode (), En_ErrorCode.UNKNOWN_COMP.getMessage (), rec.getId ());
+                        return ServiceResult.failResult (En_ErrorCode.UNKNOWN_COMP.getCode (), En_ErrorCode.UNKNOWN_COMP.getMessage (), externalId);
 
-                    WorkerEntry worker = workerEntryDAO.getByExternalId(rec.getWorkerId (), item.getCompanyId ());
+                    WorkerEntry worker = workerEntryDAO.getByExternalId(externalId, item.getCompanyId ());
                     if (worker == null)
                         return ServiceResult.failResult (En_ErrorCode.UNKNOWN_WOR.getCode (), En_ErrorCode.UNKNOWN_WOR.getMessage (), null);
 
@@ -572,28 +566,22 @@ public class WorkerController {
     }
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/delete.department")
-    public @ResponseBody ServiceResult deleteDepartment(@RequestBody DepartmentRecord rec) {
+    public @ResponseBody ServiceResult deleteDepartment(@RequestParam(name = "externalId") Long externalId, @RequestParam(name = "companyCode") String companyCode) {
 
         logger.debug("=== deleteDepartment ===");
+        logger.debug("=== externalId = " + externalId);
+        logger.debug("=== companyCode = " + companyCode);
 
         try {
 
-            BeanInfo infoRec = Introspector.getBeanInfo(rec.getClass());
+            if (externalId < 0)
+                return ServiceResult.failResult (En_ErrorCode.EMPTY_DEP_ID.getCode (), En_ErrorCode.EMPTY_DEP_ID.getMessage (), externalId);
 
-            logger.debug("=== properties from 1C ===");
-            for (PropertyDescriptor pl : infoRec.getPropertyDescriptors()) {
-                logger.debug(pl.getDisplayName() + " = " + (pl.getReadMethod() != null ? pl.getReadMethod().invoke(rec,null) + ";" : "null;"));
-            }
-            logger.debug("==========================");
-
-            if (rec.getDepartmentId () < 0)
-                return ServiceResult.failResult (En_ErrorCode.EMPTY_DEP_ID.getCode (), En_ErrorCode.EMPTY_DEP_ID.getMessage (), rec.getDepartmentId ());
-
-            CompanyHomeGroupItem item = companyGroupHomeDAO.getByExternalCode(rec.getCompanyCode ().trim ());
+            CompanyHomeGroupItem item = companyGroupHomeDAO.getByExternalCode(companyCode.trim ());
             if (item == null)
-                return ServiceResult.failResult (En_ErrorCode.EMPTY_COMP_CODE.getCode (), En_ErrorCode.EMPTY_COMP_CODE.getMessage (), rec.getDepartmentId ());
+                return ServiceResult.failResult (En_ErrorCode.EMPTY_COMP_CODE.getCode (), En_ErrorCode.EMPTY_COMP_CODE.getMessage (), externalId);
 
-            CompanyDepartment department = companyDepartmentDAO.getByExternalId(rec.getDepartmentId (), item.getCompanyId ());
+            CompanyDepartment department = companyDepartmentDAO.getByExternalId(externalId, item.getCompanyId ());
             if (department == null)
                 return ServiceResult.failResult (En_ErrorCode.UNKNOWN_DEP.getCode (), En_ErrorCode.UNKNOWN_DEP.getMessage (), null);
 
