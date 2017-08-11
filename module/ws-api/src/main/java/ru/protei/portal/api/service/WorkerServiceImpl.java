@@ -146,8 +146,6 @@ public class WorkerServiceImpl implements WorkerService {
             worker.setPositionId (position.getId ());
             worker.setHireDate (rec.getHireDate () != null && rec.getHireDate ().trim ().length () > 0 ? HelperService.DATE.parse (rec.getHireDate ()) : null);
             worker.setHireOrderNo (rec.getHireOrderNo () != null && rec.getHireOrderNo ().trim ().length () > 0 ? rec.getHireOrderNo ().trim () : null);
-            worker.setFireDate (rec.getFireDate () != null && rec.getFireDate ().trim ().length () > 0 ? HelperService.DATE.parse (rec.getFireDate ()) : null);
-            worker.setFireOrderNo (rec.getFireOrderNo () != null && rec.getFireOrderNo ().trim ().length () > 0 ? rec.getFireOrderNo ().trim () : null);
             worker.setActiveFlag (rec.getActive ());
             worker.setExternalId (rec.getWorkerId ());
 
@@ -231,8 +229,6 @@ public class WorkerServiceImpl implements WorkerService {
             worker.setPositionId (position.getId ());
             worker.setHireDate (rec.getHireDate () != null && rec.getHireDate ().trim ().length () > 0 ? HelperService.DATE.parse (rec.getHireDate ()) : null);
             worker.setHireOrderNo (rec.getHireOrderNo () != null && rec.getHireOrderNo ().trim ().length () > 0 ? rec.getHireOrderNo ().trim () : null);
-            worker.setFireDate (rec.getFireDate () != null && rec.getFireDate ().trim ().length () > 0 ? HelperService.DATE.parse (rec.getFireDate ()) : null);
-            worker.setFireOrderNo (rec.getFireOrderNo () != null && rec.getFireOrderNo ().trim ().length () > 0 ? rec.getFireOrderNo ().trim () : null);
             worker.setActiveFlag (rec.getActive ());
 
             workerEntryDAO.merge (worker);

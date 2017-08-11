@@ -72,9 +72,7 @@ public class TestRestService {
             origWorker.setDepartmentId (new Long (props.getProperty ("depId")));
             origWorker.setPositionId (new Long (props.getProperty ("positionId")));
             origWorker.setHireDate (props.getProperty ("hireDate"));
-            origWorker.setFireDate (props.getProperty ("fireDate"));
             origWorker.setHireOrderNo (props.getProperty ("hireOrderNo"));
-            origWorker.setFireOrderNo (props.getProperty ("fireOrderNo"));
             origWorker.setActive (new Integer (props.getProperty ("active")));
             origWorker.setPositionName (props.getProperty ("positionName"));
 
@@ -89,6 +87,44 @@ public class TestRestService {
     }
 
     @Test
+    public void testGetPerson() {
+        String URI = BASE_URI + "get.person";
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.setMessageConverters(getMessageConverters());
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(Arrays.asList(MediaType.APPLICATION_XML));
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(URI).queryParam("id", 148L);
+        String uriBuilder = builder.build().encode().toUriString();
+
+        ResponseEntity<WorkerRecord> response = restTemplate.exchange(uriBuilder, HttpMethod.GET, entity, WorkerRecord.class);
+        WorkerRecord wr = response.getBody();
+
+        Assert.assertNotNull ("Result of get.person is null!", wr);
+        logger.debug ("The person is received.");
+        logger.debug ("id = " + wr.getId ());
+        logger.debug ("firstName = " + wr.getFirstName ());
+        logger.debug ("lastName = " + wr.getLastName ());
+        logger.debug ("secondName = " + wr.getSecondName ());
+        logger.debug ("sex = " + wr.getSex ());
+        logger.debug ("birthday = " + wr.getBirthday ());
+        logger.debug ("phoneWork = " + wr.getPhoneWork ());
+        logger.debug ("phoneHome = " + wr.getPhoneHome ());
+        logger.debug ("phoneMobile = " + wr.getPhoneMobile ());
+        logger.debug ("email = " + wr.getEmail ());
+        logger.debug ("emailOwn = " + wr.getEmailOwn ());
+        logger.debug ("fax = " + wr.getFax ());
+        logger.debug ("address = " + wr.getAddress ());
+        logger.debug ("addressHome = " + wr.getAddressHome ());
+        logger.debug ("passportInfo = " + wr.getPassportInfo ());
+        logger.debug ("info = " + wr.getInfo ());
+        logger.debug ("ipAddress = " + wr.getIpAddress ());
+        logger.debug ("isDeleted = " + wr.isDeleted ());
+    }
+
+    @Test
     public void testGetWorker() {
         String URI = BASE_URI + "get.worker";
         RestTemplate restTemplate = new RestTemplate();
@@ -98,7 +134,9 @@ public class TestRestService {
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_XML));
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
-        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(URI).queryParam("id", 148L);
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(URI)
+                .queryParam("id", origWorker.getWorkerId())
+                .queryParam("code", origWorker.getCompanyCode());
         String uriBuilder = builder.build().encode().toUriString();
 
         ResponseEntity<WorkerRecord> response = restTemplate.exchange(uriBuilder, HttpMethod.GET, entity, WorkerRecord.class);
@@ -124,6 +162,13 @@ public class TestRestService {
         logger.debug ("info = " + wr.getInfo ());
         logger.debug ("ipAddress = " + wr.getIpAddress ());
         logger.debug ("isDeleted = " + wr.isDeleted ());
+        logger.debug("workerId = " + wr.getWorkerId());
+        logger.debug("departmentId = " + wr.getDepartmentId());
+        logger.debug("positionId = " + wr.getPositionId());
+        logger.debug("positionName = " + wr.getPositionName());
+        logger.debug("hireDate = " + wr.getHireDate());
+        logger.debug("hireOrderNo = " + wr.getHireOrderNo());
+        logger.debug("active = " + wr.getActive());
     }
 
     @Test
@@ -248,8 +293,6 @@ public class TestRestService {
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(URI).queryParam("id", 148L);
         String uriBuilder = builder.build().encode().toUriString();
-
-        logger.debug (headers.getAccept());
 
         ResponseEntity<ServiceResult> response = restTemplate.exchange(uriBuilder, HttpMethod.PUT, entity, ServiceResult.class);
         ServiceResult sr = response.getBody();

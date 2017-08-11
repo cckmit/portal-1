@@ -1,9 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.winter.jdbc.annotations.IdInsertMode;
-import ru.protei.winter.jdbc.annotations.JdbcColumn;
-import ru.protei.winter.jdbc.annotations.JdbcEntity;
-import ru.protei.winter.jdbc.annotations.JdbcId;
+import ru.protei.winter.jdbc.annotations.*;
 
 import java.util.Date;
 
@@ -22,6 +19,9 @@ public class WorkerEntry {
     @JdbcColumn(name="personId")
     private Long personId;
 
+    @JdbcJoinedObject(localColumn = "personId", remoteColumn = "id")
+    private Person person;
+
     @JdbcColumn(name="dep_id")
     private Long departmentId;
 
@@ -30,6 +30,9 @@ public class WorkerEntry {
 
     @JdbcColumn(name="positionId")
     private Long positionId;
+
+    @JdbcJoinedObject(localColumn = "positionId", remoteColumn = "id")
+    private WorkerPosition position;
 
     @JdbcColumn(name="hireDate")
     private Date hireDate;
@@ -77,6 +80,14 @@ public class WorkerEntry {
         this.personId = personId;
     }
 
+    public Person getPerson() {
+        return person;
+    }
+
+    public void setPerson(Person person) {
+        this.person = person;
+    }
+
     public Long getDepartmentId() {
         return departmentId;
     }
@@ -99,6 +110,14 @@ public class WorkerEntry {
 
     public void setPositionId(Long positionId) {
         this.positionId = positionId;
+    }
+
+    public WorkerPosition getPosition() {
+        return position;
+    }
+
+    public void setPosition(WorkerPosition position) {
+        this.position = position;
     }
 
     public Date getHireDate() {

@@ -13,6 +13,7 @@ import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 
@@ -49,10 +50,10 @@ public class WorkerController {
     @Autowired
     TransactionTemplate transactionTemplate;
 
-    @RequestMapping(method = RequestMethod.GET, value = "/get.worker")
-    public @ResponseBody WorkerRecord getWorker(@RequestParam(name = "id") Long id) {
+    @RequestMapping(method = RequestMethod.GET, value = "/get.person")
+    public @ResponseBody WorkerRecord getPerson(@RequestParam(name = "id") Long id) {
 
-        logger.debug("=== getWorker ===");
+        logger.debug("=== getPerson ===");
         logger.debug("=== id = " + id);
 
         try {
@@ -60,6 +61,31 @@ public class WorkerController {
                 Person person = personDAO.get (id);
                 if (person != null && person.getExternalCode() != null) {
                     return new WorkerRecord(person);
+                }
+            }
+        } catch (Exception e) {
+            logger.error ("error while get worker", e);
+        }
+
+        return null;
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/get.worker")
+    public @ResponseBody WorkerRecord getWorker(@RequestParam(name = "id") Long id, @RequestParam(name = "code") String code) {
+
+        logger.debug("=== getWorker ===");
+        logger.debug("=== id = " + id);
+        logger.debug("=== code = " + code);
+
+        try {
+            if (id != null && HelperFunc.isNotEmpty(code)) {
+                CompanyHomeGroupItem item = companyGroupHomeDAO.getByExternalCode(code.trim());
+                logger.debug("=== companyId = " + item.getCompanyId());
+                if (item != null) {
+                    WorkerEntry worker = workerEntryDAO.getByExternalId(id, item.getCompanyId());
+                    if (worker != null) {
+                        return new WorkerRecord(worker);
+                    }
                 }
             }
         } catch (Exception e) {
@@ -132,10 +158,10 @@ public class WorkerController {
     }
 */
 
-    @RequestMapping(method = RequestMethod.GET, value = "/get.workers")
-    public @ResponseBody WorkerRecordList getWorkers(@RequestParam(name = "expr") String expr) {
+    @RequestMapping(method = RequestMethod.GET, value = "/get.persons")
+    public @ResponseBody WorkerRecordList getPersons(@RequestParam(name = "expr") String expr) {
 
-        logger.debug("=== getWorkers ===");
+        logger.debug("=== getPersons ===");
 
         WorkerRecordList workers = new WorkerRecordList();
 
@@ -223,8 +249,6 @@ public class WorkerController {
                     worker.setPositionId (position.getId ());
                     worker.setHireDate (rec.getHireDate () != null && rec.getHireDate ().trim ().length () > 0 ? HelperService.DATE.parse (rec.getHireDate ()) : null);
                     worker.setHireOrderNo (rec.getHireOrderNo () != null && rec.getHireOrderNo ().trim ().length () > 0 ? rec.getHireOrderNo ().trim () : null);
-                    worker.setFireDate (rec.getFireDate () != null && rec.getFireDate ().trim ().length () > 0 ? HelperService.DATE.parse (rec.getFireDate ()) : null);
-                    worker.setFireOrderNo (rec.getFireOrderNo () != null && rec.getFireOrderNo ().trim ().length () > 0 ? rec.getFireOrderNo ().trim () : null);
                     worker.setActiveFlag (rec.getActive ());
                     worker.setExternalId (rec.getWorkerId ());
 
@@ -312,8 +336,6 @@ public class WorkerController {
                     worker.setPositionId (position.getId ());
                     worker.setHireDate (rec.getHireDate () != null && rec.getHireDate ().trim ().length () > 0 ? HelperService.DATE.parse (rec.getHireDate ()) : null);
                     worker.setHireOrderNo (rec.getHireOrderNo () != null && rec.getHireOrderNo ().trim ().length () > 0 ? rec.getHireOrderNo ().trim () : null);
-                    worker.setFireDate (rec.getFireDate () != null && rec.getFireDate ().trim ().length () > 0 ? HelperService.DATE.parse (rec.getFireDate ()) : null);
-                    worker.setFireOrderNo (rec.getFireOrderNo () != null && rec.getFireOrderNo ().trim ().length () > 0 ? rec.getFireOrderNo ().trim () : null);
                     worker.setActiveFlag (rec.getActive ());
 
                     workerEntryDAO.merge (worker);
@@ -648,6 +670,7 @@ public class WorkerController {
         person.setPassportInfo (rec.getPassportInfo () != null && rec.getPassportInfo ().trim ().length () > 0 ? rec.getPassportInfo ().trim () : null);
         person.setInfo (rec.getInfo () != null && rec.getInfo ().trim ().length () > 0 ? rec.getInfo ().trim () : null);
         person.setDeleted (rec.isDeleted ());
+        person.setFired(rec.isFired());
 
         PlainContactInfoFacade contactInfoFacade = new PlainContactInfoFacade(person.getContactInfo());
         contactInfoFacade.setWorkPhone (rec.getPhoneWork () != null && rec.getPhoneWork ().trim ().length () > 0 ? rec.getPhoneWork ().trim () : null);

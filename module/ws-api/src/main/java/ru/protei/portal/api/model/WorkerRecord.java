@@ -1,7 +1,9 @@
 package ru.protei.portal.api.model;
 
+import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.api.utils.HelperService;
+import ru.protei.portal.core.model.ent.WorkerEntry;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -41,9 +43,7 @@ public class WorkerRecord {
     private long positionId;
 
     private String hireDate;
-    private String fireDate;
     private String hireOrderNo;
-    private String fireOrderNo;
     private int active;
 
     private String positionName;
@@ -53,6 +53,10 @@ public class WorkerRecord {
 
     public WorkerRecord(Person p) {
         copy (p);
+    }
+
+    public WorkerRecord(WorkerEntry w) {
+        copy (w);
     }
 
     @XmlElement(name = "company-code", required = true)
@@ -271,15 +275,6 @@ public class WorkerRecord {
         this.hireDate = hireDate;
     }
 
-    @XmlElement(name = "fire-date")
-    public String getFireDate() {
-        return fireDate;
-    }
-
-    public void setFireDate(String fireDate) {
-        this.fireDate = fireDate;
-    }
-
     @XmlElement(name = "hire-order")
     public String getHireOrderNo() {
         return hireOrderNo;
@@ -287,15 +282,6 @@ public class WorkerRecord {
 
     public void setHireOrderNo(String hireOrderNo) {
         this.hireOrderNo = hireOrderNo;
-    }
-
-    @XmlElement(name = "fire-order")
-    public String getFireOrderNo() {
-        return fireOrderNo;
-    }
-
-    public void setFireOrderNo(String fireOrderNo) {
-        this.fireOrderNo = fireOrderNo;
     }
 
     @XmlElement(name = "active", required = true)
@@ -323,7 +309,7 @@ public class WorkerRecord {
         setFirstName (p.getFirstName ());
         setLastName (p.getLastName ());
         setSecondName (p.getSecondName ());
-        setSex (p.getGender() != null ? p.getGender().equals ("M") ? new Integer (1) : p.getGender().equals ("F") ? new Integer (2) : null : null);
+        setSex (p.getGender() != null ? p.getGender().equals (En_Gender.MALE) ? new Integer (1) : p.getGender().equals (En_Gender.FEMALE) ? new Integer (2) : null : null);
         setBirthday (p.getBirthday () != null ? HelperService.DATE.format (p.getBirthday ()) : null);
         setIpAddress (p.getIpAddress ());
         PlainContactInfoFacade contactInfoFacade = new PlainContactInfoFacade(p.getContactInfo());
@@ -338,5 +324,16 @@ public class WorkerRecord {
         setEmailOwn (contactInfoFacade.getEmail_own ());
         setFax (contactInfoFacade.getFax ());
         setDeleted (p.isDeleted ());
+    }
+
+    public void copy (WorkerEntry w) {
+        copy(w.getPerson());
+        setWorkerId(w.getExternalId());
+        setDepartmentId(w.getDepartmentId());
+        setPositionId(w.getPositionId());
+        setPositionName(w.getPosition() != null ? w.getPosition().getName() : null);
+        setHireDate(w.getHireDate() != null ? HelperService.DATE.format (w.getHireDate()) : null);
+        setHireOrderNo(w.getHireOrderNo());
+        setActive(w.getActiveFlag());
     }
 }

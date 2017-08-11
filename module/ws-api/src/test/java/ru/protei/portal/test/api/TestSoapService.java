@@ -78,9 +78,7 @@ public class TestSoapService {
             origWorker.setDepartmentId (new Long (props.getProperty ("depId")));
             origWorker.setPositionId (new Long (props.getProperty ("positionId")));
             origWorker.setHireDate (props.getProperty ("hireDate"));
-            origWorker.setFireDate (props.getProperty ("fireDate"));
             origWorker.setHireOrderNo (props.getProperty ("hireOrderNo"));
-            origWorker.setFireOrderNo (props.getProperty ("fireOrderNo"));
             origWorker.setActive (new Integer (props.getProperty ("active")));
             origWorker.setPositionName (props.getProperty ("positionName"));
 
