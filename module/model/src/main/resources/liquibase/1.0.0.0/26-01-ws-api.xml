@@ -45,4 +45,13 @@
                           tableName="company_dep"/>
     </changeSet>
 
+    <changeSet author="turik" id="fixFK_CD_PARENT">
+        <dropForeignKeyConstraint baseTableName="company_dep" constraintName="FK_CD_PARENT"/>
+        <addForeignKeyConstraint baseColumnNames="parent_dep"
+                                 baseTableName="company_dep"
+                                 constraintName="FK_CD_PARENT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="company_dep"/>
+    </changeSet>
+
 </databaseChangeLog>

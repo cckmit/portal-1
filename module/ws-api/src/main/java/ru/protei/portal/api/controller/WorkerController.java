@@ -95,7 +95,6 @@ public class WorkerController {
         return null;
     }
 
-/*
     @RequestMapping(method = RequestMethod.GET, value = "/get.department")
     public @ResponseBody DepartmentRecord getDepartment() {
 
@@ -110,6 +109,7 @@ public class WorkerController {
         return departmentRecord;
     }
 
+/*
     @RequestMapping(method = RequestMethod.GET, value = "/get.result")
     public @ResponseBody ServiceResult getServiceResult() {
 
@@ -308,9 +308,11 @@ public class WorkerController {
                     if (person == null)
                         return ServiceResult.failResult (En_ErrorCode.UNKNOWN_PER.getCode (), En_ErrorCode.UNKNOWN_PER.getMessage (), null);
 
+                    logger.debug("=== fireWorker ===");
+
                     WorkerEntry worker = workerEntryDAO.getByExternalId(rec.getWorkerId (), item.getCompanyId ());
-                    if (worker == null || worker.getPersonId() != person.getId ())
-                        return ServiceResult.failResult (En_ErrorCode.UNKNOWN_WOR.getCode (), En_ErrorCode.UNKNOWN_WOR.getMessage (), null);
+                    if (worker == null || !worker.getPersonId().equals(person.getId ()))
+                        return ServiceResult.failResult(En_ErrorCode.UNKNOWN_WOR.getCode(), En_ErrorCode.UNKNOWN_WOR.getMessage(), null);
 
                     copy (rec, person);
 
@@ -428,7 +430,7 @@ public class WorkerController {
         }
     }
 
-    @RequestMapping(method = RequestMethod.PUT, value = "/update.photo", headers = "Content-Type=image/jpeg")
+    @RequestMapping(method = RequestMethod.PUT, value = "/update.photo", headers = "Content-Type=image/*")
     public @ResponseBody ServiceResult updatePhoto(@RequestParam(name = "id") Long id, @RequestBody byte[] buf) {
 
         logger.debug("=== updatePhoto ===");

@@ -329,8 +329,8 @@ public class WorkerRecord {
     public void copy (WorkerEntry w) {
         copy(w.getPerson());
         setWorkerId(w.getExternalId());
-        setDepartmentId(w.getDepartmentId());
-        setPositionId(w.getPositionId());
+        setDepartmentId(w.getDepartment().getExternalId());
+        setPositionId(w.getPosition().getExternalId());
         setPositionName(w.getPosition() != null ? w.getPosition().getName() : null);
         setHireDate(w.getHireDate() != null ? HelperService.DATE.format (w.getHireDate()) : null);
         setHireOrderNo(w.getHireOrderNo());

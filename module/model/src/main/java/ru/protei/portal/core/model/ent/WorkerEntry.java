@@ -25,6 +25,9 @@ public class WorkerEntry {
     @JdbcColumn(name="dep_id")
     private Long departmentId;
 
+    @JdbcJoinedObject(localColumn = "dep_id", remoteColumn = "id")
+    private CompanyDepartment department;
+
     @JdbcColumn(name="companyId")
     private Long companyId;
 
@@ -94,6 +97,14 @@ public class WorkerEntry {
 
     public void setDepartmentId(Long departmentId) {
         this.departmentId = departmentId;
+    }
+
+    public CompanyDepartment getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(CompanyDepartment department) {
+        this.department = department;
     }
 
     public Long getCompanyId() {

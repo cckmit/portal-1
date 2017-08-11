@@ -288,7 +288,7 @@ public class TestRestService {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_XML));
-        headers.setContentType(MediaType.IMAGE_JPEG);
+        headers.setContentType(MediaType.IMAGE_GIF);
         HttpEntity<byte[]> entity = new HttpEntity<>(buf, headers);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(URI).queryParam("id", 148L);
