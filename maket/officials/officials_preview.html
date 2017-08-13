@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<!-- saved from url=(0039)http://127.0.0.1:8888/crm.html#products -->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="gwt:property" content="locale=ru">
+
+    <title>Protei UI :: CRM</title>
+    <link rel="stylesheet" href="../regions/regions_files/portal-classic.css">
+    <link rel="stylesheet" href="../regions/regions_files/animate.css">
+    <link rel="stylesheet" href="../regions/regions_files/modal.css">
+    <link rel="stylesheet" href="../regions/regions_files/font-awesome.min.css">
+    <link rel="stylesheet" href="../regions/regions_files/importance.css">
+    <link rel="stylesheet" href="../regions/regions_files/ionicons.min.css">
+    <link rel="stylesheet" href="../regions/regions_files/datetimepicker.css">
+    <link rel="stylesheet" href="../regions/regions_files/table-widget.css">
+    <link rel="stylesheet" href="../regions/regions_files/pager.css">
+
+    <style>
+        .region-picture {
+            position: relative;
+            display: block;
+            left: calc( 100% - 120px );
+            top: -20px;
+            opacity: 0.3;
+        }
+
+        .region-picture > img {
+            width: 70%;
+        }
+
+        .region-picture > i {
+            position: relative;
+            display: block;
+            top: -46px;
+            left: 0px;
+
+            font-size: 10em;
+        }
+
+        .header-block {
+            overflow: hidden;
+        }
+
+        .status-group > button {
+            padding: 5px 8px;
+            border-color: #ffffff;
+        }
+        .status-group > button:hover {
+            background-color: #ffffff;
+        }
+    </style>
+</head>
+<body class="content-wrapper">
+<noscript>
+    &lt;div style="width: 22em; position: absolute; left: 50%; margin-left: -11em; color: red; background-color: white;
+    border: 1px solid red; padding: 4px; font-family: sans-serif"&gt;
+    Your web browser must have JavaScript enabled
+    in order for this application to display correctly.
+    &lt;/div&gt;
+</noscript>
+
+
+<div aria-hidden="true" style="display: none;"></div>
+<div class="global">
+    <header class="main-header"><a class="logo" href="http://protei.ru/"> <span class="logo-lg"> <img
+            src="./regions_files/logo.svg"> <b>PROTEI</b> LTD </span> <span class="logo-mini"> <img
+            src="./regions_files/logo.svg"> </span> </a>
+        <nav class="navbar"><a class="sidebar-toggle" href="http://127.0.0.1:8888/crm.html#"><span class="sr-only">Toggle navigation</span></a>
+            <ul class="nav navbar-nav navbar-left">
+                <li><a class="gwt-Anchor" href="http://127.0.0.1:8888/crm.html#"><i class="fa fa-plus"></i> <span>Создать</span></a>
+                    <span class="count" aria-hidden="true" style="display: none;"></span></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li class="nav-search" aria-hidden="true" style="display: none;"><a class="gwt-Anchor"><i
+                        class="fa fa-search"></i></a> <input type="text" class="gwt-TextBox"></li>
+                <li><a class="gwt-Anchor" href="http://127.0.0.1:8888/crm.html#" title="Выйти (you can use Ctrl+F4)"><i
+                        class="fa fa-lg fa-sign-out"></i></a></li>
+            </ul>
+        </nav>
+    </header>
+    <div class="main-sidebar">
+        <section class="sidebar">
+            <div class="user-panel">
+                <div class="pull-left image"><img class="img-circle" src="./regions_files/user-icon-m.png"></div>
+                <div class="pull-left info"><p>Евгений</p> <a>portal_employee</a></div>
+            </div>
+            <ul class="sidebar-menu">
+                <li class="header">Навигация</li>
+            </ul>
+            <div class="sidebar-menu">
+                <li><a class="gwt-Anchor" href="http://127.0.0.1:8888/crm.html#"><i class="fa fa-dashboard"></i> <span>Доска задач</span></a>
+                    <span class="count" aria-hidden="true" style="display: none;"></span></li>
+                <li class=""><a class="gwt-Anchor" href="http://127.0.0.1:8888/crm.html#"><i
+                        class="icon icon-organization"></i> <span>Компании</span></a> <span class="count"
+                                                                                            aria-hidden="true"
+                                                                                            style="display: none;"></span>
+                </li>
+                <li class=""><a class="gwt-Anchor" href="http://127.0.0.1:8888/crm.html#"><i
+                        class="icon icon-product"></i> <span>Продукты</span></a> <span class="count" aria-hidden="true"
+                                                                                       style="display: none;"></span>
+                </li>
+                <li><a class="gwt-Anchor" href="http://127.0.0.1:8888/crm.html#"><i class="fa fa-group"></i> <span>Контактные лица</span></a>
+                    <span class="count" aria-hidden="true" style="display: none;"></span></li>
+                <li class=""><a class="gwt-Anchor" href="http://127.0.0.1:8888/crm.html#"><i class="fa fa-tasks"></i>
+                    <span>Обращения</span></a> <span class="count" aria-hidden="true" style="display: none;"></span>
+                </li>
+                <li class=""><a class="gwt-Anchor" href="http://127.0.0.1:8888/crm.html#"><i class="fa fa-globe"></i>
+                    <span>Регионы</span></a> <span class="count" aria-hidden="true" style="display: none;"></span>
+                </li>
+                <li class="active"><a class="gwt-Anchor" href="http://127.0.0.1:8888/crm.html#"><i class="fa fa-archive"></i>
+                    <span>Матрица принятия решений</span></a> <span class="count" aria-hidden="true" style="display: none;"></span>
+                </li>
+            </div>
+        </section>
+    </div>
+
+    <div class="right-side">
+        <div class="main-content">
+            <div class="grid">
+                <div class="global-table-container col-xs-5 short-table-view">
+                    <div class="table-hover projects">
+                        <div class="scroller left"></div>
+                        <div class="scroller right"></div>
+                        <div class="table-container">
+                            <table class="table">
+                                <thead class="">
+                                <tr>
+                                    <th class="status"></th>
+                                    <th class="number">Продукт</th>
+                                    <th class="info">Регион</th>
+                                    <th></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr class="selected">
+                                    <td class="status" style="cursor: pointer;"><i class="region-state times fa-2x"></i>
+                                    </td>
+                                    <td class="number" style="cursor: pointer;"><b>Система 112</b>
+                                    <td class="info" style="cursor: pointer;"><b>Камчатский край</b>
+                                    </td>
+                                    <td style="cursor: pointer;"><a href="#" class="fa fa-lg fa-pencil-square-o"
+                                                                    title="Редактирование"></a></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="preview-container col-xs-7">
+                    <div class="preview-wrapper grid with-table-pager">
+                        <div class="preview">
+                            <fieldset class="header">
+                                <legend>
+                                    <lable>Должностные лица</lable>
+                                </legend>
+                                <div class="form col-xs-8">
+                                    <span class="col-xs-8" style="font-size: 1.3em;"><b>Морозов Дмитрий Юрьевич</b>
+                                    </span>
+                                </div>
+                                <div class="form col-xs-4">
+                                    <span class="col-xs-4" style="font-size: 1.3em;"><a href="#" class="fa fa-lg fa-pencil-square-o" title="Редактирование"></a>
+                                    </span>
+                                </div>
+                                <div class = "col-xs-12">
+                                    <label class = "col-xs-4 col-md-4">Должность</label>
+                                    <span class = "col-xs-8 col-md-8">Директор</span>
+                                </div>
+                                <div class = "col-xs-12">
+                                    <label class = "col-xs-4 col-md-4">Организация</label>
+                                    <span class = "col-xs-8 col-md-8">НТЦ Протей</span>
+                                </div>
+                                <div class = "col-xs-12">
+                                    <label class = "col-xs-4 col-md-4">Подчинение</label>
+                                    <span class = "col-xs-8 col-md-8"></span>
+                                </div>
+                                <div class = "col-xs-12">
+                                    <label class = "col-xs-4 col-md-4">Амплуа</label>
+                                    <span class = "col-xs-8 col-md-8">Главный босс, решает все вопросы</span>
+                                </div>
+                                <div class = "col-xs-12">
+                                    <label class = "col-xs-4 col-md-4">Комментарий</label>
+                                    <span class = "col-xs-8 col-md-8">Обращаться только в крайнем случае</span>
+                                </div>
+
+                                <div style="position: relative; top: 15px">
+                                <div class="form col-xs-8">
+                                    <span class="col-xs-8" style="font-size: 1.3em;"><b>Волков Геннадий Петрович</b>
+                                    </span>
+                                </div>
+
+                                <div class="form col-xs-4">
+                                    <span class="col-xs-4" style="font-size: 1.3em;"><a href="#" class="fa fa-lg fa-pencil-square-o" title="Редактирование"></a>
+                                    </span>
+                                </div>
+
+                                <div class = "col-xs-12">
+                                    <label class = "col-xs-4 col-md-4">Должность</label>
+                                    <span class = "col-xs-8 col-md-8">Заместитель</span>
+                                </div>
+                                <div class = "col-xs-12">
+                                    <label class = "col-xs-4 col-md-4">Организация</label>
+                                    <span class = "col-xs-8 col-md-8">НТЦ Протей</span>
+                                </div>
+                                <div class = "col-xs-12">
+                                    <label class = "col-xs-4 col-md-4">Подчинение</label>
+                                    <span class = "col-xs-8 col-md-8">Морозов Д.Ю</span>
+                                </div>
+                                <div class = "col-xs-12">
+                                    <label class = "col-xs-4 col-md-4">Амплуа</label>
+                                    <span class = "col-xs-8 col-md-8">Решает управленческие вопросы</span>
+                                </div>
+                                <div class = "col-xs-12">
+                                    <label class = "col-xs-4 col-md-4">Комментарий</label>
+                                    <span class = "col-xs-8 col-md-8">Не любит обращение по пустым вопросам</span>
+                                </div>
+                                </div>
+
+                                <div style="position: relative; top: 30px">
+                                <div class="form col-xs-8">
+                                    <span class="col-xs-8" style="font-size: 1.3em;"><b>Петров Александр Васильевич</b>
+                                    </span>
+                                </div>
+
+                                <div class="form col-xs-4">
+                                    <span class="col-xs-4" style="font-size: 1.3em;"><a href="#" class="fa fa-lg fa-pencil-square-o" title="Редактирование"></a>
+                                    </span>
+                                </div>
+
+                                <div class = "col-xs-12">
+                                    <label class = "col-xs-4 col-md-4">Должность</label>
+                                    <span class = "col-xs-8 col-md-8">Менеджер по продажам</span>
+                                </div>
+                                <div class = "col-xs-12">
+                                    <label class = "col-xs-4 col-md-4">Организация</label>
+                                    <span class = "col-xs-8 col-md-8">НТЦ Протей</span>
+                                </div>
+                                <div class = "col-xs-12">
+                                    <label class = "col-xs-4 col-md-4">Подчинение</label>
+                                    <span class = "col-xs-8 col-md-8">Морозов Д.Ю, Волков Г.А</span>
+                                </div>
+                                <div class = "col-xs-12">
+                                    <label class = "col-xs-4 col-md-4">Амплуа</label>
+                                    <span class = "col-xs-8 col-md-8">Общается с заказчиками</span>
+                                </div>
+                                <div class = "col-xs-12">
+                                    <label class = "col-xs-4 col-md-4">Комментарий</label>
+                                    <span class = "col-xs-8 col-md-8">Решать все вопросы лучше через него</span>
+                                </div>
+                                </div>
+
+
+                            </fieldset>
+                        </div>
+                    </div>
+                </div>
+                <div class="filter-container no-display">
+                    <div class="panel">
+                        <div class="body">
+                            <div class="form-group local-search col-xs-12"><span class="icon local-search-icon"></span>
+                                <input type="text" class="input-field" placeholder="Поиск"></div>
+                            <div class="form-group col-xs-12"><label>Направление</label>
+                                <div class="control-group">
+                                    <div class="btn-selector"><label></label>
+                                        <button type="button" class="btn btn-white"><i class=""></i> <span
+                                                class=""></span> <span class="caret"></span></button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group col-xs-12"><label>Федеральный Округ</label>
+                                <div class="control-group">
+                                    <div class="btn-group status-group">
+                                        <div class="btn btn-white"><span class="hide"><input type="checkbox" value="on"
+                                                                                             id="gwt-uid-2619"
+                                                                                             tabindex="0"><label
+                                                for="gwt-uid-2619"></label></span> <i class="hide"></i>
+                                            <span>ДВФО</span></div>
+                                        <div class="btn btn-white"><span class="hide"><input type="checkbox" value="on"
+                                                                                             id="gwt-uid-2623"
+                                                                                             tabindex="0"><label
+                                                for="gwt-uid-2623"></label></span> <i class="hide"></i> <span>КФО</span>
+                                        </div>
+                                        <div class="btn btn-white"><span class="hide"><input type="checkbox" value="on"
+                                                                                             id="gwt-uid-2627"
+                                                                                             tabindex="0"><label
+                                                for="gwt-uid-2627"></label></span> <i class="hide"></i> <span>ПФО</span>
+                                        </div>
+                                        <div class="btn btn-white"><span class="hide"><input type="checkbox" value="on"
+                                                                                             id="gwt-uid-2631"
+                                                                                             tabindex="0"><label
+                                                for="gwt-uid-2631"></label></span> <i class="hide"></i>
+                                            <span>СЗФО</span></div>
+                                        <div class="btn btn-white"><span class="hide"><input type="checkbox" value="on"
+                                                                                             id="gwt-uid-2635"
+                                                                                             tabindex="0"><label
+                                                for="gwt-uid-2635"></label></span> <i class="hide"></i>
+                                            <span>СКФО</span></div>
+                                        <div class="btn btn-white"><span class="hide"><input type="checkbox" value="on"
+                                                                                             id="gwt-uid-2639"
+                                                                                             tabindex="0"><label
+                                                for="gwt-uid-2639"></label></span> <i class="hide"></i> <span>СФО</span>
+                                        </div>
+                                        <div class="btn btn-white"><span class="hide"><input type="checkbox" value="on"
+                                                                                             id="gwt-uid-2643"
+                                                                                             tabindex="0"><label
+                                                for="gwt-uid-2643"></label></span> <i class="hide"></i> <span>УФО</span>
+                                        </div>
+                                        <div class="btn btn-white"><span class="hide"><input type="checkbox" value="on"
+                                                                                             id="gwt-uid-2647"
+                                                                                             tabindex="0"><label
+                                                for="gwt-uid-2647"></label></span> <i class="hide"></i> <span>ЦФО</span>
+                                        </div>
+                                        <div class="btn btn-white"><span class="hide"><input type="checkbox" value="on"
+                                                                                             id="gwt-uid-2651"
+                                                                                             tabindex="0"><label
+                                                for="gwt-uid-2651"></label></span> <i class="hide"></i> <span>ЮФО</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group col-xs-12"><label>Статус</label>
+                                <div class="control-group">
+                                    <div class="btn-group status-group">
+                                        <div class="btn btn-white"><span class="hide"><input type="checkbox" value="on"
+                                                                                             id="gwt-uid-529"
+                                                                                             tabindex="0"><label
+                                                for="gwt-uid-529"></label></span> <i
+                                                class="region-state unknown fa-lg"></i> <span></span></div>
+                                        <div class="btn btn-white"><span class="hide"><input type="checkbox" value="on"
+                                                                                             id="gwt-uid-533"
+                                                                                             tabindex="0"><label
+                                                for="gwt-uid-533"></label></span> <i
+                                                class="region-state times fa-lg"></i> <span></span></div>
+                                        <div class="btn btn-white"><span class="hide"><input type="checkbox" value="on"
+                                                                                             id="gwt-uid-537"
+                                                                                             tabindex="0"><label
+                                                for="gwt-uid-537"></label></span> <i
+                                                class="region-state talk fa-lg"></i> <span></span></div>
+                                        <div class="btn btn-white"><span class="hide"><input type="checkbox" value="on"
+                                                                                             id="gwt-uid-541"
+                                                                                             tabindex="0"><label
+                                                for="gwt-uid-541"></label></span> <i
+                                                class="region-state projecting fa-lg"></i> <span></span></div>
+                                        <div class="btn btn-white"><span class="hide"><input type="checkbox" value="on"
+                                                                                             id="gwt-uid-545"
+                                                                                             tabindex="0"><label
+                                                for="gwt-uid-545"></label></span> <i
+                                                class="region-state development fa-lg"></i> <span></span></div>
+                                        <div class="btn btn-white"><span class="hide"><input type="checkbox" value="on"
+                                                                                             id="gwt-uid-549"
+                                                                                             tabindex="0"><label
+                                                for="gwt-uid-549"></label></span> <i
+                                                class="region-state deployment fa-lg"></i> <span></span></div>
+                                        <div class="btn btn-white"><span class="hide"><input type="checkbox" value="on"
+                                                                                             id="gwt-uid-553"
+                                                                                             tabindex="0"><label
+                                                for="gwt-uid-553"></label></span> <i
+                                                class="region-state support fa-lg"></i> <span></span></div>
+                                        <div class="btn btn-white"><span class="hide"><input type="checkbox" value="on"
+                                                                                             id="gwt-uid-557"
+                                                                                             tabindex="0"><label
+                                                for="gwt-uid-557"></label></span> <i
+                                                class="region-state support-finished fa-lg"></i> <span></span></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group col-xs-12"><label>Сортировать по</label>
+                                <div class="control-group">
+                                    <div class="btn-selector"><label></label>
+                                        <button type="button" class="btn btn-white"><i class=""></i> <span class="">Название</span>
+                                            <span class="caret"></span></button>
+                                    </div>
+                                    <div tabindex="0" class="btn btn-white sorting_button btn-down" role="button"
+                                         aria-pressed="true"><input type="text" tabindex="-1" role="presentation"
+                                                                    style="opacity: 0; height: 1px; width: 1px; z-index: -1; overflow: hidden; position: absolute;">
+                                        <div></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="footer">
+                            <button type="button" class="btn btn-white">Сбросить</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="notifyPanel"></div>
+</div>
+</body>
+</html>
