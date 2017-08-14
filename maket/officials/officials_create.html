@@ -20,10 +20,6 @@
             src="./regions_files/logo.svg"> <b>PROTEI</b> LTD </span> <span class="logo-mini"> <img
             src="./regions_files/logo.svg"> </span> </a>
         <nav class="navbar"><a class="sidebar-toggle" href="http://127.0.0.1:8888/crm.html#"><span class="sr-only">Toggle navigation</span></a>
-            <!--<ul class="nav navbar-nav navbar-left">-->
-                <!--<li><a class="gwt-Anchor" href="http://127.0.0.1:8888/crm.html#"><i class="fa fa-plus"></i> <span>Создать</span></a>-->
-                    <!--<span class="count" aria-hidden="true" style="display: none;"></span></li>-->
-            <!--</ul>-->
             <ul class="nav navbar-nav navbar-right">
                 <li class="nav-search" aria-hidden="true" style="display: none;"><a class="gwt-Anchor"><i
                         class="fa fa-search"></i></a> <input type="text" class="gwt-TextBox"></li>
@@ -61,8 +57,10 @@
                 <li class=""><a class="gwt-Anchor" href="http://127.0.0.1:8888/crm.html#"><i class="fa fa-globe"></i>
                     <span>Регионы</span></a> <span class="count" aria-hidden="true" style="display: none;"></span>
                 </li>
-                <li class="active"><a class="gwt-Anchor" href="http://127.0.0.1:8888/crm.html#"><i class="fa fa-archive"></i>
-                    <span>Матрица принятия решений</span></a> <span class="count" aria-hidden="true" style="display: none;"></span>
+                <li class="active"><a class="gwt-Anchor" href="http://127.0.0.1:8888/crm.html#"><i
+                        class="fa fa-archive"></i>
+                    <span>Матрица принятия решений</span></a> <span class="count" aria-hidden="true"
+                                                                    style="display: none;"></span>
                 </li>
             </div>
         </section>
@@ -71,26 +69,115 @@
 
 <div class="panel right-side">
     <div class="body">
-        <div class="grid">
-            <div class="form-group col-xs-12">
+        <div class="grid grid-indent">
+            <div class="form-group col-xs-12 col-lg-6">
                 <label>Название региона</label>
                 <div class="panelField verifiable">
                     <input class="input-field" notNull="true"/>
                 </div>
             </div>
-            <div class="form-group col-xs-12">
+            <div class="form-group col-xs-12 col-lg-6">
                 <label>Название продукта</label>
                 <div class="panelField verifiable">
                     <input class="input-field" notNull="true">
                 </div>
             </div>
+            <div class="form-group col-xs-12"><label> Комментарий </label>
+                <textarea
+                        class="input-field description"></textarea></div>
+        </div>
+
+        <div class="col-xs-12 col-lg-4">
+            <label class="bordered">Должностные лица</label>
+        </div>
+        <div>
+            <div style="padding-top: 15px">
+                <div class="grid">
+                    <div class="global-table-container col-xs-12">
+                        <div class="table-hover contacts">
+                            <div class="scroller left"></div>
+                            <div class="scroller right"></div>
+                            <div class="table-container">
+                                <div class="table-container">
+                                    <table class="table">
+                                        <thead class="">
+                                        <tr>
+                                            <th class="">ФИО</th>
+                                            <th class="">Организация</th>
+                                            <th>Должность</th>
+                                            <th class=""></th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr style="height: 0px;"></tr>
+                                        <tr>
+                                            <td class="" style="cursor: pointer;">
+                                                Морозов Юрий Геннадьевич
+                                            </td>
+                                            <td class="" style="cursor: pointer;">
+                                                НТЦ Протей
+                                            </td>
+                                            <td class="" style="cursor: pointer;">Директор</td>
+                                            <td style="cursor: pointer;"><a href="#" class="fa fa-lg fa-pencil-square-o"
+                                                                            title="Редактирование"></a></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="direction" style="cursor: pointer;">
+                                                Волков Геннадий Петрович
+                                            </td>
+                                            <td class="info" style="cursor: pointer;">
+                                                НТЦ Протей
+                                            </td>
+                                            <td class="" style="cursor: pointer;">Заместитель директора</td>
+                                            <td style="cursor: pointer;"><a href="#" class="fa fa-lg fa-pencil-square-o"
+                                                                            title="Редактирование"></a></td>
+                                        </tr>
+
+                                        <tr>
+                                            <td class="" style="cursor: pointer;">
+                                                Петров Александр Васильевич
+                                            </td>
+                                            <td class="" style="cursor: pointer;">
+                                                НТЦ Протей
+                                            </td>
+                                            <td class="" style="cursor: pointer;">Менеджер по продажам</td>
+                                            <td style="cursor: pointer;"><a href="#" class="fa fa-lg fa-pencil-square-o"
+                                                                            title="Редактирование"></a></td>
+                                        </tr>
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group col-xs-12"><label>Вложения</label>
+            <div class="col-xs-12 col-md-12">
+                <div class="panel">
+                    <div class="body">
+                        <div class="attach attach-add">
+                            <div>
+                                <form target="FormPanel_Crm_5" enctype="multipart/form-data" method="post">
+                                    <label><input type="file" class="hide" name="file">
+                                        <div><i class="fa fa-plus-circle" style="font-size: 1.9em; color: lightgrey;"
+                                                aria-hidden="true"></i></div>
+                                    </label></form>
+                            </div>
+                        </div>
+                        <ul class="attachment-list">
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            <button class="btn btn-success">Сохранить</button>
+            <button class="btn btn-white">Отменить</button>
         </div>
     </div>
-    <div class="footer">
-        <button class="btn btn-success">Сохранить</button>
-        <button class="btn btn-white">Отменить</button>
-    </div>
 </div>
-
-</body>
+    </body>
 </html>
