@@ -20,7 +20,7 @@
         .region-picture {
             position: relative;
             display: block;
-            left: calc( 100% - 120px );
+            left: calc(100% - 120px);
             top: -20px;
             opacity: 0.3;
         }
@@ -46,8 +46,13 @@
             padding: 5px 8px;
             border-color: #ffffff;
         }
+
         .status-group > button:hover {
             background-color: #ffffff;
+        }
+
+        table > tbody > tr > td.region {
+            background-color: #f9f9f9;
         }
     </style>
 </head>
@@ -108,8 +113,10 @@
                 <li class=""><a class="gwt-Anchor" href="http://127.0.0.1:8888/crm.html#"><i class="fa fa-globe"></i>
                     <span>Регионы</span></a> <span class="count" aria-hidden="true" style="display: none;"></span>
                 </li>
-                <li class="active"><a class="gwt-Anchor" href="http://127.0.0.1:8888/crm.html#"><i class="fa fa-archive"></i>
-                    <span>Матрица принятия решений</span></a> <span class="count" aria-hidden="true" style="display: none;"></span>
+                <li class="active"><a class="gwt-Anchor" href="http://127.0.0.1:8888/crm.html#"><i
+                        class="fa fa-archive"></i>
+                    <span>Матрица принятия решений</span></a> <span class="count" aria-hidden="true"
+                                                                    style="display: none;"></span>
                 </li>
             </div>
         </section>
@@ -126,87 +133,52 @@
                             <thead class="">
                             <tr>
                                 <th class="number">Продукт</th>
-                                <th class="info">Регион</th>
+                                <th class="info">Описание</th>
+                                <th>Количество</th>
+                                <th></th>
                                 <th></th>
                             </tr>
                             </thead>
                             <tbody>
                             <tr style="height: 0px;"></tr>
                             <tr>
+                                <td class="region" colspan="5">
+                                    <div><b>Алтайский край</b></div>
+                                </td>
+                            </tr>
+                            <tr>
                                 <td class="number" style="cursor: pointer;">
                                     Система 112
                                 </td>
                                 <td class="info" style="cursor: pointer;">
-                                    <div>Ставропольский край
-                                    </div>
+                                    Экстренные вызовы 112<br>05.08.2017
+
                                 </td>
+                                <td>55</td>
+                                <td style="cursor: pointer;"><a href="#" class="fa fa-lg fa-paperclip">
+                                </a></td>
                                 <td style="cursor: pointer;"><a href="#" class="fa fa-lg fa-pencil-square-o"
                                                                 title="Редактирование"></a></td>
+                            </tr>
+                            <tr>
+                                <td class="region" colspan="5">
+                                    <div><b>Нижегородская область</b></div>
+                                </td>
                             </tr>
                             <tr>
                                 <td class="direction" style="cursor: pointer;">
                                     СОРМ
                                 </td>
                                 <td class="info" style="cursor: pointer;">
-                                    <div>
-                                        Республика Казахстан
-                                    </div>
+                                    Разыскные мероприятия<br>03.01.2001
                                 </td>
+                                <td>10</td>
+                                <td style="cursor: pointer;"><a href="#" class="fa fa-lg fa-paperclip">
+                                </a></td>
                                 <td style="cursor: pointer;"><a href="#" class="fa fa-lg fa-pencil-square-o"
                                                                 title="Редактирование"></a></td>
                             </tr>
 
-                            <tr>
-                                <td class="direction" style="cursor: pointer;">
-                                    DPI
-                                </td>
-                                <td class="info" style="cursor: pointer;">
-                                    <div>
-                                        Самарская область
-                                    </div>
-                                </td>
-                                <td style="cursor: pointer;"><a href="#" class="fa fa-lg fa-pencil-square-o"
-                                                                title="Редактирование"></a></td>
-                            </tr>
-
-                            <tr>
-                                <td class="direction" style="cursor: pointer;">
-                                    Портал
-                                </td>
-                                <td class="info" style="cursor: pointer;">
-                                    <div>
-                                        Ленинградская область
-                                    </div>
-                                </td>
-                                <td style="cursor: pointer;"><a href="#" class="fa fa-lg fa-pencil-square-o"
-                                                                title="Редактирование"></a></td>
-                            </tr>
-
-                            <tr>
-                                <td class="direction" style="cursor: pointer;">
-                                    Call-center
-                                </td>
-                                <td class="info" style="cursor: pointer;">
-                                    <div>
-                                        Камчатский край
-                                    </div>
-                                </td>
-                                <td style="cursor: pointer;"><a href="#" class="fa fa-lg fa-pencil-square-o"
-                                                                title="Редактирование"></a></td>
-                            </tr>
-
-                            <tr>
-                                <td class="direction" style="cursor: pointer;">
-                                    Devmon
-                                </td>
-                                <td class="info" style="cursor: pointer;">
-                                    <div>
-                                        Нижегородская область
-                                    </div>
-                                </td>
-                                <td style="cursor: pointer;"><a href="#" class="fa fa-lg fa-pencil-square-o"
-                                                                title="Редактирование"></a></td>
-                            </tr>
                             </tbody>
                         </table>
                     </div>
@@ -216,6 +188,21 @@
                 <div class="panel">
                     <div class="body">
 
+                        <div class="form-group local-search col-xs-12"><span class="icon local-search-icon"></span>
+                            <input type="text" class="input-field" placeholder="Поиск"></div>
+                        <div class="col-xs-12"><label class="bold">Дата создания</label>
+                            <div class="form-group">
+                                <div class="input-group date"><input type="text" class="form-control"
+                                                                     placeholder="Выберите дату">
+                                    <div class="input-group-btn">
+                                        <button type="button" class="btn btn-default"><i class="fa fa-calendar"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="control-label range-message" aria-hidden="true"
+                                     style="display: none;"></div>
+                            </div>
+                        </div>
                         <div class="form-group col-xs-12">
                             <label>Продукт</label>
                             <div class="control-group">
@@ -255,7 +242,8 @@
                                         <span class="caret"></span>
                                     </button>
                                 </div>
-                                <div tabindex="0" class="btn btn-white sorting_button btn-down" role="button" aria-pressed="true">
+                                <div tabindex="0" class="btn btn-white sorting_button btn-down" role="button"
+                                     aria-pressed="true">
                                     <input type="text" tabindex="-1" role="presentation"
                                            style="opacity: 0; height: 1px; width: 1px; z-index: -1; overflow: hidden; position: absolute;">
                                     <div></div>
