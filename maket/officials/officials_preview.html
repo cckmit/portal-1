@@ -88,7 +88,7 @@
 
         .truncate {
             font-size: 12px;
-            width: 340px;
+            width: 330px;
             margin-top: 5px;
             white-space: nowrap;
             overflow: hidden;
@@ -141,9 +141,62 @@
         .user-description {
         }
 
-        .region{
+        .region {
             background-color: #f9f9f9;
         }
+
+
+        .search-form .form-group {
+            float: right !important;
+            transition: all 0.35s, border-radius 0s;
+            width: 32px;
+            height: 32px;
+            background-color: #fff;
+            box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
+            border-radius: 25px;
+            border: 1px solid #ccc;
+        }
+        .search-form .form-group input.form-control {
+            padding-right: 20px;
+            border: 0 none;
+            background: transparent;
+            box-shadow: none;
+            display:block;
+        }
+        .search-form .form-group input.form-control::-webkit-input-placeholder {
+            display: none;
+        }
+        .search-form .form-group input.form-control:-moz-placeholder {
+            /* Firefox 18- */
+            display: none;
+        }
+        .search-form .form-group input.form-control::-moz-placeholder {
+            /* Firefox 19+ */
+            display: none;
+        }
+        .search-form .form-group input.form-control:-ms-input-placeholder {
+            display: none;
+        }
+        .search-form .form-group:hover,
+        .search-form .form-group.hover {
+            width: 100%;
+            border-radius: 4px 25px 25px 4px;
+        }
+        .search-form .form-group span.form-control-feedback {
+            position: absolute;
+            top: -1px;
+            right: -2px;
+            z-index: 2;
+            display: block;
+            width: 34px;
+            height: 34px;
+            line-height: 34px;
+            text-align: center;
+            color: #3596e0;
+            left: initial;
+            font-size: 14px;
+        }
+
 
 
     </style>
@@ -289,167 +342,219 @@
 
 
                         <div class="preview col-xs-12">
+                            <!--<fieldset class="header">-->
+                            <!--<legend>-->
+                            <!--СОРМ - Нижегородская область-->
+                            <!--</legend>-->
+
                             <fieldset class="header">
                                 <legend>
-                                    СОРМ - Нижегородская область
+                                    Общая информация
                                 </legend>
-                                <h2 class="col-xs-5" style="margin-top: 2px; margin-bottom: 10px">Должностные лица</h2>
-
-                                <div class="form-group local-search col-xs-5" style="margin: 0px"><span
-                                        class="icon local-search-icon" style="top: 3px"></span> <input type="text"
-                                                                                                       class="input-field"
-                                                                                                       placeholder="Введите ФИО или название компании">
+                                <div class="col-xs-6"><label class="col-xs-5 col-md-5">Дата создания</label> <span
+                                        class="col-xs-7 col-md-7">02.08.2017 01:17</span></div>
+                                <div class="col-xs-6"><label class="col-xs-4 col-md-4">Регион</label> <span
+                                        class="col-xs-5 col-md-5">Нижегородская область</span>
                                 </div>
-                                <div class="container col-xs-12">
-                                    <div class="panel-group">
-                                        <div class="panel panel-default">
-                                            <div class="panel-heading">
-                                                <h2 class="panel-title">
-                                                    <a data-toggle="collapse" href="#collapse1">НТЦ Протей</a>
-                                                </h2>
-                                            </div>
-                                            <div id="collapse1" class="panel-collapse collapse">
-                                                <div class="panel-body">
+                                <div class="col-xs-6"><label class="col-xs-5 col-md-5">Продукт</label> <span
+                                        class="col-xs-7 col-md-7">СОРМ</span></div>
 
+                                <div class="col-xs-11" style="margin-bottom: 0px; margin-top: 10px">Оперативно разыскные мероприятия
+                                проводимые республикой Казахстан при содействии сил внеземного происхождения</div>
 
-                                                    <div class="row">
-                                                        <div class="col-xs-5">
-                                                            <div class="user-official">Морозов Дмитрий Юрьевич</div>
-                                                            <!--<div class="user-relative">Артемьев А.С<br>Сергеев А.А</div>-->
-
-                                                            <div class="truncate-holder">
-                                                                <p class="truncate-users">Артемьев А.С, Сергеев А.А, Иванов А.Н, Арсеньев В.Н, Козлов М.Л, Максимов М.М, Шелестов Г.А
-                                                                </p>
-                                                            </div>
-
-
-                                                        </div>
-                                                        <div class="col-xs-6">
-                                                            <div class="user-dolznost">Директор</div>
-                                                            <div class="user-description"
-                                                                 title="Решает управленческие вопросы. Обращаться только в крайнем случае.">
-
-                                                                <div class="truncate-holder">
-                                                                    <p class="truncate">Решает управленческие вопросы.
-                                                                        Обращаться только в крайнем случае.</p>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <!--<div class="fa-lg fa-pencil-square-o"></div>-->
-                                                        <div><a href="#" class="fa fa-lg fa-pencil-square-o"
-                                                                title="Редактирование"></a></div>
-                                                    </div>
-
-                                                    <div class="row" style="padding-top: 50px">
-                                                        <div class="col-xs-5">
-                                                            <div class="user-official">Серебряков Евгений Дмитриевич</div>
-                                                            <!--<div class="user-relative">Артемьев А.С<br>Сергеев А.А</div>-->
-
-                                                            <div class="truncate-holder">
-                                                                <p class="truncate-users">Артемьев А.С, Сергеев А.А, Иванов А.Н, Арсеньев В.Н, Козлов М.Л, Максимов М.М, Шелестов Г.А
-                                                                </p>
-                                                            </div>
-
-
-                                                        </div>
-                                                        <div class="col-xs-6">
-                                                            <div class="user-dolznost">Заместитель директора</div>
-                                                            <div class="user-description"
-                                                                 title="Решает управленческие вопросы. Обращаться только в крайнем случае.">
-
-                                                                <div class="truncate-holder">
-                                                                    <p class="truncate">Решает управленческие вопросы.
-                                                                        Обращаться только в крайнем случае.</p>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <!--<div class="fa-lg fa-pencil-square-o"></div>-->
-                                                        <div><a href="#" class="fa fa-lg fa-pencil-square-o"
-                                                                title="Редактирование"></a></div>
-                                                    </div>
-
-                                                    <div class="row" style="padding-top: 50px">
-                                                        <div class="col-xs-5">
-                                                            <div class="user-official">Елисеев Алексей Геннадьевич</div>
-                                                            <!--<div class="user-relative">Артемьев А.С<br>Сергеев А.А</div>-->
-
-                                                            <div class="truncate-holder">
-                                                                <p class="truncate-users">Артемьев А.С, Сергеев А.А, Иванов А.Н, Арсеньев В.Н, Козлов М.Л, Максимов М.М, Шелестов Г.А
-                                                                </p>
-                                                            </div>
-
-
-                                                        </div>
-                                                        <div class="col-xs-6">
-                                                            <div class="user-dolznost">Менеджер по продажам</div>
-                                                            <div class="user-description"
-                                                                 title="Решает управленческие вопросы. Обращаться только в крайнем случае.">
-
-                                                                <div class="truncate-holder">
-                                                                    <p class="truncate">Решает управленческие вопросы.
-                                                                        Обращаться только в крайнем случае.</p>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <!--<div class="fa-lg fa-pencil-square-o"></div>-->
-                                                        <div><a href="#" class="fa fa-lg fa-pencil-square-o"
-                                                                title="Редактирование"></a></div>
-                                                    </div>
-
-                                                </div>
-
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                </div>
-
-                                <div class="container col-xs-12">
-                                    <div class="panel-group">
-                                        <div class="panel panel-default">
-                                            <div class="panel-heading">
-                                                <h2 class="panel-title">
-                                                    <a data-toggle="collapse" href="#collapse2">НТЦ Аргус</a>
-                                                </h2>
-                                            </div>
-                                            <div id="collapse2" class="panel-collapse collapse">
-                                                <div class="panel-body">
-
-
-                                                    <div class="row">
-                                                        <div class="col-xs-5">
-                                                            <div class="user-official">Семенин Артем Олегович</div>
-                                                            <!--<div class="user-relative">Иванов А.Н<br>Петров А.В</div>-->
-                                                            <div class="truncate-holder">
-                                                                <p class="truncate-users">Артемьев А.С, Сергеев А.А, Иванов А.Н, Арсеньев В.Н, Козлов М.Л, Максимов М.М, Шелестов Г.А
-                                                                </p>
-                                                            </div>
-
-                                                        </div>
-                                                        <div class="col-xs-6">
-                                                            <div class="user-dolznost">Заместитель директора</div>
-                                                            <div class="user-description">
-
-                                                                <div class="truncate-holder">
-                                                                    <p class="truncate">Крайне полезный человек. Знает
-                                                                        самые полезные вещи</p>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div><a href="#" class="fa fa-lg fa-pencil-square-o"
-                                                                title="Редактирование"></a></div>
-                                                    </div>
-
-                                                </div>
-
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                </div>
 
                             </fieldset>
 
+                            <!--<h2 class="col-xs-5" style="margin-top: 10px; margin-bottom: 10px">Должностные лица</h2>-->
+                            <fieldset class="header" style="margin-bottom: 0px">
+                                <legend>Должностные лица</legend>
+                            </fieldset>
+
+                            <div class="form-group local-search col-xs-5" style="margin-top: 0px; margin-bottom: 0px"><span
+                                    class="icon local-search-icon" style="top: 10px"></span> <input type="text"
+                                                                                                    class="input-field"
+                                                                                                    placeholder="Введите ФИО или название компании">
+                            </div>
+
+
+                            <div class="container col-xs-12">
+                                <div class="panel-group">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h2 class="panel-title">
+                                                <a data-toggle="collapse" href="#collapse1">НТЦ Протей</a>
+                                            </h2>
+                                        </div>
+                                        <div id="collapse1" class="panel-collapse collapse">
+                                            <div class="panel-body">
+
+
+                                                <div class="row">
+                                                    <div class="col-xs-5">
+                                                        <div class="user-official">Морозов Дмитрий Юрьевич</div>
+                                                        <!--<div class="user-relative">Артемьев А.С<br>Сергеев А.А</div>-->
+
+                                                        <div class="truncate-holder">
+                                                            <p class="truncate-users">Артемьев А.С, Сергеев А.А, Иванов
+                                                                А.Н, Арсеньев В.Н, Козлов М.Л, Максимов М.М, Шелестов
+                                                                Г.А
+                                                            </p>
+                                                        </div>
+
+
+                                                    </div>
+                                                    <div class="col-xs-6">
+                                                        <div class="user-dolznost">Директор</div>
+                                                        <div class="user-description"
+                                                             title="Решает управленческие вопросы. Обращаться только в крайнем случае.">
+
+                                                            <div class="truncate-holder">
+                                                                <p class="truncate">Решает управленческие вопросы.
+                                                                    Обращаться только в крайнем случае.</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <!--<div class="fa-lg fa-pencil-square-o"></div>-->
+                                                    <div><a href="#" class="fa fa-lg fa-pencil-square-o"
+                                                            title="Редактирование"></a></div>
+                                                </div>
+
+                                                <div class="row" style="padding-top: 50px">
+                                                    <div class="col-xs-5">
+                                                        <div class="user-official">Серебряков Евгений Дмитриевич</div>
+                                                        <!--<div class="user-relative">Артемьев А.С<br>Сергеев А.А</div>-->
+
+                                                        <div class="truncate-holder">
+                                                            <p class="truncate-users">Артемьев А.С, Сергеев А.А, Иванов
+                                                                А.Н, Арсеньев В.Н, Козлов М.Л, Максимов М.М, Шелестов
+                                                                Г.А
+                                                            </p>
+                                                        </div>
+
+
+                                                    </div>
+                                                    <div class="col-xs-6">
+                                                        <div class="user-dolznost">Заместитель директора</div>
+                                                        <div class="user-description"
+                                                             title="Решает управленческие вопросы. Обращаться только в крайнем случае.">
+
+                                                            <div class="truncate-holder">
+                                                                <p class="truncate">Решает управленческие вопросы.
+                                                                    Обращаться только в крайнем случае.</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <!--<div class="fa-lg fa-pencil-square-o"></div>-->
+                                                    <div><a href="#" class="fa fa-lg fa-pencil-square-o"
+                                                            title="Редактирование"></a></div>
+                                                </div>
+
+                                                <div class="row" style="padding-top: 50px">
+                                                    <div class="col-xs-5">
+                                                        <div class="user-official">Елисеев Алексей Геннадьевич</div>
+                                                        <!--<div class="user-relative">Артемьев А.С<br>Сергеев А.А</div>-->
+
+                                                        <div class="truncate-holder">
+                                                            <p class="truncate-users">Артемьев А.С, Сергеев А.А, Иванов
+                                                                А.Н, Арсеньев В.Н, Козлов М.Л, Максимов М.М, Шелестов
+                                                                Г.А
+                                                            </p>
+                                                        </div>
+
+
+                                                    </div>
+                                                    <div class="col-xs-6">
+                                                        <div class="user-dolznost">Менеджер по продажам</div>
+                                                        <div class="user-description"
+                                                             title="Решает управленческие вопросы. Обращаться только в крайнем случае.">
+
+                                                            <div class="truncate-holder">
+                                                                <p class="truncate">Решает управленческие вопросы.
+                                                                    Обращаться только в крайнем случае.</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <!--<div class="fa-lg fa-pencil-square-o"></div>-->
+                                                    <div><a href="#" class="fa fa-lg fa-pencil-square-o"
+                                                            title="Редактирование"></a></div>
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <div class="container col-xs-12">
+                                <div class="panel-group">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h2 class="panel-title">
+                                                <a data-toggle="collapse" href="#collapse2">НТЦ Аргус</a>
+                                            </h2>
+                                        </div>
+                                        <div id="collapse2" class="panel-collapse collapse">
+                                            <div class="panel-body">
+
+
+                                                <div class="row">
+                                                    <div class="col-xs-5">
+                                                        <div class="user-official">Семенин Артем Олегович</div>
+                                                        <!--<div class="user-relative">Иванов А.Н<br>Петров А.В</div>-->
+                                                        <div class="truncate-holder">
+                                                            <p class="truncate-users">Артемьев А.С, Сергеев А.А, Иванов
+                                                                А.Н, Арсеньев В.Н, Козлов М.Л, Максимов М.М, Шелестов
+                                                                Г.А
+                                                            </p>
+                                                        </div>
+
+                                                    </div>
+                                                    <div class="col-xs-6">
+                                                        <div class="user-dolznost">Заместитель директора</div>
+                                                        <div class="user-description">
+
+                                                            <div class="truncate-holder">
+                                                                <p class="truncate">Крайне полезный человек. Знает
+                                                                    самые полезные вещи</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div><a href="#" class="fa fa-lg fa-pencil-square-o"
+                                                            title="Редактирование"></a></div>
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <!--</fieldset>-->
+                            <fieldset class="header" style="margin-top: 20px; margin-bottom: 0px">
+                                <legend>Вложения</legend>
+                                <div class="col-xs-12 col-md-12">
+                                    <div class="panel">
+                                        <div class="body">
+                                            <div class="attach attach-add">
+                                                <div>
+                                                    <form target="FormPanel_Crm_2" enctype="multipart/form-data"
+                                                          method="post"><label><input type="file" class="hide"
+                                                                                      name="file">
+                                                        <div><i class="fa-2x ion-plus-circled"></i></div>
+                                                    </label></form>
+                                                </div>
+                                            </div>
+                                            <ul class="attachment-list"></ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+
+                            <fieldset class="header">
                             <legend>Комментарии</legend>
                             <div class="col-xs-12 col-md-12">
                                 <div class="panel">
@@ -522,71 +627,15 @@
                                     </div>
                                 </div>
                             </div>
+                            </fieldset>
                         </div>
 
-
-                        <!--<fieldset class="header">-->
-                        <!--<legend>Комментарии</legend>-->
-                        <!--<div class="col-xs-12 col-md-12">-->
-                        <!--<div class="panel">-->
-                        <!--<div class="body">-->
-                        <!--<ul class="chats"></ul>-->
-                        <!--</div>-->
-                        <!--<div class="panel-footer">-->
-                        <!--<div class="chats-footer">-->
-                        <!--<textarea class="input-field form-group"-->
-                        <!--placeholder="Введите ваше сообщениe"></textarea>-->
-                        <!--<span class="">-->
-                        <!--<button type="button"-->
-                        <!--class="btn btn-success">Отправить</button>-->
-                        <!--<div class="inline-block">-->
-                        <!--<form target="FormPanel_Crm_6"-->
-                        <!--enctype="multipart/form-data"-->
-                        <!--method="post"><label>-->
-                        <!--<input type="file" class="hide" name="file">-->
-                        <!--<div>-->
-                        <!--<span class="btn btn-white"> Добавить вложение </span></div></label></form></div>-->
-                        <!--<ul class="inline-block attachment-list-simple"></ul> </span>-->
-                        <!--</div>-->
-                        <!--</div>-->
-                        <!--</div>-->
-                        <!--</div>-->
-                        <!--</fieldset>-->
-                        <!--<div class="col-xs-12 col-md-12">-->
-                        <!--<div class="panel">-->
-                        <!--<div class="body">-->
-                        <!--<ul class="chats"></ul>-->
-                        <!--</div>-->
-                        <!--<div class="panel-footer">-->
-                        <!--<div class="chats-footer">-->
-                        <!--<textarea class="input-field form-group"-->
-                        <!--placeholder="Введите ваше сообщениe"></textarea>-->
-                        <!--<span class="">-->
-                        <!--<button type="button"-->
-                        <!--class="btn btn-success">Отправить</button>-->
-                        <!--<div class="inline-block">-->
-                        <!--<form target="FormPanel_Crm_6"-->
-                        <!--enctype="multipart/form-data"-->
-                        <!--method="post"><label>-->
-                        <!--<input type="file" class="hide" name="file">-->
-                        <!--<div>-->
-                        <!--<span class="btn btn-white"> Добавить вложение </span></div></label></form></div>-->
-                        <!--<ul class="inline-block attachment-list-simple"></ul> </span>-->
-                        <!--</div>-->
-                        <!--</div>-->
-                        <!--</div>-->
-                        <!--</div>-->
-                        <!--</div>-->
-
-
-                        <!--</div>-->
-                        <!--</div>-->
-
-
-                        <!--</div>-->
-                        <!--</div>-->
                     </div>
                     <div class="notifyPanel"></div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
 </body>
 </html>

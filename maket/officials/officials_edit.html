@@ -12,6 +12,49 @@
     <link rel="stylesheet" href="../regions/regions_files/datetimepicker.css">
     <link rel="stylesheet" href="../regions/regions_files/table-widget.css">
     <link rel="stylesheet" href="../regions/regions_files/pager.css">
+
+    <style>
+        a.select2-search-choice-close {
+            font: normal normal normal 14px/1 FontAwesome;
+            display: inline-block;
+        }
+
+        a.select2-search-choice-close:before {
+             content: "\f00d";
+        }
+
+        li.select2-search-choice div {
+            display: inline-block;
+            width: initial;
+        }
+
+        ul.select2-choices {
+            list-style: none;
+            margin-top: 5px;
+            padding-left: 10px;
+        }
+
+        .select2-container {
+            border: 1px solid #fff;
+            width: initial;
+
+        }
+
+        .select2-container:hover {
+             border: 1px solid #ccc;
+         }
+
+
+        .select2-button button {
+            background-color: white;
+            text-align: left;
+            height: 30px;
+        }
+
+
+
+
+    </style>
 </head>
 
 <div aria-hidden="true" style="display: none;"></div>
@@ -102,23 +145,68 @@
                     <input class="input-field" notNull="true">
                 </div>
             </div>
-            <div class="form-group col-xs-12 col-lg-4">
-                <label>Подчинение</label>
-                <div class="panelField verifiable">
-                    <input class="input-field" notNull="true">
+            <div class="form-group"><label>Подчинение</label>
+                <!--<div class="control-group" style="width: 32.8%">-->
+                <!--<div class="btn-selector">-->
+                <!--<label></label>-->
+                <!--<button type="button" class="btn btn-white">-->
+                <!--<i class=""></i>-->
+                <!--<span class="">Добавьте сотрудника</span>-->
+                <!--<span class="caret"></span>-->
+                <!--</button>-->
+                <!--</div>-->
+                <div class="gwt-PopupPanel" style="position: absolute; right: 80px">
+                    <!--style="visibility: visible; overflow: visible; position: absolute; left: 881px; top: 252px;">-->
+                    <div class="popupContent">
+                        <div class="dropdown-menu" style="position: relative; display: block; width: 400px;">
+                            <div class="col-xs-12">
+                                <div><label></label>
+                                    <div class="select2-container select2-container-multi multi-input-select">
+                                        <ul class="select2-choices">
+                                            <li class="select2-search-choice col-xs-4">
+                                                <div>
+                                                <div>Агафонов В.Н.</div>
+                                                <a class="select2-search-choice-close" href="#"></a>
+                                                </div></li>
+                                            <li class="select2-search-choice">
+                                                <div>
+                                                <div>Бакаева Т.Н.</div>
+                                                <a class="select2-search-choice-close" href="#"></a>
+                                                </div>
+                                            </li>
+
+                                            </li>
+
+                                        </ul>
+                                        <div class="select2-button" style="margin-top: 4px">
+                                            <button type="button" class="btn btn-flat btn-default"><span class="caret1">Добавить</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            <!--</div>-->
+                        </div>
+                    </div>
+                    <!--</div>-->
+                </div>
+
+                <!--<textarea class="input-field description" style="min-height: 80px;max-height: 120px;"></textarea>-->
+
+            </div>
+            <div class="form-group col-xs-12">
+                <label>Амплуа</label>
+                <div class="panel-аield verifiable">
+                    <textarea class="input-field description" style="min-height: 80px;max-height: 120px;"></textarea>
                 </div>
             </div>
         </div>
-        <div class="form-group col-xs-12"><label>Амплуа</label>
-            <textarea class="input-field description" style="min-height: 80px;max-height: 120px;"></textarea>
-    </div>
 
-    <div class="footer">
-        <button class="btn btn-success">Сохранить</button>
-        <button class="btn btn-white">Отменить</button>
-    </div>
+        <div class="footer">
+            <button class="btn btn-success">Сохранить</button>
+            <button class="btn btn-white">Отменить</button>
+        </div>
     </div>
 </div>
-
+</div>
 </body>
 </html>
