@@ -363,10 +363,14 @@ public abstract class IssueCommentListActivity
     }
 
     private void synchronizeAttachments(Collection<Attachment> oldAttachments, Collection<Attachment> newAttachments){
-        if(!oldAttachments.isEmpty())
-            fireEvent(new AttachmentEvents.Remove(show.caseId, oldAttachments));
-        if(!newAttachments.isEmpty())
-            fireEvent(new AttachmentEvents.Add(show.caseId, newAttachments));
+        ArrayList<Attachment> listForRemove = new ArrayList<>(oldAttachments);
+        ArrayList<Attachment> listForAdd = new ArrayList<>(newAttachments);
+        listForRemove.removeIf(listForAdd::remove);
+
+        if(!listForRemove.isEmpty())
+            fireEvent(new AttachmentEvents.Remove(show.caseId, listForRemove));
+        if(!listForAdd.isEmpty())
+            fireEvent(new AttachmentEvents.Add(show.caseId, listForAdd));
     }
 
     private List<Long> extractIds(Collection<CaseAttachment> list){

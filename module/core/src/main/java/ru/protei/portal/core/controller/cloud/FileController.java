@@ -12,11 +12,7 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.api.struct.FileStorage;
@@ -120,8 +116,10 @@ public class FileController {
         attachment.setExtLink(filePath);
         attachment.setMimeType(item.getContentType());
 
-        if(attachmentService.saveAttachment(attachment).isError())
+        if(attachmentService.saveAttachment(attachment).isError()) {
+            fileStorage.deleteFile(filePath);
             throw new SQLException("attachment not saved");
+        }
 
         return attachment;
     }
