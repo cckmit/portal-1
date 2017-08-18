@@ -9,8 +9,6 @@ public interface AttachmentServiceAsync {
 
     void getAttachmentsByCaseId(Long caseId, AsyncCallback<List<Attachment>> async);
 
-    void getAttachmentsByCommentId(Long commentId, AsyncCallback<List<Attachment>> async);
-
     void getAttachments(List<Long> attachmentIds, AsyncCallback<List<Attachment>> async);
 
     /**
@@ -21,5 +19,4 @@ public interface AttachmentServiceAsync {
      */
     void removeAttachmentEverywhere(Long attachmentId, AsyncCallback<Boolean> async);
 
-    void bindAttachmentToCase(List<Attachment> attachments, Long caseId, AsyncCallback<Boolean> async);
 }

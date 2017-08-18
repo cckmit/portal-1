@@ -7,16 +7,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
-import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.event.CaseCommentEvent;
 import ru.protei.portal.core.event.CaseObjectEvent;
-import ru.protei.portal.core.model.dao.CaseCommentDAO;
-import ru.protei.portal.core.model.dao.CaseObjectDAO;
-import ru.protei.portal.core.model.dao.CaseShortViewDAO;
-import ru.protei.portal.core.model.dao.CaseStateMatrixDAO;
+import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseQuery;
@@ -56,9 +51,6 @@ public class CaseServiceImpl implements CaseService {
     CaseAttachmentDAO caseAttachmentDAO;
 
     @Autowired
-    AttachmentDAO attachmentDAO;
-
-    @Autowired
     AttachmentService attachmentService;
 
     @Autowired
@@ -87,13 +79,7 @@ public class CaseServiceImpl implements CaseService {
             return new CoreResponse().error(En_ResultStatus.NOT_FOUND);
 
         jdbcManyRelationsHelper.fillAll( caseObject.getInitiatorCompany() );
-        caseObject.setAttachmentsIds(
-                caseAttachmentDAO
-                        .getListByCaseId(id)
-                        .stream()
-                        .map(CaseAttachment::getAttachmentId)
-                        .collect(Collectors.toList())
-        );
+        jdbcManyRelationsHelper.fill( caseObject, "attachments");
 
         return new CoreResponse<CaseObject>().success(caseObject);
     }
@@ -108,17 +94,18 @@ public class CaseServiceImpl implements CaseService {
         Date now = new Date();
         caseObject.setCreated(now);
         caseObject.setModified(now);
-        if(CollectionUtils.isNotEmpty(caseObject.getAttachmentsIds()))
-            caseObject.setAttachmentExists(true);
 
         Long caseId = caseObjectDAO.insertCase(caseObject);
 
         if (caseId == null)
             return new CoreResponse().error(En_ResultStatus.NOT_CREATED);
 
-        if(CollectionUtils.isNotEmpty(caseObject.getAttachmentsIds())){
+        if(CollectionUtils.isNotEmpty(caseObject.getAttachments())){
             caseAttachmentDAO.persistBatch(
-                    generateCaseAttachments(caseObject.getAttachmentsIds(), caseId, null)
+                    caseObject.getAttachments()
+                            .stream()
+                            .map(a -> new CaseAttachment(caseId, a.getId()))
+                            .collect(Collectors.toList())
             );
         }
 
@@ -139,14 +126,12 @@ public class CaseServiceImpl implements CaseService {
         UserSessionDescriptor descriptor = authService.findSession( token );
 
         caseObject.setModified(new Date());
-        caseObject.setAttachmentExists(CollectionUtils.isNotEmpty(caseObject.getAttachmentsIds()));
-
-        CaseObject oldState = caseObjectDAO.get(caseObject.getId());
 
         if (caseObject.getState() == En_CaseState.CREATED && caseObject.getManager() != null) {
             caseObject.setState(En_CaseState.OPENED);
         }
 
+        CaseObject oldState = caseObjectDAO.get(caseObject.getId());
         boolean isUpdated = caseObjectDAO.merge(caseObject);
 
         if (!isUpdated)
@@ -156,15 +141,6 @@ public class CaseServiceImpl implements CaseService {
         CaseObject newState = caseObjectDAO.get(caseObject.getId());
 
         publisherService.publishEvent(new CaseObjectEvent(this, newState, oldState, descriptor.getPerson()));
-
-        Collection<CaseAttachment> removedCaseAttachments =
-                caseAttachmentDAO.subtractDiffAndSynchronize(
-                        caseAttachmentDAO.getListByCaseId(caseObject.getId()),
-                        generateCaseAttachments(caseObject.getAttachmentsIds(), caseObject.getId(), null)
-                );
-
-        if(!removedCaseAttachments.isEmpty())
-            removeAttachments( token, removedCaseAttachments);
 
         return new CoreResponse<CaseObject>().success( caseObject );
     }
@@ -186,7 +162,7 @@ public class CaseServiceImpl implements CaseService {
         if ( list == null )
             return new CoreResponse<List<CaseComment>>().error(En_ResultStatus.GET_DATA_ERROR);
 
-        fillAttachmentsIntoComments(list, caseAttachmentDAO.getListByCaseId(caseId));
+        jdbcManyRelationsHelper.fill(list, "caseAttachments");
 
         return new CoreResponse<List<CaseComment>>().success(list);
     }
@@ -206,12 +182,10 @@ public class CaseServiceImpl implements CaseService {
         if (commentId == null)
             return new CoreResponse().error(En_ResultStatus.NOT_CREATED);
 
-        List<Long> attachmentsIds = comment.getAttachmentsIds();
-        if(CollectionUtils.isNotEmpty(attachmentsIds)){
+        if(CollectionUtils.isNotEmpty(comment.getCaseAttachments())){
             updateExistsAttachmentsFlag(comment.getCaseId(), true);
-            caseAttachmentDAO.persistBatch(
-                generateCaseAttachments(attachmentsIds, comment.getCaseId(), commentId)
-            );
+            comment.getCaseAttachments().forEach(ca -> ca.setCommentId(commentId));
+            caseAttachmentDAO.persistBatch(comment.getCaseAttachments());
         }
 
         boolean isCaseChanged = updateCaseModified ( token, comment.getCaseId(), comment.getCreated() ).getData();
@@ -250,7 +224,7 @@ public class CaseServiceImpl implements CaseService {
         Collection<CaseAttachment> removedCaseAttachments =
                 caseAttachmentDAO.subtractDiffAndSynchronize(
                         caseAttachmentDAO.getListByCommentId(comment.getId()),
-                        generateCaseAttachments(comment.getAttachmentsIds(), comment.getCaseId(), comment.getId())
+                        comment.getCaseAttachments()
                 );
 
         if (!removedCaseAttachments.isEmpty()) {
@@ -284,17 +258,18 @@ public class CaseServiceImpl implements CaseService {
         if (!isRemoved)
             return new CoreResponse().error( En_ResultStatus.NOT_REMOVED );
 
-        if(CollectionUtils.isNotEmpty(caseComment.getAttachmentsIds())){
+        boolean isCaseChanged = true;
+        if(CollectionUtils.isNotEmpty(caseComment.getCaseAttachments())){
             caseAttachmentDAO.removeByCommentId(caseId);
-            caseComment.getAttachmentsIds().forEach( (item)->{ attachmentService.removeAttachment( token, item ); } );
+            caseComment.getCaseAttachments().forEach(ca -> attachmentService.removeAttachment(token, ca.getAttachmentId()));
 
             if(!isExistsAttachments(caseComment.getCaseId()))
-                updateExistsAttachmentsFlag(caseComment.getCaseId(), false);
+                isCaseChanged = updateExistsAttachmentsFlag(caseComment.getCaseId(), false).getData();
         }
 
-        boolean isCaseChanged = updateCaseModified( token, caseId, new Date()).getData();
+        isCaseChanged &= updateCaseModified(token, caseId, new Date()).getData();
 
-        if ( !isCaseChanged )
+        if (!isCaseChanged)
             throw new RuntimeException( "failed to update case modifiedDate " );
 
         return new CoreResponse<Boolean>().success(isRemoved);
@@ -329,7 +304,7 @@ public class CaseServiceImpl implements CaseService {
         if(caseId == null)
             return new CoreResponse<Boolean>().error(En_ResultStatus.INCORRECT_PARAMS);
 
-        CaseObject caseObject = caseObjectDAO.get( caseId );
+        CaseObject caseObject = new CaseObject(caseId);
         caseObject.setAttachmentExists(flag);
         boolean result = caseObjectDAO.partialMerge(caseObject, "ATTACHMENT_EXISTS");
 
@@ -380,40 +355,6 @@ public class CaseServiceImpl implements CaseService {
 
     private void removeAttachments( AuthToken token, Collection<CaseAttachment> list){
         list.forEach(ca -> attachmentService.removeAttachment( token, ca.getAttachmentId()));
-    }
-
-    private void fillAttachmentsIntoComments(Collection<CaseComment> comments, Collection<CaseAttachment> caseAttachments){
-        if(CollectionUtils.isEmpty(comments) || CollectionUtils.isEmpty(caseAttachments))
-            return;
-
-        Collection<Long> commentsIdsOfCa = new ArrayList<>();
-        Collection<CaseAttachment> caseAttachmentsForComments = caseAttachments
-                .stream()
-                .filter(ca -> ca.getCommentId() != null)
-                .peek(ca -> commentsIdsOfCa.add(ca.getCommentId()))
-                .collect(Collectors.toList());
-
-        for(CaseComment comment: comments){
-            if(!commentsIdsOfCa.contains(comment.getId()))
-                continue;
-
-            List<Long> attachmentsIds = new ArrayList<>();
-            caseAttachmentsForComments.forEach(ca -> {
-                if(comment.getId().equals(ca.getCommentId()))
-                    attachmentsIds.add(ca.getAttachmentId());
-            });
-            comment.setAttachmentsIds(attachmentsIds);
-        }
-    }
-
-    private Collection<CaseAttachment> generateCaseAttachments(Collection<Long> attachmentsIds, Long caseId, Long commentId){
-        if(attachmentsIds == null)
-            return Collections.emptyList();
-
-        return attachmentsIds
-                .stream()
-                .map(attachId -> new CaseAttachment(caseId, attachId, commentId))
-                .collect(Collectors.toList());
     }
 
     static final long CHANGE_LIMIT_TIME = 300000;  // 5 минут  (в мсек)

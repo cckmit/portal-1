@@ -9,11 +9,13 @@ import ru.protei.winter.core.utils.config.utils.PropertiesWrapper;
 public class PortalConfigData {
 
     private SmtpConfig smtpConfig;
+    private CloudConfig cloudConfig;
 
     private final String crmCaseUrl;
 
     public PortalConfigData (PropertiesWrapper wrapper) throws ConfigException {
         smtpConfig = new SmtpConfig(wrapper);
+        cloudConfig = new CloudConfig(wrapper);
 
         crmCaseUrl = wrapper.getProperty( "crm.case.url", "http://127.0.0.1:8888/crm.html#issues/issue:id=%d;" );
     }
@@ -24,6 +26,10 @@ public class PortalConfigData {
 
     public String getCrmCaseUrl() {
         return crmCaseUrl;
+    }
+
+    public CloudConfig cloud() {
+        return cloudConfig;
     }
 
     public static class SmtpConfig {
@@ -53,6 +59,30 @@ public class PortalConfigData {
 
         public String getFromAddress() {
             return fromAddress;
+        }
+    }
+
+    public static class CloudConfig {
+        private final String storagePath;
+        private final String user;
+        private final String password;
+
+        public CloudConfig(PropertiesWrapper properties) throws ConfigException{
+            storagePath = properties.getProperty("cloud.path");
+            user = properties.getProperty("cloud.user");
+            password = properties.getProperty("cloud.password");
+        }
+
+        public String getStoragePath() {
+            return storagePath;
+        }
+
+        public String getUser() {
+            return user;
+        }
+
+        public String getPassword() {
+            return password;
         }
     }
 

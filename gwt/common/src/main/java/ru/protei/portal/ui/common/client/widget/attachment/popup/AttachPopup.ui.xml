@@ -3,6 +3,6 @@
              xmlns:attachment='urn:import:ru.protei.portal.ui.common.client.widget.attachment.list'>
 
     <g:HTMLPanel ui:field="root" styleName="attachment-popup">
-        <attachment:AttachmentList hiddenControls="false" ui:field="attachmentContainer"  />
+        <attachment:AttachmentList hiddenControls="true" ui:field="attachmentContainer"  />
     </g:HTMLPanel>
 </ui:UiBinder>

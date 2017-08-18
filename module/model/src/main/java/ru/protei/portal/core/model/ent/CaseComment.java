@@ -44,7 +44,8 @@ public class CaseComment extends AuditableObject {
     @JdbcColumn(name="old_id")
     private Long oldId;
 
-    private List<Long> attachmentsIds;
+    @JdbcOneToMany(table = "case_attachment", remoteColumn = "ccomment_id", additionalConditions = @JdbcManyJoinData(remoteColumn="case_id", localColumn = "case_id"))
+    private List<CaseAttachment> caseAttachments;
 
     public CaseComment() {}
 
@@ -143,22 +144,12 @@ public class CaseComment extends AuditableObject {
         this.oldId = oldId;
     }
 
-    public List<Long> getAttachmentsIds() {
-        return attachmentsIds;
+    public List<CaseAttachment> getCaseAttachments() {
+        return caseAttachments;
     }
 
-    public void setAttachmentsIds(List<Long> attachmentsIds) {
-        this.attachmentsIds = attachmentsIds;
-    }
-
-    public void setAttachments(Collection<Attachment> attachments){
-        if(attachments == null)
-            return;
-
-        this.attachmentsIds = attachments
-                .stream()
-                .map(Attachment::getId)
-                .collect(Collectors.toList());
+    public void setCaseAttachments(List<CaseAttachment> attachments) {
+        this.caseAttachments = attachments;
     }
 
     @Override

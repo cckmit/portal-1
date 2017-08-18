@@ -35,4 +35,6 @@ public interface AttachmentService {
     @Privileged( En_Privilege.ISSUE_VIEW )
     CoreResponse<List<Attachment>> getAttachments( AuthToken token, List<Long> ids);
 
+    CoreResponse<Long> saveAttachment(Attachment attachment);
+
 }

@@ -6,7 +6,6 @@ import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.winter.jdbc.annotations.*;
 
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -100,7 +99,9 @@ public class CaseObject extends AuditableObject {
     @JdbcColumn(name = "ATTACHMENT_EXISTS")
     private boolean isAttachmentExists;
 
-    private Collection<Long> attachmentsIds;
+    @JdbcManyToMany(linkTable = "case_attachment", localLinkColumn = "case_id", remoteLinkColumn = "att_id")
+    private List<Attachment> attachments;
+
     @JdbcOneToMany(table = "case_location", localColumn = "id", remoteColumn = "CASE_ID" )
     private List<CaseLocation> locations;
 
@@ -349,12 +350,12 @@ public class CaseObject extends AuditableObject {
         this.typeId = type.getId();
     }
 
-    public Collection<Long> getAttachmentsIds() {
-        return attachmentsIds;
+    public List<Attachment> getAttachments() {
+        return attachments;
     }
 
-    public void setAttachmentsIds(Collection<Long> attachmentsIds) {
-        this.attachmentsIds = attachmentsIds;
+    public void setAttachments(List<Attachment> attachments) {
+        this.attachments = attachments;
     }
 
     public boolean isAttachmentExists() {
