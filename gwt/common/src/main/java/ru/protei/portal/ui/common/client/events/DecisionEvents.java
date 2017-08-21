@@ -5,9 +5,9 @@ import ru.brainworm.factory.context.client.annotation.Url;
 /**
  * Created by serebryakov on 21/08/17.
  */
-public class OfficialEvents {
+public class DecisionEvents {
 
-    @Url( value = "officials", primary = true )
+    @Url( value = "decisions", primary = true )
     public static class Show {
 
         public Show () {}

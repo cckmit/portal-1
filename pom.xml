@@ -47,7 +47,7 @@
                 <module>gwt/equipment</module>
                 <module>gwt/account</module>
                 <module>gwt/role</module>
-                <module>gwt/official</module>
+                <module>gwt/decision</module>
                 <!--<module>app/crm</module>-->
             </modules>
         </profile>

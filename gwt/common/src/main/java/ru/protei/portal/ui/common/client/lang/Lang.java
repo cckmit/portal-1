@@ -575,7 +575,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String buttonLocale();
 
-    String privilegeCategoryOfficial();
+    String privilegeCategoryDecision();
 
     String matrixSolutions();
 }
