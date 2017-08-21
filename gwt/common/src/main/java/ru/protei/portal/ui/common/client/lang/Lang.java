@@ -574,4 +574,6 @@ public interface Lang extends Messages, ContactItemLang {
     String privilegeRemove();
 
     String buttonLocale();
+
+    String privilegeCategoryOfficial();
 }
