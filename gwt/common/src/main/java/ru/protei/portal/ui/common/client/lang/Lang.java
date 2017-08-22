@@ -578,4 +578,10 @@ public interface Lang extends Messages, ContactItemLang {
     String privilegeCategoryDecision();
 
     String matrixSolutions();
+
+    String officialTableProduct();
+
+    String officialTableInfo();
+
+    String officialTableNumberEmployees();
 }
