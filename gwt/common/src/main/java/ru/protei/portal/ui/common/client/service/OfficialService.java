@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Сервис управления должностными лицами
  */
-@RemoteServiceRelativePath( "springGwtServices/OfficialService" )
+@RemoteServiceRelativePath( "springGwtServices/OfficialService")
 public interface OfficialService extends RemoteService {
 
     List<Official> getOfficialList();

@@ -7,7 +7,7 @@ import ru.brainworm.factory.context.client.annotation.Url;
  */
 public class OfficialEvents {
 
-    @Url( value = "decisions", primary = true )
+    @Url( value = "officials", primary = true )
     public static class Show {
 
         public Show () {}

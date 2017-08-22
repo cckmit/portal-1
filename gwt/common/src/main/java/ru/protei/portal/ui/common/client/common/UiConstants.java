@@ -18,7 +18,7 @@ public class UiConstants {
         String EQUIPMENT = "fa fa-server";
         String ACCOUNT = "fa fa-group";
         String ROLE = "fa fa-user";
-        String DECISION = "fa fa-book";
+        String OFFICIAL = "fa fa-book";
     }
 
     public interface ActionBarIcons {

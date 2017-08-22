@@ -28,8 +28,8 @@ public class En_PrivilegeEntityLang {
                 return lang.privilegeCategoryEquipment();
             case ROLE:
                 return lang.privilegeCategoryRole();
-            case DECISION:
-                return lang.privilegeCategoryDecision();
+            case OFFICIAL:
+                return lang.privilegeCategoryOfficial();
             default:
                 return lang.unknownField();
         }

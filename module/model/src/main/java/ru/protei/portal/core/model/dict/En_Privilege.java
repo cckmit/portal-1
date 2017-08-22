@@ -51,8 +51,8 @@ public enum En_Privilege {
     ROLE_EDIT (ROLE, EDIT),
     ROLE_CREATE (ROLE, CREATE),
 
-    DECISION_VIEW (DECISION, VIEW),
-    DECISION_EDIT (DECISION, EDIT);
+    OFFICIAL_VIEW(OFFICIAL, VIEW),
+    OFFICIAL_EDIT(OFFICIAL, EDIT);
 
     private final En_PrivilegeEntity entity;
     private final En_PrivilegeAction action;

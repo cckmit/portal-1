@@ -14,18 +14,6 @@ public class Official extends CaseShortView {
     private Date createTime;
     private String numberEmployees;
 
-    public String getProductName() {
-        return productName;
-    }
-
-    public String getInfo() {
-        return info;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
     public String getNumberEmployees() {
         return numberEmployees;
     }
