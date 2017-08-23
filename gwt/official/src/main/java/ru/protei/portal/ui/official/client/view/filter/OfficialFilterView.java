@@ -1,8 +1,13 @@
 package ru.protei.portal.ui.official.client.view.filter;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.range.RangePicker;
@@ -41,9 +46,7 @@ public class OfficialFilterView extends Composite implements AbstractOfficialFil
     }
 
     @Override
-    public HasValue<String> searchPattern() {
-        return search;
-    }
+    public HasValue<String> searchPattern() { return search; }
 
     @Override
     public HasValue<DateInterval> dateRange() {
@@ -79,6 +82,66 @@ public class OfficialFilterView extends Composite implements AbstractOfficialFil
         sortField.setValue(En_SortField.creation_date);
         sortDir.setValue(false);
     }
+
+    @UiHandler( "search" )
+    public void onKeyUpSearch( KeyUpEvent event ) {
+        timer.cancel();
+        timer.schedule( 300 );
+    }
+
+    Timer timer = new Timer() {
+        @Override
+        public void run() {
+            if ( activity != null ) {
+                activity.onFilterChanged();
+            }
+        }
+    };
+
+    @UiHandler("dateRange")
+    public void onDateRangeChanged(ValueChangeEvent<DateInterval> event) {
+        if (activity != null) {
+            activity.onFilterChanged();
+        }
+    }
+
+    @UiHandler("product")
+    public void onProductChanged(ValueChangeEvent<ProductShortView> event) {
+        if (activity != null) {
+            activity.onFilterChanged();
+        }
+    }
+
+    @UiHandler("region")
+    public void onRegionChanged(ValueChangeEvent<EntityOption> event) {
+        if (activity != null) {
+            activity.onFilterChanged();
+        }
+    }
+
+    @UiHandler("sortField")
+    public void onSortFieldChanged(ValueChangeEvent<En_SortField> event) {
+        if (activity != null) {
+            activity.onFilterChanged();
+        }
+    }
+
+    @UiHandler("sortDir")
+    public void onSortDirClicked(ClickEvent event) {
+        if (activity != null) {
+            activity.onFilterChanged();
+        }
+    }
+
+    @UiHandler("resetBtn")
+    public void onResetButtonChanged(ClickEvent event) {
+        if (activity != null) {
+            resetFilter();
+            activity.onFilterChanged();
+        }
+    }
+
+
 
     @Inject
     @UiField
