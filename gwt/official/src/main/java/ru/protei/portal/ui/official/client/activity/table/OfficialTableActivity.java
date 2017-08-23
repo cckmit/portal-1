@@ -89,6 +89,6 @@ public abstract class OfficialTableActivity implements AbstractOfficialsTableAct
 
     @Override
     public void onFilterChanged() {
-
+        requestTotalCount();
     }
 }

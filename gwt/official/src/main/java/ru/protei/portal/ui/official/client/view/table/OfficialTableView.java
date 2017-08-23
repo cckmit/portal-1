@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.official.client.view.table;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.DOM;
@@ -175,6 +176,15 @@ public class OfficialTableView extends Composite implements AbstractOfficialTabl
     @Override
     public int getPageCount() {
         return 0;
+    }
+
+    @Override
+    public void addSeparator(String text) {
+        Element elem = DOM.createDiv();
+        SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
+        safeHtmlBuilder.appendHtmlConstant( "<b>" ).appendEscapedLines( text ).appendHtmlConstant( "</b>" );
+        elem.setInnerSafeHtml( safeHtmlBuilder.toSafeHtml() );
+        table.addCustomRow( elem, "region", null );
     }
 
 

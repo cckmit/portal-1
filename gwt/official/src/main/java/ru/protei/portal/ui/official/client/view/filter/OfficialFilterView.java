@@ -141,8 +141,6 @@ public class OfficialFilterView extends Composite implements AbstractOfficialFil
         }
     }
 
-
-
     @Inject
     @UiField
     Lang lang;

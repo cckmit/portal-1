@@ -23,4 +23,6 @@ public interface AbstractOfficialTableView extends IsWidget {
     int getPageSize();
 
     int getPageCount();
+
+    void addSeparator(String text);
 }
