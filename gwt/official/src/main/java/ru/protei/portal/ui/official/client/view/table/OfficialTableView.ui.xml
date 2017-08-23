@@ -4,8 +4,8 @@
 
     <g:HTMLPanel styleName="main-content">
         <div class="grid">
-            <g:HTMLPanel ui:field="tableContainer" styleName="col-xs-9">
-                <table:InfiniteTableWidget ui:field="table"/>
+            <g:HTMLPanel ui:field="tableContainer" styleName="global-table-container col-xs-9">
+                <table:TableWidget ui:field="table" styleName="table-hover projects"/>
             </g:HTMLPanel>
             <g:HTMLPanel ui:field="previewContainer" styleName="preview-container no-width"/>
             <g:HTMLPanel ui:field="filterContainer" styleName="filter-container col-xs-3"/>

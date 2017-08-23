@@ -2,6 +2,7 @@ package ru.protei.portal.ui.official.client.activity.table;
 
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
+import ru.protei.portal.core.model.ent.Official;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 
 /**
@@ -18,11 +19,11 @@ public interface AbstractOfficialTableView extends IsWidget {
     HasWidgets getPreviewContainer ();
     HasWidgets getFilterContainer ();
 
-    void setRecordCount( Long count );
-
     int getPageSize();
 
     int getPageCount();
 
     void addSeparator(String text);
+
+    void addRow(Official official);
 }

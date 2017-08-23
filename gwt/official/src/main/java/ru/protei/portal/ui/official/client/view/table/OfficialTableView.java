@@ -10,7 +10,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
-import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
+import ru.brainworm.factory.widget.table.client.TableWidget;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Official;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
@@ -129,7 +129,6 @@ public class OfficialTableView extends Composite implements AbstractOfficialTabl
     public void setActivity(AbstractOfficialsTableActivity activity) {
         this.activity = activity;
         attachColumn.setAttachHandler(activity);
-        table.setLoadHandler( activity );
     }
 
     @Override
@@ -149,7 +148,6 @@ public class OfficialTableView extends Composite implements AbstractOfficialTabl
 
     @Override
     public void clearRecords() {
-        table.clearCache();
         table.clearRows();
     }
 
@@ -161,11 +159,6 @@ public class OfficialTableView extends Composite implements AbstractOfficialTabl
     @Override
     public HasWidgets getFilterContainer() {
         return filterContainer;
-    }
-
-    @Override
-    public void setRecordCount(Long count) {
-        table.setTotalRecords(count.intValue());
     }
 
     @Override
@@ -187,6 +180,11 @@ public class OfficialTableView extends Composite implements AbstractOfficialTabl
         table.addCustomRow( elem, "region", null );
     }
 
+    @Override
+    public void addRow(Official official) {
+        table.addRow(official);
+    }
+
 
     private AbstractOfficialsTableActivity activity;
     private List<ClickColumn> columns = new ArrayList<ClickColumn>();
@@ -201,7 +199,7 @@ public class OfficialTableView extends Composite implements AbstractOfficialTabl
     @UiField
     HTMLPanel tableContainer;
     @UiField
-    InfiniteTableWidget<Official> table;
+    TableWidget<Official> table;
     @UiField
     HTMLPanel previewContainer;
     @UiField

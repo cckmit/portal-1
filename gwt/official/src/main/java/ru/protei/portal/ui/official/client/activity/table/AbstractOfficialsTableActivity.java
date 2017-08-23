@@ -9,7 +9,7 @@ import ru.protei.portal.ui.common.client.columns.EditClickColumn;
  * Created by serebryakov on 21/08/17.
  */
 public interface AbstractOfficialsTableActivity
-        extends InfiniteLoadHandler<Official>, EditClickColumn.EditHandler<Official>, AttachClickColumn.AttachHandler<Official> {
+        extends EditClickColumn.EditHandler<Official>, AttachClickColumn.AttachHandler<Official> {
 
     void onEditClicked(Official value);
 }

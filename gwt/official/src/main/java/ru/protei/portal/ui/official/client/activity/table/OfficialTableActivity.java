@@ -9,13 +9,16 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.Official;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
+import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.OfficialEvents;
+import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.OfficialServiceAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.official.client.activity.filter.AbstractOfficialFilterActivity;
 import ru.protei.portal.ui.official.client.activity.filter.AbstractOfficialFilterView;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Активность таблицы должностных лиц
@@ -53,42 +56,52 @@ public abstract class OfficialTableActivity implements AbstractOfficialsTableAct
 
     private void requestTotalCount() {
         view.clearRecords();
-        view.setRecordCount(2l);
-    }
-
-    @Override
-    public void loadData(int offset, int limit, final AsyncCallback<List<Official>> asyncCallback) {
-        officialService.getOfficialList(new RequestCallback<List<Official>>() {
+        officialService.getOfficialsByRegions(new RequestCallback<Map<String, List<Official>>>() {
             @Override
-            public void onError(Throwable throwable) {
-                asyncCallback.onFailure(throwable);
+            public void onSuccess(Map<String, List<Official>> result) {
+                fillRows(result);
             }
 
             @Override
-            public void onSuccess(List<Official> officials) {
-                asyncCallback.onSuccess(officials);
+            public void onError(Throwable throwable) {
+                fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
             }
         });
 
-    }
-
-    private AppEvents.InitDetails init;
-
-    @Inject
-    private AbstractOfficialTableView view;
-    @Inject
-    private AbstractOfficialFilterView filterView;
-
-    @Inject
-    OfficialServiceAsync officialService;
-
-    @Override
-    public void onAttachClicked(Official value, IsWidget widget) {
 
     }
 
     @Override
     public void onFilterChanged() {
         requestTotalCount();
+    }
+
+    private void fillRows(Map<String, List<Official>> result) {
+        view.clearRecords();
+        for (Map.Entry<String, List<Official>> entry: result.entrySet()) {
+            view.addSeparator(entry.getKey());
+
+            for (Official official: entry.getValue()) {
+                view.addRow(official);
+            }
+        }
+    }
+
+    @Inject
+    OfficialServiceAsync officialService;
+
+    @Inject
+    Lang lang;
+    private AppEvents.InitDetails init;
+
+    @Inject
+    private AbstractOfficialTableView view;
+
+    @Inject
+    private AbstractOfficialFilterView filterView;
+
+    @Override
+    public void onAttachClicked(Official value, IsWidget widget) {
+
     }
 }
