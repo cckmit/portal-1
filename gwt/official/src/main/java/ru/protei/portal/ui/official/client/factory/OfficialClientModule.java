@@ -2,9 +2,11 @@ package ru.protei.portal.ui.official.client.factory;
 
 import com.google.gwt.inject.client.AbstractGinModule;
 import com.google.inject.Singleton;
+import ru.protei.portal.ui.official.client.activity.filter.AbstractOfficialFilterView;
 import ru.protei.portal.ui.official.client.activity.page.OfficialPage;
 import ru.protei.portal.ui.official.client.activity.table.AbstractOfficialTableView;
 import ru.protei.portal.ui.official.client.activity.table.OfficialTableActivity;
+import ru.protei.portal.ui.official.client.view.filter.OfficialFilterView;
 import ru.protei.portal.ui.official.client.view.table.OfficialTableView;
 
 /**
@@ -17,6 +19,7 @@ public class OfficialClientModule extends AbstractGinModule{
 
         bind ( OfficialTableActivity.class ).asEagerSingleton();
         bind ( AbstractOfficialTableView.class ).to( OfficialTableView.class ).in( Singleton.class );
+        bind ( AbstractOfficialFilterView.class ).to(OfficialFilterView.class ).in( Singleton.class );
 
     }
 }

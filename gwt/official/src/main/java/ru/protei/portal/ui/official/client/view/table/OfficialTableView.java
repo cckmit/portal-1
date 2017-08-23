@@ -154,12 +154,12 @@ public class OfficialTableView extends Composite implements AbstractOfficialTabl
 
     @Override
     public HasWidgets getPreviewContainer() {
-        return null;
+        return previewContainer;
     }
 
     @Override
     public HasWidgets getFilterContainer() {
-        return null;
+        return filterContainer;
     }
 
     @Override

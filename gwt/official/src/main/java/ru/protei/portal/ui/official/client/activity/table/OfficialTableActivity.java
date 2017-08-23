@@ -8,25 +8,35 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.Official;
 import ru.protei.portal.ui.common.client.events.AppEvents;
+import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.OfficialEvents;
 import ru.protei.portal.ui.common.client.service.OfficialServiceAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
+import ru.protei.portal.ui.official.client.activity.filter.AbstractOfficialFilterActivity;
+import ru.protei.portal.ui.official.client.activity.filter.AbstractOfficialFilterView;
 
 import java.util.List;
 
 /**
  * Активность таблицы должностных лиц
  */
-public abstract class OfficialTableActivity implements AbstractOfficialsTableActivity, Activity {
+public abstract class OfficialTableActivity implements AbstractOfficialsTableActivity, AbstractOfficialFilterActivity, Activity {
 
     @PostConstruct
     public void onInit() {
         view.setActivity(this);
+        filterView.setActivity(this);
+        view.getFilterContainer().add(filterView.asWidget());
     }
 
     @Override
     public void onEditClicked(Official value) {
 
+    }
+
+    @Event
+    public void onAuthSuccess (AuthEvents.Success event) {
+        filterView.resetFilter();
     }
 
     @Event
@@ -63,14 +73,22 @@ public abstract class OfficialTableActivity implements AbstractOfficialsTableAct
     }
 
     private AppEvents.InitDetails init;
+
     @Inject
     private AbstractOfficialTableView view;
+    @Inject
+    private AbstractOfficialFilterView filterView;
 
     @Inject
     OfficialServiceAsync officialService;
 
     @Override
     public void onAttachClicked(Official value, IsWidget widget) {
+
+    }
+
+    @Override
+    public void onFilterChanged() {
 
     }
 }

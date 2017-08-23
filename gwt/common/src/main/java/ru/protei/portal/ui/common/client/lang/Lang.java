@@ -584,4 +584,8 @@ public interface Lang extends Messages, ContactItemLang {
     String officialTableInfo();
 
     String officialTableNumberEmployees();
+
+    String selectOfficialRegion();
+
+    String officialRegion();
 }
