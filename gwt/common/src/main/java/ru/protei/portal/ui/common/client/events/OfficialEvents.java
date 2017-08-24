@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.common.client.events;
 
+import com.google.gwt.user.client.ui.HasWidgets;
 import ru.brainworm.factory.context.client.annotation.Url;
 
 /**
@@ -12,5 +13,15 @@ public class OfficialEvents {
 
         public Show () {}
 
+    }
+
+    public static class ShowPreview {
+        public HasWidgets parent;
+        public Long id;
+
+        public ShowPreview(HasWidgets previewContainer, Long id) {
+            this.parent = previewContainer;
+            this.id = id;
+        }
     }
 }

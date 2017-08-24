@@ -16,6 +16,7 @@ import ru.protei.portal.core.model.ent.Official;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.AttachClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
+import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -124,16 +125,21 @@ public class OfficialTableView extends Composite implements AbstractOfficialTabl
         table.addColumn(editClickColumn.header, editClickColumn.values);
     }
 
-
     @Override
     public void setActivity(AbstractOfficialsTableActivity activity) {
         this.activity = activity;
         attachColumn.setAttachHandler(activity);
+        editClickColumn.setColumnProvider( columnProvider );
+        columns.forEach( clickColumn -> {
+            clickColumn.setHandler( activity );
+            clickColumn.setColumnProvider( columnProvider );
+        });
     }
+
 
     @Override
     public void setAnimation(TableAnimation animation) {
-
+        animation.setContainers(tableContainer, previewContainer, filterContainer);
     }
 
     @Override
@@ -185,16 +191,18 @@ public class OfficialTableView extends Composite implements AbstractOfficialTabl
         table.addRow(official);
     }
 
-
     private AbstractOfficialsTableActivity activity;
-    private List<ClickColumn> columns = new ArrayList<ClickColumn>();
 
+
+    private List<ClickColumn> columns = new ArrayList<ClickColumn>();
     @Inject
     Lang lang;
 
     AttachClickColumn<Official> attachColumn;
 
     private EditClickColumn<Official> editClickColumn;
+
+    private ClickColumnProvider<Official> columnProvider = new ClickColumnProvider<Official>();
 
     @UiField
     HTMLPanel tableContainer;

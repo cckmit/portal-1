@@ -1,16 +1,13 @@
 package ru.protei.portal.ui.official.client.activity.table;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.Official;
-import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.AuthEvents;
-import ru.protei.portal.ui.common.client.events.NotifyEvents;
-import ru.protei.portal.ui.common.client.events.OfficialEvents;
+import ru.protei.portal.ui.common.client.animation.TableAnimation;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.OfficialServiceAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
@@ -23,11 +20,13 @@ import java.util.Map;
 /**
  * Активность таблицы должностных лиц
  */
-public abstract class OfficialTableActivity implements AbstractOfficialsTableActivity, AbstractOfficialFilterActivity, Activity {
+public abstract class OfficialTableActivity
+        implements AbstractOfficialsTableActivity, AbstractOfficialFilterActivity, Activity {
 
     @PostConstruct
     public void onInit() {
         view.setActivity(this);
+        view.setAnimation(animation);
         filterView.setActivity(this);
         view.getFilterContainer().add(filterView.asWidget());
     }
@@ -87,11 +86,28 @@ public abstract class OfficialTableActivity implements AbstractOfficialsTableAct
         }
     }
 
-    @Inject
-    OfficialServiceAsync officialService;
+    @Override
+    public void onItemClicked(Official value) {
+        showPreview(value);
+    }
+
+    private void showPreview(Official value) {
+        if ( value == null ) {
+            animation.closeDetails();
+        } else {
+            animation.showDetails();
+            fireEvent( new OfficialEvents.ShowPreview( view.getPreviewContainer(), value.getId() ) );
+        }
+    }
 
     @Inject
+    TableAnimation animation;
+
+    @Inject
+    OfficialServiceAsync officialService;
+    @Inject
     Lang lang;
+
     private AppEvents.InitDetails init;
 
     @Inject

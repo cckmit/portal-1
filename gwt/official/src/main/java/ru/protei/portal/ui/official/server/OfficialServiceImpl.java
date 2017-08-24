@@ -27,7 +27,7 @@ public class OfficialServiceImpl implements OfficialService {
         official2.setProductName("DPI");
         official2.setEmployeesNumber("55");
         official2.setInfo("Анализ трафика");
-        official1.setAttachmentExists(true);
+        official2.setAttachmentExists(true);
 
         officials.add(official1);
         officials.add(official2);
