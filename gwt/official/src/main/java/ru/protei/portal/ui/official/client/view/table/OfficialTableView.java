@@ -70,33 +70,74 @@ public class OfficialTableView extends Composite implements AbstractOfficialTabl
 
             @Override
             public void fillColumnValue(Element cell, Official value) {
+//                cell.addClassName( "info" );
+//
+//                Element divElement = DOM.createDiv();
+//
+//                Element infoElement = DOM.createLabel();
+//
+//                infoElement.setInnerText( value == null ? "" : value.getInfo() == null ? "" : value.getInfo() );
+//
+//                divElement.appendChild( infoElement );
+//
+//                Date createTime = value == null ? null : value.getCreated();
+//
+//                if ( createTime != null ) {
+//                    Element groupElement = DOM.createElement( "p" );
+//                    groupElement.addClassName( "text-semimuted" );
+//                    groupElement.addClassName( "no-margin" );
+//
+//                    Element i = DOM.createElement( "i" );
+//                    i.addClassName( "fa fa-clock-o" );
+//                    groupElement.appendChild( i );
+//
+//                    Element createdElement = DOM.createSpan();
+//                    createdElement.setInnerText( " " + DateFormatter.formatDateTime( createTime ) );
+//                    groupElement.appendChild( createdElement );
+//
+//                    divElement.appendChild( groupElement );
+//                }
+//
+//                cell.appendChild( divElement );
+
                 cell.addClassName( "info" );
 
                 Element divElement = DOM.createDiv();
 
-                Element infoElement = DOM.createLabel();
+                if ( value.isPrivateCase() ) {
+                    Element lock = DOM.createElement( "i" );
+                    lock.addClassName( "fa fa-fw fa-lock text-danger" );
+                    divElement.appendChild( lock );
+                }
 
-                infoElement.setInnerText( value == null ? "" : value.getInfo() == null ? "" : value.getInfo() );
+                Element productElement = DOM.createLabel();
+                productElement.setInnerText( value == null ? "" : value.getProductName() == null ? "" : value.getProductName() );
 
-                divElement.appendChild( infoElement );
 
-                Date createTime = value == null ? null : value.getCreated();
 
-                if ( createTime != null ) {
+                divElement.appendChild( productElement );
+
+                Date created = value == null ? null : value.getCreated();
+                if ( created != null ) {
                     Element groupElement = DOM.createElement( "p" );
                     groupElement.addClassName( "text-semimuted" );
                     groupElement.addClassName( "no-margin" );
-
                     Element i = DOM.createElement( "i" );
                     i.addClassName( "fa fa-clock-o" );
                     groupElement.appendChild( i );
 
                     Element createdElement = DOM.createSpan();
-                    createdElement.setInnerText( " " + DateFormatter.formatDateTime( createTime ) );
+                    createdElement.setInnerText( " " + DateFormatter.formatDateTime( created ) );
                     groupElement.appendChild( createdElement );
 
                     divElement.appendChild( groupElement );
                 }
+
+                Element infoElement = DOM.createElement( "p" );
+                infoElement.addClassName( "issue-description" );
+                infoElement.addClassName( "no-margin" );
+                infoElement.setInnerText( value == null ? "" : value.getInfo() );
+                divElement.appendChild( infoElement );
 
                 cell.appendChild( divElement );
             }

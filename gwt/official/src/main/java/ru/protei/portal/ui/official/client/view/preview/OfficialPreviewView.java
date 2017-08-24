@@ -1,11 +1,16 @@
 package ru.protei.portal.ui.official.client.view.preview;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.inject.Inject;
+import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.official.client.activity.preview.AbstractOfficialPreviewActivity;
 import ru.protei.portal.ui.official.client.activity.preview.AbstractOfficialPreviewView;
 
@@ -14,8 +19,10 @@ import ru.protei.portal.ui.official.client.activity.preview.AbstractOfficialPrev
  */
 public class OfficialPreviewView extends Composite implements AbstractOfficialPreviewView{
 
+
     public OfficialPreviewView() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        name.getElement().setPropertyString( "placeholder", lang.officialPreviewSearch() );
     }
 
     @Override
@@ -25,41 +32,56 @@ public class OfficialPreviewView extends Composite implements AbstractOfficialPr
 
     @Override
     public void setCreationDate(String value) {
-
+        creationDate.setInnerText(value);
     }
 
     @Override
     public void setProduct(String value) {
-
+        product.setInnerText(value);
     }
 
     @Override
     public void setRegion(String value) {
-
+        region.setInnerText(value);
     }
 
     @Override
     public void setInfo(String value) {
-
+        info.setInnerHTML(value);
     }
 
     @Override
     public void showFullScreen(boolean value) {
-        this.fullScreen.setVisible( !value );
+        fullScreen.setVisible( !value );
         if ( value ) {
-            this.preview.addStyleName( "col-xs-12 col-lg-6" );
+            preview.addStyleName( "col-xs-12 col-lg-6" );
         } else {
-            this.preview.setStyleName( "preview" );
+            preview.setStyleName( "preview" );
         }
     }
 
     private AbstractOfficialPreviewActivity activity;
 
-    interface OfficialPreviewViewUiBinder extends UiBinder<HTMLPanel, OfficialPreviewView> {}
+    @UiField
+    @Inject
+    Lang lang;
 
-    private static OfficialPreviewViewUiBinder ourUiBinder = GWT.create(OfficialPreviewViewUiBinder.class);
     @UiField
     HTMLPanel preview;
     @UiField
     Anchor fullScreen;
+    @UiField
+    SpanElement region;
+    @UiField
+    SpanElement product;
+    @UiField
+    SpanElement creationDate;
+    @UiField
+    TextBox name;
+    @UiField
+    DivElement info;
+
+    private static OfficialPreviewViewUiBinder ourUiBinder = GWT.create(OfficialPreviewViewUiBinder.class);
+
+    interface OfficialPreviewViewUiBinder extends UiBinder<HTMLPanel, OfficialPreviewView> {}
 }

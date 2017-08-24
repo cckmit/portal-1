@@ -588,4 +588,10 @@ public interface Lang extends Messages, ContactItemLang {
     String selectOfficialRegion();
 
     String officialRegion();
+
+    String officialGeneralInfo();
+
+    String officialFaces();
+
+    String officialPreviewSearch();
 }

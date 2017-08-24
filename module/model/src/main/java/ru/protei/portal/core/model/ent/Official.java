@@ -1,11 +1,12 @@
 package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.view.CaseShortView;
+import ru.protei.portal.core.model.view.EntityOption;
 
 import java.util.Date;
 
 /**
- * Created by serebryakov on 21/08/17.
+ * Матрица принятия решений
  */
 public class Official extends CaseShortView {
 
@@ -13,6 +14,7 @@ public class Official extends CaseShortView {
     private String info;
     private Date createTime;
     private String numberEmployees;
+    private EntityOption region;
 
     public String getNumberEmployees() {
         return numberEmployees;
@@ -20,5 +22,13 @@ public class Official extends CaseShortView {
 
     public void setEmployeesNumber(String number) {
         numberEmployees = number;
+    }
+
+    public EntityOption getRegion() {
+        return region;
+    }
+
+    public void setRegion(EntityOption region) {
+        this.region = region;
     }
 }

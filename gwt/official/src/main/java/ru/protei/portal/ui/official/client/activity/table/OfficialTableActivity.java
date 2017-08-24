@@ -100,11 +100,16 @@ public abstract class OfficialTableActivity
         }
     }
 
-    @Inject
-    TableAnimation animation;
+    @Override
+    public void onAttachClicked(Official value, IsWidget widget) {
+
+    }
 
     @Inject
+    TableAnimation animation;
+    @Inject
     OfficialServiceAsync officialService;
+
     @Inject
     Lang lang;
 
@@ -115,9 +120,4 @@ public abstract class OfficialTableActivity
 
     @Inject
     private AbstractOfficialFilterView filterView;
-
-    @Override
-    public void onAttachClicked(Official value, IsWidget widget) {
-
-    }
 }
