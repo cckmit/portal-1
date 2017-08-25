@@ -3,6 +3,8 @@ package ru.protei.portal.ui.official.server;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.ent.Official;
+import ru.protei.portal.core.model.ent.OfficialMember;
+import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.service.OfficialService;
 
@@ -91,6 +93,42 @@ public class OfficialServiceImpl implements OfficialService {
 
         return officialsByRegions;
     }
+
+    @Override
+    public Map<String, List<OfficialMember>> getOfficialMembersByProducts() {
+        Map<String, List<OfficialMember>> result = new HashMap<>();
+        String company1 = "НТЦ Протей";
+        String company2 = "НТЦ Буравчик";
+        OfficialMember member1 = new OfficialMember();
+        Person person1 = new Person();
+        person1.setFirstName("Морозов Евгений Юрьевич");
+        Person person2 = new Person();
+        person2.setFirstName("Григорьев Геннадий Иванович");
+        Person person3 = new Person();
+        person3.setFirstName("Серебряков Евгений Дмитриевич");
+        Person person4 = new Person();
+        person4.setFirstName("Песков Дмитрий Иванович");
+        member1.setMember(person1);
+        member1.setAmplua("Любит готовить");
+        member1.setRelations("Вася, Петя");
+        OfficialMember member2 = new OfficialMember();
+        member2.setMember(person2);
+        member2.setAmplua("Любит отдыхать");
+        member2.setRelations("Коля, Ваня");
+        OfficialMember member3 = new OfficialMember();
+        member3.setMember(person3);
+        member3.setAmplua("Любит жену");
+        member3.setRelations("Веня");
+        OfficialMember member4 = new OfficialMember();
+        member4.setMember(person4);
+        member4.setAmplua("Любит прогать");
+        member4.setRelations("Денис");
+        result.put(company1, Arrays.asList(member1, member2));
+        result.put(company2, Arrays.asList(member3, member4));
+
+        return result;
+    }
+
 
     private List<Official> officialList;
 }

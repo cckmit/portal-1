@@ -7,11 +7,9 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.Anchor;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.ent.OfficialMember;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.official.client.activity.preview.AbstractOfficialPreviewActivity;
 import ru.protei.portal.ui.official.client.activity.preview.AbstractOfficialPreviewView;
@@ -20,7 +18,6 @@ import ru.protei.portal.ui.official.client.activity.preview.AbstractOfficialPrev
  * Created by serebryakov on 23/08/17.
  */
 public class OfficialPreviewView extends Composite implements AbstractOfficialPreviewView{
-
 
     public OfficialPreviewView() {
         initWidget(ourUiBinder.createAndBindUi(this));
@@ -62,6 +59,21 @@ public class OfficialPreviewView extends Composite implements AbstractOfficialPr
         }
     }
 
+    @Override
+    public void clearMembers() {
+        membersContainer.clear();
+    }
+
+    @Override
+    public HTMLPanel getMembersContainer() {
+        return membersContainer;
+    }
+
+    @Override
+    public void addMemberView(Widget widget) {
+        membersContainer.add(widget.asWidget());
+    }
+
     @UiHandler( "fullScreen" )
     public void onFullScreenClicked ( ClickEvent event) {
         event.preventDefault();
@@ -91,6 +103,8 @@ public class OfficialPreviewView extends Composite implements AbstractOfficialPr
     TextBox name;
     @UiField
     DivElement info;
+    @UiField
+    HTMLPanel membersContainer;
 
     private static OfficialPreviewViewUiBinder ourUiBinder = GWT.create(OfficialPreviewViewUiBinder.class);
 

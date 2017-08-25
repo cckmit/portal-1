@@ -1,6 +1,8 @@
 package ru.protei.portal.ui.official.client.activity.preview;
 
+import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Абстракция активности на странице превью должностных лиц
@@ -15,4 +17,9 @@ public interface AbstractOfficialPreviewView extends IsWidget{
     void setInfo( String value);
     void showFullScreen(boolean value);
 
+    void clearMembers();
+
+    HTMLPanel getMembersContainer();
+
+    void addMemberView(Widget widget);
 }

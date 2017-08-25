@@ -34,6 +34,7 @@
                     <span class="icon local-search-icon" style="top: 4px"></span>
                     <g:TextBox ui:field="name" styleName="input-field"/>
                 </div>
+                <g:HTMLPanel ui:field="membersContainer"></g:HTMLPanel>
             </fieldset>
 
         </g:HTMLPanel>
