@@ -3,8 +3,10 @@ package ru.protei.portal.ui.official.client.view.preview;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.SpanElement;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
@@ -57,6 +59,15 @@ public class OfficialPreviewView extends Composite implements AbstractOfficialPr
             preview.addStyleName( "col-xs-12 col-lg-6" );
         } else {
             preview.setStyleName( "preview" );
+        }
+    }
+
+    @UiHandler( "fullScreen" )
+    public void onFullScreenClicked ( ClickEvent event) {
+        event.preventDefault();
+
+        if ( activity != null ) {
+            activity.onFullScreenClicked();
         }
     }
 

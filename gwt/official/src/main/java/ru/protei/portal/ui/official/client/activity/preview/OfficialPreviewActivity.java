@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.ent.Official;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.AppEvents;
+import ru.protei.portal.ui.common.client.events.IssueEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.OfficialEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -33,6 +34,11 @@ public abstract class OfficialPreviewActivity implements AbstractOfficialPreview
         this.officialId = event.id;
         fillView(officialId);
         view.showFullScreen(false);
+    }
+
+    @Event
+    public void onInit( AppEvents.InitDetails event ) {
+        this.initDetails = event;
     }
 
     private void fillView(Long officialId) {
@@ -61,13 +67,17 @@ public abstract class OfficialPreviewActivity implements AbstractOfficialPreview
         view.setInfo(official.getInfo());
     }
 
-    @Inject
-    OfficialServiceAsync officialService;
-
     @Override
     public void onFullScreenClicked() {
-
+        initDetails.parent.clear();
+        initDetails.parent.add( view.asWidget() );
+        view.showFullScreen(true);
     }
+
+    private AppEvents.InitDetails initDetails;
+
+    @Inject
+    OfficialServiceAsync officialService;
 
     @Inject
     Lang lang;

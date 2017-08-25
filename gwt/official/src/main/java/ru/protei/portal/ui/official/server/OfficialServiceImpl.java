@@ -70,7 +70,7 @@ public class OfficialServiceImpl implements OfficialService {
         official2.setCreated(new Date(2016, 05, 11));
         official2.setProductName("DPI");
         official2.setEmployeesNumber("55");
-        official2.setInfo("The word-break CSS property specifies whether or not the browser should insert line breaks wherever the text would otherwise overflow its content box. In contrast to overflow-wrap, word-break will create a break at the exact place where text would otherwise overflow its container (even if putting an entire word on its own line would negate the need for a break).");
+        official2.setInfo("Эффективные технологии анализа трафика");
         official2.setAttachmentExists(true);
         official2.setRegion(new EntityOption("Камчатский край", 2l));
         official2.setId(2l);
