@@ -443,6 +443,10 @@ public class WorkerController {
             if (buf == null)
                 return ServiceResult.failResult (En_ErrorCode.EMPTY_PHOTO.getCode (), En_ErrorCode.EMPTY_PHOTO.getMessage (), id);
 
+            Person person = personDAO.get (id);
+            if (person == null)
+                return ServiceResult.failResult (En_ErrorCode.UNKNOWN_PER.getCode (), En_ErrorCode.UNKNOWN_PER.getMessage (), id);
+
             String fileName = WSConfig.getInstance ().getDirPhotos () + id + ".jpg";
             logger.debug("=== fileName = " + fileName);
 
@@ -478,8 +482,6 @@ public class WorkerController {
 
             for (Long id : list.getIds()) {
 
-                Photo photo = new Photo ();
-
                 logger.debug("=== personId = " + id);
                 String fileName = WSConfig.getInstance ().getDirPhotos () + id + ".jpg";
                 logger.debug("=== fileName = " + fileName);
@@ -489,15 +491,17 @@ public class WorkerController {
                     Long size = file.length();
                     byte[] buf = new byte[size.intValue()];
                     in.read(buf);
+
+                    Photo photo = new Photo ();
+                    photo.setId (id);
                     photo.setPhoto (buf);
+                    photos.getPhotos().add (photo);
+
                     logger.debug("=== file exists");
                     logger.debug("=== photo's length = " + (buf != null ? buf.length : null));
                 } else {
-                    photo.setPhoto (null);
                     logger.debug ("=== file doesn't exist");
                 }
-                photo.setId (id);
-                photos.getPhotos().add (photo);
             }
 
         } catch (Exception e) {

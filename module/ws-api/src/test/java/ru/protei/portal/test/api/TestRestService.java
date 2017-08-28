@@ -296,7 +296,7 @@ public class TestRestService {
         headers.setContentType(MediaType.IMAGE_GIF);
         HttpEntity<byte[]> entity = new HttpEntity<>(buf, headers);
 
-        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(URI).queryParam("id", 148L);
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(URI).queryParam("id", 999);
         String uriBuilder = builder.build().encode().toUriString();
 
         ResponseEntity<ServiceResult> response = restTemplate.exchange(uriBuilder, HttpMethod.PUT, entity, ServiceResult.class);
