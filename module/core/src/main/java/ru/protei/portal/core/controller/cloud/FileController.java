@@ -12,6 +12,7 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.protei.portal.api.struct.CoreResponse;
@@ -41,6 +42,9 @@ public class FileController {
 
     @Autowired
     FileStorage fileStorage;
+
+//    @Autowired
+//    EventPublisherService eventPublisherService;
 
 
     private static final Logger logger = Logger.getLogger(FileStorage.class);
@@ -72,7 +76,10 @@ public class FileController {
                         CoreResponse<Long> caseAttachId = caseService.bindAttachmentToCase(ud.makeAuthToken(), attachment, caseId);
                         if(caseAttachId.isError())
                             break;
+
+//                        eventPublisherService.publishEvent(new CaseAttachmentEvent(this, attachment, caseId));
                     }
+
                     return mapper.writeValueAsString(attachment);
                 }
             } catch (FileUploadException | SQLException | IOException e) {
@@ -100,6 +107,24 @@ public class FileController {
         response.setHeader("Cache-Control", "max-age=86400, must-revalidate"); // 1 day
         response.setHeader("Content-Disposition", "filename="+ extractRealFileName(fileName));
         IOUtils.copy(file.getData(), response.getOutputStream());
+    }
+
+    public Long saveAttachment (Attachment attachment, InputStreamSource content, Long caseId) throws IOException, SQLException {
+        if(caseId == null)
+            throw new RuntimeException("Case-ID is required");
+
+        attachment.setExtLink(fileStorage.save(generateUniqueFileName(attachment.getFileName()), content.getInputStream()));
+
+        if(attachmentService.saveAttachment(attachment).isError()) {
+            fileStorage.deleteFile(attachment.getExtLink());
+            throw new SQLException("attachment not saved");
+        }
+
+        CoreResponse<Long> caseAttachId = caseService.bindAttachmentToCase(null, attachment, caseId);
+        if(caseAttachId.isError())
+            throw new SQLException("unable to bind attachment to case");
+
+        return caseAttachId.getData();
     }
 
     private String saveFile(FileItem file) throws IOException{
