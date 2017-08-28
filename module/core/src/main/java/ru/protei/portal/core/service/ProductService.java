@@ -1,18 +1,18 @@
 package ru.protei.portal.core.service;
 
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.core.model.annotations.Auditable;
 import ru.protei.portal.core.model.annotations.Privileged;
+import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.DevUnit;
-import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.query.ProductDirectionQuery;
 import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.ProductShortView;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * Сервис управления продуктами
@@ -32,9 +32,11 @@ public interface ProductService {
     CoreResponse<DevUnit> getProduct( AuthToken token, Long id );
 
     @Privileged( En_Privilege.PRODUCT_CREATE )
+    @Auditable( En_AuditType.PRODUCT_CREATE )
     CoreResponse<Long> createProduct( AuthToken token, DevUnit product);
 
     @Privileged( En_Privilege.PRODUCT_EDIT )
+    @Auditable( En_AuditType.PRODUCT_MODIFY )
     CoreResponse<Boolean> updateProduct( AuthToken token, DevUnit product );
 
     @Privileged( En_Privilege.PRODUCT_VIEW )

@@ -1,8 +1,10 @@
 package ru.protei.portal.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.core.aspect.ServiceLayerInterceptor;
 import ru.protei.portal.core.controller.auth.AuthInterceptor;
 import ru.protei.portal.core.model.dao.*;
@@ -26,6 +28,12 @@ public class MainConfiguration {
     @Bean
     public PortalConfig getPortalConfig () throws ConfigException{
         return new PortalConfig("portal.properties");
+    }
+
+    @Bean
+    public FileStorage getFileStorage (@Autowired PortalConfig config){
+        PortalConfigData.CloudConfig cloud = config.data().cloud();
+        return new FileStorage(cloud.getStoragePath(), cloud.getUser(), cloud.getPassword());
     }
 
     @Bean
@@ -111,6 +119,11 @@ public class MainConfiguration {
     @Bean
     public CaseShortViewDAO getCaseShortDAO() {
         return new CaseShortViewDAO_Impl();
+    }
+
+    @Bean
+    public AuditObjectDAO getAuditDAO() {
+        return new AuditObjectDAO_Impl();
     }
 
     @Bean
@@ -252,6 +265,11 @@ public class MainConfiguration {
 
     @Bean
     public CaseService getCaseService() { return new CaseServiceImpl(); }
+
+    @Bean
+    public AuditService getAuditService() {
+        return new AuditServiceImpl();
+    }
 
     @Bean
     public AttachmentService getAttachmentService() { return new AttachmentServiceImpl(); }

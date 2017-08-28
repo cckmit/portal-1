@@ -53,7 +53,7 @@ public class AttachPopup extends PopupPanel{
             return;
 
         attachmentContainer.clear();
-        attachments.forEach(attachmentContainer::add);
+        attachmentContainer.add(attachments);
     }
 
     @Override

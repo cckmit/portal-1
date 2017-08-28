@@ -73,7 +73,7 @@ public class IssueServiceImpl implements IssueService {
             response = caseService.saveCaseObject( descriptor.makeAuthToken(), caseObject, getCurrentPerson() );
         }
         else
-            response = caseService.updateCaseObject( descriptor.makeAuthToken(), caseObject, getCurrentPerson() );
+            response = caseService.updateCaseObject( descriptor.makeAuthToken(), caseObject );
 
         log.debug( "saveIssue(): response.isOk()={}", response.isOk() );
         if ( response.isError() ) throw new RequestFailedException(response.getStatus());

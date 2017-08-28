@@ -4,8 +4,10 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -13,14 +15,16 @@ import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.ui.common.client.activity.attachment.AbstractAttachmentActivity;
 import ru.protei.portal.ui.common.client.activity.attachment.AbstractAttachmentView;
 import ru.protei.portal.ui.common.client.activity.attachment.AttachmentType;
+import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.PersonServiceAsync;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.HasAttachmentListHandlers;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveHandler;
+import ru.protei.portal.ui.common.client.widget.attachment.preview.AttachmentPreview;
+import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by bondarenko on 17.01.17.
@@ -37,28 +41,45 @@ public class AttachmentList extends Composite implements HasAttachments, HasAtta
         if(attachment == null)
             return;
 
-        AbstractAttachmentView view = attachmentViewFactory.get();
-        view.setActivity(this);
-        view.setFileName(attachment.getFileName());
-        view.setFileSize(attachment.getDataSize());
-        view.setDownloadUrl(DOWNLOAD_PATH + attachment.getExtLink());
+        AbstractAttachmentView view = createView(attachment);
+        personService.getPersonNames(Collections.singletonList(attachment.getCreatorId()), new RequestCallback<Map<Long, String>>() {
+            @Override
+            public void onError(Throwable throwable) {}
 
-        if(!isSimpleMode) {
-            AttachmentType.AttachmentCategory category = AttachmentType.getCategory(attachment.getMimeType());
-            if (category == AttachmentType.AttachmentCategory.IMAGE)
-                view.setPicture(DOWNLOAD_PATH + attachment.getExtLink());
-            else
-                view.setPicture(category.picture);
-        }else
-            view.asWidget().addStyleName("attach-minimize");
+            @Override
+            public void onSuccess(Map<Long, String> names) {
+                view.setCreationInfo(names.get(attachment.getCreatorId()), attachment.getCreated());
+            }
+        });
+    }
 
-        if(isHiddenControls){
-            view.asWidget().addStyleName("attach-hide-controls");
+
+    @Override
+    public void add(Collection<Attachment> attachments){
+        if(attachments == null || attachments.isEmpty())
+            return;
+
+        if(attachments.size() == 1) {
+            add((Attachment) attachments.toArray()[0]);
+        }else {
+            attachments.forEach(this::createView);
+            Set<Long> attachIds = attachments.stream().map(Attachment::getCreatorId).collect(Collectors.toSet());
+
+            personService.getPersonNames(attachIds, new RequestCallback<Map<Long, String>>() {
+                @Override
+                public void onError(Throwable throwable) {
+                }
+
+                @Override
+                public void onSuccess(Map<Long, String> names) {
+                    viewToAttachment.forEach((view, attachment) -> {
+                        if (attachments.contains(attachment)) {
+                            view.setCreationInfo(names.get(attachment.getCreatorId()), attachment.getCreated());
+                        }
+                    });
+                }
+            });
         }
-
-        viewToAttachment.put(view, attachment);
-
-        add(view.asWidget());
     }
 
     @Override
@@ -84,6 +105,11 @@ public class AttachmentList extends Composite implements HasAttachments, HasAtta
     }
 
     @Override
+    public boolean isEmpty() {
+        return viewToAttachment.isEmpty();
+    }
+
+    @Override
     public Collection<Attachment> getAll() {
         return viewToAttachment.values();
     }
@@ -105,21 +131,63 @@ public class AttachmentList extends Composite implements HasAttachments, HasAtta
 
     @Override
     public void onAttachmentRemove(AbstractAttachmentView attachment) {
-        RemoveEvent.fire( this, viewToAttachment.get(attachment) );
+        if(Window.confirm(lang.attachmentRemoveConfirmMessage())) {
+            RemoveEvent.fire(this, viewToAttachment.get(attachment));
+        }
+    }
+
+    @Override
+    public void onShowPreview(Image attachment) {
+        attachmentPreview.show(attachment);
     }
 
     public void setSimpleMode(boolean isSimpleMode){
         this.isSimpleMode = isSimpleMode;
     }
 
-    public void setHiddenControls(boolean isVisibleControls){
-        this.isHiddenControls = isVisibleControls;
+    public void setHiddenControls(boolean hideControls){
+        this.isHiddenControls = hideControls;
+    }
+
+    private AbstractAttachmentView createView(Attachment attachment){
+        AbstractAttachmentView view = attachmentViewFactory.get();
+        view.setActivity(this);
+        view.setFileName(attachment.getFileName());
+        view.setFileSize(attachment.getDataSize());
+        view.setDownloadUrl(DOWNLOAD_PATH + attachment.getExtLink());
+
+        if(!isSimpleMode) {
+            AttachmentType.AttachmentCategory category = AttachmentType.getCategory(attachment.getMimeType());
+            if (category == AttachmentType.AttachmentCategory.IMAGE) {
+                view.setPicture(DOWNLOAD_PATH + attachment.getExtLink());
+            }else {
+                view.setPicture(category.picture);
+                view.asWidget().addStyleName("attach-hide-preview-btn");
+            }
+        }else
+            view.asWidget().addStyleName("attach-minimize");
+
+        if(isHiddenControls){
+            view.asWidget().addStyleName("attach-hide-remove-btn");
+        }
+
+        viewToAttachment.put(view, attachment);
+        add(view.asWidget());
+
+        return view;
     }
 
     @Inject
     Provider<AbstractAttachmentView> attachmentViewFactory;
     @UiField
     HTMLPanel attachmentList;
+    @Inject
+    Lang lang;
+    @Inject
+    AttachmentPreview attachmentPreview;
+    @Inject
+    PersonServiceAsync personService;
+
 
     private boolean isSimpleMode;
     private boolean isHiddenControls;

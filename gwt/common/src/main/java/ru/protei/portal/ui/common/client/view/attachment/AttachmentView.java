@@ -7,12 +7,13 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.Anchor;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.*;
+import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.activity.attachment.AbstractAttachmentActivity;
 import ru.protei.portal.ui.common.client.activity.attachment.AbstractAttachmentView;
+import ru.protei.portal.ui.common.client.lang.Lang;
+
+import java.util.Date;
 
 /**
  * Created by bondarenko on 28.12.16.
@@ -20,6 +21,9 @@ import ru.protei.portal.ui.common.client.activity.attachment.AbstractAttachmentV
 public class AttachmentView extends Composite implements AbstractAttachmentView {
     public AttachmentView() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        picture.addLoadHandler(event -> {
+            thumbs.removeClassName("icon-verifiable");
+        });
     }
 
     @Override
@@ -48,6 +52,12 @@ public class AttachmentView extends Composite implements AbstractAttachmentView 
     }
 
     @Override
+    public void setCreationInfo(String author, Date created){
+        String dateCreation = created.toLocaleString().replace(",","");
+        root.setTitle(lang.attachmentAuthor() +" "+ author +", "+ dateCreation);
+    }
+
+    @Override
     public void setPicture(String url) {
         picture.setUrl(url);
     }
@@ -58,10 +68,20 @@ public class AttachmentView extends Composite implements AbstractAttachmentView 
             activity.onAttachmentRemove(this);
     }
 
+    @UiHandler("showPreviewButton")
+    public void onShowPreview(ClickEvent event){
+        if(activity != null)
+            activity.onShowPreview(
+                new Image(picture.getUrl())
+            );
+    }
+
     @UiField
     Image picture;
     @UiField
     Anchor deleteButton;
+    @UiField
+    Anchor showPreviewButton;
     @UiField
     SpanElement fileName;
     @UiField
@@ -72,6 +92,10 @@ public class AttachmentView extends Composite implements AbstractAttachmentView 
     DivElement attachControls;
     @UiField
     HTMLPanel root;
+    @UiField
+    DivElement thumbs;
+    @Inject
+    Lang lang;
 
     AbstractAttachmentActivity activity;
 

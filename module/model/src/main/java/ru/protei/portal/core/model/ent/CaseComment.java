@@ -1,8 +1,8 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.winter.jdbc.annotations.*;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
  * Created by michael on 19.05.16.
  */
 @JdbcEntity(table = "case_comment")
-public class CaseComment implements Serializable{
+public class CaseComment extends AuditableObject {
 
     @JdbcId(name="id" , idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -44,7 +44,8 @@ public class CaseComment implements Serializable{
     @JdbcColumn(name="old_id")
     private Long oldId;
 
-    private List<Long> attachmentsIds;
+    @JdbcOneToMany(table = "case_attachment", remoteColumn = "ccomment_id", additionalConditions = @JdbcManyJoinData(remoteColumn="case_id", localColumn = "case_id"))
+    private List<CaseAttachment> caseAttachments;
 
     public CaseComment() {}
 
@@ -143,22 +144,17 @@ public class CaseComment implements Serializable{
         this.oldId = oldId;
     }
 
-    public List<Long> getAttachmentsIds() {
-        return attachmentsIds;
+    public List<CaseAttachment> getCaseAttachments() {
+        return caseAttachments;
     }
 
-    public void setAttachmentsIds(List<Long> attachmentsIds) {
-        this.attachmentsIds = attachmentsIds;
+    public void setCaseAttachments(List<CaseAttachment> attachments) {
+        this.caseAttachments = attachments;
     }
 
-    public void setAttachments(Collection<Attachment> attachments){
-        if(attachments == null)
-            return;
-
-        this.attachmentsIds = attachments
-                .stream()
-                .map(Attachment::getId)
-                .collect(Collectors.toList());
+    @Override
+    public String getAuditType() {
+        return "CaseComment";
     }
 
     @Override

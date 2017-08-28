@@ -12,9 +12,13 @@ public interface HasAttachments extends HasWidgets {
 
     void add(Attachment attachment);
 
+    void add(Collection<Attachment> attachments);
+
     void remove(Attachment attachment);
 
     void clear();
+
+    boolean isEmpty();
 
     Collection<Attachment> getAll();
 

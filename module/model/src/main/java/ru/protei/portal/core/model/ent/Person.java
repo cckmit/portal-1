@@ -1,19 +1,19 @@
 package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_Gender;
+import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.struct.ContactInfo;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.PersonShortViewSupport;
 import ru.protei.winter.jdbc.annotations.*;
 
-import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Created by michael on 30.03.16.
  */
 @JdbcEntity(table = "Person")
-public class Person implements Serializable, PersonShortViewSupport {
+public class Person extends AuditableObject implements PersonShortViewSupport {
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
 
@@ -282,6 +282,11 @@ public class Person implements Serializable, PersonShortViewSupport {
 
     public void setGender (En_Gender gender) {
         this.genderCode = gender.getCode();
+    }
+
+    @Override
+    public String getAuditType() {
+        return "Person";
     }
 
     @Override

@@ -1,18 +1,18 @@
 package ru.protei.portal.core.service;
 
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.core.model.annotations.Auditable;
 import ru.protei.portal.core.model.annotations.Privileged;
+import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanyGroup;
-import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.query.CompanyGroupQuery;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * Сервис управления компаниями
@@ -33,9 +33,11 @@ public interface CompanyService {
     CoreResponse<Company> getCompany(AuthToken token, Long id );
 
     @Privileged( En_Privilege.COMPANY_CREATE )
+    @Auditable( En_AuditType.COMPANY_CREATE )
     CoreResponse<Company> createCompany( AuthToken token, Company company );
 
     @Privileged( En_Privilege.COMPANY_EDIT )
+    @Auditable( En_AuditType.COMPANY_MODIFY )
     CoreResponse<Company> updateCompany( AuthToken token, Company company );
 
     CoreResponse<Boolean> isCompanyNameExists(String name, Long excludeId);

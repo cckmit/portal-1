@@ -8,18 +8,19 @@ import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanySubscription;
-import ru.protei.portal.ui.common.client.common.AttachmentCollection;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.AppEvents;
+import ru.protei.portal.ui.common.client.events.AttachmentEvents;
 import ru.protei.portal.ui.common.client.events.IssueEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
 import ru.protei.portal.ui.common.client.service.IssueServiceAsync;
-import ru.protei.portal.ui.common.client.widget.uploader.FileUploader;
+import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
-import ru.protei.portal.ui.issue.client.activity.table.IssueTableActivity;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,10 +32,10 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
     @PostConstruct
     public void onInit() {
         view.setActivity( this );
-        view.setFileUploadHandler(new FileUploader.FileUploadHandler() {
+        view.setFileUploadHandler(new AttachmentUploader.FileUploadHandler() {
             @Override
             public void onSuccess(Attachment attachment) {
-                attachmentCollection.addAttachment(attachment);
+                addAttachments(Collections.singleton(attachment));
             }
             @Override
             public void onError() {
@@ -49,10 +50,25 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
     }
 
     @Event
+    public void onAddingAttachments( AttachmentEvents.Add event ) {
+        if(view.isAttached() && issueId.equals(event.caseId))
+            addAttachments(event.attachments);
+    }
+
+    @Event
+    public void onRemovingAttachments( AttachmentEvents.Remove event ) {
+        if(view.isAttached() && issueId.equals(event.caseId)){
+            event.attachments.forEach(view.attachmentsContainer()::remove);
+
+            if(view.attachmentsContainer().isEmpty())
+                fireEvent(new IssueEvents.ChangeIssue(issueId));
+        }
+    }
+
+    @Event
     public void onShow( IssueEvents.ShowPreview event ) {
         event.parent.clear();
         event.parent.add( view.asWidget() );
-        attachmentCollection.clear();
 
         this.issueId = event.issueId;
 
@@ -65,7 +81,6 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
     public void onShow( IssueEvents.ShowFullScreen event ) {
         initDetails.parent.clear();
         initDetails.parent.add( view.asWidget() );
-        attachmentCollection.clear();
 
         this.issueId = event.issueId;
 
@@ -87,8 +102,12 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
                     onError(null);
                     return;
                 }
-                attachmentCollection.removeAttachment(attachment);
-                fireEvent( new IssueEvents.ShowComments( view.getCommentsContainer(), issueId, attachmentCollection ) );
+
+                view.attachmentsContainer().remove(attachment);
+                if(view.attachmentsContainer().isEmpty())
+                    fireEvent(new IssueEvents.ChangeIssue(issueId));
+
+                fireEvent( new IssueEvents.ShowComments( view.getCommentsContainer(), issueId ) );
             }
         });
     }
@@ -124,7 +143,10 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
                     .collect( Collectors.joining(", ") ) );
         }
 
-        fireEvent( new IssueEvents.ShowComments( view.getCommentsContainer(), value.getId(), attachmentCollection ) );
+        view.attachmentsContainer().clear();
+        view.attachmentsContainer().add(value.getAttachments());
+
+        fireEvent( new IssueEvents.ShowComments( view.getCommentsContainer(), value.getId() ) );
     }
 
     private void fillView( Long id ) {
@@ -146,19 +168,25 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
             }
         } );
 
-        attachmentService.getAttachmentsByCaseId(id, new RequestCallback<List<Attachment>>() {
-            @Override
-            public void onError(Throwable throwable) {
-                fireEvent( new NotifyEvents.Show( lang.attachmentsNotLoaded(), NotifyEvents.NotifyType.ERROR ) );
-            }
+//        attachmentService.getAttachmentsByCaseId(id, new RequestCallback<List<Attachment>>() {
+//            @Override
+//            public void onError(Throwable throwable) {
+//                fireEvent( new NotifyEvents.Show( lang.attachmentsNotLoaded(), NotifyEvents.NotifyType.ERROR ) );
+//            }
+//
+//            @Override
+//            public void onSuccess(List<Attachment> result) {
+//                view.attachmentsContainer().clear();
+//                IssuePreviewActivity.this.addAttachments(result);
+//            }
+//        });
+    }
 
-            @Override
-            public void onSuccess(List<Attachment> result) {
-                view.attachmentsContainer().clear();
-                result.forEach(attachmentCollection::addAttachment);
-            }
-        });
+    private void addAttachments(Collection<Attachment> attachs){
+        if(view.attachmentsContainer().isEmpty())
+            fireEvent(new IssueEvents.ChangeIssue(issueId));
 
+        view.attachmentsContainer().add(attachs);
     }
 
     @Inject
@@ -169,30 +197,7 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
     IssueServiceAsync issueService;
     @Inject
     AttachmentServiceAsync attachmentService;
-    @Inject
-    IssueTableActivity issueTableActivity;
-
-    private AttachmentCollection attachmentCollection = new AttachmentCollection() {
-        @Override
-        public void addAttachment(Attachment attachment) {
-            if(isEmpty())
-                issueTableActivity.updateRow(issueId);
-
-            put(attachment.getId(), attachment);
-            view.attachmentsContainer().add(attachment);
-        }
-
-        @Override
-        public void removeAttachment(Attachment attachment) {
-            remove(attachment.getId());
-            view.attachmentsContainer().remove(attachment);
-
-            if(isEmpty())
-                issueTableActivity.updateRow(issueId);
-        }
-    };
 
     private Long issueId;
-
     private AppEvents.InitDetails initDetails;
 }

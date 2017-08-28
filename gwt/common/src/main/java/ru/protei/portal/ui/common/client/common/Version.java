@@ -58,9 +58,10 @@ package ru.protei.portal.ui.common.client.common;
  * 4.0.29.27 - CRM-12 Управление аккаунтами
  * 4.0.29.28 - CRM-19 Не отображаются комментарии заказчиков
  * 4.0.30.28 - CRM-25 Селектор смены языка приложения в навбаре
+ * 4.0.31.28 - CRM-16 Аудит действий
  */
 public class Version {
     public static String getVersion() {
-        return "4.0.30.28";
+        return "4.0.31.28";
     }
 }

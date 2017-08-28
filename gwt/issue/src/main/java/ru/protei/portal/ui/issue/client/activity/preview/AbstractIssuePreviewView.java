@@ -3,7 +3,7 @@ package ru.protei.portal.ui.issue.client.activity.preview;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
-import ru.protei.portal.ui.common.client.widget.uploader.FileUploader;
+import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 
 /**
  * Абстракция вида превью обращения
@@ -32,5 +32,6 @@ public interface AbstractIssuePreviewView extends IsWidget {
     HasWidgets getCommentsContainer();
     HasAttachments attachmentsContainer();
 
-    void setFileUploadHandler(FileUploader.FileUploadHandler handler);
+    void setFileUploadHandler(AttachmentUploader.FileUploadHandler handler);
+    boolean isAttached();
 }

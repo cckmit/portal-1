@@ -1,7 +1,9 @@
 package ru.protei.portal.core.service;
 
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.core.model.annotations.Auditable;
 import ru.protei.portal.core.model.annotations.Privileged;
+import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
@@ -11,7 +13,6 @@ import ru.protei.portal.core.model.view.CaseShortView;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Сервис управления обращениями
@@ -28,10 +29,12 @@ public interface CaseService {
     CoreResponse<CaseObject> getCaseObject( AuthToken token, long id );
 
     @Privileged({ En_Privilege.ISSUE_CREATE })
+    @Auditable( En_AuditType.ISSUE_CREATE )
     CoreResponse<CaseObject> saveCaseObject( AuthToken token, CaseObject p, Person initiator );
 
     @Privileged({ En_Privilege.ISSUE_CREATE })
-    CoreResponse<CaseObject> updateCaseObject( AuthToken token, CaseObject p, Person currentPerson );
+    @Auditable( En_AuditType.ISSUE_MODIFY )
+    CoreResponse<CaseObject> updateCaseObject( AuthToken token, CaseObject p );
 
     CoreResponse<List<En_CaseState>> stateList(En_CaseType caseType);
 
@@ -39,12 +42,15 @@ public interface CaseService {
     CoreResponse<List<CaseComment>> getCaseCommentList( AuthToken token, long caseId );
 
     @Privileged({ En_Privilege.ISSUE_EDIT, En_Privilege.ISSUE_VIEW })
+    @Auditable( En_AuditType.ISSUE_COMMENT_CREATE )
     CoreResponse<CaseComment> addCaseComment( AuthToken token, CaseComment p, Person currentPerson );
 
     @Privileged({ En_Privilege.ISSUE_EDIT, En_Privilege.ISSUE_VIEW })
+    @Auditable( En_AuditType.ISSUE_COMMENT_MODIFY )
     CoreResponse<CaseComment> updateCaseComment( AuthToken token, CaseComment p, Person person );
 
     @Privileged({ En_Privilege.ISSUE_EDIT, En_Privilege.ISSUE_VIEW })
+    @Auditable( En_AuditType.ISSUE_COMMENT_REMOVE )
     CoreResponse removeCaseComment( AuthToken token, CaseComment caseComment, Long personId );
 
     @Privileged( En_Privilege.ISSUE_EDIT )
