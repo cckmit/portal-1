@@ -1,7 +1,7 @@
 package ru.protei.portal.ui.official.client.activity.preview;
 
 /**
- * Created by serebryakov on 23/08/17.
+ * Абстрактная активность карточки должностных лиц
  */
 public interface AbstractOfficialPreviewActivity {
 

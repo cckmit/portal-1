@@ -1,0 +1,27 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+
+    <g:HTMLPanel styleName="official-item">
+
+            <div class="col-xs-5">
+                <div ui:field="name" class="user-official"></div>
+                <div class="truncate-holder">
+                    <p ui:field="relations" class="truncate-users">
+                    </p>
+                </div>
+
+
+            </div>
+            <div class="col-xs-6">
+                <div ui:field="position" class="user-dolznost"></div>
+                    <div class="truncate-holder">
+                        <p ui:field="amplua" class="truncate"></p>
+                    </div>
+                </div>
+
+            <div class="col-xs-1">
+                <a href="#" class="fa fa-lg fa-pencil-square-o" title="Редактирование"></a>
+            </div>
+
+    </g:HTMLPanel>
+</ui:UiBinder>

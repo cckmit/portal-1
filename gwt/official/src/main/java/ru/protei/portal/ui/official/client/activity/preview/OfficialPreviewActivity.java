@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by serebryakov on 23/08/17.
+ * Активность карточки должностных лиц
  */
 public abstract class OfficialPreviewActivity implements AbstractOfficialPreviewActivity, Activity {
 
@@ -83,12 +83,17 @@ public abstract class OfficialPreviewActivity implements AbstractOfficialPreview
     private void fillMembers(Map<String, List<OfficialMember>> members) {
         view.clearMembers();
         for (Map.Entry<String, List<OfficialMember>> entry: members.entrySet()) {
-            AbstractOfficialMembersView memberView = provider.get();
-            memberView.setCompanyName(entry.getKey());
+            AbstractOfficialListView listView = listProvider.get();
+            listView.setCompanyName(entry.getKey());
             for (OfficialMember member: entry.getValue()) {
-                memberView.addOfficialMember(member);
-                view.addMemberView(memberView.asWidget());
+                AbstractOfficialItemView itemView = itemProvider.get();
+                itemView.setName(member.getMember().getFirstName());
+                itemView.setAmplua(member.getAmplua());
+                itemView.setPosition(member.getMember().getPosition());
+                itemView.setRelations(member.getRelations());
+                listView.getItemContainer().add(itemView.asWidget());
             }
+            view.getMembersContainer().add(listView.asWidget());
         }
     }
 
@@ -102,7 +107,10 @@ public abstract class OfficialPreviewActivity implements AbstractOfficialPreview
     private AppEvents.InitDetails initDetails;
 
     @Inject
-    Provider<AbstractOfficialMembersView> provider;
+    Provider<AbstractOfficialListView> listProvider;
+
+    @Inject
+    Provider<AbstractOfficialItemView> itemProvider;
 
     @Inject
     OfficialServiceAsync officialService;

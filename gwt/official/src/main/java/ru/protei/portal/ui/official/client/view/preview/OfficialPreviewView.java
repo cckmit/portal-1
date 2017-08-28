@@ -15,7 +15,7 @@ import ru.protei.portal.ui.official.client.activity.preview.AbstractOfficialPrev
 import ru.protei.portal.ui.official.client.activity.preview.AbstractOfficialPreviewView;
 
 /**
- * Created by serebryakov on 23/08/17.
+ * Представление карточки должностных лиц
  */
 public class OfficialPreviewView extends Composite implements AbstractOfficialPreviewView{
 
@@ -67,11 +67,6 @@ public class OfficialPreviewView extends Composite implements AbstractOfficialPr
     @Override
     public HTMLPanel getMembersContainer() {
         return membersContainer;
-    }
-
-    @Override
-    public void addMemberView(Widget widget) {
-        membersContainer.add(widget.asWidget());
     }
 
     @UiHandler( "fullScreen" )

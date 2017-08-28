@@ -5,7 +5,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
- * Абстракция активности на странице превью должностных лиц
+ * Абстрактное представление карточки должностных лиц
  */
 public interface AbstractOfficialPreviewView extends IsWidget{
 
@@ -21,5 +21,4 @@ public interface AbstractOfficialPreviewView extends IsWidget{
 
     HTMLPanel getMembersContainer();
 
-    void addMemberView(Widget widget);
 }
