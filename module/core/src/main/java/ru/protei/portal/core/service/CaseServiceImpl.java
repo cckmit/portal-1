@@ -118,12 +118,9 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     @Transactional
-    public CoreResponse< CaseObject > updateCaseObject( AuthToken token, CaseObject caseObject ) {
-
+    public CoreResponse<CaseObject> updateCaseObject( CaseObject caseObject, Person initiator ) {
         if (caseObject == null)
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
-
-        UserSessionDescriptor descriptor = authService.findSession( token );
 
         caseObject.setModified(new Date());
 
@@ -140,9 +137,16 @@ public class CaseServiceImpl implements CaseService {
         // From GWT-side we get partially filled object, that's why we need to refresh state from db
         CaseObject newState = caseObjectDAO.get(caseObject.getId());
 
-        publisherService.publishEvent(new CaseObjectEvent(this, newState, oldState, descriptor.getPerson()));
+        publisherService.publishEvent(new CaseObjectEvent(this, newState, oldState, initiator));
 
         return new CoreResponse<CaseObject>().success( caseObject );
+    }
+
+    @Override
+    @Transactional
+    public CoreResponse< CaseObject > updateCaseObject( AuthToken token, CaseObject caseObject ) {
+        UserSessionDescriptor descriptor = authService.findSession( token );
+        return updateCaseObject (caseObject, descriptor.getPerson());
     }
 
     @Override

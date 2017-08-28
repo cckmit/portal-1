@@ -194,6 +194,7 @@ public class InboundMainMessageHandler implements InboundMessageHandler {
 
             if (request.getSubject().getStatus() != null) {
                 switch (request.getSubject().getStatus()) {
+                    case IN_PROGRESS:
                     case WAIT_SOLUTION:
                     case REJECT_WA:
                         if (object.getState() != En_CaseState.OPENED) {

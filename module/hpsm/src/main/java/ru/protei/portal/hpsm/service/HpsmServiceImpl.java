@@ -10,8 +10,10 @@ import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.CaseCommentEvent;
 import ru.protei.portal.core.event.CaseObjectEvent;
 import ru.protei.portal.core.model.dao.ExternalCaseAppDAO;
+import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.ExternalCaseAppData;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.hpsm.api.HpsmMessageFactory;
 import ru.protei.portal.core.mail.MailSendChannel;
 import ru.protei.portal.hpsm.config.HpsmEnvConfig;
@@ -126,6 +128,15 @@ public class HpsmServiceImpl implements HpsmService {
         if (msg == null) {
             logger.error("unable to parse app-data, case {}", object.getExtId());
             return;
+        }
+
+        /**
+         * Bug CRM-30
+         */
+        if (object.getState() == En_CaseState.WORKAROUND && HelperFunc.isEmpty(msg.getWorkaroundText())) {
+            msg.setWorkaroundText(event.getCaseComment().getText());
+            appData.setExtAppData(xStream.toXML(msg));
+            externalCaseAppDAO.saveExtAppData(appData);
         }
 
         HpsmMessageHeader header = new HpsmMessageHeader(appData.getExtAppCaseId(), object.getExtId(), msg.status());
