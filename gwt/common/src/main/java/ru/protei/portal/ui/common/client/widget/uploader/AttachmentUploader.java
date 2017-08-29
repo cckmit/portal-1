@@ -75,8 +75,8 @@ public class AttachmentUploader extends FileUploader{
         return attachment;
     }
 
-    private static final String UPLOAD_WITHOUT_AUTOBINDING_URL = "/Crm/springApi/uploadFile";
-    private static final String UPLOAD_WITH_AUTOBINDING_URL = "/Crm/springApi/uploadFileToCase";
+    private static final String UPLOAD_WITHOUT_AUTOBINDING_URL = "Crm/springApi/uploadFile";
+    private static final String UPLOAD_WITH_AUTOBINDING_URL = "Crm/springApi/uploadFileToCase";
     private FileUploadHandler uploadHandler;
     private Long caseId;
 }

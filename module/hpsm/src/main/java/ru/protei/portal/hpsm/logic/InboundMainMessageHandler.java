@@ -6,6 +6,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import ru.protei.portal.core.ServiceModule;
+import ru.protei.portal.core.controller.cloud.FileController;
+import ru.protei.portal.core.event.CaseCommentEvent;
 import ru.protei.portal.core.event.CaseObjectEvent;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_CaseState;
@@ -19,12 +21,15 @@ import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.service.EventPublisherService;
 import ru.protei.portal.hpsm.api.HpsmSeverity;
 import ru.protei.portal.hpsm.api.HpsmStatus;
+import ru.protei.portal.hpsm.struct.HpsmAttachment;
 import ru.protei.portal.hpsm.struct.HpsmMessage;
 import ru.protei.portal.hpsm.struct.HpsmMessageHeader;
 import ru.protei.portal.hpsm.utils.HpsmUtils;
 
 import javax.mail.internet.MimeMessage;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by michael on 25.04.17.
@@ -57,6 +62,9 @@ public class InboundMainMessageHandler implements InboundMessageHandler {
 
     @Autowired
     private CaseService caseService;
+
+    @Autowired
+    private FileController fileController;
 
 
     @Override
@@ -194,6 +202,7 @@ public class InboundMainMessageHandler implements InboundMessageHandler {
 
             if (request.getSubject().getStatus() != null) {
                 switch (request.getSubject().getStatus()) {
+                    case IN_PROGRESS:
                     case WAIT_SOLUTION:
                     case REJECT_WA:
                         if (object.getState() != En_CaseState.OPENED) {
@@ -239,6 +248,11 @@ public class InboundMainMessageHandler implements InboundMessageHandler {
 
             logger.debug("case and data stored in db for {}", appData.getExtAppCaseId());
 
+            logger.debug("publish event on update case id={}, ext={}", object.getId(), object.getExtId());
+
+            eventPublisherService.publishEvent(new CaseObjectEvent(ServiceModule.HPSM, caseService, object, oldState, contactPerson));
+
+
             if (HelperFunc.isNotEmpty(request.getHpsmMessage().getMessage())) {
                 logger.debug("append comment text from message");
                 commentText.append(request.getHpsmMessage().getMessage());
@@ -247,13 +261,11 @@ public class InboundMainMessageHandler implements InboundMessageHandler {
             logger.debug("case {}, add comment: {}", appData.getExtAppCaseId(), commentText.toString());
 
             comment.setText(commentText.toString());
-            Long commentId = commentDAO.persist(comment);
 
-            logger.debug("comment added in db, id={}", commentId);
+            processStoreComment(request, contactPerson, object, object.getId(), comment);
 
-            logger.debug("publish event on update case id={}, ext={}", object.getId(), object.getExtId());
+            logger.debug("comment added in db, id={}", comment.getId());
 
-            eventPublisherService.publishEvent(new CaseObjectEvent(ServiceModule.HPSM, caseService, object, oldState, contactPerson));
         }
     }
 
@@ -306,14 +318,6 @@ public class InboundMainMessageHandler implements InboundMessageHandler {
 
             if (caseObjId != null && caseObjId > 0L) {
 
-                CaseComment comment = createComment(request, contactPerson, obj, caseObjId);
-
-                logger.debug("add comment to new case, case-id={}, comment={}", caseObjId, comment.getId());
-
-//                if (request.hasAttachments()) {
-//                    logger.debug("process attachments for new case, id={}", caseObjId);
-//                }
-
                 HpsmMessageHeader replySubj = new HpsmMessageHeader(request.getSubject().getHpsmId(), obj.getExtId(), HpsmStatus.REGISTERED);
                 HpsmMessage replyEvent = request.getHpsmMessage().createCopy();
 
@@ -332,6 +336,8 @@ public class InboundMainMessageHandler implements InboundMessageHandler {
                 logger.debug("publish event on create case id={}, ext={}", obj.getId(), obj.getExtId());
 
                 eventPublisherService.publishEvent(new CaseObjectEvent(ServiceModule.HPSM, caseService, obj, null, contactPerson));
+
+                createComment(request, contactPerson, obj, caseObjId);
 
                 instance.sendReply(request.getEmailSourceAddr(), replySubj, replyEvent);
             }
@@ -355,7 +361,48 @@ public class InboundMainMessageHandler implements InboundMessageHandler {
         comment.setClientIp("hpsm");
         comment.setText(appendCommentInfo (commentText, request.getHpsmMessage()).toString());
 
+        return processStoreComment(request, contactPerson, obj, caseObjId, comment);
+    }
+
+    private CaseComment processStoreComment(HpsmEvent request, Person contactPerson, CaseObject obj, Long caseObjId, CaseComment comment) {
         commentDAO.persist(comment);
+        logger.debug("add comment to new case, case-id={}, comment={}", caseObjId, comment.getId());
+
+
+        if (request.hasAttachments()) {
+            logger.debug("process attachments for new case, id={}", caseObjId);
+
+            List<CaseAttachment> caseAttachments = new ArrayList<>(request.getAttachments().size());
+
+            for (HpsmAttachment in : request.getAttachments()) {
+                Attachment a = new Attachment();
+                a.setCreated(new Date());
+                a.setCreatorId(contactPerson.getId());
+                a.setDataSize((long)in.getSize());
+                a.setFileName(in.getFileName());
+                a.setMimeType(in.getContentType());
+                a.setLabelText(in.getDescription());
+
+                try {
+                    logger.debug("invoke file controller to store attachment {} (size={})", in.getFileName(), in.getSize());
+                    Long caId = fileController.saveAttachment(a, in.getStreamSource(), caseObjId);
+                    logger.debug("result from file controller = {} for {} (size={})", caId, in.getFileName(), in.getSize());
+
+                    if (caId != null) {
+                        caseAttachments.add(new CaseAttachment(caseObjId, a.getId(), comment.getId(), caId));
+                    }
+                }
+                catch (Exception e) {
+                    logger.debug("unable to process attachment {}", in.getFileName());
+                    logger.debug("trace", e);
+                }
+            }
+
+            comment.setCaseAttachments(caseAttachments);
+        }
+
+        eventPublisherService.publishEvent(new CaseCommentEvent(ServiceModule.HPSM, caseService, obj, comment, contactPerson));
+
         return comment;
     }
 

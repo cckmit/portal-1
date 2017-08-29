@@ -19,7 +19,12 @@ import ru.protei.winter.jdbc.JdbcConfigurationContext;
  * Created by michael on 19.04.17.
  */
 @Configuration
-@Import({CoreConfigurationContext.class, JdbcConfigurationContext.class, MainConfiguration.class, HpsmConfigurationContext.class, CoreMailConfiguration.class})
+@Import({CoreConfigurationContext.class,
+        JdbcConfigurationContext.class,
+        MainConfiguration.class,
+        AddonConfiguration.class,
+        HpsmConfigurationContext.class,
+        CoreMailConfiguration.class})
 public class HpsmTestConfiguration {
 
     @Bean

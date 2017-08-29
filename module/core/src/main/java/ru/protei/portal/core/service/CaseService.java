@@ -36,6 +36,9 @@ public interface CaseService {
     @Auditable( En_AuditType.ISSUE_MODIFY )
     CoreResponse<CaseObject> updateCaseObject( AuthToken token, CaseObject p );
 
+    @Auditable( En_AuditType.ISSUE_MODIFY )
+    CoreResponse<CaseObject> updateCaseObject( CaseObject p, Person initiator );
+
     CoreResponse<List<En_CaseState>> stateList(En_CaseType caseType);
 
     @Privileged( requireAny = { En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT })

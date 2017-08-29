@@ -35,7 +35,7 @@
         <dependency>
             <groupId>ru.protei</groupId>
             <artifactId>portal4.hpsm</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0.5.2</version>
         </dependency>
         <dependency>
             <groupId>ru.protei</groupId>
@@ -182,6 +182,7 @@
                 </executions>
                 <configuration>
                     <webappDirectory>${webappDirectory}</webappDirectory>
+                    <packagingExcludes>WEB-INF/lib/log4j-over-slf4j*.jar</packagingExcludes>
                 </configuration>
             </plugin>
 

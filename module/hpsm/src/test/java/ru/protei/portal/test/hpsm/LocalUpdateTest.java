@@ -12,9 +12,11 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.service.CaseControlService;
 import ru.protei.portal.core.service.CaseService;
+import ru.protei.portal.hpsm.api.HpsmMessageFactory;
 import ru.protei.portal.hpsm.api.HpsmStatus;
 import ru.protei.portal.hpsm.logic.HpsmEvent;
 import ru.protei.portal.hpsm.logic.InboundMainMessageHandler;
+import ru.protei.portal.hpsm.struct.HpsmMessage;
 import ru.protei.portal.hpsm.utils.HpsmTestUtils;
 import ru.protei.portal.hpsm.utils.TestServiceInstance;
 import ru.protei.portal.test.hpsm.config.HpsmTestConfiguration;
@@ -47,12 +49,10 @@ public class LocalUpdateTest {
         CaseObjectDAO caseObjectDAO = ctx.getBean(CaseObjectDAO.class);
         ExternalCaseAppDAO externalCaseAppDAO = ctx.getBean(ExternalCaseAppDAO.class);
 
-
-
         TestServiceInstance testServiceInstance = ctx.getBean(TestServiceInstance.class);
         InboundMainMessageHandler handler = ctx.getBean(InboundMainMessageHandler.class);
-
         HpsmTestUtils testUtils = ctx.getBean(HpsmTestUtils.class);
+        HpsmMessageFactory hpsmMessageFactory = ctx.getBean(HpsmMessageFactory.class);
 
         boolean result = handler.handle(testUtils.createNewRequest(HPSM_TEST_CASE_ID1), testServiceInstance);
 
@@ -100,7 +100,7 @@ public class LocalUpdateTest {
 
         object.setState(En_CaseState.OPENED);
         object.setManager(testPerson);
-        caseService.updateCaseObject( null, object );
+        caseService.updateCaseObject(object, testPerson );
 
         // wait event handling
         Thread.sleep(200);
@@ -118,8 +118,48 @@ public class LocalUpdateTest {
         Assert.assertNotNull(event.getHpsmMessage().getOurManagerEmail());
 
 
+
+        object.setState(En_CaseState.WORKAROUND);
+        caseService.updateCaseObject(object, testPerson);
+
+        // wait event handling
+        Thread.sleep(200);
+
+        responseMail = testServiceInstance.getSentMessage();
+        Assert.assertNotNull(responseMail);
+        event = testUtils.parseEvent(responseMail);
+        Assert.assertEquals(HpsmStatus.WORKAROUND, event.getSubject().getStatus());
+        Assert.assertTrue(HelperFunc.isNotEmpty(event.getHpsmMessage().getTxOurOpenTime()));
+        Assert.assertTrue(HelperFunc.isNotEmpty(event.getHpsmMessage().getTxWorkaroundTime()));
+        Assert.assertTrue(HelperFunc.isNotEmpty(event.getHpsmMessage().getTxOurWorkaroundTime()));
+        Assert.assertNotNull(event.getHpsmMessage().getTxOurWorkaroundTime());
+        Assert.assertNotNull(event.getHpsmMessage().getTxWorkaroundTime());
+
+
+        comment = new CaseComment();
+        comment.setText("Workaround");
+
+        comment.setAuthorId(testPerson.getId());
+        comment.setAuthor(testPerson);
+        comment.setCaseStateId(object.getStateId());
+        comment.setCreated(new Date());
+        comment.setCaseId(object.getId());
+        caseService.addCaseComment(null, comment, testPerson );
+
+        // wait event handling
+        Thread.sleep(200);
+
+        responseMail = testServiceInstance.getSentMessage();
+
+        Assert.assertNotNull(responseMail);
+
+        event = testUtils.parseEvent(responseMail);
+        Assert.assertNotNull(event.getHpsmMessage().getTxWorkaroundTime());
+        Assert.assertNotNull(event.getHpsmMessage().getWorkaroundText());
+
+
         object.setState(En_CaseState.DONE);
-        caseService.updateCaseObject( null, object );
+        caseService.updateCaseObject( object, testPerson);
 
         // wait event handling
         Thread.sleep(200);
