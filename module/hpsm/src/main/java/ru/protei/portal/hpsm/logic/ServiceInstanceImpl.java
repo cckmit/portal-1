@@ -107,20 +107,13 @@ public class ServiceInstanceImpl implements ServiceInstance {
 
     @Override
     public void sendReply(HpsmMessageHeader replyHeader, HpsmMessage replyMessage, List<HpsmAttachment> attachmentList) throws Exception {
-
-        MimeMessage message = messageFactory.makeReplyMessage(this.serviceConfig.getOutboundChannel().getSendTo(), serviceConfig.getOutboundChannel().getSenderAddress(), replyHeader, replyMessage);
-
-        if (attachmentList != null && !attachmentList.isEmpty()) {
-            logger.debug("send reply with attachments, count = {}", attachmentList.size());
-
-            MimeMessageHelper helper = new MimeMessageHelper(message, true);
-            for (HpsmAttachment a : attachmentList) {
-                helper.addAttachment(a.getFileName(), a.getStreamSource(), a.getContentType());
-                logger.debug("attachment file {} is included", a.getFileName());
-            }
-        }
-
-        this.sendChannel.send(message);
+        this.sendChannel.send(
+                messageFactory.makeReplyMessage(this.serviceConfig.getOutboundChannel().getSendTo(),
+                                                serviceConfig.getOutboundChannel().getSenderAddress(),
+                                                replyHeader,
+                                                replyMessage,
+                                                attachmentList)
+        );
     }
 
 

@@ -200,6 +200,9 @@ public class CaseServiceImpl implements CaseService {
         // re-read data from db to get full-filled object
         CaseComment result = caseCommentDAO.get( commentId );
 
+        // attachments won't read now from DAO
+        result.setCaseAttachments(comment.getCaseAttachments());
+
         publisherService.publishEvent(new CaseCommentEvent(this, caseObjectDAO.get(result.getCaseId()), result, currentPerson));
 
         return new CoreResponse<CaseComment>().success( result );

@@ -1,12 +1,15 @@
 package ru.protei.portal.hpsm.service;
 
 import com.thoughtworks.xstream.XStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import ru.protei.portal.hpsm.api.HpsmMessageFactory;
 import ru.protei.portal.hpsm.api.HpsmStatus;
 import ru.protei.portal.core.mail.MailMessageFactory;
+import ru.protei.portal.hpsm.struct.HpsmAttachment;
 import ru.protei.portal.hpsm.struct.HpsmMessage;
 import ru.protei.portal.hpsm.struct.HpsmMessageHeader;
 import ru.protei.portal.hpsm.struct.HpsmPingMessage;
@@ -14,11 +17,14 @@ import ru.protei.portal.hpsm.utils.EventMsgInputStreamSource;
 import ru.protei.portal.hpsm.utils.HpsmUtils;
 
 import javax.mail.internet.MimeMessage;
+import java.util.List;
 
 /**
  * Created by michael on 15.05.17.
  */
 public class HpsmMessageFactoryImpl implements HpsmMessageFactory {
+
+    private static Logger logger = LoggerFactory.getLogger(HpsmMessageFactoryImpl.class);
 
     @Autowired
     @Qualifier("hpsmSerializer")
@@ -39,19 +45,25 @@ public class HpsmMessageFactoryImpl implements HpsmMessageFactory {
 
     @Override
     public MimeMessage makeReplyMessage(String to, String from, HpsmMessageHeader subject, HpsmMessage hpsmMessage) throws Exception {
-        return makeMessageBase (to, from, subject, hpsmMessage, HpsmUtils.RTTS_HPSM_XML_REPLY);
+        return makeMessageBase (to, from, subject, hpsmMessage, HpsmUtils.RTTS_HPSM_XML_REPLY, null);
+    }
+
+    @Override
+    public MimeMessage makeReplyMessage(String to, String from, HpsmMessageHeader subject, HpsmMessage hpsmMessage, List<HpsmAttachment> attachments) throws Exception {
+        return makeMessageBase (to, from, subject, hpsmMessage, HpsmUtils.RTTS_HPSM_XML_REPLY, attachments);
     }
 
     @Override
     public MimeMessage makeRequestMesssage(String to, String from, HpsmMessageHeader subject, HpsmMessage hpsmMessage) throws Exception {
-        return makeMessageBase (to, from, subject, hpsmMessage, HpsmUtils.RTTS_HPSM_XML_REQUEST);
+        return makeMessageBase (to, from, subject, hpsmMessage, HpsmUtils.RTTS_HPSM_XML_REQUEST, null);
     }
 
 
     private MimeMessage makeMessageBase (String to, String from,
                                  HpsmMessageHeader subject,
                                  HpsmMessage hpsmMessage,
-                                 String xmlName
+                                 String xmlName,
+                                         List<HpsmAttachment> attachmentList
     ) throws Exception {
         MimeMessage response = messageFactory.createMailMessage();
         MimeMessageHelper helper = new MimeMessageHelper(response, true);
@@ -61,6 +73,16 @@ public class HpsmMessageFactoryImpl implements HpsmMessageFactory {
         helper.addAttachment(xmlName,
                 new EventMsgInputStreamSource(xstream).attach(hpsmMessage),
                 "application/xml");
+
+
+        if (attachmentList != null && !attachmentList.isEmpty()) {
+            logger.debug("send reply with attachments, count = {}", attachmentList.size());
+
+            for (HpsmAttachment a : attachmentList) {
+                helper.addAttachment(a.getFileName(), a.getStreamSource(), a.getContentType());
+                logger.debug("attachment file {} is included", a.getFileName());
+            }
+        }
 
         return response;
     }

@@ -164,6 +164,8 @@ public class HpsmServiceImpl implements HpsmService {
 
         List<HpsmAttachment> replyAttachments = null;
 
+
+
         if (event.getCaseComment().getCaseAttachments() != null && !event.getCaseComment().getCaseAttachments().isEmpty()){
             logger.debug("process attachments case-id={}", object.getId());
             replyAttachments = new ArrayList<>();

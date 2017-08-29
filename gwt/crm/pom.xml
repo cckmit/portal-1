@@ -182,6 +182,7 @@
                 </executions>
                 <configuration>
                     <webappDirectory>${webappDirectory}</webappDirectory>
+                    <packagingExcludes>WEB-INF/lib/log4j-over-slf4j*.jar</packagingExcludes>
                 </configuration>
             </plugin>
 
