@@ -55,6 +55,10 @@
                 </div>
             </fieldset>
 
+            <fieldset class="header">
+                <legend><ui:text from="{lang.comments}"/></legend>
+                <g:HTMLPanel ui:field="commentsContainer" styleName="col-xs-12 col-md-12"/>
+            </fieldset>
         </g:HTMLPanel>
 
     </g:HTMLPanel>

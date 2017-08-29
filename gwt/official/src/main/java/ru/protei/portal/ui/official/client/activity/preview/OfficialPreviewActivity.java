@@ -87,10 +87,12 @@ public abstract class OfficialPreviewActivity implements AbstractOfficialPreview
             listView.setCompanyName(entry.getKey());
             for (OfficialMember member: entry.getValue()) {
                 AbstractOfficialItemView itemView = itemProvider.get();
+                itemView.setActivity(this);
                 itemView.setName(member.getMember().getFirstName());
                 itemView.setAmplua(member.getAmplua());
                 itemView.setPosition(member.getMember().getPosition());
                 itemView.setRelations(member.getRelations());
+                itemViewToModel.put(itemView, member);
                 listView.getItemContainer().add(itemView.asWidget());
             }
             view.getMembersContainer().add(listView.asWidget());
@@ -104,7 +106,16 @@ public abstract class OfficialPreviewActivity implements AbstractOfficialPreview
         view.showFullScreen(true);
     }
 
+    @Override
+    public void onEditClicked(AbstractOfficialItemView itemView) {
+        OfficialMember member = itemViewToModel.get(itemView);
+//        fireEvent(new OfficialEvents.Edit(member));
+
+    }
+
     private AppEvents.InitDetails initDetails;
+
+    private Map<AbstractOfficialItemView, OfficialMember> itemViewToModel = new HashMap<>();
 
     @Inject
     Provider<AbstractOfficialListView> listProvider;

@@ -20,7 +20,7 @@
                 </div>
 
             <div class="col-xs-1">
-                <a href="#" class="fa fa-lg fa-pencil-square-o" title="Редактирование"></a>
+                <g:Anchor ui:field="editButton" href="#" styleName="fa fa-lg fa-pencil-square-o" title="Редактирование"></g:Anchor>
             </div>
 
     </g:HTMLPanel>

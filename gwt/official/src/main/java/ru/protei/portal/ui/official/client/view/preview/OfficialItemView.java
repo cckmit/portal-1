@@ -1,16 +1,17 @@
 package ru.protei.portal.ui.official.client.view.preview;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.AnchorElement;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.ParagraphElement;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.HasValue;
-import ru.protei.portal.core.model.ent.OfficialMember;
 import ru.protei.portal.ui.official.client.activity.preview.AbstractOfficialItemView;
+import ru.protei.portal.ui.official.client.activity.preview.AbstractOfficialPreviewActivity;
 
 /**
  * Created by serebryakov on 25/08/17.
@@ -41,6 +42,21 @@ public class OfficialItemView extends Composite implements AbstractOfficialItemV
         this.relations.setInnerText(relations);
     }
 
+    @Override
+    public void setActivity(AbstractOfficialPreviewActivity activity) {
+        this.activity = activity;
+    }
+
+    @UiHandler("editButton")
+    public void onEditClicked(ClickEvent event) {
+        if (activity != null) {
+            activity.onEditClicked(this);
+        }
+    }
+
+    private AbstractOfficialPreviewActivity activity;
+
+
     @UiField
     DivElement name;
 
@@ -52,6 +68,9 @@ public class OfficialItemView extends Composite implements AbstractOfficialItemV
 
     @UiField
     ParagraphElement amplua;
+
+    @UiField
+    Anchor editButton;
 
     interface OfficialItemViewUiBinder extends UiBinder<HTMLPanel, OfficialItemView> {}
 

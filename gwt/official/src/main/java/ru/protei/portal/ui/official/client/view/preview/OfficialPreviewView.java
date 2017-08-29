@@ -100,6 +100,8 @@ public class OfficialPreviewView extends Composite implements AbstractOfficialPr
     DivElement info;
     @UiField
     HTMLPanel membersContainer;
+    @UiField
+    HTMLPanel commentsContainer;
 
     private static OfficialPreviewViewUiBinder ourUiBinder = GWT.create(OfficialPreviewViewUiBinder.class);
 
