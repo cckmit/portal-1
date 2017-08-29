@@ -30,12 +30,17 @@ public class CaseAttachment implements Serializable{
     }
 
     public CaseAttachment(Long caseId, Long attachmentId) {
-        this.caseId = caseId;
-        this.attachmentId = attachmentId;
+        this(caseId, attachmentId, null, null);
     }
 
     public CaseAttachment(Long caseId, Long attachmentId, Long commentId) {
-        this(caseId, attachmentId);
+        this(caseId, attachmentId, commentId, null);
+    }
+
+    public CaseAttachment(Long caseId, Long attachmentId, Long commentId, Long id) {
+        this.id = id;
+        this.caseId = caseId;
+        this.attachmentId = attachmentId;
         this.commentId = commentId;
     }
 

@@ -3,6 +3,7 @@ package ru.protei.portal.hpsm.logic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.integration.mail.MailReceivingMessageSource;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.messaging.Message;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Company;
@@ -13,6 +14,7 @@ import ru.protei.portal.hpsm.api.HpsmMessageFactory;
 import ru.protei.portal.core.mail.MailSendChannel;
 import ru.protei.portal.hpsm.api.HpsmSeverity;
 import ru.protei.portal.hpsm.config.HpsmEnvConfig;
+import ru.protei.portal.hpsm.struct.HpsmAttachment;
 import ru.protei.portal.hpsm.struct.HpsmMessage;
 import ru.protei.portal.hpsm.struct.HpsmMessageHeader;
 import ru.protei.portal.hpsm.struct.HpsmPingMessage;
@@ -20,6 +22,7 @@ import ru.protei.portal.hpsm.utils.CompanyBranchMap;
 import ru.protei.portal.hpsm.utils.HpsmUtils;
 
 import javax.mail.internet.MimeMessage;
+import java.util.List;
 
 /**
  * Created by michael on 15.05.17.
@@ -103,6 +106,25 @@ public class ServiceInstanceImpl implements ServiceInstance {
     }
 
     @Override
+    public void sendReply(HpsmMessageHeader replyHeader, HpsmMessage replyMessage, List<HpsmAttachment> attachmentList) throws Exception {
+
+        MimeMessage message = messageFactory.makeReplyMessage(this.serviceConfig.getOutboundChannel().getSendTo(), serviceConfig.getOutboundChannel().getSenderAddress(), replyHeader, replyMessage);
+
+        if (attachmentList != null && !attachmentList.isEmpty()) {
+            logger.debug("send reply with attachments, count = {}", attachmentList.size());
+
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+            for (HpsmAttachment a : attachmentList) {
+                helper.addAttachment(a.getFileName(), a.getStreamSource(), a.getContentType());
+                logger.debug("attachment file {} is included", a.getFileName());
+            }
+        }
+
+        this.sendChannel.send(message);
+    }
+
+
+    @Override
     public void sendReply(String to, HpsmMessageHeader replyHeader, HpsmMessage replyMessage) throws Exception {
         this.sendChannel.send(messageFactory.makeReplyMessage(to, serviceConfig.getOutboundChannel().getSenderAddress(), replyHeader, replyMessage));
     }
@@ -111,7 +133,6 @@ public class ServiceInstanceImpl implements ServiceInstance {
     public void sendReply(String replyTo, HpsmPingMessage msg) throws Exception {
         this.sendChannel.send(messageFactory.makePingMessgae(replyTo, serviceConfig.getOutboundChannel().getSenderAddress(), msg));
     }
-
 
 
     public void fillReplyMessageAttributes(HpsmMessage message, CaseObject object) {
