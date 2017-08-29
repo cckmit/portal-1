@@ -10,11 +10,11 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import ru.protei.portal.ui.official.client.activity.preview.AbstractOfficialItemActivity;
 import ru.protei.portal.ui.official.client.activity.preview.AbstractOfficialItemView;
-import ru.protei.portal.ui.official.client.activity.preview.AbstractOfficialPreviewActivity;
 
 /**
- * Created by serebryakov on 25/08/17.
+ * Абстрактное представление должностного лица
  */
 public class OfficialItemView extends Composite implements AbstractOfficialItemView {
 
@@ -43,7 +43,7 @@ public class OfficialItemView extends Composite implements AbstractOfficialItemV
     }
 
     @Override
-    public void setActivity(AbstractOfficialPreviewActivity activity) {
+    public void setActivity(AbstractOfficialItemActivity activity) {
         this.activity = activity;
     }
 
@@ -54,7 +54,7 @@ public class OfficialItemView extends Composite implements AbstractOfficialItemV
         }
     }
 
-    private AbstractOfficialPreviewActivity activity;
+    private AbstractOfficialItemActivity activity;
 
 
     @UiField

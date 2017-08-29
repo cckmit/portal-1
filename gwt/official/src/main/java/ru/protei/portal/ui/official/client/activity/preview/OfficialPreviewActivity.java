@@ -15,13 +15,14 @@ import ru.protei.portal.ui.common.client.events.OfficialEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.OfficialServiceAsync;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
  * Активность карточки должностных лиц
  */
-public abstract class OfficialPreviewActivity implements AbstractOfficialPreviewActivity, Activity {
+public abstract class OfficialPreviewActivity implements AbstractOfficialPreviewActivity, AbstractOfficialItemActivity,  Activity {
 
     @PostConstruct
     public void onInit() {
@@ -106,16 +107,16 @@ public abstract class OfficialPreviewActivity implements AbstractOfficialPreview
         view.showFullScreen(true);
     }
 
-    @Override
-    public void onEditClicked(AbstractOfficialItemView itemView) {
-        OfficialMember member = itemViewToModel.get(itemView);
-//        fireEvent(new OfficialEvents.Edit(member));
-
-    }
 
     private AppEvents.InitDetails initDetails;
 
-    private Map<AbstractOfficialItemView, OfficialMember> itemViewToModel = new HashMap<>();
+    private Map<AbstractOfficialItemView, OfficialMember> itemViewToModel
+            = new HashMap<AbstractOfficialItemView, OfficialMember>();
+
+    @Override
+    public void onEditClicked(AbstractOfficialItemView itemView) {
+        itemViewToModel.get(itemView);
+    }
 
     @Inject
     Provider<AbstractOfficialListView> listProvider;
@@ -129,10 +130,9 @@ public abstract class OfficialPreviewActivity implements AbstractOfficialPreview
     @Inject
     Lang lang;
 
+
     @Inject
     private AbstractOfficialPreviewView view;
 
     private Long officialId;
-
-
 }

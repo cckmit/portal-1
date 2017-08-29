@@ -15,5 +15,5 @@ public interface AbstractOfficialItemView extends IsWidget {
 
     void setRelations(String relations);
 
-    void setActivity(AbstractOfficialPreviewActivity activity);
+    void setActivity(AbstractOfficialItemActivity activity);
 }

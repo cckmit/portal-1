@@ -9,5 +9,4 @@ public interface AbstractOfficialPreviewActivity {
 
     void onFullScreenClicked();
 
-    void onEditClicked(AbstractOfficialItemView itemView);
 }
