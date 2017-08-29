@@ -49,6 +49,7 @@ public class OfficialItemView extends Composite implements AbstractOfficialItemV
 
     @UiHandler("editButton")
     public void onEditClicked(ClickEvent event) {
+        event.preventDefault();
         if (activity != null) {
             activity.onEditClicked(this);
         }

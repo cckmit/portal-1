@@ -11,7 +11,7 @@ import ru.protei.portal.core.model.ent.OfficialMember;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
-import ru.protei.portal.ui.common.client.events.OfficialEvents;
+import ru.protei.portal.ui.common.client.events.OfficialMemberEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.OfficialServiceAsync;
 
@@ -30,7 +30,7 @@ public abstract class OfficialPreviewActivity implements AbstractOfficialPreview
     }
 
     @Event
-    public void onShow(OfficialEvents.ShowPreview event) {
+    public void onShow(OfficialMemberEvents.ShowPreview event) {
         event.parent.clear();
         event.parent.add(view.asWidget());
         this.officialId = event.id;
@@ -41,6 +41,11 @@ public abstract class OfficialPreviewActivity implements AbstractOfficialPreview
     @Event
     public void onInit( AppEvents.InitDetails event ) {
         this.initDetails = event;
+    }
+
+    @Event
+    public void onReloadPreview(OfficialMemberEvents.ReloadPreview event) {
+        fillView(officialId);
     }
 
     private void fillView(Long officialId) {
@@ -89,7 +94,8 @@ public abstract class OfficialPreviewActivity implements AbstractOfficialPreview
             for (OfficialMember member: entry.getValue()) {
                 AbstractOfficialItemView itemView = itemProvider.get();
                 itemView.setActivity(this);
-                itemView.setName(member.getMember().getFirstName());
+                itemView.setName(member.getMember().getLastName() + " " +
+                member.getMember().getFirstName() + " " + member.getMember().getSecondName());
                 itemView.setAmplua(member.getAmplua());
                 itemView.setPosition(member.getMember().getPosition());
                 itemView.setRelations(member.getRelations());
@@ -115,7 +121,7 @@ public abstract class OfficialPreviewActivity implements AbstractOfficialPreview
 
     @Override
     public void onEditClicked(AbstractOfficialItemView itemView) {
-        itemViewToModel.get(itemView);
+        fireEvent(new OfficialMemberEvents.Edit(itemViewToModel.get(itemView).getId()));
     }
 
     @Inject

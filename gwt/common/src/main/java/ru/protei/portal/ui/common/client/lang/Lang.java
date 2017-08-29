@@ -594,4 +594,10 @@ public interface Lang extends Messages, ContactItemLang {
     String officialFaces();
 
     String officialPreviewSearch();
+
+    String officialOrganization();
+
+    String officialRelations();
+
+    String officialAmplua();
 }

@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.official.client.activity.table;
 
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -39,10 +40,24 @@ public abstract class OfficialTableActivity
     @Event
     public void onAuthSuccess (AuthEvents.Success event) {
         filterView.resetFilter();
+        officialService.initMembers(new AsyncCallback<Boolean>() {
+            @Override
+            public void onFailure(Throwable throwable) {
+                fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
+            }
+
+            @Override
+            public void onSuccess(Boolean aBoolean) {
+                if (!aBoolean) {
+                    fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
+                }
+                return;
+            }
+        });
     }
 
     @Event
-    public void onShow(OfficialEvents.Show event) {
+    public void onShow(OfficialMemberEvents.Show event) {
         init.parent.clear();
         init.parent.add(view.asWidget());
         requestTotalCount();
@@ -96,7 +111,7 @@ public abstract class OfficialTableActivity
             animation.closeDetails();
         } else {
             animation.showDetails();
-            fireEvent( new OfficialEvents.ShowPreview( view.getPreviewContainer(), value.getId() ) );
+            fireEvent( new OfficialMemberEvents.ShowPreview( view.getPreviewContainer(), value.getId() ) );
         }
     }
 

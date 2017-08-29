@@ -1,0 +1,112 @@
+package ru.protei.portal.ui.official.client.activity.edit;
+
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.inject.Inject;
+import ru.brainworm.factory.context.client.events.Back;
+import ru.brainworm.factory.generator.activity.client.activity.Activity;
+import ru.brainworm.factory.generator.activity.client.annotations.Event;
+import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.ent.OfficialMember;
+import ru.protei.portal.ui.common.client.events.AppEvents;
+import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.events.OfficialMemberEvents;
+import ru.protei.portal.ui.common.client.service.OfficialServiceAsync;
+
+/**
+ * Активность на форме редактирования должностного лица
+ */
+public abstract class OfficialMemberEditActivity implements AbstractOfficialMemberEditActivity, Activity {
+
+    @PostConstruct
+    public void onInit() {
+        view.setActivity( this );
+    }
+
+    @Event
+    public void onInitDetails( AppEvents.InitDetails initDetails ) {
+        this.initDetails = initDetails;
+    }
+
+    @Event
+    public void onShowEdit(OfficialMemberEvents.Edit event) {
+        initDetails.parent.clear();
+        initDetails.parent.add(view.asWidget());
+
+        if(event.id == null) {
+            officialMember = new OfficialMember();
+            fillView();
+            return;
+        }
+
+        requestData(event.id);
+    }
+
+    private void fillView() {
+        view.firstName().setValue(officialMember.getMember().getFirstName());
+        view.lastName().setValue(officialMember.getMember().getLastName());
+        view.secondName().setValue(officialMember.getMember().getSecondName());
+        view.organization().setValue(officialMember.getMember().getCompany().getCname());
+        view.position().setValue(officialMember.getMember().getPosition());
+        view.amplua().setValue(officialMember.getAmplua());
+        view.relations().setValue(officialMember.getRelations());
+    }
+
+    private void requestData(Long id) {
+        officialService.getOfficialMember(id, new AsyncCallback<OfficialMember>() {
+
+            @Override
+            public void onFailure(Throwable throwable) {
+                fireEvent(new NotifyEvents.Show(throwable.getMessage(), NotifyEvents.NotifyType.ERROR));
+            }
+
+            @Override
+            public void onSuccess(OfficialMember value) {
+                officialMember = value;
+                fillView();
+            }
+        });
+    }
+
+    @Override
+    public void onSaveClicked() {
+        applyChangesOfficialMember();
+        officialService.saveOfficialMember(officialMember, new AsyncCallback<OfficialMember>() {
+            @Override
+            public void onFailure(Throwable throwable) {
+                fireEvent(new NotifyEvents.Show(throwable.getMessage(), NotifyEvents.NotifyType.ERROR));
+            }
+
+            @Override
+            public void onSuccess(OfficialMember officialMember) {
+                fireEvent(new OfficialMemberEvents.ReloadPreview());
+                fireEvent( new Back() );
+            }
+        });
+    }
+
+    private void applyChangesOfficialMember() {
+        officialMember.getMember().setFirstName(view.firstName().getValue());
+        officialMember.getMember().setLastName(view.lastName().getValue());
+        officialMember.getMember().setSecondName(view.secondName().getValue());
+        officialMember.getMember().getCompany().setCname(view.organization().getValue());
+        officialMember.getMember().setPosition(view.position().getValue());
+        officialMember.setAmplua(view.amplua().getValue());
+        officialMember.setRelations(view.relations().getValue());
+    }
+
+    @Override
+    public void onCancelClicked() {
+        fireEvent(new Back());
+    }
+
+    private OfficialMember officialMember;
+
+
+    @Inject
+    OfficialServiceAsync officialService;
+
+    @Inject
+    private AbstractOfficialMemberEditView view;
+
+    private AppEvents.InitDetails initDetails;
+}

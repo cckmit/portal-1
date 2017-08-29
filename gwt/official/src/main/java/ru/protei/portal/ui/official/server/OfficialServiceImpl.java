@@ -1,10 +1,7 @@
 package ru.protei.portal.ui.official.server;
 
 import org.springframework.stereotype.Service;
-import ru.protei.portal.core.model.ent.DevUnit;
-import ru.protei.portal.core.model.ent.Official;
-import ru.protei.portal.core.model.ent.OfficialMember;
-import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.service.OfficialService;
 
@@ -96,43 +93,100 @@ public class OfficialServiceImpl implements OfficialService {
 
     @Override
     public Map<String, List<OfficialMember>> getOfficialMembersByProducts() {
-        Map<String, List<OfficialMember>> result = new HashMap<>();
-        String company1 = "НТЦ Протей";
-        String company2 = "НТЦ Буравчик";
+        return membersByRegions;
+    }
+
+    @Override
+    public OfficialMember getOfficialMember(Long id) {
+
+        for (OfficialMember member: members) {
+            if (member.getId() == id) {
+                return member;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public void saveOfficialMember(OfficialMember officialMember) {
+        for (OfficialMember member: members) {
+            if (member.getId() == officialMember.getId()) {
+                int index = members.indexOf(member);
+                members.set(index, officialMember);
+            }
+        }
+    }
+
+    @Override
+    public void initMembers() {
         OfficialMember member1 = new OfficialMember();
         Person person1 = new Person();
-        person1.setFirstName("Морозов Евгений Юрьевич");
+        person1.setLastName("Морозов");
+        person1.setFirstName("Евгений");
+        person1.setSecondName("Юрьевич");
         person1.setPosition("Директор");
+        Company company1 = new Company();
+        company1.setCname("НТЦ Протей");
+        person1.setCompany(company1);
         Person person2 = new Person();
-        person2.setFirstName("Григорьев Геннадий Иванович");
+        person2.setLastName("Григорьев");
+        person2.setFirstName("Геннадий");
+        person2.setSecondName("Иванович");
         person2.setPosition("Заместитель");
+        Company company2 = new Company();
+        company2.setCname("НТЦ Буравчик");
+        person2.setCompany(company2);
         Person person3 = new Person();
-        person3.setFirstName("Серебряков Евгений Дмитриевич");
+        person3.setLastName("Серебряков");
+        person3.setFirstName("Евгений");
+        person3.setSecondName("Дмитриевич");
         person3.setPosition("Менеджер");
+        Company company3 = new Company();
+        company3.setCname("Гугл");
+        person3.setCompany(company3);
         Person person4 = new Person();
-        person4.setFirstName("Песков Дмитрий Иванович");
+        person4.setLastName("Песков");
+        person4.setFirstName("Дмитрий");
+        person4.setSecondName("Иванович");
         person4.setPosition("Младший менеджер");
+        Company company4 = new Company();
+        company4.setCname("Яндекс");
+        person4.setCompany(company4);
         member1.setMember(person1);
         member1.setAmplua("Любит коньяк 12-летней выдержки, обедает в ресторане \"Какой-то\", 2 дочери, разведен. В общении - дружелюбен, любит разговоры о рыбалке");
         member1.setRelations("Артемьев А.С, Сергеев А.А, Иванов А.Н, Арсеньев В.Н, Козлов М.Л, Максимов М.М, Шелестов Г.А");
+        member1.setId(1l);
         OfficialMember member2 = new OfficialMember();
         member2.setMember(person2);
         member2.setAmplua("Решает управленческие вопросы. Обращаться только в крайнем случае.");
         member2.setRelations("Артемьев А.С, Сергеев А.А, Иванов А.Н, Арсеньев В.Н, Козлов М.Л, Максимов М.М, Шелестов Г.А");
+        member2.setId(2l);
         OfficialMember member3 = new OfficialMember();
         member3.setMember(person3);
         member3.setAmplua("Любит коньяк 12-летней выдержки, обедает в ресторане \"Какой-то\", 2 дочери, разведен. В общении - дружелюбен, любит разговоры о рыбалке");
         member3.setRelations("Артемьев А.С, Сергеев А.А, Иванов А.Н, Арсеньев В.Н, Козлов М.Л, Максимов М.М, Шелестов Г.А");
+        member3.setId(3l);
         OfficialMember member4 = new OfficialMember();
         member4.setMember(person4);
         member4.setAmplua("Решает управленческие вопросы. Обращаться только в крайнем случае.");
         member4.setRelations("Артемьев А.С, Сергеев А.А, Иванов А.Н, Арсеньев В.Н, Козлов М.Л, Максимов М.М, Шелестов Г.А");
-        result.put(company1, Arrays.asList(member1, member2));
-        result.put(company2, Arrays.asList(member3, member4));
+        member4.setId(4l);
 
-        return result;
+        members.add(member1);
+        members.add(member2);
+        members.add(member3);
+        members.add(member4);
+
+        String org1 = "НТЦ Протей";
+        String org2 = "НТЦ Буравчик";
+
+//        membersByRegions.put(org1, Arrays.asList(member1, member2));
+//        membersByRegions.put(org2, Arrays.asList(member3, member4));
+        membersByRegions.put(org1, members);
     }
 
-
+    Map<String, List<OfficialMember>> membersByRegions = new HashMap<>();
     private List<Official> officialList;
-}
+    private List<OfficialMember> members = new ArrayList<>();
+
+ }

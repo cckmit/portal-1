@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.common.client.service;
 
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import ru.protei.portal.core.model.ent.Official;
@@ -23,4 +24,10 @@ public interface OfficialService extends RemoteService {
     Map<String, List<Official>> getOfficialsByRegions();
 
     Map<String, List<OfficialMember>> getOfficialMembersByProducts();
+
+    OfficialMember getOfficialMember(Long id);
+
+    void saveOfficialMember(OfficialMember officialMember);
+
+    void initMembers();
 }

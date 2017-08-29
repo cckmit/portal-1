@@ -9,7 +9,7 @@ import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.ActionBarEvents;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
-import ru.protei.portal.ui.common.client.events.OfficialEvents;
+import ru.protei.portal.ui.common.client.events.OfficialMemberEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.winter.web.common.client.events.MenuEvents;
 import ru.protei.winter.web.common.client.events.SectionEvents;
@@ -53,6 +53,6 @@ public abstract class OfficialPage
     Lang lang;
 
     private String ТAB;
-    private OfficialEvents.Show show = new OfficialEvents.Show();
+    private OfficialMemberEvents.Show show = new OfficialMemberEvents.Show();
 
 }
