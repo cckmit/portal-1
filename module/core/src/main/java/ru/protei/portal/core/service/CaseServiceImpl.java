@@ -329,6 +329,12 @@ public class CaseServiceImpl implements CaseService {
     @Override
     @Transactional
     public CoreResponse<Long> bindAttachmentToCase( AuthToken token, Attachment attachment, long caseId) {
+        return attachToCase(attachment, caseId);
+    }
+
+    @Override
+    @Transactional
+    public CoreResponse<Long> attachToCase(Attachment attachment, long caseId) {
         CaseAttachment caseAttachment = new CaseAttachment(caseId, attachment.getId());
         Long caseAttachId = caseAttachmentDAO.persist(caseAttachment);
 
