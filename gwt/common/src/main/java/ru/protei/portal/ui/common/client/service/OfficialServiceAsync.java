@@ -13,7 +13,7 @@ import java.util.Map;
  */
 public interface OfficialServiceAsync {
 
-    void getOfficial(long id, AsyncCallback< Official > async);
+    void getOfficial(Long id, AsyncCallback< Official > async);
 
     void getOfficialsByRegions(OfficialQuery query, AsyncCallback<Map<String, List<Official>>> async);
 

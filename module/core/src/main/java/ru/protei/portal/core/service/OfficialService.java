@@ -16,9 +16,16 @@ import java.util.Map;
 public interface OfficialService {
 
     /**
-     * Возвращает проектную информацию по регионам
+     * Возвращает список должностных лиц по регионам
      * @param query    параметры запроса
      */
     @Privileged( En_Privilege.OFFICIAL_VIEW )
     CoreResponse<Map<String, List<Official>>> listOfficialsByRegions(AuthToken authToken, OfficialQuery query);
+
+
+    /**
+     * Возвращает должностное лицо по его id
+     */
+    @Privileged( En_Privilege.OFFICIAL_VIEW )
+    CoreResponse<Official> getOfficial(AuthToken authToken, Long id);
 }

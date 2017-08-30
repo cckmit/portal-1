@@ -11,8 +11,6 @@ import java.util.List;
  */
 public class Official extends CaseShortView {
 
-    private Long id;
-
     private String info;
 
     private String numberEmployees;
@@ -27,13 +25,6 @@ public class Official extends CaseShortView {
 
     private boolean attachmentExists;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getInfo() {
         return info;
@@ -104,8 +95,6 @@ public class Official extends CaseShortView {
         if ( locations != null && !locations.isEmpty() ) {
             official.setRegion( EntityOption.fromLocation( locations.get( 0 ).getLocation() ) );
         }
-
-
 
         return official;
     }

@@ -17,7 +17,7 @@ import java.util.Map;
 @RemoteServiceRelativePath( "springGwtServices/OfficialService")
 public interface OfficialService extends RemoteService {
 
-    Official getOfficial(long id);
+    Official getOfficial(Long id) throws RequestFailedException;
 
     Map<String, List<Official>> getOfficialsByRegions(OfficialQuery query) throws RequestFailedException;
 
@@ -26,6 +26,4 @@ public interface OfficialService extends RemoteService {
     OfficialMember getOfficialMember(Long id);
 
     void saveOfficialMember(OfficialMember officialMember);
-
-    void initMembers();
 }

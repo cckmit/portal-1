@@ -31,14 +31,24 @@ public class OfficialServiceImpl implements OfficialService {
         caseQuery.setTo(query.getTo());
         caseQuery.setType( En_CaseType.OFFICIAL );
         caseQuery.setProductId( query.getProductId() );
-        List< CaseObject > officials = caseObjectDAO.listByQuery( caseQuery );
-        officials.forEach( ( official ) -> {
-            iterateAllLocations( official, ( location ) -> {
-                applyCaseToOfficial( official, location, officialsByRegions );
+        List< CaseObject > caseObjects = caseObjectDAO.listByQuery( caseQuery );
+        caseObjects.forEach( ( caseObject ) -> {
+            iterateAllLocations( caseObject, ( location ) -> {
+                applyCaseToOfficial( caseObject, location, officialsByRegions );
             } );
         } );
         return new CoreResponse<Map<String, List<Official>>>().success(officialsByRegions);
     }
+
+    @Override
+    public CoreResponse<Official> getOfficial(AuthToken authToken, Long id) {
+
+        CaseObject caseObject = caseObjectDAO.get(id);
+        helper.fillAll( caseObject );
+
+        return new CoreResponse<Official>().success(Official.fromCaseObject(caseObject));
+    }
+
 
     private void iterateAllLocations( CaseObject official, Consumer< Location > handler ) {
         if ( official == null ) {
