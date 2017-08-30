@@ -69,7 +69,7 @@ public abstract class OfficialPreviewActivity implements AbstractOfficialPreview
 
     private void fillView(Official official) {
         view.setCreationDate(official.getCreated() == null ? "" : DateFormatter.formatDateTime( official.getCreated() ));
-        view.setProduct(official.getProduct().getDisplayText());
+        view.setProduct(official.getProduct().getName());
         view.setRegion(official.getRegion().getDisplayText());
         view.setInfo(official.getInfo());
 

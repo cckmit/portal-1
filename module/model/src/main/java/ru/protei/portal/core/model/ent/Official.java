@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Матрица принятия решений
  */
-public class Official extends CaseShortView{
+public class Official extends CaseShortView {
 
     private Long id;
 
@@ -19,7 +19,7 @@ public class Official extends CaseShortView{
 
     private EntityOption region;
 
-    private EntityOption product;
+    private DevUnit product;
 
     private Date created;
 
@@ -43,7 +43,9 @@ public class Official extends CaseShortView{
         this.info = info;
     }
 
-    public String getNumberEmployees() { return numberEmployees; }
+    public String getNumberEmployees() {
+        return numberEmployees;
+    }
 
     public void setNumberEmployees(String numberEmployees) {
         this.numberEmployees = numberEmployees;
@@ -57,11 +59,11 @@ public class Official extends CaseShortView{
         this.region = region;
     }
 
-    public EntityOption getProduct() {
+    public DevUnit getProduct() {
         return product;
     }
 
-    public void setProduct(EntityOption product) {
+    public void setProduct(DevUnit product) {
         this.product = product;
     }
 
@@ -88,4 +90,24 @@ public class Official extends CaseShortView{
     public void setAttachmentExists(boolean attachmentExists) {
         this.attachmentExists = attachmentExists;
     }
+
+    public static Official fromCaseObject(CaseObject caseObject) {
+        Official official = new Official();
+        official.setId(caseObject.getId());
+        official.setInfo(caseObject.getInfo());
+        official.setNumberEmployees(String.valueOf(caseObject.getMembers().size()));
+        official.setProduct(caseObject.getProduct());
+        official.setCreated(caseObject.getCreated());
+        official.setAttachmentExists(caseObject.isAttachmentExists());
+
+        List<CaseLocation> locations = caseObject.getLocations();
+        if ( locations != null && !locations.isEmpty() ) {
+            official.setRegion( EntityOption.fromLocation( locations.get( 0 ).getLocation() ) );
+        }
+
+
+
+        return official;
+    }
+
 }

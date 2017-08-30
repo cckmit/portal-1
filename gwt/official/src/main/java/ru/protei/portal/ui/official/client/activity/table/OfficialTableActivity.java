@@ -6,7 +6,9 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.Official;
+import ru.protei.portal.core.model.query.OfficialQuery;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -70,7 +72,7 @@ public abstract class OfficialTableActivity
 
     private void requestTotalCount() {
         view.clearRecords();
-        officialService.getOfficialsByRegions(new RequestCallback<Map<String, List<Official>>>() {
+        officialService.getOfficialsByRegions(getQuery(), new RequestCallback<Map<String, List<Official>>>() {
             @Override
             public void onSuccess(Map<String, List<Official>> result) {
                 fillRows(result);
@@ -83,6 +85,21 @@ public abstract class OfficialTableActivity
         });
 
 
+    }
+
+    private OfficialQuery getQuery() {
+        OfficialQuery query = new OfficialQuery();
+        query.setSearchString(filterView.searchPattern().getValue());
+        query.setSortDir(filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
+        query.setSortField(filterView.sortField().getValue());
+        query.setProductId(filterView.product().getValue() == null
+                ? null
+                : filterView.product().getValue().getId());
+        query.setRegionId(filterView.region().getValue() == null
+                ? null
+                :filterView.region().getValue().getId());
+
+        return query;
     }
 
     @Override
