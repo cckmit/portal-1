@@ -21,8 +21,6 @@ public interface OfficialService extends RemoteService {
 
     Map<String, List<Official>> getOfficialsByRegions(OfficialQuery query) throws RequestFailedException;
 
-    Map<String, List<OfficialMember>> getOfficialMembersByProducts(Long id);
-
     OfficialMember getOfficialMember(Long id);
 
     void saveOfficialMember(OfficialMember officialMember);

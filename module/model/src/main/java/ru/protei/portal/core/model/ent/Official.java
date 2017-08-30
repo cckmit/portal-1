@@ -3,6 +3,7 @@ package ru.protei.portal.core.model.ent;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.model.view.EntityOption;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -95,6 +96,12 @@ public class Official extends CaseShortView {
         if ( locations != null && !locations.isEmpty() ) {
             official.setRegion( EntityOption.fromLocation( locations.get( 0 ).getLocation() ) );
         }
+
+        List<OfficialMember> officialMembers = new ArrayList<>();
+        for (CaseMember caseMember: caseObject.getMembers()) {
+            officialMembers.add(new OfficialMember().fromCaseMember(caseMember));
+        }
+        official.setMembers(officialMembers);
 
         return official;
     }

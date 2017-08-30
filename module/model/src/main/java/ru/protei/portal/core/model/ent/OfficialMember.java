@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Map;
 
 /**
- * Created by serebryakov on 24/08/17.
+ * Должностное лицо
  */
 public class OfficialMember implements Serializable {
 
@@ -86,5 +86,19 @@ public class OfficialMember implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public OfficialMember fromCaseMember(CaseMember caseMember) {
+        OfficialMember officialMember = new OfficialMember();
+        officialMember.setCompany(caseMember.getMember().getCompany().getCname());
+        officialMember.setRelations(caseMember.getMember().getRelations());
+        officialMember.setId(caseMember.getId());
+        officialMember.setAmplua(caseMember.getMember().getAmplua());
+        officialMember.setFirstName(caseMember.getMember().getFirstName());
+        officialMember.setLastName(caseMember.getMember().getLastName());
+        officialMember.setSecondName(caseMember.getMember().getSecondName());
+        officialMember.setPosition(caseMember.getMember().getPosition());
+
+        return officialMember;
     }
 }

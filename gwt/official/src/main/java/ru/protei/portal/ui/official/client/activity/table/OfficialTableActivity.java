@@ -42,20 +42,6 @@ public abstract class OfficialTableActivity
     @Event
     public void onAuthSuccess (AuthEvents.Success event) {
         filterView.resetFilter();
-        officialService.initMembers(new AsyncCallback<Boolean>() {
-            @Override
-            public void onFailure(Throwable throwable) {
-                fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
-            }
-
-            @Override
-            public void onSuccess(Boolean aBoolean) {
-                if (!aBoolean) {
-                    fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
-                }
-                return;
-            }
-        });
     }
 
     @Event

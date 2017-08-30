@@ -84,6 +84,12 @@ public class Person extends AuditableObject implements PersonShortViewSupport {
     @JdbcColumn(name = "contactInfo", converterType = ConverterType.JSON)
     private ContactInfo contactInfo;
 
+    @JdbcColumn(name = "amplua")
+    private String amplua;
+
+    @JdbcColumn(name = "relations")
+    private String relations;
+
     public static Person fromPersonShortView( PersonShortView personShortView ){
         if(personShortView == null)
             return null;
@@ -297,5 +303,21 @@ public class Person extends AuditableObject implements PersonShortViewSupport {
     @Override
     public PersonShortView toFullNameShortView() {
         return new PersonShortView(this.displayName, this.getId(), this.isFired);
+    }
+
+    public String getAmplua() {
+        return amplua;
+    }
+
+    public void setAmplua(String amplua) {
+        this.amplua = amplua;
+    }
+
+    public String getRelations() {
+        return relations;
+    }
+
+    public void setRelations(String relations) {
+        this.relations = relations;
     }
 }

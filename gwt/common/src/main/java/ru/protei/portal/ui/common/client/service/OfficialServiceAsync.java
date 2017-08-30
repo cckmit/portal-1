@@ -17,11 +17,7 @@ public interface OfficialServiceAsync {
 
     void getOfficialsByRegions(OfficialQuery query, AsyncCallback<Map<String, List<Official>>> async);
 
-    void getOfficialMembersByProducts(Long id, AsyncCallback<Map<String, List<OfficialMember>>> async);
-
     void getOfficialMember(Long id, AsyncCallback<OfficialMember> asyncCallback);
 
     void saveOfficialMember(OfficialMember officialMember, AsyncCallback<OfficialMember> asyncCallback);
-
-    void initMembers(AsyncCallback<Boolean> callback);
 }

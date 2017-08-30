@@ -31,7 +31,6 @@ public class OfficialServiceImpl implements ru.protei.portal.ui.common.client.se
 
         return response.getData();
 
-
     }
 
     @Override
@@ -54,17 +53,6 @@ public class OfficialServiceImpl implements ru.protei.portal.ui.common.client.se
 
         return descriptor;
     }
-
-//    @Override
-
-    @Override
-    public Map<String, List<OfficialMember>> getOfficialMembersByProducts(Long id) {
-//        Official official = getOfficial(id);
-//        return createMembersByRegionsMap(official);
-        return null;
-    }
-
-
 
     @Override
     public OfficialMember getOfficialMember(Long id) {
@@ -92,27 +80,6 @@ public class OfficialServiceImpl implements ru.protei.portal.ui.common.client.se
         }
     }
 
-
-    private Map<String, List<OfficialMember>> createMembersByRegionsMap(Official official) {
-        Map<String, List<OfficialMember>> membersByRegionsMap = new HashMap<>();
-
-        List<OfficialMember> members = official.getMembers();
-        Set<String> companies = new HashSet<>();
-        for (OfficialMember member : members) {
-            companies.add(member.getCompany());
-        }
-        for (String company : companies) {
-            List<OfficialMember> newMembers = new ArrayList<>();
-            for (OfficialMember member : members) {
-                if (member.getCompany().equals(company)) {
-                    newMembers.add(member);
-                }
-            }
-            membersByRegionsMap.put(company, newMembers);
-        }
-
-        return membersByRegionsMap;
-    }
 
     private List<Official> officialList = new ArrayList<>();
 

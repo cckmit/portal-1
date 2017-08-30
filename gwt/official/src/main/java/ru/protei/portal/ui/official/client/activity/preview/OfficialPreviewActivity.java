@@ -14,6 +14,7 @@ import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.OfficialMemberEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.OfficialServiceAsync;
+import ru.protei.portal.ui.official.client.OfficialUtils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -73,17 +74,8 @@ public abstract class OfficialPreviewActivity implements AbstractOfficialPreview
         view.setRegion(official.getRegion().getDisplayText());
         view.setInfo(official.getInfo());
 
-        officialService.getOfficialMembersByProducts(official.getId(), new AsyncCallback<Map<String, List<OfficialMember>>>() {
-            @Override
-            public void onFailure(Throwable throwable) {
-                fireEvent( new NotifyEvents.Show( lang.errNotFound(), NotifyEvents.NotifyType.ERROR ) );
-            }
+        fillMembers(OfficialUtils.createMembersByRegionsMap(official));
 
-            @Override
-            public void onSuccess(Map<String, List<OfficialMember>> members) {
-                fillMembers(members);
-            }
-        });
     }
 
     private void fillMembers(Map<String, List<OfficialMember>> members) {
