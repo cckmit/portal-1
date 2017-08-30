@@ -26,6 +26,9 @@ public class OfficialServiceImpl implements OfficialService {
 
         Map<String, List<Official>> officialsByRegions = new HashMap<>();
         CaseQuery caseQuery = new CaseQuery();
+        caseQuery.setSearchString(query.getSearchString());
+        caseQuery.setFrom(query.getFrom());
+        caseQuery.setTo(query.getTo());
         caseQuery.setType( En_CaseType.OFFICIAL );
         caseQuery.setProductId( query.getProductId() );
         List< CaseObject > officials = caseObjectDAO.listByQuery( caseQuery );

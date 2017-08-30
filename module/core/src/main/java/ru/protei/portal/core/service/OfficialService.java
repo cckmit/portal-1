@@ -6,8 +6,6 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Official;
 import ru.protei.portal.core.model.query.OfficialQuery;
-import ru.protei.portal.core.model.query.ProjectQuery;
-import ru.protei.portal.core.model.struct.RegionInfo;
 
 import java.util.List;
 import java.util.Map;

@@ -90,6 +90,8 @@ public abstract class OfficialTableActivity
     private OfficialQuery getQuery() {
         OfficialQuery query = new OfficialQuery();
         query.setSearchString(filterView.searchPattern().getValue());
+        query.setFrom(filterView.dateRange().getValue().from);
+        query.setTo(filterView.dateRange().getValue().to);
         query.setSortDir(filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
         query.setSortField(filterView.sortField().getValue());
         query.setProductId(filterView.product().getValue() == null
