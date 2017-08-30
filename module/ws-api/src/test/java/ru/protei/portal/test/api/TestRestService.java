@@ -15,10 +15,7 @@ import ru.protei.portal.api.config.WSConfig;
 import ru.protei.portal.api.model.*;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 public class TestRestService {
     private static Logger logger = Logger.getLogger(TestRestService.class);
@@ -295,6 +292,36 @@ public class TestRestService {
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_XML));
         headers.setContentType(MediaType.IMAGE_JPEG);
         HttpEntity<byte[]> entity = new HttpEntity<>(buf, headers);
+
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(URI).queryParam("id", 6989);
+        String uriBuilder = builder.build().encode().toUriString();
+
+        ResponseEntity<ServiceResult> response = restTemplate.exchange(uriBuilder, HttpMethod.PUT, entity, ServiceResult.class);
+        ServiceResult sr = response.getBody();
+
+        Assert.assertNotNull ("Result updatePhoto() is null!", sr);
+        Assert.assertEquals ("updatePhoto() is not success! " + sr.getErrInfo (), true, sr.isSuccess ());
+        Assert.assertTrue ("updatePhoto() must return not null identifer!", (sr.getId () != null && sr.getId () > 0));
+        logger.debug ("The photo of worker is updated. id = " + sr.getId ());
+    }
+
+    @Test
+    public void testUpdateFoto() {
+
+        Long id = new Long (155);
+        byte[] buf = read (id);
+        logger.debug ("personId = " + id);
+        logger.debug ("photo = " + buf);
+        logger.debug("photo's length = " + (buf != null ? buf.length : null));
+
+        String URI = BASE_URI + "update.foto";
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.setMessageConverters(getMessageConverters());
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(Arrays.asList(MediaType.APPLICATION_XML));
+
+        HttpEntity<byte[]> entity = new HttpEntity<>(Base64.getEncoder().encode(buf), headers);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(URI).queryParam("id", 6989);
         String uriBuilder = builder.build().encode().toUriString();

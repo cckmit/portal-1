@@ -23,6 +23,7 @@ import java.beans.PropertyDescriptor;
 import java.io.*;
 import java.net.Inet4Address;
 import java.text.ParseException;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 
@@ -452,6 +453,49 @@ public class WorkerController {
 
             out = new BufferedOutputStream(new FileOutputStream(fileName));
             out.write (buf);
+
+            return ServiceResult.successResult (id);
+
+        } catch (Exception e) {
+            logger.error ("error while update photo", e);
+        } finally {
+            try {
+                if (out != null)
+                    out.close();
+            } catch (Exception e) {}
+        }
+
+        return ServiceResult.failResult (En_ErrorCode.NOT_UPDATE.getCode (), En_ErrorCode.NOT_UPDATE.getMessage (), id);
+    }
+
+    @RequestMapping(method = RequestMethod.PUT, value = "/update.foto")
+    public @ResponseBody ServiceResult updateFoto(@RequestParam(name = "id") Long id, @RequestBody byte[] base64string) {
+
+        logger.debug("=== updateFoto ===");
+        logger.debug("=== properties from 1C ===");
+        logger.debug("personId = " + id);
+        logger.debug("photo's length = " + (base64string != null ? base64string.length : null));
+        logger.debug("==========================");
+
+        OutputStream out = null;
+
+        try {
+
+            if (id == null || id < 0)
+                return ServiceResult.failResult (En_ErrorCode.EMPTY_PER_ID.getCode (), En_ErrorCode.EMPTY_PER_ID.getMessage (), id);
+
+            if (base64string == null)
+                return ServiceResult.failResult (En_ErrorCode.EMPTY_PHOTO.getCode (), En_ErrorCode.EMPTY_PHOTO.getMessage (), id);
+
+            Person person = personDAO.get (id);
+            if (person == null)
+                return ServiceResult.failResult (En_ErrorCode.UNKNOWN_PER.getCode (), En_ErrorCode.UNKNOWN_PER.getMessage (), id);
+
+            String fileName = WSConfig.getInstance ().getDirPhotos () + id + ".jpg";
+            logger.debug("=== fileName = " + fileName);
+
+            out = new BufferedOutputStream(new FileOutputStream(fileName));
+            out.write (Base64.getDecoder().decode(base64string));
 
             return ServiceResult.successResult (id);
 
