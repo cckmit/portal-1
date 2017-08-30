@@ -69,11 +69,11 @@ public abstract class OfficialPreviewActivity implements AbstractOfficialPreview
 
     private void fillView(Official official) {
         view.setCreationDate(official.getCreated() == null ? "" : DateFormatter.formatDateTime( official.getCreated() ));
-        view.setProduct(official.getProductName());
+        view.setProduct(official.getProduct().getDisplayText());
         view.setRegion(official.getRegion().getDisplayText());
         view.setInfo(official.getInfo());
 
-        officialService.getOfficialMembersByProducts(new AsyncCallback<Map<String, List<OfficialMember>>>() {
+        officialService.getOfficialMembersByProducts(official.getId(), new AsyncCallback<Map<String, List<OfficialMember>>>() {
             @Override
             public void onFailure(Throwable throwable) {
                 fireEvent( new NotifyEvents.Show( lang.errNotFound(), NotifyEvents.NotifyType.ERROR ) );
@@ -94,10 +94,10 @@ public abstract class OfficialPreviewActivity implements AbstractOfficialPreview
             for (OfficialMember member: entry.getValue()) {
                 AbstractOfficialItemView itemView = itemProvider.get();
                 itemView.setActivity(this);
-                itemView.setName(member.getMember().getLastName() + " " +
-                member.getMember().getFirstName() + " " + member.getMember().getSecondName());
+                itemView.setName(member.getLastName() + " " +
+                member.getFirstName() + " " + member.getSecondName());
                 itemView.setAmplua(member.getAmplua());
-                itemView.setPosition(member.getMember().getPosition());
+                itemView.setPosition(member.getPosition());
                 itemView.setRelations(member.getRelations());
                 itemViewToModel.put(itemView, member);
                 listView.getItemContainer().add(itemView.asWidget());

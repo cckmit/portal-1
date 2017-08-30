@@ -42,11 +42,11 @@ public abstract class OfficialMemberEditActivity implements AbstractOfficialMemb
     }
 
     private void fillView() {
-        view.firstName().setValue(officialMember.getMember().getFirstName());
-        view.lastName().setValue(officialMember.getMember().getLastName());
-        view.secondName().setValue(officialMember.getMember().getSecondName());
-        view.organization().setValue(officialMember.getMember().getCompany().getCname());
-        view.position().setValue(officialMember.getMember().getPosition());
+        view.firstName().setValue(officialMember.getFirstName());
+        view.lastName().setValue(officialMember.getLastName());
+        view.secondName().setValue(officialMember.getSecondName());
+        view.organization().setValue(officialMember.getCompany());
+        view.position().setValue(officialMember.getPosition());
         view.amplua().setValue(officialMember.getAmplua());
         view.relations().setValue(officialMember.getRelations());
     }
@@ -85,11 +85,11 @@ public abstract class OfficialMemberEditActivity implements AbstractOfficialMemb
     }
 
     private void applyChangesOfficialMember() {
-        officialMember.getMember().setFirstName(view.firstName().getValue());
-        officialMember.getMember().setLastName(view.lastName().getValue());
-        officialMember.getMember().setSecondName(view.secondName().getValue());
-        officialMember.getMember().getCompany().setCname(view.organization().getValue());
-        officialMember.getMember().setPosition(view.position().getValue());
+        officialMember.setFirstName(view.firstName().getValue());
+        officialMember.setLastName(view.lastName().getValue());
+        officialMember.setSecondName(view.secondName().getValue());
+        officialMember.setCompany(view.organization().getValue());
+        officialMember.setPosition(view.position().getValue());
         officialMember.setAmplua(view.amplua().getValue());
         officialMember.setRelations(view.relations().getValue());
     }

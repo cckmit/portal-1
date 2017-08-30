@@ -15,15 +15,11 @@ import java.util.Map;
 @RemoteServiceRelativePath( "springGwtServices/OfficialService")
 public interface OfficialService extends RemoteService {
 
-    List<Official> getOfficialList();
-
     Official getOfficial(long id);
-
-    Long getOfficialCount();
 
     Map<String, List<Official>> getOfficialsByRegions();
 
-    Map<String, List<OfficialMember>> getOfficialMembersByProducts();
+    Map<String, List<OfficialMember>> getOfficialMembersByProducts(Long id);
 
     OfficialMember getOfficialMember(Long id);
 
