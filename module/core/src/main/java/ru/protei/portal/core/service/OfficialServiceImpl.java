@@ -1,13 +1,17 @@
 package ru.protei.portal.core.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.core.model.dao.CaseMemberDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
+import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.OfficialQuery;
-import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.ArrayList;
@@ -49,6 +53,33 @@ public class OfficialServiceImpl implements OfficialService {
         return new CoreResponse<Official>().success(Official.fromCaseObject(caseObject));
     }
 
+    @Override
+    public CoreResponse<OfficialMember> getOfficialMember(AuthToken authToken, Long id) {
+        CaseMember caseMember = caseMemberDAO.get(id);
+        return new CoreResponse<OfficialMember>().success(OfficialMember.fromCaseMember(caseMember));
+    }
+
+    @Override
+    public CoreResponse<OfficialMember> saveOfficialMember(AuthToken authToken, OfficialMember officialMember) {
+
+        CaseMember caseMember = caseMemberDAO.get(officialMember.getId());
+        Person member = caseMember.getMember();
+        member.setFirstName(officialMember.getFirstName());
+        member.setPosition(officialMember.getPosition());
+        member.getCompany().setCname(officialMember.getCompany());
+        member.setLastName(officialMember.getLastName());
+        member.setSecondName(officialMember.getSecondName());
+        member.setAmplua(officialMember.getAmplua());
+        member.setRelations(officialMember.getRelations());
+
+        boolean isUpdated = personDAO.merge(member);
+
+        if (!isUpdated)
+            return new CoreResponse().error(En_ResultStatus.NOT_UPDATED);
+
+        return new CoreResponse<OfficialMember>().success(OfficialMember.fromCaseMember(caseMember));
+    }
+
 
     private void iterateAllLocations( CaseObject official, Consumer< Location > handler ) {
         if ( official == null ) {
@@ -87,9 +118,14 @@ public class OfficialServiceImpl implements OfficialService {
     }
 
 
-
+    @Autowired
+    PersonDAO personDAO;
     @Autowired
     CaseObjectDAO caseObjectDAO;
     @Autowired
+    CaseMemberDAO caseMemberDAO;
+    @Autowired
     JdbcManyRelationsHelper helper;
+
+    private static Logger log = LoggerFactory.getLogger(OfficialServiceImpl.class);
 }

@@ -88,7 +88,7 @@ public class OfficialMember implements Serializable {
         this.id = id;
     }
 
-    public OfficialMember fromCaseMember(CaseMember caseMember) {
+    public static OfficialMember fromCaseMember(CaseMember caseMember) {
         OfficialMember officialMember = new OfficialMember();
         officialMember.setCompany(caseMember.getMember().getCompany().getCname());
         officialMember.setRelations(caseMember.getMember().getRelations());

@@ -36,6 +36,7 @@ public class UiConstants {
         String PROJECT = "project";
         String ACCOUNT = "account";
         String ROLE = "role";
+        String OFFICIAL = "official";
     }
 
     /**

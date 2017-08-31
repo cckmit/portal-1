@@ -106,15 +106,15 @@ public abstract class OfficialPreviewActivity implements AbstractOfficialPreview
     }
 
 
-    private AppEvents.InitDetails initDetails;
-
-    private Map<AbstractOfficialItemView, OfficialMember> itemViewToModel
-            = new HashMap<AbstractOfficialItemView, OfficialMember>();
-
     @Override
     public void onEditClicked(AbstractOfficialItemView itemView) {
         fireEvent(new OfficialMemberEvents.Edit(itemViewToModel.get(itemView).getId()));
     }
+
+    private AppEvents.InitDetails initDetails;
+
+    private Map<AbstractOfficialItemView, OfficialMember> itemViewToModel
+            = new HashMap<AbstractOfficialItemView, OfficialMember>();
 
     @Inject
     Provider<AbstractOfficialListView> listProvider;

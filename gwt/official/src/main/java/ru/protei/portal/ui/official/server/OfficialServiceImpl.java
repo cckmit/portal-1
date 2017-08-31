@@ -1,12 +1,13 @@
 package ru.protei.portal.ui.official.server;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.OfficialQuery;
-import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.server.service.SessionService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
@@ -55,33 +56,30 @@ public class OfficialServiceImpl implements ru.protei.portal.ui.common.client.se
     }
 
     @Override
-    public OfficialMember getOfficialMember(Long id) {
-        for (Official official: officialList) {
-            List<OfficialMember> members = official.getMembers();
-            for (OfficialMember member: members) {
-                if (member.getId() == id) {
-                    return member;
-                }
-            }
-        }
-        return null;
+    public OfficialMember getOfficialMember(Long id) throws RequestFailedException {
+
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
+        CoreResponse< OfficialMember > response = officialService.getOfficialMember( descriptor.makeAuthToken(), id );
+        if ( response.isError() )
+            throw new RequestFailedException( response.getStatus() );
+
+        return response.getData();
+
     }
 
     @Override
-    public void saveOfficialMember(OfficialMember officialMember) {
-        for (Official official: officialList) {
-            List<OfficialMember> members = official.getMembers();
-            for (OfficialMember member: members) {
-                if (member.getId() == officialMember.getId()) {
-                    int index = members.indexOf(member);
-                    members.set(index, officialMember);
-                }
-            }
-        }
+    public OfficialMember saveOfficialMember(OfficialMember officialMember) throws RequestFailedException {
+
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
+        CoreResponse<OfficialMember> response = officialService.saveOfficialMember( descriptor.makeAuthToken(), officialMember );
+        if ( response.isError() )
+            throw new RequestFailedException( response.getStatus() );
+
+        return response.getData();
     }
 
-
-    private List<Official> officialList = new ArrayList<>();
 
     @Autowired
     private ru.protei.portal.core.service.OfficialService officialService;
@@ -89,5 +87,7 @@ public class OfficialServiceImpl implements ru.protei.portal.ui.common.client.se
     SessionService sessionService;
     @Autowired
     HttpServletRequest httpServletRequest;
+
+    private static Logger log = LoggerFactory.getLogger(ru.protei.portal.core.service.OfficialServiceImpl.class);
 
 }
