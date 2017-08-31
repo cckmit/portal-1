@@ -129,6 +129,8 @@ public class OfficialTableView extends Composite implements AbstractOfficialTabl
         this.activity = activity;
         attachColumn.setAttachHandler(activity);
         editClickColumn.setColumnProvider( columnProvider );
+        editClickColumn.setHandler( activity );
+        editClickColumn.setEditHandler( activity );
         columns.forEach( clickColumn -> {
             clickColumn.setHandler( activity );
             clickColumn.setColumnProvider( columnProvider );

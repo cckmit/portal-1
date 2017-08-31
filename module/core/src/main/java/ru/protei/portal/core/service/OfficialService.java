@@ -44,4 +44,11 @@ public interface OfficialService {
     @Privileged({ En_Privilege.OFFICIAL_EDIT })
     @Auditable( En_AuditType.OFFICIAL_MODIFY)
     CoreResponse<OfficialMember> saveOfficialMember(AuthToken authToken, OfficialMember officialMember);
+
+    /**
+     * Сохраняет матрицу принятия решений
+     */
+    @Privileged({ En_Privilege.OFFICIAL_EDIT })
+    @Auditable( En_AuditType.OFFICIAL_MODIFY)
+    CoreResponse<Official> saveOfficial(AuthToken authToken, Official official);
 }

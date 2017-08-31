@@ -15,4 +15,5 @@ public interface AbstractOfficialsTableActivity
         AttachClickColumn.AttachHandler<Official> {
 
     void onEditClicked(Official value);
+
 }

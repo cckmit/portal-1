@@ -2,7 +2,9 @@ package ru.protei.portal.ui.official.client.factory;
 
 import com.google.gwt.inject.client.AbstractGinModule;
 import com.google.inject.Singleton;
+import ru.protei.portal.ui.official.client.activity.edit.AbstractOfficialEditView;
 import ru.protei.portal.ui.official.client.activity.edit.AbstractOfficialMemberEditView;
+import ru.protei.portal.ui.official.client.activity.edit.OfficialEditActivity;
 import ru.protei.portal.ui.official.client.activity.edit.OfficialMemberEditActivity;
 import ru.protei.portal.ui.official.client.activity.filter.AbstractOfficialFilterView;
 import ru.protei.portal.ui.official.client.activity.page.OfficialPage;
@@ -12,6 +14,7 @@ import ru.protei.portal.ui.official.client.activity.preview.AbstractOfficialPrev
 import ru.protei.portal.ui.official.client.activity.preview.OfficialPreviewActivity;
 import ru.protei.portal.ui.official.client.activity.table.AbstractOfficialTableView;
 import ru.protei.portal.ui.official.client.activity.table.OfficialTableActivity;
+import ru.protei.portal.ui.official.client.view.edit.OfficialEditView;
 import ru.protei.portal.ui.official.client.view.edit.OfficialMemberEditView;
 import ru.protei.portal.ui.official.client.view.filter.OfficialFilterView;
 import ru.protei.portal.ui.official.client.view.preview.OfficialItemView;
@@ -38,6 +41,9 @@ public class OfficialClientModule extends AbstractGinModule{
 
         bind(OfficialMemberEditActivity.class).asEagerSingleton();
         bind(AbstractOfficialMemberEditView.class).to(OfficialMemberEditView.class);
+
+        bind(OfficialEditActivity.class).asEagerSingleton();
+        bind(AbstractOfficialEditView.class).to(OfficialEditView.class);
 
     }
 }

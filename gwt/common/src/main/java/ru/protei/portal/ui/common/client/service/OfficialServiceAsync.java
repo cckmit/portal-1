@@ -20,4 +20,6 @@ public interface OfficialServiceAsync {
     void getOfficialMember(Long id, AsyncCallback<OfficialMember> asyncCallback);
 
     void saveOfficialMember(OfficialMember officialMember, AsyncCallback<OfficialMember> asyncCallback);
+
+    void saveOfficial(Official official, AsyncCallback<Official> asyncCallback);
 }

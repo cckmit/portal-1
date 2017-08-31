@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.core.model.dao.CaseLocationDAO;
 import ru.protei.portal.core.model.dao.CaseMemberDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
@@ -12,12 +13,11 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.OfficialQuery;
+import ru.protei.portal.core.model.view.CaseShortView;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 
 /**
@@ -80,6 +80,23 @@ public class OfficialServiceImpl implements OfficialService {
         return new CoreResponse<OfficialMember>().success(OfficialMember.fromCaseMember(caseMember));
     }
 
+    @Override
+    public CoreResponse<Official> saveOfficial(AuthToken authToken, Official official) {
+        CaseObject caseObject = caseObjectDAO.get(official.getId());
+        helper.fillAll(caseObject);
+        log.debug("caseObject " + caseObject.toString() );
+        log.debug("regionId " + official.getRegion().getId() );
+        caseObject.setProductId(official.getProduct().getId());
+        caseObject.setInfo(official.getInfo());
+        caseObjectDAO.merge(caseObject);
+        CaseLocation location = caseLocationDAO.get(caseObject.getLocations().get(0).getId());
+        location.setLocationId(official.getRegion().getId());
+        caseLocationDAO.merge(location);
+
+
+        return new CoreResponse<Official>().success(official);
+    }
+
 
     private void iterateAllLocations( CaseObject official, Consumer< Location > handler ) {
         if ( official == null ) {
@@ -124,6 +141,8 @@ public class OfficialServiceImpl implements OfficialService {
     CaseObjectDAO caseObjectDAO;
     @Autowired
     CaseMemberDAO caseMemberDAO;
+    @Autowired
+    CaseLocationDAO caseLocationDAO;
     @Autowired
     JdbcManyRelationsHelper helper;
 

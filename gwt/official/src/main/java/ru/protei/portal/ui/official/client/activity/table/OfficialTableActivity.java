@@ -18,6 +18,7 @@ import ru.protei.portal.ui.common.client.service.OfficialServiceAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.official.client.activity.filter.AbstractOfficialFilterActivity;
 import ru.protei.portal.ui.official.client.activity.filter.AbstractOfficialFilterView;
+import ru.protei.winter.web.common.client.events.SectionEvents;
 
 import java.util.List;
 import java.util.Map;
@@ -40,7 +41,16 @@ public abstract class OfficialTableActivity
 
     @Override
     public void onEditClicked(Official value) {
+        fireEvent(new OfficialEvents.Edit(value.getId()));
+    }
 
+    @Event
+    public void onCreateClicked( SectionEvents.Clicked event ) {
+        if ( !UiConstants.ActionBarIdentity.OFFICIAL.equals( event.identity ) ) {
+            return;
+        }
+
+        fireEvent(new OfficialEvents.Edit(null));
     }
 
     @Event

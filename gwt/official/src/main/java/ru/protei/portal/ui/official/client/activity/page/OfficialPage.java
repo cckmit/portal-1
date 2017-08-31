@@ -36,7 +36,12 @@ public abstract class OfficialPage
     }
 
     @Event
-    public void onEdit( OfficialMemberEvents.Edit event ) {
+    public void onOfficialMemberEdit( OfficialMemberEvents.Edit event ) {
+        fireSelectTab();
+    }
+
+    @Event
+    public void onOfficialEdit( OfficialEvents.Edit event ) {
         fireSelectTab();
     }
 
