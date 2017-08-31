@@ -16,12 +16,12 @@ public class OfficialUtils {
         List<OfficialMember> members = official.getMembers();
         Set<String> companies = new HashSet<>();
         for (OfficialMember member : members) {
-            companies.add(member.getCompany());
+            companies.add(member.getCompany().getDisplayText());
         }
         for (String company : companies) {
             List<OfficialMember> newMembers = new ArrayList<>();
             for (OfficialMember member : members) {
-                if (member.getCompany().equals(company)) {
+                if (member.getCompany().getDisplayText().equals(company)) {
                     newMembers.add(member);
                 }
             }

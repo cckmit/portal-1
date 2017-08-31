@@ -66,7 +66,7 @@ public class OfficialServiceImpl implements OfficialService {
         Person member = caseMember.getMember();
         member.setFirstName(officialMember.getFirstName());
         member.setPosition(officialMember.getPosition());
-        member.getCompany().setCname(officialMember.getCompany());
+        member.setCompanyId(officialMember.getCompany().getId());
         member.setLastName(officialMember.getLastName());
         member.setSecondName(officialMember.getSecondName());
         member.setAmplua(officialMember.getAmplua());

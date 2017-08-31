@@ -6,10 +6,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.ui.common.client.common.UiConstants;
-import ru.protei.portal.ui.common.client.events.ActionBarEvents;
-import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.AuthEvents;
-import ru.protei.portal.ui.common.client.events.OfficialMemberEvents;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.winter.web.common.client.events.MenuEvents;
 import ru.protei.winter.web.common.client.events.SectionEvents;
@@ -31,6 +28,16 @@ public abstract class OfficialPage
             fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.OFFICIAL) );
             fireEvent( new AppEvents.InitPage( show ) );
         }
+    }
+
+    @Event
+    public void onShowTable( OfficialMemberEvents.Show event ) {
+        fireSelectTab();
+    }
+
+    @Event
+    public void onEdit( OfficialMemberEvents.Edit event ) {
+        fireSelectTab();
     }
 
     @Event

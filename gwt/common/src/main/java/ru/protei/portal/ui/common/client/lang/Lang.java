@@ -600,4 +600,6 @@ public interface Lang extends Messages, ContactItemLang {
     String officialRelations();
 
     String officialAmplua();
+
+    String selectOfficialCompany();
 }

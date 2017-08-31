@@ -1,12 +1,15 @@
 package ru.protei.portal.ui.official.client.view.edit;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.ButtonElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
+import com.google.inject.Inject;
+import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.official.client.activity.edit.AbstractOfficialMemberEditView;
 import ru.protei.portal.ui.official.client.activity.edit.AbstractOfficialMemberEditActivity;
 
@@ -15,8 +18,10 @@ import ru.protei.portal.ui.official.client.activity.edit.AbstractOfficialMemberE
  */
 public class OfficialMemberEditView extends Composite implements AbstractOfficialMemberEditView {
 
-    public OfficialMemberEditView() {
+    @Inject
+    public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        company.setDefaultValue( lang.selectOfficialCompany() );
     }
 
     @Override
@@ -35,8 +40,8 @@ public class OfficialMemberEditView extends Composite implements AbstractOfficia
     }
 
     @Override
-    public HasValue<String> organization() {
-        return organization;
+    public HasValue<EntityOption> organization() {
+        return company;
     }
 
     @Override
@@ -78,11 +83,14 @@ public class OfficialMemberEditView extends Composite implements AbstractOfficia
     private static OfficialMemberEditActivityUiBinder ourUiBinder = GWT.create(OfficialMemberEditActivityUiBinder.class);
 
     @UiField
+    Lang lang;
+    @Inject
+    @UiField(provided = true)
+    CompanySelector company;
+    @UiField
     TextBox lastName;
     @UiField
     TextBox secondName;
-    @UiField
-    TextBox organization;
     @UiField
     TextBox position;
     @UiField

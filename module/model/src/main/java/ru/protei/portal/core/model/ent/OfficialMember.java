@@ -1,7 +1,8 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.view.EntityOption;
+
 import java.io.Serializable;
-import java.util.Map;
 
 /**
  * Должностное лицо
@@ -16,7 +17,7 @@ public class OfficialMember implements Serializable {
 
     private String secondName;
 
-    private String company;
+    private EntityOption company;
 
     private String position;
 
@@ -48,11 +49,11 @@ public class OfficialMember implements Serializable {
         this.secondName = secondName;
     }
 
-    public String getCompany() {
+    public EntityOption getCompany() {
         return company;
     }
 
-    public void setCompany(String company) {
+    public void setCompany(EntityOption company) {
         this.company = company;
     }
 
@@ -90,7 +91,7 @@ public class OfficialMember implements Serializable {
 
     public static OfficialMember fromCaseMember(CaseMember caseMember) {
         OfficialMember officialMember = new OfficialMember();
-        officialMember.setCompany(caseMember.getMember().getCompany().getCname());
+        officialMember.setCompany(caseMember.getMember().getCompany().toEntityOption());
         officialMember.setRelations(caseMember.getMember().getRelations());
         officialMember.setId(caseMember.getId());
         officialMember.setAmplua(caseMember.getMember().getAmplua());
