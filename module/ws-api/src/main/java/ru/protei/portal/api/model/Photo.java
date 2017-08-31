@@ -2,6 +2,7 @@ package ru.protei.portal.api.model;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Base64;
 
 /**
  * Created by turik on 19.08.16.
@@ -10,7 +11,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class Photo {
 
     private Long id = null;
-    private byte[] photo = null;
+    private String content = null;
 
     @XmlElement(name = "id")
     public Long getId() {
@@ -22,11 +23,11 @@ public class Photo {
     }
 
     @XmlElement(name = "content")
-    public byte[] getPhoto() {
-        return photo;
+    public String getContent() {
+        return content;
     }
 
-    public void setPhoto(byte[] photo) {
-        this.photo = photo;
+    public void setContent(String content) {
+        this.content = content;
     }
 }

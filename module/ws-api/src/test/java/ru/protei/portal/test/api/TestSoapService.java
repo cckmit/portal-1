@@ -302,8 +302,8 @@ public class TestSoapService {
         List<Photo> result = client.getPhotos (list);
         Assert.assertNotNull ("Result getPhotos() is null!", result);
         for (Photo p : result) {
-            Assert.assertNotNull ("Photo for id = " + p.getId () + " not exist!", p.getPhoto ());
-            logger.debug ("Photo for id = " + p.getId () + " exist. Length of photo = " + p.getPhoto ().length);
+            Assert.assertNotNull ("Photo for id = " + p.getId () + " not exist!", p.getContent ());
+            logger.debug ("Photo for id = " + p.getId () + " exist. Length of photo = " + p.getContent ().length());
         }
     }
 

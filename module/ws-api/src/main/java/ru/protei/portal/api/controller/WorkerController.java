@@ -22,6 +22,7 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.io.*;
 import java.net.Inet4Address;
+import java.nio.charset.Charset;
 import java.text.ParseException;
 import java.util.Base64;
 import java.util.Date;
@@ -516,7 +517,7 @@ public class WorkerController {
 
         logger.debug("=== getPhotos ===");
         logger.debug("=== properties from 1C ===");
-        logger.debug("list = " + list);
+        logger.debug("list = " + list.getIds());
         logger.debug("==========================");
 
         InputStream in = null;
@@ -538,11 +539,13 @@ public class WorkerController {
 
                     Photo photo = new Photo ();
                     photo.setId (id);
-                    photo.setPhoto (buf);
+                    photo.setContent (Base64.getEncoder().encodeToString(buf));
+                    //photo.setPhoto (buf);
                     photos.getPhotos().add (photo);
 
                     logger.debug("=== file exists");
-                    logger.debug("=== photo's length = " + (buf != null ? buf.length : null));
+                    logger.debug("=== photo's length = " + (photo.getContent().length()));
+                    logger.debug("=== photo's content in Base64 = " + photo.getContent());
                 } else {
                     logger.debug ("=== file doesn't exist");
                 }

@@ -370,11 +370,11 @@ public class WorkerServiceImpl implements WorkerService {
                     Long size = file.length();
                     byte[] buf = new byte[size.intValue()];
                     in.read(buf);
-                    photo.setPhoto (buf);
+                    photo.setContent (new String(buf));
                     logger.debug("=== file exists");
                     logger.debug("=== photo's length = " + (buf != null ? buf.length : null));
                 } else {
-                    photo.setPhoto (null);
+                    photo.setContent (null);
                     logger.debug ("=== file doesn't exist");
                 }
                 photo.setId (id);

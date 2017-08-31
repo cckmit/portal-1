@@ -15,6 +15,7 @@ import ru.protei.portal.api.config.WSConfig;
 import ru.protei.portal.api.model.*;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class TestRestService {
@@ -387,8 +388,22 @@ public class TestRestService {
 
         Assert.assertNotNull ("Result getPhotos() is null!", pl);
         for (Photo p : pl.getPhotos()) {
-            Assert.assertNotNull ("Photo for id = " + p.getId () + " not exist!", p.getPhoto ());
-            logger.debug ("Photo for id = " + p.getId () + " exist. Length of photo = " + p.getPhoto ().length);
+            logger.debug ("Photo for id = " + p.getId () + " exist. Length of photo = " + p.getContent ().length());
+            logger.debug("Photo's content in Base64 = " + p.getContent());
+            String newFileName = WSConfig.getInstance ().getDirPhotos () + "new/" + p.getId() + ".jpg";
+            OutputStream out = null;
+            try {
+                out = new BufferedOutputStream(new FileOutputStream(newFileName));
+                out.write (Base64.getDecoder().decode(p.getContent()));
+                //out.write (p.getContent());
+            } catch (Exception e){
+                logger.error(e.getMessage(), e);
+            } finally {
+                try {
+                    if (out != null)
+                        out.close();
+                } catch (Exception e) {}
+            }
         }
     }
 
