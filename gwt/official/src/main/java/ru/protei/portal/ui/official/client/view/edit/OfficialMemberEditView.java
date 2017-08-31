@@ -78,15 +78,13 @@ public class OfficialMemberEditView extends Composite implements AbstractOfficia
         }
     }
 
-    private AbstractOfficialMemberEditActivity activity;
-
-    private static OfficialMemberEditActivityUiBinder ourUiBinder = GWT.create(OfficialMemberEditActivityUiBinder.class);
-
     @UiField
     Lang lang;
+
     @Inject
     @UiField(provided = true)
     CompanySelector company;
+
     @UiField
     TextBox lastName;
     @UiField
@@ -103,6 +101,10 @@ public class OfficialMemberEditView extends Composite implements AbstractOfficia
     Button saveButton;
     @UiField
     Button cancelButton;
+
+    private static OfficialMemberEditActivityUiBinder ourUiBinder = GWT.create(OfficialMemberEditActivityUiBinder.class);
+
+    private AbstractOfficialMemberEditActivity activity;
 
     interface OfficialMemberEditActivityUiBinder extends UiBinder<HTMLPanel, OfficialMemberEditView> {}
 }

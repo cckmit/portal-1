@@ -1,0 +1,32 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+    <property name="now" value="CURRENT_TIMESTAMP" dbms="mysql"/>
+
+    <changeSet author="serebryakov" id="31-08-2017 14:57">
+        <insert tableName="audit_type">
+            <column name="id" value="29"/>
+            <column name="code" value="OFFICIAL_MODIFY"/>
+            <column name="info" type="Изменение должностного лица"/>
+        </insert>
+        <insert tableName="audit_type">
+            <column name="id" value="30"/>
+            <column name="code" value="OFFICIAL_CREATE"/>
+            <column name="info" type="Создание должностного лица"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="serebryakov" id="31-08-2017 15:07">
+    <update tableName="audit_type">
+        <column name="info" value="Изменение должностного лица"/>
+        <where>id = 29</where>
+    </update>
+    <update tableName="audit_type">
+        <column name="info" value="Создание должностного лица"/>
+        <where>id = 30</where>
+    </update>
+    </changeSet>
+
+</databaseChangeLog>

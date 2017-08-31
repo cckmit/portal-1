@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.view.EntityOption;
 
 import java.io.Serializable;
@@ -7,7 +8,7 @@ import java.io.Serializable;
 /**
  * Должностное лицо
  */
-public class OfficialMember implements Serializable {
+public class OfficialMember extends AuditableObject {
 
     private Long id;
 
@@ -101,5 +102,10 @@ public class OfficialMember implements Serializable {
         officialMember.setPosition(caseMember.getMember().getPosition());
 
         return officialMember;
+    }
+
+    @Override
+    public String getAuditType() {
+        return "OfficialMember";
     }
 }

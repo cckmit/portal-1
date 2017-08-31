@@ -42,7 +42,10 @@ public enum En_AuditType {
 
     ATTACHMENT_REMOVE( 27 ),
 
-    EQUIPMENT_COPY( 28 );
+    EQUIPMENT_COPY( 28 ),
+
+    OFFICIAL_MODIFY( 29 ),
+    OFFICIAL_CREATE( 30);
 
     En_AuditType( int id ) {
         this.id = id;
