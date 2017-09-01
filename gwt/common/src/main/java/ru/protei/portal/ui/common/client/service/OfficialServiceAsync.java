@@ -21,5 +21,7 @@ public interface OfficialServiceAsync {
 
     void saveOfficialMember(OfficialMember officialMember, AsyncCallback<OfficialMember> asyncCallback);
 
-    void saveOfficial(Official official, AsyncCallback<Official> asyncCallback);
+    void updateOfficial(Official official, AsyncCallback<Official> asyncCallback);
+
+    void createOfficial(Official official, AsyncCallback<Long> asyncCallback);
 }

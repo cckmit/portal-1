@@ -4,17 +4,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.CoreResponse;
-import ru.protei.portal.core.model.dao.CaseLocationDAO;
-import ru.protei.portal.core.model.dao.CaseMemberDAO;
-import ru.protei.portal.core.model.dao.CaseObjectDAO;
-import ru.protei.portal.core.model.dao.PersonDAO;
+import ru.protei.portal.core.model.dao.*;
+import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.OfficialQuery;
-import ru.protei.portal.core.model.view.CaseShortView;
-import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
@@ -81,11 +77,9 @@ public class OfficialServiceImpl implements OfficialService {
     }
 
     @Override
-    public CoreResponse<Official> saveOfficial(AuthToken authToken, Official official) {
+    public CoreResponse<Official> updateOfficial(AuthToken authToken, Official official) {
         CaseObject caseObject = caseObjectDAO.get(official.getId());
         helper.fillAll(caseObject);
-        log.debug("caseObject " + caseObject.toString() );
-        log.debug("regionId " + official.getRegion().getId() );
         caseObject.setProductId(official.getProduct().getId());
         caseObject.setInfo(official.getInfo());
         caseObjectDAO.merge(caseObject);
@@ -93,8 +87,36 @@ public class OfficialServiceImpl implements OfficialService {
         location.setLocationId(official.getRegion().getId());
         caseLocationDAO.merge(location);
 
-
         return new CoreResponse<Official>().success(official);
+    }
+
+    @Override
+    public CoreResponse<Long> createOfficial(AuthToken authToken, Official official, Long creatorId) {
+        CaseType type = caseTypeDAO.get( new Long( En_CaseType.OFFICIAL.getId() ) );
+        Long id = type.getNextId();
+        type.setNextId( id + 1 );
+        caseTypeDAO.merge( type );
+
+        CaseObject caseObject = new CaseObject();
+        caseObject.setCaseType(En_CaseType.OFFICIAL);
+        caseObject.setCaseNumber( id );
+        caseObject.setCreated( new Date() );
+        caseObject.setName( "Новое должностное лицо" );
+        caseObject.setInfo( official.getInfo() );
+        caseObject.setProductId(official.getProduct().getId());
+        caseObject.setCreatorId( creatorId );
+        caseObject.setState(En_CaseState.CREATED);
+        Long caseId = caseObjectDAO.persist( caseObject );
+
+        CaseLocation caseLocation = new CaseLocation();
+        caseLocation.setCaseId(caseId);
+        caseLocation.setLocationId(official.getRegion().getId());
+        caseLocationDAO.persist(caseLocation);
+
+        caseObject.setLocations(Arrays.asList(caseLocation));
+        caseObjectDAO.merge(caseObject);
+
+        return new CoreResponse< Long >().success( caseId );
     }
 
 
@@ -139,6 +161,8 @@ public class OfficialServiceImpl implements OfficialService {
     PersonDAO personDAO;
     @Autowired
     CaseObjectDAO caseObjectDAO;
+    @Autowired
+    CaseTypeDAO caseTypeDAO;
     @Autowired
     CaseMemberDAO caseMemberDAO;
     @Autowired

@@ -81,10 +81,24 @@ public class OfficialServiceImpl implements ru.protei.portal.ui.common.client.se
     }
 
     @Override
-    public Official saveOfficial(Official official) throws RequestFailedException {
+    public Long createOfficial(Official official) throws RequestFailedException {
+
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+        Long creatorId = sessionService.getUserSessionDescriptor( httpServletRequest ).getPerson().getId();
+
+        CoreResponse< Long > response = officialService.createOfficial( descriptor.makeAuthToken(), official, creatorId );
+        if ( response.isError() ) {
+            throw new RequestFailedException( response.getStatus() );
+        }
+
+        return response.getData();
+    }
+
+    @Override
+    public Official updateOfficial(Official official) throws RequestFailedException {
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse<Official> response = officialService.saveOfficial( descriptor.makeAuthToken(), official );
+        CoreResponse<Official> response = officialService.updateOfficial( descriptor.makeAuthToken(), official );
         if ( response.isError() )
             throw new RequestFailedException( response.getStatus() );
 

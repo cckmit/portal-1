@@ -50,5 +50,12 @@ public interface OfficialService {
      */
     @Privileged({ En_Privilege.OFFICIAL_EDIT })
     @Auditable( En_AuditType.OFFICIAL_MODIFY)
-    CoreResponse<Official> saveOfficial(AuthToken authToken, Official official);
+    CoreResponse<Official> updateOfficial(AuthToken authToken, Official official);
+
+    /**
+     * Создает матрицу принятия решений
+     */
+    @Privileged({ En_Privilege.OFFICIAL_EDIT })
+    @Auditable( En_AuditType.OFFICIAL_MODIFY)
+    CoreResponse<Long> createOfficial(AuthToken authToken, Official official, Long creatorId);
 }

@@ -71,17 +71,32 @@ public abstract class OfficialEditActivity implements AbstractOfficialEditActivi
     @Override
     public void onSaveClicked() {
         applyChangesForOfficial();
-        officialService.saveOfficial(official, new AsyncCallback<Official>() {
-            @Override
-            public void onFailure(Throwable throwable) {
-                fireEvent(new NotifyEvents.Show(throwable.getMessage(), NotifyEvents.NotifyType.ERROR));
-            }
 
-            @Override
-            public void onSuccess(Official official) {
-                fireEvent( new Back() );
-            }
-        });
+        if (official.getId() != null) {
+            officialService.updateOfficial(official, new AsyncCallback<Official>() {
+                @Override
+                public void onFailure(Throwable throwable) {
+                    fireEvent(new NotifyEvents.Show(throwable.getMessage(), NotifyEvents.NotifyType.ERROR));
+                }
+
+                @Override
+                public void onSuccess(Official official) {
+                    fireEvent(new Back());
+                }
+            });
+        } else {
+            officialService.createOfficial(official, new AsyncCallback<Long>() {
+                @Override
+                public void onFailure(Throwable throwable) {
+                    fireEvent(new NotifyEvents.Show(throwable.getMessage(), NotifyEvents.NotifyType.ERROR));
+                }
+
+                @Override
+                public void onSuccess(Long aLong) {
+                    fireEvent(new Back());
+                }
+            });
+        }
 
     }
 
