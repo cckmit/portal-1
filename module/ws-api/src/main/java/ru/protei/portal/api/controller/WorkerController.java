@@ -426,36 +426,40 @@ public class WorkerController {
         }
     }
 
-    @RequestMapping(method = RequestMethod.PUT, value = "/update.photo", headers = "Content-Type=image/*")
-    public @ResponseBody ServiceResult updatePhoto(@RequestParam(name = "id") Long id, @RequestBody byte[] buf) {
+    @RequestMapping(method = RequestMethod.PUT, value = "/update.photo")
+    public @ResponseBody ServiceResult updatePhoto(@RequestBody Photo photo) {
 
         logger.debug("=== updatePhoto ===");
         logger.debug("=== properties from 1C ===");
-        logger.debug("personId = " + id);
-        logger.debug("photo's length = " + (buf != null ? buf.length : null));
+        logger.debug("personId = " + (photo == null ? null : photo.getId()));
+        logger.debug("photo's length = " + (photo == null || photo.getContent() == null ? null : photo.getContent().length()));
+        logger.debug("photo's content in Base64 = " + (photo == null ? null : photo.getContent()));
         logger.debug("==========================");
 
         OutputStream out = null;
 
         try {
 
-            if (id == null || id < 0)
-                return ServiceResult.failResult (En_ErrorCode.EMPTY_PER_ID.getCode (), En_ErrorCode.EMPTY_PER_ID.getMessage (), id);
+            if (photo == null)
+                return ServiceResult.failResult (En_ErrorCode.EMPTY_PHOTO.getCode (), En_ErrorCode.EMPTY_PHOTO.getMessage (), photo.getId());
 
-            if (buf == null)
-                return ServiceResult.failResult (En_ErrorCode.EMPTY_PHOTO.getCode (), En_ErrorCode.EMPTY_PHOTO.getMessage (), id);
+            if (photo.getId() < 0)
+                return ServiceResult.failResult (En_ErrorCode.EMPTY_PER_ID.getCode (), En_ErrorCode.EMPTY_PER_ID.getMessage (), photo.getId());
 
-            Person person = personDAO.get (id);
+            if (HelperFunc.isEmpty(photo.getContent()))
+                return ServiceResult.failResult (En_ErrorCode.EMPTY_PHOTO_CONTENT.getCode (), En_ErrorCode.EMPTY_PHOTO_CONTENT.getMessage (), photo.getId());
+
+            Person person = personDAO.get (photo.getId());
             if (person == null)
-                return ServiceResult.failResult (En_ErrorCode.UNKNOWN_PER.getCode (), En_ErrorCode.UNKNOWN_PER.getMessage (), id);
+                return ServiceResult.failResult (En_ErrorCode.UNKNOWN_PER.getCode (), En_ErrorCode.UNKNOWN_PER.getMessage (), photo.getId());
 
-            String fileName = WSConfig.getInstance ().getDirPhotos () + id + ".jpg";
+            String fileName = WSConfig.getInstance ().getDirPhotos () + photo.getId() + ".jpg";
             logger.debug("=== fileName = " + fileName);
 
             out = new BufferedOutputStream(new FileOutputStream(fileName));
-            out.write (buf);
+            out.write (Base64.getDecoder().decode(photo.getContent()));
 
-            return ServiceResult.successResult (id);
+            return ServiceResult.successResult (photo.getId());
 
         } catch (Exception e) {
             logger.error ("error while update photo", e);
@@ -466,50 +470,7 @@ public class WorkerController {
             } catch (Exception e) {}
         }
 
-        return ServiceResult.failResult (En_ErrorCode.NOT_UPDATE.getCode (), En_ErrorCode.NOT_UPDATE.getMessage (), id);
-    }
-
-    @RequestMapping(method = RequestMethod.PUT, value = "/update.foto")
-    public @ResponseBody ServiceResult updateFoto(@RequestParam(name = "id") Long id, @RequestBody byte[] base64string) {
-
-        logger.debug("=== updateFoto ===");
-        logger.debug("=== properties from 1C ===");
-        logger.debug("personId = " + id);
-        logger.debug("photo's length = " + (base64string != null ? base64string.length : null));
-        logger.debug("==========================");
-
-        OutputStream out = null;
-
-        try {
-
-            if (id == null || id < 0)
-                return ServiceResult.failResult (En_ErrorCode.EMPTY_PER_ID.getCode (), En_ErrorCode.EMPTY_PER_ID.getMessage (), id);
-
-            if (base64string == null)
-                return ServiceResult.failResult (En_ErrorCode.EMPTY_PHOTO.getCode (), En_ErrorCode.EMPTY_PHOTO.getMessage (), id);
-
-            Person person = personDAO.get (id);
-            if (person == null)
-                return ServiceResult.failResult (En_ErrorCode.UNKNOWN_PER.getCode (), En_ErrorCode.UNKNOWN_PER.getMessage (), id);
-
-            String fileName = WSConfig.getInstance ().getDirPhotos () + id + ".jpg";
-            logger.debug("=== fileName = " + fileName);
-
-            out = new BufferedOutputStream(new FileOutputStream(fileName));
-            out.write (Base64.getDecoder().decode(base64string));
-
-            return ServiceResult.successResult (id);
-
-        } catch (Exception e) {
-            logger.error ("error while update photo", e);
-        } finally {
-            try {
-                if (out != null)
-                    out.close();
-            } catch (Exception e) {}
-        }
-
-        return ServiceResult.failResult (En_ErrorCode.NOT_UPDATE.getCode (), En_ErrorCode.NOT_UPDATE.getMessage (), id);
+        return ServiceResult.failResult (En_ErrorCode.NOT_UPDATE.getCode (), En_ErrorCode.NOT_UPDATE.getMessage (), null);
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/get.photos")
@@ -540,7 +501,6 @@ public class WorkerController {
                     Photo photo = new Photo ();
                     photo.setId (id);
                     photo.setContent (Base64.getEncoder().encodeToString(buf));
-                    //photo.setPhoto (buf);
                     photos.getPhotos().add (photo);
 
                     logger.debug("=== file exists");

@@ -10,8 +10,8 @@ import java.util.Base64;
 @XmlRootElement(name = "photo")
 public class Photo {
 
-    private Long id = null;
-    private String content = null;
+    private Long id;
+    private String content;
 
     @XmlElement(name = "id")
     public Long getId() {

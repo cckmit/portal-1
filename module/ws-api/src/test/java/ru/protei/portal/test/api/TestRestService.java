@@ -291,43 +291,13 @@ public class TestRestService {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_XML));
-        headers.setContentType(MediaType.IMAGE_JPEG);
-        HttpEntity<byte[]> entity = new HttpEntity<>(buf, headers);
 
-        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(URI).queryParam("id", 6989);
-        String uriBuilder = builder.build().encode().toUriString();
+        Photo photo = new Photo();
+        photo.setId(6989L);
+        photo.setContent(Base64.getEncoder().encodeToString(buf));
+        HttpEntity<Photo> entity = new HttpEntity<>(photo, headers);
 
-        ResponseEntity<ServiceResult> response = restTemplate.exchange(uriBuilder, HttpMethod.PUT, entity, ServiceResult.class);
-        ServiceResult sr = response.getBody();
-
-        Assert.assertNotNull ("Result updatePhoto() is null!", sr);
-        Assert.assertEquals ("updatePhoto() is not success! " + sr.getErrInfo (), true, sr.isSuccess ());
-        Assert.assertTrue ("updatePhoto() must return not null identifer!", (sr.getId () != null && sr.getId () > 0));
-        logger.debug ("The photo of worker is updated. id = " + sr.getId ());
-    }
-
-    @Test
-    public void testUpdateFoto() {
-
-        Long id = new Long (155);
-        byte[] buf = read (id);
-        logger.debug ("personId = " + id);
-        logger.debug ("photo = " + buf);
-        logger.debug("photo's length = " + (buf != null ? buf.length : null));
-
-        String URI = BASE_URI + "update.foto";
-        RestTemplate restTemplate = new RestTemplate();
-        restTemplate.setMessageConverters(getMessageConverters());
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setAccept(Arrays.asList(MediaType.APPLICATION_XML));
-
-        HttpEntity<byte[]> entity = new HttpEntity<>(Base64.getEncoder().encode(buf), headers);
-
-        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(URI).queryParam("id", 6989);
-        String uriBuilder = builder.build().encode().toUriString();
-
-        ResponseEntity<ServiceResult> response = restTemplate.exchange(uriBuilder, HttpMethod.PUT, entity, ServiceResult.class);
+        ResponseEntity<ServiceResult> response = restTemplate.exchange(URI, HttpMethod.PUT, entity, ServiceResult.class);
         ServiceResult sr = response.getBody();
 
         Assert.assertNotNull ("Result updatePhoto() is null!", sr);

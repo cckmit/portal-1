@@ -26,7 +26,8 @@ public enum En_ErrorCode {
     NOT_CREATE("WE-10019", "Can not create."),
     NOT_UPDATE("WE-10020", "Can not update."),
     NOT_DELETE("WE-10021", "Can not delete."),
-    EMPTY_PHOTO("WE-10022", "Photo is empty.");
+    EMPTY_PHOTO("WE-10022", "Photo is empty."),
+    EMPTY_PHOTO_CONTENT("WE-10023", "Photo's content is empty.");
 
     En_ErrorCode (String code, String message) {
         this.code = code;
