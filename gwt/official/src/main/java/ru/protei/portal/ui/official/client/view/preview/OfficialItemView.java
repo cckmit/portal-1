@@ -47,6 +47,12 @@ public class OfficialItemView extends Composite implements AbstractOfficialItemV
         this.activity = activity;
     }
 
+    @Override
+    public void setButtonsVisibility(boolean isVisible) {
+        editButton.setVisible(isVisible);
+        removeButton.setVisible(isVisible);
+    }
+
     @UiHandler("editButton")
     public void onEditClicked(ClickEvent event) {
         event.preventDefault();
@@ -56,7 +62,6 @@ public class OfficialItemView extends Composite implements AbstractOfficialItemV
     }
 
     private AbstractOfficialItemActivity activity;
-
 
     @UiField
     DivElement name;
@@ -72,6 +77,9 @@ public class OfficialItemView extends Composite implements AbstractOfficialItemV
 
     @UiField
     Anchor editButton;
+
+    @UiField
+    Anchor removeButton;
 
     interface OfficialItemViewUiBinder extends UiBinder<HTMLPanel, OfficialItemView> {}
 

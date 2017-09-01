@@ -16,4 +16,6 @@ public interface AbstractOfficialItemView extends IsWidget {
     void setRelations(String relations);
 
     void setActivity(AbstractOfficialItemActivity activity);
+
+    void setButtonsVisibility(boolean isVisible);
 }

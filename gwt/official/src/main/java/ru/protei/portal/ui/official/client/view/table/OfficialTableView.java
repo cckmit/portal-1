@@ -14,10 +14,7 @@ import ru.brainworm.factory.widget.table.client.TableWidget;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Official;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
-import ru.protei.portal.ui.common.client.columns.AttachClickColumn;
-import ru.protei.portal.ui.common.client.columns.ClickColumn;
-import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
-import ru.protei.portal.ui.common.client.columns.EditClickColumn;
+import ru.protei.portal.ui.common.client.columns.*;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.official.client.activity.table.AbstractOfficialTableView;
@@ -28,20 +25,22 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Created by serebryakov on 21/08/17.
+ * Представление таблицы матриц принятий решений
  */
 public class OfficialTableView extends Composite implements AbstractOfficialTableView {
 
     @Inject
-    private void onInit(EditClickColumn<Official> editClickColumn) {
+    private void onInit(EditClickColumn<Official> editClickColumn, RemoveClickColumn<Official> removeClickColumn) {
         initWidget(ourUiBinder.createAndBindUi(this));
         this.editClickColumn = editClickColumn;
+        this.removeClickColumn = removeClickColumn;
         initTable();
     }
 
     private void initTable() {
         attachColumn = new AttachClickColumn<Official>(lang) {};
         editClickColumn.setPrivilege( En_Privilege.OFFICIAL_EDIT);
+        removeClickColumn.setPrivilege( En_Privilege.OFFICIAL_EDIT);
 
         ClickColumn<Official> productColumn = new ClickColumn<Official>() {
             @Override
@@ -122,15 +121,22 @@ public class OfficialTableView extends Composite implements AbstractOfficialTabl
         table.addColumn(numberEmployeesColumn.header, numberEmployeesColumn.values);
         table.addColumn(attachColumn.header, attachColumn.values);
         table.addColumn(editClickColumn.header, editClickColumn.values);
+        table.addColumn(removeClickColumn.header, removeClickColumn.values);
     }
 
     @Override
     public void setActivity(AbstractOfficialsTableActivity activity) {
         this.activity = activity;
+
         attachColumn.setAttachHandler(activity);
         editClickColumn.setColumnProvider( columnProvider );
         editClickColumn.setHandler( activity );
         editClickColumn.setEditHandler( activity );
+
+        removeClickColumn.setHandler( activity );
+        removeClickColumn.setRemoveHandler( activity );
+        removeClickColumn.setColumnProvider( columnProvider );
+
         columns.forEach( clickColumn -> {
             clickColumn.setHandler( activity );
             clickColumn.setColumnProvider( columnProvider );
@@ -141,16 +147,6 @@ public class OfficialTableView extends Composite implements AbstractOfficialTabl
     @Override
     public void setAnimation(TableAnimation animation) {
         animation.setContainers(tableContainer, previewContainer, filterContainer);
-    }
-
-    @Override
-    public void hideElements() {
-
-    }
-
-    @Override
-    public void showElements() {
-
     }
 
     @Override
@@ -166,16 +162,6 @@ public class OfficialTableView extends Composite implements AbstractOfficialTabl
     @Override
     public HasWidgets getFilterContainer() {
         return filterContainer;
-    }
-
-    @Override
-    public int getPageSize() {
-        return 0;
-    }
-
-    @Override
-    public int getPageCount() {
-        return 0;
     }
 
     @Override
@@ -202,6 +188,7 @@ public class OfficialTableView extends Composite implements AbstractOfficialTabl
     AttachClickColumn<Official> attachColumn;
 
     private EditClickColumn<Official> editClickColumn;
+    private RemoveClickColumn< Official > removeClickColumn;
 
     private ClickColumnProvider<Official> columnProvider = new ClickColumnProvider<Official>();
 

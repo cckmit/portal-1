@@ -144,14 +144,19 @@ public abstract class OfficialTableActivity
 
     }
 
-    private static String CREATE_ACTION;
+    @Override
+    public void onRemoveClicked(Official value) {
 
+    }
+
+    private static String CREATE_ACTION;
     @Inject
     TableAnimation animation;
     @Inject
     OfficialServiceAsync officialService;
     @Inject
     Lang lang;
+
     @Inject
     PolicyService policyService;
 

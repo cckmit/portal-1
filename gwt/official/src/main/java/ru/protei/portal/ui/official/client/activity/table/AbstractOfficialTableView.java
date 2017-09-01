@@ -6,22 +6,16 @@ import ru.protei.portal.core.model.ent.Official;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 
 /**
- * Created by serebryakov on 21/08/17.
+ * Абстрактное представление таблицы матриц принятий решений
  */
 public interface AbstractOfficialTableView extends IsWidget {
 
     void setActivity( AbstractOfficialsTableActivity activity );
     void setAnimation ( TableAnimation animation );
 
-    void hideElements();
-    void showElements();
     void clearRecords();
     HasWidgets getPreviewContainer ();
     HasWidgets getFilterContainer ();
-
-    int getPageSize();
-
-    int getPageCount();
 
     void addSeparator(String text);
 
