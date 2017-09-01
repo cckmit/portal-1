@@ -105,10 +105,15 @@ public abstract class OfficialPreviewActivity implements AbstractOfficialPreview
         view.showFullScreen(true);
     }
 
+    @Override
+    public void onAddCLicked() {
+        fireEvent(new OfficialMemberEvents.Edit(null, officialId));
+    }
+
 
     @Override
     public void onEditClicked(AbstractOfficialItemView itemView) {
-        fireEvent(new OfficialMemberEvents.Edit(itemViewToModel.get(itemView).getId()));
+        fireEvent(new OfficialMemberEvents.Edit(itemViewToModel.get(itemView).getId(), null));
     }
 
     private AppEvents.InitDetails initDetails;

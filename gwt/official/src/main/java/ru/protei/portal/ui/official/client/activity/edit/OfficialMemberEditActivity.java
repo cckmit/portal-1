@@ -31,6 +31,7 @@ public abstract class OfficialMemberEditActivity implements AbstractOfficialMemb
     public void onShowEdit(OfficialMemberEvents.Edit event) {
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
+        this.event = event;
 
         if(event.id == null) {
             officialMember = new OfficialMember();
@@ -70,18 +71,34 @@ public abstract class OfficialMemberEditActivity implements AbstractOfficialMemb
     @Override
     public void onSaveClicked() {
         applyChangesOfficialMember();
-        officialService.saveOfficialMember(officialMember, new AsyncCallback<OfficialMember>() {
-            @Override
-            public void onFailure(Throwable throwable) {
-                fireEvent(new NotifyEvents.Show(throwable.getMessage(), NotifyEvents.NotifyType.ERROR));
-            }
 
-            @Override
-            public void onSuccess(OfficialMember officialMember) {
-                fireEvent(new OfficialMemberEvents.ReloadPreview());
-                fireEvent( new Back() );
-            }
-        });
+        if (officialMember.getId() != null) {
+            officialService.saveOfficialMember(officialMember, new AsyncCallback<OfficialMember>() {
+                @Override
+                public void onFailure(Throwable throwable) {
+                    fireEvent(new NotifyEvents.Show(throwable.getMessage(), NotifyEvents.NotifyType.ERROR));
+                }
+
+                @Override
+                public void onSuccess(OfficialMember officialMember) {
+                    fireEvent(new OfficialMemberEvents.ReloadPreview());
+                    fireEvent(new Back());
+                }
+            });
+        } else {
+            officialService.createOfficialMember(officialMember, event.parentId, new AsyncCallback<Long>() {
+                @Override
+                public void onFailure(Throwable throwable) {
+                    fireEvent(new NotifyEvents.Show(throwable.getMessage(), NotifyEvents.NotifyType.ERROR));
+                }
+
+                @Override
+                public void onSuccess(Long result) {
+                    fireEvent(new OfficialMemberEvents.ReloadPreview());
+                    fireEvent(new Back());
+                }
+            });
+        }
     }
 
     private void applyChangesOfficialMember() {
@@ -98,6 +115,8 @@ public abstract class OfficialMemberEditActivity implements AbstractOfficialMemb
     public void onCancelClicked() {
         fireEvent(new Back());
     }
+
+    private OfficialMemberEvents.Edit event;
 
     private OfficialMember officialMember;
 

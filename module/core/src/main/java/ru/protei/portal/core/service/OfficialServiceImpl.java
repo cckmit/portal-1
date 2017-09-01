@@ -5,9 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.*;
-import ru.protei.portal.core.model.dict.En_CaseState;
-import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.OfficialQuery;
@@ -53,6 +51,36 @@ public class OfficialServiceImpl implements OfficialService {
     public CoreResponse<OfficialMember> getOfficialMember(AuthToken authToken, Long id) {
         CaseMember caseMember = caseMemberDAO.get(id);
         return new CoreResponse<OfficialMember>().success(OfficialMember.fromCaseMember(caseMember));
+    }
+
+    @Override
+    public CoreResponse<Long> createOfficialMember(AuthToken authToken, OfficialMember officialMember, Long parentId) {
+        CaseObject caseObject = caseObjectDAO.get(parentId);
+
+        CaseMember caseMember = new CaseMember();
+        caseMember.setCaseId(caseObject.getId());
+
+        Person person = new Person();
+        person.setAmplua(officialMember.getAmplua());
+        person.setRelations(officialMember.getRelations());
+        person.setCreated(new Date());
+        person.setCreator("Service");
+        person.setCompanyId(officialMember.getCompany().getId());
+        person.setSecondName(officialMember.getSecondName());
+        person.setFirstName(officialMember.getFirstName());
+        person.setLastName(officialMember.getLastName());
+        person.setPosition(officialMember.getPosition());
+        person.setGender(En_Gender.UNDEFINED);
+        person.setCreator("Service");
+        person.setDisplayName(officialMember.getLastName() + " " + officialMember.getFirstName()
+        + officialMember.getSecondName());
+        Long newPersonId = personDAO.persist(person);
+
+        caseMember.setMemberId(newPersonId);
+        caseMember.setRole(En_DevUnitPersonRoleType.DEPLOY_MANAGER);
+        caseMemberDAO.persist(caseMember);
+
+        return new CoreResponse<Long>().success(null);
     }
 
     @Override

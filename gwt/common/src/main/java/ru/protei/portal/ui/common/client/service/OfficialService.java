@@ -23,6 +23,8 @@ public interface OfficialService extends RemoteService {
 
     OfficialMember getOfficialMember(Long id) throws RequestFailedException;
 
+    Long createOfficialMember(OfficialMember officialMember, Long parentId) throws RequestFailedException;
+
     OfficialMember saveOfficialMember(OfficialMember officialMember) throws RequestFailedException;
 
     Long createOfficial(Official official) throws RequestFailedException;

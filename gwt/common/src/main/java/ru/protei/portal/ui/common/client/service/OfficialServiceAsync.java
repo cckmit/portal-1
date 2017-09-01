@@ -24,4 +24,6 @@ public interface OfficialServiceAsync {
     void updateOfficial(Official official, AsyncCallback<Official> asyncCallback);
 
     void createOfficial(Official official, AsyncCallback<Long> asyncCallback);
+
+    void createOfficialMember(OfficialMember officialMember, Long parentId, AsyncCallback<Long> asyncCallback);
 }

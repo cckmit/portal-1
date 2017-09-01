@@ -32,10 +32,13 @@
 
             <fieldset class="header">
                 <legend><ui:text from="{lang.officialFaces}"/></legend>
-                <div class="form-group local-search col-xs-5" style="position: relative">
-                    <span class="icon local-search-icon" style="top: 4px"></span>
-                    <g:TextBox ui:field="name" styleName="input-field"/>
-                </div>
+                <!--<div class="form-group local-search col-xs-5" style="position: relative">-->
+                    <!--<span class="icon local-search-icon" style="top: 4px"></span>-->
+                    <!--<g:TextBox ui:field="name" styleName="input-field"/>-->
+                <!--</div>-->
+                <g:Button ui:field="addButton" styleName="btn btn-white">
+                    <ui:text from="{lang.buttonAdd}"/>
+                </g:Button>
                 <g:HTMLPanel ui:field="membersContainer"></g:HTMLPanel>
             </fieldset>
 

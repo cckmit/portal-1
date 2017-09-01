@@ -39,6 +39,13 @@ public interface OfficialService {
     CoreResponse<OfficialMember> getOfficialMember(AuthToken authToken, Long id);
 
     /**
+     * Создает должностное лицо
+     */
+    @Privileged({ En_Privilege.OFFICIAL_EDIT })
+    @Auditable( En_AuditType.OFFICIAL_MODIFY)
+    CoreResponse<Long> createOfficialMember(AuthToken authToken, OfficialMember officialMember, Long parentId);
+
+    /**
      * Сохраняет должностное лицо
      */
     @Privileged({ En_Privilege.OFFICIAL_EDIT })

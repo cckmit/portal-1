@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.events;
 
 import com.google.gwt.user.client.ui.HasWidgets;
+import ru.brainworm.factory.context.client.annotation.Omit;
 import ru.brainworm.factory.context.client.annotation.Url;
 import ru.protei.portal.core.model.ent.OfficialMember;
 
@@ -30,12 +31,17 @@ public class OfficialMemberEvents {
     public static class Edit {
         public Long id;
 
+        @Omit
+        public Long parentId;
+
         public Edit() {
             this.id = null;
+            this.parentId = null;
         }
 
-        public Edit(Long id) {
+        public Edit(Long id, Long parentId) {
             this.id = id;
+            this.parentId = parentId;
         }
     }
 

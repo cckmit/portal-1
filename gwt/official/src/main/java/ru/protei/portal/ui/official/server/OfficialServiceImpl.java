@@ -69,6 +69,19 @@ public class OfficialServiceImpl implements ru.protei.portal.ui.common.client.se
     }
 
     @Override
+    public Long createOfficialMember(OfficialMember officialMember, Long parentId) throws RequestFailedException {
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
+        CoreResponse< Long > response = officialService.createOfficialMember( descriptor.makeAuthToken(), officialMember, parentId);
+        if ( response.isError() ) {
+            throw new RequestFailedException( response.getStatus() );
+        }
+
+        return response.getData();
+
+    }
+
+    @Override
     public OfficialMember saveOfficialMember(OfficialMember officialMember) throws RequestFailedException {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();

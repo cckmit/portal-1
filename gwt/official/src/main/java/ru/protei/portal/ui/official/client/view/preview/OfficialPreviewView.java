@@ -21,7 +21,7 @@ public class OfficialPreviewView extends Composite implements AbstractOfficialPr
 
     public OfficialPreviewView() {
         initWidget(ourUiBinder.createAndBindUi(this));
-        name.getElement().setPropertyString( "placeholder", lang.officialPreviewSearch() );
+//        name.getElement().setPropertyString( "placeholder", lang.officialPreviewSearch() );
     }
 
     @Override
@@ -78,6 +78,14 @@ public class OfficialPreviewView extends Composite implements AbstractOfficialPr
         }
     }
 
+    @UiHandler("addButton")
+    public void onAddClicked(ClickEvent event) {
+        if (activity != null ) {
+            activity.onAddCLicked();
+        }
+    }
+
+
     private AbstractOfficialPreviewActivity activity;
 
     @UiField
@@ -94,14 +102,16 @@ public class OfficialPreviewView extends Composite implements AbstractOfficialPr
     SpanElement product;
     @UiField
     SpanElement creationDate;
-    @UiField
-    TextBox name;
+//    @UiField
+//    TextBox name;
     @UiField
     DivElement info;
     @UiField
     HTMLPanel membersContainer;
     @UiField
     HTMLPanel commentsContainer;
+    @UiField
+    Button addButton;
 
     private static OfficialPreviewViewUiBinder ourUiBinder = GWT.create(OfficialPreviewViewUiBinder.class);
 
