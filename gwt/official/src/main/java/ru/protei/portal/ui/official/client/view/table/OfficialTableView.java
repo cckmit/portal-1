@@ -18,7 +18,7 @@ import ru.protei.portal.ui.common.client.columns.*;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.official.client.activity.table.AbstractOfficialTableView;
-import ru.protei.portal.ui.official.client.activity.table.AbstractOfficialsTableActivity;
+import ru.protei.portal.ui.official.client.activity.table.AbstractOfficialTableActivity;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -125,7 +125,7 @@ public class OfficialTableView extends Composite implements AbstractOfficialTabl
     }
 
     @Override
-    public void setActivity(AbstractOfficialsTableActivity activity) {
+    public void setActivity(AbstractOfficialTableActivity activity) {
         this.activity = activity;
 
         attachColumn.setAttachHandler(activity);
@@ -178,7 +178,7 @@ public class OfficialTableView extends Composite implements AbstractOfficialTabl
         table.addRow(official);
     }
 
-    private AbstractOfficialsTableActivity activity;
+    private AbstractOfficialTableActivity activity;
 
 
     private List<ClickColumn> columns = new ArrayList<ClickColumn>();

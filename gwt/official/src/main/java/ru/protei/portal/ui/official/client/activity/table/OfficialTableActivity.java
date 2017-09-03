@@ -7,6 +7,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
+import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.Official;
 import ru.protei.portal.core.model.query.OfficialQuery;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -14,7 +15,10 @@ import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.AttachmentService;
+import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
 import ru.protei.portal.ui.common.client.service.OfficialServiceAsync;
+import ru.protei.portal.ui.common.client.widget.attachment.popup.AttachPopup;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.official.client.activity.filter.AbstractOfficialFilterActivity;
 import ru.protei.portal.ui.official.client.activity.filter.AbstractOfficialFilterView;
@@ -27,7 +31,7 @@ import java.util.Map;
  * Активность таблицы должностных лиц
  */
 public abstract class OfficialTableActivity
-        implements AbstractOfficialsTableActivity, AbstractOfficialFilterActivity, Activity {
+        implements AbstractOfficialTableActivity, AbstractOfficialFilterActivity, Activity {
 
     @PostConstruct
     public void onInit() {
@@ -42,6 +46,11 @@ public abstract class OfficialTableActivity
     @Override
     public void onEditClicked(Official value) {
         fireEvent(new OfficialEvents.Edit(value.getId()));
+    }
+
+    @Override
+    public void updateRow(Long officialId) {
+
     }
 
     @Event
@@ -141,7 +150,20 @@ public abstract class OfficialTableActivity
 
     @Override
     public void onAttachClicked(Official value, IsWidget widget) {
+        attachmentService.getAttachmentsByCaseId(value.getId(), new RequestCallback<List<Attachment>>() {
+            @Override
+            public void onError(Throwable throwable) {
+                fireEvent( new NotifyEvents.Show( lang.attachmentsNotLoaded(), NotifyEvents.NotifyType.ERROR ) );
+            }
 
+            @Override
+            public void onSuccess(List<Attachment> list) {
+                if(!list.isEmpty()) {
+                    attachPopup.fill(list);
+                    attachPopup.showNear(widget);
+                }
+            }
+        });
     }
 
     @Override
@@ -150,6 +172,11 @@ public abstract class OfficialTableActivity
     }
 
     private static String CREATE_ACTION;
+
+    @Inject
+    AttachPopup attachPopup;
+    @Inject
+    AttachmentServiceAsync attachmentService;
     @Inject
     TableAnimation animation;
     @Inject

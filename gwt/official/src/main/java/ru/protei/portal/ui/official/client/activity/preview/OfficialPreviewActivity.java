@@ -7,16 +7,23 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.Official;
 import ru.protei.portal.core.model.ent.OfficialMember;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.ui.common.client.common.AttachmentCollection;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.AppEvents;
+import ru.protei.portal.ui.common.client.events.IssueEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.OfficialMemberEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
 import ru.protei.portal.ui.common.client.service.OfficialServiceAsync;
+import ru.protei.portal.ui.common.client.widget.uploader.FileUploader;
+import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.official.client.OfficialUtils;
+import ru.protei.portal.ui.official.client.activity.table.OfficialTableActivity;
 
 import java.util.HashMap;
 import java.util.List;
@@ -30,6 +37,16 @@ public abstract class OfficialPreviewActivity implements AbstractOfficialPreview
     @PostConstruct
     public void onInit() {
         view.setActivity(this);
+        view.setFileUploadHandler(new FileUploader.FileUploadHandler() {
+            @Override
+            public void onSuccess(Attachment attachment) {
+                attachmentCollection.addAttachment(attachment);
+            }
+            @Override
+            public void onError() {
+                fireEvent(new NotifyEvents.Show(lang.uploadFileError(), NotifyEvents.NotifyType.ERROR));
+            }
+        });
     }
 
     @Event
@@ -68,6 +85,19 @@ public abstract class OfficialPreviewActivity implements AbstractOfficialPreview
                 fillView( official );
             }
         } );
+
+        attachmentService.getAttachmentsByCaseId(officialId, new RequestCallback<List<Attachment>>() {
+            @Override
+            public void onError(Throwable throwable) {
+                fireEvent( new NotifyEvents.Show( lang.attachmentsNotLoaded(), NotifyEvents.NotifyType.ERROR ) );
+            }
+
+            @Override
+            public void onSuccess(List<Attachment> result) {
+                view.attachmentsContainer().clear();
+                result.forEach(attachmentCollection::addAttachment);
+            }
+        });
     }
 
     private void fillView(Official official) {
@@ -77,6 +107,7 @@ public abstract class OfficialPreviewActivity implements AbstractOfficialPreview
         view.setInfo(official.getInfo());
 
         fillMembers(OfficialUtils.createMembersByRegionsMap(official));
+        fireEvent( new IssueEvents.ShowComments( view.getCommentsContainer(), official.getId(), attachmentCollection ) );
 
     }
 
@@ -113,11 +144,34 @@ public abstract class OfficialPreviewActivity implements AbstractOfficialPreview
         fireEvent(new OfficialMemberEvents.Edit(null, officialId));
     }
 
+    @Override
+    public void removeAttachment(Attachment attachment) {
+        attachmentService.removeAttachmentEverywhere(attachment.getId(), new RequestCallback<Boolean>() {
+            @Override
+            public void onError(Throwable throwable) {
+                fireEvent(new NotifyEvents.Show(lang.removeFileError(), NotifyEvents.NotifyType.ERROR));
+            }
+
+            @Override
+            public void onSuccess(Boolean result) {
+                if(!result){
+                    onError(null);
+                    return;
+                }
+                attachmentCollection.removeAttachment(attachment);
+                fireEvent( new IssueEvents.ShowComments( view.getCommentsContainer(), officialId, attachmentCollection ) );
+            }
+        });
+    }
+
 
     @Override
     public void onEditClicked(AbstractOfficialItemView itemView) {
         fireEvent(new OfficialMemberEvents.Edit(itemViewToModel.get(itemView).getId(), null));
     }
+
+    @Inject
+    AttachmentServiceAsync attachmentService;
 
     @Inject
     PolicyService policyService;
@@ -132,7 +186,30 @@ public abstract class OfficialPreviewActivity implements AbstractOfficialPreview
     OfficialServiceAsync officialService;
 
     @Inject
+    OfficialTableActivity officialTableActivity;
+
+    @Inject
     Lang lang;
+
+    private AttachmentCollection attachmentCollection = new AttachmentCollection() {
+        @Override
+        public void addAttachment(Attachment attachment) {
+            if(isEmpty())
+                officialTableActivity.updateRow(officialId);
+
+            put(attachment.getId(), attachment);
+            view.attachmentsContainer().add(attachment);
+        }
+
+        @Override
+        public void removeAttachment(Attachment attachment) {
+            remove(attachment.getId());
+            view.attachmentsContainer().remove(attachment);
+
+            if(isEmpty())
+                officialTableActivity.updateRow(officialId);
+        }
+    };
 
     private AppEvents.InitDetails initDetails;
 

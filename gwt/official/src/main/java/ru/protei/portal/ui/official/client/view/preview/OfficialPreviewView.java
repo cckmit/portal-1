@@ -11,6 +11,10 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.OfficialMember;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
+import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
+import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
+import ru.protei.portal.ui.common.client.widget.uploader.FileUploader;
 import ru.protei.portal.ui.official.client.activity.preview.AbstractOfficialPreviewActivity;
 import ru.protei.portal.ui.official.client.activity.preview.AbstractOfficialPreviewView;
 
@@ -19,7 +23,8 @@ import ru.protei.portal.ui.official.client.activity.preview.AbstractOfficialPrev
  */
 public class OfficialPreviewView extends Composite implements AbstractOfficialPreviewView{
 
-    public OfficialPreviewView() {
+    @Inject
+    public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
 //        name.getElement().setPropertyString( "placeholder", lang.officialPreviewSearch() );
     }
@@ -69,6 +74,21 @@ public class OfficialPreviewView extends Composite implements AbstractOfficialPr
         return membersContainer;
     }
 
+    @Override
+    public HasAttachments attachmentsContainer() {
+        return attachmentContainer;
+    }
+
+    @Override
+    public HasWidgets getCommentsContainer() {
+        return commentsContainer;
+    }
+
+    @Override
+    public void setFileUploadHandler(FileUploader.FileUploadHandler handler) {
+        fileUploader.setFileUploadHandler(handler);
+    }
+
     @UiHandler( "fullScreen" )
     public void onFullScreenClicked ( ClickEvent event) {
         event.preventDefault();
@@ -83,6 +103,11 @@ public class OfficialPreviewView extends Composite implements AbstractOfficialPr
         if (activity != null ) {
             activity.onAddCLicked();
         }
+    }
+
+    @UiHandler("attachmentContainer")
+    public void attachmentContainerRemove(RemoveEvent event) {
+        activity.removeAttachment(event.getAttachment());
     }
 
 
@@ -110,8 +135,14 @@ public class OfficialPreviewView extends Composite implements AbstractOfficialPr
     HTMLPanel membersContainer;
     @UiField
     HTMLPanel commentsContainer;
+    @Inject
+    @UiField(provided = true)
+    AttachmentList attachmentContainer;
     @UiField
     Button addButton;
+    @Inject
+    @UiField
+    FileUploader fileUploader;
 
     private static OfficialPreviewViewUiBinder ourUiBinder = GWT.create(OfficialPreviewViewUiBinder.class);
 
