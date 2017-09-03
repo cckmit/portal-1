@@ -5,5 +5,7 @@ package ru.protei.portal.ui.official.client.activity.preview;
  */
 public interface AbstractOfficialItemActivity {
 
-    void onEditClicked(AbstractOfficialItemView officialItemView);
+    void onEditClicked(AbstractOfficialItemView itemView);
+
+    void onRemoveClicked(AbstractOfficialItemView itemView);
 }

@@ -13,10 +13,7 @@ import ru.protei.portal.core.model.ent.OfficialMember;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.AttachmentCollection;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
-import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.IssueEvents;
-import ru.protei.portal.ui.common.client.events.NotifyEvents;
-import ru.protei.portal.ui.common.client.events.OfficialMemberEvents;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
 import ru.protei.portal.ui.common.client.service.OfficialServiceAsync;
@@ -64,7 +61,7 @@ public abstract class OfficialPreviewActivity implements AbstractOfficialPreview
     }
 
     @Event
-    public void onReloadPreview(OfficialMemberEvents.ReloadPreview event) {
+    public void onReloadPreview(OfficialMemberEvents.ReloadPage event) {
         fillView(officialId);
     }
 
@@ -168,6 +165,25 @@ public abstract class OfficialPreviewActivity implements AbstractOfficialPreview
     @Override
     public void onEditClicked(AbstractOfficialItemView itemView) {
         fireEvent(new OfficialMemberEvents.Edit(itemViewToModel.get(itemView).getId(), null));
+    }
+
+    @Override
+    public void onRemoveClicked(AbstractOfficialItemView itemView) {
+        officialService.removeOfficialMember(itemViewToModel.get(itemView).getId(), new AsyncCallback<Boolean>() {
+            @Override
+            public void onFailure(Throwable throwable) {
+                fireEvent(new NotifyEvents.Show(lang.errOfficialMemberRemove(), NotifyEvents.NotifyType.ERROR));
+            }
+
+            @Override
+            public void onSuccess(Boolean result) {
+                if (!result) {
+                    fireEvent(new NotifyEvents.Show(lang.errOfficialMemberRemove(), NotifyEvents.NotifyType.ERROR));
+                    return;
+                }
+                fireEvent(new OfficialMemberEvents.ReloadPage());
+             }
+        });
     }
 
     @Inject

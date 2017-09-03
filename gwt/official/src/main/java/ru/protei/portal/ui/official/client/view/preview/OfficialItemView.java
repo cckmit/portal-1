@@ -61,6 +61,13 @@ public class OfficialItemView extends Composite implements AbstractOfficialItemV
         }
     }
 
+    @UiHandler("removeButton")
+    public void onRemoveClicked(ClickEvent event) {
+        if (activity != null) {
+            activity.onRemoveClicked(this);
+        }
+    }
+
     private AbstractOfficialItemActivity activity;
 
     @UiField

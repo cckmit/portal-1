@@ -30,4 +30,8 @@ public interface OfficialService extends RemoteService {
     Long createOfficial(Official official) throws RequestFailedException;
 
     Official updateOfficial(Official official) throws RequestFailedException;
+
+    boolean removeOfficial(Long id) throws RequestFailedException;
+
+    boolean removeOfficialMember(Long id) throws RequestFailedException;
 }

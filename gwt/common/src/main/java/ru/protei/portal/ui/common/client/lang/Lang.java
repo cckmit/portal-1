@@ -602,4 +602,8 @@ public interface Lang extends Messages, ContactItemLang {
     String officialAmplua();
 
     String selectOfficialCompany();
+
+    String errOfficialRemove();
+
+    String errOfficialMemberRemove();
 }

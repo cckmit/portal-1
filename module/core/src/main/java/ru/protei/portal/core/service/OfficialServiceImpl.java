@@ -147,6 +147,29 @@ public class OfficialServiceImpl implements OfficialService {
         return new CoreResponse< Long >().success( caseId );
     }
 
+    @Override
+    public CoreResponse<Boolean> removeOfficial(AuthToken authToken, Long id) {
+        CaseObject caseObject = caseObjectDAO.get(id);
+        helper.fillAll(caseObject);
+        for (CaseLocation location: caseObject.getLocations()){
+            caseLocationDAO.remove(location);
+        }
+
+        for (CaseMember member: caseObject.getMembers()) {
+            caseMemberDAO.remove(member);
+        }
+
+        boolean isRemoving = caseObjectDAO.remove(caseObject);
+        return new CoreResponse<Boolean>().success(isRemoving);
+    }
+
+    @Override
+    public CoreResponse<Boolean> removeOfficialMember(AuthToken authToken, Long id) {
+        boolean isRemoving = caseMemberDAO.removeByKey(id);
+
+        return new CoreResponse<Boolean>().success(isRemoving);
+    }
+
 
     private void iterateAllLocations( CaseObject official, Consumer< Location > handler ) {
         if ( official == null ) {

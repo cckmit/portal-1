@@ -118,6 +118,30 @@ public class OfficialServiceImpl implements ru.protei.portal.ui.common.client.se
         return response.getData();
     }
 
+    @Override
+    public boolean removeOfficial(Long id) throws RequestFailedException {
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
+        CoreResponse< Boolean > response = officialService.removeOfficial( descriptor.makeAuthToken(), id);
+        if ( response.isError() ) {
+            throw new RequestFailedException( response.getStatus() );
+        }
+
+        return response.getData();
+    }
+
+    @Override
+    public boolean removeOfficialMember(Long id) throws RequestFailedException {
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
+        CoreResponse< Boolean > response = officialService.removeOfficialMember( descriptor.makeAuthToken(), id);
+        if ( response.isError() ) {
+            throw new RequestFailedException( response.getStatus() );
+        }
+
+        return response.getData();
+    }
+
 
     @Autowired
     private ru.protei.portal.core.service.OfficialService officialService;

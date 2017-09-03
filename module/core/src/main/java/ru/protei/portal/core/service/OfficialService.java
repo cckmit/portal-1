@@ -65,4 +65,18 @@ public interface OfficialService {
     @Privileged({ En_Privilege.OFFICIAL_EDIT })
     @Auditable( En_AuditType.OFFICIAL_MODIFY)
     CoreResponse<Long> createOfficial(AuthToken authToken, Official official, Long creatorId);
+
+    /**
+     * Удаляет матрицу принятия решений
+     */
+    @Privileged({ En_Privilege.OFFICIAL_EDIT })
+    @Auditable( En_AuditType.OFFICIAL_MODIFY)
+    CoreResponse<Boolean> removeOfficial(AuthToken authToken, Long id);
+
+    /**
+     * Удаляет должностное лицо из матрицы принятия решений
+     */
+    @Privileged({ En_Privilege.OFFICIAL_EDIT })
+    @Auditable( En_AuditType.OFFICIAL_MODIFY)
+    CoreResponse<Boolean> removeOfficialMember(AuthToken authToken, Long id);
 }

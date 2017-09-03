@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.official.client.activity.table;
 
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -15,7 +16,6 @@ import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.AttachmentService;
 import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
 import ru.protei.portal.ui.common.client.service.OfficialServiceAsync;
 import ru.protei.portal.ui.common.client.widget.attachment.popup.AttachPopup;
@@ -77,6 +77,12 @@ public abstract class OfficialTableActivity
                 new ActionBarEvents.Clear()
         );
         requestTotalCount();
+    }
+
+
+    @Event
+    public void onReload(OfficialMemberEvents.ReloadPage event) {
+        onShow(new OfficialMemberEvents.Show());
     }
 
     @Event
@@ -168,7 +174,21 @@ public abstract class OfficialTableActivity
 
     @Override
     public void onRemoveClicked(Official value) {
+        officialService.removeOfficial(value.getId(), new AsyncCallback<Boolean>() {
+            @Override
+            public void onFailure(Throwable throwable) {
+                fireEvent( new NotifyEvents.Show( lang.errOfficialRemove(), NotifyEvents.NotifyType.ERROR ) );
+            }
 
+            @Override
+            public void onSuccess(Boolean result) {
+                if (!result) {
+                    fireEvent( new NotifyEvents.Show( lang.errOfficialRemove(), NotifyEvents.NotifyType.ERROR ) );
+                    return;
+                }
+                onShow(new OfficialMemberEvents.Show());
+            }
+        });
     }
 
     private static String CREATE_ACTION;

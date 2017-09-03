@@ -81,7 +81,7 @@ public abstract class OfficialMemberEditActivity implements AbstractOfficialMemb
 
                 @Override
                 public void onSuccess(OfficialMember officialMember) {
-                    fireEvent(new OfficialMemberEvents.ReloadPreview());
+                    fireEvent(new OfficialMemberEvents.ReloadPage());
                     fireEvent(new Back());
                 }
             });
@@ -94,7 +94,7 @@ public abstract class OfficialMemberEditActivity implements AbstractOfficialMemb
 
                 @Override
                 public void onSuccess(Long result) {
-                    fireEvent(new OfficialMemberEvents.ReloadPreview());
+                    fireEvent(new OfficialMemberEvents.ReloadPage());
                     fireEvent(new Back());
                 }
             });

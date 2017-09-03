@@ -45,6 +45,6 @@ public class OfficialMemberEvents {
         }
     }
 
-    public static class ReloadPreview {
+    public static class ReloadPage {
     }
 }
