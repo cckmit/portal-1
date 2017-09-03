@@ -82,7 +82,7 @@ public abstract class OfficialTableActivity
 
     @Event
     public void onReload(OfficialMemberEvents.ReloadPage event) {
-        onShow(new OfficialMemberEvents.Show());
+        requestTotalCount();
     }
 
     @Event
@@ -186,7 +186,7 @@ public abstract class OfficialTableActivity
                     fireEvent( new NotifyEvents.Show( lang.errOfficialRemove(), NotifyEvents.NotifyType.ERROR ) );
                     return;
                 }
-                onShow(new OfficialMemberEvents.Show());
+                requestTotalCount();
             }
         });
     }
