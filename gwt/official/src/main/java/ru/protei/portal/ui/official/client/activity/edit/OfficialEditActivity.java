@@ -13,6 +13,7 @@ import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.OfficialEvents;
+import ru.protei.portal.ui.common.client.events.OfficialMemberEvents;
 import ru.protei.portal.ui.common.client.service.OfficialServiceAsync;
 
 /**
@@ -82,6 +83,7 @@ public abstract class OfficialEditActivity implements AbstractOfficialEditActivi
                 @Override
                 public void onSuccess(Official official) {
                     fireEvent(new Back());
+                    fireEvent(new OfficialMemberEvents.ReloadPage());
                 }
             });
         } else {
