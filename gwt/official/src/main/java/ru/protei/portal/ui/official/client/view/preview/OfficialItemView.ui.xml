@@ -21,7 +21,7 @@
             </div>
 
             <div class="col-xs-1">
-                <g:Anchor ui:field="editButton" href="#" styleName="fa fa-lg fa-pencil-square-o" title="Редактирование"></g:Anchor>
+                <g:Anchor ui:field="editButton" href="#" styleName="fa fa-lg ion-compose" title="Редактирование"></g:Anchor>
             </div>
             <div class="col-xs-1">
                 <g:Anchor ui:field="removeButton" href="#" styleName="fa fa-lg fa-trash-o" title="Удаление"></g:Anchor>

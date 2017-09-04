@@ -20,7 +20,7 @@
                             <ui:text from="{lang.officialTableInfo}"/>
                         </label>
                         <div class="panelField verifiable">
-                            <g:TextBox ui:field="info" styleName="input-field"></g:TextBox>
+                            <g:TextArea ui:field="info" styleName="input-field description"></g:TextArea>
                         </div>
                     </div>
                 </div>

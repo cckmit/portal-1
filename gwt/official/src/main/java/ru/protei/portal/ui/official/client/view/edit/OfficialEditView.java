@@ -73,7 +73,7 @@ public class OfficialEditView extends Composite implements AbstractOfficialEditV
     ProductButtonSelector product;
 
     @UiField
-    TextBox info;
+    TextArea info;
     @UiField
     Button saveButton;
     @UiField
