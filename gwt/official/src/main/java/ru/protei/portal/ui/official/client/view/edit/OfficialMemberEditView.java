@@ -9,8 +9,8 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.ui.common.client.lang.En_PersonRoleTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.official.client.activity.edit.AbstractOfficialMemberEditView;
@@ -88,12 +88,15 @@ public class OfficialMemberEditView extends Composite implements AbstractOfficia
     private void fillAmpluaOptions() {
         amplua.addOption( lang.selectOfficialAmplua(), null );
         for (En_DevUnitPersonRoleType roleType: En_DevUnitPersonRoleType.values()) {
-            amplua.addOption(roleType.name(), roleType);
+            amplua.addOption(roleTypeLang.getName(roleType), roleType);
         }
     }
 
     @UiField
     Lang lang;
+
+    @Inject
+    En_PersonRoleTypeLang roleTypeLang;
 
     @Inject
     @UiField(provided = true)

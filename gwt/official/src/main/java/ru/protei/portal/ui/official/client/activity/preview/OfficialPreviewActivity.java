@@ -14,6 +14,7 @@ import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.AttachmentCollection;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.*;
+import ru.protei.portal.ui.common.client.lang.En_PersonRoleTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
 import ru.protei.portal.ui.common.client.service.OfficialServiceAsync;
@@ -118,7 +119,7 @@ public abstract class OfficialPreviewActivity implements AbstractOfficialPreview
                 itemView.setActivity(this);
                 itemView.setName(member.getLastName() + " " +
                 member.getFirstName() + " " + member.getSecondName());
-                itemView.setAmplua(member.getAmplua().name());
+                itemView.setAmplua(roleTypeLang.getName(member.getAmplua()));
                 itemView.setPosition(member.getPosition());
                 itemView.setRelations(member.getRelations());
                 itemView.setButtonsVisibility(policyService.hasPrivilegeFor(En_Privilege.OFFICIAL_EDIT));
@@ -206,6 +207,9 @@ public abstract class OfficialPreviewActivity implements AbstractOfficialPreview
 
     @Inject
     Lang lang;
+
+    @Inject
+    En_PersonRoleTypeLang roleTypeLang;
 
     private AttachmentCollection attachmentCollection = new AttachmentCollection() {
         @Override

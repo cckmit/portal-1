@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.lang;
 
 import com.google.gwt.i18n.client.Messages;
+import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
 import ru.protei.portal.core.model.dict.lang.ContactItemLang;
 
 /**
@@ -610,4 +611,14 @@ public interface Lang extends Messages, ContactItemLang {
     String officialComment();
 
     String selectOfficialAmplua();
+
+    String personHeadManager();
+
+    String personDeployManager();
+
+    String personSalesManager();
+
+    String personAdsManager();
+
+    String personArtManager();
 }
