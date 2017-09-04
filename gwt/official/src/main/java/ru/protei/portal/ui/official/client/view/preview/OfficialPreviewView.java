@@ -127,8 +127,6 @@ public class OfficialPreviewView extends Composite implements AbstractOfficialPr
     SpanElement product;
     @UiField
     SpanElement creationDate;
-//    @UiField
-//    TextBox name;
     @UiField
     DivElement info;
     @UiField
@@ -139,7 +137,7 @@ public class OfficialPreviewView extends Composite implements AbstractOfficialPr
     @UiField(provided = true)
     AttachmentList attachmentContainer;
     @UiField
-    Button addButton;
+    InlineHTML addButton;
     @Inject
     @UiField
     FileUploader fileUploader;

@@ -1813,6 +1813,7 @@ ul.privileges {
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
+  word-break: break-word;
 }
 
 .truncate-users:hover {

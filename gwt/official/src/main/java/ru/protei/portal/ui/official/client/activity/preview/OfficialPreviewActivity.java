@@ -51,6 +51,7 @@ public abstract class OfficialPreviewActivity implements AbstractOfficialPreview
     public void onShow(OfficialMemberEvents.ShowPreview event) {
         event.parent.clear();
         event.parent.add(view.asWidget());
+        attachmentCollection.clear();
         this.officialId = event.id;
         fillView(officialId);
         view.showFullScreen(false);

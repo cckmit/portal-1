@@ -29,4 +29,29 @@
     </update>
     </changeSet>
 
+    <changeSet author="serebryakov" id="04-09-2017 22:21">
+        <addColumn tableName="person">
+            <column name="relations" type="VARCHAR(128)"/>
+            <column name="comments" type="VARCHAR(500)"/>
+        </addColumn>
+
+        <insert tableName="dev_unit_mrole">
+            <column name="ID" value="3"/>
+            <column name="UROLE_CODE" value="ads_manager"/>
+            <column name="UROLE_INFO" value="Менеджер по рекламе"/>
+        </insert>
+
+        <insert tableName="dev_unit_mrole">
+            <column name="ID" value="4"/>
+            <column name="UROLE_CODE" value="sales_manager"/>
+            <column name="UROLE_INFO" value="Менеджер по продажам"/>
+        </insert>
+
+        <insert tableName="dev_unit_mrole">
+            <column name="ID" value="5"/>
+            <column name="UROLE_CODE" value="art_manager"/>
+            <column name="UROLE_INFO" value="Арт-менеджер"/>
+        </insert>
+    </changeSet>
+
 </databaseChangeLog>
