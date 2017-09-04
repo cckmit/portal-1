@@ -18,4 +18,6 @@ public interface AbstractOfficialItemView extends IsWidget {
     void setActivity(AbstractOfficialItemActivity activity);
 
     void setButtonsVisibility(boolean isVisible);
+
+    void setComments(String comments);
 }

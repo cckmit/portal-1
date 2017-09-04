@@ -3,27 +3,34 @@
 
     <g:HTMLPanel styleName="official-item">
 
+        <div class="from-group">
             <div class="col-xs-5">
                 <div ui:field="name" class="user-official"></div>
-                <div class="truncate-holder">
-                    <p ui:field="relations" class="truncate-users">
+                <div>
+                    <p ui:field="amplua" class="truncate"></p>
+                </div>
+            </div>
+
+            <div class="col-xs-6">
+                <div ui:field="position" class="user-dolznost"></div>
+                <div class="col-xs-12">
+                    <p ui:field="comments" class="truncate-users">
                     </p>
                 </div>
 
-
             </div>
-            <div class="col-xs-6">
-                <div ui:field="position" class="user-dolznost"></div>
-                    <div class="truncate-holder">
-                        <p ui:field="amplua" class="truncate"></p>
-                    </div>
-                </div>
 
             <div class="col-xs-1">
                 <g:Anchor ui:field="editButton" href="#" styleName="fa fa-lg fa-pencil-square-o" title="Редактирование"></g:Anchor>
             </div>
             <div class="col-xs-1">
                 <g:Anchor ui:field="removeButton" href="#" styleName="fa fa-lg fa-trash-o" title="Удаление"></g:Anchor>
+            </div>
+        </div>
+            <div class="form-group">
+            <div class="col-xs-12">
+                <p ui:field="relations" style="margin-top: 2px; font-size: 13px"></p>
+            </div>
             </div>
 
     </g:HTMLPanel>

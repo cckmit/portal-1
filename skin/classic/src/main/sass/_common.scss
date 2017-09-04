@@ -1808,8 +1808,8 @@ ul.privileges {
 
 .truncate-users {
   font-size: 12px;
-  width: 235px;
-  margin-top: 0px;
+  width: 330px;
+  margin-top: 7px;
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
@@ -1817,9 +1817,8 @@ ul.privileges {
 
 .truncate-users:hover {
   position: absolute;
-  width: 75%;
+  width: 85%;
   white-space: inherit;
-  padding: 5px;
   background-color: white;
   z-index: 1;
 }
@@ -1835,7 +1834,7 @@ ul.privileges {
 .truncate {
   font-size: 12px;
   width: 375px;
-  margin-top: 5px;
+  margin-top: 3px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1845,7 +1844,6 @@ ul.privileges {
   position: absolute;
   width: 95%;
   white-space: inherit;
-  padding: 5px;
   background-color: white;
   z-index: 1;
 }

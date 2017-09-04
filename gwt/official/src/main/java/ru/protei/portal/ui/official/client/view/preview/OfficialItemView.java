@@ -43,6 +43,11 @@ public class OfficialItemView extends Composite implements AbstractOfficialItemV
     }
 
     @Override
+    public void setComments(String comments) {
+        this.comments.setInnerText(comments);
+    }
+
+    @Override
     public void setActivity(AbstractOfficialItemActivity activity) {
         this.activity = activity;
     }
@@ -87,6 +92,9 @@ public class OfficialItemView extends Composite implements AbstractOfficialItemV
 
     @UiField
     Anchor removeButton;
+
+    @UiField
+    ParagraphElement comments;
 
     interface OfficialItemViewUiBinder extends UiBinder<HTMLPanel, OfficialItemView> {}
 

@@ -69,6 +69,7 @@ public class OfficialServiceImpl implements OfficialService {
         person.setFirstName(officialMember.getFirstName());
         person.setLastName(officialMember.getLastName());
         person.setPosition(officialMember.getPosition());
+        person.setComments(officialMember.getComments());
         person.setGender(En_Gender.UNDEFINED);
         person.setCreator("Service");
         person.setDisplayName(officialMember.getLastName() + " " + officialMember.getFirstName()
@@ -160,6 +161,12 @@ public class OfficialServiceImpl implements OfficialService {
             caseMemberDAO.remove(member);
         }
 
+        List<CaseComment> caseComments = caseCommentDAO.getCaseComments(caseObject.getId());
+        for (CaseComment comment: caseComments) {
+            caseCommentDAO.remove(comment);
+        }
+
+
         boolean isRemoving = caseObjectDAO.remove(caseObject);
         return new CoreResponse<Boolean>().success(isRemoving);
     }
@@ -219,6 +226,8 @@ public class OfficialServiceImpl implements OfficialService {
     CaseMemberDAO caseMemberDAO;
     @Autowired
     CaseLocationDAO caseLocationDAO;
+    @Autowired
+    CaseCommentDAO caseCommentDAO;
     @Autowired
     JdbcManyRelationsHelper helper;
 
