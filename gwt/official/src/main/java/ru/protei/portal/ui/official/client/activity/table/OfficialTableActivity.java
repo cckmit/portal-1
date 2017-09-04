@@ -188,6 +188,7 @@ public abstract class OfficialTableActivity
                     return;
                 }
                 requestTotalCount();
+                showPreview(null);
             }
         });
     }
