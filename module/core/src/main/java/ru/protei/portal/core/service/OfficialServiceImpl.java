@@ -93,6 +93,7 @@ public class OfficialServiceImpl implements OfficialService {
         person.setLastName(officialMember.getLastName());
         person.setSecondName(officialMember.getSecondName());
         person.setRelations(officialMember.getRelations());
+        person.setComments(officialMember.getComments());
 
         boolean isUpdatedPerson = personDAO.merge(person);
 

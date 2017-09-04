@@ -608,4 +608,6 @@ public interface Lang extends Messages, ContactItemLang {
     String errOfficialMemberRemove();
 
     String officialComment();
+
+    String selectOfficialAmplua();
 }

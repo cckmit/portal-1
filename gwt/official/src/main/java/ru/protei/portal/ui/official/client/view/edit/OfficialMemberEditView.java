@@ -25,11 +25,7 @@ public class OfficialMemberEditView extends Composite implements AbstractOfficia
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         company.setDefaultValue( lang.selectOfficialCompany() );
-        amplua.addOption( En_DevUnitPersonRoleType.DEPLOY_MANAGER.name(), null );
-        amplua.setValue(null);
-        for (En_DevUnitPersonRoleType roleType: En_DevUnitPersonRoleType.values()) {
-            amplua.addOption(roleType.name(), roleType);
-        }
+        fillAmpluaOptions();
 
     }
 
@@ -64,20 +60,16 @@ public class OfficialMemberEditView extends Composite implements AbstractOfficia
     }
 
     @Override
-    public HasValue<En_DevUnitPersonRoleType> amplua() {
-        return amplua;
-    }
+    public HasValue<En_DevUnitPersonRoleType> amplua() { return amplua; }
 
-//    @Override
-//    public HasValue<String> comments() {
-//        return comments;
-//    }
-
+    @Override
+    public HasValue<String> comments() { return comments; }
 
     @Override
     public void setActivity(AbstractOfficialMemberEditActivity activity) {
         this.activity = activity;
     }
+
 
     @UiHandler("saveButton")
     public void onSaveButtonClicked(ClickEvent event) {
@@ -90,6 +82,13 @@ public class OfficialMemberEditView extends Composite implements AbstractOfficia
     public void onCancelButtonClicked(ClickEvent event) {
         if (activity != null) {
             activity.onCancelClicked();
+        }
+    }
+
+    private void fillAmpluaOptions() {
+        amplua.addOption( lang.selectOfficialAmplua(), null );
+        for (En_DevUnitPersonRoleType roleType: En_DevUnitPersonRoleType.values()) {
+            amplua.addOption(roleType.name(), roleType);
         }
     }
 
@@ -117,6 +116,8 @@ public class OfficialMemberEditView extends Composite implements AbstractOfficia
     Button saveButton;
     @UiField
     Button cancelButton;
+    @UiField
+    TextArea comments;
 
     private static OfficialMemberEditActivityUiBinder ourUiBinder = GWT.create(OfficialMemberEditActivityUiBinder.class);
 

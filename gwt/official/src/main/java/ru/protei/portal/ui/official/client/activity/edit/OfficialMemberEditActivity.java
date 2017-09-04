@@ -109,7 +109,7 @@ public abstract class OfficialMemberEditActivity implements AbstractOfficialMemb
         officialMember.setPosition(view.position().getValue());
         officialMember.setAmplua(view.amplua().getValue());
         officialMember.setRelations(view.relations().getValue());
-//        officialMember.setComments(view.comments().getValue());
+        officialMember.setComments(view.comments().getValue());
     }
 
     @Override

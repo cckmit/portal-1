@@ -24,7 +24,7 @@ public interface AbstractOfficialMemberEditView extends IsWidget {
 
     HasValue<En_DevUnitPersonRoleType> amplua();
 
-//    HasValue<String> comments();
+    HasValue<String> comments();
 
     void setActivity(AbstractOfficialMemberEditActivity activity);
 }

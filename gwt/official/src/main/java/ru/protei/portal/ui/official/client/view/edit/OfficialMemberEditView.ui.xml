@@ -33,13 +33,23 @@
                         </div>
                     </div>
                 </div>
+
                 <div class="grid grid-indent">
-                    <div class="form-group col-xs-12 col-lg-4">
+                    <div class="form-group col-xs-12 col-lg-6">
                         <div class="form-group col-xs-12">
                             <companyselector:CompanySelector ui:field="company" header="{lang.officialOrganization}"/>
                         </div>
                     </div>
-                    <div class="form-group col-xs-12 col-lg-4">
+                    <div class="form-group col-xs-12 col-lg-6">
+                        <label><ui:text from="{lang.officialAmplua}"/></label>
+                        <div class="panel-field verifiable">
+                            <buttonselector:ButtonSelector ui:field="amplua"></buttonselector:ButtonSelector>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="grid grid-indent">
+                    <div class="form-group col-xs-12 col-lg-6">
                         <label>
                             <ui:text from="{lang.contactPosition}"/>
                         </label>
@@ -47,7 +57,7 @@
                             <g:TextBox ui:field="position" styleName="input-field"></g:TextBox>
                         </div>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group col-xs-12 col-lg-6">
                         <label>
                             <ui:text from="{lang.officialRelations}"/>
                         </label>
@@ -55,20 +65,26 @@
                             <g:TextBox ui:field="relations" styleName="input-field"></g:TextBox>
                         </div>
                     </div>
+                </div>
+
+                <div class="grid grid-indent">
                     <div class="form-group col-xs-12">
-                        <label><ui:text from="{lang.officialAmplua}"/></label>
-                        <div class="panel-field verifiable">
-                            <buttonselector:ButtonSelector ui:field="amplua" styleName="input-field description"></buttonselector:ButtonSelector>
+                        <label>
+                            <ui:text from="{lang.officialComment}"/>
+                        </label>
+
+                        <div class="panelField verifiable">
+                            <g:TextArea styleName="input-field description" ui:field="comments"></g:TextArea>
                         </div>
                     </div>
                 </div>
+            </div>
 
                 <div class="footer">
                     <g:Button ui:field="saveButton" styleName="btn btn-success"><ui:text from="{lang.buttonSave}"/></g:Button>
                     <g:Button ui:field="cancelButton" styleName="btn btn-white"><ui:text from="{lang.buttonCancel}"/></g:Button>
                 </div>
             </div>
-        </div>
     </g:HTMLPanel>
 
 </ui:UiBinder>
