@@ -82,6 +82,7 @@ public abstract class OfficialTableActivity
 
     @Event
     public void onReload(OfficialMemberEvents.ReloadPage event) {
+
         requestTotalCount();
     }
 

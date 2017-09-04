@@ -1,6 +1,7 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:companyselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.company'>
+             xmlns:companyselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.company'
+             xmlns:buttonselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.button'>
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
     <g:HTMLPanel>
@@ -57,7 +58,7 @@
                     <div class="form-group col-xs-12">
                         <label><ui:text from="{lang.officialAmplua}"/></label>
                         <div class="panel-field verifiable">
-                            <g:TextArea ui:field="amplua" styleName="input-field description"></g:TextArea>
+                            <buttonselector:ButtonSelector ui:field="amplua" styleName="input-field description"></buttonselector:ButtonSelector>
                         </div>
                     </div>
                 </div>

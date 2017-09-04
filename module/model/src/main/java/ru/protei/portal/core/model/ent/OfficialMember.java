@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.view.EntityOption;
 
@@ -22,9 +23,11 @@ public class OfficialMember extends AuditableObject {
 
     private String position;
 
-    private String amplua;
+    private En_DevUnitPersonRoleType amplua;
 
     private String relations;
+
+    private String comments;
 
     public String getFirstName() {
         return firstName;
@@ -66,11 +69,11 @@ public class OfficialMember extends AuditableObject {
         this.position = position;
     }
 
-    public String getAmplua() {
+    public En_DevUnitPersonRoleType getAmplua() {
         return amplua;
     }
 
-    public void setAmplua(String amplua) {
+    public void setAmplua(En_DevUnitPersonRoleType amplua) {
         this.amplua = amplua;
     }
 
@@ -95,11 +98,12 @@ public class OfficialMember extends AuditableObject {
         officialMember.setCompany(caseMember.getMember().getCompany().toEntityOption());
         officialMember.setRelations(caseMember.getMember().getRelations());
         officialMember.setId(caseMember.getId());
-        officialMember.setAmplua(caseMember.getMember().getAmplua());
+        officialMember.setAmplua(caseMember.getRole());
         officialMember.setFirstName(caseMember.getMember().getFirstName());
         officialMember.setLastName(caseMember.getMember().getLastName());
         officialMember.setSecondName(caseMember.getMember().getSecondName());
         officialMember.setPosition(caseMember.getMember().getPosition());
+        officialMember.setComments(caseMember.getMember().getComments());
 
         return officialMember;
     }
@@ -107,5 +111,14 @@ public class OfficialMember extends AuditableObject {
     @Override
     public String getAuditType() {
         return "OfficialMember";
+    }
+
+
+    public String getComments() {
+        return comments;
+    }
+
+    public void setComments(String comments) {
+        this.comments = comments;
     }
 }

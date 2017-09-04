@@ -84,11 +84,11 @@ public class Person extends AuditableObject implements PersonShortViewSupport {
     @JdbcColumn(name = "contactInfo", converterType = ConverterType.JSON)
     private ContactInfo contactInfo;
 
-    @JdbcColumn(name = "amplua")
-    private String amplua;
-
     @JdbcColumn(name = "relations")
     private String relations;
+
+    @JdbcColumn(name = "comments")
+    private String comments;
 
     public static Person fromPersonShortView( PersonShortView personShortView ){
         if(personShortView == null)
@@ -305,19 +305,19 @@ public class Person extends AuditableObject implements PersonShortViewSupport {
         return new PersonShortView(this.displayName, this.getId(), this.isFired);
     }
 
-    public String getAmplua() {
-        return amplua;
-    }
-
-    public void setAmplua(String amplua) {
-        this.amplua = amplua;
-    }
-
     public String getRelations() {
         return relations;
     }
 
     public void setRelations(String relations) {
         this.relations = relations;
+    }
+
+    public String getComments() {
+        return comments;
+    }
+
+    public void setComments(String comments) {
+        this.comments = comments;
     }
 }

@@ -61,7 +61,6 @@ public class OfficialServiceImpl implements OfficialService {
         caseMember.setCaseId(caseObject.getId());
 
         Person person = new Person();
-        person.setAmplua(officialMember.getAmplua());
         person.setRelations(officialMember.getRelations());
         person.setCreated(new Date());
         person.setCreator("Service");
@@ -77,7 +76,7 @@ public class OfficialServiceImpl implements OfficialService {
         Long newPersonId = personDAO.persist(person);
 
         caseMember.setMemberId(newPersonId);
-        caseMember.setRole(En_DevUnitPersonRoleType.DEPLOY_MANAGER);
+        caseMember.setRole(officialMember.getAmplua());
         caseMemberDAO.persist(caseMember);
 
         return new CoreResponse<Long>().success(null);
@@ -87,18 +86,19 @@ public class OfficialServiceImpl implements OfficialService {
     public CoreResponse<OfficialMember> saveOfficialMember(AuthToken authToken, OfficialMember officialMember) {
 
         CaseMember caseMember = caseMemberDAO.get(officialMember.getId());
-        Person member = caseMember.getMember();
-        member.setFirstName(officialMember.getFirstName());
-        member.setPosition(officialMember.getPosition());
-        member.setCompanyId(officialMember.getCompany().getId());
-        member.setLastName(officialMember.getLastName());
-        member.setSecondName(officialMember.getSecondName());
-        member.setAmplua(officialMember.getAmplua());
-        member.setRelations(officialMember.getRelations());
+        Person person = caseMember.getMember();
+        person.setFirstName(officialMember.getFirstName());
+        person.setPosition(officialMember.getPosition());
+        person.setCompanyId(officialMember.getCompany().getId());
+        person.setLastName(officialMember.getLastName());
+        person.setSecondName(officialMember.getSecondName());
+        person.setRelations(officialMember.getRelations());
 
-        boolean isUpdated = personDAO.merge(member);
+        boolean isUpdatedPerson = personDAO.merge(person);
 
-        if (!isUpdated)
+        caseMember.setRole(officialMember.getAmplua());
+        boolean isUpdatesMember = caseMemberDAO.merge(caseMember);
+        if (!isUpdatedPerson || !isUpdatesMember)
             return new CoreResponse().error(En_ResultStatus.NOT_UPDATED);
 
         return new CoreResponse<OfficialMember>().success(OfficialMember.fromCaseMember(caseMember));

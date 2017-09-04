@@ -118,7 +118,7 @@ public abstract class OfficialPreviewActivity implements AbstractOfficialPreview
                 itemView.setActivity(this);
                 itemView.setName(member.getLastName() + " " +
                 member.getFirstName() + " " + member.getSecondName());
-                itemView.setAmplua(member.getAmplua());
+                itemView.setAmplua(member.getAmplua().name());
                 itemView.setPosition(member.getPosition());
                 itemView.setRelations(member.getRelations());
                 itemView.setButtonsVisibility(policyService.hasPrivilegeFor(En_Privilege.OFFICIAL_EDIT));

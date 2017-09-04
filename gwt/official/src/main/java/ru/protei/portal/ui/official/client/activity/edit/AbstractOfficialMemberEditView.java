@@ -2,6 +2,7 @@ package ru.protei.portal.ui.official.client.activity.edit;
 
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
+import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
 import ru.protei.portal.core.model.view.EntityOption;
 
 /**
@@ -21,7 +22,9 @@ public interface AbstractOfficialMemberEditView extends IsWidget {
 
     HasValue<String> relations();
 
-    HasValue<String> amplua();
+    HasValue<En_DevUnitPersonRoleType> amplua();
+
+//    HasValue<String> comments();
 
     void setActivity(AbstractOfficialMemberEditActivity activity);
 }

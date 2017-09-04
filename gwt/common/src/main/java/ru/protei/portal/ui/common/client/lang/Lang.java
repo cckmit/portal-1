@@ -606,4 +606,6 @@ public interface Lang extends Messages, ContactItemLang {
     String errOfficialRemove();
 
     String errOfficialMemberRemove();
+
+    String officialComment();
 }

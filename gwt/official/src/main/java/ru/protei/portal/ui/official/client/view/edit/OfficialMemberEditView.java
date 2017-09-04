@@ -7,8 +7,11 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
+import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.official.client.activity.edit.AbstractOfficialMemberEditView;
 import ru.protei.portal.ui.official.client.activity.edit.AbstractOfficialMemberEditActivity;
@@ -22,6 +25,12 @@ public class OfficialMemberEditView extends Composite implements AbstractOfficia
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         company.setDefaultValue( lang.selectOfficialCompany() );
+        amplua.addOption( En_DevUnitPersonRoleType.DEPLOY_MANAGER.name(), null );
+        amplua.setValue(null);
+        for (En_DevUnitPersonRoleType roleType: En_DevUnitPersonRoleType.values()) {
+            amplua.addOption(roleType.name(), roleType);
+        }
+
     }
 
     @Override
@@ -55,9 +64,15 @@ public class OfficialMemberEditView extends Composite implements AbstractOfficia
     }
 
     @Override
-    public HasValue<String> amplua() {
+    public HasValue<En_DevUnitPersonRoleType> amplua() {
         return amplua;
     }
+
+//    @Override
+//    public HasValue<String> comments() {
+//        return comments;
+//    }
+
 
     @Override
     public void setActivity(AbstractOfficialMemberEditActivity activity) {
@@ -93,8 +108,9 @@ public class OfficialMemberEditView extends Composite implements AbstractOfficia
     TextBox position;
     @UiField
     TextBox relations;
-    @UiField
-    TextArea amplua;
+    @Inject
+    @UiField(provided = true)
+    ButtonSelector<En_DevUnitPersonRoleType> amplua;
     @UiField
     TextBox firstName;
     @UiField
