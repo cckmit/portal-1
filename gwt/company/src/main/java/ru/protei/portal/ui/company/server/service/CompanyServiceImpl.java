@@ -5,21 +5,25 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanyGroup;
+import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.query.CompanyGroupQuery;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.service.PolicyService;
 import ru.protei.portal.ui.common.client.service.CompanyService;
 import ru.protei.portal.ui.common.server.service.SessionService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Реализация сервиса по работе с компаниями
@@ -137,6 +141,7 @@ public class CompanyServiceImpl implements CompanyService {
 
         //TODO используется в Селектор списка компаний CompanySelector, считаю что привилегия COMPANY_VIEW не для этого
 
+
         CoreResponse< List< EntityOption > > result = companyService.companyOptionList();
 
         log.debug( "result status: {}, data-amount: {}", result.getStatus(), result.isOk() ? result.getDataAmountTotal() : 0 );
@@ -169,9 +174,12 @@ public class CompanyServiceImpl implements CompanyService {
 
         log.debug( "getCategoryOptionList()" );
 
+        Set<UserRole> availableRoles = getDescriptorAndCheckSession().getLogin().getRoles();
+        boolean hasOfficial = policyService.hasPrivilegeFor(En_Privilege.OFFICIAL_VIEW, availableRoles);
+
         //TODO используется в Селектор списка категорий CategoryBtnGroupMulti/CategoryButtonSelector, считаю что привилегия COMPANY_VIEW не для этого
 
-        CoreResponse< List< EntityOption > > result = companyService.categoryOptionList();
+        CoreResponse< List< EntityOption > > result = companyService.categoryOptionList(hasOfficial);
 
         log.debug( "result status: {}, data-amount: {}", result.getStatus(), result.isOk() ? result.getDataAmountTotal() : 0 );
 
@@ -196,6 +204,9 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Autowired
     SessionService sessionService;
+
+    @Autowired
+    PolicyService policyService;
 
     @Autowired
     HttpServletRequest httpServletRequest;

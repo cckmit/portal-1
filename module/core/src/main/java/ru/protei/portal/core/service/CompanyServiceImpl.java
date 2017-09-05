@@ -21,10 +21,7 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.winter.core.utils.collections.CollectionUtils;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -125,8 +122,15 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public CoreResponse<List<EntityOption>> categoryOptionList() {
-        List<CompanyCategory> list = companyCategoryDAO.getAll();
+    public CoreResponse<List<EntityOption>> categoryOptionList(boolean hasOfficial) {
+
+        List<CompanyCategory> list;
+
+        if(!hasOfficial) {
+            list = companyCategoryDAO.getListByKeys(Arrays.asList(1l, 2l, 3l));
+        } else {
+            list = companyCategoryDAO.getAll();
+        }
 
         if (list == null)
             new CoreResponse<List<EntityOption>>().error(En_ResultStatus.GET_DATA_ERROR);

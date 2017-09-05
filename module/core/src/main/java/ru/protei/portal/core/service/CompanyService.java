@@ -27,7 +27,7 @@ public interface CompanyService {
     CoreResponse<List<Company>> companyList(AuthToken token, CompanyQuery query);
     CoreResponse<List<EntityOption>> groupOptionList();
     CoreResponse<List<CompanyGroup>> groupList(CompanyGroupQuery query);
-    CoreResponse<List<EntityOption>> categoryOptionList();
+    CoreResponse<List<EntityOption>> categoryOptionList(boolean hasOfficial);
 
     @Privileged( En_Privilege.COMPANY_VIEW )
     CoreResponse<Company> getCompany(AuthToken token, Long id );
