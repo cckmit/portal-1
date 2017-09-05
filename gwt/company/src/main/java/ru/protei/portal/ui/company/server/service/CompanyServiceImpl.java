@@ -5,10 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
-import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.dict.En_SortDir;
-import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanyGroup;
 import ru.protei.portal.core.model.ent.UserRole;
@@ -135,14 +132,14 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public List< EntityOption > getCompanyOptionList() throws RequestFailedException {
+    public List< EntityOption > getCompanyOptionList(List<En_CompanyCategory> categories) throws RequestFailedException {
 
         log.debug( "getCompanyOptionList()" );
 
         //TODO используется в Селектор списка компаний CompanySelector, считаю что привилегия COMPANY_VIEW не для этого
 
 
-        CoreResponse< List< EntityOption > > result = companyService.companyOptionList();
+        CoreResponse< List< EntityOption > > result = companyService.companyOptionList(categories);
 
         log.debug( "result status: {}, data-amount: {}", result.getStatus(), result.isOk() ? result.getDataAmountTotal() : 0 );
 

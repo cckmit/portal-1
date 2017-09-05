@@ -8,10 +8,7 @@ import ru.protei.portal.core.model.dao.CompanyCategoryDAO;
 import ru.protei.portal.core.model.dao.CompanyDAO;
 import ru.protei.portal.core.model.dao.CompanyGroupDAO;
 import ru.protei.portal.core.model.dao.CompanySubscriptionDAO;
-import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.dict.En_SortDir;
-import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CompanyGroupQuery;
@@ -61,8 +58,11 @@ public class CompanyServiceImpl implements CompanyService {
 
 
     @Override
-    public CoreResponse<List<EntityOption>> companyOptionList() {
-        List<Company> list = companyDAO.getListByQuery(new CompanyQuery("", En_SortField.comp_name, En_SortDir.ASC));
+    public CoreResponse<List<EntityOption>> companyOptionList(List<En_CompanyCategory> categories) {
+        CompanyQuery query = new CompanyQuery("", En_SortField.comp_name, En_SortDir.ASC);
+        List<Long> ids = categories.stream().map(En_CompanyCategory::getId).collect(Collectors.toList());
+        query.setCategoryIds(ids);
+        List<Company> list = companyDAO.getListByQuery(query);
 
         if (list == null)
             new CoreResponse<List<EntityOption>>().error(En_ResultStatus.GET_DATA_ERROR);

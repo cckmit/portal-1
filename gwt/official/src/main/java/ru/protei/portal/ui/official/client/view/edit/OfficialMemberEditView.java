@@ -7,6 +7,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.lang.En_PersonRoleTypeLang;
@@ -15,6 +16,8 @@ import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.official.client.activity.edit.AbstractOfficialMemberEditView;
 import ru.protei.portal.ui.official.client.activity.edit.AbstractOfficialMemberEditActivity;
+
+import java.util.Arrays;
 
 /**
  * Представление формы редактирования должностного лица
@@ -25,6 +28,8 @@ public class OfficialMemberEditView extends Composite implements AbstractOfficia
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         company.setDefaultValue( lang.selectOfficialCompany() );
+        company.setCategories(Arrays.asList(En_CompanyCategory.OFFICIAL));
+        company.subscribeToModel();
         fillAmpluaOptions();
 
     }

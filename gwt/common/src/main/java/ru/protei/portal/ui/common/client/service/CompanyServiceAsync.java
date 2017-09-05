@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.service;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanyGroup;
 import ru.protei.portal.core.model.query.CompanyQuery;
@@ -59,9 +60,10 @@ public interface CompanyServiceAsync {
 
     /**
      * Получение списка сокращенного представления компании (name,id)
+     * @param categories
      * @param callback
      */
-    void getCompanyOptionList( AsyncCallback< List< EntityOption > > callback );
+    void getCompanyOptionList(List<En_CompanyCategory> categories, AsyncCallback<List<EntityOption>> callback);
 
     /**
      * Получение списка сокращенного представления группы компаний (name,id)
