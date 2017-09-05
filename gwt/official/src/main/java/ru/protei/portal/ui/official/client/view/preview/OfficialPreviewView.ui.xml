@@ -32,13 +32,9 @@
 
             <fieldset class="header">
                 <legend><ui:text from="{lang.officialFaces}"/></legend>
-                <!--<div class="form-group local-search col-xs-5" style="position: relative">-->
-                    <!--<span class="icon local-search-icon" style="top: 4px"></span>-->
-                    <!--<g:TextBox ui:field="name" styleName="input-field"/>-->
-                <!--</div>-->
-                <g:InlineHTML ui:field="addButton" styleName="btn btn-white">
+                <g:Button ui:field="addButton" styleName="btn btn-white">
                     <ui:text from="{lang.buttonAdd}"/>
-                </g:InlineHTML>
+                </g:Button>
                 <g:HTMLPanel ui:field="membersContainer"></g:HTMLPanel>
             </fieldset>
 
@@ -58,10 +54,8 @@
                 </div>
             </fieldset>
 
-            <fieldset class="header">
-                <legend><ui:text from="{lang.comments}"/></legend>
-                <g:HTMLPanel ui:field="commentsContainer" styleName="col-xs-12 col-md-12"/>
-            </fieldset>
+            <legend><ui:text from="{lang.comments}"/></legend>
+            <g:HTMLPanel ui:field="commentsContainer" styleName="col-xs-12 col-md-12"/>
         </g:HTMLPanel>
 
     </g:HTMLPanel>

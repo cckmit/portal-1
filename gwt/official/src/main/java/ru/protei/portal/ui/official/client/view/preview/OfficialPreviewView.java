@@ -137,7 +137,7 @@ public class OfficialPreviewView extends Composite implements AbstractOfficialPr
     @UiField(provided = true)
     AttachmentList attachmentContainer;
     @UiField
-    InlineHTML addButton;
+    Button addButton;
     @Inject
     @UiField
     FileUploader fileUploader;
