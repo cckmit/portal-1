@@ -24,7 +24,7 @@ public class OfficialEditView extends Composite implements AbstractOfficialEditV
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         region.setDefaultValue(lang.selectOfficialRegion());
-        product.setDefaultValue(lang.selectOfficialCompany());
+        product.setDefaultValue(lang.selectOfficialProduct());
     }
 
     @Override

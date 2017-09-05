@@ -623,4 +623,6 @@ public interface Lang extends Messages, ContactItemLang {
     String personArtManager();
 
     String officialInRelationsWith();
+
+    String selectOfficialProduct();
 }

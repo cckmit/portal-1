@@ -17,7 +17,7 @@ import ru.protei.portal.ui.common.client.events.OfficialMemberEvents;
 import ru.protei.portal.ui.common.client.service.OfficialServiceAsync;
 
 /**
- * Created by serebryakov on 31/08/17.
+ * Представление формы редактирования матрицы принятия решений
  */
 public abstract class OfficialEditActivity implements AbstractOfficialEditActivity, Activity {
 
