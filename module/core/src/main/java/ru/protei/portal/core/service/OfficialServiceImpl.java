@@ -153,19 +153,7 @@ public class OfficialServiceImpl implements OfficialService {
     public CoreResponse<Boolean> removeOfficial(AuthToken authToken, Long id) {
         CaseObject caseObject = caseObjectDAO.get(id);
         helper.fillAll(caseObject);
-        for (CaseLocation location: caseObject.getLocations()){
-            caseLocationDAO.remove(location);
-        }
-
-        for (CaseMember member: caseObject.getMembers()) {
-            caseMemberDAO.remove(member);
-        }
-
-        List<CaseComment> caseComments = caseCommentDAO.getCaseComments(caseObject.getId());
-        for (CaseComment comment: caseComments) {
-            caseCommentDAO.remove(comment);
-        }
-
+        removeRelatedObjects(caseObject);
 
         boolean isRemoving = caseObjectDAO.remove(caseObject);
         return new CoreResponse<Boolean>().success(isRemoving);
@@ -177,7 +165,6 @@ public class OfficialServiceImpl implements OfficialService {
 
         return new CoreResponse<Boolean>().success(isRemoving);
     }
-
 
     private void iterateAllLocations( CaseObject official, Consumer< Location > handler ) {
         if ( official == null ) {
@@ -213,6 +200,25 @@ public class OfficialServiceImpl implements OfficialService {
 
         Official official = Official.fromCaseObject(currentOfficial);
         officialList.add(official);
+    }
+
+
+    private void removeRelatedObjects(CaseObject caseObject) {
+        for (CaseLocation location: caseObject.getLocations()){
+            caseLocationDAO.remove(location);
+        }
+
+        for (CaseMember member: caseObject.getMembers()) {
+            CaseMember caseMember = caseMemberDAO.get(member.getId());
+            Long memberId = caseMember.getMemberId();
+            caseMemberDAO.remove(member);
+            personDAO.removeByKey(memberId);
+        }
+
+        List<CaseComment> caseComments = caseCommentDAO.getCaseComments(caseObject.getId());
+        for (CaseComment comment: caseComments) {
+            caseCommentDAO.remove(comment);
+        }
     }
 
 
