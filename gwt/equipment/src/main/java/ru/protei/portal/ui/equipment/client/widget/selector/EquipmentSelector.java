@@ -6,8 +6,6 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
-import ru.protei.portal.ui.common.client.widget.selector.input.InputSelector;
-import ru.protei.portal.core.model.dict.En_OrganizationCode;
 import ru.protei.portal.ui.equipment.client.common.EquipmentUtils;
 
 import java.util.List;
@@ -26,6 +24,7 @@ public class EquipmentSelector
             model.subscribe( this );
             setSearchEnabled( true );
             setHasNullValue( true );
+            setSearchAutoFocus(true);
             nullItemOption = new DisplayOption( lang.equipmentPrimaryUseNotDefinied() );
         }
 
