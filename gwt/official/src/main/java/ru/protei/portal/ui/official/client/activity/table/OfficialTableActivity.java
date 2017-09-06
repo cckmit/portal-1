@@ -54,8 +54,8 @@ public abstract class OfficialTableActivity
     }
 
     @Event
-    public void onCreateClicked( SectionEvents.Clicked event ) {
-        if ( !UiConstants.ActionBarIdentity.OFFICIAL.equals( event.identity ) ) {
+    public void onCreateClicked(SectionEvents.Clicked event) {
+        if (!UiConstants.ActionBarIdentity.OFFICIAL.equals(event.identity)) {
             return;
         }
 
@@ -63,7 +63,7 @@ public abstract class OfficialTableActivity
     }
 
     @Event
-    public void onAuthSuccess (AuthEvents.Success event) {
+    public void onAuthSuccess(AuthEvents.Success event) {
         filterView.resetFilter();
     }
 
@@ -72,8 +72,8 @@ public abstract class OfficialTableActivity
         init.parent.clear();
         init.parent.add(view.asWidget());
 
-        fireEvent( policyService.hasPrivilegeFor( En_Privilege.OFFICIAL_EDIT ) ?
-                new ActionBarEvents.Add( CREATE_ACTION, UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.OFFICIAL ) :
+        fireEvent(policyService.hasPrivilegeFor(En_Privilege.OFFICIAL_EDIT) ?
+                new ActionBarEvents.Add(CREATE_ACTION, UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.OFFICIAL) :
                 new ActionBarEvents.Clear()
         );
         requestTotalCount();
@@ -87,7 +87,7 @@ public abstract class OfficialTableActivity
     }
 
     @Event
-    public void onInitDetails( AppEvents.InitDetails initDetails ) {
+    public void onInitDetails(AppEvents.InitDetails initDetails) {
         this.init = initDetails;
     }
 
@@ -101,7 +101,7 @@ public abstract class OfficialTableActivity
 
             @Override
             public void onError(Throwable throwable) {
-                fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
+                fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
             }
         });
 
@@ -120,7 +120,7 @@ public abstract class OfficialTableActivity
                 : filterView.product().getValue().getId());
         query.setRegionId(filterView.region().getValue() == null
                 ? null
-                :filterView.region().getValue().getId());
+                : filterView.region().getValue().getId());
 
         return query;
     }
@@ -132,11 +132,14 @@ public abstract class OfficialTableActivity
 
     private void fillRows(Map<String, List<Official>> result) {
         view.clearRecords();
-        for (Map.Entry<String, List<Official>> entry: result.entrySet()) {
-            view.addSeparator(entry.getKey());
+        for (Map.Entry<String, List<Official>> entry : result.entrySet()) {
+            if (filterView.region().getValue() == null || entry.getKey()
+                    .equals(filterView.region().getValue().getDisplayText())) {
 
-            for (Official official: entry.getValue()) {
-                view.addRow(official);
+                view.addSeparator(entry.getKey());
+                for (Official official : entry.getValue()) {
+                    view.addRow(official);
+                }
             }
         }
     }
@@ -147,11 +150,11 @@ public abstract class OfficialTableActivity
     }
 
     private void showPreview(Official value) {
-        if ( value == null ) {
+        if (value == null) {
             animation.closeDetails();
         } else {
             animation.showDetails();
-            fireEvent( new OfficialMemberEvents.ShowPreview( view.getPreviewContainer(), value.getId() ) );
+            fireEvent(new OfficialMemberEvents.ShowPreview(view.getPreviewContainer(), value.getId()));
         }
     }
 
@@ -160,12 +163,12 @@ public abstract class OfficialTableActivity
         attachmentService.getAttachmentsByCaseId(value.getId(), new RequestCallback<List<Attachment>>() {
             @Override
             public void onError(Throwable throwable) {
-                fireEvent( new NotifyEvents.Show( lang.attachmentsNotLoaded(), NotifyEvents.NotifyType.ERROR ) );
+                fireEvent(new NotifyEvents.Show(lang.attachmentsNotLoaded(), NotifyEvents.NotifyType.ERROR));
             }
 
             @Override
             public void onSuccess(List<Attachment> list) {
-                if(!list.isEmpty()) {
+                if (!list.isEmpty()) {
                     attachPopup.fill(list);
                     attachPopup.showNear(widget);
                 }
@@ -178,13 +181,13 @@ public abstract class OfficialTableActivity
         officialService.removeOfficial(value.getId(), new AsyncCallback<Boolean>() {
             @Override
             public void onFailure(Throwable throwable) {
-                fireEvent( new NotifyEvents.Show( lang.errOfficialRemove(), NotifyEvents.NotifyType.ERROR ) );
+                fireEvent(new NotifyEvents.Show(lang.errOfficialRemove(), NotifyEvents.NotifyType.ERROR));
             }
 
             @Override
             public void onSuccess(Boolean result) {
                 if (!result) {
-                    fireEvent( new NotifyEvents.Show( lang.errOfficialRemove(), NotifyEvents.NotifyType.ERROR ) );
+                    fireEvent(new NotifyEvents.Show(lang.errOfficialRemove(), NotifyEvents.NotifyType.ERROR));
                     return;
                 }
                 requestTotalCount();
