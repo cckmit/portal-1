@@ -13,12 +13,24 @@ public class En_PersonRoleTypeLang {
                 return lang.personHeadManager();
             case DEPLOY_MANAGER:
                 return lang.personDeployManager();
-            case SALES_MANAGER:
-                return lang.personSalesManager();
-            case ADS_MANAGER:
-                return lang.personAdsManager();
-            case ART_MANAGER:
-                return lang.personArtManager();
+            case DECISION_CENTER:
+                return lang.personDecisionCenter();
+            case CHIEF_DECISION_MAKER:
+                return lang.personChiefDecisionMaker();
+            case KEEPER:
+                return lang.personDecisionKeeper();
+            case TECH_SPECIALIST:
+                return lang.personTechSpecialist();
+            case INFLUENCE_MAKER:
+                return lang.personInfluenceMaker();
+            case CHIEF_INFLUENCE_MAKER:
+                return lang.personChielInfluenceMaker();
+            case ECONOMIST:
+                return lang.personEconomist();
+            case WELL_WISHER:
+                return lang.personWellWisher();
+            case RECEPTIVITY_CENTER:
+                return lang.personReceptivityCenter();
         }
         return null;
     }

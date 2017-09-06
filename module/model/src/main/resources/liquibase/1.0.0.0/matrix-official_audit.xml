@@ -54,4 +54,62 @@
         </insert>
     </changeSet>
 
+    <changeSet author="serebryakov" id="06-09-2017 10:45">
+        <update tableName="dev_unit_mrole">
+            <column name="UROLE_CODE" value="decision_center"/>
+            <column name="UROLE_INFO" value="Центр принятия решений"/>
+            <where>id = 3</where>
+        </update>
+
+        <update tableName="dev_unit_mrole">
+            <column name="UROLE_CODE" value="chief_decision_maker"/>
+            <column name="UROLE_INFO" value="Главный ЛПР"/>
+            <where>id = 4</where>
+        </update>
+
+        <update tableName="dev_unit_mrole">
+            <column name="UROLE_CODE" value="decision_keeper"/>
+            <column name="UROLE_INFO" value="Привратник"/>
+            <where>id = 5</where>
+        </update>
+    </changeSet>
+
+    <changeSet author="serebryakov" id="06-09-2017 12:00">
+        <insert tableName="dev_unit_mrole">
+            <column name="ID" value="6"/>
+            <column name="UROLE_CODE" value="tech_specialists"/>
+            <column name="UROLE_INFO" value="Технические специалисты"/>
+        </insert>
+
+        <insert tableName="dev_unit_mrole">
+            <column name="ID" value="7"/>
+            <column name="UROLE_CODE" value="influence_maker"/>
+            <column name="UROLE_INFO" value="Лицо, влияющее на принятие решений"/>
+        </insert>
+
+        <insert tableName="dev_unit_mrole">
+            <column name="ID" value="8"/>
+            <column name="UROLE_CODE" value="chief_influence_maker"/>
+            <column name="UROLE_INFO" value="Главное лицо, влияющее на принятие решений"/>
+        </insert>
+
+        <insert tableName="dev_unit_mrole">
+            <column name="ID" value="9"/>
+            <column name="UROLE_CODE" value="economist"/>
+            <column name="UROLE_INFO" value="Экономист"/>
+        </insert>
+
+        <insert tableName="dev_unit_mrole">
+            <column name="ID" value="10"/>
+            <column name="UROLE_CODE" value="well_wisher"/>
+            <column name="UROLE_INFO" value="Доброжелатель"/>
+        </insert>
+
+        <insert tableName="dev_unit_mrole">
+            <column name="ID" value="11"/>
+            <column name="UROLE_CODE" value="receptivity_center"/>
+            <column name="UROLE_INFO" value="Центр восприимчивости"/>
+        </insert>
+    </changeSet>
+
 </databaseChangeLog>

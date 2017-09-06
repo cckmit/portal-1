@@ -6,9 +6,15 @@ package ru.protei.portal.core.model.dict;
 public enum En_DevUnitPersonRoleType {
     HEAD_MANAGER(1),
     DEPLOY_MANAGER(2),
-    ADS_MANAGER(3),
-    SALES_MANAGER(4),
-    ART_MANAGER(5);
+    DECISION_CENTER(3),
+    CHIEF_DECISION_MAKER(4),
+    KEEPER(5),
+    TECH_SPECIALIST(6),
+    INFLUENCE_MAKER(7),
+    CHIEF_INFLUENCE_MAKER(8),
+    ECONOMIST(9),
+    WELL_WISHER(10),
+    RECEPTIVITY_CENTER(11);
 
     private En_DevUnitPersonRoleType( int typeId ) {
         this.id = typeId;

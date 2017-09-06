@@ -93,6 +93,10 @@ public class OfficialMemberEditView extends Composite implements AbstractOfficia
     private void fillAmpluaOptions() {
         amplua.addOption( lang.selectOfficialAmplua(), null );
         for (En_DevUnitPersonRoleType roleType: En_DevUnitPersonRoleType.values()) {
+            if (roleType.equals(En_DevUnitPersonRoleType.HEAD_MANAGER) ||
+                roleType.equals(En_DevUnitPersonRoleType.DEPLOY_MANAGER)) {
+                continue;
+            }
             amplua.addOption(roleTypeLang.getName(roleType), roleType);
         }
     }

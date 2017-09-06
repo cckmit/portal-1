@@ -616,13 +616,25 @@ public interface Lang extends Messages, ContactItemLang {
 
     String personDeployManager();
 
-    String personSalesManager();
-
-    String personAdsManager();
-
-    String personArtManager();
-
     String officialInRelationsWith();
 
     String selectOfficialProduct();
+
+    String personDecisionCenter();
+
+    String personChiefDecisionMaker();
+
+    String personDecisionKeeper();
+
+    String personTechSpecialist();
+
+    String personInfluenceMaker();
+
+    String personChielInfluenceMaker();
+
+    String personEconomist();
+
+    String personWellWisher();
+
+    String personReceptivityCenter();
 }
