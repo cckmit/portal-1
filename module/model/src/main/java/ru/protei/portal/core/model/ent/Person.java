@@ -87,9 +87,6 @@ public class Person extends AuditableObject implements PersonShortViewSupport {
     @JdbcColumn(name = "relations")
     private String relations;
 
-    @JdbcColumn(name = "comments")
-    private String comments;
-
     public static Person fromPersonShortView( PersonShortView personShortView ){
         if(personShortView == null)
             return null;
@@ -311,13 +308,5 @@ public class Person extends AuditableObject implements PersonShortViewSupport {
 
     public void setRelations(String relations) {
         this.relations = relations;
-    }
-
-    public String getComments() {
-        return comments;
-    }
-
-    public void setComments(String comments) {
-        this.comments = comments;
     }
 }

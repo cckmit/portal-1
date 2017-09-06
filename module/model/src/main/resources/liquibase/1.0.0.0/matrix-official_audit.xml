@@ -112,4 +112,8 @@
         </insert>
     </changeSet>
 
+    <changeSet author="serebryakov" id="06-09-2017 14:55">
+        <dropColumn tableName="person" columnName="comments"/>
+    </changeSet>
+
 </databaseChangeLog>

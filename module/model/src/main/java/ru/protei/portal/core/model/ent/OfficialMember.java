@@ -103,7 +103,7 @@ public class OfficialMember extends AuditableObject {
         officialMember.setLastName(caseMember.getMember().getLastName());
         officialMember.setSecondName(caseMember.getMember().getSecondName());
         officialMember.setPosition(caseMember.getMember().getPosition());
-        officialMember.setComments(caseMember.getMember().getComments());
+        officialMember.setComments(caseMember.getMember().getInfo());
 
         return officialMember;
     }

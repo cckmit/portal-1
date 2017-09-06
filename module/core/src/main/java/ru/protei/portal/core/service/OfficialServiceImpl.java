@@ -69,7 +69,7 @@ public class OfficialServiceImpl implements OfficialService {
         person.setFirstName(officialMember.getFirstName());
         person.setLastName(officialMember.getLastName());
         person.setPosition(officialMember.getPosition());
-        person.setComments(officialMember.getComments());
+        person.setInfo(officialMember.getComments());
         person.setGender(En_Gender.UNDEFINED);
         person.setCreator("Service");
         person.setDisplayName(officialMember.getLastName() + " " + officialMember.getFirstName()
@@ -94,7 +94,7 @@ public class OfficialServiceImpl implements OfficialService {
         person.setLastName(officialMember.getLastName());
         person.setSecondName(officialMember.getSecondName());
         person.setRelations(officialMember.getRelations());
-        person.setComments(officialMember.getComments());
+        person.setInfo(officialMember.getComments());
 
         boolean isUpdatedPerson = personDAO.merge(person);
 
