@@ -73,7 +73,12 @@ public enum En_SortField {
     /**
      * role name
      */
-    role_name("role_code");
+    role_name("role_code"),
+
+    /**
+     * equipment project
+     */
+    project("project");
 
     private String fieldName;
     private String bundleKey;
