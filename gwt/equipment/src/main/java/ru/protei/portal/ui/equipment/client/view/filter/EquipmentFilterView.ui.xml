@@ -27,7 +27,7 @@
                 <label>
                     <ui:text from="{lang.equipmentPrimaryUse}"/>
                 </label>
-                <selector:EquipmentSelector ui:field="equipment"/>
+                <selector:EquipmentSelector ui:field="equipment" hasNullValue="true"/>
             </div>
 
             <div class="form-group col-xs-12">

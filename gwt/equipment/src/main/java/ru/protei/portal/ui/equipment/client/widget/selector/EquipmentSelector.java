@@ -32,8 +32,10 @@ public class EquipmentSelector
         @Override
         public void fillOptions( List< Equipment > options ) {
             clearOptions();
+            if (hasNullValue) {
+                addOption(lang.equipmentPrimaryUseNotDefinied(), null);
+            }
 
-            addOption(lang.equipmentPrimaryUseNotDefinied(), null);
             for ( Equipment value : options ) {
                 StringBuilder sb = new StringBuilder();
                 sb.append( value.getName() );
@@ -48,8 +50,14 @@ public class EquipmentSelector
             }
         }
 
+        public void setHasNullValue(boolean hasNullValue) {
+            this.hasNullValue = hasNullValue;
+        }
+
         @Override
         public void refreshValue() {}
+
+        private boolean hasNullValue;
 
         private Lang lang;
     }
