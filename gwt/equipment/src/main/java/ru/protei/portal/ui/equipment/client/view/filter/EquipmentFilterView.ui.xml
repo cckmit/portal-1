@@ -5,7 +5,7 @@
              xmlns:stage="urn:import:ru.protei.portal.ui.equipment.client.widget.stage"
              xmlns:person="urn:import:ru.protei.portal.ui.common.client.widget.selector.person"
              xmlns:sortfield="urn:import:ru.protei.portal.ui.common.client.widget.selector.sortfield"
->
+             xmlns:selector="urn:import:ru.protei.portal.ui.equipment.client.widget.selector">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
@@ -21,6 +21,13 @@
                     <ui:text from="{lang.equipmentManager}"/>
                 </label>
                 <person:EmployeeButtonSelector ui:field="manager" defaultValue="{lang.selectorAny}"/>
+            </div>
+
+            <div class="form-group col-xs-12">
+                <label>
+                    <ui:text from="{lang.equipmentPrimaryUse}"/>
+                </label>
+                <selector:EquipmentSelector ui:field="equipment"/>
             </div>
 
             <div class="form-group col-xs-12">

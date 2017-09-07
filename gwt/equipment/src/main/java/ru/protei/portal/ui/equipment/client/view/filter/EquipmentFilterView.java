@@ -11,6 +11,7 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -19,6 +20,7 @@ import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSele
 import ru.protei.portal.ui.equipment.client.activity.filter.AbstractEquipmentFilterActivity;
 import ru.protei.portal.ui.equipment.client.activity.filter.AbstractEquipmentFilterView;
 import ru.protei.portal.ui.equipment.client.widget.organization.OrganizationBtnGroupMulti;
+import ru.protei.portal.ui.equipment.client.widget.selector.EquipmentSelector;
 import ru.protei.portal.ui.equipment.client.widget.stage.EquipmentStageOptionList;
 import ru.protei.portal.ui.equipment.client.widget.type.EquipmentTypeBtnGroupMulti;
 
@@ -51,6 +53,7 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
         manager.setValue( null );
         sortField.setValue( En_SortField.name );
         sortDir.setValue( false );
+        equipment.setValue(null);
     }
 
     @Override
@@ -98,6 +101,11 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
         return sortDir;
     }
 
+    @Override
+    public HasValue<Equipment> equipment() {
+        return equipment;
+    }
+
     @UiHandler( "resetBtn" )
     public void onResetClicked ( ClickEvent event ) {
         if ( activity != null ) {
@@ -138,6 +146,11 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
 
     @UiHandler( "sortField" )
     public void onSordFieldChanged( ValueChangeEvent<En_SortField> event ) {
+        fireChangeTimer();
+    }
+
+    @UiHandler( "equipment" )
+    public void onEquipmentChanged( ValueChangeEvent<Equipment> event ) {
         fireChangeTimer();
     }
 
@@ -196,6 +209,9 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
     SortFieldSelector sortField;
     @UiField
     ToggleButton sortDir;
+    @Inject
+    @UiField(provided = true)
+    EquipmentSelector equipment;
 
     @Inject
     FixedPositioner positioner;

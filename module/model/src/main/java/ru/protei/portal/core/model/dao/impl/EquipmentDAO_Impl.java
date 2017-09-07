@@ -100,6 +100,11 @@ public class EquipmentDAO_Impl extends PortalBaseJdbcDAO<Equipment> implements E
                 condition.append( " and manager_id=? " );
                 args.add(query.getManagerId());
             }
+
+            if ( query.getEquipmentId() != null ) {
+                condition.append(" and linked_equipment_id=? ");
+                args.add(query.getEquipmentId());
+            }
         });
     }
 

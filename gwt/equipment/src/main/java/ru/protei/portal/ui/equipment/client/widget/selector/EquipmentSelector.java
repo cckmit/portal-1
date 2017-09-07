@@ -21,6 +21,7 @@ public class EquipmentSelector
 
         @Inject
         public void init( EquipmentModel model, Lang lang ) {
+            this.lang = lang;
             model.subscribe( this );
             setSearchEnabled( true );
             setHasNullValue( true );
@@ -32,6 +33,7 @@ public class EquipmentSelector
         public void fillOptions( List< Equipment > options ) {
             clearOptions();
 
+            addOption(lang.equipmentPrimaryUseNotDefinied(), null);
             for ( Equipment value : options ) {
                 StringBuilder sb = new StringBuilder();
                 sb.append( value.getName() );
@@ -48,4 +50,6 @@ public class EquipmentSelector
 
         @Override
         public void refreshValue() {}
-}
+
+        private Lang lang;
+    }
