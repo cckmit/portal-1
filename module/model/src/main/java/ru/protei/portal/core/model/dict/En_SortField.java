@@ -78,7 +78,12 @@ public enum En_SortField {
     /**
      * equipment project
      */
-    project("project");
+    project("project"),
+
+    /**
+     * equipment primary use
+     */
+    primary_use("primary_use");
 
     private String fieldName;
     private String bundleKey;
