@@ -6,7 +6,7 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.ProductShortView;
 
 /**
- * Created by serebryakov on 31/08/17.
+ * Абстрактное представление формы редактирования матрицы принятия решений
  */
 public interface AbstractOfficialEditView extends IsWidget{
 

@@ -180,8 +180,8 @@ public class OfficialTableView extends Composite implements AbstractOfficialTabl
 
     private AbstractOfficialTableActivity activity;
 
-
     private List<ClickColumn> columns = new ArrayList<ClickColumn>();
+
     @Inject
     Lang lang;
 

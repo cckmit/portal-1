@@ -116,4 +116,18 @@
         <dropColumn tableName="person" columnName="comments"/>
     </changeSet>
 
+    <changeSet author="serebryakov" id="08-09-2017 01:07">
+        <insert tableName="case_type">
+            <column name="ID" value="10"/>
+            <column name="CT_CODE" value="official"/>
+            <column name="CT_INFO" value="Должностное лицо"/>
+            <column name="NEXT_ID" value="100"/>
+        </insert>
+
+        <insert tableName="company_category">
+            <column name="id" value="4"/>
+            <column name="category_name" value="Должностное лицо"/>
+        </insert>
+    </changeSet>
+
 </databaseChangeLog>

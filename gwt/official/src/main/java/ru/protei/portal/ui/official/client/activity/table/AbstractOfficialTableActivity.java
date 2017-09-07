@@ -8,7 +8,7 @@ import ru.protei.portal.ui.common.client.columns.EditClickColumn;
 import ru.protei.portal.ui.common.client.columns.RemoveClickColumn;
 
 /**
- * Created by serebryakov on 21/08/17.
+ * Абстракция активности в таблице должностных лиц
  */
 public interface AbstractOfficialTableActivity
         extends ClickColumn.Handler<Official>, EditClickColumn.EditHandler<Official>,
