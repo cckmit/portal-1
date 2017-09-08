@@ -53,10 +53,9 @@ public class DecimalNumberDAO_Impl extends PortalBaseJdbcDAO<DecimalNumber > imp
     @Override
     public Integer getNextAvailableRegNumber(DecimalNumber number) {
 
-        StringBuilder sql = new StringBuilder("select min(a.reg_number) + 1 from ")
-                .append("(select reg_number from ").append(getTableName()).append(" union select 0) a ")
-                .append("left join ").append(getTableName()).append(" b on b.reg_number = a.reg_number + 1 and ")
-                .append("classifier_code=? and org_code=? where b.reg_number is null");
-        return jdbcTemplate.queryForObject(sql.toString(), Integer.class, number.getClassifierCode(), number.getOrganizationCode().name());
+        String sql = "select min(a.reg_number) + 1 from (select reg_number from decimal_number union select 0) a " +
+                "left join decimal_number b on b.reg_number = a.reg_number + 1 " +
+                "and classifier_code=? and org_code=? where b.reg_number is null";
+        return jdbcTemplate.queryForObject(sql, Integer.class, number.getClassifierCode(), number.getOrganizationCode().name());
     }
 }
