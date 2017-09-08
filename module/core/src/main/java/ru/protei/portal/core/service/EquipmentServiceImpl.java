@@ -90,29 +90,11 @@ public class EquipmentServiceImpl implements EquipmentService {
             return new CoreResponse<DecimalNumber>().success( number );
         }
 
-        List<Integer> registerNumbers = decimalNumberDAO.getAll()
-                .stream()
-                .map(d -> d.getRegisterNumber())
-                .sorted()
-                .collect(Collectors.toList());
-
-        Integer minFreeValue = 0;
-        for (int i = 1; i < registerNumbers.get(registerNumbers.size() - 1); i++) {
-            if (registerNumbers.contains(i)) {
-                continue;
-            }
-            minFreeValue = i;
-            break;
-        }
+        Integer nextAvailableRegNumber = decimalNumberDAO.getNextAvailableRegNumber(number);
 
         boolean ifExist = true;
-        while ( ifExist && maxNum < 999 ) {
-            if (minFreeValue == 0) {
-                number.setRegisterNumber(maxNum + 1);
-            }
-            else {
-                number.setRegisterNumber(minFreeValue);
-            }
+        while ( ifExist && nextAvailableRegNumber < 999 ) {
+            number.setRegisterNumber(nextAvailableRegNumber);
             ifExist = decimalNumberDAO.checkIfExist( number );
         }
 

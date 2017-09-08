@@ -49,4 +49,14 @@ public class DecimalNumberDAO_Impl extends PortalBaseJdbcDAO<DecimalNumber > imp
         StringBuilder sql = new StringBuilder("select id from ").append(getTableName()).append( " where equipment_id=?" );
         return jdbcTemplate.queryForList(sql.toString(), Long.class, id);
     }
+
+    @Override
+    public Integer getNextAvailableRegNumber(DecimalNumber number) {
+
+        StringBuilder sql = new StringBuilder("select min(a.reg_number) + 1 from ")
+                .append("(select reg_number from ").append(getTableName()).append(" union select 0) a ")
+                .append("left join ").append(getTableName()).append(" b on b.reg_number = a.reg_number + 1 and ")
+                .append("classifier_code=? and org_code=? where b.reg_number is null");
+        return jdbcTemplate.queryForObject(sql.toString(), Integer.class, number.getClassifierCode(), number.getOrganizationCode().name());
+    }
 }
