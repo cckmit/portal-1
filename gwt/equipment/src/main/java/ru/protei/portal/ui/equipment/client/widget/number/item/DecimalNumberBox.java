@@ -3,6 +3,7 @@ package ru.protei.portal.ui.equipment.client.widget.number.item;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.*;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
@@ -23,6 +24,7 @@ import ru.protei.portal.ui.common.client.widget.selector.event.RemoveHandler;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.equipment.client.provider.AbstractDecimalNumberDataProvider;
 import ru.protei.portal.ui.equipment.client.widget.number.list.AbstractDecimalNumberItemHandler;
+import ru.protei.portal.ui.equipment.client.widget.number.list.DecimalNumberList;
 import ru.protei.portal.ui.equipment.client.widget.selector.OrganizationCodeSelector;
 import ru.protei.winter.web.common.client.common.DisplayStyle;
 
@@ -130,7 +132,7 @@ public class DecimalNumberBox
         checkExistNumber();
 
         if (regNumModification.getText().length() == 2) {
-            itemHandler.onEditComplete(this);
+            next.setFocus(true);
         }
     }
 
@@ -162,8 +164,19 @@ public class DecimalNumberBox
         RemoveEvent.fire( this );
     }
 
+    @UiHandler("next")
+    public void onNextClicked(KeyUpEvent event) {
+        if(event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+            itemHandler.onEditComplete(this);
+        }
+    }
+
     public HasEnabled enabledOrganizationCode() {
         return organizationCode;
+    }
+
+    public void setItemHandler(DecimalNumberList itemHandler) {
+        this.itemHandler = itemHandler;
     }
 
     public void fillOrganizationCodesOption( Set< En_OrganizationCode > availableValues ) {
@@ -260,9 +273,9 @@ public class DecimalNumberBox
     MaskedTextBox regNum;
     @UiField
     MaskedTextBox classifierCode;
+
     @UiField
     Element msg;
-
     @UiField
     @Inject
     Lang lang;
@@ -273,12 +286,14 @@ public class DecimalNumberBox
     @UiField
     ToggleButton isReserve;
 
+    @UiField
+    Button next;
+
     @Inject
     AbstractDecimalNumberDataProvider dataProvider;
 
     private DecimalNumber value = new DecimalNumber();
 
-    @Inject
     AbstractDecimalNumberItemHandler itemHandler;
 
     interface DecimalNumberWidgetUiBinder extends UiBinder<HTMLPanel, DecimalNumberBox> {}
