@@ -13,8 +13,6 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.protei.portal.core.model.dict.En_OrganizationCode;
 import ru.protei.portal.core.model.ent.DecimalNumber;
-import ru.protei.portal.ui.common.client.widget.selector.event.RemoveEvent;
-import ru.protei.portal.ui.common.client.widget.selector.event.RemoveHandler;
 import ru.protei.portal.ui.equipment.client.widget.number.item.DecimalNumberBox;
 
 import java.util.*;
@@ -24,7 +22,7 @@ import java.util.*;
  */
 public class DecimalNumberList
         extends Composite
-        implements HasValue<List<DecimalNumber>>
+        implements HasValue<List<DecimalNumber>>, AbstractDecimalNumberItemHandler
 {
     @Inject
     public void onInit() {
@@ -121,19 +119,29 @@ public class DecimalNumberList
         addRemoveHandler( box, emptyNumber );
     }
 
+    @Override
+    public void onEditComplete(DecimalNumberBox box) {
+        DecimalNumber number = box.getValue();
+        DecimalNumber newNumber = new DecimalNumber();
+        newNumber.setModification(number.getModification() + 1);
+        values.add( newNumber );
+
+        createBoxAndFillValue(newNumber);
+    }
+
     private void checkAddButtonState() {
         add.setVisible( En_OrganizationCode.values().length - values.size() >= 1 );
     }
-
     @UiField
     HTMLPanel list;
+
     @UiField
     Button add;
 
     @Inject
     Provider<DecimalNumberBox> boxProvider;
-
     private List<DecimalNumber> values = new ArrayList<>();
+
     private List<DecimalNumberBox> numberBoxes = new ArrayList<>();
 
     interface DecimalNumberListUiBinder extends UiBinder< HTMLPanel, DecimalNumberList > {}

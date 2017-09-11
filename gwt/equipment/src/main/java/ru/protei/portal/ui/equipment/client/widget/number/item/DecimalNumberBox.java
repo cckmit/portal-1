@@ -22,6 +22,7 @@ import ru.protei.portal.ui.common.client.widget.selector.event.RemoveEvent;
 import ru.protei.portal.ui.common.client.widget.selector.event.RemoveHandler;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.equipment.client.provider.AbstractDecimalNumberDataProvider;
+import ru.protei.portal.ui.equipment.client.widget.number.list.AbstractDecimalNumberItemHandler;
 import ru.protei.portal.ui.equipment.client.widget.selector.OrganizationCodeSelector;
 import ru.protei.winter.web.common.client.common.DisplayStyle;
 
@@ -127,6 +128,10 @@ public class DecimalNumberBox
         ValueChangeEvent.fire( this, this.value );
 
         checkExistNumber();
+
+        if (regNumModification.getText().length() == 2) {
+            itemHandler.onEditComplete(this);
+        }
     }
 
 
@@ -272,6 +277,9 @@ public class DecimalNumberBox
     AbstractDecimalNumberDataProvider dataProvider;
 
     private DecimalNumber value = new DecimalNumber();
+
+    @Inject
+    AbstractDecimalNumberItemHandler itemHandler;
 
     interface DecimalNumberWidgetUiBinder extends UiBinder<HTMLPanel, DecimalNumberBox> {}
     private static DecimalNumberWidgetUiBinder ourUiBinder = GWT.create( DecimalNumberWidgetUiBinder.class );
