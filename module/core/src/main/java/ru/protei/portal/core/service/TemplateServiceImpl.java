@@ -1,10 +1,10 @@
 package ru.protei.portal.core.service;
 
 
-import freemarker.template.Configuration;
-import freemarker.template.TemplateExceptionHandler;
+import freemarker.template.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.core.event.CaseCommentEvent;
 import ru.protei.portal.core.event.CaseObjectEvent;
 import ru.protei.portal.core.model.dict.En_CaseState;
@@ -13,13 +13,12 @@ import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.service.template.LocalizedTemplateCreator;
 import ru.protei.portal.core.service.template.PreparedTemplate;
+import ru.protei.portal.core.Lang;
 
 import javax.annotation.PostConstruct;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static java.util.stream.Collectors.toList;
 
@@ -31,6 +30,9 @@ public class TemplateServiceImpl implements TemplateService {
 
     Configuration templateConfiguration;
 
+    @Autowired
+    Lang keys;
+
     @PostConstruct
     public void onInit() {
         try {
@@ -38,6 +40,19 @@ public class TemplateServiceImpl implements TemplateService {
             templateConfiguration.setClassForTemplateLoading( TemplateServiceImpl.class, "/" );
             templateConfiguration.setDefaultEncoding( "UTF-8" );
             templateConfiguration.setTemplateExceptionHandler( TemplateExceptionHandler.HTML_DEBUG_HANDLER );
+
+            LocalizedTemplateCreator templateCreator = new LocalizedTemplateCreator(
+                    TemplateServiceImpl.class.getResource("/").getFile(),
+                    keys,
+                    Locale.forLanguageTag("ru"),
+                    Locale.ENGLISH
+            );
+
+            templateCreator.createFor(
+                    templateConfiguration.getTemplate("notification/email/crm.subject.ftl", "UTF-8"));
+            templateCreator.createFor(
+                    templateConfiguration.getTemplate("notification/email/crm.body.ftl", "UTF-8"));
+
         } catch ( Exception e ) {
             log.error( "Freemarker Configuration init failure", e );
             e.printStackTrace();

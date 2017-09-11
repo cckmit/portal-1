@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.core.aspect.ServiceLayerInterceptor;
 import ru.protei.portal.core.controller.auth.AuthInterceptor;
@@ -15,6 +16,7 @@ import ru.protei.portal.core.service.user.AuthServiceImpl;
 import ru.protei.portal.core.service.user.LDAPAuthProvider;
 import ru.protei.portal.core.utils.SessionIdGen;
 import ru.protei.portal.core.utils.SimpleSidGenerator;
+import ru.protei.portal.core.Lang;
 import ru.protei.winter.core.utils.config.exception.ConfigException;
 
 @EnableAspectJAutoProxy
@@ -34,6 +36,14 @@ public class MainConfiguration {
     public FileStorage getFileStorage (@Autowired PortalConfig config){
         PortalConfigData.CloudConfig cloud = config.data().cloud();
         return new FileStorage(cloud.getStoragePath(), cloud.getUser(), cloud.getPassword());
+    }
+
+    @Bean
+    public Lang lang() {
+        ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+        messageSource.setBasenames("Lang");
+        messageSource.setDefaultEncoding("UTF-8");
+        return new Lang(messageSource);
     }
 
     @Bean

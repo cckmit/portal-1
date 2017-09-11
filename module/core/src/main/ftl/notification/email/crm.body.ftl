@@ -1,3 +1,4 @@
+<#noparse>
 <html>
 <head>
     <meta http-equiv="content-type" content="text/html; charset=windows-1251">
@@ -19,7 +20,7 @@
                             </a>
                         </td>
                         <td style="padding-left: 5px; font-size: 11px; font-family:sans-serif; text-align: right; color: #888888">
-                            Создана <#if createdByMe == true>вами <#else>${case.creator.displayShortName}</#if> ${case.created}
+                            </#noparse>${createdBy}<#noparse> <#if createdByMe == true></#noparse>${you}<#noparse><#else>${case.creator.displayShortName}</#if> ${case.created}
                         </td>
                     </tr>
                     </tbody>
@@ -34,7 +35,7 @@
                     <#if case.privateCase == true>
                         <span style="color:#777777;font-style:italic;font-size:13px">
                                 <img style="vertical-align:text-bottom;opacity: 0.3;margin-left: -2px;" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAApUlEQVQ4jd3RPYpCQRAE4M+fTPYZiAu6F/B8G3gPr6B4H0FzXUFETMR0hWdgBzIO62PVxIaimZquqhmaF9UnRpgHRuhWFX/hByV2gRJL9KoYTEPwjXpgGNykisERs4SrYYFDOlzPGHxgk3BlcO10uJmc+9FbGCR3reg9bDPB+jhF2l/4ddnSzRcKNHLOmVcXOYN/1RsYXK9xhTE6dzR7rB8Nfl6dAU0MImYlDT68AAAAAElFTkSuQmCC">
-                                Обращение является приватным
+                            </#noparse>${issueIsPrivate}<#noparse>
                             </span>
                     </#if>
                     </div>
@@ -48,7 +49,7 @@
             <tbody>
             <tr>
                 <td style="vertical-align: top;padding: 5px 5px 5px 0;padding-right: 15px;font-family: sans-serif;font-size: 13px;color: #888888;">
-                    Продукт
+                    </#noparse>${product}<#noparse>
                 </td>
                 <td colspan="3" style="
                         vertical-align:top;padding:5px;font-family: sans-serif;font-size: 13px;
@@ -64,7 +65,7 @@
             </tr>
             <tr>
                 <td style="padding: 5px 5px 5px 0; vertical-align: top;padding-right: 15px; font-family: sans-serif; font-size:13px; color: #888888;">
-                    Критичность
+                    </#noparse>${criticality}<#noparse>
                 </td>
                 <td style="
                         vertical-align: top; padding: 5px; font-family:sans-serif; font-size: 13px;
@@ -78,7 +79,7 @@
                     </div>
                 </td>
                 <td style=" padding: 5px 5px 5px 20px; vertical-align: top; padding-right: 15px; font-family: sans-serif;font-size: 13px; color: #888888;">
-                    Статус
+                    </#noparse>${state}<#noparse>
                 </td>
                 <td style="
                         vertical-align: top; padding: 5px; font-family:sans-serif; font-size: 13px;
@@ -94,7 +95,7 @@
             </tr>
             <tr>
                 <td style=" padding: 5px 5px 5px 0; vertical-align: top;padding-right: 15px; font-family: sans-serif; font-size:13px; color: #888888;">
-                    Заказчик
+                    </#noparse>${customer}<#noparse>
                 </td>
                 <td style="
                         vertical-align: top; padding: 5px; font-family:sans-serif; font-size: 13px;
@@ -111,7 +112,7 @@
                     </div>
                 </td>
                 <td style=" padding: 5px 5px 5px 20px; vertical-align:top; padding-right: 15px; font-family: sans-serif;font-size: 13px; color: #888888;">
-                    Менеджер
+                    </#noparse>${manager}<#noparse>
                 </td>
                 <td style="
                         vertical-align: top; padding: 5px; font-family:sans-serif; font-size: 13px;
@@ -157,7 +158,7 @@
                                 <#if caseComment.changed>background: #dff7e2;</#if>
                         ">
                             <div class="wiki text">
-                                Изменил статус на ${caseComment.caseState}
+                                </#noparse>${changedStateTo}<#noparse> ${caseComment.caseState}
                             </div>
                         </td>
                     </tr>
@@ -200,3 +201,4 @@
 </div>
 </body>
 </html>
+</#noparse>
