@@ -18,13 +18,12 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.mask.MaskedTextBox;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.dict.En_OrganizationCode;
-import ru.protei.portal.ui.common.client.widget.selector.event.HasRemoveHandlers;
-import ru.protei.portal.ui.common.client.widget.selector.event.RemoveEvent;
-import ru.protei.portal.ui.common.client.widget.selector.event.RemoveHandler;
+import ru.protei.portal.ui.common.client.widget.platelist.events.AddEvent;
+import ru.protei.portal.ui.common.client.widget.platelist.events.AddHandler;
+import ru.protei.portal.ui.common.client.widget.platelist.events.HasAddHandlers;
+import ru.protei.portal.ui.common.client.widget.selector.event.*;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.equipment.client.provider.AbstractDecimalNumberDataProvider;
-import ru.protei.portal.ui.equipment.client.widget.number.list.AbstractDecimalNumberItemHandler;
-import ru.protei.portal.ui.equipment.client.widget.number.list.DecimalNumberList;
 import ru.protei.portal.ui.equipment.client.widget.selector.OrganizationCodeSelector;
 import ru.protei.winter.web.common.client.common.DisplayStyle;
 
@@ -34,7 +33,7 @@ import java.util.Set;
  * Вид виджета децимального номера
  */
 public class DecimalNumberBox
-        extends Composite implements HasValue<DecimalNumber>, HasEnabled, HasRemoveHandlers{
+        extends Composite implements HasValue<DecimalNumber>, HasEnabled, HasRemoveHandlers, HasAddHandlers {
 
     @Inject
     public void onInit() {
@@ -82,6 +81,11 @@ public class DecimalNumberBox
     @Override
     public HandlerRegistration addRemoveHandler( RemoveHandler handler ) {
         return addHandler( handler, RemoveEvent.getType() );
+    }
+
+    @Override
+    public HandlerRegistration addAddHandler(AddHandler handler) {
+        return addHandler(handler, AddEvent.getType());
     }
 
     @Override
@@ -136,7 +140,6 @@ public class DecimalNumberBox
         }
     }
 
-
     @UiHandler( "getNextNumber" )
     public void onGetNextNumber( ClickEvent event ) {
         event.preventDefault();
@@ -167,16 +170,12 @@ public class DecimalNumberBox
     @UiHandler("next")
     public void onNextClicked(KeyUpEvent event) {
         if(event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
-            itemHandler.onEditComplete(this);
+            AddEvent.fire(this);
         }
     }
 
     public HasEnabled enabledOrganizationCode() {
         return organizationCode;
-    }
-
-    public void setItemHandler(DecimalNumberList itemHandler) {
-        this.itemHandler = itemHandler;
     }
 
     public void fillOrganizationCodesOption( Set< En_OrganizationCode > availableValues ) {
@@ -254,14 +253,12 @@ public class DecimalNumberBox
         msg.addClassName( "hide" );
         getNumberMsg.removeClassName( "hide" );
     }
-
     private void showMessage( String text, DisplayStyle style ) {
         msg.removeClassName( "hide" );
         getNumberMsg.addClassName( "hide" );
         msg.setClassName( "text text-" + style.name().toLowerCase() );
         msg.setInnerText( text );
     }
-
     private void clearMessage(){
         getNumberMsg.addClassName( "hide" );
         msg.addClassName( "hide" );
@@ -270,11 +267,11 @@ public class DecimalNumberBox
     @Inject
     @UiField(provided = true)
     OrganizationCodeSelector organizationCode;
+
     @UiField
     MaskedTextBox regNumModification;
     @UiField
     MaskedTextBox regNum;
-
     @UiField
     MaskedTextBox classifierCode;
     @UiField
@@ -282,8 +279,10 @@ public class DecimalNumberBox
     @UiField
     @Inject
     Lang lang;
+
     @UiField
     DivElement container;
+
     @UiField
     SpanElement getNumberMsg;
 
@@ -297,8 +296,6 @@ public class DecimalNumberBox
     AbstractDecimalNumberDataProvider dataProvider;
 
     private DecimalNumber value = new DecimalNumber();
-
-    AbstractDecimalNumberItemHandler itemHandler;
 
     interface DecimalNumberWidgetUiBinder extends UiBinder<HTMLPanel, DecimalNumberBox> {}
     private static DecimalNumberWidgetUiBinder ourUiBinder = GWT.create( DecimalNumberWidgetUiBinder.class );

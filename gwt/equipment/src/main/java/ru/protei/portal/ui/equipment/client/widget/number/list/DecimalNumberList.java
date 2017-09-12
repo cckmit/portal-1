@@ -22,7 +22,7 @@ import java.util.*;
  */
 public class DecimalNumberList
         extends Composite
-        implements HasValue<List<DecimalNumber>>, AbstractDecimalNumberItemHandler
+        implements HasValue<List<DecimalNumber>>
 {
     @Inject
     public void onInit() {
@@ -85,8 +85,6 @@ public class DecimalNumberList
     private void createBoxAndFillValue( DecimalNumber number ) {
         DecimalNumberBox box = boxProvider.get();
         box.setValue( number );
-        box.setItemHandler(this);
-
         numberBoxes.add( box );
         if (number.getOrganizationCode().equals(En_OrganizationCode.PAMR)) {
             pmraList.add(box.asWidget());
@@ -94,7 +92,24 @@ public class DecimalNumberList
             pdraList.add(box.asWidget());
         }
         box.setFocusToNextButton(true);
+        addNextItemHandler(box);
         addRemoveHandler( box, number );
+    }
+
+    private void addNextItemHandler(DecimalNumberBox box) {
+        box.addAddHandler(event -> {
+            DecimalNumber oldNumber = box.getValue();
+            DecimalNumber newNumber = new DecimalNumber();
+            newNumber.setOrganizationCode(oldNumber.getOrganizationCode());
+            newNumber.setClassifierCode(oldNumber.getClassifierCode());
+            newNumber.setRegisterNumber(oldNumber.getRegisterNumber());
+            newNumber.setModification(oldNumber.getModification() + 1);
+
+            if (!numberExists(newNumber)) {
+                values.add(newNumber);
+                createBoxAndFillValue(newNumber);
+            }
+        });
     }
 
     private void addRemoveHandler( DecimalNumberBox box, DecimalNumber number ) {
@@ -113,7 +128,6 @@ public class DecimalNumberList
 
     private void createEmptyBox() {
         DecimalNumberBox box = boxProvider.get();
-        box.setItemHandler(this);
         DecimalNumber emptyNumber = new DecimalNumber();
 
         Set<En_OrganizationCode> availableValues = new HashSet<>( Arrays.asList( En_OrganizationCode.values() ) );
@@ -132,22 +146,8 @@ public class DecimalNumberList
         } else {
             pdraList.add(box.asWidget());
         }
+        addNextItemHandler(box);
         addRemoveHandler( box, emptyNumber );
-    }
-
-    @Override
-    public void onEditComplete(DecimalNumberBox box) {
-        DecimalNumber number = box.getValue();
-        DecimalNumber newNumber = new DecimalNumber();
-        newNumber.setOrganizationCode(number.getOrganizationCode());
-        newNumber.setClassifierCode(number.getClassifierCode());
-        newNumber.setRegisterNumber(number.getRegisterNumber());
-        newNumber.setModification(number.getModification() + 1);
-
-        if (!numberExists(newNumber)) {
-            values.add(newNumber);
-            createBoxAndFillValue(newNumber);
-        }
     }
 
     private boolean numberExists(DecimalNumber number) {

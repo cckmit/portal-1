@@ -48,8 +48,6 @@ public class EquipmentClientModule extends AbstractGinModule {
         bind( EquipmentCopyActivity.class ).asEagerSingleton();
         bind( AbstractEquipmentCopyView.class ).to( EquipmentCopyView.class ).in( Singleton.class );
 
-        bind (AbstractDecimalNumberItemHandler.class).to(DecimalNumberList.class);
-
         requestStaticInjection( EquipmentUtils.class );
     }
 }
