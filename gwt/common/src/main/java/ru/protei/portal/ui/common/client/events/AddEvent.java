@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.common.client.widget.platelist.events;
+package ru.protei.portal.ui.common.client.events;
 
 import com.google.gwt.event.shared.GwtEvent;
 
