@@ -132,7 +132,7 @@ public class DecimalNumberBox
         checkExistNumber();
 
         if (regNumModification.getText().length() == 2) {
-            next.setFocus(true);
+            setFocusToNextButton(true);
         }
     }
 
@@ -181,6 +181,10 @@ public class DecimalNumberBox
 
     public void fillOrganizationCodesOption( Set< En_OrganizationCode > availableValues ) {
         organizationCode.fillOptions( availableValues );
+    }
+
+    public void setFocusToNextButton(boolean isFocused) {
+        next.setFocus(isFocused);
     }
 
     private void checkExistNumber() {
@@ -263,7 +267,6 @@ public class DecimalNumberBox
         msg.addClassName( "hide" );
         msg.setInnerText( "" );
     }
-
     @Inject
     @UiField(provided = true)
     OrganizationCodeSelector organizationCode;
@@ -271,9 +274,9 @@ public class DecimalNumberBox
     MaskedTextBox regNumModification;
     @UiField
     MaskedTextBox regNum;
+
     @UiField
     MaskedTextBox classifierCode;
-
     @UiField
     Element msg;
     @UiField
@@ -283,6 +286,7 @@ public class DecimalNumberBox
     DivElement container;
     @UiField
     SpanElement getNumberMsg;
+
     @UiField
     ToggleButton isReserve;
 

@@ -93,6 +93,7 @@ public class DecimalNumberList
         } else {
             pdraList.add(box.asWidget());
         }
+        box.setFocusToNextButton(true);
         addRemoveHandler( box, number );
     }
 
@@ -142,9 +143,23 @@ public class DecimalNumberList
         newNumber.setClassifierCode(number.getClassifierCode());
         newNumber.setRegisterNumber(number.getRegisterNumber());
         newNumber.setModification(number.getModification() + 1);
-        values.add( newNumber );
 
-        createBoxAndFillValue(newNumber);
+        if (!numberExists(newNumber)) {
+            values.add(newNumber);
+            createBoxAndFillValue(newNumber);
+        }
+    }
+
+    private boolean numberExists(DecimalNumber number) {
+        for (DecimalNumber value: values) {
+            if (value.getOrganizationCode() == number.getOrganizationCode()
+                && value.getModification() == number.getModification()
+                    && value.getClassifierCode() == number.getClassifierCode())
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void checkAddButtonState() {
