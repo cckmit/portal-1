@@ -20,8 +20,6 @@ import ru.protei.portal.ui.equipment.client.view.edit.EquipmentEditView;
 import ru.protei.portal.ui.equipment.client.view.filter.EquipmentFilterView;
 import ru.protei.portal.ui.equipment.client.view.preview.EquipmentPreviewView;
 import ru.protei.portal.ui.equipment.client.view.table.EquipmentTableView;
-import ru.protei.portal.ui.equipment.client.widget.number.list.AbstractDecimalNumberItemHandler;
-import ru.protei.portal.ui.equipment.client.widget.number.list.DecimalNumberList;
 
 
 /**
