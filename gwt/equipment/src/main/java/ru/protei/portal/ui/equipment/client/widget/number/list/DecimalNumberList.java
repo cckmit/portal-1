@@ -77,7 +77,8 @@ public class DecimalNumberList
     }
 
     private void clearBoxes() {
-        list.clear();
+        pdraList.clear();
+        pmraList.clear();
         numberBoxes.clear();
     }
 
@@ -87,14 +88,22 @@ public class DecimalNumberList
         box.setItemHandler(this);
 
         numberBoxes.add( box );
-        list.add( box.asWidget() );
+        if (number.getOrganizationCode().equals(En_OrganizationCode.PAMR)) {
+            pmraList.add(box.asWidget());
+        } else {
+            pdraList.add(box.asWidget());
+        }
         addRemoveHandler( box, number );
     }
 
     private void addRemoveHandler( DecimalNumberBox box, DecimalNumber number ) {
         box.addRemoveHandler( event -> {
             values.remove( number );
-            list.remove( box );
+            if (number.getOrganizationCode().equals(En_OrganizationCode.PAMR)) {
+                pmraList.remove(box);
+            } else {
+                pdraList.remove(box);
+            }
             numberBoxes.remove( box );
 
             checkAddButtonState();
@@ -117,7 +126,11 @@ public class DecimalNumberList
 
         values.add( emptyNumber );
         numberBoxes.add( box );
-        list.add( box.asWidget() );
+        if (emptyNumber.getOrganizationCode().equals(En_OrganizationCode.PAMR)) {
+            pmraList.add(box.asWidget());
+        } else {
+            pdraList.add(box.asWidget());
+        }
         addRemoveHandler( box, emptyNumber );
     }
 
@@ -143,6 +156,10 @@ public class DecimalNumberList
 
     @UiField
     Button add;
+    @UiField
+    HTMLPanel pmraList;
+    @UiField
+    HTMLPanel pdraList;
 
     @Inject
     Provider<DecimalNumberBox> boxProvider;

@@ -3,10 +3,36 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
+    <ui:style>
+        .container {
+            display: inline-flex;
+        }
+
+        .left-half {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            flex: 1;
+            padding: 1rem;
+        }
+
+        .right-half {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            flex: 1;
+            padding: 1rem;
+        }
+
+    </ui:style>
+
     <g:HTMLPanel ui:field="root">
-        <g:HTMLPanel ui:field="list"/>
         <g:Button ui:field="add" styleName="btn btn-white">
             <ui:text from="{lang.buttonAdd}"/>
         </g:Button>
+        <g:HTMLPanel ui:field="list" styleName="{style.container}">
+            <g:HTMLPanel ui:field="pmraList" styleName="{style.left-half}"></g:HTMLPanel>
+            <g:HTMLPanel ui:field="pdraList" styleName="{style.right-half}"></g:HTMLPanel>
+        </g:HTMLPanel>
     </g:HTMLPanel>
 </ui:UiBinder>
