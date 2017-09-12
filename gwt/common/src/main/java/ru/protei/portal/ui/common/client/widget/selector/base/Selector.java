@@ -201,6 +201,10 @@ public abstract class Selector<T>
         return addHandler( handler, SelectorChangeValEvent.getType() );
     }
 
+    public void addCloseHandler(CloseHandler<PopupPanel> handler){
+        popup.addCloseHandler(handler);
+    }
+
     public abstract void fillSelectorView( DisplayOption selectedValue );
 
     @Override
@@ -236,10 +240,6 @@ public abstract class Selector<T>
         itemView.setName( name );
         itemView.addStyleName( "search-no-result" );
         popup.getChildContainer().add( itemView.asWidget() );
-    }
-
-    public void addCloseHandler(CloseHandler<PopupPanel> handler){
-        popup.addCloseHandler(handler);
     }
 
     @Inject
