@@ -14,7 +14,6 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.Image;
 
 /**
  * Вид одного элемента из выпадайки селектора
@@ -56,14 +55,25 @@ public class SelectorItem
         ClickEvent.fireNativeEvent( event.getNativeEvent(), this );
     }
 
+    public void select() {
+        text.getParentElement().getStyle().setBackgroundColor("lightgrey");
+    }
+
+
+    public void unselect() {
+        text.getParentElement().getStyle().setBackgroundColor("white");
+    }
+
     @UiField
     HTMLPanel root;
     @UiField
     Anchor anchor;
     @UiField
     Element icon;
+
     @UiField
     SpanElement text;
+
     @UiField
     ImageElement image;
 

@@ -9,6 +9,8 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
@@ -39,13 +41,42 @@ public class SelectorPopup
     }
 
     @Override
+    protected void onAttach() {
+        super.onAttach();
+        if (handler != null) {
+            handler.selectFirst();
+        }
+        DOM.sinkEvents(this.getElement(), Event.ONKEYUP );
+        DOM.setEventListener(this.getElement(), (event ) -> {
+            if (event.getKeyCode() == 40) {
+                if (handler != null) {
+                    handler.onArrowDown();
+                }
+            }
+
+            if (event.getKeyCode() == 38) {
+                if (handler != null) {
+                    handler.onArrowUp();
+                }
+            }
+
+            if (event.getKeyCode() == 13) {
+                if (handler != null) {
+                    handler.onEnterClicked();
+                }
+            }
+        });
+
+    }
+
+    @Override
     public HandlerRegistration addValueChangeHandler( ValueChangeHandler< String > handler ) {
         return addHandler( handler, ValueChangeEvent.getType() );
     }
+
     public HasWidgets getChildContainer() {
         return childContainer;
     }
-
     public void showNear( IsWidget nearWidget ) {
         this.relative = nearWidget;
 
@@ -92,10 +123,12 @@ public class SelectorPopup
     }
 
 
+
     @UiHandler( "search" )
     public void onSearchInputChanged( KeyUpEvent event ) {
         fireChangeValueTimer();
     }
+
 
     @Override
     protected void onLoad() {
@@ -123,6 +156,10 @@ public class SelectorPopup
         searchAutoFocus = val;
     }
 
+    public void setHandler(AbstractNavigationHandler handler) {
+        this.handler = handler;
+    }
+
     Timer searchValueChangeTimer = new Timer() {
         @Override
         public void run() {
@@ -147,6 +184,8 @@ public class SelectorPopup
     HTMLPanel root;
     @Inject
     Lang lang;
+
+    private AbstractNavigationHandler handler;
 
     interface SelectorPopupViewUiBinder extends UiBinder<HTMLPanel, SelectorPopup > {}
     private static SelectorPopupViewUiBinder ourUiBinder = GWT.create( SelectorPopupViewUiBinder.class );

@@ -18,9 +18,9 @@ import ru.protei.portal.ui.common.client.widget.selector.event.HasSelectorChange
 import ru.protei.portal.ui.common.client.widget.selector.event.SelectorChangeValEvent;
 import ru.protei.portal.ui.common.client.widget.selector.event.SelectorChangeValHandler;
 import ru.protei.portal.ui.common.client.widget.selector.item.SelectorItem;
+import ru.protei.portal.ui.common.client.widget.selector.popup.AbstractNavigationHandler;
 import ru.protei.portal.ui.common.client.widget.selector.popup.SelectorPopup;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -225,6 +225,10 @@ public abstract class Selector<T>
 
     protected void closePopup(){
         popup.hide();
+    }
+
+    protected void setHandler(AbstractNavigationHandler handler) {
+        popup.setHandler(handler);
     }
 
     private void addEmptyListGhostOption( String name ) {
