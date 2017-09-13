@@ -63,6 +63,7 @@ public class DecimalNumberBox
         classifierCode.setText( value.getClassifierCode() == null ? null : NumberFormat.getFormat("000000").format( value.getClassifierCode() ) );
         regNum.setText( value.getRegisterNumber() == null ? null : NumberFormat.getFormat("000").format( value.getRegisterNumber() ) );
         regNumModification.setText( value.getModification() == null ? null : NumberFormat.getFormat("00").format( value.getModification() ) );
+        checkNextButtonState();
         isReserve.setValue( value.isReserve() );
 
         clearMessage();
@@ -102,7 +103,7 @@ public class DecimalNumberBox
     public void onRegNumChanged( KeyUpEvent event ) {
         value.setRegisterNumber( Integer.parseInt( regNum.getValue() ) );
         ValueChangeEvent.fire( this, value );
-
+        checkNextButtonState();
         if ( regNum.getText().length() == 3 ) {
             checkExistNumber();
             return;
@@ -115,7 +116,7 @@ public class DecimalNumberBox
     public void onClassifierCodeChanged( KeyUpEvent event ) {
         value.setClassifierCode( Integer.parseInt( classifierCode.getValue() ) );
         ValueChangeEvent.fire( this, value );
-
+        checkNextButtonState();
         markBoxAsError( false );
         if ( classifierCode.getText().length() == 6 ) {
             fillNextAvailableNumber();
@@ -132,7 +133,7 @@ public class DecimalNumberBox
         ValueChangeEvent.fire( this, this.value );
 
         checkExistNumber();
-
+        checkNextButtonState();
         if (regNumModification.getText().length() == 2) {
             setFocusToNextButton(true);
         }
@@ -200,6 +201,13 @@ public class DecimalNumberBox
                 showMessage( lang.equipmentDecimalNumberEmpty(), DisplayStyle.SUCCESS );
             }
         } );
+    }
+
+    private void checkNextButtonState() {
+        boolean stateCondition = regNumModification.getText().length() == 2
+                && classifierCode.getText().length() == 6
+                && regNum.getText().length() == 3;
+        next.setEnabled(stateCondition);
     }
 
     private void markBoxAsError( boolean isError ) {
