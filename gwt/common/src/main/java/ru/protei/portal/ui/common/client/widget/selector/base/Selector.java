@@ -21,6 +21,7 @@ import ru.protei.portal.ui.common.client.widget.selector.item.SelectorItem;
 import ru.protei.portal.ui.common.client.widget.selector.popup.AbstractNavigationHandler;
 import ru.protei.portal.ui.common.client.widget.selector.popup.SelectorPopup;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**

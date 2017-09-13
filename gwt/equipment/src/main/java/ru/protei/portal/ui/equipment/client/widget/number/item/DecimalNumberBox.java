@@ -2,9 +2,7 @@ package ru.protei.portal.ui.equipment.client.widget.number.item;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.*;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -167,15 +165,13 @@ public class DecimalNumberBox
         RemoveEvent.fire( this );
     }
 
-    @UiHandler("next")
-    public void onNextClicked(KeyUpEvent event) {
-        if(event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
-            AddEvent.fire(this);
-        }
-    }
-
     public HasEnabled enabledOrganizationCode() {
         return organizationCode;
+    }
+
+    @UiHandler("next")
+    public void onNextClicked(ClickEvent event) {
+            AddEvent.fire(this);
     }
 
     public void fillOrganizationCodesOption( Set< En_OrganizationCode > availableValues ) {

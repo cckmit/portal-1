@@ -18,10 +18,7 @@
             <mask:MaskedTextBox ui:field="regNumModification" styleName="input-field dn-register-number-modifier" mask="99"/>
             <label class="dn-separator"></label>
             <g:Button ui:field="next" styleName="btn btn-white">
-                <span class = "fa-stack">
-                <i class="fa fa-square-o fa-stack-2x"></i>
-                <i class="fa fa-arrow-right fa-stack-1x"></i>
-                </span>
+                <i class="fa fa-arrow-right"></i>
             </g:Button>
             <g:Button ui:field="remove" styleName="btn btn-primary" title="{lang.equipmentRemove}">
                 <i class="fa fa-trash fa-lg"/>
