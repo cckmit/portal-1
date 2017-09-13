@@ -15,9 +15,12 @@
             <label class="dn-separator">.</label>
             <mask:MaskedTextBox ui:field="regNum" styleName="input-field dn-register-number" mask="999"/>
             <label class="dn-separator">–</label>
-            <mask:MaskedTextBox ui:field="regNumModification" styleName="input-field dn-register-number-modifier" mask="99"/>
+            <div class="modtooltip">
+                <mask:MaskedTextBox ui:field="regNumModification" styleName="input-field dn-register-number-modifier" mask="99"/>
+                <label><ui:text from="{lang.pushEnter}"></ui:text></label>
+            </div>
             <label class="dn-separator"></label>
-            <g:Button ui:field="next" styleName="btn btn-white">
+            <g:Button ui:field="next" styleName="btn btn-white" title="{lang.formNextMod}">
                 <i class="fa fa-arrow-right"></i>
             </g:Button>
             <g:Button ui:field="remove" styleName="btn btn-primary" title="{lang.equipmentRemove}">

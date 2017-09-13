@@ -578,4 +578,8 @@ public interface Lang extends Messages, ContactItemLang {
     String privilegeRemove();
 
     String buttonLocale();
+
+    String pushEnter();
+
+    String formNextMod();
 }

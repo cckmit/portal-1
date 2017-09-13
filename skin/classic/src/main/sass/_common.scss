@@ -1795,3 +1795,20 @@ ul.privileges {
 .list-inline>li {
   display: inline-block;
 }
+
+.modtooltip {
+  position: relative;
+}
+
+.modtooltip > label {
+  position: absolute;
+  font-size: 11px;
+  opacity: 0;
+  transition: 0.3s;
+}
+
+.modtooltip:hover > label{
+  opacity: 1;
+  color: red;
+  transition: 0.3s;
+}
