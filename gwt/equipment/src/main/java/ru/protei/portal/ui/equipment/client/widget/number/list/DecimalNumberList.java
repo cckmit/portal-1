@@ -86,11 +86,7 @@ public class DecimalNumberList
         DecimalNumberBox box = boxProvider.get();
         box.setValue( number );
         numberBoxes.add( box );
-        if (number.getOrganizationCode().equals(En_OrganizationCode.PAMR)) {
-            pamrList.add(box.asWidget());
-        } else {
-            pdraList.add(box.asWidget());
-        }
+        addToSublist(number, box);
         box.setFocusToNextButton(true);
         addNextItemHandler(box);
         addRemoveHandler( box, number );
@@ -115,11 +111,7 @@ public class DecimalNumberList
     private void addRemoveHandler( DecimalNumberBox box, DecimalNumber number ) {
         box.addRemoveHandler( event -> {
             values.remove( number );
-            if (number.getOrganizationCode().equals(En_OrganizationCode.PAMR)) {
-                pamrList.remove(box);
-            } else {
-                pdraList.remove(box);
-            }
+            box.removeFromParent();
             numberBoxes.remove( box );
 
             checkAddButtonState();
@@ -141,11 +133,7 @@ public class DecimalNumberList
 
         values.add( emptyNumber );
         numberBoxes.add( box );
-        if (emptyNumber.getOrganizationCode().equals(En_OrganizationCode.PAMR)) {
-            pamrList.add(box.asWidget());
-        } else {
-            pdraList.add(box.asWidget());
-        }
+        addToSublist(emptyNumber, box);
         addNextItemHandler(box);
         addRemoveHandler( box, emptyNumber );
     }
@@ -160,6 +148,14 @@ public class DecimalNumberList
             }
         }
         return false;
+    }
+
+    private void addToSublist(DecimalNumber number, DecimalNumberBox box) {
+        if (number.getOrganizationCode().equals(En_OrganizationCode.PAMR)) {
+            pamrList.add(box.asWidget());
+        } else {
+            pdraList.add(box.asWidget());
+        }
     }
 
     private void checkAddButtonState() {
