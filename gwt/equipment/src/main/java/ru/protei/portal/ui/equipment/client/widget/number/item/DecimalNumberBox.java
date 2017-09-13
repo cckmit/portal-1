@@ -166,13 +166,13 @@ public class DecimalNumberBox
         RemoveEvent.fire( this );
     }
 
-    public HasEnabled enabledOrganizationCode() {
-        return organizationCode;
-    }
-
     @UiHandler("next")
     public void onNextClicked(ClickEvent event) {
             AddEvent.fire(this);
+    }
+
+    public HasEnabled enabledOrganizationCode() {
+        return organizationCode;
     }
 
     public void fillOrganizationCodesOption( Set< En_OrganizationCode > availableValues ) {

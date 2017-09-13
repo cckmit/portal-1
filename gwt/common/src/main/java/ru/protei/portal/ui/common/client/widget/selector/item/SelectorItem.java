@@ -4,9 +4,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.SpanElement;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.HasClickHandlers;
+import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -14,6 +12,8 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
+import ru.protei.portal.ui.common.client.widget.selector.popup.AbstractNavigationHandler;
 
 /**
  * Вид одного элемента из выпадайки селектора
@@ -25,6 +25,7 @@ public class SelectorItem
 
     public SelectorItem() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+
     }
 
     @Override
@@ -55,19 +56,37 @@ public class SelectorItem
         ClickEvent.fireNativeEvent( event.getNativeEvent(), this );
     }
 
-    public void select() {
-        text.getParentElement().getStyle().setBackgroundColor("lightgrey");
+    @UiHandler("anchor")
+    public void onKeyUpEvent( KeyUpEvent event) {
+        if (event.getNativeKeyCode() == KeyCodes.KEY_DOWN) {
+            if (handler != null) {
+                handler.onArrowDown(this);
+            }
+        }
+
+        if (event.getNativeKeyCode() == KeyCodes.KEY_UP) {
+            if (handler != null) {
+                handler.onArrowUp(this);
+            }
+        }
     }
 
-
-    public void unselect() {
-        text.getParentElement().getStyle().setBackgroundColor("white");
+    public void setFocus(boolean isFocused) {
+        anchor.setFocus(isFocused);
     }
+
+    public <T> void setNavigationHandler(Selector handler) {
+        this.handler = handler;
+    }
+
+    private AbstractNavigationHandler handler;
 
     @UiField
     HTMLPanel root;
+
     @UiField
     Anchor anchor;
+
     @UiField
     Element icon;
 
@@ -76,6 +95,7 @@ public class SelectorItem
 
     @UiField
     ImageElement image;
+
 
     interface SelectorItemViewUiBinder extends UiBinder<HTMLPanel, SelectorItem > {}
     private static SelectorItemViewUiBinder ourUiBinder = GWT.create( SelectorItemViewUiBinder.class );

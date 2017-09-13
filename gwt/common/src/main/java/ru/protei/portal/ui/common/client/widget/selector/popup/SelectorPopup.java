@@ -41,35 +41,6 @@ public class SelectorPopup
     }
 
     @Override
-    protected void onAttach() {
-        super.onAttach();
-        if (handler != null) {
-            handler.selectFirst();
-        }
-        DOM.sinkEvents(this.getElement(), Event.ONKEYUP );
-        DOM.setEventListener(this.getElement(), (event ) -> {
-            if (event.getKeyCode() == 40) {
-                if (handler != null) {
-                    handler.onArrowDown();
-                }
-            }
-
-            if (event.getKeyCode() == 38) {
-                if (handler != null) {
-                    handler.onArrowUp();
-                }
-            }
-
-            if (event.getKeyCode() == 13) {
-                if (handler != null) {
-                    handler.onEnterClicked();
-                }
-            }
-        });
-
-    }
-
-    @Override
     public HandlerRegistration addValueChangeHandler( ValueChangeHandler< String > handler ) {
         return addHandler( handler, ValueChangeEvent.getType() );
     }

@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
  */
 public class EquipmentSelector
         extends ButtonSelector<Equipment >
-        implements ModelSelector<Equipment>, AbstractNavigationHandler
+        implements ModelSelector<Equipment>
     {
 
         @Inject
@@ -34,7 +34,6 @@ public class EquipmentSelector
 
         @Override
         public void fillOptions( List< Equipment > options ) {
-            this.options = options;
             clearOptions();
             if (hasNullValue) {
                 addOption(lang.equipmentPrimaryUseNotDefinied(), null);
@@ -54,42 +53,6 @@ public class EquipmentSelector
             }
         }
 
-        @Override
-        public void onArrowUp() {
-            if (selectedIndex == 0) {
-                return;
-            }
-            unSelectPrevious(selectedIndex);
-            selectedIndex -= 1;
-            selectElement(selectedIndex);
-
-        }
-
-        @Override
-        public void onArrowDown() {
-            if (selectedIndex == options.size() - 1) {
-                return;
-            }
-            unSelectPrevious(selectedIndex);
-            selectedIndex += 1;
-            selectElement(selectedIndex);
-        }
-
-        @Override
-        public void onEnterClicked() {
-            DisplayOption displayOption = itemToDisplayOptionModel.get(options.get(selectedIndex));
-            fillSelectorView(displayOption);
-            unSelectPrevious(selectedIndex);
-            closePopup();
-            ValueChangeEvent.fire(this, options.get(selectedIndex));
-        }
-
-        @Override
-        public void selectFirst() {
-            this.selectedIndex = 0;
-            selectElement(0);
-        }
-
         public void setHasNullValue(boolean hasNullValue) {
             this.hasNullValue = hasNullValue;
         }
@@ -97,18 +60,7 @@ public class EquipmentSelector
         @Override
         public void refreshValue() {}
 
-        private void unSelectPrevious(int selectedIndex) {
-            itemToViewModel.get(options.get(selectedIndex)).unselect();
-        }
-
-        private void selectElement(int selectedIndex) {
-            itemToViewModel.get(options.get(selectedIndex)).select();
-        }
-
         private boolean hasNullValue;
-
-        private List<Equipment> options;
-        private int selectedIndex;
 
         private Lang lang;
     }
