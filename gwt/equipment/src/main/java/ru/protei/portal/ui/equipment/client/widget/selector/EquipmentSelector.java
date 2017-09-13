@@ -29,7 +29,6 @@ public class EquipmentSelector
             setHasNullValue( true );
             setSearchAutoFocus(true);
             nullItemOption = new DisplayOption( lang.equipmentPrimaryUseNotDefinied() );
-            setHandler(this);
         }
 
         @Override

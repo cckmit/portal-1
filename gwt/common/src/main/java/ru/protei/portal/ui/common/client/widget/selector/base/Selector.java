@@ -31,7 +31,6 @@ public abstract class Selector<T>
         ClickHandler, ValueChangeHandler<String>,
         Window.ScrollHandler,
         HasSelectorChangeValHandlers, AbstractNavigationHandler {
-    private int selectedIndex;
 
     public void setValue(T value) {
         setValue(value, false);
@@ -107,6 +106,7 @@ public abstract class Selector<T>
         itemView.setIcon(option.getIcon());
         itemView.setImage(option.getImageSrc());
         itemView.addClickHandler(this);
+        itemView.setNavigationHandler(this);
         itemViewToModel.put(itemView, value);
         itemToViewModel.put(value, itemView);
         if (value == null) {
@@ -230,19 +230,8 @@ public abstract class Selector<T>
         selectFirstElement();
     }
 
-    private void selectFirstElement() {
-        HTMLPanel panel = (HTMLPanel) popup.getChildContainer();
-        this.selectedIndex = 0;
-        SelectorItem firstItem = (SelectorItem) panel.getWidget(0);
-        firstItem.setFocus(true);
-    }
-
     protected void closePopup() {
         popup.hide();
-    }
-
-    protected void setHandler(AbstractNavigationHandler handler) {
-        popup.setHandler(handler);
     }
 
     private void addEmptyListGhostOption(String name) {
@@ -285,6 +274,12 @@ public abstract class Selector<T>
         }
         SelectorItem nextSelectorItem = (SelectorItem) nextWidget;
         nextSelectorItem.setFocus(true);
+    }
+
+    private void selectFirstElement() {
+        HTMLPanel panel = (HTMLPanel) popup.getChildContainer();
+        SelectorItem firstItem = (SelectorItem) panel.getWidget(0);
+        firstItem.setFocus(true);
     }
 
     @Inject

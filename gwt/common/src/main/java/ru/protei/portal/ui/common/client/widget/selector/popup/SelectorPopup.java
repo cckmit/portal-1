@@ -127,10 +127,6 @@ public class SelectorPopup
         searchAutoFocus = val;
     }
 
-    public void setHandler(AbstractNavigationHandler handler) {
-        this.handler = handler;
-    }
-
     Timer searchValueChangeTimer = new Timer() {
         @Override
         public void run() {
@@ -155,8 +151,6 @@ public class SelectorPopup
     HTMLPanel root;
     @Inject
     Lang lang;
-
-    private AbstractNavigationHandler handler;
 
     interface SelectorPopupViewUiBinder extends UiBinder<HTMLPanel, SelectorPopup > {}
     private static SelectorPopupViewUiBinder ourUiBinder = GWT.create( SelectorPopupViewUiBinder.class );
