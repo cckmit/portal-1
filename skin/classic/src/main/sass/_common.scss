@@ -1795,15 +1795,3 @@ ul.privileges {
 .list-inline>li {
   display: inline-block;
 }
-
-.flex-container {
-  display: inline-flex;
-}
-
-.flex-split-vert-item {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  flex: 1;
-  padding: 1rem;
-}

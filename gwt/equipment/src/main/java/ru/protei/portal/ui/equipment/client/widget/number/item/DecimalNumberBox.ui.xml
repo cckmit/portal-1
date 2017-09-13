@@ -5,7 +5,7 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="dn col-md-12 col-lg-6">
+    <g:HTMLPanel styleName="dn col-md-12 col-lg-9">
         <div class="dn-container" ui:field="container">
             <g:ToggleButton ui:field="isReserve" styleName="btn dn-reserve" title="{lang.equipmentReserve}"/>
             <label class="dn-separator"></label>
