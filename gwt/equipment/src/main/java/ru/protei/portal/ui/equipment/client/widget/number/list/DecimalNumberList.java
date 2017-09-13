@@ -163,7 +163,7 @@ public class DecimalNumberList
     }
 
     private void checkAddButtonState() {
-        add.setVisible( En_OrganizationCode.values().length - values.size() >= 1 );
+        add.setEnabled(En_OrganizationCode.values().length - values.size() >= 1);
     }
 
     @UiField
