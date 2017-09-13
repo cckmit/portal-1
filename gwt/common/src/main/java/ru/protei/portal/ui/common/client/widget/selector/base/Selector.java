@@ -259,9 +259,13 @@ public abstract class Selector<T>
         Widget nextWidget = new Widget();
         for (int i = 0; i < widgetCount; i++ ) {
             if (panel.getWidget(i).equals(item)) {
+                if (i == 0) {
+                    return;
+                }
                 nextWidget = panel.getWidget(i - 1);
             }
         }
+
         SelectorItem nextSelectorItem = (SelectorItem) nextWidget;
         nextSelectorItem.setFocus(true);
     }
@@ -273,6 +277,9 @@ public abstract class Selector<T>
         Widget nextWidget = new Widget();
         for (int i = 0; i < widgetCount; i++ ) {
             if (panel.getWidget(i).equals(item)) {
+                if (i == (widgetCount - 1)) {
+                    return;
+                }
                 nextWidget = panel.getWidget(i + 1);
             }
         }
