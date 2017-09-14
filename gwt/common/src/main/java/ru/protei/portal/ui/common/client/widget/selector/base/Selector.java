@@ -1,8 +1,6 @@
 package ru.protei.portal.ui.common.client.widget.selector.base;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
@@ -16,7 +14,6 @@ import ru.protei.portal.ui.common.client.widget.selector.event.HasSelectorChange
 import ru.protei.portal.ui.common.client.widget.selector.event.SelectorChangeValEvent;
 import ru.protei.portal.ui.common.client.widget.selector.event.SelectorChangeValHandler;
 import ru.protei.portal.ui.common.client.widget.selector.item.SelectorItem;
-import ru.protei.portal.ui.common.client.widget.selector.popup.AbstractNavigationHandler;
 import ru.protei.portal.ui.common.client.widget.selector.popup.SelectorPopup;
 
 import java.util.HashMap;
@@ -30,7 +27,7 @@ public abstract class Selector<T>
         implements HasValue<T>,
         ClickHandler, ValueChangeHandler<String>,
         Window.ScrollHandler,
-        HasSelectorChangeValHandlers, AbstractNavigationHandler {
+        HasSelectorChangeValHandlers, KeyUpHandler {
 
     public void setValue(T value) {
         setValue(value, false);
@@ -84,7 +81,7 @@ public abstract class Selector<T>
         itemView.setName(name);
         itemView.setStyle(styleName);
         itemView.addClickHandler(this);
-        itemView.setNavigationHandler(this);
+        itemView.addKeyUpHandler(this);
 
         itemViewToModel.put(itemView, value);
         itemToViewModel.put(value, itemView);
@@ -106,7 +103,8 @@ public abstract class Selector<T>
         itemView.setIcon(option.getIcon());
         itemView.setImage(option.getImageSrc());
         itemView.addClickHandler(this);
-        itemView.setNavigationHandler(this);
+        itemView.addKeyUpHandler(this);
+
         itemViewToModel.put(itemView, value);
         itemToViewModel.put(value, itemView);
         if (value == null) {
@@ -218,6 +216,17 @@ public abstract class Selector<T>
         scrollRegistration.removeHandler();
     }
 
+    @Override
+    public void onKeyUp(KeyUpEvent keyUpEvent) {
+        if (keyUpEvent.getNativeKeyCode() == KeyCodes.KEY_DOWN) {
+            onArrowDown((SelectorItem) keyUpEvent.getSource());
+        }
+
+        if (keyUpEvent.getNativeKeyCode() == KeyCodes.KEY_UP) {
+            onArrowUp((SelectorItem) keyUpEvent.getSource());
+        }
+    }
+
     protected void showPopup(IsWidget relative) {
         this.relative = relative;
         popup.setSearchVisible(searchEnabled);
@@ -241,38 +250,23 @@ public abstract class Selector<T>
         popup.getChildContainer().add(itemView.asWidget());
     }
 
-    @Override
     public void onArrowUp(SelectorItem item) {
         HTMLPanel panel = (HTMLPanel) popup.getChildContainer();
-        int widgetCount = panel.getWidgetCount();
-        Widget nextWidget = new Widget();
-        for (int i = 0; i < widgetCount; i++ ) {
-            if (panel.getWidget(i).equals(item)) {
-                if (i == 0) {
-                    return;
-                }
-                nextWidget = panel.getWidget(i - 1);
-            }
+        int selectedItemIndex = panel.getWidgetIndex(item);
+        if (selectedItemIndex == 0) {
+            return;
         }
-
-        SelectorItem nextSelectorItem = (SelectorItem) nextWidget;
-        nextSelectorItem.setFocus(true);
+        SelectorItem previousSelectorItem = (SelectorItem) panel.getWidget(--selectedItemIndex);
+        previousSelectorItem.setFocus(true);
     }
 
-    @Override
     public void onArrowDown(SelectorItem item) {
         HTMLPanel panel = (HTMLPanel) popup.getChildContainer();
-        int widgetCount = panel.getWidgetCount();
-        Widget nextWidget = new Widget();
-        for (int i = 0; i < widgetCount; i++ ) {
-            if (panel.getWidget(i).equals(item)) {
-                if (i == (widgetCount - 1)) {
-                    return;
-                }
-                nextWidget = panel.getWidget(i + 1);
-            }
+        int selectedItemIndex = panel.getWidgetIndex(item);
+        if (selectedItemIndex == panel.getWidgetCount() - 1) {
+            return;
         }
-        SelectorItem nextSelectorItem = (SelectorItem) nextWidget;
+        SelectorItem nextSelectorItem = (SelectorItem) panel.getWidget(++selectedItemIndex);
         nextSelectorItem.setFocus(true);
     }
 
@@ -281,25 +275,25 @@ public abstract class Selector<T>
         SelectorItem firstItem = (SelectorItem) panel.getWidget(0);
         firstItem.setFocus(true);
     }
-
     @Inject
     SelectorPopup popup;
     @Inject
     Lang lang;
+
     @Inject
     Provider<SelectorItem> itemFactory;
-
     protected DisplayOption nullItemOption;
-    protected boolean hasNullValue = true;
 
+    protected boolean hasNullValue = true;
     private boolean searchEnabled = false;
     private boolean searchAutoFocusEnabled = false;
     private IsWidget relative;
     private T selectedOption = null;
     private SelectorItem nullItemView;
-    private HandlerRegistration scrollRegistration;
 
+    private HandlerRegistration scrollRegistration;
     protected Map<SelectorItem, T> itemViewToModel = new HashMap<>();
     protected Map<T, SelectorItem> itemToViewModel = new HashMap<>();
+
     protected Map<T, DisplayOption> itemToDisplayOptionModel = new HashMap<>();
 }

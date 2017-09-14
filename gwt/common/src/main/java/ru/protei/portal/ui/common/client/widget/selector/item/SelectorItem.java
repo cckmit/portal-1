@@ -20,7 +20,7 @@ import ru.protei.portal.ui.common.client.widget.selector.popup.AbstractNavigatio
  */
 public class SelectorItem
         extends Composite
-        implements HasClickHandlers
+        implements HasClickHandlers, HasKeyUpHandlers
 {
 
     public SelectorItem() {
@@ -31,6 +31,11 @@ public class SelectorItem
     @Override
     public HandlerRegistration addClickHandler( ClickHandler handler ) {
         return addHandler( handler, ClickEvent.getType() );
+    }
+
+    @Override
+    public HandlerRegistration addKeyUpHandler(KeyUpHandler keyUpHandler) {
+        return addHandler( keyUpHandler, KeyUpEvent.getType() );
     }
 
     public void setName( String name ) {
@@ -58,28 +63,14 @@ public class SelectorItem
 
     @UiHandler("anchor")
     public void onKeyUpEvent( KeyUpEvent event) {
-        if (event.getNativeKeyCode() == KeyCodes.KEY_DOWN) {
-            if (handler != null) {
-                handler.onArrowDown(this);
-            }
-        }
+        event.preventDefault();
 
-        if (event.getNativeKeyCode() == KeyCodes.KEY_UP) {
-            if (handler != null) {
-                handler.onArrowUp(this);
-            }
-        }
+        KeyUpEvent.fireNativeEvent(event.getNativeEvent(), this);
     }
 
     public void setFocus(boolean isFocused) {
         anchor.setFocus(isFocused);
     }
-
-    public <T> void setNavigationHandler(Selector handler) {
-        this.handler = handler;
-    }
-
-    private AbstractNavigationHandler handler;
 
     @UiField
     HTMLPanel root;

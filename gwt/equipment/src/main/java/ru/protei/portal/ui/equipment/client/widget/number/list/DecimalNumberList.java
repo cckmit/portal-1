@@ -67,7 +67,7 @@ public class DecimalNumberList
 
     @UiHandler( "add" )
     public void onAddClicked( ClickEvent event )  {
-        boolean isFull = values.size() == En_OrganizationCode.values().length;
+        boolean isFull = valuesHasBothOrgTypes();
         if ( !isFull ) {
             numberBoxes.forEach( ( s) -> s.enabledOrganizationCode().setEnabled( false )  );
             createEmptyBox();
