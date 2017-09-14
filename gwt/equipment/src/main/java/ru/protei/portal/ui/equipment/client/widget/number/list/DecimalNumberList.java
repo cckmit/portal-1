@@ -175,7 +175,24 @@ public class DecimalNumberList
     }
 
     private void checkAddButtonState() {
-        add.setEnabled(En_OrganizationCode.values().length - values.size() >= 1);
+        add.setEnabled(!valuesHasBothOrgTypes());
+    }
+
+    private boolean valuesHasBothOrgTypes() {
+        boolean hasPdraType = false;
+        boolean hasPamrType = false;
+        for (DecimalNumber value: values) {
+            if (value.getOrganizationCode() == null) {
+                return false;
+            }
+            if (value.getOrganizationCode().equals(En_OrganizationCode.PAMR)) {
+                hasPamrType = true;
+            }
+            else {
+                hasPdraType = true;
+            }
+        }
+        return hasPamrType && hasPdraType;
     }
 
     @UiField
