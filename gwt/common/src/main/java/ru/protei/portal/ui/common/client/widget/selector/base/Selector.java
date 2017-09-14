@@ -250,7 +250,13 @@ public abstract class Selector<T>
         popup.getChildContainer().add(itemView.asWidget());
     }
 
-    public void onArrowUp(SelectorItem item) {
+    private void selectFirstElement() {
+        HTMLPanel panel = (HTMLPanel) popup.getChildContainer();
+        SelectorItem firstItem = (SelectorItem) panel.getWidget(0);
+        firstItem.setFocus(true);
+    }
+
+    private void onArrowUp(SelectorItem item) {
         HTMLPanel panel = (HTMLPanel) popup.getChildContainer();
         int selectedItemIndex = panel.getWidgetIndex(item);
         if (selectedItemIndex == 0) {
@@ -260,7 +266,7 @@ public abstract class Selector<T>
         previousSelectorItem.setFocus(true);
     }
 
-    public void onArrowDown(SelectorItem item) {
+    private void onArrowDown(SelectorItem item) {
         HTMLPanel panel = (HTMLPanel) popup.getChildContainer();
         int selectedItemIndex = panel.getWidgetIndex(item);
         if (selectedItemIndex == panel.getWidgetCount() - 1) {
@@ -270,11 +276,6 @@ public abstract class Selector<T>
         nextSelectorItem.setFocus(true);
     }
 
-    private void selectFirstElement() {
-        HTMLPanel panel = (HTMLPanel) popup.getChildContainer();
-        SelectorItem firstItem = (SelectorItem) panel.getWidget(0);
-        firstItem.setFocus(true);
-    }
     @Inject
     SelectorPopup popup;
     @Inject

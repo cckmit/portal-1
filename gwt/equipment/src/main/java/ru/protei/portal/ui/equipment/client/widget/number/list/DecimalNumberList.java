@@ -163,20 +163,10 @@ public class DecimalNumberList
     }
 
     private boolean valuesHasBothOrgTypes() {
-        boolean hasPdraType = false;
-        boolean hasPamrType = false;
-        for (DecimalNumber value: values) {
-            if (value.getOrganizationCode() == null) {
-                return false;
-            }
-            if (value.getOrganizationCode().equals(En_OrganizationCode.PAMR)) {
-                hasPamrType = true;
-            }
-            else {
-                hasPdraType = true;
-            }
-        }
-        return hasPamrType && hasPdraType;
+        if (pdraList.getWidgetCount() != 0
+                && pamrList.getWidgetCount() != 0)
+            return true;
+        return false;
     }
 
     @UiField

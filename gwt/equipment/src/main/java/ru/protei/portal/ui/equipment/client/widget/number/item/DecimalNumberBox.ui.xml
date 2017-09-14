@@ -17,7 +17,10 @@
             <label class="dn-separator">–</label>
             <div class="modtooltip">
                 <mask:MaskedTextBox ui:field="regNumModification" styleName="input-field dn-register-number-modifier" mask="99"/>
-                <label><ui:text from="{lang.pushEnter}"></ui:text></label>
+                <label class="text text-info">
+                    <i class="fa fa-info-circle m-r-5 "></i>
+                    <ui:text from="{lang.equipmentGetNextModification}"></ui:text>
+                </label>
             </div>
             <label class="dn-separator"></label>
             <g:Button ui:field="next" styleName="btn btn-white" title="{lang.formNextMod}">

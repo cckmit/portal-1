@@ -579,7 +579,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String buttonLocale();
 
-    String pushEnter();
+    String equipmentGetNextModification();
 
     String formNextMod();
 }
