@@ -27,7 +27,7 @@ public abstract class Selector<T>
         implements HasValue<T>,
         ClickHandler, ValueChangeHandler<String>,
         Window.ScrollHandler,
-        HasSelectorChangeValHandlers, KeyUpHandler {
+        HasSelectorChangeValHandlers {
 
     public void setValue(T value) {
         setValue(value, false);
@@ -77,12 +77,8 @@ public abstract class Selector<T>
     }
 
     public void addOptionWithStyle(String name, T value, String styleName) {
-        SelectorItem itemView = itemFactory.get();
-        itemView.setName(name);
-        itemView.setStyle(styleName);
-        itemView.addClickHandler(this);
-        itemView.addKeyUpHandler(this);
-
+        SelectorItem itemView = buildItemView(name,
+                styleName, itemHandler);
         itemViewToModel.put(itemView, value);
         itemToViewModel.put(value, itemView);
         if (value == null) {
@@ -97,13 +93,10 @@ public abstract class Selector<T>
     }
 
     public void addOption(DisplayOption option, T value) {
-        SelectorItem itemView = itemFactory.get();
-        itemView.setName(option.getName());
-        itemView.setStyle(option.getStyle());
-        itemView.setIcon(option.getIcon());
+        SelectorItem itemView = buildItemView(option.getName(),
+                option.getStyle(), itemHandler);
         itemView.setImage(option.getImageSrc());
-        itemView.addClickHandler(this);
-        itemView.addKeyUpHandler(this);
+        itemView.setIcon(option.getIcon());
 
         itemViewToModel.put(itemView, value);
         itemToViewModel.put(value, itemView);
@@ -142,7 +135,6 @@ public abstract class Selector<T>
         popup.hide();
         ValueChangeEvent.fire(this, value);
     }
-
 
     @Override
     public HandlerRegistration addValueChangeHandler(ValueChangeHandler<T> handler) {
@@ -188,6 +180,7 @@ public abstract class Selector<T>
         }
     }
 
+
     @Override
     public void onWindowScroll(Window.ScrollEvent event) {
         if (popup.isAttached()) {
@@ -216,17 +209,6 @@ public abstract class Selector<T>
         scrollRegistration.removeHandler();
     }
 
-    @Override
-    public void onKeyUp(KeyUpEvent keyUpEvent) {
-        if (keyUpEvent.getNativeKeyCode() == KeyCodes.KEY_DOWN) {
-            onArrowDown((SelectorItem) keyUpEvent.getSource());
-        }
-
-        if (keyUpEvent.getNativeKeyCode() == KeyCodes.KEY_UP) {
-            onArrowUp((SelectorItem) keyUpEvent.getSource());
-        }
-    }
-
     protected void showPopup(IsWidget relative) {
         this.relative = relative;
         popup.setSearchVisible(searchEnabled);
@@ -236,11 +218,22 @@ public abstract class Selector<T>
         popup.addValueChangeHandler(this);
         popup.clearSearchField();
 
-        selectFirstElement();
+        if (!searchEnabled) {
+            selectFirstElement();
+        }
     }
 
     protected void closePopup() {
         popup.hide();
+    }
+
+    private SelectorItem buildItemView(String name, String styleName, KeyUpHandler itemHandler) {
+        SelectorItem itemView = itemFactory.get();
+        itemView.setName(name);
+        itemView.setStyle(styleName);
+        itemView.addClickHandler(this);
+        itemView.addKeyUpHandler(itemHandler);
+        return itemView;
     }
 
     private void addEmptyListGhostOption(String name) {
@@ -284,6 +277,19 @@ public abstract class Selector<T>
     @Inject
     Provider<SelectorItem> itemFactory;
     protected DisplayOption nullItemOption;
+
+    KeyUpHandler itemHandler = new KeyUpHandler() {
+        @Override
+        public void onKeyUp(KeyUpEvent keyUpEvent) {
+            if (keyUpEvent.getNativeKeyCode() == KeyCodes.KEY_DOWN) {
+                onArrowDown((SelectorItem) keyUpEvent.getSource());
+            }
+
+            if (keyUpEvent.getNativeKeyCode() == KeyCodes.KEY_UP) {
+                onArrowUp((SelectorItem) keyUpEvent.getSource());
+            }
+        }
+    };
 
     protected boolean hasNullValue = true;
     private boolean searchEnabled = false;
