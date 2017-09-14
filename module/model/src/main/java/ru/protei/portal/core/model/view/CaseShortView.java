@@ -259,7 +259,10 @@ public class CaseShortView implements Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof CaseShortView && id.equals(((CaseShortView) obj).getId());
+        if (id != null) {
+            return obj instanceof CaseShortView && id.equals(((CaseShortView) obj).getId());
+        }
+        return false;
     }
 
     @Override

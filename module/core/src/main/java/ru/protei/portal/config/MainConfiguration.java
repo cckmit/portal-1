@@ -314,6 +314,9 @@ public class MainConfiguration {
     @Bean
     public PolicyService getPolicyService() { return new PolicyServiceImpl(); }
 
+    @Bean
+    public OfficialService getOfficialService() { return new OfficialServiceImpl(); }
+
     /** ASPECT/INTERCEPTORS **/
     @Bean
     public ServiceLayerInterceptor getServiceLayerInterceptor () {

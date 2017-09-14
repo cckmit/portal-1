@@ -1795,3 +1795,61 @@ ul.privileges {
 .list-inline>li {
   display: inline-block;
 }
+
+.no-margin {
+  margin: 0px;
+}
+
+.user-official {
+  font-weight: bold;
+  padding-bottom: 5px;
+  font-size: 1.3em;
+}
+
+.truncate-users {
+  font-size: 12px;
+  width: 330px;
+  margin-top: 7px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  word-break: break-word;
+}
+
+.truncate-users:hover {
+  position: absolute;
+  width: 85%;
+  white-space: inherit;
+  background-color: white;
+  z-index: 1;
+}
+
+.user-dolznost {
+  font-size: 1.3em;
+}
+
+.truncate-holder {
+  height: 12px;
+}
+
+.truncate {
+  font-size: 12px;
+  width: 375px;
+  margin-top: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.truncate:hover {
+  position: absolute;
+  width: 95%;
+  white-space: inherit;
+  background-color: white;
+  z-index: 1;
+}
+
+.official-item {
+  padding-bottom: 60px;
+}
+

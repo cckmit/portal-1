@@ -1,0 +1,133 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+    <property name="now" value="CURRENT_TIMESTAMP" dbms="mysql"/>
+
+    <changeSet author="serebryakov" id="31-08-2017 14:57">
+        <insert tableName="audit_type">
+            <column name="id" value="29"/>
+            <column name="code" value="OFFICIAL_MODIFY"/>
+            <column name="info" type="Изменение должностного лица"/>
+        </insert>
+        <insert tableName="audit_type">
+            <column name="id" value="30"/>
+            <column name="code" value="OFFICIAL_CREATE"/>
+            <column name="info" type="Создание должностного лица"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="serebryakov" id="31-08-2017 15:07">
+    <update tableName="audit_type">
+        <column name="info" value="Изменение должностного лица"/>
+        <where>id = 29</where>
+    </update>
+    <update tableName="audit_type">
+        <column name="info" value="Создание должностного лица"/>
+        <where>id = 30</where>
+    </update>
+    </changeSet>
+
+    <changeSet author="serebryakov" id="04-09-2017 22:21">
+        <addColumn tableName="person">
+            <column name="relations" type="VARCHAR(128)"/>
+            <column name="comments" type="VARCHAR(500)"/>
+        </addColumn>
+
+        <insert tableName="dev_unit_mrole">
+            <column name="ID" value="3"/>
+            <column name="UROLE_CODE" value="ads_manager"/>
+            <column name="UROLE_INFO" value="Менеджер по рекламе"/>
+        </insert>
+
+        <insert tableName="dev_unit_mrole">
+            <column name="ID" value="4"/>
+            <column name="UROLE_CODE" value="sales_manager"/>
+            <column name="UROLE_INFO" value="Менеджер по продажам"/>
+        </insert>
+
+        <insert tableName="dev_unit_mrole">
+            <column name="ID" value="5"/>
+            <column name="UROLE_CODE" value="art_manager"/>
+            <column name="UROLE_INFO" value="Арт-менеджер"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="serebryakov" id="06-09-2017 10:45">
+        <update tableName="dev_unit_mrole">
+            <column name="UROLE_CODE" value="decision_center"/>
+            <column name="UROLE_INFO" value="Центр принятия решений"/>
+            <where>id = 3</where>
+        </update>
+
+        <update tableName="dev_unit_mrole">
+            <column name="UROLE_CODE" value="chief_decision_maker"/>
+            <column name="UROLE_INFO" value="Главный ЛПР"/>
+            <where>id = 4</where>
+        </update>
+
+        <update tableName="dev_unit_mrole">
+            <column name="UROLE_CODE" value="decision_keeper"/>
+            <column name="UROLE_INFO" value="Привратник"/>
+            <where>id = 5</where>
+        </update>
+    </changeSet>
+
+    <changeSet author="serebryakov" id="06-09-2017 12:00">
+        <insert tableName="dev_unit_mrole">
+            <column name="ID" value="6"/>
+            <column name="UROLE_CODE" value="tech_specialists"/>
+            <column name="UROLE_INFO" value="Технические специалисты"/>
+        </insert>
+
+        <insert tableName="dev_unit_mrole">
+            <column name="ID" value="7"/>
+            <column name="UROLE_CODE" value="influence_maker"/>
+            <column name="UROLE_INFO" value="Лицо, влияющее на принятие решений"/>
+        </insert>
+
+        <insert tableName="dev_unit_mrole">
+            <column name="ID" value="8"/>
+            <column name="UROLE_CODE" value="chief_influence_maker"/>
+            <column name="UROLE_INFO" value="Главное лицо, влияющее на принятие решений"/>
+        </insert>
+
+        <insert tableName="dev_unit_mrole">
+            <column name="ID" value="9"/>
+            <column name="UROLE_CODE" value="economist"/>
+            <column name="UROLE_INFO" value="Экономист"/>
+        </insert>
+
+        <insert tableName="dev_unit_mrole">
+            <column name="ID" value="10"/>
+            <column name="UROLE_CODE" value="well_wisher"/>
+            <column name="UROLE_INFO" value="Доброжелатель"/>
+        </insert>
+
+        <insert tableName="dev_unit_mrole">
+            <column name="ID" value="11"/>
+            <column name="UROLE_CODE" value="receptivity_center"/>
+            <column name="UROLE_INFO" value="Центр восприимчивости"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="serebryakov" id="06-09-2017 14:55">
+        <dropColumn tableName="person" columnName="comments"/>
+    </changeSet>
+
+    <changeSet author="serebryakov" id="08-09-2017 01:07">
+        <insert tableName="case_type">
+            <column name="ID" value="10"/>
+            <column name="CT_CODE" value="official"/>
+            <column name="CT_INFO" value="Должностное лицо"/>
+            <column name="NEXT_ID" value="100"/>
+        </insert>
+
+        <insert tableName="company_category">
+            <column name="id" value="4"/>
+            <column name="category_name" value="Должностное лицо"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>
