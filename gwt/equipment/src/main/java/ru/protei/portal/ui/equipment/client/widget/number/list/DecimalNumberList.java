@@ -94,7 +94,6 @@ public class DecimalNumberList
 
     private void addNextItemHandler(DecimalNumberBox box) {
         box.addAddHandler(event -> {
-            box.setEnabled(false);
             DecimalNumber oldNumber = box.getValue();
             DecimalNumber newNumber = new DecimalNumber();
             newNumber.setOrganizationCode(oldNumber.getOrganizationCode());
@@ -111,27 +110,12 @@ public class DecimalNumberList
 
     private void addRemoveHandler( DecimalNumberBox box, DecimalNumber number ) {
         box.addRemoveHandler( event -> {
-            int indexRemovedBox = numberBoxes.indexOf(box);
-            if (indexRemovedBox != 0) {
-                int indexEnabledBox = findLastBoxTheSameType(indexRemovedBox);
-                numberBoxes.get(indexEnabledBox).setEnabled(true);
-            }
             values.remove( number );
             box.removeFromParent();
             numberBoxes.remove( box );
 
             checkAddButtonState();
         } );
-    }
-
-    private int findLastBoxTheSameType(int index) {
-        for (int i = index - 1; i >= 0; i--) {
-            if (numberBoxes.get(i).getValue().getOrganizationCode().equals(
-                    numberBoxes.get(index).getValue().getOrganizationCode())) {
-                return i;
-            }
-        }
-        return 0;
     }
 
     private void createEmptyBox() {
