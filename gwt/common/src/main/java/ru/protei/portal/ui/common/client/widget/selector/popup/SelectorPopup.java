@@ -99,7 +99,6 @@ public class SelectorPopup
     public void onSearchInputChanged( KeyUpEvent event ) {
         if(event.getNativeKeyCode() == KeyCodes.KEY_DOWN) {
             event.preventDefault();
-            ValueChangeEvent.fire( SelectorPopup.this, search.getText() );
             if (childContainer.getWidgetCount() == 0) {
                 return;
             }
