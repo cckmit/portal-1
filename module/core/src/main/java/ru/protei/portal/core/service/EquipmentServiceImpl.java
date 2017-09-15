@@ -18,10 +18,7 @@ import ru.protei.portal.core.model.query.EquipmentQuery;
 import ru.protei.winter.core.utils.collections.CollectionUtils;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -93,10 +90,11 @@ public class EquipmentServiceImpl implements EquipmentService {
             return new CoreResponse<DecimalNumber>().success( number );
         }
 
+        Integer nextAvailableRegNumber = decimalNumberDAO.getNextAvailableRegNumber(number);
+
         boolean ifExist = true;
-        while ( ifExist && maxNum < 999 ) {
-            maxNum += 1;
-            number.setRegisterNumber( maxNum );
+        while ( ifExist && nextAvailableRegNumber < 999 ) {
+            number.setRegisterNumber(nextAvailableRegNumber);
             ifExist = decimalNumberDAO.checkIfExist( number );
         }
 

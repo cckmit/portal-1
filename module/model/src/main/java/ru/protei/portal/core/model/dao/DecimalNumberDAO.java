@@ -17,4 +17,6 @@ public interface DecimalNumberDAO extends PortalBaseDAO<DecimalNumber> {
     Integer getMaxModification( DecimalNumber number );
 
     List<Long> getDecimalNumbersByEquipmentId( Long id );
+
+    Integer getNextAvailableRegNumber(DecimalNumber number);
 }

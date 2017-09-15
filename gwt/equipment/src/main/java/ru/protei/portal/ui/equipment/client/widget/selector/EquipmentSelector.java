@@ -6,8 +6,6 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
-import ru.protei.portal.ui.common.client.widget.selector.input.InputSelector;
-import ru.protei.portal.core.model.dict.En_OrganizationCode;
 import ru.protei.portal.ui.equipment.client.common.EquipmentUtils;
 
 import java.util.List;
@@ -23,15 +21,20 @@ public class EquipmentSelector
 
         @Inject
         public void init( EquipmentModel model, Lang lang ) {
+            this.lang = lang;
             model.subscribe( this );
             setSearchEnabled( true );
             setHasNullValue( true );
+            setSearchAutoFocus(true);
             nullItemOption = new DisplayOption( lang.equipmentPrimaryUseNotDefinied() );
         }
 
         @Override
         public void fillOptions( List< Equipment > options ) {
             clearOptions();
+            if (hasNullValue) {
+                addOption(lang.equipmentPrimaryUseNotDefinied(), null);
+            }
 
             for ( Equipment value : options ) {
                 StringBuilder sb = new StringBuilder();
@@ -47,6 +50,14 @@ public class EquipmentSelector
             }
         }
 
+        public void setHasNullValue(boolean hasNullValue) {
+            this.hasNullValue = hasNullValue;
+        }
+
         @Override
         public void refreshValue() {}
-}
+
+        private boolean hasNullValue;
+
+        private Lang lang;
+    }

@@ -14,9 +14,9 @@ import com.google.gwt.user.client.TakesValue;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.CompanySubscription;
-import ru.protei.portal.ui.common.client.widget.platelist.events.AddEvent;
-import ru.protei.portal.ui.common.client.widget.platelist.events.AddHandler;
-import ru.protei.portal.ui.common.client.widget.platelist.events.HasAddHandlers;
+import ru.protei.portal.ui.common.client.events.AddEvent;
+import ru.protei.portal.ui.common.client.events.AddHandler;
+import ru.protei.portal.ui.common.client.events.HasAddHandlers;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.company.client.widget.subscription.locale.LocaleButtonSelector;
 

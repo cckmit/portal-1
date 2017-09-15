@@ -78,7 +78,17 @@ public enum En_SortField {
     /**
      * region name
      */
-    region_name("region_name");
+    region_name("region_name"),
+
+    /**
+     * equipment project
+     */
+    project("project"),
+
+    /**
+     * equipment primary use
+     */
+    primary_use("primary_use");
 
     private String fieldName;
     private String bundleKey;

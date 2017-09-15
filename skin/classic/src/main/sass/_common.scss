@@ -1853,3 +1853,25 @@ ul.privileges {
   padding-bottom: 60px;
 }
 
+.modtooltip {
+  position: relative;
+}
+
+.modtooltip > label {
+  position: absolute;
+  opacity: 0;
+}
+
+.modtooltip > input:focus + label {
+  position: absolute;
+  font-size: 10.5px;
+  opacity: 1;
+  transition: 0.2s;
+  font-weight: normal;
+  width: 25em;
+  color: #4378c3;
+  line-height: 8px;
+  bottom: -15px;
+  left: -30px;
+
+}

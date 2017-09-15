@@ -641,4 +641,9 @@ public interface Lang extends Messages, ContactItemLang {
     String personWellWisher();
 
     String personReceptivityCenter();
+
+    String equipmentGetNextModification();
+
+    String formNextMod();
+
 }

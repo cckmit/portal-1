@@ -13,8 +13,6 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.protei.portal.core.model.dict.En_OrganizationCode;
 import ru.protei.portal.core.model.ent.DecimalNumber;
-import ru.protei.portal.ui.common.client.widget.selector.event.RemoveEvent;
-import ru.protei.portal.ui.common.client.widget.selector.event.RemoveHandler;
 import ru.protei.portal.ui.equipment.client.widget.number.item.DecimalNumberBox;
 
 import java.util.*;
@@ -69,7 +67,7 @@ public class DecimalNumberList
 
     @UiHandler( "add" )
     public void onAddClicked( ClickEvent event )  {
-        boolean isFull = values.size() == En_OrganizationCode.values().length;
+        boolean isFull = valuesHasBothOrgTypes();
         if ( !isFull ) {
             numberBoxes.forEach( ( s) -> s.enabledOrganizationCode().setEnabled( false )  );
             createEmptyBox();
@@ -79,23 +77,41 @@ public class DecimalNumberList
     }
 
     private void clearBoxes() {
-        list.clear();
+        pdraList.clear();
+        pamrList.clear();
         numberBoxes.clear();
     }
 
     private void createBoxAndFillValue( DecimalNumber number ) {
         DecimalNumberBox box = boxProvider.get();
         box.setValue( number );
-
-        numberBoxes.add( box );
-        list.add( box.asWidget() );
+        numberBoxes.add(box);
+        addToSublist(number, box);
+        box.setFocusToNextButton(true);
+        addNextItemHandler(box);
         addRemoveHandler( box, number );
+    }
+
+    private void addNextItemHandler(DecimalNumberBox box) {
+        box.addAddHandler(event -> {
+            DecimalNumber oldNumber = box.getValue();
+            DecimalNumber newNumber = new DecimalNumber();
+            newNumber.setOrganizationCode(oldNumber.getOrganizationCode());
+            newNumber.setClassifierCode(oldNumber.getClassifierCode());
+            newNumber.setRegisterNumber(oldNumber.getRegisterNumber());
+            newNumber.setModification(oldNumber.getModification() + 1);
+
+            if (!numberExists(newNumber)) {
+                values.add(newNumber);
+                createBoxAndFillValue(newNumber);
+            }
+        });
     }
 
     private void addRemoveHandler( DecimalNumberBox box, DecimalNumber number ) {
         box.addRemoveHandler( event -> {
             values.remove( number );
-            list.remove( box );
+            box.removeFromParent();
             numberBoxes.remove( box );
 
             checkAddButtonState();
@@ -117,23 +133,56 @@ public class DecimalNumberList
 
         values.add( emptyNumber );
         numberBoxes.add( box );
-        list.add( box.asWidget() );
+        addToSublist(emptyNumber, box);
+        addNextItemHandler(box);
         addRemoveHandler( box, emptyNumber );
     }
 
+    private boolean numberExists(DecimalNumber number) {
+        for (DecimalNumber value: values) {
+            if (value.getOrganizationCode() == number.getOrganizationCode()
+                && value.getModification() == number.getModification()
+                    && value.getClassifierCode() == number.getClassifierCode())
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void addToSublist(DecimalNumber number, DecimalNumberBox box) {
+        if (number.getOrganizationCode().equals(En_OrganizationCode.PAMR)) {
+            pamrList.add(box.asWidget());
+        } else {
+            pdraList.add(box.asWidget());
+        }
+    }
+
     private void checkAddButtonState() {
-        add.setVisible( En_OrganizationCode.values().length - values.size() >= 1 );
+        add.setEnabled(!valuesHasBothOrgTypes());
+    }
+
+    private boolean valuesHasBothOrgTypes() {
+        if (pdraList.getWidgetCount() != 0
+                && pamrList.getWidgetCount() != 0)
+            return true;
+        return false;
     }
 
     @UiField
     HTMLPanel list;
+
     @UiField
     Button add;
+    @UiField
+    HTMLPanel pamrList;
+    @UiField
+    HTMLPanel pdraList;
 
     @Inject
     Provider<DecimalNumberBox> boxProvider;
-
     private List<DecimalNumber> values = new ArrayList<>();
+
     private List<DecimalNumberBox> numberBoxes = new ArrayList<>();
 
     interface DecimalNumberListUiBinder extends UiBinder< HTMLPanel, DecimalNumberList > {}

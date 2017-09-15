@@ -39,7 +39,7 @@
                         <label>
                             <ui:text from="{lang.equipmentPrimaryUse}"/>
                         </label>
-                        <selector:EquipmentSelector ui:field="linkedEquipment"/>
+                        <selector:EquipmentSelector ui:field="linkedEquipment" hasNullValue="false"/>
                     </div>
 
                     <div class="form-group col-xs-7">

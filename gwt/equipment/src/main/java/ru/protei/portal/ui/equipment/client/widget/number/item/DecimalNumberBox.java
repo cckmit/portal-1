@@ -2,8 +2,7 @@ package ru.protei.portal.ui.equipment.client.widget.number.item;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.*;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -13,13 +12,14 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.ui.common.client.events.AddEvent;
+import ru.protei.portal.ui.common.client.events.AddHandler;
+import ru.protei.portal.ui.common.client.events.HasAddHandlers;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.mask.MaskedTextBox;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.dict.En_OrganizationCode;
-import ru.protei.portal.ui.common.client.widget.selector.event.HasRemoveHandlers;
-import ru.protei.portal.ui.common.client.widget.selector.event.RemoveEvent;
-import ru.protei.portal.ui.common.client.widget.selector.event.RemoveHandler;
+import ru.protei.portal.ui.common.client.widget.selector.event.*;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.equipment.client.provider.AbstractDecimalNumberDataProvider;
 import ru.protei.portal.ui.equipment.client.widget.selector.OrganizationCodeSelector;
@@ -31,7 +31,7 @@ import java.util.Set;
  * Вид виджета децимального номера
  */
 public class DecimalNumberBox
-        extends Composite implements HasValue<DecimalNumber>, HasEnabled, HasRemoveHandlers{
+        extends Composite implements HasValue<DecimalNumber>, HasEnabled, HasRemoveHandlers, HasAddHandlers {
 
     @Inject
     public void onInit() {
@@ -63,6 +63,7 @@ public class DecimalNumberBox
         classifierCode.setText( value.getClassifierCode() == null ? null : NumberFormat.getFormat("000000").format( value.getClassifierCode() ) );
         regNum.setText( value.getRegisterNumber() == null ? null : NumberFormat.getFormat("000").format( value.getRegisterNumber() ) );
         regNumModification.setText( value.getModification() == null ? null : NumberFormat.getFormat("00").format( value.getModification() ) );
+        checkNextButtonState();
         isReserve.setValue( value.isReserve() );
 
         clearMessage();
@@ -82,6 +83,11 @@ public class DecimalNumberBox
     }
 
     @Override
+    public HandlerRegistration addAddHandler(AddHandler handler) {
+        return addHandler(handler, AddEvent.getType());
+    }
+
+    @Override
     public boolean isEnabled() {
         return classifierCode.isEnabled() && regNumModification.isEnabled() && regNum.isEnabled();
     }
@@ -97,7 +103,7 @@ public class DecimalNumberBox
     public void onRegNumChanged( KeyUpEvent event ) {
         value.setRegisterNumber( Integer.parseInt( regNum.getValue() ) );
         ValueChangeEvent.fire( this, value );
-
+        checkNextButtonState();
         if ( regNum.getText().length() == 3 ) {
             checkExistNumber();
             return;
@@ -110,7 +116,7 @@ public class DecimalNumberBox
     public void onClassifierCodeChanged( KeyUpEvent event ) {
         value.setClassifierCode( Integer.parseInt( classifierCode.getValue() ) );
         ValueChangeEvent.fire( this, value );
-
+        checkNextButtonState();
         markBoxAsError( false );
         if ( classifierCode.getText().length() == 6 ) {
             fillNextAvailableNumber();
@@ -127,8 +133,11 @@ public class DecimalNumberBox
         ValueChangeEvent.fire( this, this.value );
 
         checkExistNumber();
+        checkNextButtonState();
+        if (regNumModification.getText().length() == 2) {
+            setFocusToNextButton(true);
+        }
     }
-
 
     @UiHandler( "getNextNumber" )
     public void onGetNextNumber( ClickEvent event ) {
@@ -157,12 +166,21 @@ public class DecimalNumberBox
         RemoveEvent.fire( this );
     }
 
+    @UiHandler("next")
+    public void onNextClicked(ClickEvent event) {
+            AddEvent.fire(this);
+    }
+
     public HasEnabled enabledOrganizationCode() {
         return organizationCode;
     }
 
     public void fillOrganizationCodesOption( Set< En_OrganizationCode > availableValues ) {
         organizationCode.fillOptions( availableValues );
+    }
+
+    public void setFocusToNextButton(boolean isFocused) {
+        next.setFocus(isFocused);
     }
 
     private void checkExistNumber() {
@@ -183,6 +201,13 @@ public class DecimalNumberBox
                 showMessage( lang.equipmentDecimalNumberEmpty(), DisplayStyle.SUCCESS );
             }
         } );
+    }
+
+    private void checkNextButtonState() {
+        boolean stateCondition = regNumModification.getText().length() == 2
+                && classifierCode.getText().length() == 6
+                && regNum.getText().length() == 3;
+        next.setEnabled(stateCondition);
     }
 
     private void markBoxAsError( boolean isError ) {
@@ -232,23 +257,21 @@ public class DecimalNumberBox
         msg.addClassName( "hide" );
         getNumberMsg.removeClassName( "hide" );
     }
-
     private void showMessage( String text, DisplayStyle style ) {
         msg.removeClassName( "hide" );
         getNumberMsg.addClassName( "hide" );
         msg.setClassName( "text text-" + style.name().toLowerCase() );
         msg.setInnerText( text );
     }
-
     private void clearMessage(){
         getNumberMsg.addClassName( "hide" );
         msg.addClassName( "hide" );
         msg.setInnerText( "" );
     }
-
     @Inject
     @UiField(provided = true)
     OrganizationCodeSelector organizationCode;
+
     @UiField
     MaskedTextBox regNumModification;
     @UiField
@@ -257,16 +280,21 @@ public class DecimalNumberBox
     MaskedTextBox classifierCode;
     @UiField
     Element msg;
-
     @UiField
     @Inject
     Lang lang;
+
     @UiField
     DivElement container;
+
     @UiField
     SpanElement getNumberMsg;
+
     @UiField
     ToggleButton isReserve;
+
+    @UiField
+    Button next;
 
     @Inject
     AbstractDecimalNumberDataProvider dataProvider;

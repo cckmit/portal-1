@@ -1,16 +1,12 @@
 package ru.protei.portal.ui.common.client.widget.selector.base;
 
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HasValue;
-import com.google.gwt.user.client.ui.IsWidget;
-import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -29,30 +25,30 @@ import java.util.Map;
 public abstract class Selector<T>
         extends Composite
         implements HasValue<T>,
-        ClickHandler, ValueChangeHandler< String >,
+        ClickHandler, ValueChangeHandler<String>,
         Window.ScrollHandler,
-        HasSelectorChangeValHandlers
-{
-    public void setValue( T value ) {
-        setValue( value, false );
+        HasSelectorChangeValHandlers {
+
+    public void setValue(T value) {
+        setValue(value, false);
     }
 
     @Override
-    public void setValue( T value, boolean fireEvents ) {
-        if ( value == null && !hasNullValue && !itemToDisplayOptionModel.isEmpty() ) {
+    public void setValue(T value, boolean fireEvents) {
+        if (value == null && !hasNullValue && !itemToDisplayOptionModel.isEmpty()) {
             value = itemToDisplayOptionModel.entrySet().iterator().next().getKey();
             fireEvents = true;
         }
 
         selectedOption = value;
-        if ( value == null || !itemToDisplayOptionModel.containsKey( value ) ) {
-            fillSelectorView( nullItemOption );
+        if (value == null || !itemToDisplayOptionModel.containsKey(value)) {
+            fillSelectorView(nullItemOption);
         } else {
-            fillSelectorView( itemToDisplayOptionModel.get( value ) );
+            fillSelectorView(itemToDisplayOptionModel.get(value));
         }
 
-        if ( fireEvents ) {
-            ValueChangeEvent.fire( this, value );
+        if (fireEvents) {
+            ValueChangeEvent.fire(this, value);
         }
     }
 
@@ -61,18 +57,18 @@ public abstract class Selector<T>
     }
 
     public void refreshValue() {
-        setValue( selectedOption );
+        setValue(selectedOption);
     }
 
-    public void setSearchEnabled( boolean isEnabled ) {
+    public void setSearchEnabled(boolean isEnabled) {
         this.searchEnabled = isEnabled;
     }
 
-    public void setSearchAutoFocus( boolean isEnabled ) {
+    public void setSearchAutoFocus(boolean isEnabled) {
         this.searchAutoFocusEnabled = isEnabled;
     }
 
-    public void setHasNullValue( boolean hasNullValue ) {
+    public void setHasNullValue(boolean hasNullValue) {
         this.hasNullValue = hasNullValue;
     }
 
@@ -81,38 +77,34 @@ public abstract class Selector<T>
     }
 
     public void addOptionWithStyle(String name, T value, String styleName) {
-        SelectorItem itemView = itemFactory.get();
-        itemView.setName( name );
-        itemView.setStyle( styleName );
-        itemView.addClickHandler( this );
+        SelectorItem itemView = buildItemView(name,
+                styleName, itemHandler);
         itemViewToModel.put(itemView, value);
         itemToViewModel.put(value, itemView);
-        if ( value == null ) {
-            nullItemOption = new DisplayOption( name );
+        if (value == null) {
+            nullItemOption = new DisplayOption(name);
             nullItemView = itemView;
-        }
-        else {
-            itemToDisplayOptionModel.put( value, new DisplayOption( name ) );
+        } else {
+            itemToDisplayOptionModel.put(value, new DisplayOption(name));
         }
 
         popup.getChildContainer().add(itemView.asWidget());
+
     }
 
-    public void addOption( DisplayOption option, T value ) {
-        SelectorItem itemView = itemFactory.get();
-        itemView.setName( option.getName() );
-        itemView.setStyle( option.getStyle() );
-        itemView.setIcon( option.getIcon() );
-        itemView.setImage( option.getImageSrc() );
-        itemView.addClickHandler( this );
+    public void addOption(DisplayOption option, T value) {
+        SelectorItem itemView = buildItemView(option.getName(),
+                option.getStyle(), itemHandler);
+        itemView.setImage(option.getImageSrc());
+        itemView.setIcon(option.getIcon());
+
         itemViewToModel.put(itemView, value);
         itemToViewModel.put(value, itemView);
-        if ( value == null ) {
+        if (value == null) {
             nullItemOption = option;
             nullItemView = itemView;
-        }
-        else {
-            itemToDisplayOptionModel.put( value, option );
+        } else {
+            itemToDisplayOptionModel.put(value, option);
         }
 
         popup.getChildContainer().add(itemView.asWidget());
@@ -130,29 +122,28 @@ public abstract class Selector<T>
     }
 
     @Override
-    public void onClick( ClickEvent event ) {
+    public void onClick(ClickEvent event) {
         T value = itemViewToModel.get(event.getSource());
-        if ( value == null && !itemViewToModel.containsKey( event.getSource() ) ) {
+        if (value == null && !itemViewToModel.containsKey(event.getSource())) {
             return;
         }
 
-        DisplayOption option = value != null ? itemToDisplayOptionModel.get( value ) : nullItemOption;
+        DisplayOption option = value != null ? itemToDisplayOptionModel.get(value) : nullItemOption;
         selectedOption = value;
-        fillSelectorView( option );
+        fillSelectorView(option);
 
         popup.hide();
-        ValueChangeEvent.fire( this, value );
+        ValueChangeEvent.fire(this, value);
+    }
+
+    @Override
+    public HandlerRegistration addValueChangeHandler(ValueChangeHandler<T> handler) {
+        return addHandler(handler, ValueChangeEvent.getType());
     }
 
 
     @Override
-    public HandlerRegistration addValueChangeHandler( ValueChangeHandler< T > handler ) {
-        return addHandler( handler, ValueChangeEvent.getType() );
-    }
-
-
-    @Override
-    public void onValueChange( ValueChangeEvent< String > event ) {
+    public void onValueChange(ValueChangeEvent<String> event) {
         String searchText = event.getValue().toLowerCase();
 
         boolean isEmptyResult = true;
@@ -160,52 +151,57 @@ public abstract class Selector<T>
 
         popup.getChildContainer().clear();
 
-        if ( searchText.isEmpty() && nullItemView != null ) {
-            popup.getChildContainer().add( nullItemView );
+        if (searchText.isEmpty() && nullItemView != null) {
+            popup.getChildContainer().add(nullItemView);
         }
 
-        for ( Map.Entry< T, DisplayOption> entry : itemToDisplayOptionModel.entrySet() ) {
+        for (Map.Entry<T, DisplayOption> entry : itemToDisplayOptionModel.entrySet()) {
             String entryText = entry.getValue().getName().toLowerCase();
-            if ( searchText.isEmpty() || entryText.contains(searchText) ) {
-                SelectorItem itemView = itemToViewModel.get( entry.getKey() );
-                if ( itemView != null ) {
-                    popup.getChildContainer().add( itemView );
+            if (searchText.isEmpty() || entryText.contains(searchText)) {
+                SelectorItem itemView = itemToViewModel.get(entry.getKey());
+                if (itemView != null) {
+                    popup.getChildContainer().add(itemView);
                 }
-                if(entryText.equals(searchText))
+                if (entryText.equals(searchText))
                     exactMatch = true;
 
                 isEmptyResult = false;
             }
         }
 
-        if(exactMatch){
+        if (exactMatch) {
             SelectorChangeValEvent.fire(this, null);
-        }else {
+        } else {
             SelectorChangeValEvent.fire(this, event.getValue());
         }
 
-        if ( isEmptyResult ) {
-            addEmptyListGhostOption( lang.errNoMatchesFound() );
+        if (isEmptyResult) {
+            addEmptyListGhostOption(lang.errNoMatchesFound());
         }
     }
 
+
     @Override
-    public void onWindowScroll( Window.ScrollEvent event ) {
-        if ( popup.isAttached() ) {
-            showPopup( relative );
+    public void onWindowScroll(Window.ScrollEvent event) {
+        if (popup.isAttached()) {
+            showPopup(relative);
         }
     }
 
     @Override
     public HandlerRegistration addSelectorChangeValHandler(SelectorChangeValHandler handler) {
-        return addHandler( handler, SelectorChangeValEvent.getType() );
+        return addHandler(handler, SelectorChangeValEvent.getType());
     }
 
-    public abstract void fillSelectorView( DisplayOption selectedValue );
+    public void addCloseHandler(CloseHandler<PopupPanel> handler) {
+        popup.addCloseHandler(handler);
+    }
+
+    public abstract void fillSelectorView(DisplayOption selectedValue);
 
     @Override
     protected void onLoad() {
-        scrollRegistration = Window.addWindowScrollHandler( this );
+        scrollRegistration = Window.addWindowScrollHandler(this);
     }
 
     @Override
@@ -213,49 +209,98 @@ public abstract class Selector<T>
         scrollRegistration.removeHandler();
     }
 
-    protected void showPopup( IsWidget relative ) {
+    protected void showPopup(IsWidget relative) {
         this.relative = relative;
-        popup.setSearchVisible( searchEnabled );
+        popup.setSearchVisible(searchEnabled);
         popup.setSearchAutoFocus(searchAutoFocusEnabled);
 
         popup.showNear(relative);
-        popup.addValueChangeHandler( this );
+        popup.addValueChangeHandler(this);
         popup.clearSearchField();
+
+        if (!searchEnabled) {
+            selectFirstElement();
+        }
     }
 
-    protected void closePopup(){
+    protected void closePopup() {
         popup.hide();
     }
 
-    private void addEmptyListGhostOption( String name ) {
+    private SelectorItem buildItemView(String name, String styleName, KeyUpHandler itemHandler) {
         SelectorItem itemView = itemFactory.get();
-        itemView.setName( name );
-        itemView.addStyleName( "search-no-result" );
-        popup.getChildContainer().add( itemView.asWidget() );
+        itemView.setName(name);
+        itemView.setStyle(styleName);
+        itemView.addClickHandler(this);
+        itemView.addKeyUpHandler(itemHandler);
+        return itemView;
     }
 
-    public void addCloseHandler(CloseHandler<PopupPanel> handler){
-        popup.addCloseHandler(handler);
+    private void addEmptyListGhostOption(String name) {
+        SelectorItem itemView = itemFactory.get();
+        itemView.setName(name);
+        itemView.addStyleName("search-no-result");
+        popup.getChildContainer().add(itemView.asWidget());
+    }
+
+    private void selectFirstElement() {
+        HTMLPanel panel = (HTMLPanel) popup.getChildContainer();
+        SelectorItem firstItem = (SelectorItem) panel.getWidget(0);
+        firstItem.setFocus(true);
+    }
+
+    private void onArrowUp(SelectorItem item) {
+        HTMLPanel panel = (HTMLPanel) popup.getChildContainer();
+        int selectedItemIndex = panel.getWidgetIndex(item);
+        if (selectedItemIndex == 0) {
+            return;
+        }
+        SelectorItem previousSelectorItem = (SelectorItem) panel.getWidget(--selectedItemIndex);
+        previousSelectorItem.setFocus(true);
+    }
+
+    private void onArrowDown(SelectorItem item) {
+        HTMLPanel panel = (HTMLPanel) popup.getChildContainer();
+        int selectedItemIndex = panel.getWidgetIndex(item);
+        if (selectedItemIndex == panel.getWidgetCount() - 1) {
+            return;
+        }
+        SelectorItem nextSelectorItem = (SelectorItem) panel.getWidget(++selectedItemIndex);
+        nextSelectorItem.setFocus(true);
     }
 
     @Inject
     SelectorPopup popup;
     @Inject
     Lang lang;
+
     @Inject
     Provider<SelectorItem> itemFactory;
-
     protected DisplayOption nullItemOption;
-    protected boolean hasNullValue = true;
 
+    KeyUpHandler itemHandler = new KeyUpHandler() {
+        @Override
+        public void onKeyUp(KeyUpEvent keyUpEvent) {
+            if (keyUpEvent.getNativeKeyCode() == KeyCodes.KEY_DOWN) {
+                onArrowDown((SelectorItem) keyUpEvent.getSource());
+            }
+
+            if (keyUpEvent.getNativeKeyCode() == KeyCodes.KEY_UP) {
+                onArrowUp((SelectorItem) keyUpEvent.getSource());
+            }
+        }
+    };
+
+    protected boolean hasNullValue = true;
     private boolean searchEnabled = false;
     private boolean searchAutoFocusEnabled = false;
     private IsWidget relative;
     private T selectedOption = null;
     private SelectorItem nullItemView;
-    private HandlerRegistration scrollRegistration;
 
+    private HandlerRegistration scrollRegistration;
     protected Map<SelectorItem, T> itemViewToModel = new HashMap<>();
     protected Map<T, SelectorItem> itemToViewModel = new HashMap<>();
+
     protected Map<T, DisplayOption> itemToDisplayOptionModel = new HashMap<>();
 }
