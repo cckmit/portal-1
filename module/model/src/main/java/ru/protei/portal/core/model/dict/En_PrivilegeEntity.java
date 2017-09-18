@@ -16,7 +16,8 @@ public enum En_PrivilegeEntity {
     CONTACT,
     ACCOUNT,
     ROLE,
-    OFFICIAL;
+    OFFICIAL,
+    DASHBOARD;
 
     public static En_Privilege[] getPrivileges(En_PrivilegeEntity category) {
         switch ( category ) {
@@ -42,6 +43,8 @@ public enum En_PrivilegeEntity {
                 return rolePrivileges;
             case OFFICIAL:
                 return officialPrivileges;
+            case DASHBOARD:
+                return dashboardPrivileges;
         }
 
         return null;
@@ -89,6 +92,10 @@ public enum En_PrivilegeEntity {
 
     private static final En_Privilege[] officialPrivileges = {
             OFFICIAL_VIEW, OFFICIAL_EDIT
+    };
+
+    private static final En_Privilege[] dashboardPrivileges = {
+            DASHBOARD_VIEW
     };
 
 }

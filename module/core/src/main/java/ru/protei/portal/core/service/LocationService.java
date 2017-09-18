@@ -17,9 +17,7 @@ import java.util.List;
  * Сервис управления местоположениями
  */
 public interface LocationService {
-    @Privileged( En_Privilege.REGION_VIEW )
     CoreResponse<List<DistrictInfo>> districtList(AuthToken token, DistrictQuery query );
 
-    @Privileged( En_Privilege.REGION_VIEW )
     CoreResponse<List<EntityOption>> regionShortList( AuthToken token );
 }

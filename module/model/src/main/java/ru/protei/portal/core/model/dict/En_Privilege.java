@@ -52,7 +52,9 @@ public enum En_Privilege {
     ROLE_CREATE (ROLE, CREATE),
 
     OFFICIAL_VIEW(OFFICIAL, VIEW),
-    OFFICIAL_EDIT(OFFICIAL, EDIT);
+    OFFICIAL_EDIT(OFFICIAL, EDIT),
+
+    DASHBOARD_VIEW(DASHBOARD, VIEW);
 
     private final En_PrivilegeEntity entity;
     private final En_PrivilegeAction action;
