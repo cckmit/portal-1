@@ -15,6 +15,7 @@ import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.events.AddEvent;
 import ru.protei.portal.ui.common.client.events.AddHandler;
 import ru.protei.portal.ui.common.client.events.HasAddHandlers;
+import ru.protei.portal.ui.common.client.lang.En_OrganizationCodeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.mask.MaskedTextBox;
 import ru.protei.portal.core.model.ent.DecimalNumber;
@@ -59,7 +60,7 @@ public class DecimalNumberBox
             value = new DecimalNumber();
         }
 
-        organizationCode.setValue( value.getOrganizationCode() );
+        organizationCode.setAttribute("placeholder", organizationCodeLang.getName(value.getOrganizationCode()));
         classifierCode.setText( value.getClassifierCode() == null ? null : NumberFormat.getFormat("000000").format( value.getClassifierCode() ) );
         regNum.setText( value.getRegisterNumber() == null ? null : NumberFormat.getFormat("000").format( value.getRegisterNumber() ) );
         regNumModification.setText( value.getModification() == null ? null : NumberFormat.getFormat("00").format( value.getModification() ) );
@@ -150,11 +151,6 @@ public class DecimalNumberBox
         value.setReserve( isReserve.getValue() );
     }
 
-    @UiHandler( "organizationCode" )
-    public void onOrganizationCodeChanged( ValueChangeEvent<En_OrganizationCode> event ) {
-        value.setOrganizationCode( organizationCode.getValue() );
-    }
-
     @UiHandler( "getNextModification" )
     public void onGetNextNumberModification( ClickEvent event ) {
         event.preventDefault();
@@ -169,14 +165,6 @@ public class DecimalNumberBox
     @UiHandler("next")
     public void onNextClicked(ClickEvent event) {
             AddEvent.fire(this);
-    }
-
-    public HasEnabled enabledOrganizationCode() {
-        return organizationCode;
-    }
-
-    public void fillOrganizationCodesOption( Set< En_OrganizationCode > availableValues ) {
-        organizationCode.fillOptions( availableValues );
     }
 
     public void setFocusToNextButton(boolean isFocused) {
@@ -268,10 +256,10 @@ public class DecimalNumberBox
         msg.addClassName( "hide" );
         msg.setInnerText( "" );
     }
-    @Inject
-    @UiField(provided = true)
-    OrganizationCodeSelector organizationCode;
 
+
+    @UiField
+    InputElement organizationCode;
     @UiField
     MaskedTextBox regNumModification;
     @UiField
@@ -298,6 +286,8 @@ public class DecimalNumberBox
 
     @Inject
     AbstractDecimalNumberDataProvider dataProvider;
+    @Inject
+    private En_OrganizationCodeLang organizationCodeLang;
 
     private DecimalNumber value = new DecimalNumber();
 

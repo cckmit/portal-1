@@ -48,12 +48,10 @@ public class DecimalNumberList
 
         clearBoxes();
         if ( values == null || values.isEmpty() ) {
-            createEmptyBox();
+            return;
         } else {
             values.forEach( this :: createBoxAndFillValue );
         }
-
-        checkAddButtonState();
 
         if ( fireEvents ) {
             ValueChangeEvent.fire( this, value );
@@ -65,15 +63,16 @@ public class DecimalNumberList
         return addHandler( handler, ValueChangeEvent.getType() );
     }
 
-    @UiHandler( "add" )
-    public void onAddClicked( ClickEvent event )  {
-        boolean isFull = valuesHasBothOrgTypes();
-        if ( !isFull ) {
-            numberBoxes.forEach( ( s) -> s.enabledOrganizationCode().setEnabled( false )  );
-            createEmptyBox();
-        }
+    @UiHandler( "addPamr" )
+    public void onAddPamrClicked( ClickEvent event )  {
+        createEmptyBox(En_OrganizationCode.PAMR);
 
-        checkAddButtonState();
+    }
+
+    @UiHandler( "addPdra" )
+    public void onAddPdraClicked( ClickEvent event )  {
+        createEmptyBox(En_OrganizationCode.PDRA);
+
     }
 
     private void clearBoxes() {
@@ -113,23 +112,15 @@ public class DecimalNumberList
             values.remove( number );
             box.removeFromParent();
             numberBoxes.remove( box );
-
-            checkAddButtonState();
         } );
     }
 
-    private void createEmptyBox() {
+    private void createEmptyBox(En_OrganizationCode orgCode) {
         DecimalNumberBox box = boxProvider.get();
         DecimalNumber emptyNumber = new DecimalNumber();
 
-        Set<En_OrganizationCode> availableValues = new HashSet<>( Arrays.asList( En_OrganizationCode.values() ) );
-        for ( DecimalNumberBox numberBox : numberBoxes ) {
-            availableValues.remove( numberBox.getValue().getOrganizationCode() );
-        }
-        box.fillOrganizationCodesOption( availableValues );
-
+        emptyNumber.setOrganizationCode(orgCode);
         box.setValue( emptyNumber );
-        box.enabledOrganizationCode().setEnabled( true );
 
         values.add( emptyNumber );
         numberBoxes.add( box );
@@ -158,26 +149,14 @@ public class DecimalNumberList
         }
     }
 
-    private void checkAddButtonState() {
-        add.setEnabled(!valuesHasBothOrgTypes());
-    }
-
-    private boolean valuesHasBothOrgTypes() {
-        if (pdraList.getWidgetCount() != 0
-                && pamrList.getWidgetCount() != 0)
-            return true;
-        return false;
-    }
-
-    @UiField
-    HTMLPanel list;
-
-    @UiField
-    Button add;
     @UiField
     HTMLPanel pamrList;
     @UiField
     HTMLPanel pdraList;
+    @UiField
+    Button addPamr;
+    @UiField
+    Button addPdra;
 
     @Inject
     Provider<DecimalNumberBox> boxProvider;

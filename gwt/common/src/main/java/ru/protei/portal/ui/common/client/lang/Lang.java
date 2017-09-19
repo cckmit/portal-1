@@ -646,4 +646,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String formNextMod();
 
+    String buttonAddPdra();
+
+    String buttonAddPamr();
 }

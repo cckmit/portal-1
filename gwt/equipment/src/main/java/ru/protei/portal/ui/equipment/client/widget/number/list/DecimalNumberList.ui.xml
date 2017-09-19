@@ -4,14 +4,23 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel ui:field="root">
-        <div class="footer">
-        <g:Button ui:field="add" styleName="btn btn-primary">
-            <ui:text from="{lang.buttonAdd}"/>
-        </g:Button>
+        <div class="col-xs-6">
+            <div class="footer">
+            <g:Button ui:field="addPamr" styleName="btn btn-primary">
+                <ui:text from="{lang.buttonAddPamr}"/>
+            </g:Button>
+            </div>
+            <g:HTMLPanel ui:field="pamrList"></g:HTMLPanel>
         </div>
-        <g:HTMLPanel ui:field="list">
-            <g:HTMLPanel ui:field="pamrList" styleName="col-xs-6"></g:HTMLPanel>
-            <g:HTMLPanel ui:field="pdraList" styleName="col-xs-6"></g:HTMLPanel>
-        </g:HTMLPanel>
+
+        <div class="col-xs-6">
+            <div class="footer">
+            <g:Button ui:field="addPdra" styleName="btn btn-primary">
+                <ui:text from="{lang.buttonAddPdra}"/>
+            </g:Button>
+            </div>
+            <g:HTMLPanel ui:field="pdraList">
+            </g:HTMLPanel>
+        </div>
     </g:HTMLPanel>
 </ui:UiBinder>
