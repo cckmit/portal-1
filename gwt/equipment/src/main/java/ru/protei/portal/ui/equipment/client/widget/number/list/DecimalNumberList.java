@@ -81,7 +81,7 @@ public class DecimalNumberList
         numberBoxes.clear();
     }
 
-    private void createBoxAndFillValue( DecimalNumber number ) {
+    private void createBoxAndFillValue( DecimalNumber number) {
         DecimalNumberBox box = boxProvider.get();
         box.setValue( number );
         numberBoxes.add(box);
@@ -99,7 +99,6 @@ public class DecimalNumberList
             newNumber.setClassifierCode(oldNumber.getClassifierCode());
             newNumber.setRegisterNumber(oldNumber.getRegisterNumber());
             newNumber.setModification(oldNumber.getModification() + 1);
-
             if (!numberExists(newNumber)) {
                 values.add(newNumber);
                 createBoxAndFillValue(newNumber);
@@ -107,7 +106,7 @@ public class DecimalNumberList
         });
     }
 
-    private void addRemoveHandler( DecimalNumberBox box, DecimalNumber number ) {
+    private void addRemoveHandler(final DecimalNumberBox box, final DecimalNumber number ) {
         box.addRemoveHandler( event -> {
             values.remove( number );
             box.removeFromParent();

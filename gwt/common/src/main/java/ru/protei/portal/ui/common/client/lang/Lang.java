@@ -649,4 +649,6 @@ public interface Lang extends Messages, ContactItemLang {
     String buttonAddPdra();
 
     String buttonAddPamr();
+
+    String equipmentManagerNotDefined();
 }

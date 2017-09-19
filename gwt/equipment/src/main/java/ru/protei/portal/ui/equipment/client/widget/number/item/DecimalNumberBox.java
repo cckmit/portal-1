@@ -185,8 +185,7 @@ public class DecimalNumberBox
                     showGetNextNumberMessage();
                     return;
                 }
-
-                showMessage( lang.equipmentDecimalNumberEmpty(), DisplayStyle.SUCCESS );
+                clearMessage();
             }
         } );
     }
@@ -219,7 +218,8 @@ public class DecimalNumberBox
                 markBoxAsError( false );
                 value.setRegisterNumber( result.getRegisterNumber() );
                 regNum.setText( value.getRegisterNumber() == null ? null : NumberFormat.getFormat("000").format( value.getRegisterNumber() ) );
-                showMessage( lang.equipmentDecimalNumberEmpty(), DisplayStyle.SUCCESS );
+                clearMessage();
+
             }
         } );
     }
@@ -236,7 +236,7 @@ public class DecimalNumberBox
                 markBoxAsError( false );
                 value.setModification( result.getModification() );
                 regNumModification.setText( value.getModification() == null ? null : NumberFormat.getFormat("00").format( value.getModification() ) );
-                showMessage( lang.equipmentDecimalNumberEmpty(), DisplayStyle.SUCCESS );
+                clearMessage();
             }
         } );
     }
