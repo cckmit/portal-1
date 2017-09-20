@@ -133,7 +133,7 @@ public class WorkerServiceImpl implements WorkerService {
             else
                 personDAO.merge (person);
 
-            WorkerPosition position = getValidPosition (rec.getPositionId (), rec.getPositionName (), item.getCompanyId ());
+            WorkerPosition position = getValidPosition (rec.getPositionName (), item.getCompanyId ());
 
             if (workerEntryDAO.checkExistsByCondition ("worker_extId=? and companyId=?", rec.getWorkerId (), item.getCompanyId ()))
                 return ServiceResult.failResult (En_ErrorCode.EXIST_WOR.getCode (), En_ErrorCode.EXIST_WOR.getMessage (), null);
@@ -219,7 +219,7 @@ public class WorkerServiceImpl implements WorkerService {
                 return ServiceResult.successResult (person.getId ());
             }
 
-            WorkerPosition position = getValidPosition (rec.getPositionId (), rec.getPositionName (), item.getCompanyId ());
+            WorkerPosition position = getValidPosition (rec.getPositionName (), item.getCompanyId ());
 
             WorkerEntry worker = workerEntryDAO.getByCondition ("worker_extId=? and companyId=? and personId=?", rec.getWorkerId (), item.getCompanyId (), person.getId ());
             if (worker == null)
@@ -497,8 +497,7 @@ public class WorkerServiceImpl implements WorkerService {
         if (rec.getDepartmentId () < 0)
             return ServiceResult.failResult (En_ErrorCode.EMPTY_DEP_ID.getCode (), En_ErrorCode.EMPTY_DEP_ID.getMessage (), rec.getId ());
 
-        if (rec.getPositionId () < 0 ||
-                rec.getPositionName () == null || rec.getPositionName ().trim ().length () < 1)
+        if (rec.getPositionName () == null || rec.getPositionName ().trim ().length () < 1)
             return ServiceResult.failResult (En_ErrorCode.EMPTY_POS.getCode (), En_ErrorCode.EMPTY_POS.getMessage (), rec.getId ());
 
         if (rec.getWorkerId () < 0)
@@ -563,22 +562,19 @@ public class WorkerServiceImpl implements WorkerService {
 
     }
 
-    private WorkerPosition getValidPosition(Long positionId, String positionName, Long companyId) {
+    private WorkerPosition getValidPosition(String positionName, Long companyId) {
 
-        WorkerPosition position = workerPositionDAO.getByCondition ("pos_extId=? and company_id=?", positionId, companyId);
+        WorkerPosition position = workerPositionDAO.getByCondition ("pos_name=? and company_id=?", positionName, companyId);
 
-        if (position == null) {
-            position = new WorkerPosition ();
-            position.setExternalId (positionId);
-            position.setCompanyId (companyId);
-        }
+        if (position != null)
+            return position;
+
+        position = new WorkerPosition ();
+        position.setCompanyId (companyId);
         position.setName (positionName.trim ());
-        if (position.getId () == null) {
-            Long id = workerPositionDAO.persist (position);
-            position.setId (id);
-        } else {
-            workerPositionDAO.merge (position);
-        }
+        Long id = workerPositionDAO.persist (position);
+        position.setId (id);
+
         return position;
     }
 }

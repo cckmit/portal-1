@@ -8,7 +8,7 @@ import ru.protei.portal.core.model.ent.WorkerPosition;
  */
 public class WorkerPositionDAO_Impl extends PortalBaseJdbcDAO<WorkerPosition> implements WorkerPositionDAO {
     @Override
-    public WorkerPosition getByExternalId(Long extId, Long companyId) {
-        return getByCondition ("pos_extId=? and company_id=?", extId, companyId);
+    public WorkerPosition getByName(String name, Long companyId) {
+        return getByCondition ("pos_name=? and company_id=?", name, companyId);
     }
 }

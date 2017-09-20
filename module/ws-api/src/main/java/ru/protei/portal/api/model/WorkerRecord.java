@@ -40,7 +40,6 @@ public class WorkerRecord {
 
     private long workerId;
     private long departmentId;
-    private long positionId;
 
     private String hireDate;
     private String hireOrderNo;
@@ -257,15 +256,6 @@ public class WorkerRecord {
         this.departmentId = departmentId;
     }
 
-    @XmlElement(name = "position-id", required = true)
-    public long getPositionId() {
-        return positionId;
-    }
-
-    public void setPositionId(long positionId) {
-        this.positionId = positionId;
-    }
-
     @XmlElement(name = "hire-date")
     public String getHireDate() {
         return hireDate;
@@ -330,7 +320,6 @@ public class WorkerRecord {
         copy(w.getPerson());
         setWorkerId(w.getExternalId());
         setDepartmentId(w.getDepartment().getExternalId());
-        setPositionId(w.getPosition().getExternalId());
         setPositionName(w.getPosition() != null ? w.getPosition().getName() : null);
         setHireDate(w.getHireDate() != null ? HelperService.DATE.format (w.getHireDate()) : null);
         setHireOrderNo(w.getHireOrderNo());

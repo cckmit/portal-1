@@ -68,7 +68,6 @@ public class TestRestService {
             origWorker.setFired (new Boolean (props.getProperty ("isFired")));
             origWorker.setWorkerId (new Long (props.getProperty ("workerId")));
             origWorker.setDepartmentId (new Long (props.getProperty ("depId")));
-            origWorker.setPositionId (new Long (props.getProperty ("positionId")));
             origWorker.setHireDate (props.getProperty ("hireDate"));
             origWorker.setHireOrderNo (props.getProperty ("hireOrderNo"));
             origWorker.setActive (new Integer (props.getProperty ("active")));
@@ -162,7 +161,6 @@ public class TestRestService {
         logger.debug ("isDeleted = " + wr.isDeleted ());
         logger.debug("workerId = " + wr.getWorkerId());
         logger.debug("departmentId = " + wr.getDepartmentId());
-        logger.debug("positionId = " + wr.getPositionId());
         logger.debug("positionName = " + wr.getPositionName());
         logger.debug("hireDate = " + wr.getHireDate());
         logger.debug("hireOrderNo = " + wr.getHireOrderNo());

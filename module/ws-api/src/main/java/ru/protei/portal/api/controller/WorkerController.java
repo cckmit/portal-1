@@ -22,7 +22,6 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.io.*;
 import java.net.Inet4Address;
-import java.nio.charset.Charset;
 import java.text.ParseException;
 import java.util.Base64;
 import java.util.Date;
@@ -250,7 +249,7 @@ public class WorkerController {
                         personDAO.merge(person);
                     }
 
-                    WorkerPosition position = getValidPosition (rec.getPositionId (), rec.getPositionName (), item.getCompanyId ());
+                    WorkerPosition position = getValidPosition (rec.getPositionName (), item.getCompanyId ());
 
                     WorkerEntry worker = new WorkerEntry ();
                     worker.setCreated (new Date ());
@@ -355,7 +354,7 @@ public class WorkerController {
                         return ServiceResult.successResult (person.getId ());
                     }
 
-                    WorkerPosition position = getValidPosition (rec.getPositionId (), rec.getPositionName (), item.getCompanyId ());
+                    WorkerPosition position = getValidPosition (rec.getPositionName (), item.getCompanyId ());
 
                     worker.setDepartmentId (department.getId ());
 
@@ -678,8 +677,7 @@ public class WorkerController {
         if (rec.getDepartmentId () < 0)
             return ServiceResult.failResult (En_ErrorCode.EMPTY_DEP_ID.getCode (), En_ErrorCode.EMPTY_DEP_ID.getMessage (), rec.getId ());
 
-        if (rec.getPositionId () < 0 ||
-                rec.getPositionName () == null || rec.getPositionName ().trim ().length () < 1)
+        if (rec.getPositionName () == null || rec.getPositionName ().trim ().length () < 1)
             return ServiceResult.failResult (En_ErrorCode.EMPTY_POS.getCode (), En_ErrorCode.EMPTY_POS.getMessage (), rec.getId ());
 
         if (rec.getWorkerId () < 0)
@@ -745,22 +743,19 @@ public class WorkerController {
 
     }
 
-    private WorkerPosition getValidPosition(Long positionId, String positionName, Long companyId) {
+    private WorkerPosition getValidPosition(String positionName, Long companyId) {
 
-        WorkerPosition position = workerPositionDAO.getByExternalId(positionId, companyId);
+        WorkerPosition position = workerPositionDAO.getByName(positionName, companyId);
 
-        if (position == null) {
-            position = new WorkerPosition ();
-            position.setExternalId (positionId);
-            position.setCompanyId (companyId);
-        }
+        if (position != null)
+            return position;
+
+        position = new WorkerPosition ();
+        position.setCompanyId (companyId);
         position.setName (positionName.trim ());
-        if (position.getId () == null) {
-            Long id = workerPositionDAO.persist (position);
-            position.setId (id);
-        } else {
-            workerPositionDAO.merge (position);
-        }
+        Long id = workerPositionDAO.persist (position);
+        position.setId (id);
+
         return position;
     }
 }
