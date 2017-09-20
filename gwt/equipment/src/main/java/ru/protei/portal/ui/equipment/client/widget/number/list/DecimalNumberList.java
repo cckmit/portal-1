@@ -137,15 +137,19 @@ public class DecimalNumberList
                 continue;
             }
             if (value.getOrganizationCode() == number.getOrganizationCode()
-                && value.getModification() == number.getModification()
-                && value.getClassifierCode() == number.getClassifierCode()
-                && value.getRegisterNumber() == number.getRegisterNumber())
+                && compare(value.getModification(), number.getModification())
+                && compare(value.getClassifierCode(), number.getClassifierCode())
+                && compare(value.getRegisterNumber(), number.getRegisterNumber()))
 
             {
                 return true;
             }
         }
         return false;
+    }
+
+    private boolean compare(Integer number, Integer value) {
+        return (number == null  ? value == null  : number.equals(value));
     }
 
     private void addToSublist(DecimalNumber number, DecimalNumberBox box) {
