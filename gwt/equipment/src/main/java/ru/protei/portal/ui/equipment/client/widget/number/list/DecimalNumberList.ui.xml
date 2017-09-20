@@ -5,7 +5,7 @@
 
     <g:HTMLPanel ui:field="root">
         <div class="col-xs-6">
-            <div class="footer">
+            <div class="dn-add-button">
             <g:Button ui:field="addPamr" styleName="btn btn-primary">
                 <ui:text from="{lang.buttonAddPamr}"/>
             </g:Button>
@@ -14,7 +14,7 @@
         </div>
 
         <div class="col-xs-6">
-            <div class="footer">
+            <div class="dn-add-button">
             <g:Button ui:field="addPdra" styleName="btn btn-primary">
                 <ui:text from="{lang.buttonAddPdra}"/>
             </g:Button>

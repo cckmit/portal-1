@@ -13,6 +13,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.protei.portal.core.model.dict.En_OrganizationCode;
 import ru.protei.portal.core.model.ent.DecimalNumber;
+import ru.protei.portal.ui.equipment.client.widget.number.item.AbstractBoxHandler;
 import ru.protei.portal.ui.equipment.client.widget.number.item.DecimalNumberBox;
 
 import java.util.*;
@@ -22,7 +23,7 @@ import java.util.*;
  */
 public class DecimalNumberList
         extends Composite
-        implements HasValue<List<DecimalNumber>>
+        implements HasValue<List<DecimalNumber>>, AbstractBoxHandler
 {
     @Inject
     public void onInit() {
@@ -83,6 +84,7 @@ public class DecimalNumberList
 
     private void createBoxAndFillValue( DecimalNumber number) {
         DecimalNumberBox box = boxProvider.get();
+        box.setBoxHandler(this);
         box.setValue( number );
         numberBoxes.add(box);
         addToSublist(number, box);
@@ -116,6 +118,7 @@ public class DecimalNumberList
 
     private void createEmptyBox(En_OrganizationCode orgCode) {
         DecimalNumberBox box = boxProvider.get();
+        box.setBoxHandler(this);
         DecimalNumber emptyNumber = new DecimalNumber();
 
         emptyNumber.setOrganizationCode(orgCode);
@@ -128,7 +131,7 @@ public class DecimalNumberList
         addRemoveHandler( box, emptyNumber );
     }
 
-    private boolean numberExists(DecimalNumber number) {
+    public boolean numberExists(DecimalNumber number) {
         for (DecimalNumber value: values) {
             if (value.getOrganizationCode() == number.getOrganizationCode()
                 && value.getModification() == number.getModification()

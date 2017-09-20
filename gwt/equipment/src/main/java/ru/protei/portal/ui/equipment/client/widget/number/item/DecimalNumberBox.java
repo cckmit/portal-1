@@ -19,11 +19,10 @@ import ru.protei.portal.ui.common.client.lang.En_OrganizationCodeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.mask.MaskedTextBox;
 import ru.protei.portal.core.model.ent.DecimalNumber;
-import ru.protei.portal.core.model.dict.En_OrganizationCode;
 import ru.protei.portal.ui.common.client.widget.selector.event.*;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.equipment.client.provider.AbstractDecimalNumberDataProvider;
-import ru.protei.portal.ui.equipment.client.widget.selector.OrganizationCodeSelector;
+import ru.protei.portal.ui.equipment.client.widget.number.list.DecimalNumberList;
 import ru.protei.winter.web.common.client.common.DisplayStyle;
 
 import java.util.Set;
@@ -60,7 +59,7 @@ public class DecimalNumberBox
             value = new DecimalNumber();
         }
 
-        organizationCode.setAttribute("placeholder", organizationCodeLang.getName(value.getOrganizationCode()));
+        organizationCode.setAttribute("value", organizationCodeLang.getName(value.getOrganizationCode()));
         classifierCode.setText( value.getClassifierCode() == null ? null : NumberFormat.getFormat("000000").format( value.getClassifierCode() ) );
         regNum.setText( value.getRegisterNumber() == null ? null : NumberFormat.getFormat("000").format( value.getRegisterNumber() ) );
         regNumModification.setText( value.getModification() == null ? null : NumberFormat.getFormat("00").format( value.getModification() ) );
@@ -171,6 +170,10 @@ public class DecimalNumberBox
         next.setFocus(isFocused);
     }
 
+    public void setBoxHandler(DecimalNumberList boxHandler) {
+        this.handler = boxHandler;
+    }
+
     private void checkExistNumber() {
         dataProvider.checkIfExistDecimalNumber( value, new RequestCallback< Boolean >() {
             @Override
@@ -219,7 +222,6 @@ public class DecimalNumberBox
                 value.setRegisterNumber( result.getRegisterNumber() );
                 regNum.setText( value.getRegisterNumber() == null ? null : NumberFormat.getFormat("000").format( value.getRegisterNumber() ) );
                 clearMessage();
-
             }
         } );
     }
@@ -290,6 +292,8 @@ public class DecimalNumberBox
     private En_OrganizationCodeLang organizationCodeLang;
 
     private DecimalNumber value = new DecimalNumber();
+
+    private AbstractBoxHandler handler;
 
     interface DecimalNumberWidgetUiBinder extends UiBinder<HTMLPanel, DecimalNumberBox> {}
     private static DecimalNumberWidgetUiBinder ourUiBinder = GWT.create( DecimalNumberWidgetUiBinder.class );
