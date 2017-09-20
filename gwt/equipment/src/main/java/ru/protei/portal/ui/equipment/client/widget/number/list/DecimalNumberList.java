@@ -133,9 +133,14 @@ public class DecimalNumberList
 
     public boolean numberExists(DecimalNumber number) {
         for (DecimalNumber value: values) {
+            if (number.equals(value)) {
+                continue;
+            }
             if (value.getOrganizationCode() == number.getOrganizationCode()
                 && value.getModification() == number.getModification()
-                    && value.getClassifierCode() == number.getClassifierCode())
+                && value.getClassifierCode() == number.getClassifierCode()
+                && value.getRegisterNumber() == number.getRegisterNumber())
+
             {
                 return true;
             }

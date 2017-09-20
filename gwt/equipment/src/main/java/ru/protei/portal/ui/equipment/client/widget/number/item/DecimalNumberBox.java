@@ -175,6 +175,12 @@ public class DecimalNumberBox
     }
 
     private void checkExistNumber() {
+        if (handler != null) {
+            if (handler.numberExists(value)) {
+                showMessage( lang.equipmentErrorCheckNumber(), DisplayStyle.DANGER );
+                return;
+            }
+        }
         dataProvider.checkIfExistDecimalNumber( value, new RequestCallback< Boolean >() {
             @Override
             public void onError( Throwable throwable ) {
@@ -219,6 +225,10 @@ public class DecimalNumberBox
             @Override
             public void onSuccess( DecimalNumber result ) {
                 markBoxAsError( false );
+
+                while (handler.numberExists(result)) {
+                    result.setRegisterNumber(result.getRegisterNumber() + 1);
+                }
                 value.setRegisterNumber( result.getRegisterNumber() );
                 regNum.setText( value.getRegisterNumber() == null ? null : NumberFormat.getFormat("000").format( value.getRegisterNumber() ) );
                 clearMessage();
