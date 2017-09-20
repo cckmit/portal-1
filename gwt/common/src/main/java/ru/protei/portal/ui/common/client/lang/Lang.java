@@ -651,4 +651,6 @@ public interface Lang extends Messages, ContactItemLang {
     String buttonAddPamr();
 
     String equipmentManagerNotDefined();
+
+    String equipmentNumberAlreadyInList();
 }
