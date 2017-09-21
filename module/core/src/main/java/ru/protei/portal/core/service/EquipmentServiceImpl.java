@@ -120,10 +120,12 @@ public class EquipmentServiceImpl implements EquipmentService {
             return new CoreResponse<DecimalNumber>().success( number );
         }
 
+        Integer nextAvailableModification = decimalNumberDAO.getNextAvailableModification(number);
+
+
         boolean ifExist = true;
-        while ( ifExist && maxNum < 999 ) {
-            maxNum += 1;
-            number.setModification( maxNum );
+        while ( ifExist && nextAvailableModification < 999 ) {
+            number.setModification( nextAvailableModification );
             ifExist = decimalNumberDAO.checkIfExist( number );
         }
 
