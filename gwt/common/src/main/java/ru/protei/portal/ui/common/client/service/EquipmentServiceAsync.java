@@ -54,5 +54,5 @@ public interface EquipmentServiceAsync {
 
     void removeEquipment( Long equipmentId, AsyncCallback<Boolean> async );
 
-    void getNextAvailableRegisterNumberModificationNotContainsInList(List<Integer> mods, String classifierCode, String orgCode, String regNum, AsyncCallback<DecimalNumber> callback);
+    void getNextAvailableModificationNotContainsInList(List<Integer> mods, String classifierCode, String orgCode, String regNum, AsyncCallback<DecimalNumber> callback);
 }

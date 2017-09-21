@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.DecimalNumberDAO;
 import ru.protei.portal.core.model.dao.EquipmentDAO;
-import ru.protei.portal.core.model.dict.En_OrganizationCode;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.DecimalNumber;
@@ -133,9 +132,10 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
-    public CoreResponse<DecimalNumber> getNextAvailableRegisterNumberModificationNotContainsInList(AuthToken authToken, List<Integer> mods, String classifierCode, String orgCode, String regNum) {
+    public CoreResponse<DecimalNumber> getNextAvailableRegisterNumberModificationNotContainsInList(
+            AuthToken authToken, List<Integer> mods, String classifierCode, String orgCode, String regNum) {
         DecimalNumber number = new DecimalNumber();
-        Integer nextAvailableMod = decimalNumberDAO.getNextAvailableRegisterNumberModificationNotContainsInList(mods, classifierCode, orgCode, regNum);
+        Integer nextAvailableMod = decimalNumberDAO.getNextAvailableModificationNotContainsInList(mods, classifierCode, orgCode, regNum);
         number.setModification(nextAvailableMod);
 
         return new CoreResponse<DecimalNumber>().success( number );

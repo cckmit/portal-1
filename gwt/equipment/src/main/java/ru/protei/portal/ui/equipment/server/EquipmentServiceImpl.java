@@ -186,7 +186,7 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
-    public DecimalNumber getNextAvailableRegisterNumberModificationNotContainsInList(List<Integer> mods, String classifierCode, String orgCode, String regNum) throws RequestFailedException {
+    public DecimalNumber getNextAvailableModificationNotContainsInList(List<Integer> mods, String classifierCode, String orgCode, String regNum) throws RequestFailedException {
         if (mods == null) {
             log.warn("null mods in request");
             throw new RequestFailedException(En_ResultStatus.INTERNAL_ERROR);

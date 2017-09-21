@@ -17,6 +17,7 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.equipment.client.provider.AbstractDecimalNumberDataProvider;
 import ru.protei.portal.ui.equipment.client.widget.number.item.AbstractBoxHandler;
 import ru.protei.portal.ui.equipment.client.widget.number.item.DecimalNumberBox;
+import ru.protei.winter.web.common.client.common.DisplayStyle;
 
 import java.util.*;
 
@@ -78,6 +79,37 @@ public class DecimalNumberList
 
     }
 
+    public boolean numberExists(DecimalNumber number) {
+        for (DecimalNumber value: values) {
+            if (number.equals(value)) {
+                continue;
+            }
+            if (value.getOrganizationCode() == number.getOrganizationCode()
+                && compare(value.getModification(), number.getModification())
+                && compare(value.getClassifierCode(), number.getClassifierCode())
+                && compare(value.getRegisterNumber(), number.getRegisterNumber()))
+
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public List<Integer> getRegNumbersListWithSpecificCode(Integer classifierCode) {
+        List<Integer> resultList = new ArrayList<Integer>();
+        for (DecimalNumber value: values) {
+            if (value == null || value.getClassifierCode() == null || value.getRegisterNumber() == null) {
+                continue;
+            }
+            if (compare(value.getClassifierCode(), classifierCode)) {
+                resultList.add(value.getRegisterNumber());
+            }
+        }
+        return resultList;
+    }
+
     private void clearBoxes() {
         pdraList.clear();
         pamrList.clear();
@@ -105,19 +137,19 @@ public class DecimalNumberList
             newNumber.setModification(oldNumber.getModification());
             List<Integer> mods = makeModListWithSameCodeAndRegNumber(newNumber.getClassifierCode(), newNumber.getRegisterNumber());
 
-            dataProvider.getNextAvailableRegisterNumberModificationNotContainsInList(mods, String.valueOf(newNumber.getClassifierCode()), newNumber.getOrganizationCode().name(), String.valueOf(newNumber.getRegisterNumber()), new RequestCallback<DecimalNumber>() {
-                @Override
-                public void onError(Throwable throwable) {
+            dataProvider.getNextAvailableModificationNotContainsInList(mods, String.valueOf(newNumber.getClassifierCode()),
+                    newNumber.getOrganizationCode().name(), String.valueOf(newNumber.getRegisterNumber()), new RequestCallback<DecimalNumber>() {
+                        @Override
+                        public void onError(Throwable throwable) {
+                        }
 
-                }
-
-                @Override
-                public void onSuccess(DecimalNumber result) {
-                    newNumber.setModification(result.getModification());
-                    values.add(newNumber);
-                    createBoxAndFillValue(newNumber);
-                }
-            });
+                        @Override
+                        public void onSuccess(DecimalNumber result) {
+                            newNumber.setModification(result.getModification());
+                            values.add(newNumber);
+                            createBoxAndFillValue(newNumber);
+                        }
+                    });
         });
     }
 
@@ -159,37 +191,6 @@ public class DecimalNumberList
         addToSublist(emptyNumber, box);
         addNextItemHandler(box);
         addRemoveHandler( box, emptyNumber );
-    }
-
-    public boolean numberExists(DecimalNumber number) {
-        for (DecimalNumber value: values) {
-            if (number.equals(value)) {
-                continue;
-            }
-            if (value.getOrganizationCode() == number.getOrganizationCode()
-                && compare(value.getModification(), number.getModification())
-                && compare(value.getClassifierCode(), number.getClassifierCode())
-                && compare(value.getRegisterNumber(), number.getRegisterNumber()))
-
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    @Override
-    public List<Integer> getRegNumbersListWithSpecificCode(Integer classifierCode) {
-        List<Integer> resultList = new ArrayList<Integer>();
-        for (DecimalNumber value: values) {
-            if (value == null || value.getClassifierCode() == null || value.getRegisterNumber() == null) {
-                continue;
-            }
-            if (compare(value.getClassifierCode(), classifierCode)) {
-                resultList.add(value.getRegisterNumber());
-            }
-        }
-        return resultList;
     }
 
     private boolean compare(Integer number, Integer value) {

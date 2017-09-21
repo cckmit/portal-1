@@ -229,11 +229,7 @@ public class DecimalNumberBox
 
                 @Override
                 public void onSuccess(DecimalNumber result) {
-                    markBoxAsError(false);
-
-                    value.setRegisterNumber(result.getRegisterNumber());
-                    regNum.setText(value.getRegisterNumber() == null ? null : NumberFormat.getFormat("000").format(value.getRegisterNumber()));
-                    clearMessage();
+                    fillRegNumber(result);
                 }
             });
         } else {
@@ -245,14 +241,18 @@ public class DecimalNumberBox
 
                 @Override
                 public void onSuccess(DecimalNumber result) {
-                    markBoxAsError(false);
-
-                    value.setRegisterNumber(result.getRegisterNumber());
-                    regNum.setText(value.getRegisterNumber() == null ? null : NumberFormat.getFormat("000").format(value.getRegisterNumber()));
-                    clearMessage();
+                    fillRegNumber(result);
                 }
             });
         }
+    }
+
+    private void fillRegNumber(DecimalNumber result) {
+        markBoxAsError(false);
+
+        value.setRegisterNumber(result.getRegisterNumber());
+        regNum.setText(value.getRegisterNumber() == null ? null : NumberFormat.getFormat("000").format(value.getRegisterNumber()));
+        clearMessage();
     }
 
     private List<Integer> makeNumbersListWithSameCodes(Integer code) {
@@ -286,6 +286,7 @@ public class DecimalNumberBox
         msg.addClassName( "hide" );
         getNumberMsg.removeClassName( "hide" );
     }
+
     private void showMessage( String text, DisplayStyle style ) {
         msg.removeClassName( "hide" );
         getNumberMsg.addClassName( "hide" );
