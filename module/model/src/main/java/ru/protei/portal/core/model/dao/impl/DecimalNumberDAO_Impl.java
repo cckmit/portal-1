@@ -86,7 +86,7 @@ public class DecimalNumberDAO_Impl extends PortalBaseJdbcDAO<DecimalNumber > imp
                 "left join decimal_number b on b.modification_number = a.modification_number + 1 " +
                 "and classifier_code=? and org_code=? and reg_number=? where b.modification_number is null";
 
-        sql = sql + " and a.reg_number not in (";
+        sql = sql + " and a.modification_number not in (";
 
         for (Integer mod: mods) {
             sql += String.valueOf(mod-1);

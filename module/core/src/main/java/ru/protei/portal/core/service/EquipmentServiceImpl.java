@@ -136,7 +136,7 @@ public class EquipmentServiceImpl implements EquipmentService {
     public CoreResponse<DecimalNumber> getNextAvailableRegisterNumberModificationNotContainsInList(AuthToken authToken, List<Integer> mods, String classifierCode, String orgCode, String regNum) {
         DecimalNumber number = new DecimalNumber();
         Integer nextAvailableMod = decimalNumberDAO.getNextAvailableRegisterNumberModificationNotContainsInList(mods, classifierCode, orgCode, regNum);
-        number.setRegisterNumber(nextAvailableMod);
+        number.setModification(nextAvailableMod);
 
         return new CoreResponse<DecimalNumber>().success( number );
     }

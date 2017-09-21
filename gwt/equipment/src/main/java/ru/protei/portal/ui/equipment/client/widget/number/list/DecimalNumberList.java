@@ -96,7 +96,7 @@ public class DecimalNumberList
     }
 
     private void addNextItemHandler(DecimalNumberBox box) {
-//        box.addAddHandler(event -> {
+        box.addAddHandler(event -> {
             DecimalNumber oldNumber = box.getValue();
             final DecimalNumber newNumber = new DecimalNumber();
             newNumber.setOrganizationCode(oldNumber.getOrganizationCode());
@@ -112,13 +112,13 @@ public class DecimalNumberList
                 }
 
                 @Override
-                public void onSuccess(DecimalNumber decimalNumber) {
-                    if (!numberExists(newNumber)) {
-                        values.add(newNumber);
-                        createBoxAndFillValue(newNumber);
-                    }
+                public void onSuccess(DecimalNumber result) {
+                    newNumber.setModification(result.getModification());
+                    values.add(newNumber);
+                    createBoxAndFillValue(newNumber);
                 }
             });
+        });
     }
 
     private List<Integer> makeModListWithSameCodeAndRegNumber(Integer classifierCode, Integer registerNumber) {
