@@ -13,6 +13,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.protei.portal.core.model.dict.En_OrganizationCode;
 import ru.protei.portal.core.model.ent.DecimalNumber;
+import ru.protei.portal.ui.equipment.client.provider.AbstractDecimalNumberDataProvider;
 import ru.protei.portal.ui.equipment.client.widget.number.item.AbstractBoxHandler;
 import ru.protei.portal.ui.equipment.client.widget.number.item.DecimalNumberBox;
 
@@ -96,7 +97,7 @@ public class DecimalNumberList
     private void addNextItemHandler(DecimalNumberBox box) {
         box.addAddHandler(event -> {
             DecimalNumber oldNumber = box.getValue();
-            DecimalNumber newNumber = new DecimalNumber();
+            final DecimalNumber newNumber = new DecimalNumber();
             newNumber.setOrganizationCode(oldNumber.getOrganizationCode());
             newNumber.setClassifierCode(oldNumber.getClassifierCode());
             newNumber.setRegisterNumber(oldNumber.getRegisterNumber());
@@ -106,6 +107,23 @@ public class DecimalNumberList
                 createBoxAndFillValue(newNumber);
             }
         });
+    }
+
+    private List<Integer> makeModListWithSameCodeAndRegNumber(Integer classifierCode, Integer registerNumber) {
+        List<Integer> modsList = new ArrayList<Integer>();
+
+        for (DecimalNumber value: values) {
+            if (value == null || value.getClassifierCode() == null || value.getRegisterNumber() == null
+                    || value.getModification() == null) {
+                continue;
+            }
+            if (compare(value.getClassifierCode(), classifierCode) && compare(value.getRegisterNumber(), registerNumber)) {
+                modsList.add(value.getModification());
+            }
+        }
+        return modsList;
+
+
     }
 
     private void addRemoveHandler(final DecimalNumberBox box, final DecimalNumber number ) {
@@ -185,6 +203,7 @@ public class DecimalNumberList
 
     @Inject
     Provider<DecimalNumberBox> boxProvider;
+
     private List<DecimalNumber> values = new ArrayList<>();
 
     private List<DecimalNumberBox> numberBoxes = new ArrayList<>();
