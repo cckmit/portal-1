@@ -45,6 +45,8 @@ public interface EquipmentServiceAsync {
      */
     void getNextAvailableRegisterNumber( DecimalNumber number, AsyncCallback<DecimalNumber> callback );
 
+    void getNextAvailableRegNumberNotContainsInList(List<Integer> regNumbers, String classifierCode, String orgCode, AsyncCallback<DecimalNumber> callback);
+
     void getNextAvailableRegisterNumberModification( DecimalNumber number, AsyncCallback<DecimalNumber> callback );
 
     void copyEquipment( Long equipmentId, String newName, AsyncCallback<Long> async );

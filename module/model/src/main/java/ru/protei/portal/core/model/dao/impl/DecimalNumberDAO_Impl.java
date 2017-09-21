@@ -3,15 +3,10 @@ package ru.protei.portal.core.model.dao.impl;
 import org.apache.commons.collections4.CollectionUtils;
 import ru.protei.portal.core.model.dao.DecimalNumberDAO;
 import ru.protei.portal.core.model.ent.DecimalNumber;
-import ru.protei.portal.core.model.ent.Equipment;
-import ru.protei.portal.core.model.helper.HelperFunc;
-import ru.protei.portal.core.model.query.SqlCondition;
-import sun.swing.BakedArrayList;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 /**
  * DAO децимальных номеров
@@ -57,5 +52,23 @@ public class DecimalNumberDAO_Impl extends PortalBaseJdbcDAO<DecimalNumber > imp
                 "left join decimal_number b on b.reg_number = a.reg_number + 1 " +
                 "and classifier_code=? and org_code=? where b.reg_number is null";
         return jdbcTemplate.queryForObject(sql, Integer.class, number.getClassifierCode(), number.getOrganizationCode().name());
+    }
+
+    @Override
+    public Integer getNextAvailableRegNumberNotContainsInList(List<Integer> regNumbers, String classifierCode, String orgCode) {
+        String sql = "select min(a.reg_number) + 1 from (select reg_number from decimal_number union select 0) a " +
+                "left join decimal_number b on b.reg_number = a.reg_number + 1 " +
+                "and classifier_code=? and org_code=? where b.reg_number is null";
+
+        sql = sql + " and a.reg_number not in (";
+
+        for (Integer regNumber: regNumbers) {
+            sql += String.valueOf(regNumber-1);
+            if (!regNumbers.get(regNumbers.size() -1).equals(regNumber)) {
+                sql += ",";
+            }
+        }
+        sql += ")";
+        return jdbcTemplate.queryForObject(sql, Integer.class, classifierCode, orgCode);
     }
 }

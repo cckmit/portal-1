@@ -148,6 +148,20 @@ public class DecimalNumberList
         return false;
     }
 
+    @Override
+    public List<Integer> getRegNumbersListWithSpecificCode(Integer classifierCode) {
+        List<Integer> resultList = new ArrayList<Integer>();
+        for (DecimalNumber value: values) {
+            if (value == null || value.getClassifierCode() == null || value.getRegisterNumber() == null) {
+                continue;
+            }
+            if (compare(value.getClassifierCode(), classifierCode)) {
+                resultList.add(value.getRegisterNumber());
+            }
+        }
+        return resultList;
+    }
+
     private boolean compare(Integer number, Integer value) {
         return (number == null  ? value == null  : number.equals(value));
     }

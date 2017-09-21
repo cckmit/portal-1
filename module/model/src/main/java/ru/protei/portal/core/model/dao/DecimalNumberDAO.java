@@ -3,7 +3,6 @@ package ru.protei.portal.core.model.dao;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * DAO децимальных номеров
@@ -19,4 +18,6 @@ public interface DecimalNumberDAO extends PortalBaseDAO<DecimalNumber> {
     List<Long> getDecimalNumbersByEquipmentId( Long id );
 
     Integer getNextAvailableRegNumber(DecimalNumber number);
+
+    Integer getNextAvailableRegNumberNotContainsInList(List<Integer> regNumbers, String classifierCode, String orgCode);
 }

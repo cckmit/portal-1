@@ -45,4 +45,6 @@ public interface EquipmentService extends RemoteService {
     DecimalNumber getNextAvailableRegisterNumber( DecimalNumber number ) throws RequestFailedException;
 
     DecimalNumber getNextAvailableRegisterNumberModification( DecimalNumber number ) throws RequestFailedException;
+
+    DecimalNumber getNextAvailableRegNumberNotContainsInList(List<Integer> regNumbers, String classifierCode, String orgCode) throws RequestFailedException;
 }

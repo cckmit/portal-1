@@ -25,6 +25,8 @@ import ru.protei.portal.ui.equipment.client.provider.AbstractDecimalNumberDataPr
 import ru.protei.portal.ui.equipment.client.widget.number.list.DecimalNumberList;
 import ru.protei.winter.web.common.client.common.DisplayStyle;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -216,25 +218,51 @@ public class DecimalNumberBox
     }
 
     private void fillNextAvailableNumber() {
-        dataProvider.getNextAvailableRegisterNumber( value, new RequestCallback< DecimalNumber>() {
-            @Override
-            public void onError( Throwable throwable ) {
-                showMessage( lang.equipmentErrorGetNextAvailableNumber(), DisplayStyle.DANGER );
-            }
+        List<Integer> numbers = makeNumbersListWithSameCodes(this.getValue().getClassifierCode());
 
-            @Override
-            public void onSuccess( DecimalNumber result ) {
-                markBoxAsError( false );
-
-                while (handler.numberExists(result)) {
-                    result.setRegisterNumber(result.getRegisterNumber() + 1);
+        if (numbers.isEmpty()) {
+            dataProvider.getNextAvailableRegisterNumber(value, new RequestCallback<DecimalNumber>() {
+                @Override
+                public void onError(Throwable throwable) {
+                    showMessage(lang.equipmentErrorGetNextAvailableNumber(), DisplayStyle.DANGER);
                 }
 
-                value.setRegisterNumber( result.getRegisterNumber() );
-                regNum.setText( value.getRegisterNumber() == null ? null : NumberFormat.getFormat("000").format( value.getRegisterNumber() ) );
-                clearMessage();
-            }
-        } );
+                @Override
+                public void onSuccess(DecimalNumber result) {
+                    markBoxAsError(false);
+
+                    value.setRegisterNumber(result.getRegisterNumber());
+                    regNum.setText(value.getRegisterNumber() == null ? null : NumberFormat.getFormat("000").format(value.getRegisterNumber()));
+                    clearMessage();
+                }
+            });
+        } else {
+            dataProvider.getNextAvailableRegNumberNotContainsInList(numbers, classifierCode.getValue(), value.getOrganizationCode().name(), new RequestCallback<DecimalNumber>() {
+                @Override
+                public void onError(Throwable throwable) {
+                    showMessage(lang.equipmentErrorGetNextAvailableNumber(), DisplayStyle.DANGER);
+                }
+
+                @Override
+                public void onSuccess(DecimalNumber result) {
+                    markBoxAsError(false);
+
+                    value.setRegisterNumber(result.getRegisterNumber());
+                    regNum.setText(value.getRegisterNumber() == null ? null : NumberFormat.getFormat("000").format(value.getRegisterNumber()));
+                    clearMessage();
+                }
+            });
+        }
+    }
+
+    private List<Integer> makeNumbersListWithSameCodes(Integer code) {
+        List<Integer> resultList = new ArrayList<Integer>();
+
+        if (handler != null ) {
+            resultList = handler.getRegNumbersListWithSpecificCode(code);
+        }
+
+        return resultList;
     }
 
     private void fillNextAvailableNumberModification() {

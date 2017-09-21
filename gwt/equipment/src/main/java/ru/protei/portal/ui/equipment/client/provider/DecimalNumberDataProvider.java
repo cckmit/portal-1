@@ -5,6 +5,8 @@ import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.service.EquipmentServiceAsync;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 
+import java.util.List;
+
 /**
  * Провайдер данных по децимальным номерам
  */
@@ -23,6 +25,11 @@ public class DecimalNumberDataProvider implements AbstractDecimalNumberDataProvi
     @Override
     public void getNextAvailableRegisterNumberModification( DecimalNumber number, AsyncCallback< DecimalNumber > callback ) {
         equipmentService.getNextAvailableRegisterNumberModification( number, callback );
+    }
+
+    @Override
+    public void getNextAvailableRegNumberNotContainsInList(List<Integer> regNumbers, String classifierCode, String orgCode, AsyncCallback<DecimalNumber> callback) {
+        equipmentService.getNextAvailableRegNumberNotContainsInList( regNumbers, classifierCode, orgCode, callback );
     }
 
     @Inject

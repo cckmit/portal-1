@@ -8,12 +8,11 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.DecimalNumberDAO;
 import ru.protei.portal.core.model.dao.EquipmentDAO;
-import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dict.En_OrganizationCode;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.Equipment;
-import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.query.EquipmentQuery;
 import ru.protei.winter.core.utils.collections.CollectionUtils;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
@@ -97,6 +96,17 @@ public class EquipmentServiceImpl implements EquipmentService {
             number.setRegisterNumber(nextAvailableRegNumber);
             ifExist = decimalNumberDAO.checkIfExist( number );
         }
+
+        return new CoreResponse<DecimalNumber>().success( number );
+    }
+
+    @Override
+    public CoreResponse<DecimalNumber> getNextAvailableRegNumberNotContainsInList(AuthToken authToken, List<Integer> regNumbers, String classifierCode, String orgCode) {
+
+        DecimalNumber number = new DecimalNumber();
+        number.setModification(null);
+        Integer nextAvailableRegNumber = decimalNumberDAO.getNextAvailableRegNumberNotContainsInList(regNumbers, classifierCode, orgCode);
+        number.setRegisterNumber(nextAvailableRegNumber);
 
         return new CoreResponse<DecimalNumber>().success( number );
     }

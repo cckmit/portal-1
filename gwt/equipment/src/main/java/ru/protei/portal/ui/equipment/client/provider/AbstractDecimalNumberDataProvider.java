@@ -3,6 +3,8 @@ package ru.protei.portal.ui.equipment.client.provider;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 
+import java.util.List;
+
 /**
  * Валидатор децимальных чисел
  */
@@ -22,4 +24,6 @@ public interface AbstractDecimalNumberDataProvider {
     void getNextAvailableRegisterNumber( DecimalNumber number, AsyncCallback<DecimalNumber> callback  );
 
     void getNextAvailableRegisterNumberModification( DecimalNumber number, AsyncCallback<DecimalNumber> callback  );
+
+    void getNextAvailableRegNumberNotContainsInList(List<Integer> regNumbers, String classifierCode, String orgCode, AsyncCallback<DecimalNumber> callback);
 }

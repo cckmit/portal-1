@@ -34,6 +34,9 @@ public interface EquipmentService {
     CoreResponse< DecimalNumber > getNextAvailableDecimalNumber( AuthToken token, DecimalNumber number );
 
     @Privileged( requireAny = { En_Privilege.EQUIPMENT_CREATE, En_Privilege.EQUIPMENT_EDIT })
+    CoreResponse<DecimalNumber> getNextAvailableRegNumberNotContainsInList(AuthToken authToken, List<Integer> regNumbers, String classifierCode, String orgCode);
+
+    @Privileged( requireAny = { En_Privilege.EQUIPMENT_CREATE, En_Privilege.EQUIPMENT_EDIT })
     CoreResponse< DecimalNumber > getNextAvailableDecimalNumberModification( AuthToken token, DecimalNumber number );
 
     CoreResponse< Boolean > checkIfExistDecimalNumber( DecimalNumber number );
