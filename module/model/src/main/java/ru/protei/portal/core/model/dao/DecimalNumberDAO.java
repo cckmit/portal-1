@@ -22,4 +22,6 @@ public interface DecimalNumberDAO extends PortalBaseDAO<DecimalNumber> {
     Integer getNextAvailableRegNumberNotContainsInList(List<Integer> regNumbers, String classifierCode, String orgCode);
 
     Integer getNextAvailableModification(DecimalNumber number);
+
+    Integer getNextAvailableRegisterNumberModificationNotContainsInList(List<Integer> mods, String classifierCode, String orgCode, String regNum);
 }

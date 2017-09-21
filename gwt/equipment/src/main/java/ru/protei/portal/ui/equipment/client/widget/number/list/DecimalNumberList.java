@@ -13,6 +13,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.protei.portal.core.model.dict.En_OrganizationCode;
 import ru.protei.portal.core.model.ent.DecimalNumber;
+import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.equipment.client.provider.AbstractDecimalNumberDataProvider;
 import ru.protei.portal.ui.equipment.client.widget.number.item.AbstractBoxHandler;
 import ru.protei.portal.ui.equipment.client.widget.number.item.DecimalNumberBox;
@@ -95,18 +96,29 @@ public class DecimalNumberList
     }
 
     private void addNextItemHandler(DecimalNumberBox box) {
-        box.addAddHandler(event -> {
+//        box.addAddHandler(event -> {
             DecimalNumber oldNumber = box.getValue();
             final DecimalNumber newNumber = new DecimalNumber();
             newNumber.setOrganizationCode(oldNumber.getOrganizationCode());
             newNumber.setClassifierCode(oldNumber.getClassifierCode());
             newNumber.setRegisterNumber(oldNumber.getRegisterNumber());
-            newNumber.setModification(oldNumber.getModification() + 1);
-            if (!numberExists(newNumber)) {
-                values.add(newNumber);
-                createBoxAndFillValue(newNumber);
-            }
-        });
+            newNumber.setModification(oldNumber.getModification());
+            List<Integer> mods = makeModListWithSameCodeAndRegNumber(newNumber.getClassifierCode(), newNumber.getRegisterNumber());
+
+            dataProvider.getNextAvailableRegisterNumberModificationNotContainsInList(mods, String.valueOf(newNumber.getClassifierCode()), newNumber.getOrganizationCode().name(), String.valueOf(newNumber.getRegisterNumber()), new RequestCallback<DecimalNumber>() {
+                @Override
+                public void onError(Throwable throwable) {
+
+                }
+
+                @Override
+                public void onSuccess(DecimalNumber decimalNumber) {
+                    if (!numberExists(newNumber)) {
+                        values.add(newNumber);
+                        createBoxAndFillValue(newNumber);
+                    }
+                }
+            });
     }
 
     private List<Integer> makeModListWithSameCodeAndRegNumber(Integer classifierCode, Integer registerNumber) {
@@ -201,6 +213,8 @@ public class DecimalNumberList
     @UiField
     Button addPdra;
 
+    @Inject
+    AbstractDecimalNumberDataProvider dataProvider;
     @Inject
     Provider<DecimalNumberBox> boxProvider;
 

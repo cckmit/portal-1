@@ -79,4 +79,23 @@ public class DecimalNumberDAO_Impl extends PortalBaseJdbcDAO<DecimalNumber > imp
                 "and classifier_code=? and org_code=? and reg_number=? where b.modification_number is null";
         return jdbcTemplate.queryForObject(sql, Integer.class, number.getClassifierCode(), number.getOrganizationCode().name(), number.getRegisterNumber());
     }
+
+    @Override
+    public Integer getNextAvailableRegisterNumberModificationNotContainsInList(List<Integer> mods, String classifierCode, String orgCode, String regNum) {
+        String sql = "select min(a.modification_number) + 1 from (select modification_number from decimal_number union select 0) a " +
+                "left join decimal_number b on b.modification_number = a.modification_number + 1 " +
+                "and classifier_code=? and org_code=? and reg_number=? where b.modification_number is null";
+
+        sql = sql + " and a.reg_number not in (";
+
+        for (Integer mod: mods) {
+            sql += String.valueOf(mod-1);
+            if (!mods.get(mods.size() -1).equals(mod)) {
+                sql += ",";
+            }
+        }
+        sql += ")";
+
+        return jdbcTemplate.queryForObject(sql, Integer.class, classifierCode, orgCode, regNum);
+    }
 }

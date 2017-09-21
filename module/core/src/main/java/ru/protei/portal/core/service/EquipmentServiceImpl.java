@@ -133,6 +133,15 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
+    public CoreResponse<DecimalNumber> getNextAvailableRegisterNumberModificationNotContainsInList(AuthToken authToken, List<Integer> mods, String classifierCode, String orgCode, String regNum) {
+        DecimalNumber number = new DecimalNumber();
+        Integer nextAvailableMod = decimalNumberDAO.getNextAvailableRegisterNumberModificationNotContainsInList(mods, classifierCode, orgCode, regNum);
+        number.setRegisterNumber(nextAvailableMod);
+
+        return new CoreResponse<DecimalNumber>().success( number );
+    }
+
+    @Override
     public CoreResponse< Boolean > checkIfExistDecimalNumber( DecimalNumber number ) {
         boolean isExist = decimalNumberDAO.checkIfExist( number );
         return new CoreResponse<Boolean>().success( isExist );

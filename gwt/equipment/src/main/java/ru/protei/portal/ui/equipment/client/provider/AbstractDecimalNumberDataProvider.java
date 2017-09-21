@@ -26,4 +26,6 @@ public interface AbstractDecimalNumberDataProvider {
     void getNextAvailableRegisterNumberModification( DecimalNumber number, AsyncCallback<DecimalNumber> callback  );
 
     void getNextAvailableRegNumberNotContainsInList(List<Integer> regNumbers, String classifierCode, String orgCode, AsyncCallback<DecimalNumber> callback);
+
+    void getNextAvailableRegisterNumberModificationNotContainsInList(List<Integer> mods, String classifierCode, String orgCode, String regNum, AsyncCallback<DecimalNumber> callback);
 }

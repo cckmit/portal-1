@@ -32,6 +32,11 @@ public class DecimalNumberDataProvider implements AbstractDecimalNumberDataProvi
         equipmentService.getNextAvailableRegNumberNotContainsInList( regNumbers, classifierCode, orgCode, callback );
     }
 
+    @Override
+    public void getNextAvailableRegisterNumberModificationNotContainsInList(List<Integer> mods, String classifierCode, String orgCode, String regNum, AsyncCallback<DecimalNumber> callback) {
+        equipmentService.getNextAvailableRegisterNumberModificationNotContainsInList( mods, classifierCode, orgCode, regNum, callback );
+    }
+
     @Inject
     EquipmentServiceAsync equipmentService;
 }

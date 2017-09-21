@@ -186,6 +186,22 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
+    public DecimalNumber getNextAvailableRegisterNumberModificationNotContainsInList(List<Integer> mods, String classifierCode, String orgCode, String regNum) throws RequestFailedException {
+        if (mods == null) {
+            log.warn("null mods in request");
+            throw new RequestFailedException(En_ResultStatus.INTERNAL_ERROR);
+        }
+
+        CoreResponse<DecimalNumber> response = equipmentService.getNextAvailableRegisterNumberModificationNotContainsInList( getDescriptorAndCheckSession().makeAuthToken(), mods, classifierCode, orgCode, regNum );
+        if (response.isOk()) {
+            log.debug("get next available decimal number, result: {}", response.getData());
+            return response.getData();
+        }
+
+        throw new RequestFailedException(response.getStatus());
+    }
+
+    @Override
     public DecimalNumber getNextAvailableRegisterNumberModification( DecimalNumber number ) throws RequestFailedException  {
         if (number == null) {
             log.warn("null number in request");

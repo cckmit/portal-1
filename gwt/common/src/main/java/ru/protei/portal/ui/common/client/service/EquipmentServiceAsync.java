@@ -4,6 +4,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.query.EquipmentQuery;
 import ru.protei.portal.core.model.ent.DecimalNumber;
+import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
 import java.util.List;
 
@@ -52,4 +53,6 @@ public interface EquipmentServiceAsync {
     void copyEquipment( Long equipmentId, String newName, AsyncCallback<Long> async );
 
     void removeEquipment( Long equipmentId, AsyncCallback<Boolean> async );
+
+    void getNextAvailableRegisterNumberModificationNotContainsInList(List<Integer> mods, String classifierCode, String orgCode, String regNum, AsyncCallback<DecimalNumber> callback);
 }
