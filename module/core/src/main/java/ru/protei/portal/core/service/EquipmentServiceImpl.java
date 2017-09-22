@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.DecimalNumberDAO;
 import ru.protei.portal.core.model.dao.EquipmentDAO;
-import ru.protei.portal.core.model.dict.En_OrganizationCode;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.DecimalNumber;

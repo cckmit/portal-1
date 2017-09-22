@@ -5,7 +5,7 @@ import ru.protei.portal.core.model.ent.DecimalNumber;
 import java.util.List;
 
 /**
- * Created by serebryakov on 20/09/17.
+ * Хэндлер для отправки сообщение от бокса к списку
  */
 public interface AbstractBoxHandler {
     boolean numberExists(DecimalNumber value);

@@ -176,6 +176,13 @@ public class DecimalNumberBox
         this.handler = boxHandler;
     }
 
+    public void setErrorMessage() {
+        msg.removeClassName( "hide" );
+        getNumberMsg.addClassName( "hide" );
+        msg.setClassName( "text text-" + DisplayStyle.DANGER.name().toLowerCase() );
+        msg.setInnerText(lang.equipmentErrorGetNextAvailableNumber() );
+    }
+
     private void checkExistNumber() {
         if (handler != null) {
             if (handler.numberExists(value)) {

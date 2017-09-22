@@ -115,7 +115,7 @@ public class DecimalNumberList
             dataProvider.getNextAvailableRegisterNumberModificationNotContainsInList( filter, new RequestCallback<DecimalNumber>() {
                 @Override
                 public void onError(Throwable throwable) {
-
+                    box.setErrorMessage();
                 }
 
                 @Override
