@@ -14,6 +14,7 @@ import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.query.EquipmentQuery;
+import ru.protei.portal.core.model.struct.DecimalNumberFilter;
 import ru.protei.winter.core.utils.collections.CollectionUtils;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
@@ -101,11 +102,11 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
-    public CoreResponse<DecimalNumber> getNextAvailableRegNumberNotContainsInList(AuthToken authToken, List<Integer> regNumbers, String classifierCode, String orgCode) {
+    public CoreResponse<DecimalNumber> getNextAvailableRegNumberNotContainsInList(AuthToken authToken, DecimalNumberFilter filter) {
 
         DecimalNumber number = new DecimalNumber();
         number.setModification(null);
-        Integer nextAvailableRegNumber = decimalNumberDAO.getNextAvailableRegNumberNotContainsInList(regNumbers, classifierCode, orgCode);
+        Integer nextAvailableRegNumber = decimalNumberDAO.getNextAvailableRegNumberNotContainsInList(filter);
         number.setRegisterNumber(nextAvailableRegNumber);
 
         return new CoreResponse<DecimalNumber>().success( number );
@@ -133,9 +134,9 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
-    public CoreResponse<DecimalNumber> getNextAvailableRegisterNumberModificationNotContainsInList(AuthToken authToken, List<Integer> mods, String classifierCode, String orgCode, String regNum) {
+    public CoreResponse<DecimalNumber> getNextAvailableRegisterNumberModificationNotContainsInList(AuthToken authToken, DecimalNumberFilter filter) {
         DecimalNumber number = new DecimalNumber();
-        Integer nextAvailableMod = decimalNumberDAO.getNextAvailableRegisterNumberModificationNotContainsInList(mods, classifierCode, orgCode, regNum);
+        Integer nextAvailableMod = decimalNumberDAO.getNextAvailableRegisterNumberModificationNotContainsInList(filter);
         number.setModification(nextAvailableMod);
 
         return new CoreResponse<DecimalNumber>().success( number );

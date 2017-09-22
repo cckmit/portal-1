@@ -13,6 +13,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.protei.portal.core.model.dict.En_OrganizationCode;
 import ru.protei.portal.core.model.ent.DecimalNumber;
+import ru.protei.portal.core.model.struct.DecimalNumberFilter;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.equipment.client.provider.AbstractDecimalNumberDataProvider;
 import ru.protei.portal.ui.equipment.client.widget.number.item.AbstractBoxHandler;
@@ -105,7 +106,13 @@ public class DecimalNumberList
             newNumber.setModification(oldNumber.getModification());
             List<Integer> mods = makeModListWithSameCodeAndRegNumber(newNumber.getClassifierCode(), newNumber.getRegisterNumber());
 
-            dataProvider.getNextAvailableRegisterNumberModificationNotContainsInList(mods, String.valueOf(newNumber.getClassifierCode()), newNumber.getOrganizationCode().name(), String.valueOf(newNumber.getRegisterNumber()), new RequestCallback<DecimalNumber>() {
+            DecimalNumberFilter filter = new DecimalNumberFilter();
+            filter.setExcludeNumbers(mods);
+            filter.setClassifierCode(String.valueOf(newNumber.getClassifierCode()));
+            filter.setOrganizationCode(newNumber.getOrganizationCode().name());
+            filter.setRegisterNumber(String.valueOf(newNumber.getRegisterNumber()));
+
+            dataProvider.getNextAvailableRegisterNumberModificationNotContainsInList( filter, new RequestCallback<DecimalNumber>() {
                 @Override
                 public void onError(Throwable throwable) {
 

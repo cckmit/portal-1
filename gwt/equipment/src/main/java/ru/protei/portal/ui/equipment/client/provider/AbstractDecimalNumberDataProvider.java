@@ -2,6 +2,7 @@ package ru.protei.portal.ui.equipment.client.provider;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import ru.protei.portal.core.model.ent.DecimalNumber;
+import ru.protei.portal.core.model.struct.DecimalNumberFilter;
 
 import java.util.List;
 
@@ -25,7 +26,7 @@ public interface AbstractDecimalNumberDataProvider {
 
     void getNextAvailableRegisterNumberModification( DecimalNumber number, AsyncCallback<DecimalNumber> callback  );
 
-    void getNextAvailableRegNumberNotContainsInList(List<Integer> regNumbers, String classifierCode, String orgCode, AsyncCallback<DecimalNumber> callback);
+    void getNextAvailableRegNumberNotContainsInList(DecimalNumberFilter filter, AsyncCallback<DecimalNumber> callback);
 
-    void getNextAvailableRegisterNumberModificationNotContainsInList(List<Integer> mods, String classifierCode, String orgCode, String regNum, AsyncCallback<DecimalNumber> callback);
+    void getNextAvailableRegisterNumberModificationNotContainsInList(DecimalNumberFilter filter, AsyncCallback<DecimalNumber> callback);
 }

@@ -12,6 +12,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.struct.DecimalNumberFilter;
 import ru.protei.portal.ui.common.client.events.AddEvent;
 import ru.protei.portal.ui.common.client.events.AddHandler;
 import ru.protei.portal.ui.common.client.events.HasAddHandlers;
@@ -27,7 +28,6 @@ import ru.protei.winter.web.common.client.common.DisplayStyle;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Вид виджета децимального номера
@@ -220,24 +220,12 @@ public class DecimalNumberBox
     private void fillNextAvailableNumber() {
         List<Integer> numbers = makeNumbersListWithSameCodes(this.getValue().getClassifierCode());
 
-        if (numbers.isEmpty()) {
-            dataProvider.getNextAvailableRegisterNumber(value, new RequestCallback<DecimalNumber>() {
-                @Override
-                public void onError(Throwable throwable) {
-                    showMessage(lang.equipmentErrorGetNextAvailableNumber(), DisplayStyle.DANGER);
-                }
-
-                @Override
-                public void onSuccess(DecimalNumber result) {
-                    markBoxAsError(false);
-
-                    value.setRegisterNumber(result.getRegisterNumber());
-                    regNum.setText(value.getRegisterNumber() == null ? null : NumberFormat.getFormat("000").format(value.getRegisterNumber()));
-                    clearMessage();
-                }
-            });
-        } else {
-            dataProvider.getNextAvailableRegNumberNotContainsInList(numbers, classifierCode.getValue(), value.getOrganizationCode().name(), new RequestCallback<DecimalNumber>() {
+        if (numbers != null) {
+            DecimalNumberFilter filter = new DecimalNumberFilter();
+            filter.setClassifierCode(classifierCode.getValue());
+            filter.setOrganizationCode(value.getOrganizationCode().name());
+            filter.setExcludeNumbers(numbers);
+            dataProvider.getNextAvailableRegNumberNotContainsInList(filter, new RequestCallback<DecimalNumber>() {
                 @Override
                 public void onError(Throwable throwable) {
                     showMessage(lang.equipmentErrorGetNextAvailableNumber(), DisplayStyle.DANGER);

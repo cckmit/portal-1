@@ -3,6 +3,7 @@ package ru.protei.portal.core.model.dao.impl;
 import org.apache.commons.collections4.CollectionUtils;
 import ru.protei.portal.core.model.dao.DecimalNumberDAO;
 import ru.protei.portal.core.model.ent.DecimalNumber;
+import ru.protei.portal.core.model.struct.DecimalNumberFilter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -55,21 +56,24 @@ public class DecimalNumberDAO_Impl extends PortalBaseJdbcDAO<DecimalNumber > imp
     }
 
     @Override
-    public Integer getNextAvailableRegNumberNotContainsInList(List<Integer> regNumbers, String classifierCode, String orgCode) {
+    public Integer getNextAvailableRegNumberNotContainsInList(DecimalNumberFilter filter) {
         String sql = "select min(a.reg_number) + 1 from (select reg_number from decimal_number union select 0) a " +
                 "left join decimal_number b on b.reg_number = a.reg_number + 1 " +
                 "and classifier_code=? and org_code=? where b.reg_number is null";
 
-        sql = sql + " and a.reg_number not in (";
+        if (!filter.getExcludeNumbers().isEmpty()) {
+            sql = sql + " and a.reg_number not in (";
 
-        for (Integer regNumber: regNumbers) {
-            sql += String.valueOf(regNumber-1);
-            if (!regNumbers.get(regNumbers.size() -1).equals(regNumber)) {
-                sql += ",";
+            List<Integer> excludeNumbers = filter.getExcludeNumbers();
+            for (Integer regNumber : excludeNumbers) {
+                sql += String.valueOf(regNumber - 1);
+                if (!excludeNumbers.get(excludeNumbers.size() - 1).equals(regNumber)) {
+                    sql += ",";
+                }
             }
+            sql += ")";
         }
-        sql += ")";
-        return jdbcTemplate.queryForObject(sql, Integer.class, classifierCode, orgCode);
+        return jdbcTemplate.queryForObject(sql, Integer.class, filter.getClassifierCode(), filter.getOrganizationCode());
     }
 
     @Override
@@ -81,21 +85,23 @@ public class DecimalNumberDAO_Impl extends PortalBaseJdbcDAO<DecimalNumber > imp
     }
 
     @Override
-    public Integer getNextAvailableRegisterNumberModificationNotContainsInList(List<Integer> mods, String classifierCode, String orgCode, String regNum) {
+    public Integer getNextAvailableRegisterNumberModificationNotContainsInList(DecimalNumberFilter filter) {
         String sql = "select min(a.modification_number) + 1 from (select modification_number from decimal_number union select 0) a " +
                 "left join decimal_number b on b.modification_number = a.modification_number + 1 " +
                 "and classifier_code=? and org_code=? and reg_number=? where b.modification_number is null";
 
         sql = sql + " and a.modification_number not in (";
 
-        for (Integer mod: mods) {
+        List<Integer> excludeNumbers = filter.getExcludeNumbers();
+
+        for (Integer mod: excludeNumbers) {
             sql += String.valueOf(mod-1);
-            if (!mods.get(mods.size() -1).equals(mod)) {
+            if (!excludeNumbers.get(excludeNumbers.size() -1).equals(mod)) {
                 sql += ",";
             }
         }
         sql += ")";
 
-        return jdbcTemplate.queryForObject(sql, Integer.class, classifierCode, orgCode, regNum);
+        return jdbcTemplate.queryForObject(sql, Integer.class, filter.getClassifierCode(), filter.getOrganizationCode(), filter.getRegisterNumber());
     }
 }

@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.EquipmentQuery;
+import ru.protei.portal.core.model.struct.DecimalNumberFilter;
 import ru.protei.portal.ui.common.client.service.EquipmentService;
 import ru.protei.portal.ui.common.server.service.SessionService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
@@ -170,13 +171,13 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
-    public DecimalNumber getNextAvailableRegNumberNotContainsInList(List<Integer> regNumbers, String classifierCode, String orgCode) throws RequestFailedException {
-        if (regNumbers == null) {
+    public DecimalNumber getNextAvailableRegNumberNotContainsInList(DecimalNumberFilter filter) throws RequestFailedException {
+        if (filter.getExcludeNumbers() == null) {
             log.warn("null numbers in request");
             throw new RequestFailedException(En_ResultStatus.INTERNAL_ERROR);
         }
 
-        CoreResponse<DecimalNumber> response = equipmentService.getNextAvailableRegNumberNotContainsInList( getDescriptorAndCheckSession().makeAuthToken(), regNumbers, classifierCode, orgCode );
+        CoreResponse<DecimalNumber> response = equipmentService.getNextAvailableRegNumberNotContainsInList( getDescriptorAndCheckSession().makeAuthToken(), filter );
         if (response.isOk()) {
             log.debug("get next available decimal number, result: {}", response.getData());
             return response.getData();
@@ -186,13 +187,13 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
-    public DecimalNumber getNextAvailableRegisterNumberModificationNotContainsInList(List<Integer> mods, String classifierCode, String orgCode, String regNum) throws RequestFailedException {
-        if (mods == null) {
+    public DecimalNumber getNextAvailableRegisterNumberModificationNotContainsInList(DecimalNumberFilter filter) throws RequestFailedException {
+        if (filter.getExcludeNumbers() == null) {
             log.warn("null mods in request");
             throw new RequestFailedException(En_ResultStatus.INTERNAL_ERROR);
         }
 
-        CoreResponse<DecimalNumber> response = equipmentService.getNextAvailableRegisterNumberModificationNotContainsInList( getDescriptorAndCheckSession().makeAuthToken(), mods, classifierCode, orgCode, regNum );
+        CoreResponse<DecimalNumber> response = equipmentService.getNextAvailableRegisterNumberModificationNotContainsInList( getDescriptorAndCheckSession().makeAuthToken(), filter );
         if (response.isOk()) {
             log.debug("get next available decimal number, result: {}", response.getData());
             return response.getData();

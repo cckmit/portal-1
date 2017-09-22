@@ -1,6 +1,7 @@
 package ru.protei.portal.core.model.dao;
 
 import ru.protei.portal.core.model.ent.DecimalNumber;
+import ru.protei.portal.core.model.struct.DecimalNumberFilter;
 
 import java.util.List;
 
@@ -19,9 +20,9 @@ public interface DecimalNumberDAO extends PortalBaseDAO<DecimalNumber> {
 
     Integer getNextAvailableRegNumber(DecimalNumber number);
 
-    Integer getNextAvailableRegNumberNotContainsInList(List<Integer> regNumbers, String classifierCode, String orgCode);
+    Integer getNextAvailableRegNumberNotContainsInList(DecimalNumberFilter filter);
 
     Integer getNextAvailableModification(DecimalNumber number);
 
-    Integer getNextAvailableRegisterNumberModificationNotContainsInList(List<Integer> mods, String classifierCode, String orgCode, String regNum);
+    Integer getNextAvailableRegisterNumberModificationNotContainsInList(DecimalNumberFilter filter);
 }

@@ -9,6 +9,7 @@ import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.query.EquipmentQuery;
+import ru.protei.portal.core.model.struct.DecimalNumberFilter;
 
 import java.util.List;
 
@@ -34,13 +35,13 @@ public interface EquipmentService {
     CoreResponse< DecimalNumber > getNextAvailableDecimalNumber( AuthToken token, DecimalNumber number );
 
     @Privileged( requireAny = { En_Privilege.EQUIPMENT_CREATE, En_Privilege.EQUIPMENT_EDIT })
-    CoreResponse<DecimalNumber> getNextAvailableRegNumberNotContainsInList(AuthToken authToken, List<Integer> regNumbers, String classifierCode, String orgCode);
+    CoreResponse<DecimalNumber> getNextAvailableRegNumberNotContainsInList(AuthToken authToken, DecimalNumberFilter filter);
 
     @Privileged( requireAny = { En_Privilege.EQUIPMENT_CREATE, En_Privilege.EQUIPMENT_EDIT })
     CoreResponse< DecimalNumber > getNextAvailableDecimalNumberModification( AuthToken token, DecimalNumber number );
 
     @Privileged( requireAny = { En_Privilege.EQUIPMENT_CREATE, En_Privilege.EQUIPMENT_EDIT })
-    CoreResponse<DecimalNumber> getNextAvailableRegisterNumberModificationNotContainsInList(AuthToken authToken, List<Integer> mods, String classifierCode, String orgCode, String regNum);
+    CoreResponse<DecimalNumber> getNextAvailableRegisterNumberModificationNotContainsInList(AuthToken authToken, DecimalNumberFilter filter);
 
     CoreResponse< Boolean > checkIfExistDecimalNumber( DecimalNumber number );
 
