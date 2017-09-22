@@ -1,7 +1,9 @@
 package ru.protei.portal.ui.equipment.client.view.edit;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.InputElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -95,6 +97,11 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
         return project;
     }
 
+    @Override
+    public HasValue<String> date() {
+        return dateTextBox;
+    }
+
     @UiHandler( "saveButton" )
     public void onSaveClicked( ClickEvent event ) {
         if ( activity != null ) {
@@ -107,6 +114,24 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
         if ( activity != null ) {
             activity.onCancelClicked();
         }
+    }
+
+    @Override
+    public void setVisibilitySettingsForCreated(boolean isVisible) {
+        if (!isVisible) {
+            projectBox.removeStyleName("col-xs-5");
+            projectBox.addStyleName("col-xs-7");
+            managerBox.removeStyleName("col-xs-4");
+            managerBox.addStyleName("col-xs-5");
+        }
+        else {
+            projectBox.removeStyleName("col-xs-7");
+            projectBox.addStyleName("col-xs-5");
+            managerBox.removeStyleName("col-xs-5");
+            managerBox.addStyleName("col-xs-4");
+        }
+        date.setVisible(isVisible);
+        dateTextBox.setEnabled(false);
     }
 
     @UiField
@@ -137,6 +162,14 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
     EmployeeButtonSelector manager;
     @UiField
     TextBox project;
+    @UiField
+    HTMLPanel date;
+    @UiField
+    TextBox dateTextBox;
+    @UiField
+    HTMLPanel projectBox;
+    @UiField
+    HTMLPanel managerBox;
 
     AbstractEquipmentEditActivity activity;
 

@@ -42,20 +42,29 @@
                         <selector:EquipmentSelector ui:field="linkedEquipment" hasNullValue="true"/>
                     </div>
 
-                    <div class="form-group col-xs-7">
+                    <g:HTMLPanel styleName="form-group" ui:field="projectBox">
                         <label>
                             <ui:text from="{lang.equipmentProject}"/>
                         </label>
                         <g:TextBox ui:field="project" styleName="input-field"/>
-                    </div>
+                    </g:HTMLPanel>
 
-                    <div class="form-group col-xs-5">
+                    <g:HTMLPanel styleName="form-group" ui:field="managerBox">
                         <label>
                             <ui:text from="{lang.equipmentManager}"/>
                         </label>
                         <person:EmployeeButtonSelector ui:field="manager" defaultValue="{lang.equipmentManagerNotDefined}"/>
-                    </div>
+                    </g:HTMLPanel>
+
+                    <g:HTMLPanel styleName="form-group col-xs-3" ui:field="date">
+                        <label>
+                            <ui:text from="{lang.created}"/>
+                        </label>
+                        <g:TextBox ui:field="dateTextBox" styleName="input-field"/>
+
+                    </g:HTMLPanel>
                 </div>
+
 
                 <legend class="header"><ui:text from="{lang.equipmentDecimalNumber}"/></legend>
                 <div class="grid grid-indent">

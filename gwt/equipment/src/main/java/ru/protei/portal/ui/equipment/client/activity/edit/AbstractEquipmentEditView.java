@@ -39,4 +39,8 @@ public interface AbstractEquipmentEditView extends IsWidget {
     HasValue< PersonShortView > manager();
 
     HasValue<String> project();
+
+    HasValue<String> date();
+
+    void setVisibilitySettingsForCreated(boolean isVisible);
 }
