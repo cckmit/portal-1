@@ -141,6 +141,7 @@ public class DecimalNumberList
                     newNumber.getOrganizationCode().name(), String.valueOf(newNumber.getRegisterNumber()), new RequestCallback<DecimalNumber>() {
                         @Override
                         public void onError(Throwable throwable) {
+                            box.setErrorMessage();
                         }
 
                         @Override
