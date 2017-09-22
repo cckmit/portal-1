@@ -7,6 +7,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.ConfirmDialogEvents;
 import ru.protei.portal.ui.common.client.events.EquipmentEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
@@ -17,6 +18,7 @@ import ru.protei.portal.ui.common.client.service.EquipmentServiceAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.equipment.client.common.EquipmentUtils;
 
+import java.text.SimpleDateFormat;
 import java.util.stream.Collectors;
 
 /**
@@ -75,6 +77,7 @@ public abstract class EquipmentPreviewActivity implements Activity, AbstractEqui
 
         view.setHeader( lang.equipmentDescription() + " #" + value.getId() );
         view.setName( value.getName() );
+        view.setCreatedDate(value.getCreated() == null ? "" : DateFormatter.formatDateTime(value.getCreated()));
         view.setNameBySldWrks( value.getNameSldWrks() );
         view.setComment( value.getComment() );
         view.setType( typeLang.getName( value.getType() ) );
