@@ -8,6 +8,7 @@ import ru.protei.portal.core.model.struct.DecimalNumberFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * DAO децимальных номеров
@@ -65,12 +66,7 @@ public class DecimalNumberDAO_Impl extends PortalBaseJdbcDAO<DecimalNumber > imp
             sql.append(" and a.reg_number not in (");
 
             List<Integer> excludeNumbers = filter.getExcludeNumbers();
-            for (Integer regNumber : excludeNumbers) {
-                sql.append(String.valueOf(regNumber - 1));
-                if (!excludeNumbers.get(excludeNumbers.size() - 1).equals(regNumber)) {
-                    sql.append(",");
-                }
-            }
+            sql.append(excludeNumbers.stream().map(p -> String.valueOf(p-1)).collect(Collectors.joining(",")));
             sql.append(")");
         }
         return jdbcTemplate.queryForObject(sql.toString(), Integer.class, filter.getClassifierCode(), filter.getOrganizationCode());
@@ -94,12 +90,7 @@ public class DecimalNumberDAO_Impl extends PortalBaseJdbcDAO<DecimalNumber > imp
 
         List<Integer> excludeNumbers = filter.getExcludeNumbers();
 
-        for (Integer mod: excludeNumbers) {
-            sql.append(String.valueOf(mod-1));
-            if (!excludeNumbers.get(excludeNumbers.size() -1).equals(mod)) {
-                sql.append(",");
-            }
-        }
+        sql.append(excludeNumbers.stream().map(p -> String.valueOf(p-1)).collect(Collectors.joining(",")));
         sql.append(")");
 
         return jdbcTemplate.queryForObject(sql.toString(), Integer.class, filter.getClassifierCode(), filter.getOrganizationCode(), filter.getRegisterNumber());
