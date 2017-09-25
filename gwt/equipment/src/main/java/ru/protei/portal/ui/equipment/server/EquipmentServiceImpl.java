@@ -152,32 +152,13 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
-    public DecimalNumber getNextAvailableRegisterNumber( DecimalNumber number ) throws RequestFailedException {
-        if (number == null) {
-            log.warn("null number in request");
-            throw new RequestFailedException(En_ResultStatus.INTERNAL_ERROR);
-        }
-
-        log.debug( "get next available decimal number: organizationCode={}, classifierCode={}, regNum={}",
-                number.getOrganizationCode(), number.getClassifierCode(), number.getRegisterNumber() );
-
-        CoreResponse<DecimalNumber> response = equipmentService.getNextAvailableDecimalNumber( getDescriptorAndCheckSession().makeAuthToken(), number );
-        if (response.isOk()) {
-            log.debug("get next available decimal number, result: {}", response.getData());
-            return number;
-        }
-
-        throw new RequestFailedException(response.getStatus());
-    }
-
-    @Override
-    public DecimalNumber getNextAvailableRegNumberNotContainsInList(DecimalNumberFilter filter) throws RequestFailedException {
+    public DecimalNumber getNextAvailableRegisterNumber( DecimalNumberFilter filter ) throws RequestFailedException {
         if (filter.getExcludeNumbers() == null) {
             log.warn("null numbers in request");
             throw new RequestFailedException(En_ResultStatus.INTERNAL_ERROR);
         }
 
-        CoreResponse<DecimalNumber> response = equipmentService.getNextAvailableRegNumberNotContainsInList( getDescriptorAndCheckSession().makeAuthToken(), filter );
+        CoreResponse<DecimalNumber> response = equipmentService.getNextAvailableDecimalNumber( getDescriptorAndCheckSession().makeAuthToken(), filter );
         if (response.isOk()) {
             log.debug("get next available decimal number, result: {}", response.getData());
             return response.getData();
@@ -187,35 +168,16 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
-    public DecimalNumber getNextAvailableRegisterNumberModificationNotContainsInList(DecimalNumberFilter filter) throws RequestFailedException {
+    public DecimalNumber getNextAvailableRegisterNumberModification( DecimalNumberFilter filter ) throws RequestFailedException  {
         if (filter.getExcludeNumbers() == null) {
             log.warn("null mods in request");
             throw new RequestFailedException(En_ResultStatus.INTERNAL_ERROR);
         }
 
-        CoreResponse<DecimalNumber> response = equipmentService.getNextAvailableRegisterNumberModificationNotContainsInList( getDescriptorAndCheckSession().makeAuthToken(), filter );
+        CoreResponse<DecimalNumber> response = equipmentService.getNextAvailableDecimalNumberModification( getDescriptorAndCheckSession().makeAuthToken(), filter );
         if (response.isOk()) {
             log.debug("get next available decimal number, result: {}", response.getData());
             return response.getData();
-        }
-
-        throw new RequestFailedException(response.getStatus());
-    }
-
-    @Override
-    public DecimalNumber getNextAvailableRegisterNumberModification( DecimalNumber number ) throws RequestFailedException  {
-        if (number == null) {
-            log.warn("null number in request");
-            throw new RequestFailedException(En_ResultStatus.INTERNAL_ERROR);
-        }
-
-        log.debug( "get next available decimal number modification: organizationCode={}, classifierCode={}, regNum={}",
-                number.getOrganizationCode(), number.getClassifierCode(), number.getRegisterNumber() );
-
-        CoreResponse<DecimalNumber> response = equipmentService.getNextAvailableDecimalNumberModification( getDescriptorAndCheckSession().makeAuthToken(), number );
-        if (response.isOk()) {
-            log.debug("get next available decimal number, result: {}", response.getData());
-            return number;
         }
 
         throw new RequestFailedException(response.getStatus());

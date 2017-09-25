@@ -41,13 +41,10 @@ public interface EquipmentService extends RemoteService {
     /**
      * Получение следующего доступного номера
      *
-     * @param number
+     * @param filter
      */
-    DecimalNumber getNextAvailableRegisterNumber( DecimalNumber number ) throws RequestFailedException;
+    DecimalNumber getNextAvailableRegisterNumber( DecimalNumberFilter filter ) throws RequestFailedException;
 
-    DecimalNumber getNextAvailableRegisterNumberModification( DecimalNumber number ) throws RequestFailedException;
+    DecimalNumber getNextAvailableRegisterNumberModification( DecimalNumberFilter filter ) throws RequestFailedException;
 
-    DecimalNumber getNextAvailableRegNumberNotContainsInList(DecimalNumberFilter filter) throws RequestFailedException;
-
-    DecimalNumber getNextAvailableRegisterNumberModificationNotContainsInList(DecimalNumberFilter filter) throws RequestFailedException;
 }

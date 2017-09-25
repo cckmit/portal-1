@@ -80,62 +80,19 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
-    public CoreResponse<DecimalNumber> getNextAvailableDecimalNumber( AuthToken token, DecimalNumber number ) {
-        Integer maxNum = decimalNumberDAO.getMaxRegisterNumber( number );
-        number.setModification( null );
-
-        if ( maxNum == null ) {
-            number.setRegisterNumber( 1 );
-            return new CoreResponse<DecimalNumber>().success( number );
-        }
-
-        Integer nextAvailableRegNumber = decimalNumberDAO.getNextAvailableRegNumber(number);
-
-        boolean ifExist = true;
-        while ( ifExist && nextAvailableRegNumber < 999 ) {
-            number.setRegisterNumber(nextAvailableRegNumber);
-            ifExist = decimalNumberDAO.checkIfExist( number );
-        }
-
-        return new CoreResponse<DecimalNumber>().success( number );
-    }
-
-    @Override
-    public CoreResponse<DecimalNumber> getNextAvailableRegNumberNotContainsInList(AuthToken authToken, DecimalNumberFilter filter) {
-
+    public CoreResponse<DecimalNumber> getNextAvailableDecimalNumber( AuthToken token, DecimalNumberFilter filter ) {
         DecimalNumber number = new DecimalNumber();
         number.setModification(null);
-        Integer nextAvailableRegNumber = decimalNumberDAO.getNextAvailableRegNumberNotContainsInList(filter);
+        Integer nextAvailableRegNumber = decimalNumberDAO.getNextAvailableRegNumber(filter);
         number.setRegisterNumber(nextAvailableRegNumber);
 
         return new CoreResponse<DecimalNumber>().success( number );
     }
 
     @Override
-    public CoreResponse<DecimalNumber> getNextAvailableDecimalNumberModification( AuthToken token, DecimalNumber number ) {
-        Integer maxNum = decimalNumberDAO.getMaxModification( number );
-
-        if ( maxNum == null ) {
-            number.setModification( 1 );
-            return new CoreResponse<DecimalNumber>().success( number );
-        }
-
-        Integer nextAvailableModification = decimalNumberDAO.getNextAvailableModification(number);
-
-
-        boolean ifExist = true;
-        while ( ifExist && nextAvailableModification < 999 ) {
-            number.setModification( nextAvailableModification );
-            ifExist = decimalNumberDAO.checkIfExist( number );
-        }
-
-        return new CoreResponse<DecimalNumber>().success( number );
-    }
-
-    @Override
-    public CoreResponse<DecimalNumber> getNextAvailableRegisterNumberModificationNotContainsInList(AuthToken authToken, DecimalNumberFilter filter) {
+    public CoreResponse<DecimalNumber> getNextAvailableDecimalNumberModification( AuthToken token, DecimalNumberFilter filter ) {
         DecimalNumber number = new DecimalNumber();
-        Integer nextAvailableMod = decimalNumberDAO.getNextAvailableRegisterNumberModificationNotContainsInList(filter);
+        Integer nextAvailableMod = decimalNumberDAO.getNextAvailableModification(filter);
         number.setModification(nextAvailableMod);
 
         return new CoreResponse<DecimalNumber>().success( number );

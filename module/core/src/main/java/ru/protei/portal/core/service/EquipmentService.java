@@ -32,16 +32,10 @@ public interface EquipmentService {
     CoreResponse< Equipment > saveEquipment( AuthToken token, Equipment equipment );
 
     @Privileged( requireAny = { En_Privilege.EQUIPMENT_CREATE, En_Privilege.EQUIPMENT_EDIT })
-    CoreResponse< DecimalNumber > getNextAvailableDecimalNumber( AuthToken token, DecimalNumber number );
+    CoreResponse< DecimalNumber > getNextAvailableDecimalNumber( AuthToken token, DecimalNumberFilter filter );
 
     @Privileged( requireAny = { En_Privilege.EQUIPMENT_CREATE, En_Privilege.EQUIPMENT_EDIT })
-    CoreResponse<DecimalNumber> getNextAvailableRegNumberNotContainsInList(AuthToken authToken, DecimalNumberFilter filter);
-
-    @Privileged( requireAny = { En_Privilege.EQUIPMENT_CREATE, En_Privilege.EQUIPMENT_EDIT })
-    CoreResponse< DecimalNumber > getNextAvailableDecimalNumberModification( AuthToken token, DecimalNumber number );
-
-    @Privileged( requireAny = { En_Privilege.EQUIPMENT_CREATE, En_Privilege.EQUIPMENT_EDIT })
-    CoreResponse<DecimalNumber> getNextAvailableRegisterNumberModificationNotContainsInList(AuthToken authToken, DecimalNumberFilter filter);
+    CoreResponse< DecimalNumber > getNextAvailableDecimalNumberModification( AuthToken token, DecimalNumberFilter filter );
 
     CoreResponse< Boolean > checkIfExistDecimalNumber( DecimalNumber number );
 

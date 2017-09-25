@@ -11,4 +11,6 @@ public interface AbstractBoxHandler {
     boolean numberExists(DecimalNumber value);
 
     List<Integer> getRegNumbersListWithSpecificCode(Integer classifierCode);
+
+    List<Integer> makeModListWithSameCodeAndRegNumber(Integer classifierCode, Integer registerNumber);
 }

@@ -48,16 +48,8 @@ public class DecimalNumberDAO_Impl extends PortalBaseJdbcDAO<DecimalNumber > imp
     }
 
     @Override
-    public Integer getNextAvailableRegNumber(DecimalNumber number) {
+    public Integer getNextAvailableRegNumber(DecimalNumberFilter filter) {
 
-        String sql = "select min(a.reg_number) + 1 from (select reg_number from decimal_number union select 0) a " +
-                "left join decimal_number b on b.reg_number = a.reg_number + 1 " +
-                "and classifier_code=? and org_code=? where b.reg_number is null";
-        return jdbcTemplate.queryForObject(sql, Integer.class, number.getClassifierCode(), number.getOrganizationCode().name());
-    }
-
-    @Override
-    public Integer getNextAvailableRegNumberNotContainsInList(DecimalNumberFilter filter) {
         StringBuilder sql = new StringBuilder("select min(a.reg_number) + 1 from (select reg_number from decimal_number union select 0) a " +
                 "left join decimal_number b on b.reg_number = a.reg_number + 1 " +
                 "and classifier_code=? and org_code=? where b.reg_number is null");
@@ -73,26 +65,21 @@ public class DecimalNumberDAO_Impl extends PortalBaseJdbcDAO<DecimalNumber > imp
     }
 
     @Override
-    public Integer getNextAvailableModification(DecimalNumber number) {
-        String sql = "select min(a.modification_number) + 1 from (select modification_number from decimal_number union select 0) a " +
-                "left join decimal_number b on b.modification_number = a.modification_number + 1 " +
-                "and classifier_code=? and org_code=? and reg_number=? where b.modification_number is null";
-        return jdbcTemplate.queryForObject(sql, Integer.class, number.getClassifierCode(), number.getOrganizationCode().name(), number.getRegisterNumber());
-    }
-
-    @Override
-    public Integer getNextAvailableRegisterNumberModificationNotContainsInList(DecimalNumberFilter filter) {
+    public Integer getNextAvailableModification(DecimalNumberFilter filter) {
         StringBuilder sql = new StringBuilder("select min(a.modification_number) + 1 from (select modification_number from decimal_number union select 0) a " +
                 "left join decimal_number b on b.modification_number = a.modification_number + 1 " +
                 "and classifier_code=? and org_code=? and reg_number=? where b.modification_number is null");
 
-        sql.append(" and a.modification_number not in (");
+        if (!filter.getExcludeNumbers().isEmpty()) {
+            sql.append(" and a.modification_number not in (");
 
-        List<Integer> excludeNumbers = filter.getExcludeNumbers();
+            List<Integer> excludeNumbers = filter.getExcludeNumbers();
 
-        sql.append(excludeNumbers.stream().map(p -> String.valueOf(p-1)).collect(Collectors.joining(",")));
-        sql.append(")");
+            sql.append(excludeNumbers.stream().map(p -> String.valueOf(p - 1)).collect(Collectors.joining(",")));
+            sql.append(")");
+        }
 
         return jdbcTemplate.queryForObject(sql.toString(), Integer.class, filter.getClassifierCode(), filter.getOrganizationCode(), filter.getRegisterNumber());
     }
+
 }

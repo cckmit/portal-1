@@ -232,7 +232,7 @@ public class DecimalNumberBox
             filter.setClassifierCode(classifierCode.getValue());
             filter.setOrganizationCode(value.getOrganizationCode().name());
             filter.setExcludeNumbers(numbers);
-            dataProvider.getNextAvailableRegNumberNotContainsInList(filter, new RequestCallback<DecimalNumber>() {
+            dataProvider.getNextAvailableRegisterNumber(filter, new RequestCallback<DecimalNumber>() {
                 @Override
                 public void onError(Throwable throwable) {
                     showMessage(lang.equipmentErrorGetNextAvailableNumber(), DisplayStyle.DANGER);
@@ -261,7 +261,14 @@ public class DecimalNumberBox
     }
 
     private void fillNextAvailableNumberModification() {
-        dataProvider.getNextAvailableRegisterNumberModification( value, new RequestCallback< DecimalNumber>() {
+        List<Integer> mods = handler.makeModListWithSameCodeAndRegNumber(this.getValue().getClassifierCode(), this.getValue().getRegisterNumber());
+
+        DecimalNumberFilter filter = new DecimalNumberFilter();
+        filter.setExcludeNumbers(mods);
+        filter.setClassifierCode(String.valueOf(this.getValue().getClassifierCode()));
+        filter.setOrganizationCode(this.getValue().getOrganizationCode().name());
+        filter.setRegisterNumber(String.valueOf(this.getValue().getRegisterNumber()));
+        dataProvider.getNextAvailableRegisterNumberModification( filter, new RequestCallback< DecimalNumber>() {
             @Override
             public void onError( Throwable throwable ) {
                 showMessage( lang.equipmentErrorGetNextAvailableNumber(), DisplayStyle.DANGER );

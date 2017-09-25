@@ -42,18 +42,15 @@ public interface EquipmentServiceAsync {
 
     /**
      * Получение следующего доступного номера
-     * @param number
+     * @param filter
      * @param callback
      */
-    void getNextAvailableRegisterNumber( DecimalNumber number, AsyncCallback<DecimalNumber> callback );
+    void getNextAvailableRegisterNumber( DecimalNumberFilter filter, AsyncCallback<DecimalNumber> callback );
 
-    void getNextAvailableRegNumberNotContainsInList(DecimalNumberFilter filter, AsyncCallback<DecimalNumber> callback);
-
-    void getNextAvailableRegisterNumberModification( DecimalNumber number, AsyncCallback<DecimalNumber> callback );
+    void getNextAvailableRegisterNumberModification( DecimalNumberFilter filter, AsyncCallback<DecimalNumber> callback );
 
     void copyEquipment( Long equipmentId, String newName, AsyncCallback<Long> async );
 
     void removeEquipment( Long equipmentId, AsyncCallback<Boolean> async );
 
-    void getNextAvailableRegisterNumberModificationNotContainsInList(DecimalNumberFilter filter, AsyncCallback<DecimalNumber> callback);
 }

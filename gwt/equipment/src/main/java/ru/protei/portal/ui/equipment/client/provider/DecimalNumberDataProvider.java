@@ -19,23 +19,13 @@ public class DecimalNumberDataProvider implements AbstractDecimalNumberDataProvi
     }
 
     @Override
-    public void getNextAvailableRegisterNumber( DecimalNumber number, AsyncCallback<DecimalNumber> callback ) {
-        equipmentService.getNextAvailableRegisterNumber( number, callback );
+    public void getNextAvailableRegisterNumber( DecimalNumberFilter filter, AsyncCallback<DecimalNumber> callback ) {
+        equipmentService.getNextAvailableRegisterNumber( filter, callback );
     }
 
     @Override
-    public void getNextAvailableRegisterNumberModification( DecimalNumber number, AsyncCallback< DecimalNumber > callback ) {
-        equipmentService.getNextAvailableRegisterNumberModification( number, callback );
-    }
-
-    @Override
-    public void getNextAvailableRegNumberNotContainsInList(DecimalNumberFilter filter, AsyncCallback<DecimalNumber> callback) {
-        equipmentService.getNextAvailableRegNumberNotContainsInList( filter, callback );
-    }
-
-    @Override
-    public void getNextAvailableRegisterNumberModificationNotContainsInList(DecimalNumberFilter filter, AsyncCallback<DecimalNumber> callback) {
-        equipmentService.getNextAvailableRegisterNumberModificationNotContainsInList(filter, callback );
+    public void getNextAvailableRegisterNumberModification( DecimalNumberFilter filter, AsyncCallback< DecimalNumber > callback ) {
+        equipmentService.getNextAvailableRegisterNumberModification( filter, callback );
     }
 
     @Inject

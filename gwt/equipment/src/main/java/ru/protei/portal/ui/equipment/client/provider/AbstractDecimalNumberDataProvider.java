@@ -19,14 +19,10 @@ public interface AbstractDecimalNumberDataProvider {
 
     /**
      * Получение следующего свободного децимального номера
-     * @param number    допускается частичная заполненность (мб заполнен только код по классификатору и/или рег.номер)
+     * @param filter    допускается частичная заполненность (мб заполнен только код по классификатору и/или рег.номер)
      * @return
      */
-    void getNextAvailableRegisterNumber( DecimalNumber number, AsyncCallback<DecimalNumber> callback  );
+    void getNextAvailableRegisterNumber( DecimalNumberFilter filter, AsyncCallback<DecimalNumber> callback  );
 
-    void getNextAvailableRegisterNumberModification( DecimalNumber number, AsyncCallback<DecimalNumber> callback  );
-
-    void getNextAvailableRegNumberNotContainsInList(DecimalNumberFilter filter, AsyncCallback<DecimalNumber> callback);
-
-    void getNextAvailableRegisterNumberModificationNotContainsInList(DecimalNumberFilter filter, AsyncCallback<DecimalNumber> callback);
+    void getNextAvailableRegisterNumberModification( DecimalNumberFilter filter, AsyncCallback<DecimalNumber> callback  );
 }
