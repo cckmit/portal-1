@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.core.model.dao.CaseAttachmentDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.ent.CaseAttachment;
+import ru.protei.portal.core.model.helper.HelperFunc;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -72,22 +73,11 @@ public class CaseAttachmentDAO_Impl extends PortalBaseJdbcDAO<CaseAttachment> im
         if(newList.size() == oldList.size() && newList.containsAll(oldList))
             return Collections.emptyList();
 
-        persistBatch(subtract(newList, oldList));
+        persistBatch(HelperFunc.subtract(newList, oldList));
 
-        Collection<CaseAttachment> caseAttachmentsToRemove = subtract(oldList, newList);
+        Collection<CaseAttachment> caseAttachmentsToRemove = HelperFunc.subtract(oldList, newList);
         removeBatch(caseAttachmentsToRemove);
 
         return caseAttachmentsToRemove;
     }
-
-    private Collection<CaseAttachment> subtract(Collection<CaseAttachment> a, Collection<CaseAttachment> b){
-        Collection<CaseAttachment> result = new HashSet<>();
-        for(CaseAttachment ca: a){
-            if(!b.contains(ca))
-                result.add(ca);
-        }
-
-        return result;
-    }
-
 }

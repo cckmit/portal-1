@@ -1,6 +1,7 @@
-package ru.protei.portal.core.service.template;
+package ru.protei.portal.config;
 
 import freemarker.template.*;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import ru.protei.portal.core.Lang;
 
 import java.io.IOException;
@@ -9,38 +10,44 @@ import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Создает локализованные шаблоны через Freemarker.
  */
 public class LocalizedTemplateCreator {
 
-    private String basePackagePath;
-    private Map<Locale, Object> models;
+    private static final Locale[] LOCALES = new Locale[]{Locale.ENGLISH, Locale.forLanguageTag("ru")};
 
     /**
-     * Привязка ключей через бандлы.
-     * #{@link ru.protei.portal.config.MainConfiguration#lang}
-     * @param basePackagePath path to save templates
+     * Create localized templates
+     * @param templates template paths
      */
-    public LocalizedTemplateCreator(String basePackagePath, Lang keys, Locale... locales) {
-        this.basePackagePath = basePackagePath;
-        models = new HashMap<>(locales.length);
-        for (Locale locale : locales) {
+    public static void main(String[] templates) {
+        if(templates.length == 0)
+            return;
+
+        Lang keys = getLang();
+        String basePackagePath = LocalizedTemplateCreator.class.getResource("/").getFile();
+
+        Map<Locale, Object> models = new HashMap<>(LOCALES.length);
+        for (Locale locale : LOCALES) {
             models.put(locale, getModel(keys.getFor(locale)));
         }
-    }
 
-    /**
-     * @param basePackagePath path to save templates
-     * @param langToModels map of locale with the suitable template model
-     */
-    public LocalizedTemplateCreator(String basePackagePath, Map<Locale, Object> langToModels) {
-        this.basePackagePath = basePackagePath;
-        models = langToModels;
+        Configuration templateConfiguration = new Configuration( Configuration.VERSION_2_3_23 );
+        templateConfiguration.setClassForTemplateLoading( LocalizedTemplateCreator.class, "/" );
+        templateConfiguration.setDefaultEncoding( "UTF-8" );
+        templateConfiguration.setTemplateExceptionHandler( TemplateExceptionHandler.RETHROW_HANDLER );
+
+        try {
+            for (String template: templates){
+                createFor(basePackagePath, models, templateConfiguration.getTemplate(template, "UTF-8"));
+            }
+        }catch (IOException | TemplateException e){
+            System.out.println(e.getMessage());
+        }
     }
 
     /**
@@ -54,7 +61,7 @@ public class LocalizedTemplateCreator {
      * @throws IOException
      * @throws TemplateException
      */
-    public void createFor(Template template, OpenOption... options) throws IOException, TemplateException{
+    private static void createFor(String basePackagePath, Map<Locale, Object> models, Template template, OpenOption... options) throws IOException, TemplateException{
         if(!template.getName().endsWith(".ftl"))
             throw new TemplateException("Name of template "+ template.getName() +" doesn't end with \".ftl\"", null);
 
@@ -66,10 +73,18 @@ public class LocalizedTemplateCreator {
             try(Writer writer = Files.newBufferedWriter(path, options)) {
                 template.process(langToModel.getValue(), writer);
             }
+            System.out.println("Template "+ path.getFileName() +" created!");
         }
     }
 
-    private Object getModel(Lang.LocalizedLang messages){
+    private static Lang getLang(){
+        ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+        messageSource.setBasenames("Lang");
+        messageSource.setDefaultEncoding("UTF-8");
+        return new Lang(messageSource);
+    }
+
+    private static Object getModel(Lang.LocalizedLang messages){
         return new TemplateHashModel(){
             @Override
             public TemplateModel get(String key) throws TemplateModelException {

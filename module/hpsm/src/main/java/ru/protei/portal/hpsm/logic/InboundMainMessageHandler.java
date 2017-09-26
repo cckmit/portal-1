@@ -401,7 +401,7 @@ public class InboundMainMessageHandler implements InboundMessageHandler {
             comment.setCaseAttachments(caseAttachments);
         }
 
-        eventPublisherService.publishEvent(new CaseCommentEvent(ServiceModule.HPSM, caseService, obj, comment, contactPerson));
+        eventPublisherService.publishEvent(new CaseCommentEvent(ServiceModule.HPSM, caseService, obj, null, comment, contactPerson));
 
         return comment;
     }

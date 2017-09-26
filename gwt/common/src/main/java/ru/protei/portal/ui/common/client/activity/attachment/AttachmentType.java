@@ -59,10 +59,10 @@ public enum AttachmentType {
 
     public enum AttachmentCategory {
         IMAGE(null),
-        TEXT("/Crm/images/textIcon.gif"),
-        ARCHIVE("/Crm/images/archiveIcon.gif"),
-        CODE("/Crm/images/codeIcon.gif"),
-        UNKNOWN("/Crm/images/unknownIcon.gif");
+        TEXT("./images/textIcon.gif"),
+        ARCHIVE("./images/archiveIcon.gif"),
+        CODE("./images/codeIcon.gif"),
+        UNKNOWN("./images/unknownIcon.gif");
 
         public String picture;
 

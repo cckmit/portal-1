@@ -1,21 +1,22 @@
 package ru.protei.portal.core.service;
 
 
-import freemarker.template.*;
+import freemarker.template.Configuration;
+import freemarker.template.TemplateExceptionHandler;
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.core.event.CaseCommentEvent;
 import ru.protei.portal.core.event.CaseObjectEvent;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
+import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.HelperFunc;
-import ru.protei.portal.core.service.template.LocalizedTemplateCreator;
 import ru.protei.portal.core.service.template.PreparedTemplate;
-import ru.protei.portal.core.Lang;
+import ru.protei.portal.core.service.template.TextUtils;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
@@ -30,9 +31,6 @@ public class TemplateServiceImpl implements TemplateService {
 
     Configuration templateConfiguration;
 
-    @Autowired
-    Lang keys;
-
     @PostConstruct
     public void onInit() {
         try {
@@ -40,19 +38,6 @@ public class TemplateServiceImpl implements TemplateService {
             templateConfiguration.setClassForTemplateLoading( TemplateServiceImpl.class, "/" );
             templateConfiguration.setDefaultEncoding( "UTF-8" );
             templateConfiguration.setTemplateExceptionHandler( TemplateExceptionHandler.HTML_DEBUG_HANDLER );
-
-            LocalizedTemplateCreator templateCreator = new LocalizedTemplateCreator(
-                    TemplateServiceImpl.class.getResource("/").getFile(),
-                    keys,
-                    Locale.forLanguageTag("ru"),
-                    Locale.ENGLISH
-            );
-
-            templateCreator.createFor(
-                    templateConfiguration.getTemplate("notification/email/crm.subject.ftl", "UTF-8"));
-            templateCreator.createFor(
-                    templateConfiguration.getTemplate("notification/email/crm.body.ftl", "UTF-8"));
-
         } catch ( Exception e ) {
             log.error( "Freemarker Configuration init failure", e );
             e.printStackTrace();
@@ -72,9 +57,13 @@ public class TemplateServiceImpl implements TemplateService {
         CaseObject oldState = caseObjectEvent == null ? null : caseObjectEvent.getOldState();
 
         Map<String, Object> templateModel = new HashMap<>();
+
+        templateModel.put( "TextUtils", new TextUtils() );
         templateModel.put( "linkToIssue", String.format( urlTemplate, newState.getId() ) );
+        templateModel.put( "isCreated", caseObjectEvent == null ? false : caseObjectEvent.isCreateEvent() );
         templateModel.put( "createdByMe", false );
         templateModel.put( "case", newState );
+        templateModel.put( "oldCase", oldState );
         templateModel.put( "importanceLevel", En_ImportanceLevel.getById( newState.getImpLevel() ).getCode() );
         templateModel.put( "manager", manager );
         templateModel.put( "caseState", En_CaseState.getById( newState.getStateId() ).getName() );
@@ -93,13 +82,27 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put( "oldManager", oldManager );
         templateModel.put( "infoChanged", caseObjectEvent == null ? false : caseObjectEvent.isInfoChanged() );
 
+        if(oldState == null && CollectionUtils.isNotEmpty(newState.getAttachments())){
+            templateModel.put( "attachments", newState.getAttachments() );
+        }else {
+            templateModel.putAll(
+                    getAttachmentModelKeys(getAttachmentsFromCase(oldState), getAttachmentsFromCase(newState))
+            );
+        }
+
         templateModel.put( "caseComments",  caseComments.stream().map( ( comment ) -> {
             Map< String, Object > caseComment = new HashMap<>();
             caseComment.put( "created", comment.getCreated() );
             caseComment.put( "author", comment.getAuthor() );
             caseComment.put( "text", comment.getText() );
             caseComment.put( "caseState", En_CaseState.getById( comment.getCaseStateId() ) );
-            caseComment.put( "changed", caseCommentEvent == null ? false : HelperFunc.equals( caseCommentEvent.getCaseComment().getId(), comment.getId() ) );
+
+            boolean isChanged = caseCommentEvent == null ? false : HelperFunc.equals( caseCommentEvent.getCaseComment().getId(), comment.getId() );
+            caseComment.put( "changed",  isChanged);
+            if(isChanged && caseCommentEvent.getOldCaseComment() != null){
+                caseComment.put( "oldText", caseCommentEvent.getOldCaseComment().getText() );
+            }
+
             return caseComment;
         } ).collect( toList() ) );
 
@@ -121,5 +124,36 @@ public class TemplateServiceImpl implements TemplateService {
         template.setModel( templateModel );
         template.setTemplateConfiguration( templateConfiguration );
         return template;
+    }
+
+    private Map<String, Object> getAttachmentModelKeys(Collection<Attachment> oldAttachs, Collection<Attachment> newAttachs){
+        if(oldAttachs.isEmpty() && newAttachs.isEmpty())
+            return Collections.emptyMap();
+        else{
+            Collection<Attachment> removed = newAttachs.isEmpty()?oldAttachs:HelperFunc.subtract(oldAttachs, newAttachs);
+            Collection<Attachment> added = oldAttachs.isEmpty()?newAttachs:HelperFunc.subtract(newAttachs, oldAttachs);
+
+            Map<String, Object> model = new HashMap<>(3);
+            if(added.isEmpty() && removed.isEmpty())
+                model.put( "attachments", newAttachs);
+            else{
+                oldAttachs.retainAll(newAttachs);
+                model.put( "attachments", oldAttachs);
+            }
+            model.put( "removedAttachments", removed);
+            model.put( "addedAttachments", added);
+
+            return model;
+        }
+    }
+
+    private Collection<Attachment> getAttachmentsFromCase(CaseObject object){
+        return object == null?
+                Collections.emptyList()
+                :
+                (object.getAttachments() == null?
+                        Collections.emptyList()
+                        :
+                        object.getAttachments());
     }
 }
