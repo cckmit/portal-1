@@ -28,4 +28,9 @@ public class WorkerEntryDAO_Impl extends PortalBaseJdbcDAO<WorkerEntry> implemen
     public WorkerEntry getByExternalId(Long extId, Long companyId) {
         return getByCondition ("worker_extId=? and worker_entry.companyId=?", extId, companyId);
     }
+
+    @Override
+    public boolean checkExistsByPosId(Long posId) {
+        return checkExistsByCondition ("positionId=?", posId);
+    }
 }

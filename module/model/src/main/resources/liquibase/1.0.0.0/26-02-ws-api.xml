@@ -48,5 +48,18 @@
         </createIndex>
     </changeSet>
 
+    <changeSet author="turik" id="dropExtIdFromWorkerPosition">
+        <dropIndex tableName="worker_position" indexName="uq_ext_pos"/>
+        <dropColumn columnName="pos_extId" tableName="worker_position"/>
+    </changeSet>
+
+<!--
+    <changeSet author="turik" id="createIndexWorkerPosition">
+        <createIndex indexName="uq_pos" tableName="worker_position">
+            <column name="company_id"/>
+            <column name="pos_name"/>
+        </createIndex>
+    </changeSet>
+-->
 
 </databaseChangeLog>

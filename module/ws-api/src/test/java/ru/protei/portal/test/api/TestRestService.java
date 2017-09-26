@@ -25,6 +25,7 @@ public class TestRestService {
     private static String dirPhotos;
     private static DepartmentRecord origDepartment = new DepartmentRecord ();
     private static WorkerRecord origWorker = new WorkerRecord ();
+    private static String newPosition;
 
     @BeforeClass
     public static void setUpClass() {
@@ -73,6 +74,7 @@ public class TestRestService {
             origWorker.setActive (new Integer (props.getProperty ("active")));
             origWorker.setPositionName (props.getProperty ("positionName"));
 
+            newPosition = props.getProperty("newPositionName");
         } catch (Exception e) {
             logger.error ("Can not read config!", e);
         } finally {
@@ -384,7 +386,7 @@ public class TestRestService {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_XML));
-        HttpEntity<DepartmentRecord> entity = new HttpEntity<>(origDepartment, headers);
+        HttpEntity<String> entity = new HttpEntity<>(headers);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(URI)
                 .queryParam("externalId", origDepartment.getDepartmentId())
@@ -398,6 +400,57 @@ public class TestRestService {
         Assert.assertEquals ("delete.department is not success! " + sr.getErrInfo (), true, sr.isSuccess ());
         Assert.assertTrue ("delete.department must return not null identifer!", (sr.getId () != null && sr.getId () > 0));
         logger.debug ("The department is deleted. id = " + sr.getId ());
+    }
+
+    @Test
+    public void testUpdatePosition() {
+        String URI = BASE_URI + "update.position";
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.setMessageConverters(getMessageConverters());
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(Arrays.asList(MediaType.APPLICATION_XML));
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(URI)
+                .queryParam("oldName", origWorker.getPositionName())
+                .queryParam("newName", newPosition)
+                .queryParam("companyCode", origWorker.getCompanyCode());
+        String uriBuilder = builder.build().encode().toUriString();
+
+        ResponseEntity<ServiceResult> response = restTemplate.exchange(uriBuilder, HttpMethod.PUT, entity, ServiceResult.class);
+        ServiceResult sr = response.getBody();
+
+        Assert.assertNotNull(sr);
+        Assert.assertNotNull ("Result update.position is null!", sr);
+        Assert.assertEquals ("update.position is not success! " + sr.getErrInfo (), true, sr.isSuccess ());
+        Assert.assertTrue ("update.position must return not null identifer!", (sr.getId () != null && sr.getId () > 0));
+        logger.debug ("The position is updated. id = " + sr.getId ());
+    }
+
+    @Test
+    public void testDeletePosition() {
+
+        String URI = BASE_URI + "delete.position";
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.setMessageConverters(getMessageConverters());
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(Arrays.asList(MediaType.APPLICATION_XML));
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(URI)
+                .queryParam("name", origWorker.getPositionName())
+                .queryParam("companyCode", origWorker.getCompanyCode());
+        String uriBuilder = builder.build().encode().toUriString();
+
+        ResponseEntity<ServiceResult> response = restTemplate.exchange(uriBuilder, HttpMethod.DELETE, entity, ServiceResult.class);
+        ServiceResult sr = response.getBody();
+
+        Assert.assertNotNull ("Result delete.position is null!", sr);
+        Assert.assertEquals ("delete.position is not success! " + sr.getErrInfo (), true, sr.isSuccess ());
+        Assert.assertTrue ("delete.position must return not null identifer!", (sr.getId () != null && sr.getId () > 0));
+        logger.debug ("The position is deleted. id = " + sr.getId ());
     }
 
     private List<HttpMessageConverter<?>> getMessageConverters() {
