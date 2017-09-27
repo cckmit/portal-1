@@ -135,7 +135,7 @@ public class TestRestService {
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(URI)
                 .queryParam("id", origWorker.getWorkerId())
-                .queryParam("code", origWorker.getCompanyCode());
+                .queryParam("companyCode", origWorker.getCompanyCode());
         String uriBuilder = builder.build().encode().toUriString();
 
         ResponseEntity<WorkerRecord> response = restTemplate.exchange(uriBuilder, HttpMethod.GET, entity, WorkerRecord.class);
@@ -451,6 +451,12 @@ public class TestRestService {
         Assert.assertEquals ("delete.position is not success! " + sr.getErrInfo (), true, sr.isSuccess ());
         Assert.assertTrue ("delete.position must return not null identifer!", (sr.getId () != null && sr.getId () > 0));
         logger.debug ("The position is deleted. id = " + sr.getId ());
+    }
+
+    @Test
+    public void testPosition() {
+
+        logger.debug ("" + origWorker.getPositionName());
     }
 
     private List<HttpMessageConverter<?>> getMessageConverters() {
