@@ -77,11 +77,10 @@ public class WorkerController {
 
         logger.debug("=== getWorker ===");
         logger.debug("=== id = " + id);
-        logger.debug("=== companyCode = " + companyCode);
 
         try {
 
-            String companyDecode = URLDecoder.decode( companyCode, "UTF-8" );
+            String companyDecode = URLDecoder.decode(companyCode, "UTF-8");
             logger.debug("=== companyCode = " + companyDecode);
 
             if (id != null && HelperFunc.isNotEmpty(companyDecode)) {
@@ -100,6 +99,7 @@ public class WorkerController {
         return null;
     }
 
+/*
     @RequestMapping(method = RequestMethod.GET, value = "/get.department")
     public @ResponseBody DepartmentRecord getDepartment() {
 
@@ -114,7 +114,7 @@ public class WorkerController {
         return departmentRecord;
     }
 
-/*
+
     @RequestMapping(method = RequestMethod.GET, value = "/get.result")
     public @ResponseBody ServiceResult getServiceResult() {
 
@@ -226,12 +226,12 @@ public class WorkerController {
                     if (department == null) {
                         logger.debug("=== error result, " + En_ErrorCode.UNKNOWN_DEP.getMessage());
                         logger.debug(En_ErrorCode.UNKNOWN_DEP.getMessage());
-                        return ServiceResult.failResult(En_ErrorCode.UNKNOWN_DEP.getCode(), En_ErrorCode.UNKNOWN_DEP.getMessage(), null);
+                        return ServiceResult.failResult(En_ErrorCode.UNKNOWN_DEP.getCode(), En_ErrorCode.UNKNOWN_DEP.getMessage(), rec.getId());
                     }
 
                     if (workerEntryDAO.checkExistsByExternalId(rec.getWorkerId (), item.getCompanyId ())) {
                         logger.debug("=== error result, " + En_ErrorCode.EXIST_WOR.getMessage());
-                        return ServiceResult.failResult(En_ErrorCode.EXIST_WOR.getCode(), En_ErrorCode.EXIST_WOR.getMessage(), null);
+                        return ServiceResult.failResult(En_ErrorCode.EXIST_WOR.getCode(), En_ErrorCode.EXIST_WOR.getMessage(), rec.getId());
                     }
 
                     Person person = null;
@@ -262,8 +262,8 @@ public class WorkerController {
                     worker.setCompanyId (item.getCompanyId ());
                     worker.setDepartmentId (department.getId ());
                     worker.setPositionId (position.getId ());
-                    worker.setHireDate (rec.getHireDate () != null && rec.getHireDate ().trim ().length () > 0 ? HelperService.DATE.parse (rec.getHireDate ()) : null);
-                    worker.setHireOrderNo (rec.getHireOrderNo () != null && rec.getHireOrderNo ().trim ().length () > 0 ? rec.getHireOrderNo ().trim () : null);
+                    worker.setHireDate (HelperFunc.isNotEmpty(rec.getHireDate ()) ? HelperService.DATE.parse (rec.getHireDate ()) : null);
+                    worker.setHireOrderNo (HelperFunc.isNotEmpty(rec.getHireOrderNo ()) ? rec.getHireOrderNo ().trim () : null);
                     worker.setActiveFlag (rec.getActive ());
                     worker.setExternalId (rec.getWorkerId ());
 
@@ -325,19 +325,19 @@ public class WorkerController {
                     CompanyDepartment department = companyDepartmentDAO.getByExternalId(rec.getDepartmentId (), item.getCompanyId ());
                     if (department == null) {
                         logger.debug("=== error result, " + En_ErrorCode.UNKNOWN_DEP.getMessage());
-                        return ServiceResult.failResult(En_ErrorCode.UNKNOWN_DEP.getCode(), En_ErrorCode.UNKNOWN_DEP.getMessage(), null);
+                        return ServiceResult.failResult(En_ErrorCode.UNKNOWN_DEP.getCode(), En_ErrorCode.UNKNOWN_DEP.getMessage(), rec.getId());
                     }
 
                     Person person = personDAO.get (rec.getId ());
                     if (person == null) {
                         logger.debug("=== error result, " + En_ErrorCode.UNKNOWN_PER.getMessage());
-                        return ServiceResult.failResult(En_ErrorCode.UNKNOWN_PER.getCode(), En_ErrorCode.UNKNOWN_PER.getMessage(), null);
+                        return ServiceResult.failResult(En_ErrorCode.UNKNOWN_PER.getCode(), En_ErrorCode.UNKNOWN_PER.getMessage(), rec.getId());
                     }
 
                     WorkerEntry worker = workerEntryDAO.getByExternalId(rec.getWorkerId (), item.getCompanyId ());
                     if (worker == null || !worker.getPersonId().equals(person.getId ())) {
                         logger.debug("=== error result, " + En_ErrorCode.UNKNOWN_WOR.getMessage());
-                        return ServiceResult.failResult(En_ErrorCode.UNKNOWN_WOR.getCode(), En_ErrorCode.UNKNOWN_WOR.getMessage(), null);
+                        return ServiceResult.failResult(En_ErrorCode.UNKNOWN_WOR.getCode(), En_ErrorCode.UNKNOWN_WOR.getMessage(), rec.getId());
                     }
 
                     copy (rec, person);
@@ -364,8 +364,8 @@ public class WorkerController {
                     worker.setDepartmentId (department.getId ());
 
                     worker.setPositionId (position.getId ());
-                    worker.setHireDate (rec.getHireDate () != null && rec.getHireDate ().trim ().length () > 0 ? HelperService.DATE.parse (rec.getHireDate ()) : null);
-                    worker.setHireOrderNo (rec.getHireOrderNo () != null && rec.getHireOrderNo ().trim ().length () > 0 ? rec.getHireOrderNo ().trim () : null);
+                    worker.setHireDate (HelperFunc.isNotEmpty(rec.getHireDate ()) ? HelperService.DATE.parse (rec.getHireDate ()) : null);
+                    worker.setHireOrderNo (HelperFunc.isNotEmpty(rec.getHireOrderNo ()) ? rec.getHireOrderNo ().trim () : null);
                     worker.setActiveFlag (rec.getActive ());
 
                     workerEntryDAO.merge (worker);
@@ -437,7 +437,7 @@ public class WorkerController {
                     WorkerEntry worker = workerEntryDAO.getByExternalId(externalId, item.getCompanyId ());
                     if (worker == null) {
                         logger.debug("=== error result, " + En_ErrorCode.UNKNOWN_WOR.getMessage());
-                        return ServiceResult.failResult(En_ErrorCode.UNKNOWN_WOR.getCode(), En_ErrorCode.UNKNOWN_WOR.getMessage(), null);
+                        return ServiceResult.failResult(En_ErrorCode.UNKNOWN_WOR.getCode(), En_ErrorCode.UNKNOWN_WOR.getMessage(), externalId);
                     }
 
                     Long personId = worker.getPersonId ();
@@ -601,7 +601,7 @@ public class WorkerController {
 
             if (rec.getParentId () != null && !companyDepartmentDAO.checkExistsByExternalId(rec.getParentId (), item.getCompanyId ())) {
                 logger.debug("=== error result, " + En_ErrorCode.UNKNOWN_PAR_DEP.getMessage());
-                return ServiceResult.failResult(En_ErrorCode.UNKNOWN_PAR_DEP.getCode(), En_ErrorCode.UNKNOWN_PAR_DEP.getMessage(), null);
+                return ServiceResult.failResult(En_ErrorCode.UNKNOWN_PAR_DEP.getCode(), En_ErrorCode.UNKNOWN_PAR_DEP.getMessage(), rec.getDepartmentId());
             }
 
             CompanyDepartment department = companyDepartmentDAO.getByExternalId(rec.getDepartmentId (), item.getCompanyId ());
@@ -660,17 +660,17 @@ public class WorkerController {
             CompanyDepartment department = companyDepartmentDAO.getByExternalId(externalId, item.getCompanyId ());
             if (department == null) {
                 logger.debug("=== error result, " + En_ErrorCode.UNKNOWN_DEP.getMessage());
-                return ServiceResult.failResult(En_ErrorCode.UNKNOWN_DEP.getCode(), En_ErrorCode.UNKNOWN_DEP.getMessage(), null);
+                return ServiceResult.failResult(En_ErrorCode.UNKNOWN_DEP.getCode(), En_ErrorCode.UNKNOWN_DEP.getMessage(), externalId);
             }
 
             if (companyDepartmentDAO.checkExistsByParentId(department.getId ())) {
                 logger.debug("=== error result, " + En_ErrorCode.EXIST_CHILD_DEP.getMessage());
-                return ServiceResult.failResult(En_ErrorCode.EXIST_CHILD_DEP.getCode(), En_ErrorCode.EXIST_CHILD_DEP.getMessage(), null);
+                return ServiceResult.failResult(En_ErrorCode.EXIST_CHILD_DEP.getCode(), En_ErrorCode.EXIST_CHILD_DEP.getMessage(), externalId);
             }
 
             if (workerEntryDAO.checkExistsByDepId(department.getId ())) {
                 logger.debug("=== error result, " + En_ErrorCode.EXIST_DEP_WOR.getMessage());
-                return ServiceResult.failResult(En_ErrorCode.EXIST_DEP_WOR.getCode(), En_ErrorCode.EXIST_DEP_WOR.getMessage(), null);
+                return ServiceResult.failResult(En_ErrorCode.EXIST_DEP_WOR.getCode(), En_ErrorCode.EXIST_DEP_WOR.getMessage(), externalId);
             }
 
             companyDepartmentDAO.remove (department);
@@ -689,8 +689,6 @@ public class WorkerController {
     public @ResponseBody ServiceResult updatePosition(@RequestParam(name = "oldName") String oldName, @RequestParam(name = "newName") String newName, @RequestParam(name = "companyCode") String companyCode) {
 
         logger.debug("=== updatePosition ===");
-        logger.debug("=== oldName = " + oldName);
-
         try {
 
             String oldNameDecode = URLDecoder.decode( oldName, "UTF-8" );
@@ -828,8 +826,8 @@ public class WorkerController {
         if (HelperFunc.isEmpty(rec.getDepartmentName ()))
             return ServiceResult.failResult (En_ErrorCode.EMPTY_DEP_NAME.getCode (), En_ErrorCode.EMPTY_DEP_NAME.getMessage (), rec.getDepartmentId ());
 
-        if (rec.getHeadId () != null && !personDAO.checkExistsByCondition ("id=?", rec.getHeadId ()))
-            return ServiceResult.failResult (En_ErrorCode.UNKNOWN_HEAD_DEP.getCode (), En_ErrorCode.UNKNOWN_HEAD_DEP.getMessage (), null);
+        if (rec.getHeadId () != null && personDAO.get(rec.getHeadId()) == null)
+            return ServiceResult.failResult (En_ErrorCode.UNKNOWN_HEAD_DEP.getCode (), En_ErrorCode.UNKNOWN_HEAD_DEP.getMessage (), rec.getDepartmentId ());
 
         return ServiceResult.successResult (rec.getDepartmentId ());
     }
@@ -838,30 +836,26 @@ public class WorkerController {
 
         person.setFirstName (rec.getFirstName ().trim ());
         person.setLastName (rec.getLastName ().trim ());
-        person.setSecondName (rec.getSecondName () != null && rec.getSecondName ().trim ().length () > 0 ? rec.getSecondName ().trim () : null);
+        person.setSecondName (HelperFunc.isEmpty(rec.getSecondName ()) ? null : rec.getSecondName ().trim ());
         person.setDisplayName (HelperService.generateDisplayName (person.getFirstName (), person.getLastName (), person.getSecondName ()));
         person.setDisplayShortName (HelperService.generateDisplayShortName (person.getFirstName (), person.getLastName (), person.getSecondName ()));
         person.setGender (rec.getSex () == null ? En_Gender.UNDEFINED : rec.getSex () == 1 ? En_Gender.MALE : En_Gender.FEMALE);
-        person.setBirthday (rec.getBirthday() != null && rec.getBirthday().trim ().length () > 0 ? HelperService.DATE.parse(rec.getBirthday()) : null);
-        person.setIpAddress (rec.getIpAddress () != null && rec.getIpAddress ().trim ().length () > 0 ? rec.getIpAddress ().trim () : null);
-        person.setPassportInfo (rec.getPassportInfo () != null && rec.getPassportInfo ().trim ().length () > 0 ? rec.getPassportInfo ().trim () : null);
-        person.setInfo (rec.getInfo () != null && rec.getInfo ().trim ().length () > 0 ? rec.getInfo ().trim () : null);
+        person.setBirthday (HelperFunc.isEmpty(rec.getBirthday()) ? null : HelperService.DATE.parse(rec.getBirthday()));
+        person.setIpAddress (HelperFunc.isEmpty(rec.getIpAddress ()) ? null : rec.getIpAddress ().trim ());
+        person.setPassportInfo (HelperFunc.isEmpty(rec.getPassportInfo ()) ? null : rec.getPassportInfo ().trim ());
+        person.setInfo (HelperFunc.isEmpty(rec.getInfo ()) ? null : rec.getInfo ().trim ());
         person.setDeleted (rec.isDeleted ());
         person.setFired(rec.isFired());
 
         PlainContactInfoFacade contactInfoFacade = new PlainContactInfoFacade(person.getContactInfo());
-        contactInfoFacade.setWorkPhone (rec.getPhoneWork () != null && rec.getPhoneWork ().trim ().length () > 0 ? rec.getPhoneWork ().trim () : null);
-        contactInfoFacade.setMobilePhone (rec.getPhoneMobile () != null && rec.getPhoneMobile ().trim ().length () > 0 ? rec.getPhoneMobile ().trim () : null);
-        contactInfoFacade.setHomePhone (rec.getPhoneHome () != null && rec.getPhoneHome ().trim ().length () > 0 ? rec.getPhoneHome ().trim () : null);
-        contactInfoFacade.setLegalAddress (rec.getAddress () != null && rec.getAddress ().trim ().length () > 0 ? rec.getAddress ().trim () : null);
-        contactInfoFacade.setHomeAddress (rec.getAddressHome () != null && rec.getAddressHome ().trim ().length () > 0 ? rec.getAddressHome ().trim () : null);
-        contactInfoFacade.setEmail (rec.getEmail () != null && rec.getEmail ().trim ().length () > 0 ? rec.getEmail ().trim () : null);
-        contactInfoFacade.setEmail_own (rec.getEmailOwn () != null && rec.getEmailOwn ().trim ().length () > 0 ? rec.getEmailOwn ().trim () : null);
-        contactInfoFacade.setFax (rec.getFax () != null && rec.getFax ().trim ().length () > 0 ? rec.getFax ().trim () : null);
-
-        //person.setDepartment ();
-        //person.setPosition ();
-
+        contactInfoFacade.setWorkPhone (HelperFunc.isEmpty(rec.getPhoneWork ()) ? null : rec.getPhoneWork ().trim ());
+        contactInfoFacade.setMobilePhone (HelperFunc.isEmpty(rec.getPhoneMobile ()) ? null : rec.getPhoneMobile ().trim ());
+        contactInfoFacade.setHomePhone (HelperFunc.isEmpty(rec.getPhoneHome ()) ? null : rec.getPhoneHome ().trim ());
+        contactInfoFacade.setLegalAddress (HelperFunc.isEmpty(rec.getAddress ()) ? null : rec.getAddress ().trim ());
+        contactInfoFacade.setHomeAddress (HelperFunc.isEmpty(rec.getAddressHome ()) ? null : rec.getAddressHome ().trim ());
+        contactInfoFacade.setEmail (HelperFunc.isEmpty(rec.getEmail ()) ? null : rec.getEmail ().trim ());
+        contactInfoFacade.setEmail_own (HelperFunc.isEmpty(rec.getEmailOwn ()) ? null : rec.getEmailOwn ().trim ());
+        contactInfoFacade.setFax (HelperFunc.isEmpty(rec.getFax ()) ? null : rec.getFax ().trim ());
     }
 
     private WorkerPosition getValidPosition(String positionName, Long companyId) {

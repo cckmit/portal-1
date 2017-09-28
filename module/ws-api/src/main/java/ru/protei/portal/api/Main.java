@@ -3,13 +3,17 @@ package ru.protei.portal.api;
 import org.apache.cxf.transport.servlet.CXFServlet;
 import org.apache.log4j.Logger;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.springframework.web.context.ContextLoaderListener;
-import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
+import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.servlet.DispatcherServlet;
 import ru.protei.portal.api.config.APIConfigurationContext;
+
+import javax.servlet.DispatcherType;
+import java.util.EnumSet;
 
 public class Main {
 
@@ -37,6 +41,11 @@ public class Main {
             context.register(APIConfigurationContext.class);
 
             webapp.addEventListener(new ContextLoaderListener(context));
+
+            CharacterEncodingFilter characterEncodingFilter = new CharacterEncodingFilter();
+            characterEncodingFilter.setEncoding("UTF-8");
+            characterEncodingFilter.setForceEncoding(true);
+            webapp.addFilter(new FilterHolder(characterEncodingFilter), "/*", EnumSet.of(DispatcherType.FORWARD,DispatcherType.REQUEST));
 
             // SPRING servlet-dispatcher
             ServletHolder springHolder = new ServletHolder("dispatcher", new DispatcherServlet(context));
