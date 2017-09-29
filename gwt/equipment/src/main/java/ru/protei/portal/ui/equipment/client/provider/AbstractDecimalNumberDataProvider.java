@@ -2,9 +2,7 @@ package ru.protei.portal.ui.equipment.client.provider;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import ru.protei.portal.core.model.ent.DecimalNumber;
-import ru.protei.portal.core.model.struct.DecimalNumberFilter;
-
-import java.util.List;
+import ru.protei.portal.core.model.struct.DecimalNumberQuery;
 
 /**
  * Валидатор децимальных чисел
@@ -22,7 +20,7 @@ public interface AbstractDecimalNumberDataProvider {
      * @param filter    допускается частичная заполненность (мб заполнен только код по классификатору и/или рег.номер)
      * @return
      */
-    void getNextAvailableRegisterNumber( DecimalNumberFilter filter, AsyncCallback<DecimalNumber> callback  );
+    void getNextAvailableRegisterNumber( DecimalNumberQuery filter, AsyncCallback<Integer> callback  );
 
-    void getNextAvailableRegisterNumberModification( DecimalNumberFilter filter, AsyncCallback<DecimalNumber> callback  );
+    void getNextAvailableModification( DecimalNumberQuery filter, AsyncCallback<Integer> callback  );
 }

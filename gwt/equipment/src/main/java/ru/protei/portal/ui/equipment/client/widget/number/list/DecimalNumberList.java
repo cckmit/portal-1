@@ -13,11 +13,13 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.protei.portal.core.model.dict.En_OrganizationCode;
 import ru.protei.portal.core.model.ent.DecimalNumber;
-import ru.protei.portal.core.model.struct.DecimalNumberFilter;
+import ru.protei.portal.core.model.struct.DecimalNumberQuery;
+import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.equipment.client.provider.AbstractDecimalNumberDataProvider;
-import ru.protei.portal.ui.equipment.client.widget.number.item.AbstractBoxHandler;
+import ru.protei.portal.ui.equipment.client.widget.number.item.DecimalNumberBoxHandler;
 import ru.protei.portal.ui.equipment.client.widget.number.item.DecimalNumberBox;
+import ru.protei.winter.web.common.client.common.DisplayStyle;
 
 import java.util.*;
 
@@ -26,8 +28,7 @@ import java.util.*;
  */
 public class DecimalNumberList
         extends Composite
-        implements HasValue<List<DecimalNumber>>, AbstractBoxHandler
-{
+        implements HasValue<List<DecimalNumber>>, DecimalNumberBoxHandler {
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
@@ -52,6 +53,7 @@ public class DecimalNumberList
 
         clearBoxes();
         if ( values == null || values.isEmpty() ) {
+            createEmptyBox(En_OrganizationCode.PAMR);
             return;
         } else {
             values.forEach( this :: createBoxAndFillValue );
@@ -67,64 +69,42 @@ public class DecimalNumberList
         return addHandler( handler, ValueChangeEvent.getType() );
     }
 
+    @Override
+    public void onGetNextNumber( DecimalNumberBox box ) {
+        DecimalNumberQuery query = makeQuery( box.getValue(), getUsedRegNumbersByClassifier( box.getValue() ) );
+
+        dataProvider.getNextAvailableRegisterNumber( query, new RequestCallback< Integer >() {
+            @Override
+            public void onError( Throwable throwable ) {
+                box.showMessage( lang.equipmentErrorGetNextAvailableNumber(), DisplayStyle.DANGER );
+            }
+
+            @Override
+            public void onSuccess( Integer registerNumber ) {
+                DecimalNumber number = box.getValue();
+                number.setRegisterNumber( registerNumber );
+                number.setModification( null );
+
+                box.setValue( number );
+                box.setFocusToRegisterNumberField( true );
+            }
+        } );
+    }
+
+    @Override
+    public void onGetNextModification( DecimalNumberBox box ) {
+        getNextModification( box, false );
+    }
+
     @UiHandler( "addPamr" )
     public void onAddPamrClicked( ClickEvent event )  {
         createEmptyBox(En_OrganizationCode.PAMR);
-
     }
 
     @UiHandler( "addPdra" )
     public void onAddPdraClicked( ClickEvent event )  {
         createEmptyBox(En_OrganizationCode.PDRA);
-
     }
-
-    public List<Integer> makeModListWithSameCodeAndRegNumber(Integer classifierCode, Integer registerNumber) {
-        List<Integer> modsList = new ArrayList<Integer>();
-
-        for (DecimalNumber value: values) {
-            if (value == null || value.getClassifierCode() == null || value.getRegisterNumber() == null
-                    || value.getModification() == null) {
-                continue;
-            }
-            if (compare(value.getClassifierCode(), classifierCode) && compare(value.getRegisterNumber(), registerNumber)) {
-                modsList.add(value.getModification());
-            }
-        }
-        return modsList;
-    }
-
-    @Override
-    public List<Integer> getRegNumbersListWithSpecificCode(Integer classifierCode) {
-        List<Integer> resultList = new ArrayList<Integer>();
-        for (DecimalNumber value: values) {
-            if (value == null || value.getClassifierCode() == null || value.getRegisterNumber() == null) {
-                continue;
-            }
-            if (compare(value.getClassifierCode(), classifierCode)) {
-                resultList.add(value.getRegisterNumber());
-            }
-        }
-        return resultList;
-    }
-
-    public boolean numberExists(DecimalNumber number) {
-        for (DecimalNumber value: values) {
-            if (number.equals(value)) {
-                continue;
-            }
-            if (value.getOrganizationCode() == number.getOrganizationCode()
-                    && compare(value.getModification(), number.getModification())
-                    && compare(value.getClassifierCode(), number.getClassifierCode())
-                    && compare(value.getRegisterNumber(), number.getRegisterNumber()))
-
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
 
     private void clearBoxes() {
         pdraList.clear();
@@ -134,80 +114,133 @@ public class DecimalNumberList
 
     private void createBoxAndFillValue( DecimalNumber number) {
         DecimalNumberBox box = boxProvider.get();
-        box.setBoxHandler(this);
+
         box.setValue( number );
-        numberBoxes.add(box);
-        addToSublist(number, box);
-        box.setFocusToNextButton(true);
-        addNextItemHandler(box);
-        addRemoveHandler( box, number );
-    }
-
-    private void addNextItemHandler(DecimalNumberBox box) {
-        box.addAddHandler(event -> {
-            DecimalNumber oldNumber = box.getValue();
-            final DecimalNumber newNumber = new DecimalNumber();
-            newNumber.setOrganizationCode(oldNumber.getOrganizationCode());
-            newNumber.setClassifierCode(oldNumber.getClassifierCode());
-            newNumber.setRegisterNumber(oldNumber.getRegisterNumber());
-            newNumber.setModification(oldNumber.getModification());
-            List<Integer> mods = makeModListWithSameCodeAndRegNumber(newNumber.getClassifierCode(), newNumber.getRegisterNumber());
-
-            DecimalNumberFilter filter = new DecimalNumberFilter();
-            filter.setExcludeNumbers(mods);
-            filter.setClassifierCode(String.valueOf(newNumber.getClassifierCode()));
-            filter.setOrganizationCode(newNumber.getOrganizationCode().name());
-            filter.setRegisterNumber(String.valueOf(newNumber.getRegisterNumber()));
-
-            dataProvider.getNextAvailableRegisterNumberModification( filter, new RequestCallback<DecimalNumber>() {
-                @Override
-                public void onError(Throwable throwable) {
-                    box.setErrorMessage();
-                }
-
-                @Override
-                public void onSuccess(DecimalNumber result) {
-                    newNumber.setModification(result.getModification());
-                    values.add(newNumber);
-                    createBoxAndFillValue(newNumber);
-                }
-            });
-        });
-    }
-
-    private void addRemoveHandler(final DecimalNumberBox box, final DecimalNumber number ) {
+        box.setHandler(this);
+        box.addAddHandler( event -> getNextModification( box, true ) );
         box.addRemoveHandler( event -> {
             values.remove( number );
             box.removeFromParent();
             numberBoxes.remove( box );
         } );
+        box.addValueChangeHandler( event -> {
+            if ( !event.getValue().isEmpty() ) {
+                checkExistNumber( box );
+            }
+        } );
+
+        numberBoxes.add(box);
+        placeBox(number, box);
     }
 
     private void createEmptyBox(En_OrganizationCode orgCode) {
-        DecimalNumberBox box = boxProvider.get();
-        box.setBoxHandler(this);
         DecimalNumber emptyNumber = new DecimalNumber();
-
         emptyNumber.setOrganizationCode(orgCode);
-        box.setValue( emptyNumber );
-
         values.add( emptyNumber );
-        numberBoxes.add( box );
-        addToSublist(emptyNumber, box);
-        addNextItemHandler(box);
-        addRemoveHandler( box, emptyNumber );
+
+        createBoxAndFillValue( emptyNumber );
     }
 
-    private boolean compare(Integer number, Integer value) {
-        return (number == null  ? value == null  : number.equals(value));
-    }
-
-    private void addToSublist(DecimalNumber number, DecimalNumberBox box) {
+    private void placeBox( DecimalNumber number, DecimalNumberBox box ) {
         if (number.getOrganizationCode().equals(En_OrganizationCode.PAMR)) {
             pamrList.add(box.asWidget());
         } else {
             pdraList.add(box.asWidget());
         }
+    }
+
+    private void getNextModification( DecimalNumberBox box, boolean needCreareNewBox ) {
+        DecimalNumber value = box.getValue();
+        DecimalNumberQuery query = makeQuery( value, getUsedModificationsByClassifierAndRegNumber( value ) );
+
+        dataProvider.getNextAvailableModification( query, new RequestCallback< Integer>() {
+            @Override
+            public void onError( Throwable throwable ) {
+                box.showMessage( lang.equipmentErrorGetNextAvailableNumber(), DisplayStyle.DANGER );
+            }
+
+            @Override
+            public void onSuccess( Integer modification ) {
+                if ( needCreareNewBox ) {
+                    DecimalNumber newNumber = new DecimalNumber( value.getOrganizationCode(), value.getClassifierCode(),
+                            value.getRegisterNumber(), modification );
+                    values.add( newNumber );
+                    createBoxAndFillValue( newNumber );
+                } else {
+                    DecimalNumber value = box.getValue();
+                    value.setModification( modification );
+                    box.setValue( value );
+                }
+            }
+        } );
+    }
+
+    private Set<Integer> getUsedRegNumbersByClassifier( DecimalNumber number ) {
+        Set<Integer> registerNumbers = new HashSet<>();
+        values.forEach( value -> {
+            if ( value == null || value.isEmpty() ){
+                return;
+            }
+            if ( value.getOrganizationCode() == number.getOrganizationCode()
+                    && Objects.equals( value.getClassifierCode(), number.getClassifierCode() ) ) {
+                registerNumbers.add( value.getRegisterNumber() );
+            }
+        } );
+
+        return registerNumbers;
+    }
+
+    private Set<Integer> getUsedModificationsByClassifierAndRegNumber( DecimalNumber number ) {
+        Set<Integer> modifications = new HashSet<>();
+
+        values.forEach( value -> {
+            if ( value == null || ( value.isEmpty() && value.getModification() == null) ) {
+                return;
+            }
+            if ( value.getOrganizationCode() == number.getOrganizationCode()
+                    && Objects.equals(value.getClassifierCode(), number.getClassifierCode())
+                    && Objects.equals(value.getRegisterNumber(), number.getRegisterNumber())) {
+                modifications.add(value.getModification());
+            }
+        } );
+
+        return modifications;
+    }
+
+    private void checkExistNumber( DecimalNumberBox box ) {
+        if ( numberExists( box.getValue() ) ) {
+            box.showMessage( lang.equipmentNumberAlreadyInList(), DisplayStyle.DANGER );
+            return;
+        }
+
+        dataProvider.checkIfExistDecimalNumber( box.getValue(), new RequestCallback< Boolean >() {
+            @Override
+            public void onError( Throwable throwable ) {
+                box.showMessage( lang.equipmentErrorCheckNumber(), DisplayStyle.DANGER );
+            }
+
+            @Override
+            public void onSuccess( Boolean result ) {
+                box.clearBoxState();
+                if ( result ) {
+                    box.showGetNextNumberMessage();
+                }
+            }
+        } );
+    }
+
+    private DecimalNumberQuery makeQuery( DecimalNumber value, Set<Integer> excludeNumbers ) {
+        DecimalNumberQuery query = new DecimalNumberQuery();
+        query.setClassifierCode( value.getClassifierCode() );
+        query.setOrganizationCode( value.getOrganizationCode() );
+        query.setRegisterNumber( value.getRegisterNumber() );
+        query.setExcludeNumbers( excludeNumbers );
+
+        return query;
+    }
+
+    private boolean numberExists(DecimalNumber number) {
+        return values.stream().anyMatch( value -> !number.equals( value ) && number.isSameNumber( value ) );
     }
 
     @UiField
@@ -219,6 +252,8 @@ public class DecimalNumberList
     @UiField
     Button addPdra;
 
+    @Inject
+    Lang lang;
     @Inject
     AbstractDecimalNumberDataProvider dataProvider;
     @Inject

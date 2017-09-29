@@ -10,7 +10,7 @@ import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.EquipmentQuery;
-import ru.protei.portal.core.model.struct.DecimalNumberFilter;
+import ru.protei.portal.core.model.struct.DecimalNumberQuery;
 import ru.protei.portal.ui.common.client.service.EquipmentService;
 import ru.protei.portal.ui.common.server.service.SessionService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
@@ -152,13 +152,13 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
-    public DecimalNumber getNextAvailableRegisterNumber( DecimalNumberFilter filter ) throws RequestFailedException {
+    public Integer getNextAvailableRegisterNumber( DecimalNumberQuery filter ) throws RequestFailedException {
         if (filter.getExcludeNumbers() == null) {
             log.warn("null numbers in request");
             throw new RequestFailedException(En_ResultStatus.INTERNAL_ERROR);
         }
 
-        CoreResponse<DecimalNumber> response = equipmentService.getNextAvailableDecimalNumber( getDescriptorAndCheckSession().makeAuthToken(), filter );
+        CoreResponse<Integer> response = equipmentService.getNextAvailableDecimalNumber( getDescriptorAndCheckSession().makeAuthToken(), filter );
         if (response.isOk()) {
             log.debug("get next available decimal number, result: {}", response.getData());
             return response.getData();
@@ -168,13 +168,13 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
-    public DecimalNumber getNextAvailableRegisterNumberModification( DecimalNumberFilter filter ) throws RequestFailedException  {
+    public Integer getNextAvailableRegisterNumberModification( DecimalNumberQuery filter ) throws RequestFailedException  {
         if (filter.getExcludeNumbers() == null) {
             log.warn("null mods in request");
             throw new RequestFailedException(En_ResultStatus.INTERNAL_ERROR);
         }
 
-        CoreResponse<DecimalNumber> response = equipmentService.getNextAvailableDecimalNumberModification( getDescriptorAndCheckSession().makeAuthToken(), filter );
+        CoreResponse<Integer> response = equipmentService.getNextAvailableDecimalNumberModification( getDescriptorAndCheckSession().makeAuthToken(), filter );
         if (response.isOk()) {
             log.debug("get next available decimal number, result: {}", response.getData());
             return response.getData();

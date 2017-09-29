@@ -3,11 +3,12 @@ package ru.protei.portal.core.model.dao.impl;
 import org.apache.commons.collections4.CollectionUtils;
 import ru.protei.portal.core.model.dao.DecimalNumberDAO;
 import ru.protei.portal.core.model.ent.DecimalNumber;
-import ru.protei.portal.core.model.struct.DecimalNumberFilter;
+import ru.protei.portal.core.model.struct.DecimalNumberQuery;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -30,25 +31,13 @@ public class DecimalNumberDAO_Impl extends PortalBaseJdbcDAO<DecimalNumber > imp
     }
 
     @Override
-    public Integer getMaxRegisterNumber( DecimalNumber number ) {
-        return getMaxValue( "reg_number", Integer.class, "org_code=? and classifier_code=?", number.getOrganizationCode().name(),
-                number.getClassifierCode() );
-    }
-
-    @Override
-    public Integer getMaxModification( DecimalNumber number ) {
-        return getMaxValue( "modification_number", Integer.class, "org_code=? and classifier_code=? and reg_number=?", number.getOrganizationCode().name(),
-                number.getClassifierCode(), number.getRegisterNumber() );
-    }
-
-    @Override
     public List< Long > getDecimalNumbersByEquipmentId( Long id ) {
         StringBuilder sql = new StringBuilder("select id from ").append(getTableName()).append( " where equipment_id=?" );
         return jdbcTemplate.queryForList(sql.toString(), Long.class, id);
     }
 
     @Override
-    public Integer getNextAvailableRegNumber(DecimalNumberFilter filter) {
+    public Integer getNextAvailableRegNumber(DecimalNumberQuery filter) {
 
         StringBuilder sql = new StringBuilder("select min(a.reg_number) + 1 from (select reg_number from decimal_number union select 0) a " +
                 "left join decimal_number b on b.reg_number = a.reg_number + 1 " +
@@ -57,7 +46,7 @@ public class DecimalNumberDAO_Impl extends PortalBaseJdbcDAO<DecimalNumber > imp
         if (!filter.getExcludeNumbers().isEmpty()) {
             sql.append(" and a.reg_number not in (");
 
-            List<Integer> excludeNumbers = filter.getExcludeNumbers();
+            Set<Integer> excludeNumbers = filter.getExcludeNumbers();
             sql.append(excludeNumbers.stream().map(p -> String.valueOf(p-1)).collect(Collectors.joining(",")));
             sql.append(")");
         }
@@ -65,7 +54,7 @@ public class DecimalNumberDAO_Impl extends PortalBaseJdbcDAO<DecimalNumber > imp
     }
 
     @Override
-    public Integer getNextAvailableModification(DecimalNumberFilter filter) {
+    public Integer getNextAvailableModification(DecimalNumberQuery filter) {
         StringBuilder sql = new StringBuilder("select min(a.modification_number) + 1 from (select modification_number from decimal_number union select 0) a " +
                 "left join decimal_number b on b.modification_number = a.modification_number + 1 " +
                 "and classifier_code=? and org_code=? and reg_number=? where b.modification_number is null");
@@ -73,7 +62,7 @@ public class DecimalNumberDAO_Impl extends PortalBaseJdbcDAO<DecimalNumber > imp
         if (!filter.getExcludeNumbers().isEmpty()) {
             sql.append(" and a.modification_number not in (");
 
-            List<Integer> excludeNumbers = filter.getExcludeNumbers();
+            Set<Integer> excludeNumbers = filter.getExcludeNumbers();
 
             sql.append(excludeNumbers.stream().map(p -> String.valueOf(p - 1)).collect(Collectors.joining(",")));
             sql.append(")");

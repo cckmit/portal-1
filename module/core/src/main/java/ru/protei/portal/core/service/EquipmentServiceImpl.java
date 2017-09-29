@@ -13,7 +13,7 @@ import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.query.EquipmentQuery;
-import ru.protei.portal.core.model.struct.DecimalNumberFilter;
+import ru.protei.portal.core.model.struct.DecimalNumberQuery;
 import ru.protei.winter.core.utils.collections.CollectionUtils;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
@@ -80,22 +80,15 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
-    public CoreResponse<DecimalNumber> getNextAvailableDecimalNumber( AuthToken token, DecimalNumberFilter filter ) {
-        DecimalNumber number = new DecimalNumber();
-        number.setModification(null);
-        Integer nextAvailableRegNumber = decimalNumberDAO.getNextAvailableRegNumber(filter);
-        number.setRegisterNumber(nextAvailableRegNumber);
-
-        return new CoreResponse<DecimalNumber>().success( number );
+    public CoreResponse<Integer> getNextAvailableDecimalNumber( AuthToken token, DecimalNumberQuery query ) {
+        Integer regNumber = decimalNumberDAO.getNextAvailableRegNumber(query);
+        return new CoreResponse<Integer>().success( regNumber );
     }
 
     @Override
-    public CoreResponse<DecimalNumber> getNextAvailableDecimalNumberModification( AuthToken token, DecimalNumberFilter filter ) {
-        DecimalNumber number = new DecimalNumber();
-        Integer nextAvailableMod = decimalNumberDAO.getNextAvailableModification(filter);
-        number.setModification(nextAvailableMod);
-
-        return new CoreResponse<DecimalNumber>().success( number );
+    public CoreResponse<Integer> getNextAvailableDecimalNumberModification( AuthToken token, DecimalNumberQuery query ) {
+        Integer modification = decimalNumberDAO.getNextAvailableModification(query);
+        return new CoreResponse<Integer>().success( modification );
     }
 
     @Override

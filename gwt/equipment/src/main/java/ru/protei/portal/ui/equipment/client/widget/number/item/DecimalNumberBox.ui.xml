@@ -9,7 +9,7 @@
         <div class="dn-container" ui:field="container">
             <g:ToggleButton ui:field="isReserve" styleName="btn dn-reserve" title="{lang.equipmentReserve}"/>
             <label class="dn-separator"></label>
-            <input class="input-field dn-org-code" ui:field="organizationCode" disabled="disabled"></input>
+            <g:TextBox styleName="input-field dn-org-code" ui:field="organizationCode"></g:TextBox>
             <label class="dn-separator">.</label>
             <mask:MaskedTextBox ui:field="classifierCode" styleName="input-field dn-classifier-code" mask="999999"/>
             <label class="dn-separator">.</label>

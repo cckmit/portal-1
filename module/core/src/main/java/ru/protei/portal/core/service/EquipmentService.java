@@ -9,7 +9,7 @@ import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.query.EquipmentQuery;
-import ru.protei.portal.core.model.struct.DecimalNumberFilter;
+import ru.protei.portal.core.model.struct.DecimalNumberQuery;
 
 import java.util.List;
 
@@ -32,10 +32,10 @@ public interface EquipmentService {
     CoreResponse< Equipment > saveEquipment( AuthToken token, Equipment equipment );
 
     @Privileged( requireAny = { En_Privilege.EQUIPMENT_CREATE, En_Privilege.EQUIPMENT_EDIT })
-    CoreResponse< DecimalNumber > getNextAvailableDecimalNumber( AuthToken token, DecimalNumberFilter filter );
+    CoreResponse< Integer > getNextAvailableDecimalNumber( AuthToken token, DecimalNumberQuery filter );
 
     @Privileged( requireAny = { En_Privilege.EQUIPMENT_CREATE, En_Privilege.EQUIPMENT_EDIT })
-    CoreResponse< DecimalNumber > getNextAvailableDecimalNumberModification( AuthToken token, DecimalNumberFilter filter );
+    CoreResponse< Integer > getNextAvailableDecimalNumberModification( AuthToken token, DecimalNumberQuery filter );
 
     CoreResponse< Boolean > checkIfExistDecimalNumber( DecimalNumber number );
 
