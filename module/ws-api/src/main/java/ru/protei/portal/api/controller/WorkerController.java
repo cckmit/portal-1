@@ -599,9 +599,13 @@ public class WorkerController {
                 return ServiceResult.failResult(En_ErrorCode.UNKNOWN_COMP.getCode(), En_ErrorCode.UNKNOWN_COMP.getMessage(), rec.getDepartmentId());
             }
 
-            if (rec.getParentId () != null && !companyDepartmentDAO.checkExistsByExternalId(rec.getParentId (), item.getCompanyId ())) {
-                logger.debug("=== error result, " + En_ErrorCode.UNKNOWN_PAR_DEP.getMessage());
-                return ServiceResult.failResult(En_ErrorCode.UNKNOWN_PAR_DEP.getCode(), En_ErrorCode.UNKNOWN_PAR_DEP.getMessage(), rec.getDepartmentId());
+            CompanyDepartment parentDepartment = null;
+            if (rec.getParentId () != null) {
+                parentDepartment = companyDepartmentDAO.getByExternalId(rec.getParentId (), item.getCompanyId ());
+                if (parentDepartment == null) {
+                    logger.debug("=== error result, " + En_ErrorCode.UNKNOWN_PAR_DEP.getMessage());
+                    return ServiceResult.failResult(En_ErrorCode.UNKNOWN_PAR_DEP.getCode(), En_ErrorCode.UNKNOWN_PAR_DEP.getMessage(), rec.getDepartmentId());
+                }
             }
 
             CompanyDepartment department = companyDepartmentDAO.getByExternalId(rec.getDepartmentId (), item.getCompanyId ());
@@ -614,7 +618,7 @@ public class WorkerController {
             }
 
             department.setName (rec.getDepartmentName ().trim ());
-            department.setParentId (rec.getParentId ());
+            department.setParentId (parentDepartment == null ? null : parentDepartment.getId());
             department.setHeadId (rec.getHeadId ());
 
             if (department.getId () == null)
