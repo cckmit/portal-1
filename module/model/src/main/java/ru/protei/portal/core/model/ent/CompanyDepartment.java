@@ -1,9 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.winter.jdbc.annotations.IdInsertMode;
-import ru.protei.winter.jdbc.annotations.JdbcColumn;
-import ru.protei.winter.jdbc.annotations.JdbcEntity;
-import ru.protei.winter.jdbc.annotations.JdbcId;
+import ru.protei.winter.jdbc.annotations.*;
 
 import java.util.Date;
 
@@ -19,6 +16,9 @@ public class CompanyDepartment {
     @JdbcColumn(name = "company_id")
     private Long companyId;
 
+    @JdbcJoinedColumn(localColumn = "company_id", table = "company_group_home", remoteColumn = "companyId", mappedColumn = "external_code")
+    private String externalCode;
+
     @JdbcColumn(name = "created")
     private Date created;
 
@@ -33,6 +33,9 @@ public class CompanyDepartment {
 
     @JdbcColumn(name = "parent_dep")
     private Long parentId;
+
+    @JdbcJoinedColumn(localColumn = "parent_dep", table = "company_dep", remoteColumn = "id", mappedColumn = "dep_extId")
+    private Long parentExternalId;
 
     @JdbcColumn(name = "head_id")
     private Long headId;
@@ -113,5 +116,21 @@ public class CompanyDepartment {
 
     public void setExternalId(Long externalId) {
         this.externalId = externalId;
+    }
+
+    public String getExternalCode() {
+        return externalCode;
+    }
+
+    public void setExternalCode(String externalCode) {
+        this.externalCode = externalCode;
+    }
+
+    public Long getParentExternalId() {
+        return parentExternalId;
+    }
+
+    public void setParentExternalId(Long parentExternalId) {
+        this.parentExternalId = parentExternalId;
     }
 }

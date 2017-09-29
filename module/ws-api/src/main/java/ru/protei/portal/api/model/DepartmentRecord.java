@@ -1,5 +1,7 @@
 package ru.protei.portal.api.model;
 
+import ru.protei.portal.core.model.ent.CompanyDepartment;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -18,6 +20,12 @@ public class DepartmentRecord {
     private Long parentId;
 
     private Long headId;
+
+    public DepartmentRecord() {}
+
+    public DepartmentRecord(CompanyDepartment d) {
+        copy(d);
+    }
 
     @XmlElement(name = "company-code", required = true)
     public String getCompanyCode() {
@@ -62,5 +70,14 @@ public class DepartmentRecord {
 
     public void setHeadId(Long headId) {
         this.headId = headId;
+    }
+
+    public void copy(CompanyDepartment d) {
+        setCompanyCode(d.getExternalCode());
+
+        setDepartmentId(d.getExternalId());
+        setDepartmentName(d.getName());
+        setParentId(d.getParentExternalId());
+        setHeadId(d.getHeadId());
     }
 }

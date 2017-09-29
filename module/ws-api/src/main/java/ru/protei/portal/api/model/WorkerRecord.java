@@ -47,8 +47,7 @@ public class WorkerRecord {
 
     private String positionName;
 
-    public WorkerRecord() {
-    }
+    public WorkerRecord() {}
 
     public WorkerRecord(Person p) {
         copy (p);
@@ -320,8 +319,8 @@ public class WorkerRecord {
         copy(w.getPerson());
         setWorkerId(w.getExternalId());
         setDepartmentId(w.getDepartment().getExternalId());
-        setPositionName(w.getPosition() != null ? w.getPosition().getName() : null);
-        setHireDate(w.getHireDate() != null ? HelperService.DATE.format (w.getHireDate()) : null);
+        setPositionName(w.getPosition() == null ? null : w.getPosition().getName());
+        setHireDate(w.getHireDate() == null ? null : HelperService.DATE.format (w.getHireDate()));
         setHireOrderNo(w.getHireOrderNo());
         setActive(w.getActiveFlag());
     }

@@ -99,22 +99,35 @@ public class WorkerController {
         return null;
     }
 
-/*
+
     @RequestMapping(method = RequestMethod.GET, value = "/get.department")
-    public @ResponseBody DepartmentRecord getDepartment() {
+    public @ResponseBody DepartmentRecord getDepartment(@RequestParam(name = "id") Long id, @RequestParam(name = "companyCode") String companyCode) {
 
         logger.debug("=== getDepartment ===");
+        logger.debug("=== id = " + id);
 
-        DepartmentRecord departmentRecord = new DepartmentRecord();
-        departmentRecord.setCompanyCode("protei");
-        departmentRecord.setDepartmentId(1L);
-        departmentRecord.setDepartmentName("Department Name");
-        departmentRecord.setHeadId(1L);
-        departmentRecord.setParentId(null);
-        return departmentRecord;
+        try {
+
+            String companyDecode = URLDecoder.decode(companyCode, "UTF-8");
+            logger.debug("=== companyCode = " + companyDecode);
+
+            if (id != null && HelperFunc.isNotEmpty(companyDecode)) {
+                CompanyHomeGroupItem item = companyGroupHomeDAO.getByExternalCode(companyDecode.trim());
+                if (item != null) {
+                    CompanyDepartment department = companyDepartmentDAO.getByExternalId(id, item.getCompanyId());
+                    if (department != null) {
+                        return new DepartmentRecord(department);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.error ("error while get worker", e);
+        }
+
+        return null;
     }
 
-
+/*
     @RequestMapping(method = RequestMethod.GET, value = "/get.result")
     public @ResponseBody ServiceResult getServiceResult() {
 
@@ -481,7 +494,7 @@ public class WorkerController {
 
             if (photo == null) {
                 logger.debug("=== error result, " + En_ErrorCode.EMPTY_PHOTO.getMessage());
-                return ServiceResult.failResult(En_ErrorCode.EMPTY_PHOTO.getCode(), En_ErrorCode.EMPTY_PHOTO.getMessage(), photo.getId());
+                return ServiceResult.failResult(En_ErrorCode.EMPTY_PHOTO.getCode(), En_ErrorCode.EMPTY_PHOTO.getMessage(), null);
             }
 
             if (photo.getId() < 0) {
@@ -864,7 +877,7 @@ public class WorkerController {
 
     private WorkerPosition getValidPosition(String positionName, Long companyId) {
 
-        WorkerPosition position = workerPositionDAO.getByName(positionName, companyId);
+        WorkerPosition position = workerPositionDAO.getByName(positionName.trim(), companyId);
 
         if (position != null)
             return position;
