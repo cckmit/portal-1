@@ -18,12 +18,14 @@ public class DecimalNumberDAO_Impl extends PortalBaseJdbcDAO<DecimalNumber > imp
 
     @Override
     public boolean checkIfExist( DecimalNumber number ) {
-        String condition = "org_code=? and classifier_code=? AND reg_number=?";
+        String condition = "org_code=? and classifier_code=? AND reg_number=? ";
         List<Object> args = new ArrayList<>( Arrays.asList( number.getOrganizationCode().name(), number.getClassifierCode(), number.getRegisterNumber() ) );
 
         if ( number.getModification() != null ) {
             condition += " AND modification_number=?";
             args.add( number.getModification() );
+        } else {
+            condition += " AND modification_number IS NULL";
         }
 
         List< DecimalNumber > numbers = getListByCondition( condition, args );
@@ -52,10 +54,15 @@ public class DecimalNumberDAO_Impl extends PortalBaseJdbcDAO<DecimalNumber > imp
 
         sql.append( ") a " +
                 "     LEFT JOIN decimal_number b ON b.reg_number = a.reg_number" +
-                "                                   AND classifier_code=? " +
                 "                                   AND org_code=? " +
+                "                                   AND classifier_code=? " +
                 "WHERE b.reg_number IS NULL");
 
+        if (!filter.getExcludeNumbers().isEmpty()) {
+            sql.append(" AND a.reg_number NOT IN (");
+            sql.append(filter.getExcludeNumbers().stream().map( String::valueOf ).collect(Collectors.joining(",")));
+            sql.append(")");
+        }
         return jdbcTemplate.queryForObject(sql.toString(), Integer.class,
                 filter.getNumber().getOrganizationCode(), filter.getNumber().getClassifierCode(),
                 filter.getNumber().getOrganizationCode(), filter.getNumber().getClassifierCode());
@@ -65,7 +72,7 @@ public class DecimalNumberDAO_Impl extends PortalBaseJdbcDAO<DecimalNumber > imp
     public Integer getNextAvailableModification(DecimalNumberQuery filter) {
         StringBuilder sql = new StringBuilder("SELECT MIN(a.modification_number) " +
                 "FROM (SELECT modification_number+1 AS modification_number " +
-                "      FROM decimal_number WHERE org_code=? AND classifier_code=? AND reg_number=?" +
+                "      FROM decimal_number WHERE org_code=? AND classifier_code=? AND reg_number=? " +
                 "      UNION SELECT 1 ");
 
         if (!filter.getExcludeNumbers().isEmpty()) {
@@ -81,6 +88,13 @@ public class DecimalNumberDAO_Impl extends PortalBaseJdbcDAO<DecimalNumber > imp
                 "                                   AND classifier_code=? " +
                 "                                   AND reg_number=? " +
                 "WHERE b.modification_number IS NULL");
+
+        if (!filter.getExcludeNumbers().isEmpty()) {
+            sql.append(" AND a.modification_number NOT IN (");
+            sql.append(filter.getExcludeNumbers().stream().map( String::valueOf ).collect(Collectors.joining(",")));
+            sql.append(")");
+        }
+
         return jdbcTemplate.queryForObject(sql.toString(), Integer.class,
                 filter.getNumber().getOrganizationCode(), filter.getNumber().getClassifierCode(), filter.getNumber().getRegisterNumber(),
                 filter.getNumber().getOrganizationCode(), filter.getNumber().getClassifierCode(), filter.getNumber().getRegisterNumber());
