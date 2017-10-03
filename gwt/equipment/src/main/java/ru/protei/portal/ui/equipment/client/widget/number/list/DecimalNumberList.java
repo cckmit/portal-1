@@ -71,7 +71,7 @@ public class DecimalNumberList
 
     @Override
     public void onGetNextNumber( DecimalNumberBox box ) {
-        DecimalNumberQuery query = makeQuery( box.getValue(), getUsedRegNumbersByClassifier( box.getValue() ) );
+        DecimalNumberQuery query = new DecimalNumberQuery( box.getValue(), getUsedRegNumbersByClassifier( box.getValue() ) );
 
         dataProvider.getNextAvailableRegisterNumber( query, new RequestCallback< Integer >() {
             @Override
@@ -151,7 +151,7 @@ public class DecimalNumberList
 
     private void getNextModification( DecimalNumberBox box, boolean needCreareNewBox ) {
         DecimalNumber value = box.getValue();
-        DecimalNumberQuery query = makeQuery( value, getUsedModificationsByClassifierAndRegNumber( value ) );
+        DecimalNumberQuery query = new DecimalNumberQuery( box.getValue(), getUsedModificationsByClassifierAndRegNumber( value ) );
 
         dataProvider.getNextAvailableModification( query, new RequestCallback< Integer>() {
             @Override
@@ -167,7 +167,6 @@ public class DecimalNumberList
                     values.add( newNumber );
                     createBoxAndFillValue( newNumber );
                 } else {
-                    DecimalNumber value = box.getValue();
                     value.setModification( modification );
                     box.setValue( value );
                 }
@@ -227,16 +226,6 @@ public class DecimalNumberList
                 }
             }
         } );
-    }
-
-    private DecimalNumberQuery makeQuery( DecimalNumber value, Set<Integer> excludeNumbers ) {
-        DecimalNumberQuery query = new DecimalNumberQuery();
-        query.setClassifierCode( value.getClassifierCode() );
-        query.setOrganizationCode( value.getOrganizationCode() );
-        query.setRegisterNumber( value.getRegisterNumber() );
-        query.setExcludeNumbers( excludeNumbers );
-
-        return query;
     }
 
     private boolean numberExists(DecimalNumber number) {

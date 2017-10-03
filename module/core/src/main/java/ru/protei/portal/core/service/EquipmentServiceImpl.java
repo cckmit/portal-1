@@ -81,12 +81,22 @@ public class EquipmentServiceImpl implements EquipmentService {
 
     @Override
     public CoreResponse<Integer> getNextAvailableDecimalNumber( AuthToken token, DecimalNumberQuery query ) {
+        if ( query == null || query.getNumber() == null
+                || query.getNumber().getOrganizationCode() == null
+                || query.getNumber().getClassifierCode() == null ) {
+            return new CoreResponse<Integer>().error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
         Integer regNumber = decimalNumberDAO.getNextAvailableRegNumber(query);
         return new CoreResponse<Integer>().success( regNumber );
     }
 
     @Override
     public CoreResponse<Integer> getNextAvailableDecimalNumberModification( AuthToken token, DecimalNumberQuery query ) {
+        if ( query == null || query.getNumber() == null || query.getNumber().isEmpty() ) {
+            return new CoreResponse<Integer>().error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
         Integer modification = decimalNumberDAO.getNextAvailableModification(query);
         return new CoreResponse<Integer>().success( modification );
     }
@@ -99,7 +109,6 @@ public class EquipmentServiceImpl implements EquipmentService {
 
     @Override
     public CoreResponse<Long> copyEquipment( AuthToken token, Long equipmentId, String newName, Long authorId ) {
-
         if (equipmentId == null || newName == null) {
             return new CoreResponse<Long>().error(En_ResultStatus.INCORRECT_PARAMS);
         }

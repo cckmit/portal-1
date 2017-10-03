@@ -1,9 +1,8 @@
 package ru.protei.portal.core.model.struct;
 
-import ru.protei.portal.core.model.dict.En_OrganizationCode;
+import ru.protei.portal.core.model.ent.DecimalNumber;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -11,15 +10,9 @@ import java.util.Set;
  */
 public class DecimalNumberQuery implements Serializable {
 
-    private En_OrganizationCode organizationCode;
+    private DecimalNumber number;
 
     private Set<Integer> excludeNumbers;
-
-    private Integer classifierCode;
-
-    private Integer registerNumber;
-
-    public void setOrganizationCode(En_OrganizationCode organizationCode) { this.organizationCode = organizationCode;}
 
     public void setExcludeNumbers(Set<Integer> excludeNumbers) {
         this.excludeNumbers = excludeNumbers;
@@ -29,23 +22,19 @@ public class DecimalNumberQuery implements Serializable {
         return excludeNumbers;
     }
 
-    public Integer getClassifierCode() {
-        return classifierCode;
+    public DecimalNumber getNumber() {
+        return number;
     }
 
-    public void setClassifierCode(Integer classifierCode) {
-        this.classifierCode = classifierCode;
+    public void setNumber( DecimalNumber number ) {
+        this.number = number;
     }
 
-    public En_OrganizationCode getOrganizationCode() {
-        return organizationCode;
+    public DecimalNumberQuery( DecimalNumber number, Set< Integer > excludeNumbers ) {
+        this.number = number;
+        this.excludeNumbers = excludeNumbers;
     }
 
-    public void setRegisterNumber(Integer registerNumber) {
-        this.registerNumber = registerNumber;
-    }
-
-    public Integer getRegisterNumber() {
-        return registerNumber;
+    public DecimalNumberQuery() {
     }
 }
