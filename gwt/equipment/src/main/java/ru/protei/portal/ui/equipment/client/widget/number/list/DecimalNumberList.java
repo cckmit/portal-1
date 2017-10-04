@@ -169,6 +169,7 @@ public class DecimalNumberList
                 } else {
                     value.setModification( modification );
                     box.setValue( value );
+                    box.clearBoxState();
                 }
             }
         } );

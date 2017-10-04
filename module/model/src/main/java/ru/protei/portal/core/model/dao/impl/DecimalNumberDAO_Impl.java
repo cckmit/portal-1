@@ -64,8 +64,8 @@ public class DecimalNumberDAO_Impl extends PortalBaseJdbcDAO<DecimalNumber > imp
             sql.append(")");
         }
         return jdbcTemplate.queryForObject(sql.toString(), Integer.class,
-                filter.getNumber().getOrganizationCode(), filter.getNumber().getClassifierCode(),
-                filter.getNumber().getOrganizationCode(), filter.getNumber().getClassifierCode());
+                filter.getNumber().getOrganizationCode().name(), filter.getNumber().getClassifierCode(),
+                filter.getNumber().getOrganizationCode().name(), filter.getNumber().getClassifierCode());
     }
 
     @Override
@@ -96,8 +96,8 @@ public class DecimalNumberDAO_Impl extends PortalBaseJdbcDAO<DecimalNumber > imp
         }
 
         return jdbcTemplate.queryForObject(sql.toString(), Integer.class,
-                filter.getNumber().getOrganizationCode(), filter.getNumber().getClassifierCode(), filter.getNumber().getRegisterNumber(),
-                filter.getNumber().getOrganizationCode(), filter.getNumber().getClassifierCode(), filter.getNumber().getRegisterNumber());
-    }
+                filter.getNumber().getOrganizationCode().name(), filter.getNumber().getClassifierCode(), filter.getNumber().getRegisterNumber(),
+                filter.getNumber().getOrganizationCode().name(), filter.getNumber().getClassifierCode(), filter.getNumber().getRegisterNumber());
+   }
 
 }
