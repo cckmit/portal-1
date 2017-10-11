@@ -1,15 +1,15 @@
 /*
  * Федеральные округа
  */
-insert into location (ID, TYPE_ID, name, code) values (1, 1, 'Центральный Федеральный Округ','30', 'ЦФО');
-insert into location (ID, TYPE_ID, name, code) values (2, 1, 'Северо-Западный Федеральный Округ','СЗФО');
-insert into location (ID, TYPE_ID, name, code) values (3, 1, 'Южный Федеральный Округ','ЮФО');
-insert into location (ID, TYPE_ID, name, code) values (4, 1, 'Северо-Кавказский Округ','СКФО');
-insert into location (ID, TYPE_ID, name, code) values (5, 1, 'Приволжский Федеральный Округ','ПФО');
-insert into location (ID, TYPE_ID, name, code) values (6, 1, 'Уральский Федеральный Округ','УФО');
-insert into location (ID, TYPE_ID, name, code) values (7, 1, 'Сибирский Федеральный Округ','СФО');
-insert into location (ID, TYPE_ID, name, code) values (8, 1, 'Дальневосточный Федеральный Округ','ДВФО');
-insert into location (ID, TYPE_ID, name, code) values (9, 1, 'Крымский Федеральный Округ','КФО');
+insert into location (ID, TYPE_ID, name, code, path) values (1, 1, 'Центральный Федеральный Округ', 'ЦФО', '');
+insert into location (ID, TYPE_ID, name, code, path) values (2, 1, 'Северо-Западный Федеральный Округ','СЗФО', '');
+insert into location (ID, TYPE_ID, name, code, path) values (3, 1, 'Южный Федеральный Округ','ЮФО', '');
+insert into location (ID, TYPE_ID, name, code, path) values (4, 1, 'Северо-Кавказский Округ','СКФО', '');
+insert into location (ID, TYPE_ID, name, code, path) values (5, 1, 'Приволжский Федеральный Округ','ПФО', '');
+insert into location (ID, TYPE_ID, name, code, path) values (6, 1, 'Уральский Федеральный Округ','УФО', '');
+insert into location (ID, TYPE_ID, name, code, path) values (7, 1, 'Сибирский Федеральный Округ','СФО', '');
+insert into location (ID, TYPE_ID, name, code, path) values (8, 1, 'Дальневосточный Федеральный Округ','ДВФО', '');
+insert into location (ID, TYPE_ID, name, code, path) values (9, 1, 'Крымский Федеральный Округ','КФО', '');
 
 /*
  * Регионы

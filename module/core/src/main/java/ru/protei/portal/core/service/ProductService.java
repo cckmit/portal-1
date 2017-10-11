@@ -22,7 +22,6 @@ public interface ProductService {
     @Privileged( En_Privilege.PRODUCT_VIEW )
     CoreResponse<Long> count(AuthToken token, ProductQuery query);
 
-    @Privileged( En_Privilege.PRODUCT_VIEW )
     CoreResponse<List<ProductShortView>> shortViewList( AuthToken token, ProductQuery query );
 
     @Privileged( En_Privilege.PRODUCT_VIEW )
@@ -42,6 +41,5 @@ public interface ProductService {
     @Privileged( En_Privilege.PRODUCT_VIEW )
     CoreResponse<Boolean> checkUniqueProductByName( AuthToken token, String name, Long id);
 
-    @Privileged( En_Privilege.PRODUCT_VIEW )
     CoreResponse<List<ProductDirectionInfo>> productDirectionList( AuthToken token, ProductDirectionQuery query );
 }

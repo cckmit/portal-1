@@ -4,6 +4,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.query.EquipmentQuery;
 import ru.protei.portal.core.model.ent.DecimalNumber;
+import ru.protei.portal.core.model.struct.DecimalNumberQuery;
 
 import java.util.List;
 
@@ -40,14 +41,15 @@ public interface EquipmentServiceAsync {
 
     /**
      * Получение следующего доступного номера
-     * @param number
+     * @param filter
      * @param callback
      */
-    void getNextAvailableRegisterNumber( DecimalNumber number, AsyncCallback<DecimalNumber> callback );
+    void getNextAvailableRegisterNumber( DecimalNumberQuery filter, AsyncCallback<Integer> callback );
 
-    void getNextAvailableRegisterNumberModification( DecimalNumber number, AsyncCallback<DecimalNumber> callback );
+    void getNextAvailableRegisterNumberModification( DecimalNumberQuery filter, AsyncCallback<Integer> callback );
 
     void copyEquipment( Long equipmentId, String newName, AsyncCallback<Long> async );
 
     void removeEquipment( Long equipmentId, AsyncCallback<Boolean> async );
+
 }

@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.EquipmentQuery;
+import ru.protei.portal.core.model.struct.DecimalNumberQuery;
 import ru.protei.portal.ui.common.client.service.EquipmentService;
 import ru.protei.portal.ui.common.server.service.SessionService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
@@ -151,38 +152,32 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
-    public DecimalNumber getNextAvailableRegisterNumber( DecimalNumber number ) throws RequestFailedException {
-        if (number == null) {
-            log.warn("null number in request");
+    public Integer getNextAvailableRegisterNumber( DecimalNumberQuery filter ) throws RequestFailedException {
+        if (filter.getExcludeNumbers() == null) {
+            log.warn("null numbers in request");
             throw new RequestFailedException(En_ResultStatus.INTERNAL_ERROR);
         }
 
-        log.debug( "get next available decimal number: organizationCode={}, classifierCode={}, regNum={}",
-                number.getOrganizationCode(), number.getClassifierCode(), number.getRegisterNumber() );
-
-        CoreResponse<DecimalNumber> response = equipmentService.getNextAvailableDecimalNumber( getDescriptorAndCheckSession().makeAuthToken(), number );
+        CoreResponse<Integer> response = equipmentService.getNextAvailableDecimalNumber( getDescriptorAndCheckSession().makeAuthToken(), filter );
         if (response.isOk()) {
             log.debug("get next available decimal number, result: {}", response.getData());
-            return number;
+            return response.getData();
         }
 
         throw new RequestFailedException(response.getStatus());
     }
 
     @Override
-    public DecimalNumber getNextAvailableRegisterNumberModification( DecimalNumber number ) throws RequestFailedException  {
-        if (number == null) {
-            log.warn("null number in request");
+    public Integer getNextAvailableRegisterNumberModification( DecimalNumberQuery filter ) throws RequestFailedException  {
+        if (filter.getExcludeNumbers() == null) {
+            log.warn("null mods in request");
             throw new RequestFailedException(En_ResultStatus.INTERNAL_ERROR);
         }
 
-        log.debug( "get next available decimal number modification: organizationCode={}, classifierCode={}, regNum={}",
-                number.getOrganizationCode(), number.getClassifierCode(), number.getRegisterNumber() );
-
-        CoreResponse<DecimalNumber> response = equipmentService.getNextAvailableDecimalNumberModification( getDescriptorAndCheckSession().makeAuthToken(), number );
+        CoreResponse<Integer> response = equipmentService.getNextAvailableDecimalNumberModification( getDescriptorAndCheckSession().makeAuthToken(), filter );
         if (response.isOk()) {
             log.debug("get next available decimal number, result: {}", response.getData());
-            return number;
+            return response.getData();
         }
 
         throw new RequestFailedException(response.getStatus());

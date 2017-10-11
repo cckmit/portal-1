@@ -1571,8 +1571,9 @@ a {
       min-width: 50px;
     }
 
-    .dn-org-code button {
-      width: 80px;
+    .dn-org-code {
+      width: 55px;
+      background: white;
     }
 
     .dn-reserve.btn {
@@ -1873,5 +1874,10 @@ ul.privileges {
   line-height: 8px;
   bottom: -15px;
   left: -30px;
+}
 
+.dn-add-button {
+  float: right;
+  padding-bottom: 12px;
+  padding-right: 14px;
 }

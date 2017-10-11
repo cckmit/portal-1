@@ -2,6 +2,7 @@ package ru.protei.portal.ui.equipment.client.provider;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.struct.DecimalNumberQuery;
 import ru.protei.portal.ui.common.client.service.EquipmentServiceAsync;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 
@@ -16,13 +17,13 @@ public class DecimalNumberDataProvider implements AbstractDecimalNumberDataProvi
     }
 
     @Override
-    public void getNextAvailableRegisterNumber( DecimalNumber number, AsyncCallback<DecimalNumber> callback ) {
-        equipmentService.getNextAvailableRegisterNumber( number, callback );
+    public void getNextAvailableRegisterNumber( DecimalNumberQuery filter, AsyncCallback<Integer> callback ) {
+        equipmentService.getNextAvailableRegisterNumber( filter, callback );
     }
 
     @Override
-    public void getNextAvailableRegisterNumberModification( DecimalNumber number, AsyncCallback< DecimalNumber > callback ) {
-        equipmentService.getNextAvailableRegisterNumberModification( number, callback );
+    public void getNextAvailableModification( DecimalNumberQuery filter, AsyncCallback< Integer > callback ) {
+        equipmentService.getNextAvailableRegisterNumberModification( filter, callback );
     }
 
     @Inject

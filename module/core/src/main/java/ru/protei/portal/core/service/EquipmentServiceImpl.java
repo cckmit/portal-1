@@ -8,13 +8,12 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.DecimalNumberDAO;
 import ru.protei.portal.core.model.dao.EquipmentDAO;
-import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.Equipment;
-import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.query.EquipmentQuery;
+import ru.protei.portal.core.model.struct.DecimalNumberQuery;
 import ru.protei.winter.core.utils.collections.CollectionUtils;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
@@ -81,43 +80,25 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
-    public CoreResponse<DecimalNumber> getNextAvailableDecimalNumber( AuthToken token, DecimalNumber number ) {
-        Integer maxNum = decimalNumberDAO.getMaxRegisterNumber( number );
-        number.setModification( null );
-
-        if ( maxNum == null ) {
-            number.setRegisterNumber( 1 );
-            return new CoreResponse<DecimalNumber>().success( number );
+    public CoreResponse<Integer> getNextAvailableDecimalNumber( AuthToken token, DecimalNumberQuery query ) {
+        if ( query == null || query.getNumber() == null
+                || query.getNumber().getOrganizationCode() == null
+                || query.getNumber().getClassifierCode() == null ) {
+            return new CoreResponse<Integer>().error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        Integer nextAvailableRegNumber = decimalNumberDAO.getNextAvailableRegNumber(number);
-
-        boolean ifExist = true;
-        while ( ifExist && nextAvailableRegNumber < 999 ) {
-            number.setRegisterNumber(nextAvailableRegNumber);
-            ifExist = decimalNumberDAO.checkIfExist( number );
-        }
-
-        return new CoreResponse<DecimalNumber>().success( number );
+        Integer regNumber = decimalNumberDAO.getNextAvailableRegNumber(query);
+        return new CoreResponse<Integer>().success( regNumber );
     }
 
     @Override
-    public CoreResponse<DecimalNumber> getNextAvailableDecimalNumberModification( AuthToken token, DecimalNumber number ) {
-        Integer maxNum = decimalNumberDAO.getMaxModification( number );
-
-        if ( maxNum == null ) {
-            number.setModification( 1 );
-            return new CoreResponse<DecimalNumber>().success( number );
+    public CoreResponse<Integer> getNextAvailableDecimalNumberModification( AuthToken token, DecimalNumberQuery query ) {
+        if ( query == null || query.getNumber() == null || query.getNumber().isEmpty() ) {
+            return new CoreResponse<Integer>().error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        boolean ifExist = true;
-        while ( ifExist && maxNum < 999 ) {
-            maxNum += 1;
-            number.setModification( maxNum );
-            ifExist = decimalNumberDAO.checkIfExist( number );
-        }
-
-        return new CoreResponse<DecimalNumber>().success( number );
+        Integer modification = decimalNumberDAO.getNextAvailableModification(query);
+        return new CoreResponse<Integer>().success( modification );
     }
 
     @Override
@@ -128,7 +109,6 @@ public class EquipmentServiceImpl implements EquipmentService {
 
     @Override
     public CoreResponse<Long> copyEquipment( AuthToken token, Long equipmentId, String newName, Long authorId ) {
-
         if (equipmentId == null || newName == null) {
             return new CoreResponse<Long>().error(En_ResultStatus.INCORRECT_PARAMS);
         }

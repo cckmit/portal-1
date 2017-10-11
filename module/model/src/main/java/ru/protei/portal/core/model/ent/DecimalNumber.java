@@ -4,6 +4,7 @@ import ru.protei.portal.core.model.dict.En_OrganizationCode;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * Децимальный номер оборудования
@@ -103,6 +104,19 @@ public class DecimalNumber implements Serializable {
 
     public boolean isValid() {
         return true;
+    }
+
+    public boolean isEmpty() {
+        return organizationCode == null
+                || ( classifierCode == null || classifierCode < 1 )
+                || ( registerNumber == null || registerNumber < 1 );
+    }
+
+    public boolean isSameNumber( DecimalNumber number ) {
+        return  organizationCode == number.getOrganizationCode()
+                && Objects.equals( modification, number.getModification() )
+                && Objects.equals( classifierCode, number.getClassifierCode() )
+                && Objects.equals( registerNumber, number.getRegisterNumber() );
     }
 
     public DecimalNumber( En_OrganizationCode organizationCode, Integer classifierCode, Integer registerNumber, Integer modification ) {

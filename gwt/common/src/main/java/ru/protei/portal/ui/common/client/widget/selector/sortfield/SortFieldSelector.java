@@ -42,7 +42,6 @@ public class SortFieldSelector extends ButtonSelector< En_SortField > {
                 addOption( lang.equipmentName(), En_SortField.name );
                 addOption( lang.equipmentNameBySldWrks(), En_SortField.equipment_name_sldwrks );
                 addOption( lang.equipmentProject(), En_SortField.project );
-                addOption( lang.equipmentPrimaryUse(), En_SortField.primary_use);
                 break;
             case ACCOUNT:
                 addOption( lang.accountLogin(), En_SortField.ulogin );

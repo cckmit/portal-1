@@ -9,6 +9,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_EquipmentType;
 import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.EquipmentEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
@@ -35,6 +36,7 @@ public abstract class EquipmentEditActivity
 
     @Event
     public void onShow( EquipmentEvents.Edit event ) {
+        view.setVisibilitySettingsForCreated(! (event.id == null));
         if( event.id == null ) {
             Equipment newEquipment = new Equipment();
             fillView(newEquipment);
@@ -110,6 +112,7 @@ public abstract class EquipmentEditActivity
 
         view.nameSldWrks().setValue( equipment.getNameSldWrks() );
         view.name().setValue( equipment.getName() );
+        view.date().setValue(DateFormatter.formatDateTime(equipment.getCreated()));
         view.comment().setValue( equipment.getComment() );
         view.type().setValue( isCreate ? En_EquipmentType.DETAIL : equipment.getType() );
         view.stage().setValue( equipment.getStage() );

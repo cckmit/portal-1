@@ -10,22 +10,22 @@ import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.events.AddEvent;
 import ru.protei.portal.ui.common.client.events.AddHandler;
 import ru.protei.portal.ui.common.client.events.HasAddHandlers;
+import ru.protei.portal.ui.common.client.lang.En_OrganizationCodeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.mask.MaskedTextBox;
 import ru.protei.portal.core.model.ent.DecimalNumber;
-import ru.protei.portal.core.model.dict.En_OrganizationCode;
 import ru.protei.portal.ui.common.client.widget.selector.event.*;
-import ru.protei.portal.ui.common.shared.model.RequestCallback;
-import ru.protei.portal.ui.equipment.client.provider.AbstractDecimalNumberDataProvider;
-import ru.protei.portal.ui.equipment.client.widget.selector.OrganizationCodeSelector;
+import ru.protei.portal.ui.equipment.client.widget.number.list.DecimalNumberList;
+import ru.protei.winter.core.utils.StringUtils;
 import ru.protei.winter.web.common.client.common.DisplayStyle;
 
-import java.util.Set;
+import java.util.Objects;
 
 /**
  * Вид виджета децимального номера
@@ -39,6 +39,7 @@ public class DecimalNumberBox
         classifierCode.getElement().setAttribute( "placeholder", lang.equipmentClassifierCode().toLowerCase() );
         regNum.getElement().setAttribute( "placeholder", lang.equipmentRegisterNumber().toLowerCase() );
         regNumModification.getElement().setAttribute( "placeholder", lang.equipmentRegisterNumberModification().toLowerCase() );
+        organizationCode.setEnabled( false );
     }
 
     @Override
@@ -59,14 +60,15 @@ public class DecimalNumberBox
             value = new DecimalNumber();
         }
 
-        organizationCode.setValue( value.getOrganizationCode() );
+        organizationCode.setText(organizationCodeLang.getName(value.getOrganizationCode()));
         classifierCode.setText( value.getClassifierCode() == null ? null : NumberFormat.getFormat("000000").format( value.getClassifierCode() ) );
         regNum.setText( value.getRegisterNumber() == null ? null : NumberFormat.getFormat("000").format( value.getRegisterNumber() ) );
         regNumModification.setText( value.getModification() == null ? null : NumberFormat.getFormat("00").format( value.getModification() ) );
-        checkNextButtonState();
         isReserve.setValue( value.isReserve() );
 
+        checkNextButtonState();
         clearMessage();
+
         if ( fireEvents ) {
             ValueChangeEvent.fire( this, decimalNumber );
         }
@@ -99,50 +101,43 @@ public class DecimalNumberBox
         regNum.setEnabled( enabled );
     }
 
-    @UiHandler( "regNum" )
-    public void onRegNumChanged( KeyUpEvent event ) {
-        value.setRegisterNumber( Integer.parseInt( regNum.getValue() ) );
-        ValueChangeEvent.fire( this, value );
-        checkNextButtonState();
-        if ( regNum.getText().length() == 3 ) {
-            checkExistNumber();
-            return;
-        }
-
-        clearMessage();
+    public void setHandler( DecimalNumberList boxHandler) {
+        this.handler = boxHandler;
     }
 
-    @UiHandler( "classifierCode" )
-    public void onClassifierCodeChanged( KeyUpEvent event ) {
-        value.setClassifierCode( Integer.parseInt( classifierCode.getValue() ) );
-        ValueChangeEvent.fire( this, value );
-        checkNextButtonState();
+    public void showGetNextNumberMessage() {
+        msg.addClassName( "hide" );
+        getNumberMsg.removeClassName( "hide" );
+
+        markBoxAsError( true );
+    }
+
+    public void showMessage( String text, DisplayStyle style ) {
+        msg.removeClassName( "hide" );
+        getNumberMsg.addClassName( "hide" );
+        msg.setClassName( "text text-" + style.name().toLowerCase() );
+        msg.setInnerText( text );
+
+        markBoxAsError( style == DisplayStyle.DANGER );
+    }
+
+    public void clearBoxState(){
+        clearMessage();
         markBoxAsError( false );
-        if ( classifierCode.getText().length() == 6 ) {
-            fillNextAvailableNumber();
-            return;
-        }
-
-        clearMessage();
     }
 
-    @UiHandler( "regNumModification" )
-    public void onRegNumModificationChanged( KeyUpEvent event ) {
-        String modificationString = regNumModification.getValue();
-        this.value.setModification( modificationString == null || modificationString.isEmpty() ? null : Integer.parseInt( modificationString ) );
-        ValueChangeEvent.fire( this, this.value );
-
-        checkExistNumber();
-        checkNextButtonState();
-        if (regNumModification.getText().length() == 2) {
-            setFocusToNextButton(true);
-        }
+    @UiHandler( {"classifierCode", "regNum", "regNumModification"} )
+    public void onNumberChanged( KeyUpEvent event ) {
+        changeNumberTimer.cancel();
+        changeNumberTimer.schedule( 300 );
     }
 
     @UiHandler( "getNextNumber" )
     public void onGetNextNumber( ClickEvent event ) {
         event.preventDefault();
-        fillNextAvailableNumber();
+        if ( handler != null ) {
+            handler.onGetNextNumber( this );
+        }
     }
 
     @UiHandler( "isReserve" )
@@ -150,15 +145,12 @@ public class DecimalNumberBox
         value.setReserve( isReserve.getValue() );
     }
 
-    @UiHandler( "organizationCode" )
-    public void onOrganizationCodeChanged( ValueChangeEvent<En_OrganizationCode> event ) {
-        value.setOrganizationCode( organizationCode.getValue() );
-    }
-
     @UiHandler( "getNextModification" )
     public void onGetNextNumberModification( ClickEvent event ) {
         event.preventDefault();
-        fillNextAvailableNumberModification();
+        if ( handler != null ) {
+            handler.onGetNextModification( this );
+        }
     }
 
     @UiHandler( "remove" )
@@ -171,43 +163,16 @@ public class DecimalNumberBox
             AddEvent.fire(this);
     }
 
-    public HasEnabled enabledOrganizationCode() {
-        return organizationCode;
+    public void setFocusToRegisterNumberField( boolean isFocused ) {
+        regNum.setFocus( isFocused );
     }
 
-    public void fillOrganizationCodesOption( Set< En_OrganizationCode > availableValues ) {
-        organizationCode.fillOptions( availableValues );
-    }
-
-    public void setFocusToNextButton(boolean isFocused) {
+    private void setFocusToNextButton(boolean isFocused) {
         next.setFocus(isFocused);
     }
 
-    private void checkExistNumber() {
-        dataProvider.checkIfExistDecimalNumber( value, new RequestCallback< Boolean >() {
-            @Override
-            public void onError( Throwable throwable ) {
-                showMessage( lang.equipmentErrorCheckNumber(), DisplayStyle.DANGER );
-            }
-
-            @Override
-            public void onSuccess( Boolean result ) {
-                markBoxAsError( result );
-                if ( result ) {
-                    showGetNextNumberMessage();
-                    return;
-                }
-
-                showMessage( lang.equipmentDecimalNumberEmpty(), DisplayStyle.SUCCESS );
-            }
-        } );
-    }
-
     private void checkNextButtonState() {
-        boolean stateCondition = regNumModification.getText().length() == 2
-                && classifierCode.getText().length() == 6
-                && regNum.getText().length() == 3;
-        next.setEnabled(stateCondition);
+        next.setEnabled(!value.isEmpty());
     }
 
     private void markBoxAsError( boolean isError ) {
@@ -219,59 +184,18 @@ public class DecimalNumberBox
         container.removeClassName( "has-error" );
     }
 
-    private void fillNextAvailableNumber() {
-        dataProvider.getNextAvailableRegisterNumber( value, new RequestCallback< DecimalNumber>() {
-            @Override
-            public void onError( Throwable throwable ) {
-                showMessage( lang.equipmentErrorGetNextAvailableNumber(), DisplayStyle.DANGER );
-            }
-
-            @Override
-            public void onSuccess( DecimalNumber result ) {
-                markBoxAsError( false );
-                value.setRegisterNumber( result.getRegisterNumber() );
-                regNum.setText( value.getRegisterNumber() == null ? null : NumberFormat.getFormat("000").format( value.getRegisterNumber() ) );
-                showMessage( lang.equipmentDecimalNumberEmpty(), DisplayStyle.SUCCESS );
-            }
-        } );
-    }
-
-    private void fillNextAvailableNumberModification() {
-        dataProvider.getNextAvailableRegisterNumberModification( value, new RequestCallback< DecimalNumber>() {
-            @Override
-            public void onError( Throwable throwable ) {
-                showMessage( lang.equipmentErrorGetNextAvailableNumber(), DisplayStyle.DANGER );
-            }
-
-            @Override
-            public void onSuccess( DecimalNumber result ) {
-                markBoxAsError( false );
-                value.setModification( result.getModification() );
-                regNumModification.setText( value.getModification() == null ? null : NumberFormat.getFormat("00").format( value.getModification() ) );
-                showMessage( lang.equipmentDecimalNumberEmpty(), DisplayStyle.SUCCESS );
-            }
-        } );
-    }
-
-    private void showGetNextNumberMessage() {
-        msg.addClassName( "hide" );
-        getNumberMsg.removeClassName( "hide" );
-    }
-    private void showMessage( String text, DisplayStyle style ) {
-        msg.removeClassName( "hide" );
-        getNumberMsg.addClassName( "hide" );
-        msg.setClassName( "text text-" + style.name().toLowerCase() );
-        msg.setInnerText( text );
-    }
     private void clearMessage(){
         getNumberMsg.addClassName( "hide" );
         msg.addClassName( "hide" );
         msg.setInnerText( "" );
     }
-    @Inject
-    @UiField(provided = true)
-    OrganizationCodeSelector organizationCode;
 
+    private Integer parseValue( String value ) {
+        return value == null || value.isEmpty() ? null : Integer.parseInt( value );
+    }
+
+    @UiField
+    TextBox organizationCode;
     @UiField
     MaskedTextBox regNumModification;
     @UiField
@@ -283,23 +207,45 @@ public class DecimalNumberBox
     @UiField
     @Inject
     Lang lang;
-
     @UiField
     DivElement container;
-
     @UiField
     SpanElement getNumberMsg;
-
     @UiField
     ToggleButton isReserve;
-
     @UiField
     Button next;
 
     @Inject
-    AbstractDecimalNumberDataProvider dataProvider;
+    private En_OrganizationCodeLang organizationCodeLang;
 
+    private DecimalNumberBoxHandler handler;
     private DecimalNumber value = new DecimalNumber();
+
+    private Timer changeNumberTimer = new Timer() {
+        @Override
+        public void run() {
+            value.setClassifierCode( parseValue( classifierCode.getValue() ) );
+            value.setRegisterNumber( parseValue( regNum.getValue() ));
+            value.setModification( parseValue( regNumModification.getValue() ) );
+
+            checkNextButtonState();
+            ValueChangeEvent.fire( DecimalNumberBox.this, value );
+
+            if ( handler == null ) {
+                return;
+            }
+
+            if ( classifierCode.getText().length() == 6
+                    && regNum.getText().length() < 3 ) {
+                handler.onGetNextNumber( DecimalNumberBox.this );
+            }
+
+            if (regNumModification.getText().length() == 2) {
+                setFocusToNextButton(true);
+            }
+        }
+    };
 
     interface DecimalNumberWidgetUiBinder extends UiBinder<HTMLPanel, DecimalNumberBox> {}
     private static DecimalNumberWidgetUiBinder ourUiBinder = GWT.create( DecimalNumberWidgetUiBinder.class );
