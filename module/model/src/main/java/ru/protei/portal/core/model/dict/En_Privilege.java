@@ -59,7 +59,9 @@ public enum En_Privilege {
     ISSUE_COMPANY_EDIT( ISSUE_COMPANY, EDIT ),
     ISSUE_PRODUCT_EDIT( ISSUE_PRODUCT, EDIT ),
     ISSUE_MANAGER_EDIT( ISSUE_MANAGER, EDIT ),
-    ISSUE_PRIVACY_VIEW( ISSUE_PRIVACY, VIEW );
+    ISSUE_PRIVACY_VIEW( ISSUE_PRIVACY, VIEW ),
+
+    DASHBOARD_ALL_COMPANIES_VIEW( DASHBOARD_ALL_COMPANIES, VIEW );
 
     private final En_PrivilegeEntity entity;
     private final En_PrivilegeAction action;

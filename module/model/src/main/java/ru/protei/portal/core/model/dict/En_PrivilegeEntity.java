@@ -21,7 +21,8 @@ public enum En_PrivilegeEntity {
     ISSUE_COMPANY,
     ISSUE_PRODUCT,
     ISSUE_MANAGER,
-    ISSUE_PRIVACY;
+    ISSUE_PRIVACY,
+    DASHBOARD_ALL_COMPANIES;
 
     public static En_Privilege[] getPrivileges(En_PrivilegeEntity category) {
         switch ( category ) {
@@ -57,6 +58,8 @@ public enum En_PrivilegeEntity {
                 return issueManagerPrivileges;
             case ISSUE_PRIVACY:
                 return issuePrivacyPrivileges;
+            case DASHBOARD_ALL_COMPANIES:
+                return dashboardAllCompaniesPrivileges;
         }
 
         return null;
@@ -124,5 +127,9 @@ public enum En_PrivilegeEntity {
 
     private static final En_Privilege[] issuePrivacyPrivileges = {
         ISSUE_PRIVACY_VIEW
+    };
+
+    private static final En_Privilege[] dashboardAllCompaniesPrivileges = {
+        DASHBOARD_ALL_COMPANIES_VIEW
     };
 }
