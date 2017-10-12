@@ -8,6 +8,7 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.core.service.PolicyService;
 import ru.protei.portal.ui.common.client.common.IssueStates;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
@@ -114,6 +115,9 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
 
     @Inject
     Lang lang;
+
+    @Inject
+    PolicyService policyService;
 
     private AppEvents.InitDetails initDetails;
     private Profile profile;

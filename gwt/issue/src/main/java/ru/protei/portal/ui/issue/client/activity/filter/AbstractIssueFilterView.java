@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.issue.client.activity.filter;
 
+import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
@@ -29,4 +30,6 @@ public interface AbstractIssueFilterView extends IsWidget {
     HasValue< Boolean > sortDir();
     HasValue< String > searchPattern();
     void resetFilter();
+
+    HasEnabled companyEnabled();
 }

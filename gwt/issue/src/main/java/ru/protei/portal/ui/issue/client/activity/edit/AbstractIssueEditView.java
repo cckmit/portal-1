@@ -52,4 +52,9 @@ public interface AbstractIssueEditView extends IsWidget {
 
 
     HasVisibility saveVisibility();
+
+    HasEnabled companyEnabled();
+    HasEnabled productEnabled();
+    HasEnabled managerEnabled();
+    HasVisibility privacyVisibility();
 }

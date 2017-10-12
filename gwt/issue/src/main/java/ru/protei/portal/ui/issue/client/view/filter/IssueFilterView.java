@@ -115,6 +115,11 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         search.setText( "" );
     }
 
+    @Override
+    public HasEnabled companyEnabled() {
+        return company;
+    }
+
     @UiHandler( "resetBtn" )
     public void onResetClicked ( ClickEvent event ) {
         if ( activity != null ) {

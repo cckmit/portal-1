@@ -30,6 +30,15 @@ public class En_PrivilegeEntityLang {
                 return lang.privilegeCategoryRole();
             case OFFICIAL:
                 return lang.privilegeCategoryOfficial();
+            case ISSUE_COMPANY:
+                return lang.privilegeIssueFilterCompany();
+            case ISSUE_PRODUCT:
+                return lang.privilegeIssueProduct();
+            case ISSUE_MANAGER:
+                return lang.privilegeIssueManager();
+            case ISSUE_PRIVACY:
+                return lang.privilegeIssuePrivacy();
+
             default:
                 return lang.unknownField();
         }
