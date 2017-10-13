@@ -1,15 +1,14 @@
 package ru.protei.portal.ui.common.shared.model;
 
 import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.ent.CompanySubscription;
+import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.UserRole;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.Set;
 
 /**
- * Клиентский профиль пользователя
+ * Клиентский профиль пользовател]
  */
 public class Profile implements Serializable {
 
@@ -21,11 +20,9 @@ public class Profile implements Serializable {
 
     private Long id;
 
-    private String companyName;
-
-    private List<CompanySubscription> companySubscriptions;
-
     private Set<En_Privilege> privileges;
+
+    private Company company;
 
     public Set<UserRole> getRoles() {
         return roles;
@@ -67,22 +64,6 @@ public class Profile implements Serializable {
         this.privileges = privileges;
     }
 
-    public String getCompanyName() {
-        return companyName;
-    }
-
-    public void setCompanyName( String companyName ) {
-        this.companyName = companyName;
-    }
-
-    public List< CompanySubscription > getCompanySubscriptions() {
-        return companySubscriptions;
-    }
-
-    public void setCompanySubscriptios( List< CompanySubscription > subscriptions ) {
-        this.companySubscriptions = subscriptions;
-    }
-
     public boolean hasPrivilegeFor( En_Privilege privilege ) {
         if ( privileges == null ) {
             return false;
@@ -93,13 +74,20 @@ public class Profile implements Serializable {
     @Override
     public String toString() {
         return "Profile{" +
-                "roles=" + roles +
-                ", login='" + login + '\'' +
-                ", name='" + name + '\'' +
-                ", id=" + id +
-                ", companyName=" + companyName +
-                ", companySubscriptions=" + companySubscriptions +
-                ", privileges=" + privileges +
-                '}';
+            "roles=" + roles +
+            ", login='" + login + '\'' +
+            ", name='" + name + '\'' +
+            ", id=" + id +
+            ", privileges=" + privileges +
+            ", company=" + company +
+            '}';
+    }
+
+    public void setCompany( Company company ) {
+        this.company = company;
+    }
+
+    public Company getCompany() {
+        return company;
     }
 }

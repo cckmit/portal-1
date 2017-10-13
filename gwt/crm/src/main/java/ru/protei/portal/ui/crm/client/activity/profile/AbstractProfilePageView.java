@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.crm.client.activity.profile;
 
 import com.google.gwt.user.client.ui.HasValue;
+import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.ent.CompanySubscription;
 
@@ -18,4 +19,6 @@ public interface AbstractProfilePageView extends IsWidget {
     void setName( String name );
 
     void setRoles( String value );
+
+    HasVisibility saveButtonVisibility();
 }

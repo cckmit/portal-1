@@ -7,10 +7,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.HasValue;
-import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.CompanySubscription;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
@@ -63,6 +60,11 @@ public class ProfilePageView extends Composite implements AbstractProfilePageVie
         this.role.setInnerText( value );
     }
 
+    @Override
+    public HasVisibility saveButtonVisibility() {
+        return saveButton;
+    }
+
     @UiHandler( "saveButton" )
     public void onButtonClicked( ClickEvent event ) {
         if ( activity != null ) {
@@ -80,6 +82,8 @@ public class ProfilePageView extends Composite implements AbstractProfilePageVie
     InlineLabel name;
     @UiField
     Element role;
+    @UiField
+    Button saveButton;
 
     @Inject
     FixedPositioner positioner;

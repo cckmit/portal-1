@@ -168,6 +168,42 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         return saveButton;
     }
 
+    @Override
+    public HasEnabled companyEnabled() {
+        return company;
+    }
+
+    @Override
+    public HasEnabled productEnabled() {
+        return product;
+    }
+
+    @Override
+    public HasEnabled managerEnabled() {
+        return manager;
+    }
+
+    @Override
+    public HasVisibility privacyVisibility() {
+        return new HasVisibility() {
+            @Override
+            public boolean isVisible() {
+                return local.isVisible();
+            }
+
+            @Override
+            public void setVisible( boolean b ) {
+                if ( b ) {
+                    nameInputGroupContainer.add( name );
+                }
+                else {
+                    nameContainer.add( name );
+                }
+                local.setVisible( b );
+            }
+        };
+    }
+
     @UiHandler("company")
     public void onChangeCompany(ValueChangeEvent<EntityOption> event){
         Company company = Company.fromEntityOption(event.getValue());
@@ -257,6 +293,10 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     AttachmentList attachmentContainer;
     @UiField
     DivElement subscriptions;
+    @UiField
+    HTMLPanel nameInputGroupContainer;
+    @UiField
+    HTMLPanel nameContainer;
 
 
     private AbstractIssueEditActivity activity;

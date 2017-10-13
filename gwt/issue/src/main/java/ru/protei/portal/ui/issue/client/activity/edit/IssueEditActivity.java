@@ -159,6 +159,11 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     }
 
     private void fillView(CaseObject issue) {
+        view.companyEnabled().setEnabled( policyService.hasPrivilegeFor( En_Privilege.ISSUE_COMPANY_EDIT ) );
+        view.productEnabled().setEnabled( policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRODUCT_EDIT ) );
+        view.managerEnabled().setEnabled( policyService.hasPrivilegeFor( En_Privilege.ISSUE_MANAGER_EDIT ) );
+        view.privacyVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRIVACY_VIEW ) );
+
         view.attachmentsContainer().clear();
         view.setCaseId(issue.getId());
 
@@ -198,7 +203,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
     private void fillIssueObject(CaseObject issue){
         issue.setName(view.name().getValue());
-        issue.setPrivateCase(view.isLocal().getValue());
+        issue.setPrivateCase( policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRIVACY_VIEW ) ? view.isLocal().getValue() : false );
         issue.setInfo(view.description().getText());
 
         issue.setStateId(view.state().getValue().getId());
@@ -207,8 +212,12 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         issue.setInitiatorCompany(Company.fromEntityOption(view.company().getValue()));
         issue.setInitiator(Person.fromPersonShortView(view.initiator().getValue()));
 
-        issue.setProduct(DevUnit.fromProductShortView(view.product().getValue()));
-        issue.setManager(Person.fromPersonShortView( view.manager().getValue()));
+        if ( policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRODUCT_EDIT ) ) {
+            issue.setProduct( DevUnit.fromProductShortView( view.product().getValue() ) );
+        }
+        if ( policyService.hasPrivilegeFor( En_Privilege.ISSUE_MANAGER_EDIT ) ) {
+            issue.setManager( Person.fromPersonShortView( view.manager().getValue() ) );
+        }
     }
 
     private boolean validateFieldsAndGetResult(){

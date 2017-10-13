@@ -177,11 +177,22 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public void updateSelfCompanySubscription( List< CompanySubscription > value ) throws RequestFailedException {
+    public Company updateSelfCompanySubscription( List< CompanySubscription > value ) throws RequestFailedException {
         log.debug( "updateSelfCompanySubscription()" );
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-        CoreResponse< Boolean > result = companyService.updateCompanySubscriptions( descriptor.getCompany().getId(), value );
+        CoreResponse< Boolean > updateResult = companyService.updateCompanySubscriptions( descriptor.getCompany().getId(), value );
+
+        if ( updateResult.isError() ) {
+            throw new RequestFailedException( updateResult.getStatus() );
+        }
+
+        CoreResponse< Company > companyResult = companyService.getCompany( descriptor.makeAuthToken(), descriptor.getCompany().getId() );
+        if ( companyResult.isError() ) {
+            throw new RequestFailedException( updateResult.getStatus() );
+        }
+
+        return companyResult.getData();
     }
 
     private UserSessionDescriptor getDescriptorAndCheckSession() throws RequestFailedException {

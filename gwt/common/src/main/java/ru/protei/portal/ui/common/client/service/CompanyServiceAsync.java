@@ -84,5 +84,5 @@ public interface CompanyServiceAsync {
      * @param value
      * @param callback
      */
-    void updateSelfCompanySubscription( List<CompanySubscription> value, AsyncCallback<Void> callback );
+    void updateSelfCompanySubscription( List<CompanySubscription> value, AsyncCallback<Company> callback );
 }
