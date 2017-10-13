@@ -48,7 +48,6 @@ public abstract class IssueTableActivity
         view.setAnimation( animation );
 
         filterView.setActivity( this );
-        applyFilterViewPrivileges();
         view.getFilterContainer().add( filterView.asWidget() );
 
         pagerView.setPageSize( view.getPageSize() );
@@ -62,6 +61,7 @@ public abstract class IssueTableActivity
 
     @Event
     public void onShow( IssueEvents.Show event ) {
+        applyFilterViewPrivileges();
 
         this.fireEvent( new AppEvents.InitPanelName( lang.issues() ) );
         initDetails.parent.clear();
@@ -252,7 +252,8 @@ public abstract class IssueTableActivity
 
     private void applyFilterViewPrivileges() {
         filterView.companyEnabled().setEnabled( policyService.hasPrivilegeFor( En_Privilege.ISSUE_COMPANY_EDIT ) );
-        filterView.company().setValue( policyService.getUserCompany().toEntityOption() );
+        Company userCompany = policyService.getUserCompany();
+        filterView.company().setValue( userCompany == null ? null : userCompany.toEntityOption() );
     }
 
     private Long getFilterCompanyId() {
