@@ -32,4 +32,6 @@ public interface AbstractIssueFilterView extends IsWidget {
     void resetFilter();
 
     HasEnabled companyEnabled();
+    HasEnabled productEnabled();
+    HasEnabled managerEnabled();
 }

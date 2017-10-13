@@ -252,6 +252,9 @@ public abstract class IssueTableActivity
 
     private void applyFilterViewPrivileges() {
         filterView.companyEnabled().setEnabled( policyService.hasPrivilegeFor( En_Privilege.ISSUE_COMPANY_EDIT ) );
+        filterView.productEnabled().setEnabled( policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRODUCT_EDIT ) );
+        filterView.managerEnabled().setEnabled( policyService.hasPrivilegeFor( En_Privilege.ISSUE_MANAGER_EDIT ) );
+
         Company userCompany = policyService.getUserCompany();
         filterView.company().setValue( userCompany == null ? null : userCompany.toEntityOption() );
     }
