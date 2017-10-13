@@ -5,6 +5,8 @@ import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.query.EquipmentQuery;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.struct.DecimalNumberQuery;
+import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.EquipmentShortView;
 
 import java.util.List;
 
@@ -52,4 +54,5 @@ public interface EquipmentServiceAsync {
 
     void removeEquipment( Long equipmentId, AsyncCallback<Boolean> async );
 
+    void equipmentOptionList( EquipmentQuery query, AsyncCallback< List< EquipmentShortView > > async );
 }

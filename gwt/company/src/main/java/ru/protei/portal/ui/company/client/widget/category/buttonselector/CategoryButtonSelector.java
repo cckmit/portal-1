@@ -2,6 +2,9 @@ package ru.protei.portal.ui.company.client.widget.category.buttonselector;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.ui.common.client.common.UiConstants;
+import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
+import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOptionCreator;
 import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 import ru.protei.portal.ui.company.client.widget.category.CategoryModel;
@@ -17,13 +20,15 @@ public class CategoryButtonSelector extends ButtonSelector< EntityOption > imple
     public void init( CategoryModel categoryModel ) {
         categoryModel.subscribe( this );
         setHasNullValue( false );
+
+        setDisplayOptionCreator( value -> new DisplayOption( value == null ? UiConstants.UNDEFINED_ENTRY : value.getDisplayText() ));
     }
 
     public void fillOptions( List< EntityOption > options ) {
         clearOptions();
 
         for ( EntityOption option : options ) {
-            addOption( option.getDisplayText(), option );
+            addOption( option );
         }
     }
 }

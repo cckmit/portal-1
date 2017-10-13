@@ -56,14 +56,14 @@
                     <label>
                         <ui:text from="{lang.issueProduct}"/>
                     </label>
-                    <product:ProductButtonSelector ui:field="product" validation="true"/>
+                    <product:ProductButtonSelector ui:field="product" validation="false"/>
                 </div>
 
                 <div class="form-group col-xs-3">
                     <label>
                         <ui:text from="{lang.issueManager}"/>
                     </label>
-                    <person:EmployeeButtonSelector ui:field="manager" validation="true"/>
+                    <person:EmployeeButtonSelector ui:field="manager" validation="false"/>
                 </div>
 
                 <div class="form-group col-xs-12">

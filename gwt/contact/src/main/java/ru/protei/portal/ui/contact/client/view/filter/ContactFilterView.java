@@ -31,7 +31,6 @@ public class ContactFilterView  extends Composite implements AbstractContactFilt
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
         company.setDefaultValue( lang.selectContactCompany() );
-        company.subscribeToModel();
         search.getElement().setPropertyString( "placeholder", lang.search() );
         sortField.setType( ModuleType.CONTACT );
     }

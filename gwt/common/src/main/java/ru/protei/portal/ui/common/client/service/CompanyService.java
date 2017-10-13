@@ -5,6 +5,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanyGroup;
+import ru.protei.portal.core.model.ent.CompanySubscription;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
@@ -79,4 +80,11 @@ public interface CompanyService extends RemoteService {
      * @return
      */
     List< EntityOption > getCategoryOptionList() throws RequestFailedException;
+
+    /**
+     * Обновить адреса подписок своей компании
+     *
+     * @param value
+     */
+    void updateSelfCompanySubscription( List< CompanySubscription > value ) throws RequestFailedException;
 }

@@ -56,11 +56,6 @@ public class NavImageSelector< T > extends Selector< T > implements HasEnabled {
         image.setSrc( selectedValue.getImageSrc() );
     }
 
-    public void addOption( String name, T value, String img ) {
-        DisplayOption option = new DisplayOption( name, img );
-        super.addOption( option, value );
-    }
-
     @UiField
     Anchor anchor;
     @UiField

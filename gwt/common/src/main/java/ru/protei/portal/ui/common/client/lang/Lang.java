@@ -653,4 +653,6 @@ public interface Lang extends Messages, ContactItemLang {
     String equipmentManagerNotDefined();
 
     String equipmentNumberAlreadyInList();
+
+    String companySubscriptionUpdatedSuccessful();
 }

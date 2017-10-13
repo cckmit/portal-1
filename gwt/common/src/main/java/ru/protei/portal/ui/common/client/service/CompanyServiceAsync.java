@@ -4,8 +4,10 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanyGroup;
+import ru.protei.portal.core.model.ent.CompanySubscription;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.List;
 
@@ -76,4 +78,11 @@ public interface CompanyServiceAsync {
      * @param callback
      */
     void getCategoryOptionList( AsyncCallback< List< EntityOption > > callback );
+
+    /**
+     * Обновить адреса подписок своей компании
+     * @param value
+     * @param callback
+     */
+    void updateSelfCompanySubscription( List<CompanySubscription> value, AsyncCallback<Void> callback );
 }

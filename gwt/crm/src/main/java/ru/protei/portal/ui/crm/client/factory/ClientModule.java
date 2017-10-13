@@ -11,10 +11,13 @@ import ru.protei.portal.ui.crm.client.activity.dashboard.DashboardActivity;
 import ru.protei.portal.ui.crm.client.activity.dashboardblocks.table.AbstractDashboardTableView;
 import ru.protei.portal.ui.crm.client.activity.dashboardblocks.table.DashboardTableActivity;
 import ru.protei.portal.ui.crm.client.activity.page.DashboardPage;
+import ru.protei.portal.ui.crm.client.activity.profile.AbstractProfilePageView;
+import ru.protei.portal.ui.crm.client.activity.profile.ProfilePageActivity;
 import ru.protei.portal.ui.crm.client.view.app.AppView;
 import ru.protei.portal.ui.crm.client.view.auth.AuthView;
 import ru.protei.portal.ui.crm.client.view.dashboard.DashboardView;
 import ru.protei.portal.ui.crm.client.view.dashboardblocks.table.DashboardTableView;
+import ru.protei.portal.ui.crm.client.view.profile.ProfilePageView;
 
 /**
  * Клиентский модуль
@@ -35,5 +38,8 @@ public class ClientModule extends AbstractGinModule {
 
         bind(DashboardTableActivity.class).asEagerSingleton();
         bind(AbstractDashboardTableView.class).to(DashboardTableView.class);
+
+        bind( ProfilePageActivity.class ).asEagerSingleton();
+        bind( AbstractProfilePageView.class ).to( ProfilePageView.class ).in( Singleton.class );
     }
 }

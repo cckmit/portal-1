@@ -3,11 +3,9 @@ package ru.protei.portal.ui.crm.client.activity.dashboard;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
-import ru.protei.portal.core.model.dict.En_CaseState;
-import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.dict.En_SortDir;
-import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.IssueStates;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
@@ -39,7 +37,7 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
 
     @Event
     public void onCreateClicked( SectionEvents.Clicked event ) {
-        if ( !UiConstants.ActionBarIdentity.DASHBOARD.equals( event.identity ) ) {
+        if ( !UiConstants.ActionBarIdentity.DASHBOARD.equals( event.identity ) || policyService.hasPrivilegeFor( En_Privilege.ISSUE_CREATE )) {
             return;
         }
 
@@ -52,10 +50,11 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
         initDetails.parent.clear();
         initDetails.parent.add( view.asWidget() );
 
-        fireEvent(
-                new ActionBarEvents.Add(
-                        lang.buttonCreate(), UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.DASHBOARD ) );
-
+        if ( policyService.hasPrivilegeFor( En_Privilege.ISSUE_CREATE ) ) {
+            fireEvent(
+                    new ActionBarEvents.Add(
+                            lang.buttonCreate(), UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.DASHBOARD ) );
+        }
         initWidgets();
 
     }
@@ -114,6 +113,9 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
 
     @Inject
     Lang lang;
+
+    @Inject
+    PolicyService policyService;
 
     private AppEvents.InitDetails initDetails;
     private Profile profile;

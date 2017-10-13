@@ -16,7 +16,6 @@ public class DistrictBtnGroupMulti extends ToggleBtnGroupMulti<DistrictInfo> imp
     @Inject
     public void init( DistrictModel model ) {
         model.subscribe( this );
-//        fillOptions( null );
     }
 
     @PostConstruct

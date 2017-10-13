@@ -9,11 +9,12 @@ import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.DecimalNumberDAO;
 import ru.protei.portal.core.model.dao.EquipmentDAO;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.ent.DecimalNumber;
-import ru.protei.portal.core.model.ent.Equipment;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.EquipmentQuery;
 import ru.protei.portal.core.model.struct.DecimalNumberQuery;
+import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.EquipmentShortView;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.winter.core.utils.collections.CollectionUtils;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
@@ -49,6 +50,19 @@ public class EquipmentServiceImpl implements EquipmentService {
         jdbcManyRelationsHelper.fillAll( list );
 
         return new CoreResponse<List<Equipment>>().success(list);
+    }
+
+    @Override
+    public CoreResponse< List< EquipmentShortView > > shortViewList( AuthToken token, EquipmentQuery query ) {
+        List<Equipment > list = equipmentDAO.getListByQuery(query);
+
+        if (list == null)
+            new CoreResponse<List<PersonShortView >>().error(En_ResultStatus.GET_DATA_ERROR);
+        jdbcManyRelationsHelper.fillAll( list );
+
+        List<EquipmentShortView> result = list.stream().map(EquipmentShortView::fromEquipment).collect(Collectors.toList());
+
+        return new CoreResponse<List<EquipmentShortView>>().success(result,result.size());
     }
 
     @Override
