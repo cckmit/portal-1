@@ -92,17 +92,18 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
         fillIssueObject(issue);
 
-        issueService.saveIssue(issue, new RequestCallback<Boolean>() {
+        issueService.saveIssue(issue, new RequestCallback<CaseObject>() {
             @Override
             public void onError(Throwable throwable) {
                 fireEvent(new NotifyEvents.Show(throwable.getMessage(), NotifyEvents.NotifyType.SUCCESS));
             }
 
             @Override
-            public void onSuccess(Boolean aBoolean) {
+            public void onSuccess(CaseObject caseObject) {
                 fireEvent(new IssueEvents.ChangeModel());
                 fireEvent(new Back());
                 fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+                fireEvent(new IssueEvents.SaveComment(caseObject.getId(), isChangedStatus || issue.getId() == null ? caseObject.getStateId() : null));
             }
         });
     }
@@ -201,6 +202,10 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         issue.setPrivateCase(view.isLocal().getValue());
         issue.setInfo(view.description().getText());
 
+        isChangedStatus = false;
+        if (issue.getStateId() != view.state().getValue().getId()) {
+            isChangedStatus = true;
+        }
         issue.setStateId(view.state().getValue().getId());
         issue.setImpLevel(view.importance().getValue().getId());
 
@@ -243,4 +248,5 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
     private AppEvents.InitDetails initDetails;
     private CaseObject issue;
+    private boolean isChangedStatus = false;
 }

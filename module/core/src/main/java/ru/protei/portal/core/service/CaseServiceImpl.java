@@ -100,6 +100,8 @@ public class CaseServiceImpl implements CaseService {
         if (caseId == null)
             return new CoreResponse().error(En_ResultStatus.NOT_CREATED);
 
+        caseObject.setId(caseId);
+
         if(CollectionUtils.isNotEmpty(caseObject.getAttachments())){
             caseAttachmentDAO.persistBatch(
                     caseObject.getAttachments()

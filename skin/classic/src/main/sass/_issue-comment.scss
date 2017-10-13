@@ -90,15 +90,23 @@
 }
 
 .chats .right .name {
-  float: right
+  float: right;
+}
+
+.chats .right .info {
+  float: right;
+}
+
+.chats .right .status {
+  float: right;
 }
 
 .chats .right .date-time {
-  float: left
+  float: left;
 }
 
 .chats .right .image {
-  float: right
+  float: right;
 }
 
 .chats .right .image + .message {
