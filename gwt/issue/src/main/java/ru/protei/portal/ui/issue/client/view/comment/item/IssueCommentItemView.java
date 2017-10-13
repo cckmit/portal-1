@@ -52,6 +52,12 @@ public class IssueCommentItemView
 
     @Override
     public void setMessage( String value ) {
+        if ( value == null ) {
+            this.message.getElement().setInnerText("");
+            this.messageBlock.addClassName( "hide" );
+            this.hideOptions();
+            return;
+        }
         this.message.getElement().setInnerHTML( value );
         this.messageBlock.removeClassName( "hide" );
     }
@@ -98,11 +104,6 @@ public class IssueCommentItemView
     @Override
     public void hideOptions() {
         options.removeFromParent();
-    }
-
-    @Override
-    public void hideRemove() {
-        remove.removeFromParent();
     }
 
     @UiHandler( "remove" )

@@ -91,6 +91,21 @@ public abstract class IssueCommentListActivity
         }
 
         lastCommentView = null;
+
+        if (caseComment.getCaseStateId() != null) {
+            caseComment.setText(null);
+            issueService.editIssueComment(caseComment, new RequestCallback<CaseComment>() {
+                @Override
+                public void onError(Throwable throwable) {}
+
+                @Override
+                public void onSuccess(CaseComment caseComment) {
+                    itemView.setMessage(null);
+                }
+            });
+            return;
+        }
+
         issueService.removeIssueComment( caseComment, new RequestCallback<Void>() {
             @Override
             public void onError( Throwable throwable ) {
@@ -265,7 +280,6 @@ public abstract class IssueCommentListActivity
         if ( value.getCaseStateId() != null ) {
             En_CaseState caseState = En_CaseState.getById( value.getCaseStateId() );
             itemView.setStatus( caseState );
-            itemView.hideRemove();
         }
 
         bindAttachmentsToComment(itemView, value.getCaseAttachments());

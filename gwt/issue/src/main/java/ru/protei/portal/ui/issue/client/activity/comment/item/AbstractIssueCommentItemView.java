@@ -28,6 +28,4 @@ public interface AbstractIssueCommentItemView extends IsWidget {
     HasAttachments attachmentContainer();
 
     void hideOptions();
-
-    void hideRemove();
 }
