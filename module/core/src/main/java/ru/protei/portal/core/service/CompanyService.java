@@ -4,6 +4,7 @@ import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.annotations.Auditable;
 import ru.protei.portal.core.model.annotations.Privileged;
 import ru.protei.portal.core.model.dict.En_AuditType;
+import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Company;
@@ -21,13 +22,13 @@ public interface CompanyService {
     CoreResponse<Long> countCompanies (CompanyQuery query);
     CoreResponse<Long> countGroups (CompanyGroupQuery query);
 
-    CoreResponse<List<EntityOption>> companyOptionList();
+    CoreResponse<List<EntityOption>> companyOptionList(List<En_CompanyCategory> categories);
 
     @Privileged( En_Privilege.COMPANY_VIEW )
     CoreResponse<List<Company>> companyList(AuthToken token, CompanyQuery query);
     CoreResponse<List<EntityOption>> groupOptionList();
     CoreResponse<List<CompanyGroup>> groupList(CompanyGroupQuery query);
-    CoreResponse<List<EntityOption>> categoryOptionList();
+    CoreResponse<List<EntityOption>> categoryOptionList(boolean hasOfficial);
 
     @Privileged( En_Privilege.COMPANY_VIEW )
     CoreResponse<Company> getCompany(AuthToken token, Long id );

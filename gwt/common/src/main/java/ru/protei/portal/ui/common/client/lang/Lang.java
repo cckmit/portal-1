@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.lang;
 
 import com.google.gwt.i18n.client.Messages;
+import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
 import ru.protei.portal.core.model.dict.lang.ContactItemLang;
 
 /**
@@ -578,4 +579,78 @@ public interface Lang extends Messages, ContactItemLang {
     String privilegeRemove();
 
     String buttonLocale();
+
+    String privilegeCategoryOfficial();
+
+    String matrixSolutions();
+
+    String officialTableProduct();
+
+    String officialTableInfo();
+
+    String officialTableNumberEmployees();
+
+    String selectOfficialRegion();
+
+    String officialRegion();
+
+    String officialGeneralInfo();
+
+    String officialFaces();
+
+    String officialPreviewSearch();
+
+    String officialOrganization();
+
+    String officialRelations();
+
+    String officialAmplua();
+
+    String selectOfficialCompany();
+
+    String errOfficialRemove();
+
+    String errOfficialMemberRemove();
+
+    String officialComment();
+
+    String selectOfficialAmplua();
+
+    String personHeadManager();
+
+    String personDeployManager();
+
+    String officialInRelationsWith();
+
+    String selectOfficialProduct();
+
+    String personDecisionCenter();
+
+    String personChiefDecisionMaker();
+
+    String personDecisionKeeper();
+
+    String personTechSpecialist();
+
+    String personInfluenceMaker();
+
+    String personChielInfluenceMaker();
+
+    String personEconomist();
+
+    String personWellWisher();
+
+    String personReceptivityCenter();
+
+    String equipmentGetNextModification();
+
+    String formNextMod();
+
+    String buttonAddPdra();
+
+    String buttonAddPamr();
+
+    String equipmentManagerNotDefined();
+
+    String equipmentNumberAlreadyInList();
 }

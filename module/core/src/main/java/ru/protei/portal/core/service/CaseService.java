@@ -62,6 +62,8 @@ public interface CaseService {
     @Privileged( En_Privilege.ISSUE_EDIT )
     CoreResponse<Long> bindAttachmentToCase( AuthToken token, Attachment attachment, long caseId);
 
+    CoreResponse<Long> attachToCase(Attachment attachment, long caseId);
+
     boolean isExistsAttachments(Long caseId);
     CoreResponse<Boolean> updateExistsAttachmentsFlag(Long caseId, boolean flag);
     CoreResponse<Boolean> updateExistsAttachmentsFlag(Long caseId);

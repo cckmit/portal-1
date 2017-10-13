@@ -2,7 +2,6 @@ package ru.protei.portal.ui.equipment.client.view.preview;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
-import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.dom.client.LegendElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -12,12 +11,13 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.equipment.client.activity.preview.AbstractEquipmentPreviewActivity;
 import ru.protei.portal.ui.equipment.client.activity.preview.AbstractEquipmentPreviewView;
+
+import java.text.SimpleDateFormat;
 
 /**
  * Вид превью контакта
@@ -97,6 +97,11 @@ public class EquipmentPreviewView extends Composite implements AbstractEquipment
     }
 
     @Override
+    public void setCreatedDate(String createdDate) {
+        created.setInnerText(createdDate);
+    }
+
+    @Override
     public void setCopyBtnEnabledStyle( boolean isEnabled ){
         if (isEnabled) {
             copy.removeStyleName( "link-disabled" );
@@ -155,6 +160,8 @@ public class EquipmentPreviewView extends Composite implements AbstractEquipment
     Button remove;
     @UiField
     Button copy;
+    @UiField
+    SpanElement created;
 
     @Inject
     FixedPositioner positioner;

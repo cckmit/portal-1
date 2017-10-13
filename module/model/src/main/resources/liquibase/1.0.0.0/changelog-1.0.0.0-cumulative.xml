@@ -19,5 +19,7 @@
   <include file="10-add-user_role-privileges.xml" relativeToChangelogFile="true" />
   <include file="09-03-drop_role_id.xml" relativeToChangelogFile="true" />
   <include file="16-01-create-audit.xml" relativeToChangelogFile="true" />
+  <include file="matrix-official_audit.xml" relativeToChangelogFile="true" />
+  <include file="18-09-add_attachment_exists.xml" relativeToChangelogFile="true" />
 
 </databaseChangeLog>

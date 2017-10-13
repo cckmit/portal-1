@@ -3,6 +3,8 @@ package ru.protei.portal.ui.common.client.widget.selector.company;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
+import ru.protei.portal.core.model.dict.En_CompanyCategory;
+import ru.protei.portal.core.model.ent.CompanyCategory;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.CompanyEvents;
@@ -13,7 +15,9 @@ import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Модель селектора компаний
@@ -22,29 +26,29 @@ public abstract class CompanyModel implements Activity {
 
     @Event
     public void onInit( AuthEvents.Success event ) {
-        refreshOptions();
+        notifySubscribers();
     }
 
     @Event
     public void onCompanyListChanged( CompanyEvents.ChangeModel event ) {
-        refreshOptions();
+        notifySubscribers();
     }
 
-    public void subscribe( ModelSelector<EntityOption> selector ) {
+    public void subscribe(ModelSelector<EntityOption> selector, List<En_CompanyCategory> categories) {
         subscribers.add( selector );
-        selector.fillOptions( list );
+        selectorToCategories.put(selector, categories);
+        refreshOptions(selector, categories);
     }
 
     private void notifySubscribers() {
         for ( ModelSelector< EntityOption > selector : subscribers ) {
-            selector.fillOptions( list );
-            selector.refreshValue();
+            List<En_CompanyCategory> categories = selectorToCategories.get(selector);
+            refreshOptions(selector, categories);
         }
     }
 
-    private void refreshOptions() {
-
-        companyService.getCompanyOptionList( new RequestCallback<List<EntityOption>>() {
+    private void refreshOptions(ModelSelector<EntityOption> selector, List<En_CompanyCategory> categories) {
+        companyService.getCompanyOptionList(categories, new RequestCallback<List<EntityOption>>() {
             @Override
             public void onError( Throwable throwable ) {
                 fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
@@ -54,8 +58,8 @@ public abstract class CompanyModel implements Activity {
             public void onSuccess( List<EntityOption> options ) {
                 list.clear();
                 list.addAll( options );
-
-                notifySubscribers();
+                selector.fillOptions( list );
+                selector.refreshValue();
             }
         } );
     }
@@ -67,6 +71,8 @@ public abstract class CompanyModel implements Activity {
     Lang lang;
 
     private List< EntityOption > list = new ArrayList<>();
+
+    Map<ModelSelector< EntityOption >, List<En_CompanyCategory>> selectorToCategories = new HashMap<>();
 
     List< ModelSelector< EntityOption > > subscribers = new ArrayList<>();
 

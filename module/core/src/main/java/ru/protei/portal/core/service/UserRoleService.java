@@ -15,7 +15,6 @@ import java.util.List;
  * Сервис управления ролями
  */
 public interface UserRoleService {
-    @Privileged( En_Privilege.ROLE_VIEW )
     CoreResponse<List<UserRole>> userRoleList( AuthToken authToken, UserRoleQuery query );
 
     @Privileged( En_Privilege.ROLE_VIEW )

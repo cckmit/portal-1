@@ -14,6 +14,7 @@ import ru.protei.portal.core.mail.MailSendChannel;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.service.*;
@@ -132,7 +133,7 @@ public class MailNotificationProcessor {
         MimeMessageHelper helper = new MimeMessageHelper( messageFactory.createMailMessage(), true );
         helper.setSubject( subj );
         helper.setFrom( config.data().smtp().getFromAddress() );
-        helper.setText( body, true );
+        helper.setText( HelperFunc.nvlt(body, ""), true );
         return helper;
     }
 

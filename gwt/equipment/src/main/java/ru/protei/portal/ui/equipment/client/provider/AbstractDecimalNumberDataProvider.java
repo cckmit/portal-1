@@ -2,6 +2,7 @@ package ru.protei.portal.ui.equipment.client.provider;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import ru.protei.portal.core.model.ent.DecimalNumber;
+import ru.protei.portal.core.model.struct.DecimalNumberQuery;
 
 /**
  * Валидатор децимальных чисел
@@ -16,10 +17,10 @@ public interface AbstractDecimalNumberDataProvider {
 
     /**
      * Получение следующего свободного децимального номера
-     * @param number    допускается частичная заполненность (мб заполнен только код по классификатору и/или рег.номер)
+     * @param filter    допускается частичная заполненность (мб заполнен только код по классификатору и/или рег.номер)
      * @return
      */
-    void getNextAvailableRegisterNumber( DecimalNumber number, AsyncCallback<DecimalNumber> callback  );
+    void getNextAvailableRegisterNumber( DecimalNumberQuery filter, AsyncCallback<Integer> callback  );
 
-    void getNextAvailableRegisterNumberModification( DecimalNumber number, AsyncCallback<DecimalNumber> callback  );
+    void getNextAvailableModification( DecimalNumberQuery filter, AsyncCallback<Integer> callback  );
 }

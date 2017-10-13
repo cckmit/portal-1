@@ -4,6 +4,7 @@ import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.query.EquipmentQuery;
+import ru.protei.portal.core.model.struct.DecimalNumberQuery;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 
@@ -40,9 +41,10 @@ public interface EquipmentService extends RemoteService {
     /**
      * Получение следующего доступного номера
      *
-     * @param number
+     * @param filter
      */
-    DecimalNumber getNextAvailableRegisterNumber( DecimalNumber number ) throws RequestFailedException;
+    Integer getNextAvailableRegisterNumber( DecimalNumberQuery filter ) throws RequestFailedException;
 
-    DecimalNumber getNextAvailableRegisterNumberModification( DecimalNumber number ) throws RequestFailedException;
+    Integer getNextAvailableRegisterNumberModification( DecimalNumberQuery filter ) throws RequestFailedException;
+
 }

@@ -83,7 +83,6 @@ public class RoleEditView extends Composite implements AbstractRoleEditView {
     @UiField(provided = true)
     PrivilegeList privileges;
 
-
     AbstractRoleEditActivity activity;
 
     private static ContactViewUiBinder ourUiBinder = GWT.create(ContactViewUiBinder.class);

@@ -3,6 +3,7 @@ package ru.protei.portal.ui.common.client.widget.selector.popup;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Style;
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.*;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -14,6 +15,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.selector.item.SelectorItem;
 
 /**
  * Вид попапа
@@ -42,6 +44,7 @@ public class SelectorPopup
     public HandlerRegistration addValueChangeHandler( ValueChangeHandler< String > handler ) {
         return addHandler( handler, ValueChangeEvent.getType() );
     }
+
     public HasWidgets getChildContainer() {
         return childContainer;
     }
@@ -94,6 +97,15 @@ public class SelectorPopup
 
     @UiHandler( "search" )
     public void onSearchInputChanged( KeyUpEvent event ) {
+        if(event.getNativeKeyCode() == KeyCodes.KEY_DOWN) {
+            event.preventDefault();
+            if (childContainer.getWidgetCount() == 0) {
+                return;
+            }
+            SelectorItem item = (SelectorItem) childContainer.getWidget(0);
+            item.setFocus(true);
+            return;
+        }
         fireChangeValueTimer();
     }
 
@@ -130,13 +142,12 @@ public class SelectorPopup
             ValueChangeEvent.fire( SelectorPopup.this, search.getText() );
         }
     };
-
     IsWidget relative;
     ResizeHandler resizeHandler;
     HandlerRegistration resizeHandlerReg;
     boolean searchAutoFocus = false;
-    boolean searchVisible = false;
 
+    boolean searchVisible = false;
     @UiField
     HTMLPanel childContainer;
     @UiField
@@ -145,6 +156,7 @@ public class SelectorPopup
     DivElement searchContainer;
     @UiField
     HTMLPanel root;
+
     @Inject
     Lang lang;
 

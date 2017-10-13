@@ -120,7 +120,7 @@ public class FileController {
             throw new SQLException("attachment not saved");
         }
 
-        CoreResponse<Long> caseAttachId = caseService.bindAttachmentToCase(null, attachment, caseId);
+        CoreResponse<Long> caseAttachId = caseService.attachToCase(attachment, caseId);
         if(caseAttachId.isError())
             throw new SQLException("unable to bind attachment to case");
 

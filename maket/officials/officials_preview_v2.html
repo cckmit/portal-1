@@ -1,0 +1,705 @@
+<html><head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="gwt:property" content="locale=ru">
+
+    <title>Protei UI :: CRM</title>
+    <link rel="stylesheet" href="../regions/regions_files/portal-classic.css">
+    <link rel="stylesheet" href="../regions/regions_files/animate.css">
+    <link rel="stylesheet" href="../regions/regions_files/modal.css">
+    <link rel="stylesheet" href="../regions/regions_files/font-awesome.min.css">
+    <link rel="stylesheet" href="../regions/regions_files/importance.css">
+    <link rel="stylesheet" href="../regions/regions_files/ionicons.min.css">
+    <link rel="stylesheet" href="../regions/regions_files/datetimepicker.css">
+    <link rel="stylesheet" href="../regions/regions_files/table-widget.css">
+    <link rel="stylesheet" href="../regions/regions_files/pager.css">
+
+    <style>.media-list {
+        padding-left: 0;
+        list-style: none
+    }
+
+
+    .media {
+        margin-top: 15px
+    }
+
+    .media:first-child {
+        margin-top: 0
+    }
+
+    .media, .media-body {
+        zoom: 1;
+        overflow: hidden;
+    }
+
+    .media-body {
+        width: 10000px;
+    }
+
+
+    .media-object {
+        display: block
+    }
+
+    .media-object.img-thumbnail {
+        max-width: none
+    }
+
+    .media-right, .media > .pull-right {
+        padding-left: 10px
+    }
+
+    .media-left, .media > .pull-left {
+        padding-right: 10px
+    }
+
+    .media-body, .media-left, .media-right {
+        display: table-cell;
+        vertical-align: top;
+    }
+
+    .media-middle {
+        vertical-align: middle
+    }
+
+    .media-bottom {
+        vertical-align: bottom
+    }
+
+    .media-heading {
+        margin-top: 0;
+        margin-bottom: 5px
+    }
+
+    .media-list {
+        padding-left: 0;
+        list-style: none
+    }
+
+    .display-block, label.display-block {
+        display: block;
+    }
+
+    .text-muted {
+        color: #999;
+    }
+    .region-picture {
+        position: relative;
+        display: block;
+        left: calc(100% - 120px);
+        top: -20px;
+        opacity: 0.3;
+    }
+
+    .region-picture > img {
+        width: 70%;
+    }
+
+    .region-picture > i {
+        position: relative;
+        display: block;
+        top: -46px;
+        left: 0px;
+
+        font-size: 10em;
+    }
+
+    .header-block {
+        overflow: hidden;
+    }
+
+    .status-group > button {
+        padding: 5px 8px;
+        border-color: #ffffff;
+    }
+
+    .status-group > button:hover {
+        background-color: #ffffff;
+    }
+
+    .accordion-toggle:after {
+        font-family: 'FontAwesome';
+        content: "\f078";
+        float: right;
+    }
+
+    .accordion-opened .accordion-toggle:after {
+        content: "\f054";
+    }
+
+    .truncate-holder {
+        /* position: relative; */
+        /*width: 50%;*/
+        height: 12px;
+    }
+
+    .truncate-users {
+        font-size: 12px;
+        width: 235px;
+        margin-top: 0px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+
+    .truncate-users:hover {
+        position: absolute;
+        width: 75%;
+        white-space: inherit;
+        padding: 5px;
+        background-color: white;
+        z-index: 1;
+        /*border: 1px solid lightgrey;*/
+    }
+
+    .truncate {
+        font-size: 12px;
+        width: 340px;
+        margin-top: 5px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .truncate:hover {
+        position: absolute;
+        width: 100%;
+        white-space: inherit;
+        padding: 5px;
+        background-color: white;
+        z-index: 1;
+        /*border: 1px solid lightgrey;*/
+    }
+
+    .block {
+        width: 400px;
+        min-height: 50px;
+        padding: 0 15px;
+        margin: 0 auto;
+        border: 2px solid #ccc;
+        position: relative;
+        text-align: center;
+        font-size: 14px;
+        font-family: 'Segoe UI';
+    }
+
+    .block:hover span {
+        display: block;
+        cursor: pointer;
+        height: auto;
+    }
+
+    .user-official {
+        font-weight: bold;
+        padding-bottom: 5px;
+        font-size: 1.3em;
+    }
+
+    .user-relative {
+        font-size: 11px;
+        padding-left: 5px;
+    }
+
+    .user-dolznost {
+        font-size: 1.3em;
+    }
+
+    .user-description {
+    }
+
+    .region{
+        background-color: #f9f9f9;
+    }
+
+
+    </style>
+</head>
+<body class="content-wrapper">
+<noscript>
+    &amp;amp;amp;lt;div style="width: 22em; position: absolute; left: 50%; margin-left: -11em; color: red; background-color: white;
+    border: 1px solid red; padding: 4px; font-family: sans-serif"&amp;amp;amp;gt;
+    Your web browser must have JavaScript enabled
+    in order for this application to display correctly.
+    &amp;amp;amp;lt;/div&amp;amp;amp;gt;
+</noscript>
+
+
+<div aria-hidden="true" style="display: none;"></div>
+<div class="global">
+    <header class="main-header"><a class="logo" href="http://protei.ru/"> <span class="logo-lg"> <img src="./regions_files/logo.svg"> <b>PROTEI</b> LTD </span> <span class="logo-mini"> <img src="./regions_files/logo.svg"> </span> </a>
+        <nav class="navbar"><a class="sidebar-toggle" href="http://127.0.0.1:8888/crm.html#"><span class="sr-only">Toggle navigation</span></a>
+            <ul class="nav navbar-nav navbar-left">
+                <li><a class="gwt-Anchor" href="http://127.0.0.1:8888/crm.html#"><i class="fa fa-plus"></i> <span>Создать</span></a>
+                    <span class="count" aria-hidden="true" style="display: none;"></span></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li class="nav-search" aria-hidden="true" style="display: none;"><a class="gwt-Anchor"><i class="fa fa-search"></i></a> <input type="text" class="gwt-TextBox"></li>
+                <li><a class="gwt-Anchor" href="http://127.0.0.1:8888/crm.html#" title="Выйти (you can use Ctrl+F4)"><i class="fa fa-lg fa-sign-out"></i></a></li>
+            </ul>
+        </nav>
+    </header>
+    <div class="main-sidebar">
+        <section class="sidebar">
+            <div class="user-panel">
+                <div class="pull-left image"><img class="img-circle" src="./regions_files/user-icon-m.png"></div>
+                <div class="pull-left info"><p>Евгений</p> <a>portal_employee</a></div>
+            </div>
+            <ul class="sidebar-menu">
+                <li class="header">Навигация</li>
+            </ul>
+            <div class="sidebar-menu">
+                <li><a class="gwt-Anchor" href="http://127.0.0.1:8888/crm.html#"><i class="fa fa-dashboard"></i> <span>Доска задач</span></a>
+                    <span class="count" aria-hidden="true" style="display: none;"></span></li>
+                <li class=""><a class="gwt-Anchor" href="http://127.0.0.1:8888/crm.html#"><i class="icon icon-organization"></i> <span>Компании</span></a> <span class="count" aria-hidden="true" style="display: none;"></span>
+                </li>
+                <li class=""><a class="gwt-Anchor" href="http://127.0.0.1:8888/crm.html#"><i class="icon icon-product"></i> <span>Продукты</span></a> <span class="count" aria-hidden="true" style="display: none;"></span>
+                </li>
+                <li><a class="gwt-Anchor" href="http://127.0.0.1:8888/crm.html#"><i class="fa fa-group"></i> <span>Контактные лица</span></a>
+                    <span class="count" aria-hidden="true" style="display: none;"></span></li>
+                <li class=""><a class="gwt-Anchor" href="http://127.0.0.1:8888/crm.html#"><i class="fa fa-tasks"></i>
+                    <span>Обращения</span></a> <span class="count" aria-hidden="true" style="display: none;"></span>
+                </li>
+                <li class=""><a class="gwt-Anchor" href="http://127.0.0.1:8888/crm.html#"><i class="fa fa-globe"></i>
+                    <span>Регионы</span></a> <span class="count" aria-hidden="true" style="display: none;"></span>
+                </li>
+                <li class="active"><a class="gwt-Anchor" href="http://127.0.0.1:8888/crm.html#"><i class="fa fa-archive"></i>
+                    <span>Матрица принятия решений</span></a> <span class="count" aria-hidden="true" style="display: none;"></span>
+                </li>
+            </div>
+        </section>
+    </div>
+
+    <div class="right-side">
+        <div class="main-content">
+            <div class="grid">
+                <div class="global-table-container col-xs-6 short-table-view" style="
+">
+                    <div class="table-hover projects">
+                        <div class="scroller left"></div>
+                        <div class="scroller right"></div>
+                        <div class="table-container">
+
+                            <table class="table">
+                                <thead class="">
+                                <tr>
+                                    <th class="number">Продукт</th>
+                                    <th class="info">Описание</th>
+                                    <th>Количество лиц</th>
+                                    <th></th>
+                                    <th></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr style="height: 0px;"></tr>
+                                <tr>
+                                    <td class="region" colspan="5">
+                                        <div><b>Алтайский край</b></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="number" style="cursor: pointer;">
+                                        Система 112
+                                    </td>
+                                    <td class="info" style="cursor: pointer;">
+                                        <label>Экстренные вызовы</label>
+                                        <p class="text-semimuted" style="margin: 0px; font-size: 11px;"><i class="fa fa-clock-o"></i><span> 02.08.2017 01:17</span></p>
+
+                                    </td>
+                                    <td>55</td>
+                                    <td style="cursor: pointer;"><a href="#" class="fa fa-lg fa-paperclip">
+                                    </a></td>
+                                    <td style="cursor: pointer;"><a href="#" class="fa-lg ion-compose" title="Редактирование"></a></td>
+                                </tr>
+                                <tr>
+                                    <td class="region" colspan="5">
+                                        <div><b>Нижегородская область</b></div>
+                                    </td>
+                                </tr>
+                                <tr class="selected">
+                                    <td class="direction" style="cursor: pointer;">
+                                        СОРМ
+                                    </td>
+                                    <td class="info" style="cursor: pointer;"><label>
+                                        Разыскные мероприятия</label>
+                                        <p class="text-semimuted" style="margin: 0px; font-size: 11px;"><i class="fa fa-clock-o"></i><span> 03.01.2001 02:55</span></p>
+                                    </td>
+                                    <td>10</td>
+                                    <td style="cursor: pointer;"><a href="#" class="fa fa-lg fa-paperclip">
+                                    </a></td>
+                                    <td style="cursor: pointer;"><a href="#" class="fa-lg ion-compose" title="Редактирование"></a></td>
+                                </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="preview-container col-xs-6">
+                    <div class="preview-wrapper grid with-table-pager">
+
+
+                        <div class="preview col-xs-12">
+                            <!--<fieldset class="header">-->
+                            <!--<legend>-->
+                            <!--СОРМ - Нижегородская область-->
+                            <!--</legend>-->
+
+                            <fieldset class="header">
+                                <legend>
+                                    Общая информация
+                                </legend>
+                                <div class="col-xs-6"><label class="col-xs-5 col-md-5">Дата создания</label> <span class="col-xs-7 col-md-7">02.08.2017 01:17</span></div>
+                                <div class="col-xs-6"><label class="col-xs-4 col-md-4">Регион</label> <span class="col-xs-5 col-md-5">Нижегородская область</span>
+                                </div>
+                                <div class="col-xs-6"><label class="col-xs-5 col-md-5">Продукт</label> <span class="col-xs-7 col-md-7">СОРМ</span></div>
+
+                                <div class="col-xs-11" style="margin-bottom: 0px; margin-top: 10px">Оперативно разыскные мероприятия
+                                    проводимые республикой Казахстан при содействии сил внеземного происхождения</div>
+
+
+                            </fieldset>
+
+                            <!--<h2 class="col-xs-5" style="margin-top: 10px; margin-bottom: 10px">Должностные лица</h2>-->
+                            <fieldset class="header" style="margin-bottom: 0px">
+                                <legend>Должностные лица</legend>
+                            </fieldset>
+
+                            <div class="container col-xs-12"><ul class="media-list" style="
+    margin-top: 0px;
+">
+                                <li class="media" style="font-weight: bold;">
+
+
+                                    <div class="media-body" style="
+">
+                                        <a href="#" style="
+    font-size: 1.2em;
+    color: #686868;
+">НТЦ КОМПАС<span class="media-annotation pull-right" style="
+    margin-right: 35px;
+                                                 "><i class="fa fa-user" style="
+    padding-right: 7px;
+    font-size: 0.9em;
+"></i>(2)
+</span>
+                                        </a>
+
+
+                                    </div>
+                                </li><li class="media">
+                                <div class="media-left">
+                                    <i class="fa fa-3x fa-briefcase" aria-hidden="true" style="
+    color: rgba(0, 0, 0, 0.08);
+"></i>
+
+                                </div>
+
+                                <div class="media-body" style="
+">
+                                    <a href="#" style="
+    font-size: 1.2em;
+">Морозов Дмитрий Юрьевич <b>, Губернатор такой-то области</b><span class="media-annotation pull-right" style="
+    margin-right: 35px;
+"><i class="fa-lg ion-compose"></i></span>
+                                    </a>
+
+                                    <span class="display-block text-muted" style="
+"><i aria-hidden="true" style="
+    padding-right: 8px;
+" class="fa fa-sitemap"></i>Глава администрации</span><span class="display-block" style="
+    padding-top: 5px;
+                                   "><b>Центр принятия решений.</b> Любит коньяк 12-летней выдержки, обедает в ресторане "Какой-то", 2 дочери, разведен. В общении - дружелюбен, любит разговоры о рыбалке</span>
+                                </div>
+                            </li><li class="media">
+                                <div class="media-left">
+                                    <i class="fa fa-3x fa-briefcase" aria-hidden="true" style="
+    color: rgba(0, 0, 0, 0.08);
+"></i>
+
+                                </div>
+
+                                <div class="media-body" style="
+">
+                                    <a href="#" style="
+    font-size: 1.2em;
+">Серебряков Евгений Дмитриевич<b>, Заместитель начальника управления информационных технологий такой-то компании</b><span class="media-annotation pull-right" style="
+    margin-right: 35px;
+"><i class="fa-lg ion-compose"></i></span>
+                                    </a>
+
+                                    <span class="display-block text-muted" style="display: none;"><i class="ion-network" aria-hidden="true" style="
+    padding-right: 8px;
+"></i>Артемьев А.С, Сергеев А.А, Иванов А.Н, Арсеньев В.Н, Козлов М.Л, Максимов М.М, Шелестов Г.А</span><span class="display-block" style="
+    padding-top: 5px;
+"><b>Решает управленческие вопросы. </b>Обращаться только в крайнем случае.</span>
+                                </div>
+                            </li>
+
+
+
+
+
+
+                            </ul>
+
+                            </div><div class="container col-xs-12"><ul class="media-list">
+                            <li class="media" style="font-weight: bold;">
+
+
+                                <div class="media-body" style="
+">
+                                    <a href="#" style="
+    font-size: 1.2em;
+    color: #686868;
+">НТЦ БУРАВЧИК<span class="media-annotation pull-right" style="
+    margin-right: 35px;
+                                                 "><i class="fa fa-user" style="
+    padding-right: 7px;
+    font-size: 0.9em;
+"></i>(4)
+</span>
+                                    </a>
+
+
+                                </div>
+                            </li><li class="media">
+                            <div class="media-left">
+                                <i class="fa fa-3x fa-briefcase" aria-hidden="true" style="
+    color: rgba(0, 0, 0, 0.08);
+"></i>
+
+                            </div>
+
+                            <div class="media-body" style="
+">
+                                <a href="#" style="
+    font-size: 1.2em;
+">Морозов Дмитрий Юрьевич <b>, Губернатор такой-то области</b><span class="media-annotation pull-right" style="
+    margin-right: 35px;
+"><i class="fa-lg ion-compose"></i></span>
+                                </a>
+
+                                <span class="display-block text-muted" style="
+"><i aria-hidden="true" style="
+    padding-right: 8px;
+" class="fa fa-sitemap"></i>Глава администрации</span><span class="display-block" style="
+    padding-top: 5px;
+">Центр принятия решений. Любит коньяк 12-летней выдержки, обедает в ресторане "Какой-то", 2 дочери, разведен. В общении - дружелюбен, любит разговоры о рыбалке</span>
+                            </div>
+                        </li><li class="media">
+                            <div class="media-left">
+                                <i class="fa fa-3x fa-briefcase" aria-hidden="true" style="
+    color: rgba(0, 0, 0, 0.08);
+"></i>
+
+                            </div>
+
+                            <div class="media-body" style="
+">
+                                <a href="#" style="
+    font-size: 1.2em;
+">Серебряков Евгений Дмитриевич<b>, Заместитель начальника управления информационных технологий такой-то компании</b><span class="media-annotation pull-right" style="
+    margin-right: 35px;
+"><i class="fa-lg ion-compose"></i></span>
+                                </a>
+
+                                <span class="display-block text-muted" style="display: none;"><i class="ion-network" aria-hidden="true" style="
+    padding-right: 8px;
+"></i>Артемьев А.С, Сергеев А.А, Иванов А.Н, Арсеньев В.Н, Козлов М.Л, Максимов М.М, Шелестов Г.А</span><span class="display-block" style="
+    padding-top: 5px;
+">Решает управленческие вопросы. Обращаться только в крайнем случае.</span>
+                            </div>
+                        </li><li class="media">
+                            <div class="media-left">
+                                <i class="fa fa-3x fa-briefcase" aria-hidden="true" style="
+    color: rgba(0, 0, 0, 0.08);
+"></i>
+
+                            </div>
+
+                            <div class="media-body" style="
+">
+                                <a href="#" style="
+    font-size: 1.2em;
+">Морозов Дмитрий Юрьевич <b>, Губернатор такой-то области</b><span class="media-annotation pull-right" style="
+    margin-right: 35px;
+"><i class="fa-lg ion-compose"></i></span>
+                                </a>
+
+                                <span class="display-block text-muted" style="
+"><i aria-hidden="true" style="
+    padding-right: 8px;
+" class="fa fa-sitemap"></i>Глава администрации</span><span class="display-block" style="
+    padding-top: 5px;
+">Центр принятия решений. Любит коньяк 12-летней выдержки, обедает в ресторане "Какой-то", 2 дочери, разведен. В общении - дружелюбен, любит разговоры о рыбалке</span>
+                            </div>
+                        </li><li class="media">
+                            <div class="media-left">
+                                <i class="fa fa-3x fa-briefcase" aria-hidden="true" style="
+    color: rgba(0, 0, 0, 0.08);
+"></i>
+
+                            </div>
+
+                            <div class="media-body" style="
+">
+                                <a href="#" style="
+    font-size: 1.2em;
+">Морозов Дмитрий Юрьевич <b>, Губернатор такой-то области</b><span class="media-annotation pull-right" style="
+    margin-right: 35px;
+"><i class="fa-lg ion-compose"></i></span>
+                                </a>
+
+                                <span class="display-block text-muted" style="
+"><i aria-hidden="true" style="
+    padding-right: 8px;
+" class="fa fa-sitemap"></i>Глава администрации</span><span class="display-block" style="
+    padding-top: 5px;
+">Центр принятия решений. Любит коньяк 12-летней выдержки, обедает в ресторане "Какой-то", 2 дочери, разведен. В общении - дружелюбен, любит разговоры о рыбалке</span>
+                            </div>
+                        </li>
+
+
+
+
+
+
+                        </ul>
+
+                        </div>
+
+
+
+
+
+
+                            <!--</fieldset>-->
+                            <fieldset class="header" style="margin-top: 20px; margin-bottom: 0px">
+                                <legend>Вложения</legend>
+                                <div class="col-xs-12 col-md-12">
+                                    <div class="panel">
+                                        <div class="body">
+                                            <div class="attach attach-add">
+                                                <div>
+                                                    <form target="FormPanel_Crm_2" enctype="multipart/form-data" method="post"><label><input type="file" class="hide" name="file">
+                                                        <div><i class="fa-2x ion-plus-circled"></i></div>
+                                                    </label></form>
+                                                </div>
+                                            </div>
+                                            <ul class="attachment-list"></ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+
+                            <fieldset class="header">
+                                <legend>Комментарии</legend>
+                                <div class="col-xs-12 col-md-12">
+                                    <div class="panel">
+                                        <div class="body">
+                                            <ul class="chats">
+
+                                                <li class="right">
+                                                    <div><span class="date-time">10.08.2017 12:06</span> <a class="name" href="#">Серебряков
+                                                        Евгений Дмитриевич</a> <span class="options"> <a class="gwt-Anchor" href="javascript:;"><i class="fa fa-reply"></i></a> <a class="gwt-Anchor" href="javascript:;" aria-hidden="true" style="display: none;"><i class="fa fa-pencil"></i></a> <a class="gwt-Anchor" href="javascript:;" aria-hidden="true" style="display: none;"><i class="fa fa-trash"></i></a> </span></div>
+                                                    <a class="image" href="javascript:;"><img alt="" src="./images/user-icon-m.png"></a>
+                                                    <div class="message"><span class="gwt-InlineLabel">lp[</span>
+                                                        <div class="attachment-block hide"><label style="font-size: 11px;font-weight: bold;">
+                                                            Вложения </label>
+                                                            <ul class="attachment-list"></ul>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                                <li class="left">
+                                                    <div><span class="date-time">15.08.2017 09:48</span> <a class="name" href="#">Фрост
+                                                        Александра Сергеевна</a> <span class="options"> <a class="gwt-Anchor" href="javascript:;"><i class="fa fa-reply"></i></a> <a class="gwt-Anchor" href="javascript:;" aria-hidden="true" style="display: none;"><i class="fa fa-pencil"></i></a> <a class="gwt-Anchor" href="javascript:;" aria-hidden="true" style="display: none;"><i class="fa fa-trash"></i></a> </span></div>
+                                                    <a class="image" href="javascript:;"><img alt="" src="./images/user-icon-m.png"></a>
+                                                    <div class="message"> <span class="gwt-InlineLabel"><blockquote>test</blockquote>
+678</span>
+                                                        <div class="attachment-block hide"><label style="font-size: 11px;font-weight: bold;">
+                                                            Вложения </label>
+                                                            <ul class="attachment-list"></ul>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <div class="panel-footer">
+                                            <div class="chats-footer"><textarea class="input-field form-group" placeholder="Введите ваше сообщениe"></textarea>
+                                                <span class=""> <button type="button" class="btn btn-success">Отправить</button> <div class="inline-block"><form target="FormPanel_Crm_6" enctype="multipart/form-data" method="post"><label><input type="file" class="hide" name="file"> <div><span class="btn btn-white"> Добавить вложение </span></div></label></form></div> <ul class="inline-block attachment-list-simple"></ul> </span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+
+
+                        <!--<fieldset class="header">-->
+                        <!--<legend>Комментарии</legend>-->
+                        <!--<div class="col-xs-12 col-md-12">-->
+                        <!--<div class="panel">-->
+                        <!--<div class="body">-->
+                        <!--<ul class="chats"></ul>-->
+                        <!--</div>-->
+                        <!--<div class="panel-footer">-->
+                        <!--<div class="chats-footer">-->
+                        <!--<textarea class="input-field form-group"-->
+                        <!--placeholder="Введите ваше сообщениe"></textarea>-->
+                        <!--<span class="">-->
+                        <!--<button type="button"-->
+                        <!--class="btn btn-success">Отправить</button>-->
+                        <!--<div class="inline-block">-->
+                        <!--<form target="FormPanel_Crm_6"-->
+                        <!--enctype="multipart/form-data"-->
+                        <!--method="post"><label>-->
+                        <!--<input type="file" class="hide" name="file">-->
+                        <!--<div>-->
+                        <!--<span class="btn btn-white"> Добавить вложение </span></div></label></form></div>-->
+                        <!--<ul class="inline-block attachment-list-simple"></ul> </span>-->
+                        <!--</div>-->
+                        <!--</div>-->
+                        <!--</div>-->
+                        <!--</div>-->
+                        <!--</fieldset>-->
+                        <!--<div class="col-xs-12 col-md-12">-->
+                        <!--<div class="panel">-->
+                        <!--<div class="body">-->
+                        <!--<ul class="chats"></ul>-->
+                        <!--</div>-->
+                        <!--<div class="panel-footer">-->
+                        <!--<div class="chats-footer">-->
+                        <!--<textarea class="input-field form-group"-->
+                        <!--placeholder="Введите ваше сообщениe"></textarea>-->
+                        <!--<span class="">-->
+                        <!--<button type="button"-->
+                        <!--class="btn btn-success">Отправить</button>-->
+                        <!--<div class="inline-block">-->
+                        <!--<form target="FormPanel_Crm_6"-->
+                        <!--enctype="multipart/form-data"-->
+                        <!--method="post"><label>-->
+                        <!--<input type="file" class="hide" name="file">-->
+                        <!--<div>-->
+                        <!--<span class="btn btn-white"> Добавить вложение </span></div></label></form></div>-->
+                        <!--<ul class="inline-block attachment-list-simple"></ul> </span>-->
+                        <!--</div>-->
+                        <!--</div>-->
+                        <!--</div>-->
+                        <!--</div>-->
+                        <!--</div>-->
+
+
+                        <!--</div>-->
+                        <!--</div>-->
+
+
+                        <!--</div>-->
+                        <!--</div>-->
+                    </div>
+                    <div class="notifyPanel"></div>
+                </div>
+
+            </div></div></div></div>
+</body>
+</html>

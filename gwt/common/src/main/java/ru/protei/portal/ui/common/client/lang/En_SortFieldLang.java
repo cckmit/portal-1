@@ -25,6 +25,8 @@ public class En_SortFieldLang {
                 return lang.contactPosition();
             case issue_number:
                 return lang.issueNumber();
+            case region_name:
+                return lang.officialRegion();
             default:
                 return lang.unknownField();
         }

@@ -41,6 +41,7 @@ public class SortFieldSelector extends ButtonSelector< En_SortField > {
             case EQUIPMENT:
                 addOption( lang.equipmentName(), En_SortField.name );
                 addOption( lang.equipmentNameBySldWrks(), En_SortField.equipment_name_sldwrks );
+                addOption( lang.equipmentProject(), En_SortField.project );
                 break;
             case ACCOUNT:
                 addOption( lang.accountLogin(), En_SortField.ulogin );
@@ -48,6 +49,11 @@ public class SortFieldSelector extends ButtonSelector< En_SortField > {
                 break;
             case ROLE:
                 addOption( lang.roleName(), En_SortField.role_name );
+                break;
+            case OFFICIAL:
+                addOption( sortFieldLang.getName( En_SortField.creation_date ), En_SortField.creation_date );
+                addOption( sortFieldLang.getName( En_SortField.region_name ), En_SortField.region_name );
+                addOption( sortFieldLang.getName( En_SortField.prod_name ), En_SortField.prod_name );
                 break;
         }
     }
