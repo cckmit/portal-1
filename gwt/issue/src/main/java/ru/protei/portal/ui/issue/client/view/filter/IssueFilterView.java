@@ -103,6 +103,16 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     }
 
     @Override
+    public HasEnabled productEnabled() {
+        return product;
+    }
+
+    @Override
+    public HasEnabled managerEnabled() {
+        return manager;
+    }
+
+    @Override
     public void resetFilter() {
         company.setValue( null );
         product.setValue( null );
