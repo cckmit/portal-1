@@ -16,7 +16,7 @@ import ru.protei.portal.core.model.struct.DistrictInfo;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionInputSelector;
+import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.region.client.activity.filter.AbstractRegionFilterActivity;
 import ru.protei.portal.ui.region.client.activity.filter.AbstractRegionFilterView;
@@ -177,7 +177,7 @@ public class RegionFilterView extends Composite implements AbstractRegionFilterV
 
     @Inject
     @UiField( provided = true )
-    ProductDirectionInputSelector direction;
+    ProductDirectionButtonSelector direction;
 
     @Inject
     FixedPositioner positioner;

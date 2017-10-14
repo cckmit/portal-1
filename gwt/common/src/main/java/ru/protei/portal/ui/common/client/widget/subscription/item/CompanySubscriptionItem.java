@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.company.client.widget.subscription.item;
+package ru.protei.portal.ui.common.client.widget.subscription.item;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.KeyUpEvent;
@@ -18,16 +18,16 @@ import ru.protei.portal.ui.common.client.events.AddEvent;
 import ru.protei.portal.ui.common.client.events.AddHandler;
 import ru.protei.portal.ui.common.client.events.HasAddHandlers;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
-import ru.protei.portal.ui.company.client.widget.subscription.locale.LocaleButtonSelector;
+import ru.protei.portal.ui.common.client.widget.subscription.locale.LocaleButtonSelector;
 
 
 /**
  * Один элемент списка чекбоксов
  */
-public class SubscriptionItem
+public class CompanySubscriptionItem
         extends Composite
         implements TakesValue<CompanySubscription>,
-        HasCloseHandlers<SubscriptionItem>,
+        HasCloseHandlers<CompanySubscriptionItem >,
         HasAddHandlers
 {
     @Inject
@@ -55,7 +55,7 @@ public class SubscriptionItem
     }
 
     @Override
-    public HandlerRegistration addCloseHandler( CloseHandler< SubscriptionItem > handler ) {
+    public HandlerRegistration addCloseHandler( CloseHandler< CompanySubscriptionItem > handler ) {
         return addHandler( handler, CloseEvent.getType() );
     }
 
@@ -95,6 +95,6 @@ public class SubscriptionItem
 
     private CompanySubscription value;
 
-    interface PairItemUiBinder extends UiBinder< HTMLPanel, SubscriptionItem > {}
+    interface PairItemUiBinder extends UiBinder< HTMLPanel, CompanySubscriptionItem > {}
     private static PairItemUiBinder ourUiBinder = GWT.create( PairItemUiBinder.class );
 }

@@ -15,7 +15,7 @@
             <div class="form-group col-xs-12">
                 <label><ui:text from="{lang.productDirection}"/></label>
                 <div class="control-group">
-                    <productdirection:ProductDirectionInputSelector ui:field="direction" />
+                    <productdirection:ProductDirectionButtonSelector ui:field="direction" />
                 </div>
             </div>
             <div class="form-group col-xs-12">

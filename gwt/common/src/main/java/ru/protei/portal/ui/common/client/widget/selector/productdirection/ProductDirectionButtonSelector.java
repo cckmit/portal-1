@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * Button селектор с продуктами
  */
-public class ProductDirectionInputSelector
+public class ProductDirectionButtonSelector
         extends ButtonSelector<ProductDirectionInfo>
         implements ModelSelector<ProductDirectionInfo>
 {
@@ -21,21 +21,19 @@ public class ProductDirectionInputSelector
         productDirectionModel.subscribe( this );
         setSearchEnabled( true );
         setSearchAutoFocus( true );
+
+        setDisplayOptionCreator( value -> new DisplayOption( value == null ? defaultValue : value.name ) );
     }
 
     @Override
     public void fillOptions( List< ProductDirectionInfo > products) {
         clearOptions();
-
-        if(defaultValue != null) {
-            addOption( defaultValue, null );
-            setValue(null);
+        if( defaultValue != null ) {
+            addOption( null );
+            setValue( null );
         }
 
-        products.forEach(direction -> addOption(
-                new DisplayOption( direction.name ),
-                direction
-        ));
+        products.forEach(this::addOption);
      }
 
     public void setDefaultValue( String value ) {
