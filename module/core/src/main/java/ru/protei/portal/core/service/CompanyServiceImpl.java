@@ -97,6 +97,16 @@ public class CompanyServiceImpl implements CompanyService {
         return new CoreResponse<Boolean>().success( result );
     }
 
+    @Override
+    public CoreResponse<List<CompanySubscription>> getCompanySubscriptions( Long companyId ) {
+        if ( companyId == null ) {
+            return new CoreResponse<List<CompanySubscription>>().error( En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        List<CompanySubscription> result = companySubscriptionDAO.listByCompanyId(companyId);
+        return new CoreResponse<List<CompanySubscription>>().success( result );
+    }
+
     private <T> CoreResponse<T> createUndefinedError() {
         return new CoreResponse<T>().error(En_ResultStatus.INTERNAL_ERROR);
     }

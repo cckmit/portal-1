@@ -64,10 +64,6 @@ public abstract class PolicyService implements Activity {
         return profile.getCompany();
     }
 
-    public void updateCompany( Company company ) {
-        profile.setCompany( company );
-    }
-
     @Event
     public void onLogout( AppEvents.Logout event ) {
         profile = null;

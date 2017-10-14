@@ -44,10 +44,13 @@ public interface CompanyService {
 
     CoreResponse<Boolean> isCompanyNameExists(String name, Long excludeId);
     CoreResponse<Boolean> isGroupNameExists(String name, Long excludeId);
+
+    CoreResponse<Boolean> updateCompanySubscriptions( Long id, List<CompanySubscription> value );
+    CoreResponse<List<CompanySubscription>> getCompanySubscriptions( Long companyId );
+
     /**
      * methods below are for testing purpose only
      */
     CoreResponse<CompanyGroup> createGroup(String name, String info);
 
-    CoreResponse<Boolean> updateCompanySubscriptions( Long id, List<CompanySubscription> value );
 }

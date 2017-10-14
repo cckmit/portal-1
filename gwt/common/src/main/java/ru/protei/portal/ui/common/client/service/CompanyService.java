@@ -86,5 +86,5 @@ public interface CompanyService extends RemoteService {
      *
      * @param value
      */
-    Company updateSelfCompanySubscription( List< CompanySubscription > value ) throws RequestFailedException;
+    List<CompanySubscription> updateSelfCompanySubscription( List< CompanySubscription > value ) throws RequestFailedException;
 }

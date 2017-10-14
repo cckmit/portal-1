@@ -7,6 +7,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.ent.CompanySubscription;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
@@ -19,6 +20,7 @@ import ru.protei.portal.ui.common.client.service.ContactServiceAsync;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -48,13 +50,13 @@ public abstract class ProfilePageActivity implements Activity, AbstractProfilePa
 
     @Override
     public void onSaveSubscriptionClicked() {
-        companyService.updateSelfCompanySubscription( view.companySubscription().getValue(), new RequestCallback<Company>() {
+        companyService.updateSelfCompanySubscription( view.companySubscription().getValue(), new RequestCallback<List<CompanySubscription>>() {
             @Override
             public void onError( Throwable throwable ) {}
 
             @Override
-            public void onSuccess( Company company ) {
-                policyService.updateCompany( company );
+            public void onSuccess( List<CompanySubscription> subscriptions ) {
+                policyService.getUserCompany().setSubscriptions( subscriptions );
                 fireEvent( new NotifyEvents.Show( lang.companySubscriptionUpdatedSuccessful(), NotifyEvents.NotifyType.SUCCESS ) );
             }
         });
