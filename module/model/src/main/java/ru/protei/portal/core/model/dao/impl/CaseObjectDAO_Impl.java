@@ -1,7 +1,9 @@
 package ru.protei.portal.core.model.dao.impl;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
+import ru.protei.portal.core.model.dao.CaseTypeDAO;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.helper.HelperFunc;
@@ -19,6 +21,9 @@ import java.util.stream.Collectors;
  */
 public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements CaseObjectDAO {
 
+    @Autowired
+    CaseTypeDAO caseTypeDAO;
+
     public Map<Long,Long> getNumberToIdMap (En_CaseType caseType) {
         Map<Long, Long> numberToIdMap = new HashMap<>();
 
@@ -33,7 +38,7 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
 
         En_CaseType type = object.getCaseType();
 
-        Long caseNumber = HelperFunc.nvlt(getMaxValue("CASENO", Long.class, "case_type=?", type.getId()),0L) + 1;
+        Long caseNumber = caseTypeDAO.generateNextId(type);//HelperFunc.nvlt(getMaxValue("CASENO", Long.class, "case_type=?", type.getId()),0L) + 1;
 
         object.setCaseNumber(caseNumber);
         object.setExtId(type.makeGUID(caseNumber));

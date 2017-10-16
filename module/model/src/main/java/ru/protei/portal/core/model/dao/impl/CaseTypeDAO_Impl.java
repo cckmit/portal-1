@@ -1,13 +1,28 @@
 package ru.protei.portal.core.model.dao.impl;
 
-import ru.protei.portal.core.model.dao.CaseLocationDAO;
-import ru.protei.portal.core.model.dao.CaseTaskDAO;
+import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.core.model.dao.CaseTypeDAO;
-import ru.protei.portal.core.model.ent.CaseLocation;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.CaseType;
 
 /**
- * DAO для местоположений проекта
+ * DAO для типов case
  */
 public class CaseTypeDAO_Impl extends PortalBaseJdbcDAO<CaseType > implements CaseTypeDAO {
+
+
+    @Transactional
+    @Override
+    public Long generateNextId(En_CaseType type) {
+
+        CaseType record = partialGetWithLock((long)type.getId(), "NEXT_ID");
+
+        Long rez = record.getNextId();
+
+        record.setNextId(rez + 1L);
+
+        partialMerge(record, "NEXT_ID");
+
+        return rez;
+    }
 }
