@@ -51,6 +51,8 @@
                 <!--<module>app/crm</module>-->
             </modules>
         </profile>
+
+
         <profile>
             <id>api</id>
             <modules>
