@@ -62,9 +62,10 @@ package ru.protei.portal.ui.common.client.common;
  * 4.0.31.29 - CRM-34 Замечания по реализации привилегий
  *             CRM-35 Замечания по интерфейсу
  *             CRM-15 Настройка оповещения
+ * 4.0.31.30   CRM-8 Фиксация изменения статуса в комментариях
  */
 public class Version {
     public static String getVersion() {
-        return "4.0.31.29";
+        return "4.0.31.30";
     }
 }

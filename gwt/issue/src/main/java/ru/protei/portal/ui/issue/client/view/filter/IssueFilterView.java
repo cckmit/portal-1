@@ -119,6 +119,16 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         return company;
     }
 
+    @Override
+    public HasEnabled productEnabled() {
+        return product;
+    }
+
+    @Override
+    public HasEnabled managerEnabled() {
+        return manager;
+    }
+
     @UiHandler( "resetBtn" )
     public void onResetClicked ( ClickEvent event ) {
         if ( activity != null ) {
