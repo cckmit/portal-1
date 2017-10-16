@@ -49,6 +49,7 @@ public class SelectorItem
     }
 
     public void setImage( String src ) {
+        image.removeClassName( "hide" );
         image.setSrc( src );
     }
 

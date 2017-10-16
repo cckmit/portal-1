@@ -5,7 +5,7 @@
             <i ui:field="icon"/>
             <span ui:field="text"/>
             <link rel="icon"/>
-            <img ui:field="image" src=""/>
+            <img ui:field="image" src="" class="hide"/>
         </g:Anchor>
     </g:HTMLPanel>
 </ui:UiBinder>
