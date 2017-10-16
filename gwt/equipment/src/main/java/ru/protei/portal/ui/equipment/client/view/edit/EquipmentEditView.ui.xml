@@ -53,7 +53,9 @@
                         <label>
                             <ui:text from="{lang.equipmentManager}"/>
                         </label>
-                        <person:EmployeeButtonSelector ui:field="manager" defaultValue="{lang.equipmentManagerNotDefined}"/>
+                        <person:EmployeeButtonSelector ui:field="manager"
+                                                       defaultValue="{lang.equipmentManagerNotDefined}"
+                        />
                     </g:HTMLPanel>
 
                     <g:HTMLPanel styleName="form-group col-xs-3" ui:field="date">

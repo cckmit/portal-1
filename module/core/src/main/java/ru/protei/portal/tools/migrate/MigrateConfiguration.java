@@ -22,10 +22,10 @@ public class MigrateConfiguration {
    }
 
 
-   @Bean
-   MigrateAction getCRM_SessionMigrateAction () {
-       return new MigrateCrmSessions();
-   }
+//   @Bean
+//   MigrateAction getCRM_SessionMigrateAction () {
+//       return new MigrateCrmSessions();
+//   }
 
 //   @Bean
 //   MigrateAction getPersonAbsenceAction() {

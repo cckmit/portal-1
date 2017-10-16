@@ -18,6 +18,17 @@ public class EmployeeButtonSelector extends ButtonSelector<PersonShortView> impl
         employeeModel.subscribe(this);
         setSearchEnabled( true );
         setSearchAutoFocus( true );
+
+        setDisplayOptionCreator( value -> {
+            if ( value == null ) {
+                return new DisplayOption( defaultValue );
+            }
+
+            return new DisplayOption(
+                    value.getDisplayShortName(),
+                    value.isFired() ? "not-active" : "",
+                    value.isFired() ? "fa fa-ban ban" : "");
+        } );
     }
 
     @Override
@@ -25,15 +36,11 @@ public class EmployeeButtonSelector extends ButtonSelector<PersonShortView> impl
         clearOptions();
 
         if(defaultValue != null) {
-            addOption(defaultValue, null);
+            addOption(null);
             setValue(null);
         }
 
-        persons.forEach(person -> addOption(new DisplayOption(
-                        person.getDisplayShortName(),
-                        person.isFired() ? "not-active" : "",
-                        person.isFired() ? "fa fa-ban ban" : ""),
-                person));
+        persons.forEach( this :: addOption );
     }
 
     public void setDefaultValue( String value ) {

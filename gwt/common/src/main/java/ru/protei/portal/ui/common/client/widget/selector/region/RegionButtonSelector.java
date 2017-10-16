@@ -19,6 +19,7 @@ public class RegionButtonSelector extends ButtonSelector<EntityOption> implement
         regionModel.subscribe(this);
         setSearchEnabled( true );
         setSearchAutoFocus( true );
+        setDisplayOptionCreator( value -> new DisplayOption( value == null ? defaultValue : value.getDisplayText() ) );
     }
 
     @Override
@@ -26,13 +27,11 @@ public class RegionButtonSelector extends ButtonSelector<EntityOption> implement
         clearOptions();
 
         if(defaultValue != null) {
-            addOption(defaultValue, null);
+            addOption(null);
             setValue(null);
         }
 
-        regions.forEach(person -> addOption(new DisplayOption(
-                        person.getDisplayText() ),
-                person));
+        regions.forEach(this::addOption);
     }
 
     public void setDefaultValue( String value ) {

@@ -110,7 +110,6 @@ public class PrivilegeList
     @Inject
     En_PrivilegeActionLang actionLang;
 
-
     private Set<En_Privilege> values;
 
     private Map<En_Privilege, ToggleButton> modelToView = new HashMap<>();

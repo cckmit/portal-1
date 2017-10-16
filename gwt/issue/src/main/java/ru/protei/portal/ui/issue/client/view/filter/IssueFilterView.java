@@ -43,7 +43,6 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         sortField.setType( ModuleType.ISSUE );
         sortDir.setValue( false );
         company.setDefaultValue( lang.selectIssueCompany() );
-        company.subscribeToModel();
         product.setDefaultValue( lang.selectIssueProduct() );
         manager.setDefaultValue( lang.selectIssueManager() );
         dateRange.setPlaceholder( lang.selectDate() );
@@ -113,6 +112,11 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         sortField.setValue( En_SortField.creation_date );
         sortDir.setValue( false );
         search.setText( "" );
+    }
+
+    @Override
+    public HasEnabled companyEnabled() {
+        return company;
     }
 
     @UiHandler( "resetBtn" )

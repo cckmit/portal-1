@@ -11,6 +11,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.Attachment;
+import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
@@ -60,6 +61,7 @@ public abstract class IssueTableActivity
 
     @Event
     public void onShow( IssueEvents.Show event ) {
+        applyFilterViewPrivileges();
 
         this.fireEvent( new AppEvents.InitPanelName( lang.issues() ) );
         initDetails.parent.clear();
@@ -220,7 +222,7 @@ public abstract class IssueTableActivity
             }
         }
 
-        query.setCompanyId( filterView.company().getValue() == null ? null : filterView.company().getValue().getId() );
+        query.setCompanyId( getFilterCompanyId() );
         query.setProductId( filterView.product().getValue() == null ? null : filterView.product().getValue().getId() );
         query.setManagerId( filterView.manager().getValue() == null ? null : filterView.manager().getValue().getId() );
 
@@ -246,6 +248,24 @@ public abstract class IssueTableActivity
         }
 
         return query;
+    }
+
+    private void applyFilterViewPrivileges() {
+        filterView.companyEnabled().setEnabled( policyService.hasPrivilegeFor( En_Privilege.ISSUE_COMPANY_EDIT ) );
+        filterView.productEnabled().setEnabled( policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRODUCT_EDIT ) );
+        filterView.managerEnabled().setEnabled( policyService.hasPrivilegeFor( En_Privilege.ISSUE_MANAGER_EDIT ) );
+
+        Company userCompany = policyService.getUserCompany();
+        filterView.company().setValue( userCompany == null ? null : userCompany.toEntityOption() );
+    }
+
+    private Long getFilterCompanyId() {
+        if ( !policyService.hasPrivilegeFor( En_Privilege.ISSUE_COMPANY_EDIT ) ) {
+            Company userCompany = policyService.getUserCompany();
+            return userCompany == null ? null : userCompany.getId();
+        }
+
+        return filterView.company().getValue() == null ? null : filterView.company().getValue().getId();
     }
 
     @Inject

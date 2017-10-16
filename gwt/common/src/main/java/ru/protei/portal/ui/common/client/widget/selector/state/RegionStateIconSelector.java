@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.ui.common.client.lang.En_RegionStateLang;
+import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.icon.IconSelector;
 
 /**
@@ -12,7 +13,8 @@ import ru.protei.portal.ui.common.client.widget.selector.icon.IconSelector;
 public class RegionStateIconSelector extends IconSelector<En_RegionState> {
 
     @Inject
-    public void init() {
+    public void init(En_RegionStateLang lang) {
+        setDisplayOptionCreator( value -> new DisplayOption( lang.getStateName( value ), null, lang.getStateIcon( value ) ) );
         fillButtons();
     }
 
@@ -25,10 +27,7 @@ public class RegionStateIconSelector extends IconSelector<En_RegionState> {
         clearOptions();
 
         for ( En_RegionState state : En_RegionState.values() ) {
-            addOption( lang.getStateName( state ), state, lang.getStateIcon( state ) );
+            addOption( state );
         }
     }
-
-    @Inject
-    En_RegionStateLang lang;
 }

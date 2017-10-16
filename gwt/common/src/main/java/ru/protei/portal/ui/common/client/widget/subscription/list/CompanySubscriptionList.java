@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.company.client.widget.subscription.list;
+package ru.protei.portal.ui.common.client.widget.subscription.list;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -10,7 +10,7 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.protei.portal.core.model.ent.CompanySubscription;
-import ru.protei.portal.ui.company.client.widget.subscription.item.SubscriptionItem;
+import ru.protei.portal.ui.common.client.widget.subscription.item.CompanySubscriptionItem;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,11 +22,11 @@ import static java.util.stream.Collectors.toList;
 /**
  * Список подписчиков на рассылку для компании
  */
-public class SubscriptionList
+public class CompanySubscriptionList
         extends Composite
         implements HasValue<List<CompanySubscription>>
 {
-    public SubscriptionList() {
+    public CompanySubscriptionList() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
     }
 
@@ -65,7 +65,7 @@ public class SubscriptionList
     }
 
     private void makeItemAndFillValue( CompanySubscription subscription ) {
-        SubscriptionItem subscriptionItemWidget = itemProvider.get();
+        CompanySubscriptionItem subscriptionItemWidget = itemProvider.get();
         subscriptionItemWidget.setValue( subscription );
         subscriptionItemWidget.addCloseHandler( event -> {
             if ( container.getWidgetCount() < 2 ) {
@@ -99,12 +99,12 @@ public class SubscriptionList
     @UiField
     HTMLPanel container;
     @Inject
-    Provider<SubscriptionItem> itemProvider;
+    Provider<CompanySubscriptionItem > itemProvider;
 
     List<CompanySubscription> value = new ArrayList<>();
-    Map<SubscriptionItem, CompanySubscription> modelToView = new HashMap<>();
+    Map<CompanySubscriptionItem, CompanySubscription> modelToView = new HashMap<>();
 
-    interface SubscriptionListUiBinder extends UiBinder< HTMLPanel, SubscriptionList > {}
+    interface SubscriptionListUiBinder extends UiBinder< HTMLPanel, CompanySubscriptionList > {}
     private static SubscriptionListUiBinder ourUiBinder = GWT.create( SubscriptionListUiBinder.class );
 
 }

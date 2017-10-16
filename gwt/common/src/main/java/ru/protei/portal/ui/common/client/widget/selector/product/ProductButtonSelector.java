@@ -20,30 +20,32 @@ public class ProductButtonSelector extends ButtonSelector<ProductShortView> impl
         productModel.subscribe( this );
         setSearchEnabled( true );
         setSearchAutoFocus( true );
+
+        setDisplayOptionCreator( value -> {
+            if ( value == null ) {
+                return new DisplayOption( defaultValue );
+            }
+
+            return new DisplayOption(
+                    value.getName(),
+                    En_DevUnitState.DEPRECATED.getId() == value.getStateId() ? "not-active" : "" ,
+                    En_DevUnitState.DEPRECATED.getId() == value.getStateId() ? "fa fa-ban ban" : "");
+        } );
     }
-
-    public void fillOptions( List< ProductShortView > products) {
-        clearOptions();
-
-        if(defaultValue != null) {
-            addOption( defaultValue, null );
-            setValue(null);
-        }
-
-        products.forEach(product -> addOption(new DisplayOption(
-                        product.getName(),
-                        En_DevUnitState.DEPRECATED.getId() == product.getStateId() ? "not-active" : "" ,
-                        En_DevUnitState.DEPRECATED.getId() == product.getStateId() ? "fa fa-ban ban" : ""),
-                product));
-     }
 
     public void setDefaultValue( String value ) {
         this.defaultValue = value;
     }
 
-    @Inject
-    Lang lang;
+    public void fillOptions( List< ProductShortView > products) {
+        clearOptions();
+
+        if( defaultValue != null ) {
+            addOption( null );
+            setValue(null);
+        }
+        products.forEach( this :: addOption );
+     }
 
     private String defaultValue = null;
-
 }

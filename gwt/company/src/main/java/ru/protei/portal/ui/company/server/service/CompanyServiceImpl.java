@@ -6,10 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dict.*;
-import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.core.model.ent.CompanyGroup;
-import ru.protei.portal.core.model.ent.UserRole;
-import ru.protei.portal.core.model.ent.UserSessionDescriptor;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CompanyGroupQuery;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -136,9 +133,6 @@ public class CompanyServiceImpl implements CompanyService {
 
         log.debug( "getCompanyOptionList()" );
 
-        //TODO используется в Селектор списка компаний CompanySelector, считаю что привилегия COMPANY_VIEW не для этого
-
-
         CoreResponse< List< EntityOption > > result = companyService.companyOptionList(categories);
 
         log.debug( "result status: {}, data-amount: {}", result.getStatus(), result.isOk() ? result.getDataAmountTotal() : 0 );
@@ -153,8 +147,6 @@ public class CompanyServiceImpl implements CompanyService {
     public List< EntityOption > getGroupOptionList() throws RequestFailedException {
 
         log.debug( "getGroupOptionList()" );
-
-        //TODO используется в Селектор списка групп компаний GroupButtonSelector/GroupInputSelector, считаю что привилегия COMPANY_VIEW не для этого
 
         CoreResponse< List< EntityOption > > result = companyService.groupOptionList();
 
@@ -174,8 +166,6 @@ public class CompanyServiceImpl implements CompanyService {
         Set<UserRole> availableRoles = getDescriptorAndCheckSession().getLogin().getRoles();
         boolean hasOfficial = policyService.hasPrivilegeFor(En_Privilege.OFFICIAL_VIEW, availableRoles);
 
-        //TODO используется в Селектор списка категорий CategoryBtnGroupMulti/CategoryButtonSelector, считаю что привилегия COMPANY_VIEW не для этого
-
         CoreResponse< List< EntityOption > > result = companyService.categoryOptionList(hasOfficial);
 
         log.debug( "result status: {}, data-amount: {}", result.getStatus(), result.isOk() ? result.getDataAmountTotal() : 0 );
@@ -184,6 +174,25 @@ public class CompanyServiceImpl implements CompanyService {
             throw new RequestFailedException( result.getStatus() );
 
         return result.getData();
+    }
+
+    @Override
+    public List<CompanySubscription> updateSelfCompanySubscription( List< CompanySubscription > value ) throws RequestFailedException {
+        log.debug( "updateSelfCompanySubscription()" );
+
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+        CoreResponse< Boolean > updateResult = companyService.updateCompanySubscriptions( descriptor.getCompany().getId(), value );
+
+        if ( updateResult.isError() ) {
+            throw new RequestFailedException( updateResult.getStatus() );
+        }
+
+        CoreResponse< List<CompanySubscription> > companySubscriptionResult = companyService.getCompanySubscriptions( descriptor.getCompany().getId() );
+        if ( companySubscriptionResult.isError() ) {
+            throw new RequestFailedException( updateResult.getStatus() );
+        }
+
+        return companySubscriptionResult.getData();
     }
 
     private UserSessionDescriptor getDescriptorAndCheckSession() throws RequestFailedException {

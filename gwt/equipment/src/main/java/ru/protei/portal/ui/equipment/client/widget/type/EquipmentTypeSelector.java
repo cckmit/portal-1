@@ -5,6 +5,7 @@ import ru.protei.portal.core.model.dict.En_EquipmentType;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.ui.common.client.lang.En_EquipmentTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 
 /**
@@ -13,18 +14,17 @@ import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 public class EquipmentTypeSelector extends ButtonSelector<En_EquipmentType> {
 
     @Inject
-    public void init( ) {
+    public void init( En_EquipmentTypeLang typeLang ) {
         setHasNullValue( false );
+        setDisplayOptionCreator( value -> new DisplayOption( typeLang.getName( value ) ));
         fillOptions();
     }
+
     private void fillOptions() {
         clearOptions();
 
         for ( En_EquipmentType type : En_EquipmentType.values() ) {
-            addOption( typeLang.getName( type ), type );
+            addOption( type );
         }
     }
-
-    @Inject
-    En_EquipmentTypeLang typeLang;
 }

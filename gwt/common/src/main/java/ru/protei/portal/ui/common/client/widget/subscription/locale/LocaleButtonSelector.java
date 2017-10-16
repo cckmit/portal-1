@@ -1,6 +1,7 @@
-package ru.protei.portal.ui.company.client.widget.subscription.locale;
+package ru.protei.portal.ui.common.client.widget.subscription.locale;
 
 import com.google.inject.Inject;
+import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 
 import java.util.Arrays;
@@ -14,12 +15,13 @@ public class LocaleButtonSelector extends ButtonSelector<String>{
     @Inject
     public void onInit() {
         hasNullValue = false;
+        setDisplayOptionCreator( value -> new DisplayOption( value, "selector-option-" + value, null ));
         fillOptions();
     }
 
     private void fillOptions(){
         clearOptions();
-        locales.forEach(option -> addOptionWithStyle(option, option, "selector-option-" + option));
+        locales.forEach(this::addOption);
     }
 
     private final List<String> locales = Arrays.asList("ru", "en");

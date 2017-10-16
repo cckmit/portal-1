@@ -31,7 +31,6 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
-        company.subscribeToModel();
     }
 
     @Override

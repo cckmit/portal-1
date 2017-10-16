@@ -31,7 +31,7 @@
                 <div class="col-xs-6">
                     <label class="col-xs-5 col-md-5"><ui:text from="{lang.projectDirection}"/></label>
                     <div class="col-xs-7">
-                        <productdirection:ProductDirectionInputSelector ui:field="projectDirection" />
+                        <productdirection:ProductDirectionButtonSelector ui:field="projectDirection" />
                     </div>
                 </div>
             </fieldset>
