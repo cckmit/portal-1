@@ -3,6 +3,7 @@ package ru.protei.portal.ui.common.client.widget.selector.dict;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 
 /**
@@ -14,12 +15,35 @@ public class GenderButtonSelector extends ButtonSelector<En_Gender> {
     public void init( ) {
         setSearchEnabled( false );
         setSearchAutoFocus( true );
+        setDisplayOptionCreator( value -> new DisplayOption( getName( value )) );
 
-        addOption(lang.genderUndefined(), En_Gender.UNDEFINED);
-        addOption(lang.genderFemale(), En_Gender.FEMALE);
-        addOption(lang.genderMale(), En_Gender.MALE);
+        fillOptions();
     }
 
+    private void fillOptions() {
+        for ( En_Gender value : En_Gender.values() ) {
+            addOption( value );
+        }
+    }
+
+
+    private String getName( En_Gender value ) {
+        if ( value == null ) {
+            return lang.genderUndefined();
+        }
+
+        switch ( value ) {
+            case MALE:
+                return lang.genderMale();
+            case FEMALE:
+                return lang.genderFemale();
+            case UNDEFINED:
+                return lang.genderUndefined();
+
+            default:
+                return lang.genderUndefined();
+        }
+    }
 
     @Inject
     Lang lang;

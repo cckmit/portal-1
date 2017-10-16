@@ -2,6 +2,9 @@ package ru.protei.portal.ui.common.client.events;
 
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
+import ru.brainworm.factory.context.client.annotation.Omit;
+import ru.brainworm.factory.context.client.annotation.Url;
+import ru.protei.portal.ui.common.shared.model.Profile;
 
 /**
  * Событие для App
@@ -24,6 +27,13 @@ public class AppEvents {
     public static class Logout {
         public Logout() { }
     }
+
+
+    /**
+     * Показать страничку профиля пользователя
+     */
+    @Url( value = "profile", primary = true )
+    public static class ShowProfile {}
 
     /**
      * Инициализация контейнера App

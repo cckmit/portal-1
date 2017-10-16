@@ -101,5 +101,14 @@ public class IssueEvents {
         public HasWidgets parent;
 
     }
+
+    public static class SaveComment {
+        public SaveComment( Long id, Long stateId ) {
+            this.id = id;
+            this.stateId = stateId;
+        }
+        public Long id;
+        public Long stateId;
+    }
 }
 

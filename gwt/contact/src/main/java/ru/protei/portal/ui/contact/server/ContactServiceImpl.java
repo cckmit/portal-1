@@ -30,8 +30,6 @@ public class ContactServiceImpl implements ContactService {
     @Override
     public List<Person> getContacts( ContactQuery query ) throws RequestFailedException {
 
-        //TODO используется в cелектор сотрудников любой компании ContactButtonSelector, считаю что привилегия PERSON_VIEW не для этого
-
         log.debug( "getContacts(): searchPattern={} | companyId={} | isFired={} | sortField={} | sortDir={}",
                 query.getSearchString(), query.getCompanyId(), query.getFired(), query.getSortField(), query.getSortDir() );
 
@@ -46,8 +44,6 @@ public class ContactServiceImpl implements ContactService {
     @Override
     public Person getContact(long id) throws RequestFailedException {
         log.debug("get contact, id: {}", id);
-
-        //TODO используется для отображения карточки контакта, думаю проверка роли CONTACT_VIEW логична
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 

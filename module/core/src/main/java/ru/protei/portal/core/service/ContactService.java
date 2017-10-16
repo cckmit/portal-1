@@ -17,7 +17,6 @@ import java.util.List;
  */
 public interface ContactService {
 
-    @Privileged( En_Privilege.CONTACT_VIEW )
     CoreResponse<List<PersonShortView>> shortViewList(AuthToken token, ContactQuery query);
 
     @Privileged( En_Privilege.CONTACT_VIEW )

@@ -42,7 +42,7 @@
 
         <g:HTMLPanel styleName="main-sidebar" ui:field="sidebar">
             <section class="sidebar">
-                <div class="user-panel">
+                <g:HTMLPanel ui:field="userPanel" styleName="user-panel">
                     <div class="pull-left image">
                         <img src="./images/user-icon-m.png" class="img-circle"/>
                     </div>
@@ -50,7 +50,7 @@
                         <p ui:field="username"></p>
                         <a ui:field="role"></a>
                     </div>
-                </div>
+                </g:HTMLPanel>
                 <ul class="sidebar-menu">
                     <li class="header">
                         <ui:text from="{lang.appNavHeader}"/>

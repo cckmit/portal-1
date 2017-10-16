@@ -21,7 +21,7 @@ import ru.protei.portal.ui.company.client.activity.edit.AbstractCompanyEditActiv
 import ru.protei.portal.ui.company.client.activity.edit.AbstractCompanyEditView;
 import ru.protei.portal.ui.company.client.widget.category.buttonselector.CategoryButtonSelector;
 import ru.protei.portal.ui.company.client.widget.group.buttonselector.GroupButtonSelector;
-import ru.protei.portal.ui.company.client.widget.subscription.list.SubscriptionList;
+import ru.protei.portal.ui.common.client.widget.subscription.list.CompanySubscriptionList;
 
 import java.util.List;
 
@@ -184,7 +184,7 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
 
     @Inject
     @UiField( provided = true )
-    SubscriptionList subscriptions;
+    CompanySubscriptionList subscriptions;
 
     Timer timer = new Timer() {
         @Override

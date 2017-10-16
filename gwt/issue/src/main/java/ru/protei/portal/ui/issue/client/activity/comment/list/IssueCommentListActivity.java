@@ -71,6 +71,11 @@ public abstract class IssueCommentListActivity
         requestData( event.caseId );
     }
 
+    @Event
+    public  void onSaveComment( IssueEvents.SaveComment event ) {
+        send( event.id, event.stateId );
+    }
+
     @Override
     public void onRemoveClicked( AbstractIssueCommentItemView itemView ) {
         CaseComment caseComment = itemViewToModel.get( itemView );
@@ -86,6 +91,21 @@ public abstract class IssueCommentListActivity
         }
 
         lastCommentView = null;
+
+        if (caseComment.getCaseStateId() != null) {
+            caseComment.setText(null);
+            issueService.editIssueComment(caseComment, new RequestCallback<CaseComment>() {
+                @Override
+                public void onError(Throwable throwable) {}
+
+                @Override
+                public void onSuccess(CaseComment caseComment) {
+                    itemView.setMessage(null);
+                }
+            });
+            return;
+        }
+
         issueService.removeIssueComment( caseComment, new RequestCallback<Void>() {
             @Override
             public void onError( Throwable throwable ) {
@@ -146,63 +166,7 @@ public abstract class IssueCommentListActivity
 
     @Override
     public void onSendClicked() {
-        if ( comment == null ) {
-            initCaseCommentByUser();
-        }
-        boolean isEdit = comment.getId() != null;
-
-        String message = view.message().getValue();
-        if ( message == null || message.isEmpty() ) {
-            fireEvent( new NotifyEvents.Show( lang.errEditIssueCommentEmpty(), NotifyEvents.NotifyType.ERROR ) );
-            return;
-        }
-
-        comment.setText( IssueCommentUtils.prewrapMessage( message ) );
-        comment.setCaseAttachments(
-            tempAttachments.stream()
-                    .map(a -> new CaseAttachment(show.caseId, a.getId(), isEdit? comment.getId(): null))
-                    .collect(Collectors.toList())
-        );
-
-        issueService.editIssueComment( comment, new RequestCallback<CaseComment>() {
-            @Override
-            public void onError( Throwable throwable ) {
-                fireEvent( new NotifyEvents.Show( lang.errEditIssueComment(), NotifyEvents.NotifyType.ERROR ) );
-            }
-
-            @Override
-            public void onSuccess( CaseComment result ) {
-                if(result == null){
-                    onError(null);
-                    return;
-                }
-                result.setCaseAttachments(comment.getCaseAttachments());
-
-                if ( isEdit ) {
-                    lastCommentView.setMessage( result.getText() );
-
-                    Collection<Attachment> prevAttachments = lastCommentView.attachmentContainer().getAll();
-
-                    if(!(prevAttachments.isEmpty() && tempAttachments.isEmpty())){
-                        synchronizeAttachments(prevAttachments, tempAttachments);
-                        lastCommentView.attachmentContainer().clear();
-                        lastCommentView.attachmentContainer().add(tempAttachments);
-                        lastCommentView.showAttachments(!tempAttachments.isEmpty());
-                    }
-                } else {
-                    fireEvent(new AttachmentEvents.Add(show.caseId, tempAttachments));
-                    AbstractIssueCommentItemView itemView = makeCommentView( result );
-                    lastCommentView = itemView;
-                    view.getCommentsContainer().add( itemView.asWidget() );
-                }
-
-                comment = null;
-                view.message().setValue( null );
-                view.attachmentContainer().clear();
-                tempAttachments.clear();
-                fireEvent( new IssueEvents.ChangeModel() );
-            }
-        } );
+        send( null, null );
     }
 
     @Override
@@ -299,10 +263,17 @@ public abstract class IssueCommentListActivity
     private AbstractIssueCommentItemView makeCommentView( CaseComment value ) {
         AbstractIssueCommentItemView itemView = issueProvider.get();
         itemView.setActivity( this );
+
+        if ( value.getAuthorId().equals( profile.getId() ) ) {
+            itemView.setMine();
+        }
+
         itemView.setDate( DateFormatter.formatDateTime( value.getCreated() ) );
         itemView.setOwner( value.getAuthor() == null ? "Unknown" : value.getAuthor().getDisplayName() );
         if ( HelperFunc.isNotEmpty( value.getText() ) ) {
             itemView.setMessage( value.getText() );
+        } else {
+            itemView.hideOptions();
         }
         itemView.enabledEdit( policyService.hasEveryPrivilegeOf( En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT ) );
 
@@ -314,10 +285,8 @@ public abstract class IssueCommentListActivity
         bindAttachmentsToComment(itemView, value.getCaseAttachments());
 
         itemView.enabledEdit( IssueCommentUtils.isEnableEdit( value, profile.getId() ) );
-        if ( value.getAuthorId().equals( profile.getId() ) ) {
-            itemView.setMine();
-        }
         itemViewToModel.put( itemView, value );
+
 
         return itemView;
     }
@@ -331,12 +300,6 @@ public abstract class IssueCommentListActivity
             itemView.showAttachments(true);
             requestAttachments(extractIds(caseAttachments), itemView.attachmentContainer()::add);
         }
-    }
-
-    private void initCaseCommentByUser() {
-        comment = new CaseComment();
-        comment.setAuthorId( profile.getId() );
-        comment.setCaseId( show.caseId );
     }
 
     private void requestAttachments(List<Long> ids, Consumer<Collection<Attachment>> addAction){
@@ -374,6 +337,72 @@ public abstract class IssueCommentListActivity
                 Collections.emptyList():
                 list.stream().map(CaseAttachment::getAttachmentId).collect(Collectors.toList());
     }
+
+    private void send( Long id, Long stateId ) {
+        if ( comment == null ) {
+            comment = new CaseComment();
+            comment.setAuthorId( profile.getId() );
+            comment.setCaseId( id != null ? id : show.caseId );
+        }
+
+        boolean isEdit = comment.getId() != null;
+
+        String message = view.message().getValue();
+        if ( stateId == null && HelperFunc.isEmpty( message ) ) {
+            if ( id == null ) {
+                fireEvent(new NotifyEvents.Show(lang.errEditIssueCommentEmpty(), NotifyEvents.NotifyType.ERROR));
+            }
+            return;
+        }
+
+        comment.setText( message == null ? null : IssueCommentUtils.prewrapMessage( message ) );
+        comment.setCaseStateId( stateId );
+        comment.setCaseAttachments(
+                tempAttachments.stream()
+                        .map(a -> new CaseAttachment(show.caseId, a.getId(), isEdit? comment.getId(): null))
+                        .collect(Collectors.toList())
+        );
+
+        issueService.editIssueComment( comment, new RequestCallback<CaseComment>() {
+            @Override
+            public void onError( Throwable throwable ) {
+                fireEvent( new NotifyEvents.Show( lang.errEditIssueComment(), NotifyEvents.NotifyType.ERROR ) );
+            }
+
+            @Override
+            public void onSuccess( CaseComment result ) {
+                if(result == null){
+                    onError(null);
+                    return;
+                }
+                result.setCaseAttachments(comment.getCaseAttachments());
+
+                if ( isEdit ) {
+                    lastCommentView.setMessage( result.getText() );
+
+                    Collection<Attachment> prevAttachments = lastCommentView.attachmentContainer().getAll();
+
+                    if(!(prevAttachments.isEmpty() && tempAttachments.isEmpty())){
+                        synchronizeAttachments(prevAttachments, tempAttachments);
+                        lastCommentView.attachmentContainer().clear();
+                        lastCommentView.attachmentContainer().add(tempAttachments);
+                        lastCommentView.showAttachments(!tempAttachments.isEmpty());
+                    }
+                } else {
+                    fireEvent(new AttachmentEvents.Add(show.caseId, tempAttachments));
+                    AbstractIssueCommentItemView itemView = makeCommentView( result );
+                    lastCommentView = itemView;
+                    view.getCommentsContainer().add( itemView.asWidget() );
+                }
+
+                comment = null;
+                view.message().setValue( null );
+                view.attachmentContainer().clear();
+                tempAttachments.clear();
+                fireEvent( new IssueEvents.ChangeModel() );
+            }
+        } );
+    };
 
     @Inject
     Lang lang;

@@ -41,6 +41,26 @@
                     </skipTests>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.5.0</version>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <mainClass>ru.protei.portal.config.LocalizedTemplateCreator</mainClass>
+                    <arguments>
+                        <argument>notification/email/crm.subject.ftl</argument>
+                        <argument>notification/email/crm.body.ftl</argument>
+                    </arguments>
+                </configuration>
+            </plugin>
 
         </plugins>
 
@@ -50,6 +70,12 @@
                 <includes>
                     <include>*.ftl</include>
                     <include>**/*.ftl</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>*.properties</include>
                 </includes>
             </resource>
         </resources>

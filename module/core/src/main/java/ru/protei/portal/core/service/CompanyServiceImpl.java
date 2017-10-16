@@ -87,6 +87,26 @@ public class CompanyServiceImpl implements CompanyService {
         return createUndefinedError();
     }
 
+    @Override
+    public CoreResponse< Boolean > updateCompanySubscriptions( Long companyId, List< CompanySubscription > subscriptions ) {
+        if ( companyId == null ) {
+            return new CoreResponse<Boolean>().error( En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        boolean result = updateCompanySubscription(companyId, subscriptions);
+        return new CoreResponse<Boolean>().success( result );
+    }
+
+    @Override
+    public CoreResponse<List<CompanySubscription>> getCompanySubscriptions( Long companyId ) {
+        if ( companyId == null ) {
+            return new CoreResponse<List<CompanySubscription>>().error( En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        List<CompanySubscription> result = companySubscriptionDAO.listByCompanyId(companyId);
+        return new CoreResponse<List<CompanySubscription>>().success( result );
+    }
+
     private <T> CoreResponse<T> createUndefinedError() {
         return new CoreResponse<T>().error(En_ResultStatus.INTERNAL_ERROR);
     }
@@ -171,7 +191,7 @@ public class CompanyServiceImpl implements CompanyService {
             return new CoreResponse().error(En_ResultStatus.NOT_CREATED);
         }
 
-        updateCompanySubscription(company);
+        updateCompanySubscription(company.getId(), company.getSubscriptions());
         return new CoreResponse<Company>().success(company);
     }
 
@@ -187,7 +207,7 @@ public class CompanyServiceImpl implements CompanyService {
         if ( !result )
             new CoreResponse().error(En_ResultStatus.NOT_UPDATED);
 
-        updateCompanySubscription(company);
+        updateCompanySubscription(company.getId(), company.getSubscriptions());
         return new CoreResponse<Company>().success(company);
     }
 
@@ -210,18 +230,17 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
 
-    private boolean updateCompanySubscription( Company company ) {
-        Long companyId = company.getId();
+    private boolean updateCompanySubscription( Long companyId, List<CompanySubscription> companySubscriptions ) {
         log.info( "binding update to linked company subscription for companyId = {}", companyId );
 
         List<Long> toRemoveNumberIds = companySubscriptionDAO.listIdsByCompanyId( companyId );
-        if ( CollectionUtils.isEmpty(company.getSubscriptions()) && CollectionUtils.isEmpty(toRemoveNumberIds) ) {
+        if ( CollectionUtils.isEmpty(companySubscriptions) && CollectionUtils.isEmpty(toRemoveNumberIds) ) {
             return true;
         }
 
         List<CompanySubscription> newSubscriptions = new ArrayList<>();
         List<CompanySubscription> oldSubscriptions = new ArrayList<>();
-        company.getSubscriptions().forEach( subscription -> {
+        companySubscriptions.forEach( subscription -> {
             if ( subscription.getId() == null ) {
                 subscription.setCompanyId( companyId );
                 newSubscriptions.add( subscription );

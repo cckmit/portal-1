@@ -100,6 +100,8 @@ public class CaseServiceImpl implements CaseService {
         if (caseId == null)
             return new CoreResponse().error(En_ResultStatus.NOT_CREATED);
 
+        caseObject.setId(caseId);
+
         if(CollectionUtils.isNotEmpty(caseObject.getAttachments())){
             caseAttachmentDAO.persistBatch(
                     caseObject.getAttachments()
@@ -111,6 +113,7 @@ public class CaseServiceImpl implements CaseService {
 
         // From GWT-side we get partially filled object, that's why we need to refresh state from db
         CaseObject newState = caseObjectDAO.get(caseObject.getId());
+        newState.setAttachments(caseObject.getAttachments());
         publisherService.publishEvent(new CaseObjectEvent(this, newState, initiator));
 
         return new CoreResponse<CaseObject>().success( caseObject );
@@ -129,6 +132,8 @@ public class CaseServiceImpl implements CaseService {
         }
 
         CaseObject oldState = caseObjectDAO.get(caseObject.getId());
+        jdbcManyRelationsHelper.fill( oldState, "attachments");
+
         boolean isUpdated = caseObjectDAO.merge(caseObject);
 
         if (!isUpdated)
@@ -136,6 +141,7 @@ public class CaseServiceImpl implements CaseService {
 
         // From GWT-side we get partially filled object, that's why we need to refresh state from db
         CaseObject newState = caseObjectDAO.get(caseObject.getId());
+        newState.setAttachments(caseObject.getAttachments());
 
         publisherService.publishEvent(new CaseObjectEvent(this, newState, oldState, initiator));
 
@@ -203,7 +209,10 @@ public class CaseServiceImpl implements CaseService {
         // attachments won't read now from DAO
         result.setCaseAttachments(comment.getCaseAttachments());
 
-        publisherService.publishEvent(new CaseCommentEvent(this, caseObjectDAO.get(result.getCaseId()), result, currentPerson));
+        CaseObject caseObject = caseObjectDAO.get(comment.getCaseId());
+        jdbcManyRelationsHelper.fill( caseObject, "attachments");
+
+        publisherService.publishEvent(new CaseCommentEvent(this, caseObject, null, result, currentPerson));
 
         return new CoreResponse<CaseComment>().success( result );
     }
@@ -222,6 +231,8 @@ public class CaseServiceImpl implements CaseService {
         if (!person.getId().equals(comment.getAuthorId()) || !isChangeAvailable ( comment.getCreated() ))
             return new CoreResponse().error( En_ResultStatus.NOT_UPDATED );
 
+        CaseComment prevComment = caseCommentDAO.get( comment.getId() );
+
         boolean isCommentUpdated = caseCommentDAO.merge(comment);
 
         if (!isCommentUpdated)
@@ -230,7 +241,7 @@ public class CaseServiceImpl implements CaseService {
 
         Collection<CaseAttachment> removedCaseAttachments =
                 caseAttachmentDAO.subtractDiffAndSynchronize(
-                        caseAttachmentDAO.getListByCommentId(comment.getId()),
+                        prevComment.getCaseAttachments(),
                         comment.getCaseAttachments()
                 );
 
@@ -244,6 +255,12 @@ public class CaseServiceImpl implements CaseService {
 
         if (!isCaseChanged)
             throw new RuntimeException( "failed to update case modifiedDate " );
+
+
+        CaseObject caseObject = caseObjectDAO.get(comment.getCaseId());
+        jdbcManyRelationsHelper.fill( caseObject, "attachments");
+
+        publisherService.publishEvent(new CaseCommentEvent(this, caseObject, prevComment, comment, person));
 
         return new CoreResponse<CaseComment>().success( comment );
     }

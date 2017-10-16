@@ -5,6 +5,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.IssueStates;
@@ -38,7 +39,7 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
 
     @Event
     public void onCreateClicked( SectionEvents.Clicked event ) {
-        if ( !UiConstants.ActionBarIdentity.DASHBOARD.equals( event.identity ) ) {
+        if ( !UiConstants.ActionBarIdentity.DASHBOARD.equals( event.identity ) || policyService.hasPrivilegeFor( En_Privilege.ISSUE_CREATE )) {
             return;
         }
 
@@ -51,10 +52,11 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
         initDetails.parent.clear();
         initDetails.parent.add( view.asWidget() );
 
-        fireEvent(
-                new ActionBarEvents.Add(
-                        lang.buttonCreate(), UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.DASHBOARD ) );
-
+        if ( policyService.hasPrivilegeFor( En_Privilege.ISSUE_CREATE ) ) {
+            fireEvent(
+                    new ActionBarEvents.Add(
+                            lang.buttonCreate(), UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.DASHBOARD ) );
+        }
         initWidgets();
 
     }

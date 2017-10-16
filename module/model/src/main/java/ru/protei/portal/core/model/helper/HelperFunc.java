@@ -1,9 +1,6 @@
 package ru.protei.portal.core.model.helper;
 
-import org.apache.commons.collections4.ComparatorUtils;
-
-import java.util.Arrays;
-import java.util.Date;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -90,5 +87,18 @@ public class HelperFunc {
             arg = arg + "%";
 
         return arg;
+    }
+
+    public static <T> Collection<T> subtract(Collection<T> a, Collection<T> b){
+        if(b == null || b.isEmpty() || a == null || a.isEmpty())
+            return a;
+
+        Collection<T> result = new HashSet<>();
+        for(T ca: a){
+            if(!b.contains(ca))
+                result.add(ca);
+        }
+
+        return result;
     }
 }

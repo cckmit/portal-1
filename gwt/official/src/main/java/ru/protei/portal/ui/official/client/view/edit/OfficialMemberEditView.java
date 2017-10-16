@@ -16,8 +16,10 @@ import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.official.client.activity.edit.AbstractOfficialMemberEditView;
 import ru.protei.portal.ui.official.client.activity.edit.AbstractOfficialMemberEditActivity;
+import ru.protei.portal.ui.official.client.widget.AmpluaButtonSelector;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * Представление формы редактирования должностного лица
@@ -28,10 +30,7 @@ public class OfficialMemberEditView extends Composite implements AbstractOfficia
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         company.setDefaultValue( lang.selectOfficialCompany() );
-        company.setCategories(Arrays.asList(En_CompanyCategory.OFFICIAL));
-        company.subscribeToModel();
-        fillAmpluaOptions();
-
+        company.setCategories( Collections.singletonList( En_CompanyCategory.OFFICIAL ) );
     }
 
     @Override
@@ -90,17 +89,6 @@ public class OfficialMemberEditView extends Composite implements AbstractOfficia
         }
     }
 
-    private void fillAmpluaOptions() {
-        amplua.addOption( lang.selectOfficialAmplua(), null );
-        for (En_DevUnitPersonRoleType roleType: En_DevUnitPersonRoleType.values()) {
-            if (roleType.equals(En_DevUnitPersonRoleType.HEAD_MANAGER) ||
-                roleType.equals(En_DevUnitPersonRoleType.DEPLOY_MANAGER)) {
-                continue;
-            }
-            amplua.addOption(roleTypeLang.getName(roleType), roleType);
-        }
-    }
-
     @UiField
     Lang lang;
 
@@ -121,7 +109,7 @@ public class OfficialMemberEditView extends Composite implements AbstractOfficia
     TextBox relations;
     @Inject
     @UiField(provided = true)
-    ButtonSelector<En_DevUnitPersonRoleType> amplua;
+    AmpluaButtonSelector amplua;
     @UiField
     TextBox firstName;
     @UiField
