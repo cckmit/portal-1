@@ -5,6 +5,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.query.EquipmentQuery;
 import ru.protei.portal.core.model.struct.DecimalNumberQuery;
+import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 
@@ -22,6 +23,8 @@ public interface EquipmentService extends RemoteService {
      * @return список контактов
      */
     List< Equipment > getEquipments( EquipmentQuery query ) throws RequestFailedException;
+
+    List< EquipmentShortView > equipmentOptionList( EquipmentQuery query ) throws RequestFailedException;
 
     Equipment getEquipment( long id ) throws RequestFailedException;
 

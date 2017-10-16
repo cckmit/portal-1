@@ -3,6 +3,7 @@ package ru.protei.portal.ui.equipment.client.widget.stage;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_EquipmentStage;
 import ru.protei.portal.ui.common.client.lang.En_EquipmentStageLang;
+import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 
 /**
@@ -11,8 +12,9 @@ import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 public class EquipmentStageSelector extends ButtonSelector<En_EquipmentStage> {
 
     @Inject
-    public void init( ) {
+    public void init( En_EquipmentStageLang stageLang ) {
         setHasNullValue( false );
+        setDisplayOptionCreator( value -> new DisplayOption( stageLang.getName( value )) );
         fillOptions();
     }
 
@@ -20,10 +22,7 @@ public class EquipmentStageSelector extends ButtonSelector<En_EquipmentStage> {
         clearOptions();
 
         for ( En_EquipmentStage stage : En_EquipmentStage.values() ) {
-            addOption( stageLang.getName( stage ), stage );
+            addOption( stage );
         }
     }
-
-    @Inject
-    En_EquipmentStageLang stageLang;
 }

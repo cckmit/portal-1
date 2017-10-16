@@ -41,10 +41,12 @@ public abstract class Selector<T>
         }
 
         selectedOption = value;
-        if (value == null || !itemToDisplayOptionModel.containsKey(value)) {
-            fillSelectorView(nullItemOption);
+        if ( value == null && nullItemOption != null ) {
+            fillSelectorView( nullItemOption );
+        } else if ( !itemToDisplayOptionModel.containsKey(value) && displayOptionCreator != null ) {
+            fillSelectorView( displayOptionCreator.makeDisplayOption( value ) );
         } else {
-            fillSelectorView(itemToDisplayOptionModel.get(value));
+            fillSelectorView( itemToDisplayOptionModel.get(value) );
         }
 
         if (fireEvents) {
@@ -54,6 +56,10 @@ public abstract class Selector<T>
 
     public T getValue() {
         return selectedOption;
+    }
+
+    public void setDisplayOptionCreator( DisplayOptionCreator<T> creator ) {
+        this.displayOptionCreator = creator;
     }
 
     public void refreshValue() {
@@ -72,27 +78,12 @@ public abstract class Selector<T>
         this.hasNullValue = hasNullValue;
     }
 
-    public void addOption(String name, T value) {
-        addOptionWithStyle(name, value, null);
-    }
-
-    public void addOptionWithStyle(String name, T value, String styleName) {
-        SelectorItem itemView = buildItemView(name,
-                styleName, itemHandler);
-        itemViewToModel.put(itemView, value);
-        itemToViewModel.put(value, itemView);
-        if (value == null) {
-            nullItemOption = new DisplayOption(name);
-            nullItemView = itemView;
-        } else {
-            itemToDisplayOptionModel.put(value, new DisplayOption(name));
+     public void addOption( T value ) {
+        if ( displayOptionCreator == null ) {
+            return;
         }
 
-        popup.getChildContainer().add(itemView.asWidget());
-
-    }
-
-    public void addOption(DisplayOption option, T value) {
+        DisplayOption option = displayOptionCreator.makeDisplayOption( value );
         SelectorItem itemView = buildItemView(option.getName(),
                 option.getStyle(), itemHandler);
         itemView.setImage(option.getImageSrc());
@@ -278,16 +269,13 @@ public abstract class Selector<T>
     Provider<SelectorItem> itemFactory;
     protected DisplayOption nullItemOption;
 
-    KeyUpHandler itemHandler = new KeyUpHandler() {
-        @Override
-        public void onKeyUp(KeyUpEvent keyUpEvent) {
-            if (keyUpEvent.getNativeKeyCode() == KeyCodes.KEY_DOWN) {
-                onArrowDown((SelectorItem) keyUpEvent.getSource());
-            }
+    KeyUpHandler itemHandler = keyUpEvent -> {
+        if (keyUpEvent.getNativeKeyCode() == KeyCodes.KEY_DOWN) {
+            onArrowDown((SelectorItem) keyUpEvent.getSource());
+        }
 
-            if (keyUpEvent.getNativeKeyCode() == KeyCodes.KEY_UP) {
-                onArrowUp((SelectorItem) keyUpEvent.getSource());
-            }
+        if (keyUpEvent.getNativeKeyCode() == KeyCodes.KEY_UP) {
+            onArrowUp((SelectorItem) keyUpEvent.getSource());
         }
     };
 
@@ -297,6 +285,7 @@ public abstract class Selector<T>
     private IsWidget relative;
     private T selectedOption = null;
     private SelectorItem nullItemView;
+    private DisplayOptionCreator<T> displayOptionCreator;
 
     private HandlerRegistration scrollRegistration;
     protected Map<SelectorItem, T> itemViewToModel = new HashMap<>();

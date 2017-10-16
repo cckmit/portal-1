@@ -3,6 +3,7 @@ package ru.protei.portal.ui.issue.client.widget.state.buttonselector;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
+import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 import ru.protei.portal.ui.issue.client.widget.state.StateModel;
@@ -15,18 +16,19 @@ import java.util.List;
 public class IssueStatesButtonSelector extends ButtonSelector<En_CaseState> implements ModelSelector<En_CaseState> {
 
     @Inject
-    public void init( StateModel stateModel) {
+    public void init( StateModel stateModel, En_CaseStateLang lang ) {
         stateModel.subscribe(this);
+        setDisplayOptionCreator( value -> new DisplayOption( value == null ? defaultValue : lang.getStateName( value ) ) );
     }
 
     @Override
     public void fillOptions(List<En_CaseState> options){
         clearOptions();
 
-        if(defaultValue != null)
-            addOption( defaultValue , null );
-
-        options.forEach(option -> addOption(lang.getStateName(option), option));
+        if( defaultValue != null ) {
+            addOption( null );
+        }
+        options.forEach( this::addOption );
     }
 
     public void setDefaultValue( String value ) {
@@ -34,7 +36,4 @@ public class IssueStatesButtonSelector extends ButtonSelector<En_CaseState> impl
     }
 
     private String defaultValue = null;
-
-    @Inject
-    En_CaseStateLang lang;
 }

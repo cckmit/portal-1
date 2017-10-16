@@ -11,7 +11,7 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.*;
-import ru.protei.portal.core.model.ent.Equipment;
+import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -102,7 +102,7 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
     }
 
     @Override
-    public HasValue<Equipment> equipment() {
+    public HasValue< EquipmentShortView > equipment() {
         return equipment;
     }
 
@@ -150,7 +150,7 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
     }
 
     @UiHandler( "equipment" )
-    public void onEquipmentChanged( ValueChangeEvent<Equipment> event ) {
+    public void onEquipmentChanged( ValueChangeEvent<EquipmentShortView> event ) {
         fireChangeTimer();
     }
 

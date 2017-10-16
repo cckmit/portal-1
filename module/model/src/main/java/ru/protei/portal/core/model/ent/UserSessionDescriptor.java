@@ -1,8 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
 
-import java.util.List;
-
 /**
  * Created by michael on 23.06.16.
  */

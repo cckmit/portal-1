@@ -106,9 +106,11 @@ public class AuthServiceImpl implements AuthService {
                 UserLogin userLogin = userLoginDAO.get(appSession.getLoginId());
                 jdbcManyRelationsHelper.fill(userLogin, "roles");
 
+                Company company = companyDAO.get( appSession.getCompanyId() );
+                jdbcManyRelationsHelper.fillAll(company);
                 descriptor.login(userLogin,
                         personDAO.get(appSession.getPersonId()),
-                        companyDAO.get(appSession.getCompanyId())
+                        company
                 );
 
                 sessionCache.put(appSessionId, descriptor);
@@ -173,6 +175,7 @@ public class AuthServiceImpl implements AuthService {
 
         Person person = personDAO.get(login.getPersonId());
         Company company = companyDAO.get(person.getCompanyId());
+        jdbcManyRelationsHelper.fillAll( company );
 
         logger.debug("Auth success for " + ulogin + " / " + ( login.getRoles() == null ? "null" : login.getRoles().stream().map( UserRole::getCode ).collect( Collectors.joining("," ) ) ) + "/" + person.toDebugString());
 

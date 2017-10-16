@@ -9,6 +9,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanyGroup;
+import ru.protei.portal.core.model.ent.CompanySubscription;
 import ru.protei.portal.core.model.query.CompanyGroupQuery;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -43,8 +44,13 @@ public interface CompanyService {
 
     CoreResponse<Boolean> isCompanyNameExists(String name, Long excludeId);
     CoreResponse<Boolean> isGroupNameExists(String name, Long excludeId);
+
+    CoreResponse<Boolean> updateCompanySubscriptions( Long id, List<CompanySubscription> value );
+    CoreResponse<List<CompanySubscription>> getCompanySubscriptions( Long companyId );
+
     /**
      * methods below are for testing purpose only
      */
     CoreResponse<CompanyGroup> createGroup(String name, String info);
+
 }

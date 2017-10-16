@@ -60,7 +60,7 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    public Boolean saveIssue( CaseObject caseObject ) throws RequestFailedException{
+    public CaseObject saveIssue( CaseObject caseObject ) throws RequestFailedException{
         log.debug( "saveIssue(): case={}", caseObject );
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
@@ -77,7 +77,8 @@ public class IssueServiceImpl implements IssueService {
 
         log.debug( "saveIssue(): response.isOk()={}", response.isOk() );
         if ( response.isError() ) throw new RequestFailedException(response.getStatus());
-        return response.getData() != null;
+        log.debug( "saveIssue(): id", response.getData().getId() );
+        return response.getData();
     }
 
     @Override

@@ -9,11 +9,14 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.ui.common.client.common.PageService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.crm.client.widget.localeselector.LocaleImage;
 import ru.protei.winter.web.common.client.events.MenuEvents;
+
+import java.util.stream.Collectors;
 
 /**
  * Активность приложения
@@ -40,10 +43,11 @@ public abstract class AppActivity
 
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
+        this.authEvent = event;
         init.parent.clear();
         init.parent.add( view.asWidget() );
 
-        view.setUsername( event.profile.getName(), null );
+        view.setUsername( event.profile.getName(), event.profile.getRoles().stream().map( UserRole::getCode ).collect( Collectors.joining(",") ) );
         String currentLocale = LocaleInfo.getCurrentLocale().getLocaleName();
         view.locale().setValue( LocaleImage.findByLocale( currentLocale ));
 
@@ -62,6 +66,7 @@ public abstract class AppActivity
     }
 
     public void onUserClicked() {
+        fireEvent( new AppEvents.ShowProfile());
     }
 
     public void onLogoutClicked() {
@@ -104,4 +109,5 @@ public abstract class AppActivity
 
     String initialToken;
     private AppEvents.Init init;
+    private AuthEvents.Success authEvent;
 }

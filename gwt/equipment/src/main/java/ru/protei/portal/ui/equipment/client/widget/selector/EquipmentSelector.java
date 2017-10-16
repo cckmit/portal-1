@@ -2,6 +2,7 @@ package ru.protei.portal.ui.equipment.client.widget.selector;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.Equipment;
+import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
@@ -15,39 +16,43 @@ import java.util.stream.Collectors;
  * Виджет связанных устройств
  */
 public class EquipmentSelector
-        extends ButtonSelector<Equipment >
-        implements ModelSelector<Equipment>
+        extends ButtonSelector<EquipmentShortView >
+        implements ModelSelector<EquipmentShortView>
     {
 
         @Inject
         public void init( EquipmentModel model, Lang lang ) {
-            this.lang = lang;
             model.subscribe( this );
             setSearchEnabled( true );
             setHasNullValue( true );
             setSearchAutoFocus(true);
-            nullItemOption = new DisplayOption( lang.equipmentPrimaryUseNotDefinied() );
+
+            setDisplayOptionCreator( value -> {
+                StringBuilder sb = new StringBuilder();
+                if ( value == null ) {
+                    sb.append( lang.equipmentPrimaryUseNotDefinied() );
+                } else {
+                    sb.append( value.getName() );
+                    if ( value.getDecimalNumbers() != null ) {
+                        sb
+                                .append( " (" )
+                                .append( value.getDecimalNumbers().stream().map( EquipmentUtils:: formatNumber ).collect( Collectors.joining( ", " ) ) )
+                                .append( ")" );
+                    }
+                }
+
+                return new DisplayOption( sb.toString() );
+            } );
         }
 
         @Override
-        public void fillOptions( List< Equipment > options ) {
+        public void fillOptions( List< EquipmentShortView > options ) {
             clearOptions();
             if (hasNullValue) {
-                addOption(lang.equipmentPrimaryUseNotDefinied(), null);
+                addOption(null);
             }
-
-            for ( Equipment value : options ) {
-                StringBuilder sb = new StringBuilder();
-                sb.append( value.getName() );
-                if ( value.getDecimalNumbers() != null ) {
-                    sb
-                            .append( " (" )
-                            .append( value.getDecimalNumbers().stream().map( EquipmentUtils:: formatNumber ).collect( Collectors.joining(", ")) )
-                            .append( ")" );
-                }
-
-                addOption( sb.toString(), value );
-            }
+            
+            options.forEach( this::addOption );
         }
 
         public void setHasNullValue(boolean hasNullValue) {
@@ -58,6 +63,4 @@ public class EquipmentSelector
         public void refreshValue() {}
 
         private boolean hasNullValue;
-
-        private Lang lang;
     }

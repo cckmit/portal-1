@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.EquipmentQuery;
 import ru.protei.portal.core.model.struct.DecimalNumberQuery;
+import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.ui.common.client.service.EquipmentService;
 import ru.protei.portal.ui.common.server.service.SessionService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
@@ -35,6 +36,22 @@ public class EquipmentServiceImpl implements EquipmentService {
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
         CoreResponse<List<Equipment>> response = equipmentService.equipmentList( descriptor.makeAuthToken(), query );
+
+        if ( response.isError() ) {
+            throw new RequestFailedException( response.getStatus() );
+        }
+        return response.getData();
+    }
+
+    @Override
+    public List< EquipmentShortView > equipmentOptionList( EquipmentQuery query ) throws RequestFailedException {
+        log.debug( "get equipments: name={} | types={} | stages={} | organizationCodes={} | classifierCode={} | regNum={}",
+                query.getSearchString(), query.getTypes(), query.getStages(), query.getOrganizationCodes(), query.getClassifierCode(),
+                query.getRegisterNumber() );
+
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
+        CoreResponse<List<EquipmentShortView >> response = equipmentService.shortViewList( descriptor.makeAuthToken(), query );
 
         if ( response.isError() ) {
             throw new RequestFailedException( response.getStatus() );

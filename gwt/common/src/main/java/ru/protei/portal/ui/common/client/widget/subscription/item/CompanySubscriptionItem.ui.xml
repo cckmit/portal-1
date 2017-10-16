@@ -1,6 +1,6 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:lang="urn:import:ru.protei.portal.ui.company.client.widget.subscription.locale"
+             xmlns:lang="urn:import:ru.protei.portal.ui.common.client.widget.subscription.locale"
              xmlns:validatefield="urn:import:ru.protei.portal.ui.common.client.widget.validatefield">
     <g:HTMLPanel>
         <lang:LocaleButtonSelector ui:field="locale" addStyleNames="form-group col-xs-1"/>

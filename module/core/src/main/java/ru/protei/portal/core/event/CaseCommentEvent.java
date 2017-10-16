@@ -14,17 +14,19 @@ public class CaseCommentEvent extends ApplicationEvent {
 
     private CaseObject caseObject;
     private CaseComment caseComment;
+    private CaseComment oldCaseComment;
     private Person person;
     private ServiceModule serviceModule;
 
-    public CaseCommentEvent(CaseService source, CaseObject caseObject, CaseComment comment, Person currentPerson) {
-        this(ServiceModule.GENERAL, source, caseObject, comment, currentPerson);
+    public CaseCommentEvent(CaseService source, CaseObject caseObject, CaseComment oldComment, CaseComment comment, Person currentPerson) {
+        this(ServiceModule.GENERAL, source, caseObject, oldComment, comment, currentPerson);
     }
 
-    public CaseCommentEvent(ServiceModule serviceModule, CaseService source, CaseObject caseObject, CaseComment comment, Person currentPerson) {
+    public CaseCommentEvent(ServiceModule serviceModule, CaseService source, CaseObject caseObject, CaseComment oldComment, CaseComment comment, Person currentPerson) {
         super(source);
         this.caseObject = caseObject;
         this.caseComment = comment;
+        this.oldCaseComment = oldComment;
         this.person = currentPerson;
         this.serviceModule = serviceModule;
     }
@@ -39,6 +41,10 @@ public class CaseCommentEvent extends ApplicationEvent {
 
     public CaseComment getCaseComment() {
         return caseComment;
+    }
+
+    public CaseComment getOldCaseComment() {
+        return oldCaseComment;
     }
 
     public Person getPerson() {

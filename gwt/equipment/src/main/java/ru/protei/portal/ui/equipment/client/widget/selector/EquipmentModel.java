@@ -6,6 +6,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.En_EquipmentType;
 import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.query.EquipmentQuery;
+import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.EquipmentEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
@@ -34,13 +35,13 @@ public abstract class EquipmentModel implements Activity {
         refreshOptions();
     }
 
-    public void subscribe( ModelSelector< Equipment > selector ) {
+    public void subscribe( ModelSelector< EquipmentShortView > selector ) {
         subscribers.add( selector );
         selector.fillOptions( list );
     }
 
     private void notifySubscribers() {
-        for ( ModelSelector< Equipment > selector : subscribers ) {
+        for ( ModelSelector< EquipmentShortView > selector : subscribers ) {
             selector.fillOptions( list );
             selector.refreshValue();
         }
@@ -48,15 +49,15 @@ public abstract class EquipmentModel implements Activity {
 
     private void refreshOptions() {
         // todo: needed check filter values
-        equipmentService.getEquipments( new EquipmentQuery( new HashSet<>( Arrays.asList( En_EquipmentType.ASSEMBLY_UNIT, En_EquipmentType.COMPLEX, En_EquipmentType.PRODUCT ) ) ),
-                new RequestCallback< List< Equipment > >() {
+        equipmentService.equipmentOptionList( new EquipmentQuery( new HashSet<>( Arrays.asList( En_EquipmentType.ASSEMBLY_UNIT, En_EquipmentType.COMPLEX, En_EquipmentType.PRODUCT ) ) ),
+                new RequestCallback< List< EquipmentShortView > >() {
             @Override
             public void onError( Throwable throwable ) {
                 fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
             }
 
             @Override
-            public void onSuccess( List< Equipment > options ) {
+            public void onSuccess( List< EquipmentShortView > options ) {
                 list.clear();
                 list.addAll( options );
                 notifySubscribers();
@@ -70,7 +71,6 @@ public abstract class EquipmentModel implements Activity {
     @Inject
     Lang lang;
 
-    private List< Equipment > list = new ArrayList<>();
-
-    List< ModelSelector< Equipment > > subscribers = new ArrayList<>();
+    private List< EquipmentShortView > list = new ArrayList<>();
+    List< ModelSelector< EquipmentShortView > > subscribers = new ArrayList<>();
 }

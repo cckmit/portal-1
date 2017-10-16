@@ -71,7 +71,7 @@ public class MailNotificationProcessor {
     }
 
     @EventListener
-    public void onCaseCommentAdded( CaseCommentEvent event ) {
+    public void onCaseCommentChanged(CaseCommentEvent event ) {
         Set<NotificationEntry> notificationEntries = subscriptionService.subscribers( event );
         if ( notificationEntries.isEmpty() ) {
             return;

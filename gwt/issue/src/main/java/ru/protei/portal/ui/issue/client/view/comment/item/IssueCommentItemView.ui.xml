@@ -9,9 +9,9 @@
         <ul class="list-inline m-b-5">
             <li ui:field="date" class="date-time"></li>
             <li ui:field="owner" class="name"></li>
-            <li ui:field="info" class="hide"><ui:text from="{lang.issueCommentChangeStatusTo}"/></li>
-            <li ui:field="status"></li>
-            <li>
+            <li ui:field="info" class="info hide p-l-5 p-r-5"><ui:text from="{lang.issueCommentChangeStatusTo}"/></li>
+            <li ui:field="status" class="status"></li>
+            <li ui:field="options">
                 <span class="options">
                     <g:Anchor href="javascript:;" ui:field="reply">
                         <i class="fa fa-reply"></i>
