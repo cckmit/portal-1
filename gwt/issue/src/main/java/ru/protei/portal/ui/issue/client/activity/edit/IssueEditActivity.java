@@ -138,7 +138,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     }
 
     private void resetState(){
-        view.initiatorState().setEnabled(view.companyValidator().isValid());
+//        view.initiatorState().setEnabled(view.companyValidator().isValid());
     }
 
     private void initialView(CaseObject issue){
@@ -187,6 +187,13 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         Company initiatorCompany = issue.getInitiatorCompany();
         view.company().setValue(EntityOption.fromCompany(initiatorCompany));
         view.changeCompany(initiatorCompany);
+
+        if ( initiatorCompany == null ) {
+            Company userCompany = policyService.getUserCompany();
+            view.company().setValue( userCompany == null ? null : userCompany.toEntityOption() );
+            view.changeCompany(userCompany);
+        }
+
         view.initiator().setValue( PersonShortView.fromPerson(issue.getInitiator()));
         if ( issue.getInitiatorCompany() != null ) {
             view.setSubscriptionEmails( issue.getInitiatorCompany().getSubscriptions() == null

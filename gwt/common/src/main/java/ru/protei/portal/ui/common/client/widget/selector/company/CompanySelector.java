@@ -33,7 +33,10 @@ public class CompanySelector extends ButtonSelector< EntityOption > implements M
 
         if( defaultValue != null ) {
             addOption( null );
-            setValue( null );
+
+            if ( getValue() == null ) {
+                setValue( null );
+            }
         }
 
         options.forEach(this :: addOption);
