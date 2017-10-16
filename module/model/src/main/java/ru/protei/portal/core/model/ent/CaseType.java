@@ -1,12 +1,14 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.winter.jdbc.annotations.*;
+import ru.protei.winter.jdbc.annotations.IdInsertMode;
+import ru.protei.winter.jdbc.annotations.JdbcColumn;
+import ru.protei.winter.jdbc.annotations.JdbcEntity;
+import ru.protei.winter.jdbc.annotations.JdbcId;
 
 import java.io.Serializable;
 
 /**
- * Информация о человеке с ролью
+ * Информация о типе case
  */
 @JdbcEntity(table = "case_type")
 public class CaseType implements Serializable{

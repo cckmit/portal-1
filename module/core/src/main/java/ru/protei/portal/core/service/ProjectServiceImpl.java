@@ -149,13 +149,13 @@ public class ProjectServiceImpl implements ProjectService {
     @Transactional
     public CoreResponse< Long > createProject( AuthToken token, Long creatorId ) {
 
-        CaseType type = caseTypeDAO.get( new Long( En_CaseType.PROJECT.getId() ) );
-        Long id = type.getNextId();
-        type.setNextId( id + 1 );
-        caseTypeDAO.merge( type );
+//        CaseType type = caseTypeDAO.get( new Long( En_CaseType.PROJECT.getId() ) );
+//        Long id = type.getNextId();
+//        type.setNextId( id + 1 );
+//        caseTypeDAO.merge( type );
 
         CaseObject caseObject = new CaseObject();
-        caseObject.setCaseNumber( id );
+        caseObject.setCaseNumber( caseTypeDAO.generateNextId(En_CaseType.PROJECT) );
         caseObject.setTypeId( En_CaseType.PROJECT.getId() );
         caseObject.setCreated( new Date() );
         caseObject.setName( "Новый проект" );
