@@ -3,6 +3,7 @@ package ru.protei.portal.tools.migrate;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 import ru.protei.portal.tools.migrate.tools.MigrateAction;
 
 import java.sql.Connection;
@@ -14,6 +15,7 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * Created by michael on 26.07.16.
  */
+@Component
 public class MigrationRunner {
 
     public static final String PORTAL_SYBASE_JDBC_URL = "jdbc:sybase:Tds:192.168.101.140:2638/RESV3";

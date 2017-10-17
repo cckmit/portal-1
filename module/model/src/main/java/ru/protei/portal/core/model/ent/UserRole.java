@@ -4,6 +4,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.winter.jdbc.annotations.*;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -60,7 +61,14 @@ public class UserRole extends AuditableObject {
     }
 
     public boolean hasPrivilege( En_Privilege privilege ){
-        return privileges.contains( privilege );
+        return privileges != null && privileges.contains( privilege );
+    }
+
+    public void addPrivilege(En_Privilege privilege) {
+        if (privileges == null)
+            privileges = new HashSet<>();
+
+        privileges.add(privilege);
     }
 
     @Override
