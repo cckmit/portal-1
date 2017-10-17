@@ -3,6 +3,7 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
 </#macro>
 
 <@set name="_createdBy" value="${createdBy}"/>
+<@set name="_changedStateTo" value="${changedStateTo}"/>
 <@set name="_you" value="${you}"/>
 <@set name="_yourself" value="${yourself}"/>
 <@set name="_issueIsPrivate" value="${issueIsPrivate}"/>
@@ -40,17 +41,17 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                             <tr>
                                 <td style="vertical-align: top;font-family:sans-serif; font-size: 13px;">
                                     <a title="newproject" style="float:left; margin-right:6px; font-size:15px; color: #1466c6; text-decoration: none; " href="${linkToIssue}">
-                                        CRM-${case.caseNumber} — ${case.name}
+                                        CRM-${case.caseNumber} — ${(case.name)!''}
                                     </a>
                                 </td>
                                 <td style="padding-left: 5px; font-size: 11px; font-family:sans-serif; text-align: right;<#if isCreated>color:#11731d;<#else>color:#888888;</#if>">
-                                    ${_createdBy} <#if createdByMe == true>${_yourself}<#else>${case.creator.displayShortName}</#if> ${case.created}
+                                    ${_createdBy} <#if createdByMe == true>${_yourself}<#else>${(case.creator.displayName)!'?'}</#if> ${(case.created)!''}
                                 </td>
                             </tr>
                         </tbody>
                     </table>
                     <div style="margin:14px 0 8px 0;font-size:13px;line-height:18.5px">
-                        <div>${case.info}</div>
+                        <div>${(case.info)!''}</div>
                         <div style="margin-top: 14px;">
                             <#if case.privateCase == true>
                                 <span style="color:#777777;font-style:italic;font-size:13px">
@@ -73,7 +74,7 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                             ${_description}
                         </td>
                         <td colspan="3" style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 13px;">
-                            <@diff new="${case.info}" old="${oldCase.info}"/>
+                            <@diff new="${(case.info)!''}" old="${(oldCase.info)!''}"/>
                         </td>
                     </tr>
                 </#if>
@@ -83,9 +84,9 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                     </td>
                     <td colspan="3" style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 13px;">
                         <#if productChanged>
-                            <@changeTo old="${oldProductName}" new="${case.product.name}"/>
+                            <@changeTo old="${(oldProductName)!''}" new="${(case.product.name)!''}"/>
                         <#else>
-                            ${case.product.name}
+                            ${(case.product.name)!''}
                         </#if>
                     </td>
                 </tr>
@@ -135,9 +136,9 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                     </td>
                     <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 13px;">
                         <#if customerChanged>
-                            <@changeTo old="${oldInitiator.displayShortName} (${oldInitiatorCompany.cname})" new="${case.initiator.displayShortName} (${case.initiatorCompany.cname})"/>
+                            <@changeTo old="${(oldInitiator.displayName)!''} (${(oldInitiatorCompany.cname)!''})" new="${(case.initiator.displayName)!''} (${(case.initiatorCompany.cname)!''})"/>
                         <#else>
-                            ${case.initiator.displayShortName} (${case.initiatorCompany.cname})
+                            ${(case.initiator.displayName)!''} (${(case.initiatorCompany.cname)!''})
                         </#if>
                     </td>
                 </tr>
@@ -148,11 +149,11 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                     <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 13px;">
                         <#if managerChanged>
                             <@changeTo
-                                old="${(oldManager??)?then(oldManager.displayShortName +' ('+ oldManager.company.cname +')', '?')}"
-                                new="${(manager??)?then(manager.displayShortName +' ('+ manager.company.cname +')', '?')}"
+                                old="${(oldManager??)?then(((oldManager.displayName)!'') +' ('+ oldManager.company.cname +')', '?')}"
+                                new="${(manager??)?then(((manager.displayName)!'') +' ('+ manager.company.cname +')', '?')}"
                             />
                         <#else>
-                            <#if manager??>${manager.displayShortName} (${manager.company.cname})<#else>?</#if>
+                            <#if manager??>${(manager.displayName)!''} (${manager.company.cname})<#else>?</#if>
                         </#if>
                     </td>
                 </tr>
@@ -189,17 +190,21 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                 <div style="border-radius:5px;padding:12px;margin-bottom:5px;background:<#if caseComment.changed>#dff7e2<#else>#f0f0f0</#if>;">
                     <span style="color:gray;line-height: 17px;margin-right:10px">${caseComment.created}</span>
                     <span style="color:blue;font-size:14px;margin-bottom:5px;color:#0062ff;line-height: 17px;">
-                        <#if caseComment.author??>${caseComment.author.displayShortName}</#if>
+                        <#if caseComment.author??>${(caseComment.author.displayName)!''}</#if>
                     </span>
-                    <#if caseComment.oldText??>
-                        <span style="color:#11731d;line-height: 17px;margin-right:10px">${_updated}</span>
-                        <div style="margin-top:4px;line-height:1.5em">
-                            <@diff old="${caseComment.oldText}" new="${caseComment.text}"/>
-                        </div>
+                    <#if caseComment.caseState??>
+                        ${_changedStateTo} ${caseComment.caseState}
                     <#else>
-                        <div style="margin-top:4px;line-height:1.5em">
-                            ${caseComment.text}
-                        </div>
+                        <#if caseComment.oldText??>
+                            <span style="color:#11731d;line-height: 17px;margin-right:10px">${_updated}</span>
+                            <div style="margin-top:4px;line-height:1.5em">
+                                <@diff old="${caseComment.oldText}" new="${caseComment.text}"/>
+                            </div>
+                        <#else>
+                            <div style="margin-top:4px;line-height:1.5em">
+                                ${caseComment.text}
+                            </div>
+                        </#if>
                     </#if>
                 </div>
             </#list>
