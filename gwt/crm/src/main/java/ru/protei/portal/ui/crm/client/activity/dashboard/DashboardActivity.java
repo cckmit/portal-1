@@ -55,7 +55,7 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
         if ( policyService.hasPrivilegeFor( En_Privilege.ISSUE_CREATE ) ) {
             fireEvent(
                     new ActionBarEvents.Add(
-                            lang.buttonCreate(), UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.DASHBOARD ) );
+                            lang.buttonCreate(), UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.ISSUE ) );
         }
         initWidgets();
 
