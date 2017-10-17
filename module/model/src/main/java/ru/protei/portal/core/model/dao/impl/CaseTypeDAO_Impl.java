@@ -12,7 +12,7 @@ public class CaseTypeDAO_Impl extends PortalBaseJdbcDAO<CaseType > implements Ca
     @Override
     public Long generateNextId(En_CaseType type) {
 
-        CaseType record = partialGetWithLock((long)type.getId(), "NEXT_ID");
+        CaseType record = getWithLock((long)type.getId());
 
         Long rez = record.getNextId();
 

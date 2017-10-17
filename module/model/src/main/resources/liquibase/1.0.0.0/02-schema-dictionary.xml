@@ -40,10 +40,6 @@
             insert into dev_unit_state(id,UST_CODE,UST_INFO) values (1,'active','Активно');
             insert into dev_unit_state(id,UST_CODE,UST_INFO) values (2,'deprecated','Устарело, более не используется');
 
-            insert into company_category (id, category_name) VALUES (1,'Заказчик');
-            insert into company_category (id, category_name) VALUES (2,'Партнер');
-            insert into company_category (id, category_name) VALUES (3,'Субподрядчик');
-
             delete from department_type;
             insert into department_type(id, name, info) values (1,'отдел','');
 
