@@ -221,4 +221,12 @@
                                  baseTableName="case_member" baseColumnNames="MEMBER_ROLE_ID"
                                  referencedTableName="dev_unit_mrole" referencedColumnNames="ID" />
     </changeSet>
+
+
+    <changeSet id="2017-10-18-fix-case-next-id-install" author="michael">
+        <update tableName="CASE_TYPE">
+            <column name="NEXT_ID" value="1000000"></column>
+            <where>next_id is null</where>
+        </update>
+    </changeSet>
 </databaseChangeLog>
