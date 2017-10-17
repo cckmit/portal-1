@@ -1,0 +1,14 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+<property name="now" value="CURRENT_TIMESTAMP" dbms="mysql"/>
+
+    <changeSet author="zavedeev" id="17-10-2017 22:06 01">
+        <sql>
+            update case_type set next_id=1000000 where next_id is null;
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

@@ -23,5 +23,5 @@
   <include file="18-09-add_attachment_exists.xml" relativeToChangelogFile="true" />
   <include file="2017-10-17-fix_case_issues.xml" relativeToChangelogFile="true" />
   <include file="2017-10-17-add-missed_dict.xml" relativeToChangelogFile="true" />
-
+  <include file="2017-10-17-setup_case_id_gen.xml" relativeToChangelogFile="true" />
 </databaseChangeLog>
