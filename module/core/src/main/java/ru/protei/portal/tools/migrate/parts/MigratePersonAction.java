@@ -126,13 +126,19 @@ public class MigratePersonAction implements MigrateAction {
 
 
     private final static En_Privilege [] DEF_EMPL_PRIV = {
+            En_Privilege.ISSUE_CREATE,
             En_Privilege.ISSUE_EDIT,
             En_Privilege.ISSUE_EXPORT,
-            En_Privilege.CONTACT_VIEW,
             En_Privilege.ISSUE_VIEW,
             En_Privilege.ISSUE_REPORT,
+            En_Privilege.ISSUE_COMPANY_EDIT,
+            En_Privilege.ISSUE_PRODUCT_EDIT,
+            En_Privilege.ISSUE_MANAGER_EDIT,
+            En_Privilege.ISSUE_PRIVACY_VIEW,
+            En_Privilege.DASHBOARD_VIEW,
+            En_Privilege.DASHBOARD_ALL_COMPANIES_VIEW,
+            En_Privilege.CONTACT_VIEW,
             En_Privilege.COMMON_PROFILE_VIEW,
-            En_Privilege.ISSUE_CREATE,
             En_Privilege.COMPANY_VIEW
     };
 
