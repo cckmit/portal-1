@@ -1,6 +1,5 @@
 package ru.protei.portal.core.model.dao.impl;
 
-import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.core.model.dao.CaseTypeDAO;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.CaseType;
@@ -10,8 +9,6 @@ import ru.protei.portal.core.model.ent.CaseType;
  */
 public class CaseTypeDAO_Impl extends PortalBaseJdbcDAO<CaseType > implements CaseTypeDAO {
 
-
-    @Transactional
     @Override
     public Long generateNextId(En_CaseType type) {
 
