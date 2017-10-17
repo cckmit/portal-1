@@ -1,0 +1,35 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+<property name="now" value="CURRENT_TIMESTAMP" dbms="mysql"/>
+
+    <changeSet author="zavedeev" id="17-10-2017 22:03 01">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">select count(*) from company_category where id=1</sqlCheck>
+        </preConditions>
+        <sql>
+            insert into company_category (id, category_name) VALUES (1,'Заказчик');
+        </sql>
+    </changeSet>
+
+    <changeSet author="zavedeev" id="17-10-2017 22:03 02">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">select count(*) from company_category where id=2</sqlCheck>
+        </preConditions>
+        <sql>
+            insert into company_category (id, category_name) VALUES (2,'Партнер');
+        </sql>
+    </changeSet>
+
+    <changeSet author="zavedeev" id="17-10-2017 22:03 03">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">select count(*) from company_category where id=3</sqlCheck>
+        </preConditions>
+        <sql>
+            insert into company_category (id, category_name) VALUES (3,'Субподрядчик');
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>
