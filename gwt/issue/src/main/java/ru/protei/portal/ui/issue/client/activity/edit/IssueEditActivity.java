@@ -19,6 +19,7 @@ import ru.protei.portal.ui.common.client.events.IssueEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
+import ru.protei.portal.ui.common.client.service.CompanyServiceAsync;
 import ru.protei.portal.ui.common.client.service.IssueServiceAsync;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
@@ -137,6 +138,21 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         });
     }
 
+    @Override
+    public void onCompanyChanged() {
+        companyService.getCompany( view.company().getValue().getId(), new RequestCallback< Company >() {
+            @Override
+            public void onError( Throwable throwable ) {}
+
+            @Override
+            public void onSuccess( Company company ) {
+                view.setSubscriptionEmails( company.getSubscriptions() == null ? ""
+                        : company.getSubscriptions().stream().map( CompanySubscription::getEmail )
+                        .collect( Collectors.joining(", ") ) );
+            }
+        });
+    }
+
     private void resetState(){
 //        view.initiatorState().setEnabled(view.companyValidator().isValid());
     }
@@ -188,13 +204,13 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         view.company().setValue(EntityOption.fromCompany(initiatorCompany));
         view.changeCompany(initiatorCompany);
 
-        if ( initiatorCompany == null ) {
+        if ( initiatorCompany == null && !policyService.hasPrivilegeFor( En_Privilege.ISSUE_COMPANY_EDIT ) ) {
             Company userCompany = policyService.getUserCompany();
             view.company().setValue( userCompany == null ? null : userCompany.toEntityOption() );
-            view.changeCompany(userCompany);
+            view.changeCompany( userCompany );
         }
 
-        view.initiator().setValue( PersonShortView.fromPerson(issue.getInitiator()));
+        view.initiator().setValue( PersonShortView.fromPerson( issue.getInitiator() ) );
         if ( issue.getInitiatorCompany() != null ) {
             view.setSubscriptionEmails( issue.getInitiatorCompany().getSubscriptions() == null
                     ? ""
@@ -204,8 +220,8 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                     .collect( Collectors.joining(", ") ) );
         }
 
-        view.product().setValue( ProductShortView.fromProduct(issue.getProduct()));
-        view.manager().setValue(PersonShortView.fromPerson(issue.getManager()));
+        view.product().setValue( ProductShortView.fromProduct( issue.getProduct() ) );
+        view.manager().setValue( PersonShortView.fromPerson( issue.getManager() ) );
         view.saveVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_EDIT ) );
     }
 
@@ -261,6 +277,8 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     Lang lang;
     @Inject
     PolicyService policyService;
+    @Inject
+    CompanyServiceAsync companyService;
 
     private AppEvents.InitDetails initDetails;
     private CaseObject issue;

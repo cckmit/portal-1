@@ -49,7 +49,7 @@
                     <label>
                         <ui:text from="{lang.issueInitiator}"/>
                     </label>
-                    <person:ContactButtonSelector ui:field="initiator" validation="false"/>
+                    <person:PersonButtonSelector ui:field="initiator" validation="false"/>
                 </div>
 
                 <div class="form-group col-xs-3">
