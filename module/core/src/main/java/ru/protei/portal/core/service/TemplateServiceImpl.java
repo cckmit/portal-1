@@ -70,7 +70,6 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put( "recipients", recipients );
 
         templateModel.put( "productChanged", caseObjectEvent == null ? false : caseObjectEvent.isProductChanged() );
-        templateModel.put( "oldProductName", oldState == null ? null : oldState.getProduct().getName() );
         templateModel.put( "importanceChanged", caseObjectEvent == null ? false : caseObjectEvent.isCaseImportanceChanged() );
         templateModel.put( "oldImportanceLevel", oldState == null ? null : En_ImportanceLevel.getById( oldState.getImpLevel() ).getCode() );
         templateModel.put( "caseChanged", caseObjectEvent == null ? false : caseObjectEvent.isCaseStateChanged() );
@@ -81,6 +80,8 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put( "managerChanged", caseObjectEvent == null ? false : caseObjectEvent.isManagerChanged() );
         templateModel.put( "oldManager", oldManager );
         templateModel.put( "infoChanged", caseObjectEvent == null ? false : caseObjectEvent.isInfoChanged() );
+        templateModel.put( "nameChanged", caseObjectEvent == null ? false : caseObjectEvent.isNameChanged() );
+        templateModel.put( "privacyChanged", caseObjectEvent == null ? false : caseObjectEvent.isPrivacyChanged() );
 
         if(oldState == null && CollectionUtils.isNotEmpty(newState.getAttachments())){
             templateModel.put( "attachments", newState.getAttachments() );

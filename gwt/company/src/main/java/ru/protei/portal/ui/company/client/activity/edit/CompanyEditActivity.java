@@ -166,7 +166,9 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         infoFacade.setFactAddress(view.actualAddress().getValue());
         company.setInfo(view.comment().getText());
         company.setCategory(CompanyCategory.fromEntityOption(view.companyCategory().getValue()));
-        company.setGroupId(view.companyGroup().getValue().getId());
+        if(view.companyGroup().getValue() != null) {
+            company.setGroupId(view.companyGroup().getValue().getId());
+        }
         company.setSubscriptions(view.companySubscriptions().getValue());
         infoFacade.setWebSite(view.webSite().getText());
     }

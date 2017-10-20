@@ -2,11 +2,15 @@
 ${"<#assign "+ name +"=\""+ value +"\"/>"}
 </#macro>
 
-<@set name="_createdBy" value="${createdBy}"/>
-<@set name="_changedStateTo" value="${changedStateTo}"/>
+<@set name="_issue_id" value="${issue_id}"/>
+<@set name="_issue_name" value="${issue_name}"/>
+<@set name="_issue_private" value="${issue_private}"/>
+<@set name="_yes" value="${yes}"/>
+<@set name="_no" value="${no}"/>
+<@set name="_createdBy" value="${created_by}"/>
+<@set name="_changedStateTo" value="${changed_state_to}"/>
 <@set name="_you" value="${you}"/>
 <@set name="_yourself" value="${yourself}"/>
-<@set name="_issueIsPrivate" value="${issueIsPrivate}"/>
 <@set name="_product" value="${product}"/>
 <@set name="_criticality" value="${criticality}"/>
 <@set name="_state" value="${state}"/>
@@ -31,62 +35,52 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
 </head>
 <body bgcolor="#FFFFFF" text="#000000">
-<div class="">
-    <table style="border-collapse: collapse; width: 100%;table-layout: fixed">
-        <tbody>
-            <tr>
-                <td style="padding:12px 15px;background:<#if isCreated>#dff7e2;<#else>#f0f0f0;</#if>border-radius: 5px;">
-                    <table style="border-collapse: collapse; border: 0; width: 100%;">
-                        <tbody>
-                            <tr>
-                                <td style="vertical-align: top;font-family:sans-serif; font-size: 13px;">
-                                    <a title="newproject" style="float:left; margin-right:6px; font-size:15px; color: #1466c6; text-decoration: none; " href="${linkToIssue}">
-                                        CRM-${case.caseNumber} — ${(case.name)!''}
-                                    </a>
-                                </td>
-                                <td style="padding-left: 5px; font-size: 11px; font-family:sans-serif; text-align: right;<#if isCreated>color:#11731d;<#else>color:#888888;</#if>">
-                                    ${_createdBy} <#if createdByMe == true>${_yourself}<#else>${(case.creator.displayName)!'?'}</#if> ${(case.created)!''}
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <div style="margin:14px 0 8px 0;font-size:13px;line-height:18.5px">
-                        <div>${(case.info)!''}</div>
-                        <div style="margin-top: 14px;">
-                            <#if case.privateCase == true>
-                                <span style="color:#777777;font-style:italic;font-size:13px">
-                                    <img style="vertical-align:text-bottom;opacity: 0.3;margin-left: -2px;" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAApUlEQVQ4jd3RPYpCQRAE4M+fTPYZiAu6F/B8G3gPr6B4H0FzXUFETMR0hWdgBzIO62PVxIaimZquqhmaF9UnRpgHRuhWFX/hByV2gRJL9KoYTEPwjXpgGNykisERs4SrYYFDOlzPGHxgk3BlcO10uJmc+9FbGCR3reg9bDPB+jhF2l/4ddnSzRcKNHLOmVcXOYN/1RsYXK9xhTE6dzR7rB8Nfl6dAU0MImYlDT68AAAAAElFTkSuQmCC">
-                                    ${_issueIsPrivate}
-                                </span>
-                            </#if>
-                        </div>
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+<div>
+    <div style="padding: 5px;font-size: 13px;<#if isCreated>background:#dff7e2;color:#11731d;<#else>background:#f0f0f0;color:gray;</#if>">
+        ${_createdBy} <#if createdByMe == true>${_yourself}<#else>${(case.creator.displayName)!'?'}</#if> ${(case.created)!''}
+    </div>
     <div style="margin-top: 12px">
         <table>
             <tbody>
-                <#if infoChanged>
-                    <tr>
-                        <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 13px;color: #888888;">
-                            ${_description}
-                        </td>
-                        <td colspan="3" style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 13px;">
+                <tr>
+                    <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 13px;color: #888888;">
+                        ${_issue_id}
+                    </td>
+                    <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 13px;"><b>${case.caseNumber}</b></td>
+                </tr>
+                <tr>
+                    <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 13px;color: #888888;">
+                        ${_issue_name}
+                    </td>
+                    <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 13px;">
+                        <#if nameChanged>
+                            <@diff new="${(case.name)!''}" old="${(oldCase.name)!''}"/>
+                        <#else>
+                            ${(case.name)!''}
+                        </#if>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 13px;color: #888888;">
+                        ${_description}
+                    </td>
+                    <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 13px;">
+                        <#if infoChanged>
                             <@diff new="${(case.info)!''}" old="${(oldCase.info)!''}"/>
-                        </td>
-                    </tr>
-                </#if>
+                        <#else>
+                            ${(case.info)!''}
+                        </#if>
+                    </td>
+                </tr>
                 <tr>
                     <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 13px;color: #888888;">
                         ${_product}
                     </td>
-                    <td colspan="3" style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 13px;">
+                    <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 13px;">
                         <#if productChanged>
-                            <@changeTo old="${(oldProductName)!''}" new="${(case.product.name)!''}"/>
+                            <@changeTo old="${(oldCase.product.name)!'?'}" new="${(case.product.name)!'?'}"/>
                         <#else>
-                            ${(case.product.name)!''}
+                            ${(case.product.name)!'?'}
                         </#if>
                     </td>
                 </tr>
@@ -127,6 +121,22 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                             <@changeTo old="${oldCaseState}" new="${caseState}"/>
                         <#else>
                             ${caseState}
+                        </#if>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 13px;color: #888888;">
+                        ${_issue_private}
+                    </td>
+                    <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 13px;">
+                        <#if privacyChanged>
+                            <@changeTo old="${oldCase.privateCase?string(_yes,_no)}" new="${case.privateCase?string(_yes,_no)}"/>
+                        <#else>
+                            <#if case.privateCase == true>
+                                ${_yes}
+                            <#else>
+                                ${_no}
+                            </#if>
                         </#if>
                     </td>
                 </tr>

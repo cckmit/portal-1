@@ -21,8 +21,10 @@ import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.template.PreparedTemplate;
 
 import javax.mail.MessagingException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -84,6 +86,15 @@ public class MailNotificationProcessor {
         CaseObject caseObject, Person oldManager, CaseObjectEvent caseEvent, CaseCommentEvent commentEvent,
         Set<NotificationEntry> notificationEntries, Person currentPerson
     ) {
+        Collection<NotificationEntry> notifiers =
+                caseObject.isPrivateCase()?
+                        filterProteiNotifiers(notificationEntries)
+                        :
+                        notificationEntries;
+
+        if(notifiers.isEmpty())
+            return;
+
         CoreResponse<List<CaseComment> > comments = caseService.getCaseCommentList( null, caseObject.getId() );
         if ( comments.isError() ) {
             log.error( "Failed to retrieve comments for caseId={}", caseObject.getId() );
@@ -95,7 +106,7 @@ public class MailNotificationProcessor {
             oldManager = manager;
         }
 
-        List<String> recipients = notificationEntries.stream().map( NotificationEntry::getAddress ).collect( toList() );
+        List<String> recipients = notifiers.stream().map( NotificationEntry::getAddress ).collect( toList() );
         recipients.add( new PlainContactInfoFacade( currentPerson.getContactInfo() ).getEmail() );
 
         PreparedTemplate bodyTemplate = templateService.getCrmEmailNotificationBody(
@@ -113,7 +124,7 @@ public class MailNotificationProcessor {
             return;
         }
 
-        notificationEntries.stream().forEach( (entry)->{
+        notifiers.stream().forEach( (entry)->{
             String body = bodyTemplate.getText( entry.getAddress(), entry.getLangCode() );
             String subject = subjectTemplate.getText( entry.getAddress(), entry.getLangCode() );
 
@@ -148,5 +159,9 @@ public class MailNotificationProcessor {
         }
 
         return managerResponse.getData();
+    }
+
+    private List<NotificationEntry> filterProteiNotifiers(Collection<NotificationEntry> notifiers){
+        return notifiers.stream().filter(entry -> entry.getAddress().endsWith("@protei.ru")).collect(Collectors.toList());
     }
 }

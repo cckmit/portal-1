@@ -71,6 +71,14 @@ public class CaseObjectEvent extends ApplicationEvent {
         return isUpdateEvent() && !HelperFunc.equals( newState.getInfo(), oldState.getInfo() );
     }
 
+    public boolean isNameChanged() {
+        return isUpdateEvent() && !HelperFunc.equals( newState.getName(), oldState.getName() );
+    }
+
+    public boolean isPrivacyChanged(){
+        return isUpdateEvent() && newState.isPrivateCase() != oldState.isPrivateCase();
+    }
+
     public ServiceModule getServiceModule() {
         return serviceModule != null ? serviceModule : ServiceModule.GENERAL;
     }
