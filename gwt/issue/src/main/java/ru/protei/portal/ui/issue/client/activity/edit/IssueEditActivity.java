@@ -140,17 +140,21 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
     @Override
     public void onCompanyChanged() {
-        companyService.getCompany( view.company().getValue().getId(), new RequestCallback< Company >() {
-            @Override
-            public void onError( Throwable throwable ) {}
+        if ( view.company().getValue() != null ) {
+            companyService.getCompany( view.company().getValue().getId(), new RequestCallback< Company >() {
+                @Override
+                public void onError( Throwable throwable ) {}
 
-            @Override
-            public void onSuccess( Company company ) {
-                view.setSubscriptionEmails( company.getSubscriptions() == null ? ""
-                        : company.getSubscriptions().stream().map( CompanySubscription::getEmail )
-                        .collect( Collectors.joining(", ") ) );
-            }
-        });
+                @Override
+                public void onSuccess( Company company ) {
+                    view.setSubscriptionEmails(
+                            company.getSubscriptions() == null ? ""
+                                    : company.getSubscriptions().stream()
+                                    .map( CompanySubscription::getEmail )
+                                    .collect( Collectors.joining( ", " ) ) );
+                }
+            });
+        }
     }
 
     private void resetState(){
@@ -203,23 +207,27 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         Company initiatorCompany = issue.getInitiatorCompany();
         view.company().setValue(EntityOption.fromCompany(initiatorCompany));
         view.changeCompany(initiatorCompany);
+        view.setSubscriptionEmails( "" );
 
         if ( initiatorCompany == null && !policyService.hasPrivilegeFor( En_Privilege.ISSUE_COMPANY_EDIT ) ) {
             Company userCompany = policyService.getUserCompany();
             view.company().setValue( userCompany == null ? null : userCompany.toEntityOption() );
             view.changeCompany( userCompany );
+            view.setSubscriptionEmails(
+                    userCompany == null || userCompany.getSubscriptions() == null ? ""
+                            : userCompany.getSubscriptions().stream()
+                            .map( CompanySubscription::getEmail )
+                            .collect( Collectors.joining(", ") ) );
+        }
+        if ( issue.getInitiatorCompany() != null ) {
+            view.setSubscriptionEmails(
+                    issue.getInitiatorCompany().getSubscriptions() == null ? ""
+                            : issue.getInitiatorCompany().getSubscriptions().stream()
+                            .map( CompanySubscription::getEmail )
+                            .collect( Collectors.joining(", ") ) );
         }
 
         view.initiator().setValue( PersonShortView.fromPerson( issue.getInitiator() ) );
-        if ( issue.getInitiatorCompany() != null ) {
-            view.setSubscriptionEmails( issue.getInitiatorCompany().getSubscriptions() == null
-                    ? ""
-                    : issue.getInitiatorCompany().getSubscriptions()
-                    .stream()
-                    .map( CompanySubscription::getEmail )
-                    .collect( Collectors.joining(", ") ) );
-        }
-
         view.product().setValue( ProductShortView.fromProduct( issue.getProduct() ) );
         view.manager().setValue( PersonShortView.fromPerson( issue.getManager() ) );
         view.saveVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_EDIT ) );
