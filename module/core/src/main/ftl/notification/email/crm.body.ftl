@@ -222,9 +222,11 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
     </div>
     <div style="padding: 4px 0 8px;">
         <div style="color: #777777; font-size: 11px; font-family:sans-serif; margin: 20px 0; padding: 8px 0; border-top: 1px solid #D4D5D6;">
-            ${_you} (<b>${userName}</b>) ${_notification_footer}
+            ${_you} (<b>${userName!'?'}</b>) ${_notification_footer}
             <#list recipients as recipient>
-                ${recipient},
+                <#if recipient??>
+                    ${recipient},
+                </#if>
             </#list>
         </div>
     </div>

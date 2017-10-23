@@ -107,7 +107,10 @@ public class MailNotificationProcessor {
         }
 
         List<String> recipients = notifiers.stream().map( NotificationEntry::getAddress ).collect( toList() );
-        recipients.add( new PlainContactInfoFacade( currentPerson.getContactInfo() ).getEmail() );
+        String currentPersonEmail = new PlainContactInfoFacade( currentPerson.getContactInfo() ).getEmail();
+        if(currentPersonEmail != null){
+            recipients.add( currentPersonEmail );
+        }
 
         PreparedTemplate bodyTemplate = templateService.getCrmEmailNotificationBody(
             caseEvent, comments.getData(), manager, oldManager, commentEvent,

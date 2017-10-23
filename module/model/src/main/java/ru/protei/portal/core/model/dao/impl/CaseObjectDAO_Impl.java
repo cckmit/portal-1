@@ -68,6 +68,11 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
                 args.add( query.getId() );
             }
 
+            if ( !query.isPrivateAccess() ) {
+                condition.append( " and private_flag=?" );
+                args.add( 0 );
+            }
+
             if ( query.getType() != null ) {
                 condition.append( " and case_type=?" );
                 args.add( query.getType().getId() );

@@ -205,6 +205,7 @@ public abstract class IssueTableActivity
         query.setType( En_CaseType.CRM_SUPPORT );
         query.setSortField( filterView.sortField().getValue() );
         query.setSortDir( filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC );
+        query.setPrivateAccess(isPrivateAccess);
 
         String value = filterView.searchPattern().getValue();
 
@@ -259,6 +260,8 @@ public abstract class IssueTableActivity
             Company userCompany = policyService.getUserCompany();
             filterView.company().setValue(userCompany == null ? null : userCompany.toEntityOption());
         }
+
+        isPrivateAccess = policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRIVACY_VIEW );
     }
 
     private Long getFilterCompanyId() {
@@ -300,4 +303,5 @@ public abstract class IssueTableActivity
     private AppEvents.InitDetails initDetails;
 
     private final RegExp caseNoPattern = RegExp.compile("\\d+");
+    private boolean isPrivateAccess = true;
 }

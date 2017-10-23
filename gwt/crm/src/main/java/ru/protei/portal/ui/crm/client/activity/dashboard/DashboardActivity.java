@@ -89,6 +89,7 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
             query.setCompanyId( userCompany == null ? null : userCompany.getId() );
         }
         query.setStates( issueStates.getActiveStates() );
+        query.setPrivateAccess(policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRIVACY_VIEW ));
 
         return query;
     }
@@ -101,6 +102,8 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
             Company userCompany = policyService.getUserCompany();
             query.setCompanyId( userCompany == null ? null : userCompany.getId() );
         }
+
+        query.setPrivateAccess(policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRIVACY_VIEW ));
 
         return query;
     }
@@ -119,6 +122,7 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
         inactiveStates.remove(En_CaseState.VERIFIED);
 
         query.setStates(inactiveStates);
+        query.setPrivateAccess(policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRIVACY_VIEW ));
 
         return query;
     }

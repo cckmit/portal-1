@@ -48,6 +48,11 @@ public class CaseShortViewDAO_Impl extends PortalBaseJdbcDAO<CaseShortView> impl
                 args.add( query.getId() );
             }
 
+            if ( !query.isPrivateAccess() ) {
+                condition.append( " and private_flag=?" );
+                args.add( 0 );
+            }
+
             if ( query.getType() != null ) {
                 condition.append( " and case_type=?" );
                 args.add( query.getType().getId() );

@@ -91,20 +91,22 @@ public class TemplateServiceImpl implements TemplateService {
             );
         }
 
-        templateModel.put( "caseComments",  caseComments.stream().map( ( comment ) -> {
-            Map< String, Object > caseComment = new HashMap<>();
-            caseComment.put( "created", comment.getCreated() );
-            caseComment.put( "author", comment.getAuthor() );
-            caseComment.put( "text", comment.getText() );
-            caseComment.put( "caseState", En_CaseState.getById( comment.getCaseStateId() ) );
+        templateModel.put( "caseComments",  caseComments.stream()
+            .sorted(Comparator.comparing(CaseComment::getCreated, Date::compareTo))
+            .map( comment -> {
+                Map< String, Object > caseComment = new HashMap<>();
+                caseComment.put( "created", comment.getCreated() );
+                caseComment.put( "author", comment.getAuthor() );
+                caseComment.put( "text", comment.getText() );
+                caseComment.put( "caseState", En_CaseState.getById( comment.getCaseStateId() ) );
 
-            boolean isChanged = caseCommentEvent == null ? false : HelperFunc.equals( caseCommentEvent.getCaseComment().getId(), comment.getId() );
-            caseComment.put( "changed",  isChanged);
-            if(isChanged && caseCommentEvent.getOldCaseComment() != null){
-                caseComment.put( "oldText", caseCommentEvent.getOldCaseComment().getText() );
-            }
+                boolean isChanged = caseCommentEvent == null ? false : HelperFunc.equals( caseCommentEvent.getCaseComment().getId(), comment.getId() );
+                caseComment.put( "changed",  isChanged);
+                if(isChanged && caseCommentEvent.getOldCaseComment() != null){
+                    caseComment.put( "oldText", caseCommentEvent.getOldCaseComment().getText() );
+                }
 
-            return caseComment;
+                return caseComment;
         } ).collect( toList() ) );
 
         PreparedTemplate template = new PreparedTemplate( "notification/email/crm.body.%s.ftl" );
