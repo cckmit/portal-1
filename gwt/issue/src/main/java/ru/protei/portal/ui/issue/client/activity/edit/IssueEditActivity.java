@@ -27,6 +27,7 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -157,6 +158,25 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         }
     }
 
+    @Override
+    public boolean isIssueChanged() {
+        return initialHash != calcHash();
+    }
+
+    private int calcHash(){
+        return Objects.hash(
+                view.name().getValue(),
+                view.description().getText(),
+                view.isLocal().getValue(),
+                view.state().getValue(),
+                view.importance().getValue(),
+                view.company().getValue(),
+                view.initiator().getValue(),
+                view.product().getValue(),
+                view.manager().getValue()
+        );
+    }
+
     private void resetState(){
 //        view.initiatorState().setEnabled(view.companyValidator().isValid());
     }
@@ -231,6 +251,8 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         view.product().setValue( ProductShortView.fromProduct( issue.getProduct() ) );
         view.manager().setValue( PersonShortView.fromPerson( issue.getManager() ) );
         view.saveVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_EDIT ) );
+
+        initialHash = calcHash();
     }
 
     private void fillIssueObject(CaseObject issue){
@@ -291,4 +313,5 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     private AppEvents.InitDetails initDetails;
     private CaseObject issue;
     private boolean isChangedStatus = false;
+    private int initialHash;
 }
