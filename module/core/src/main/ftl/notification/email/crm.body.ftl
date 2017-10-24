@@ -207,11 +207,11 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                     <#else>
                         <#if caseComment.oldText??>
                             <span style="color:#11731d;line-height: 17px;margin-right:10px">${_updated}</span>
-                            <div style="margin-top:4px;line-height:1.5em">
+                            <div style="margin-top:4px;line-height:1.5em;white-space:pre-wrap">
                                 <@diff old="${caseComment.oldText}" new="${caseComment.text}"/>
                             </div>
                         <#else>
-                            <div style="margin-top:4px;line-height:1.5em">
+                            <div style="margin-top:4px;line-height:1.5em;white-space:pre-wrap">
                                 ${caseComment.text}
                             </div>
                         </#if>

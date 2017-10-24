@@ -48,6 +48,12 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
+    protected void onAttach() {
+        super.onAttach();
+        saveButton.setEnabled(false);
+    }
+
+    @Override
     public void setActivity(AbstractIssueEditActivity activity) {
         this.activity = activity;
     }
