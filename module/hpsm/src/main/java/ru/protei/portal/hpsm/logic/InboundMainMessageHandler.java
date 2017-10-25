@@ -27,9 +27,7 @@ import ru.protei.portal.hpsm.struct.HpsmMessageHeader;
 import ru.protei.portal.hpsm.utils.HpsmUtils;
 
 import javax.mail.internet.MimeMessage;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by michael on 25.04.17.
@@ -369,10 +367,12 @@ public class InboundMainMessageHandler implements InboundMessageHandler {
         logger.debug("add comment to new case, case-id={}, comment={}", caseObjId, comment.getId());
 
 
+        Collection<Attachment> addedAttachments = null;
         if (request.hasAttachments()) {
             logger.debug("process attachments for new case, id={}", caseObjId);
 
             List<CaseAttachment> caseAttachments = new ArrayList<>(request.getAttachments().size());
+            addedAttachments = new ArrayList<>(request.getAttachments().size());
 
             for (HpsmAttachment in : request.getAttachments()) {
                 Attachment a = new Attachment();
@@ -382,6 +382,8 @@ public class InboundMainMessageHandler implements InboundMessageHandler {
                 a.setFileName(in.getFileName());
                 a.setMimeType(in.getContentType());
                 a.setLabelText(in.getDescription());
+
+                addedAttachments.add(a);
 
                 try {
                     logger.debug("invoke file controller to store attachment {} (size={})", in.getFileName(), in.getSize());
@@ -401,7 +403,16 @@ public class InboundMainMessageHandler implements InboundMessageHandler {
             comment.setCaseAttachments(caseAttachments);
         }
 
-        eventPublisherService.publishEvent(new CaseCommentEvent(ServiceModule.HPSM, caseService, obj, null, comment, contactPerson));
+        eventPublisherService.publishEvent(new CaseCommentEvent(
+                ServiceModule.HPSM,
+                caseService,
+                obj,
+                null,
+                null,
+                comment,
+                addedAttachments,
+                contactPerson
+        ));
 
         return comment;
     }

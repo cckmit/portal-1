@@ -14,6 +14,7 @@ import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.service.user.AuthService;
@@ -209,10 +210,23 @@ public class CaseServiceImpl implements CaseService {
         // attachments won't read now from DAO
         result.setCaseAttachments(comment.getCaseAttachments());
 
+
+        //below building event
+
         CaseObject caseObject = caseObjectDAO.get(comment.getCaseId());
         jdbcManyRelationsHelper.fill( caseObject, "attachments");
 
-        publisherService.publishEvent(new CaseCommentEvent(this, caseObject, null, result, currentPerson));
+        Collection<Long> addedAttachmentsIds = comment.getCaseAttachments()
+                .stream()
+                .map(CaseAttachment::getAttachmentId)
+                .collect(Collectors.toList());
+
+        Collection<Attachment> addedAttachments = caseObject.getAttachments()
+                .stream()
+                .filter(a -> addedAttachmentsIds.contains(a.getId()))
+                .collect(Collectors.toList());
+
+        publisherService.publishEvent(new CaseCommentEvent(this, caseObject, result, addedAttachments, currentPerson));
 
         return new CoreResponse<CaseComment>().success( result );
     }
@@ -257,10 +271,19 @@ public class CaseServiceImpl implements CaseService {
             throw new RuntimeException( "failed to update case modifiedDate " );
 
 
+        // below building event
+
         CaseObject caseObject = caseObjectDAO.get(comment.getCaseId());
         jdbcManyRelationsHelper.fill( caseObject, "attachments");
 
-        publisherService.publishEvent(new CaseCommentEvent(this, caseObject, prevComment, comment, person));
+        Collection<Attachment> removedAttachments = attachmentService.getAttachments(token, removedCaseAttachments).getData();
+        Collection<Attachment> addedAttachments = attachmentService.getAttachments(token,
+                HelperFunc.subtract(comment.getCaseAttachments(), prevComment.getCaseAttachments())
+        ).getData();
+
+        publisherService.publishEvent(
+                new CaseCommentEvent(this, caseObject, prevComment, removedAttachments, comment, addedAttachments, person)
+        );
 
         return new CoreResponse<CaseComment>().success( comment );
     }

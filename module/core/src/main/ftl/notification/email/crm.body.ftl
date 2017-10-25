@@ -178,12 +178,14 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                                     ${attach.fileName}
                                 </span>
                             </#list>
-                            <#if oldCase??>
+                            <#if removedAttachments??>
                                 <#list removedAttachments as attach>
                                     <span style="display:inline-block;padding:1px 5px;white-space:nowrap;text-decoration:line-through;color:#bd1313;">
                                         ${attach.fileName}
                                     </span>
                                 </#list>
+                            </#if>
+                            <#if addedAttachments??>
                                 <#list addedAttachments as attach>
                                     <span style="display:inline-block;padding:1px 5px;white-space:nowrap;text-decoration:none;color:#11731d;background:#dff7e2;">
                                         ${attach.fileName}

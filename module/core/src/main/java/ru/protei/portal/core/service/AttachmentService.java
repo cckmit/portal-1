@@ -7,7 +7,9 @@ import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.AuthToken;
+import ru.protei.portal.core.model.ent.CaseAttachment;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -34,6 +36,9 @@ public interface AttachmentService {
 
     @Privileged( En_Privilege.ISSUE_VIEW )
     CoreResponse<List<Attachment>> getAttachments( AuthToken token, List<Long> ids);
+
+    @Privileged( En_Privilege.ISSUE_VIEW )
+    CoreResponse<List<Attachment>> getAttachments( AuthToken token, Collection<CaseAttachment> caseAttachments);
 
     CoreResponse<Long> saveAttachment(Attachment attachment);
 

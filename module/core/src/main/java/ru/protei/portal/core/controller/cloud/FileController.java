@@ -17,16 +17,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.api.struct.FileStorage;
-import ru.protei.portal.core.model.ent.Attachment;
-import ru.protei.portal.core.model.ent.UserSessionDescriptor;
+import ru.protei.portal.core.event.CaseAttachmentEvent;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.service.AttachmentService;
 import ru.protei.portal.core.service.CaseService;
+import ru.protei.portal.core.service.EventPublisherService;
 import ru.protei.portal.core.service.user.AuthService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Collections;
 
 @RestController
 public class FileController {
@@ -43,8 +45,8 @@ public class FileController {
     @Autowired
     FileStorage fileStorage;
 
-//    @Autowired
-//    EventPublisherService eventPublisherService;
+    @Autowired
+    EventPublisherService publisherService;
 
 
     private static final Logger logger = Logger.getLogger(FileStorage.class);
@@ -69,15 +71,15 @@ public class FileController {
                     if(item.isFormField())
                         continue;
 
-                    Long creatorId = ud.getPerson().getId();
-                    Attachment attachment = saveAttachment(item, creatorId);
+                    Person creator = ud.getPerson();
+                    Attachment attachment = saveAttachment(item, creator.getId());
 
                     if(caseId != null) {
                         CoreResponse<Long> caseAttachId = caseService.bindAttachmentToCase(ud.makeAuthToken(), attachment, caseId);
                         if(caseAttachId.isError())
                             break;
 
-//                        eventPublisherService.publishEvent(new CaseAttachmentEvent(this, attachment, caseId));
+                        shareNotification(attachment, caseId, creator, ud.makeAuthToken());
                     }
 
                     return mapper.writeValueAsString(attachment);
@@ -124,7 +126,29 @@ public class FileController {
         if(caseAttachId.isError())
             throw new SQLException("unable to bind attachment to case");
 
+//        try {
+//            shareNotification(attachment, caseId, null, person);
+//        }catch (NullPointerException e){
+//            logger.error("Notification error! "+ e.getMessage());
+//        }
+
         return caseAttachId.getData();
+    }
+
+    private void shareNotification(Attachment attachment, Long caseId, Person initiator, AuthToken token){
+        CoreResponse<CaseObject> issue = caseService.getCaseObject(token, caseId);
+        if(issue.isError()){
+            logger.error("Notification error! Database exception: "+ issue.getStatus().name());
+            return;
+        }
+
+        publisherService.publishEvent(new CaseAttachmentEvent(
+                this,
+                issue.getData(),
+                Collections.singletonList(attachment),
+                null,
+                initiator
+        ));
     }
 
     private String saveFile(FileItem file) throws IOException{
