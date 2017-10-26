@@ -246,6 +246,7 @@ public class CaseServiceImpl implements CaseService {
             return new CoreResponse().error( En_ResultStatus.NOT_UPDATED );
 
         CaseComment prevComment = caseCommentDAO.get( comment.getId() );
+        jdbcManyRelationsHelper.fill(prevComment, "caseAttachments");
 
         boolean isCommentUpdated = caseCommentDAO.merge(comment);
 
