@@ -1,6 +1,7 @@
 package ru.protei.portal.core.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import ru.protei.portal.core.event.CaseAttachmentEvent;
 import ru.protei.portal.core.event.CaseCommentEvent;
 import ru.protei.portal.core.event.CaseObjectEvent;
 import ru.protei.portal.core.model.dao.CompanyGroupHomeDAO;
@@ -29,6 +30,11 @@ public class CaseSubscriptionServiceImpl implements CaseSubscriptionService {
 
     @Override
     public Set<NotificationEntry> subscribers(CaseCommentEvent event) {
+        return getByCompanyRule(event.getCaseObject().getInitiatorCompanyId());
+    }
+
+    @Override
+    public Set<NotificationEntry> subscribers(CaseAttachmentEvent event) {
         return getByCompanyRule(event.getCaseObject().getInitiatorCompanyId());
     }
 

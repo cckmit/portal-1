@@ -27,9 +27,7 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
     <span style="margin:0 5px;">&rarr;</span>
     <span style="color:#11731d;background:#dff7e2;padding:2px 4px">${new}</span>
 </#macro>
-<#macro diff old, new>
-    ${TextUtils.diff(old, new, "color:#11731d;background:#dff7e2;text-decoration:none", "color:#bd1313;text-decoration:line-through")}
-</#macro>
+<#macro diff old, new>${TextUtils.diff(old, new, "color:#11731d;background:#dff7e2;text-decoration:none", "color:#bd1313;text-decoration:line-through")}</#macro>
 <html>
 <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
@@ -178,12 +176,14 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                                     ${attach.fileName}
                                 </span>
                             </#list>
-                            <#if oldCase??>
+                            <#if removedAttachments??>
                                 <#list removedAttachments as attach>
                                     <span style="display:inline-block;padding:1px 5px;white-space:nowrap;text-decoration:line-through;color:#bd1313;">
                                         ${attach.fileName}
                                     </span>
                                 </#list>
+                            </#if>
+                            <#if addedAttachments??>
                                 <#list addedAttachments as attach>
                                     <span style="display:inline-block;padding:1px 5px;white-space:nowrap;text-decoration:none;color:#11731d;background:#dff7e2;">
                                         ${attach.fileName}
@@ -207,13 +207,9 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                     <#else>
                         <#if caseComment.oldText??>
                             <span style="color:#11731d;line-height: 17px;margin-right:10px">${_updated}</span>
-                            <div style="margin-top:4px;line-height:1.5em;white-space:pre-wrap">
-                                <@diff old="${caseComment.oldText}" new="${caseComment.text}"/>
-                            </div>
+                            <div style="margin-top:4px;line-height:1.5em;white-space:pre-wrap"><@diff old="${caseComment.oldText}" new="${caseComment.text}"/></div>
                         <#else>
-                            <div style="margin-top:4px;line-height:1.5em;white-space:pre-wrap">
-                                ${caseComment.text}
-                            </div>
+                            <div style="margin-top:4px;line-height:1.5em;white-space:pre-wrap">${caseComment.text}</div>
                         </#if>
                     </#if>
                 </div>

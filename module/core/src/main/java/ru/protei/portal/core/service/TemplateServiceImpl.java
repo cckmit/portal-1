@@ -6,14 +6,12 @@ import freemarker.template.TemplateExceptionHandler;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.protei.portal.core.event.CaseAttachmentEvent;
 import ru.protei.portal.core.event.CaseCommentEvent;
 import ru.protei.portal.core.event.CaseObjectEvent;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
-import ru.protei.portal.core.model.ent.Attachment;
-import ru.protei.portal.core.model.ent.CaseComment;
-import ru.protei.portal.core.model.ent.CaseObject;
-import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.service.template.PreparedTemplate;
 import ru.protei.portal.core.service.template.TextUtils;
@@ -46,21 +44,26 @@ public class TemplateServiceImpl implements TemplateService {
 
     @Override
     public PreparedTemplate getCrmEmailNotificationBody(
-        CaseObjectEvent caseObjectEvent, List< CaseComment > caseComments, Person manager, Person oldManager,
-        CaseCommentEvent caseCommentEvent, String urlTemplate, List< String > recipients
+            CaseObjectEvent caseEvent, List< CaseComment > caseComments, Person manager, Person oldManager,
+            CaseCommentEvent commentEvent, CaseAttachmentEvent attachmentEvent, String urlTemplate, List< String > recipients
     ) {
-        if ( caseCommentEvent == null && caseObjectEvent == null ) {
+        CaseObject newState;
+        if(caseEvent != null){
+            newState = caseEvent.getNewState();
+        }else if(commentEvent != null){
+            newState = commentEvent.getCaseObject();
+        }else if (attachmentEvent != null){
+            newState = attachmentEvent.getCaseObject();
+        }else
             return null;
-        }
 
-        CaseObject newState = caseObjectEvent == null ? caseCommentEvent.getCaseObject() : caseObjectEvent.getNewState();
-        CaseObject oldState = caseObjectEvent == null ? null : caseObjectEvent.getOldState();
+        CaseObject oldState = caseEvent == null ? null : caseEvent.getOldState();
 
         Map<String, Object> templateModel = new HashMap<>();
 
         templateModel.put( "TextUtils", new TextUtils() );
         templateModel.put( "linkToIssue", String.format( urlTemplate, newState.getId() ) );
-        templateModel.put( "isCreated", caseObjectEvent == null ? false : caseObjectEvent.isCreateEvent() );
+        templateModel.put( "isCreated", caseEvent == null ? false : caseEvent.isCreateEvent() );
         templateModel.put( "createdByMe", false );
         templateModel.put( "case", newState );
         templateModel.put( "oldCase", oldState );
@@ -69,45 +72,40 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put( "caseState", En_CaseState.getById( newState.getStateId() ).getName() );
         templateModel.put( "recipients", recipients );
 
-        templateModel.put( "productChanged", caseObjectEvent == null ? false : caseObjectEvent.isProductChanged() );
-        templateModel.put( "importanceChanged", caseObjectEvent == null ? false : caseObjectEvent.isCaseImportanceChanged() );
+        templateModel.put( "productChanged", caseEvent == null ? false : caseEvent.isProductChanged() );
+        templateModel.put( "importanceChanged", caseEvent == null ? false : caseEvent.isCaseImportanceChanged() );
         templateModel.put( "oldImportanceLevel", oldState == null ? null : En_ImportanceLevel.getById( oldState.getImpLevel() ).getCode() );
-        templateModel.put( "caseChanged", caseObjectEvent == null ? false : caseObjectEvent.isCaseStateChanged() );
+        templateModel.put( "caseChanged", caseEvent == null ? false : caseEvent.isCaseStateChanged() );
         templateModel.put( "oldCaseState", oldState == null ? null : En_CaseState.getById( oldState.getStateId() ).getName() );
-        templateModel.put( "customerChanged", caseObjectEvent == null ? false : (caseObjectEvent.isInitiatorChanged() || caseObjectEvent.isInitiatorCompanyChanged() ) );
+        templateModel.put( "customerChanged", caseEvent == null ? false : (caseEvent.isInitiatorChanged() || caseEvent.isInitiatorCompanyChanged() ) );
         templateModel.put( "oldInitiator", oldState == null ? null : oldState.getInitiator() );
         templateModel.put( "oldInitiatorCompany", oldState == null ? null : oldState.getInitiatorCompany() );
-        templateModel.put( "managerChanged", caseObjectEvent == null ? false : caseObjectEvent.isManagerChanged() );
+        templateModel.put( "managerChanged", caseEvent == null ? false : caseEvent.isManagerChanged() );
         templateModel.put( "oldManager", oldManager );
-        templateModel.put( "infoChanged", caseObjectEvent == null ? false : caseObjectEvent.isInfoChanged() );
-        templateModel.put( "nameChanged", caseObjectEvent == null ? false : caseObjectEvent.isNameChanged() );
-        templateModel.put( "privacyChanged", caseObjectEvent == null ? false : caseObjectEvent.isPrivacyChanged() );
+        templateModel.put( "infoChanged", caseEvent == null ? false : caseEvent.isInfoChanged() );
+        templateModel.put( "nameChanged", caseEvent == null ? false : caseEvent.isNameChanged() );
+        templateModel.put( "privacyChanged", caseEvent == null ? false : caseEvent.isPrivacyChanged() );
 
-        if(oldState == null && CollectionUtils.isNotEmpty(newState.getAttachments())){
-            templateModel.put( "attachments", newState.getAttachments() );
-        }else {
+
+        if(oldState == null){
+            if(!(commentEvent == null && attachmentEvent == null)){
+                Collection<Attachment> added = commentEvent == null?attachmentEvent.getAddedAttachments():commentEvent.getAddedAttachments();
+                Collection<Attachment> removed = commentEvent == null?attachmentEvent.getRemovedAttachments():commentEvent.getRemovedAttachments();
+                newState.getAttachments().removeAll(added);
+                templateModel.putAll(
+                        buildAttachmentModelKeys(newState.getAttachments(), added, removed)
+                );
+
+            }else if(CollectionUtils.isNotEmpty(newState.getAttachments())){
+                templateModel.put( "attachments", newState.getAttachments() );
+            }
+        }else{
             templateModel.putAll(
                     getAttachmentModelKeys(getAttachmentsFromCase(oldState), getAttachmentsFromCase(newState))
             );
         }
 
-        templateModel.put( "caseComments",  caseComments.stream()
-            .sorted(Comparator.comparing(CaseComment::getCreated, Date::compareTo))
-            .map( comment -> {
-                Map< String, Object > caseComment = new HashMap<>();
-                caseComment.put( "created", comment.getCreated() );
-                caseComment.put( "author", comment.getAuthor() );
-                caseComment.put( "text", comment.getText() );
-                caseComment.put( "caseState", En_CaseState.getById( comment.getCaseStateId() ) );
-
-                boolean isChanged = caseCommentEvent == null ? false : HelperFunc.equals( caseCommentEvent.getCaseComment().getId(), comment.getId() );
-                caseComment.put( "changed",  isChanged);
-                if(isChanged && caseCommentEvent.getOldCaseComment() != null){
-                    caseComment.put( "oldText", caseCommentEvent.getOldCaseComment().getText() );
-                }
-
-                return caseComment;
-        } ).collect( toList() ) );
+        templateModel.put( "caseComments",  getCommentsModelKeys(caseComments, commentEvent));
 
         PreparedTemplate template = new PreparedTemplate( "notification/email/crm.body.%s.ftl" );
         template.setModel( templateModel );
@@ -136,18 +134,47 @@ public class TemplateServiceImpl implements TemplateService {
             Collection<Attachment> removed = newAttachs.isEmpty()?oldAttachs:HelperFunc.subtract(oldAttachs, newAttachs);
             Collection<Attachment> added = oldAttachs.isEmpty()?newAttachs:HelperFunc.subtract(newAttachs, oldAttachs);
 
-            Map<String, Object> model = new HashMap<>(3);
+            Collection<Attachment> existing;
             if(added.isEmpty() && removed.isEmpty())
-                model.put( "attachments", newAttachs);
+                existing = newAttachs;
             else{
                 oldAttachs.retainAll(newAttachs);
-                model.put( "attachments", oldAttachs);
+                existing = oldAttachs;
             }
-            model.put( "removedAttachments", removed);
-            model.put( "addedAttachments", added);
 
-            return model;
+            return buildAttachmentModelKeys(existing, added, removed);
         }
+    }
+
+    private List<Map<String, Object>> getCommentsModelKeys(List<CaseComment> comments, CaseCommentEvent event){
+        return comments
+                .stream()
+                .sorted(Comparator.comparing(CaseComment::getCreated, Date::compareTo))
+                .map( comment -> {
+                    Map< String, Object > caseComment = new HashMap<>();
+                    caseComment.put( "created", comment.getCreated() );
+                    caseComment.put( "author", comment.getAuthor() );
+                    caseComment.put( "text", comment.getText() );
+                    caseComment.put( "caseState", En_CaseState.getById( comment.getCaseStateId() ) );
+
+                    boolean isChanged = event == null ? false : HelperFunc.equals( event.getCaseComment().getId(), comment.getId() );
+                    caseComment.put( "changed",  isChanged);
+                    if(isChanged && event.getOldCaseComment() != null){
+                        caseComment.put( "oldText", event.getOldCaseComment().getText() );
+                    }
+
+                    return caseComment;
+                } )
+                .collect( toList() );
+    }
+
+    private Map<String, Object> buildAttachmentModelKeys(Collection<Attachment> existing, Collection<Attachment> added, Collection<Attachment> removed){
+        Map<String, Object> model = new HashMap<>(3);
+        model.put( "attachments", existing);
+        model.put( "removedAttachments", removed);
+        model.put( "addedAttachments", added);
+
+        return model;
     }
 
     private Collection<Attachment> getAttachmentsFromCase(CaseObject object){
