@@ -282,7 +282,7 @@ public class WorkerController {
 
                     workerEntryDAO.persist (worker);
 
-                    //wsMigrationManager.persistPerson (person);
+                    //wsMigrationManager.savePerson (person);
 
                     logger.debug("=== success result, workerRowId = " + worker.getId());
                     return ServiceResult.successResult (person.getId ());
@@ -366,6 +366,7 @@ public class WorkerController {
                         if (!workerEntryDAO.checkExistsByPersonId(person.getId())) {
                             person.setFired (true);
                             personDAO.merge (person);
+                            //wsMigrationManager.firePerson (person);
                         }
 
                         logger.debug("=== success result, workerRowId = " + worker.getId());
@@ -383,7 +384,7 @@ public class WorkerController {
 
                     workerEntryDAO.merge (worker);
 
-                    //wsMigrationManager.mergePerson (person);
+                    //wsMigrationManager.savePerson (person);
 
                     logger.debug("=== success result, workerRowId = " + worker.getId());
                     return ServiceResult.successResult (person.getId ());
@@ -427,16 +428,18 @@ public class WorkerController {
 
         try {
 
+            if (HelperFunc.isEmpty(companyCode)) {
+                logger.debug("=== error result, " + En_ErrorCode.EMPTY_COMP_CODE.getMessage());
+                return ServiceResult.failResult(En_ErrorCode.EMPTY_COMP_CODE.getCode(), En_ErrorCode.EMPTY_COMP_CODE.getMessage(), externalId);
+            }
+
             String companyDecode = URLDecoder.decode( companyCode, "UTF-8" );
             logger.debug("=== companyCode = " + companyDecode);
 
             return transactionTemplate.execute(transactionStatus -> {
                 try {
 
-                    if (HelperFunc.isEmpty(companyDecode))
-                        return ServiceResult.failResult (En_ErrorCode.EMPTY_COMP_CODE.getCode (), En_ErrorCode.EMPTY_COMP_CODE.getMessage (), externalId);
-
-                    if (externalId < 0) {
+                    if (externalId == null || externalId < 0) {
                         logger.debug("=== error result, " + En_ErrorCode.EMPTY_WOR_ID.getMessage());
                         return ServiceResult.failResult(En_ErrorCode.EMPTY_WOR_ID.getCode(), En_ErrorCode.EMPTY_WOR_ID.getMessage(), externalId);
                     }
@@ -461,7 +464,7 @@ public class WorkerController {
                         Person person = personDAO.get (personId);
                         person.setDeleted (true);
                         personDAO.merge (person);
-                        //wsMigrationManager.removePerson (person);
+                        //wsMigrationManager.deletePerson (person);
                     }
                     logger.debug("=== success result, workerRowId = " + worker.getId());
                     return ServiceResult.successResult (worker.getExternalId ());
@@ -657,13 +660,15 @@ public class WorkerController {
 
         try {
 
+            if (HelperFunc.isEmpty(companyCode)) {
+                logger.debug("=== error result, " + En_ErrorCode.EMPTY_COMP_CODE.getMessage());
+                return ServiceResult.failResult(En_ErrorCode.EMPTY_COMP_CODE.getCode(), En_ErrorCode.EMPTY_COMP_CODE.getMessage(), externalId);
+            }
+
             String companyDecode = URLDecoder.decode( companyCode, "UTF-8" );
             logger.debug("=== companyCode = " + companyDecode);
 
-            if (HelperFunc.isEmpty(companyDecode))
-                return ServiceResult.failResult (En_ErrorCode.EMPTY_COMP_CODE.getCode (), En_ErrorCode.EMPTY_COMP_CODE.getMessage (), externalId);
-
-            if (externalId < 0) {
+            if (externalId == null || externalId < 0) {
                 logger.debug("=== error result, " + En_ErrorCode.EMPTY_DEP_ID.getMessage());
                 return ServiceResult.failResult(En_ErrorCode.EMPTY_DEP_ID.getCode(), En_ErrorCode.EMPTY_DEP_ID.getMessage(), externalId);
             }
@@ -708,21 +713,23 @@ public class WorkerController {
         logger.debug("=== updatePosition ===");
         try {
 
-            String oldNameDecode = URLDecoder.decode( oldName, "UTF-8" );
-            String newNameDecode = URLDecoder.decode( newName, "UTF-8" );
-            String companyDecode = URLDecoder.decode( companyCode, "UTF-8" );
+            if (HelperFunc.isEmpty(companyCode)) {
+                logger.debug("=== error result, " + En_ErrorCode.EMPTY_COMP_CODE.getMessage());
+                return ServiceResult.failResult(En_ErrorCode.EMPTY_COMP_CODE.getCode(), En_ErrorCode.EMPTY_COMP_CODE.getMessage(), null);
+            }
+
+            if (HelperFunc.isEmpty(oldName) || HelperFunc.isEmpty(newName)) {
+                logger.debug("=== error result, " + En_ErrorCode.EMPTY_POS.getMessage());
+                return ServiceResult.failResult(En_ErrorCode.EMPTY_POS.getCode(), En_ErrorCode.EMPTY_POS.getMessage(), null);
+            }
+
+            String oldNameDecode = URLDecoder.decode(oldName, "UTF-8");
+            String newNameDecode = URLDecoder.decode(newName, "UTF-8");
+            String companyDecode = URLDecoder.decode(companyCode, "UTF-8");
 
             logger.debug("=== oldName = " + oldNameDecode);
             logger.debug("=== newName = " + newNameDecode);
             logger.debug("=== companyCode = " + companyDecode);
-
-            if (HelperFunc.isEmpty(companyDecode))
-                return ServiceResult.failResult (En_ErrorCode.EMPTY_COMP_CODE.getCode (), En_ErrorCode.EMPTY_COMP_CODE.getMessage (), null);
-
-            if (HelperFunc.isEmpty(oldNameDecode) || HelperFunc.isEmpty(newNameDecode)) {
-                logger.debug("=== error result, " + En_ErrorCode.EMPTY_POS.getMessage());
-                return ServiceResult.failResult(En_ErrorCode.EMPTY_POS.getCode(), En_ErrorCode.EMPTY_POS.getMessage(), null);
-            }
 
             CompanyHomeGroupItem item = companyGroupHomeDAO.getByExternalCode(companyDecode.trim ());
             if (item == null) {
@@ -763,18 +770,20 @@ public class WorkerController {
 
         try {
 
+            if (HelperFunc.isEmpty(companyCode)) {
+                logger.debug("=== error result, " + En_ErrorCode.EMPTY_COMP_CODE.getMessage());
+                return ServiceResult.failResult(En_ErrorCode.EMPTY_COMP_CODE.getCode(), En_ErrorCode.EMPTY_COMP_CODE.getMessage(), null);
+            }
+
+            if (HelperFunc.isEmpty(name)) {
+                logger.debug("=== error result, " + En_ErrorCode.EMPTY_POS.getMessage());
+                return ServiceResult.failResult(En_ErrorCode.EMPTY_POS.getCode(), En_ErrorCode.EMPTY_POS.getMessage(), null);
+            }
+
             String nameDecode = URLDecoder.decode( name, "UTF-8" );
             String companyDecode = URLDecoder.decode( companyCode, "UTF-8" );
             logger.debug("=== name = " + nameDecode);
             logger.debug("=== companyCode = " + companyDecode);
-
-            if (HelperFunc.isEmpty(companyDecode))
-                return ServiceResult.failResult (En_ErrorCode.EMPTY_COMP_CODE.getCode (), En_ErrorCode.EMPTY_COMP_CODE.getMessage (), null);
-
-            if (HelperFunc.isEmpty(nameDecode)) {
-                logger.debug("=== error result, " + En_ErrorCode.EMPTY_POS.getMessage());
-                return ServiceResult.failResult(En_ErrorCode.EMPTY_POS.getCode(), En_ErrorCode.EMPTY_POS.getMessage(), null);
-            }
 
             CompanyHomeGroupItem item = companyGroupHomeDAO.getByExternalCode(companyDecode.trim ());
             if (item == null) {
@@ -807,44 +816,66 @@ public class WorkerController {
 
     private ServiceResult isValidWorkerRecord(WorkerRecord rec) {
 
-        if (HelperFunc.isEmpty(rec.getCompanyCode ()))
-            return ServiceResult.failResult (En_ErrorCode.EMPTY_COMP_CODE.getCode (), En_ErrorCode.EMPTY_COMP_CODE.getMessage (), rec.getId ());
+        if (HelperFunc.isEmpty(rec.getCompanyCode ())) {
+            logger.debug("=== error result, " + En_ErrorCode.EMPTY_COMP_CODE.getMessage());
+            return ServiceResult.failResult(En_ErrorCode.EMPTY_COMP_CODE.getCode(), En_ErrorCode.EMPTY_COMP_CODE.getMessage(), rec.getId());
+        }
 
-        if (rec.getDepartmentId () < 0)
-            return ServiceResult.failResult (En_ErrorCode.EMPTY_DEP_ID.getCode (), En_ErrorCode.EMPTY_DEP_ID.getMessage (), rec.getId ());
+        if (rec.getDepartmentId () < 0) {
+            logger.debug("=== error result, " + En_ErrorCode.EMPTY_DEP_ID.getMessage());
+            return ServiceResult.failResult(En_ErrorCode.EMPTY_DEP_ID.getCode(), En_ErrorCode.EMPTY_DEP_ID.getMessage(), rec.getId());
+        }
 
-        if (HelperFunc.isEmpty(rec.getPositionName ()))
-            return ServiceResult.failResult (En_ErrorCode.EMPTY_POS.getCode (), En_ErrorCode.EMPTY_POS.getMessage (), rec.getId ());
+        if (HelperFunc.isEmpty(rec.getPositionName ())) {
+            logger.debug("=== error result, " + En_ErrorCode.EMPTY_POS.getMessage());
+            return ServiceResult.failResult(En_ErrorCode.EMPTY_POS.getCode(), En_ErrorCode.EMPTY_POS.getMessage(), rec.getId());
+        }
 
-        if (rec.getWorkerId () < 0)
-            return ServiceResult.failResult (En_ErrorCode.EMPTY_WOR_ID.getCode (), En_ErrorCode.EMPTY_WOR_ID.getMessage (), rec.getId ());
+        if (rec.getWorkerId () < 0) {
+            logger.debug("=== error result, " + En_ErrorCode.EMPTY_WOR_ID.getMessage());
+            return ServiceResult.failResult(En_ErrorCode.EMPTY_WOR_ID.getCode(), En_ErrorCode.EMPTY_WOR_ID.getMessage(), rec.getId());
+        }
 
-        if (HelperFunc.isEmpty(rec.getFirstName ()))
-            return ServiceResult.failResult (En_ErrorCode.EMPTY_FIRST_NAME.getCode (), En_ErrorCode.EMPTY_FIRST_NAME.getMessage (), rec.getId ());
+        if (HelperFunc.isEmpty(rec.getFirstName ())) {
+            logger.debug("=== error result, " + En_ErrorCode.EMPTY_FIRST_NAME.getMessage());
+            return ServiceResult.failResult(En_ErrorCode.EMPTY_FIRST_NAME.getCode(), En_ErrorCode.EMPTY_FIRST_NAME.getMessage(), rec.getId());
+        }
 
-        if (HelperFunc.isEmpty(rec.getLastName ()))
-            return ServiceResult.failResult (En_ErrorCode.EMPTY_LAST_NAME.getCode (), En_ErrorCode.EMPTY_LAST_NAME.getMessage (), rec.getId ());
+        if (HelperFunc.isEmpty(rec.getLastName ())) {
+            logger.debug("=== error result, " + En_ErrorCode.EMPTY_LAST_NAME.getMessage());
+            return ServiceResult.failResult(En_ErrorCode.EMPTY_LAST_NAME.getCode(), En_ErrorCode.EMPTY_LAST_NAME.getMessage(), rec.getId());
+        }
 
         if (HelperFunc.isNotEmpty(rec.getIpAddress ()) &&
-                !rec.getIpAddress ().trim ().matches("^[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}$"))
-            return ServiceResult.failResult (En_ErrorCode.INV_FORMAT_IP.getCode (), En_ErrorCode.INV_FORMAT_IP.getMessage (), rec.getId ());
+                !rec.getIpAddress ().trim ().matches("^[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}$")) {
+            logger.debug("=== error result, " + En_ErrorCode.INV_FORMAT_IP.getMessage());
+            return ServiceResult.failResult(En_ErrorCode.INV_FORMAT_IP.getCode(), En_ErrorCode.INV_FORMAT_IP.getMessage(), rec.getId());
+        }
 
         return ServiceResult.successResult (rec.getId ());
     }
 
     private ServiceResult isValidDepartmentRecord(DepartmentRecord rec) {
 
-        if (HelperFunc.isEmpty(rec.getCompanyCode ()))
-            return ServiceResult.failResult (En_ErrorCode.EMPTY_COMP_CODE.getCode (), En_ErrorCode.EMPTY_COMP_CODE.getMessage (), rec.getDepartmentId ());
+        if (HelperFunc.isEmpty(rec.getCompanyCode ())) {
+            logger.debug("=== error result, " + En_ErrorCode.EMPTY_COMP_CODE.getMessage());
+            return ServiceResult.failResult(En_ErrorCode.EMPTY_COMP_CODE.getCode(), En_ErrorCode.EMPTY_COMP_CODE.getMessage(), rec.getDepartmentId());
+        }
 
-        if (rec.getDepartmentId () < 0)
-            return ServiceResult.failResult (En_ErrorCode.EMPTY_DEP_ID.getCode (), En_ErrorCode.EMPTY_DEP_ID.getMessage (), rec.getDepartmentId ());
+        if (rec.getDepartmentId () < 0) {
+            logger.debug("=== error result, " + En_ErrorCode.EMPTY_DEP_ID.getMessage());
+            return ServiceResult.failResult(En_ErrorCode.EMPTY_DEP_ID.getCode(), En_ErrorCode.EMPTY_DEP_ID.getMessage(), rec.getDepartmentId());
+        }
 
-        if (HelperFunc.isEmpty(rec.getDepartmentName ()))
-            return ServiceResult.failResult (En_ErrorCode.EMPTY_DEP_NAME.getCode (), En_ErrorCode.EMPTY_DEP_NAME.getMessage (), rec.getDepartmentId ());
+        if (HelperFunc.isEmpty(rec.getDepartmentName ())) {
+            logger.debug("=== error result, " + En_ErrorCode.EMPTY_DEP_NAME.getMessage());
+            return ServiceResult.failResult(En_ErrorCode.EMPTY_DEP_NAME.getCode(), En_ErrorCode.EMPTY_DEP_NAME.getMessage(), rec.getDepartmentId());
+        }
 
-        if (rec.getHeadId () != null && personDAO.get(rec.getHeadId()) == null)
-            return ServiceResult.failResult (En_ErrorCode.UNKNOWN_HEAD_DEP.getCode (), En_ErrorCode.UNKNOWN_HEAD_DEP.getMessage (), rec.getDepartmentId ());
+        if (rec.getHeadId () != null && personDAO.get(rec.getHeadId()) == null) {
+            logger.debug("=== error result, " + En_ErrorCode.UNKNOWN_HEAD_DEP.getMessage());
+            return ServiceResult.failResult(En_ErrorCode.UNKNOWN_HEAD_DEP.getCode(), En_ErrorCode.UNKNOWN_HEAD_DEP.getMessage(), rec.getDepartmentId());
+        }
 
         return ServiceResult.successResult (rec.getDepartmentId ());
     }

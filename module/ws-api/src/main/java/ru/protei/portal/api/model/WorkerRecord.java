@@ -282,7 +282,7 @@ public class WorkerRecord {
         this.active = active;
     }
 
-    @XmlElement(name = "position-name")
+    @XmlElement(name = "position-name", required = true)
     public String getPositionName() {
         return positionName;
     }
