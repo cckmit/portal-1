@@ -667,4 +667,10 @@ public interface Lang extends Messages, ContactItemLang {
     String privilegeDashboard();
 
     String companySubscriptionUpdatedSuccessful();
+
+    String view();
+
+    String list();
+
+    String table();
 }

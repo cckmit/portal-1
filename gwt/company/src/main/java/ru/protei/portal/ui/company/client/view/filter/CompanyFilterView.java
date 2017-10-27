@@ -15,6 +15,8 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
+import ru.protei.portal.ui.common.client.widget.viewtype.ViewType;
+import ru.protei.portal.ui.common.client.widget.viewtype.ViewTypeBtnGroup;
 import ru.protei.portal.ui.company.client.activity.filter.AbstractCompanyFilterActivity;
 import ru.protei.portal.ui.company.client.activity.filter.AbstractCompanyFilterView;
 import ru.protei.portal.ui.company.client.widget.category.btngroup.CategoryBtnGroupMulti;
@@ -121,6 +123,12 @@ public class CompanyFilterView extends Composite implements AbstractCompanyFilte
         }
     }
 
+    @UiHandler( "viewType" )
+    public void onViewChange(ValueChangeEvent<ViewType> type) {
+        timer.cancel();
+        timer.schedule( 300 );
+    }
+
     @UiHandler( "search" )
     public void onKeyUpSearch( KeyUpEvent event ) {
         timer.cancel();
@@ -161,6 +169,10 @@ public class CompanyFilterView extends Composite implements AbstractCompanyFilte
     @Inject
     @UiField
     Lang lang;
+
+    @Inject
+    @UiField( provided = true )
+    ViewTypeBtnGroup viewType;
 
     @Inject
     FixedPositioner positioner;
