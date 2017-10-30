@@ -11,7 +11,7 @@ import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.events.AddEvent;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.platelist.PlateList;
-import ru.protei.portal.ui.company.client.activity.list.AbstractCompanyListActivity;
+import ru.protei.portal.ui.company.client.activity.list.AbstractCompanyGridActivity;
 import ru.protei.portal.ui.company.client.activity.list.AbstractCompanyListView;
 
 /**
@@ -24,7 +24,7 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
         initWidget( ourUiBinder.createAndBindUi( this ) );
     }
 
-    public void setActivity( AbstractCompanyListActivity activity ) {
+    public void setActivity( AbstractCompanyGridActivity activity ) {
         this.activity = activity;
     }
 
@@ -57,7 +57,7 @@ public class CompanyListView extends Composite implements AbstractCompanyListVie
     @UiField
     Lang lang;
 
-    AbstractCompanyListActivity activity;
+    AbstractCompanyGridActivity activity;
 
     private static CompanyViewUiBinder ourUiBinder = GWT.create( CompanyViewUiBinder.class );
     interface CompanyViewUiBinder extends UiBinder< HTMLPanel, CompanyListView > {}

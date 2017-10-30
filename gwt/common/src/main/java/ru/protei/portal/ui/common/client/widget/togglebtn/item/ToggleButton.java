@@ -51,11 +51,16 @@ public class ToggleButton
         this.button.setTitle( value );
     }
 
-    public void setIcon( String iconName ) {
+    public void setIcon( String iconName, boolean isBeforeText ) {
         Element icon = DOM.createElement("i").cast();
         icon.setClassName( iconName );
 
-        button.getElement().appendChild( icon );
+        if(isBeforeText) {
+            button.getElement().insertFirst(icon);
+        }else{
+            button.getElement().appendChild(icon);
+
+        }
     }
 
     @Override

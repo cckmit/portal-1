@@ -3,6 +3,7 @@ package ru.protei.portal.ui.common.client.events;
 import com.google.gwt.user.client.ui.HasWidgets;
 import ru.brainworm.factory.context.client.annotation.Url;
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.ui.common.client.widget.viewtype.ViewType;
 
 /**
  * События по компаниям
@@ -46,6 +47,14 @@ public class CompanyEvents {
             return id;
         }
 
+    }
+
+    public static class ChangeCompany{
+        public long companyId;
+
+        public ChangeCompany(long companyId) {
+            this.companyId = companyId;
+        }
     }
 
     /**

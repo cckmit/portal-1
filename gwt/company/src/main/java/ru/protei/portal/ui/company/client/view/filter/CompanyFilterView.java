@@ -33,6 +33,7 @@ public class CompanyFilterView extends Composite implements AbstractCompanyFilte
         initWidget( ourUiBinder.createAndBindUi( this ) );
         group.setDefaultValue( lang.selectCompanyGroup() );
         search.getElement().setPropertyString( "placeholder", lang.search() );
+        viewType.setValue(ViewType.TABLE);
     }
 
     @Override
@@ -77,6 +78,8 @@ public class CompanyFilterView extends Composite implements AbstractCompanyFilte
         return search;
     }
 
+    @Override
+    public HasValue<ViewType> viewType(){ return viewType; }
 
     @UiHandler( "resetBtn" )
     public void onResetClicked ( ClickEvent event ) {
