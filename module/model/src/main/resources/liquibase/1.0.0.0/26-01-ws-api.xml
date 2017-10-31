@@ -54,4 +54,16 @@
                                  referencedTableName="company_dep"/>
     </changeSet>
 
+    <changeSet author="turik" id="modify_dep_extId">
+        <modifyDataType columnName="dep_extId"
+                        newDataType="varchar(32)"
+                        tableName="company_dep"/>
+    </changeSet>
+
+    <changeSet author="turik" id="not_null_dep_extId">
+        <addNotNullConstraint columnDataType="varchar(32)"
+                              columnName="dep_extId"
+                              tableName="company_dep"/>
+    </changeSet>
+
 </databaseChangeLog>

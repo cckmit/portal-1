@@ -17,7 +17,7 @@ public class CompanyDepartment {
     private Long companyId;
 
     @JdbcJoinedColumn(localColumn = "company_id", table = "company_group_home", remoteColumn = "companyId", mappedColumn = "external_code")
-    private String externalCode;
+    private String companyExternalCode;
 
     @JdbcColumn(name = "created")
     private Date created;
@@ -35,13 +35,13 @@ public class CompanyDepartment {
     private Long parentId;
 
     @JdbcJoinedColumn(localColumn = "parent_dep", table = "company_dep", remoteColumn = "id", mappedColumn = "dep_extId")
-    private Long parentExternalId;
+    private String parentExternalId;
 
     @JdbcColumn(name = "head_id")
     private Long headId;
 
     @JdbcColumn(name = "dep_extId")
-    private Long externalId;
+    private String externalId;
 
     public CompanyDepartment() {
     }
@@ -110,27 +110,27 @@ public class CompanyDepartment {
         this.headId = headId;
     }
 
-    public Long getExternalId() {
+    public String getExternalId() {
         return externalId;
     }
 
-    public void setExternalId(Long externalId) {
+    public void setExternalId(String externalId) {
         this.externalId = externalId;
     }
 
-    public String getExternalCode() {
-        return externalCode;
+    public String getCompanyExternalCode() {
+        return companyExternalCode;
     }
 
-    public void setExternalCode(String externalCode) {
-        this.externalCode = externalCode;
+    public void setCompanyExternalCode(String companyExternalCode) {
+        this.companyExternalCode = companyExternalCode;
     }
 
-    public Long getParentExternalId() {
+    public String getParentExternalId() {
         return parentExternalId;
     }
 
-    public void setParentExternalId(Long parentExternalId) {
+    public void setParentExternalId(String parentExternalId) {
         this.parentExternalId = parentExternalId;
     }
 }

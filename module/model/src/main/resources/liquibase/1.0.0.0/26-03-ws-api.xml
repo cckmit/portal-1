@@ -16,4 +16,16 @@
             <column name="worker_extId"/>
         </createIndex>
     </changeSet>
+
+    <changeSet author="turik" id="modify_worker_extId">
+        <modifyDataType columnName="worker_extId"
+                        newDataType="varchar(32)"
+                        tableName="worker_entry"/>
+    </changeSet>
+
+    <changeSet author="turik" id="not_null_worker_extId">
+        <addNotNullConstraint columnDataType="varchar(32)"
+                              columnName="worker_extId"
+                              tableName="worker_entry"/>
+    </changeSet>
 </databaseChangeLog>

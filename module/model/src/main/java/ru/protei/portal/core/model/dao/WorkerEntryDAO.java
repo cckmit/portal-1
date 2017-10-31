@@ -9,9 +9,9 @@ import java.util.List;
  * Created by turik on 19.08.16.
  */
 public interface WorkerEntryDAO extends PortalBaseDAO<WorkerEntry> {
-    boolean checkExistsByExternalId(Long extId, Long companyId);
+    boolean checkExistsByExternalId(String extId, Long companyId);
     boolean checkExistsByPersonId(Long personId);
     boolean checkExistsByDepId(Long depId);
-    WorkerEntry getByExternalId(Long extId, Long companyId);
+    WorkerEntry getByExternalId(String extId, Long companyId);
     boolean checkExistsByPosId(Long posId);
 }

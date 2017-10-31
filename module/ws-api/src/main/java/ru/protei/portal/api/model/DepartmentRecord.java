@@ -13,11 +13,11 @@ public class DepartmentRecord {
 
     private String companyCode;
 
-    private long departmentId;
+    private String departmentId;
 
     private String departmentName;
 
-    private Long parentId;
+    private String parentId;
 
     private Long headId;
 
@@ -37,11 +37,11 @@ public class DepartmentRecord {
     }
 
     @XmlElement(name = "id", required = true)
-    public long getDepartmentId() {
+    public String getDepartmentId() {
         return departmentId;
     }
 
-    public void setDepartmentId(long departmentId) {
+    public void setDepartmentId(String departmentId) {
         this.departmentId = departmentId;
     }
 
@@ -55,11 +55,11 @@ public class DepartmentRecord {
     }
 
     @XmlElement(name = "parent-id")
-    public Long getParentId() {
+    public String getParentId() {
         return parentId;
     }
 
-    public void setParentId(Long parentId) {
+    public void setParentId(String parentId) {
         this.parentId = parentId;
     }
 
@@ -73,7 +73,7 @@ public class DepartmentRecord {
     }
 
     public void copy(CompanyDepartment d) {
-        setCompanyCode(d.getExternalCode());
+        setCompanyCode(d.getCompanyExternalCode());
 
         setDepartmentId(d.getExternalId());
         setDepartmentName(d.getName());

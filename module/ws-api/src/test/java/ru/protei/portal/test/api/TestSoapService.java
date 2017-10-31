@@ -49,9 +49,9 @@ public class TestSoapService {
             dirPhotos = props.getProperty ("dir_photos");
 
             origDepartment.setCompanyCode (props.getProperty ("companyCode"));
-            origDepartment.setDepartmentId (new Long (props.getProperty ("departmentId")));
+            origDepartment.setDepartmentId(props.getProperty ("departmentId"));
             origDepartment.setDepartmentName (props.getProperty ("departmentName"));
-            origDepartment.setParentId (props.getProperty ("parentId") != null && !props.getProperty ("parentId").equals ("") ? new Long(props.getProperty ("parentId")) : null );
+            origDepartment.setParentId (props.getProperty ("parentId") != null && !props.getProperty ("parentId").equals ("") ? props.getProperty ("parentId") : null );
             origDepartment.setHeadId (props.getProperty ("headId") != null && !props.getProperty ("headId").equals ("") ? new Long (props.getProperty ("headId")) : null);
 
             origWorker.setCompanyCode (props.getProperty ("companyCode"));
@@ -74,8 +74,8 @@ public class TestSoapService {
             origWorker.setIpAddress (props.getProperty ("ipAddress"));
             origWorker.setDeleted (new Boolean (props.getProperty ("isDeleted")));
             origWorker.setFired (new Boolean (props.getProperty ("isFired")));
-            origWorker.setWorkerId (new Long (props.getProperty ("workerId")));
-            origWorker.setDepartmentId (new Long (props.getProperty ("depId")));
+            origWorker.setWorkerId(props.getProperty ("workerId"));
+            origWorker.setDepartmentId(props.getProperty ("depId"));
             origWorker.setHireDate (props.getProperty ("hireDate"));
             origWorker.setHireOrderNo (props.getProperty ("hireOrderNo"));
             origWorker.setActive (new Integer (props.getProperty ("active")));

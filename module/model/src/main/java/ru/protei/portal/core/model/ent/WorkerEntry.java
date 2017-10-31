@@ -53,7 +53,7 @@ public class WorkerEntry {
     private int activeFlag;
 
     @JdbcColumn(name = "worker_extId")
-    private Long externalId;
+    private String externalId;
 
     public WorkerEntry () {
         this.activeFlag = 1;
@@ -171,11 +171,11 @@ public class WorkerEntry {
         this.activeFlag = activeFlag;
     }
 
-    public Long getExternalId() {
+    public String getExternalId() {
         return externalId;
     }
 
-    public void setExternalId(Long externalId) {
+    public void setExternalId(String externalId) {
         this.externalId = externalId;
     }
 }

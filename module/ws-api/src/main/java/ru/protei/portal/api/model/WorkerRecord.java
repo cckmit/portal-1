@@ -38,8 +38,8 @@ public class WorkerRecord {
     private boolean isDeleted;
     private boolean isFired;
 
-    private long workerId;
-    private long departmentId;
+    private String workerId;
+    private String departmentId;
 
     private String hireDate;
     private String hireOrderNo;
@@ -238,20 +238,20 @@ public class WorkerRecord {
     }
 
     @XmlElement(name = "worker-id", required = true)
-    public long getWorkerId() {
+    public String getWorkerId() {
         return workerId;
     }
 
-    public void setWorkerId(long workerId) {
+    public void setWorkerId(String workerId) {
         this.workerId = workerId;
     }
 
     @XmlElement(name = "department-id", required = true)
-    public long getDepartmentId() {
+    public String getDepartmentId() {
         return departmentId;
     }
 
-    public void setDepartmentId(long departmentId) {
+    public void setDepartmentId(String departmentId) {
         this.departmentId = departmentId;
     }
 
