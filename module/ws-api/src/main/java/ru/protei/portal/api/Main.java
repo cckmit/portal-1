@@ -45,7 +45,7 @@ public class Main {
             CharacterEncodingFilter characterEncodingFilter = new CharacterEncodingFilter();
             characterEncodingFilter.setEncoding("UTF-8");
             characterEncodingFilter.setForceEncoding(true);
-            webapp.addFilter(new FilterHolder(characterEncodingFilter), "/*", EnumSet.of(DispatcherType.FORWARD,DispatcherType.REQUEST));
+            webapp.addFilter(new FilterHolder(characterEncodingFilter), "/*", EnumSet.of(DispatcherType.REQUEST));
 
             // SPRING servlet-dispatcher
             ServletHolder springHolder = new ServletHolder("dispatcher", new DispatcherServlet(context));
