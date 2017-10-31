@@ -462,7 +462,7 @@ public class WorkerController {
                 return ServiceResult.failResult(En_ErrorCode.UNKNOWN_COMP.getCode(), En_ErrorCode.UNKNOWN_COMP.getMessage(), null);
             }
 
-            WorkerEntry worker = workerEntryDAO.getByExternalId(externalIdDecode, item.getCompanyId ());
+            WorkerEntry worker = workerEntryDAO.getByExternalId(externalIdDecode.trim(), item.getCompanyId ());
             if (worker == null) {
                 logger.debug("=== error result, " + En_ErrorCode.UNKNOWN_WOR.getMessage());
                 return ServiceResult.failResult(En_ErrorCode.UNKNOWN_WOR.getCode(), En_ErrorCode.UNKNOWN_WOR.getMessage(), null);
@@ -696,7 +696,7 @@ public class WorkerController {
                 return ServiceResult.failResult(En_ErrorCode.UNKNOWN_COMP.getCode(), En_ErrorCode.UNKNOWN_COMP.getMessage(), null);
             }
 
-            CompanyDepartment department = companyDepartmentDAO.getByExternalId(externalIdDecode, item.getCompanyId ());
+            CompanyDepartment department = companyDepartmentDAO.getByExternalId(externalIdDecode.trim(), item.getCompanyId ());
             if (department == null) {
                 logger.debug("=== error result, " + En_ErrorCode.UNKNOWN_DEP.getMessage());
                 return ServiceResult.failResult(En_ErrorCode.UNKNOWN_DEP.getCode(), En_ErrorCode.UNKNOWN_DEP.getMessage(), null);
