@@ -40,14 +40,8 @@ public class WorkerEntry {
     @JdbcColumn(name="hireDate")
     private Date hireDate;
 
-    @JdbcColumn(name="fireDate")
-    private Date fireDate;
-
     @JdbcColumn(name="hireOrderNo")
     private String hireOrderNo;
-
-    @JdbcColumn(name="fireOrderNo")
-    private String fireOrderNo;
 
     @JdbcColumn(name="active")
     private int activeFlag;
@@ -139,28 +133,12 @@ public class WorkerEntry {
         this.hireDate = hireDate;
     }
 
-    public Date getFireDate() {
-        return fireDate;
-    }
-
-    public void setFireDate(Date fireDate) {
-        this.fireDate = fireDate;
-    }
-
     public String getHireOrderNo() {
         return hireOrderNo;
     }
 
     public void setHireOrderNo(String hireOrderNo) {
         this.hireOrderNo = hireOrderNo;
-    }
-
-    public String getFireOrderNo() {
-        return fireOrderNo;
-    }
-
-    public void setFireOrderNo(String fireOrderNo) {
-        this.fireOrderNo = fireOrderNo;
     }
 
     public int getActiveFlag() {

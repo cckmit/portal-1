@@ -28,4 +28,21 @@
                               columnName="worker_extId"
                               tableName="worker_entry"/>
     </changeSet>
+
+    <changeSet author="turik" id="modify_hireOrderNo">
+        <modifyDataType columnName="hireOrderNo"
+                        newDataType="varchar(256)"
+                        tableName="worker_entry"/>
+    </changeSet>
+
+    <changeSet author="turik" id="drop_column_fireDate">
+        <dropColumn columnName="fireDate"
+                    tableName="worker_entry"/>
+    </changeSet>
+
+    <changeSet author="turik" id="drop_column_fireOrderNo">
+        <dropColumn columnName="fireOrderNo"
+                    tableName="worker_entry"/>
+    </changeSet>
+
 </databaseChangeLog>

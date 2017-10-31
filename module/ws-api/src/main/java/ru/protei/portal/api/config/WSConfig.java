@@ -14,6 +14,8 @@ public class WSConfig {
 
     private String dirPhotos;
 
+    private boolean isEnableMigration = false;
+
     private static WSConfig m_Instance = new WSConfig ();
     public static final WSConfig getInstance() { return m_Instance; }
 
@@ -27,6 +29,10 @@ public class WSConfig {
             Properties props = new Properties();
             props.load(is);
             dirPhotos = props.getProperty ("dir_photos");
+            isEnableMigration = new Boolean(props.getProperty("enable_migration"));
+
+            logger.debug("dirPhotos = " + dirPhotos);
+            logger.debug("isEnableMigration = " + isEnableMigration);
 
         } catch (Exception e) {
             logger.error ("Can not read config!", e);
@@ -39,5 +45,9 @@ public class WSConfig {
 
     public String getDirPhotos() {
         return dirPhotos;
+    }
+
+    public boolean isEnableMigration() {
+        return isEnableMigration;
     }
 }

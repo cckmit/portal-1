@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import protei.sql.query.Tm_SqlQueryHelper;
 import ru.protei.portal.api.config.WSConfig;
 import ru.protei.portal.api.model.*;
+import ru.protei.portal.api.tools.migrate.WSMigrationManager;
 import ru.protei.portal.api.utils.HelperService;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_Gender;
@@ -51,6 +52,9 @@ public class WorkerController {
 
     @Autowired
     TransactionTemplate transactionTemplate;
+
+    @Autowired
+    WSMigrationManager migrationManager;
 
     @RequestMapping(method = RequestMethod.GET, value = "/get.person")
     public @ResponseBody WorkerRecord getPerson(@RequestParam(name = "id") Long id) {
@@ -286,7 +290,9 @@ public class WorkerController {
 
                     workerEntryDAO.persist (worker);
 
-                    //wsMigrationManager.savePerson (person);
+                    if (WSConfig.getInstance().isEnableMigration()) {
+                        migrationManager.savePerson (person);
+                    }
 
                     logger.debug("=== success result, workerRowId = " + worker.getId());
                     return ServiceResult.successResult (person.getId ());
@@ -371,7 +377,9 @@ public class WorkerController {
                         if (!workerEntryDAO.checkExistsByPersonId(person.getId())) {
                             person.setFired (true);
                             personDAO.merge (person);
-                            //wsMigrationManager.firePerson (person);
+                            if (WSConfig.getInstance().isEnableMigration()) {
+                                migrationManager.firePerson (person);
+                            }
                         }
 
                         logger.debug("=== success result, workerRowId = " + worker.getId());
@@ -389,7 +397,9 @@ public class WorkerController {
 
                     workerEntryDAO.merge (worker);
 
-                    //wsMigrationManager.savePerson (person);
+                    if (WSConfig.getInstance().isEnableMigration()) {
+                        migrationManager.savePerson (person);
+                    }
 
                     logger.debug("=== success result, workerRowId = " + worker.getId());
                     return ServiceResult.successResult (person.getId ());
@@ -469,7 +479,9 @@ public class WorkerController {
                         Person person = personDAO.get (personId);
                         person.setDeleted (true);
                         personDAO.merge (person);
-                        //wsMigrationManager.deletePerson (person);
+                        if (WSConfig.getInstance().isEnableMigration()) {
+                            migrationManager.deletePerson (person);
+                        }
                     }
                     logger.debug("=== success result, workerRowId = " + worker.getId());
                     return ServiceResult.successResult (worker.getId());

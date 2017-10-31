@@ -3,6 +3,7 @@ package ru.protei.portal.api.tools.migrate;
 import protei.sql.Column;
 import protei.sql.PrimaryKey;
 import protei.sql.Table;
+import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.ent.Person;
 
 import java.net.Inet4Address;
@@ -44,7 +45,7 @@ public class ExternalPerson {
         setPassportInfo (person.getPassportInfo ());
         setInfo (person.getInfo ());
         setBirthday (person.getBirthday ());
-        setSex (person.getGender() != null ? person.getGender().equals ("M") ? new Integer (1) : person.getGender().equals ("F") ? new Integer (2) : null : null);
+        setSex (person.getGender() != null ? person.getGender().equals (En_Gender.MALE) ? new Integer (1) : person.getGender().equals (En_Gender.FEMALE) ? new Integer (2) : null : null);
         setDeleted (person.isDeleted ());
     }
 
