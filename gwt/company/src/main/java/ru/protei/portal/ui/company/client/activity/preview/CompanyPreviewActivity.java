@@ -27,6 +27,7 @@ public abstract class CompanyPreviewActivity
         event.parent.add( view.asWidget() );
 
         fillView( event.company );
+        view.watchForScroll( event.isWatchForScroll);
     }
 
     private void fillView( Company value ) {

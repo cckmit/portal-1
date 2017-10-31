@@ -13,12 +13,14 @@ import ru.protei.portal.core.model.ent.CompanyCategory;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.ui.common.client.animation.PlateListAnimation;
 import ru.protei.portal.ui.common.client.common.PeriodicTaskService;
+import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.CompanyEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.widget.viewtype.ViewType;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.company.client.activity.item.AbstractCompanyItemActivity;
 import ru.protei.portal.ui.company.client.activity.item.AbstractCompanyItemView;
+import ru.protei.winter.web.common.client.events.SectionEvents;
 
 import java.util.HashMap;
 import java.util.List;
@@ -26,7 +28,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 /**
- * Created by bondarenko on 30.10.17.
+ * Активность списка компаний
  */
 public abstract class CompanyListActivity extends CompanyGridActivity implements AbstractCompanyItemActivity {
 
@@ -40,9 +42,18 @@ public abstract class CompanyListActivity extends CompanyGridActivity implements
         if(filterView.viewType().getValue() != ViewType.LIST)
             return;
 
-        init(view.asWidget());
+        init(this::requestCompanies, view.asWidget());
         view.getFilterContainer().add(filterView.asWidget());
         requestCompanies();
+    }
+
+    @Event
+    public void onCreateClicked( SectionEvents.Clicked event ) {
+        if ( !(UiConstants.ActionBarIdentity.COMPANY.equals( event.identity ) && filterView.viewType().getValue() == ViewType.LIST)) {
+            return;
+        }
+
+        fireEvent(new CompanyEvents.Edit(null));
     }
 
     @Override
@@ -57,7 +68,7 @@ public abstract class CompanyListActivity extends CompanyGridActivity implements
             return;
         }
 
-        fireEvent(new CompanyEvents.ShowPreview(itemView.getPreviewContainer(), value));
+        fireEvent(new CompanyEvents.ShowPreview(itemView.getPreviewContainer(), value, false));
         animation.showPreview(itemView, (IsWidget) itemView.getPreviewContainer());
     }
 
@@ -71,11 +82,7 @@ public abstract class CompanyListActivity extends CompanyGridActivity implements
         fireEvent( new CompanyEvents.Edit ( value.getId() ));
     }
 
-    @Override
-    public void onFilterChanged() {
-        query = makeQuery();
-        requestCompanies();
-    }
+    public void onCreateClicked( ) { fireEvent(new CompanyEvents.Edit()); }
 
     private AbstractCompanyItemView makeView(Company company ) {
         AbstractCompanyItemView itemView = factory.get();
@@ -97,7 +104,6 @@ public abstract class CompanyListActivity extends CompanyGridActivity implements
     }
 
     private void requestCompanies() {
-
         if ( fillViewHandler != null ) {
             fillViewHandler.cancel();
         }

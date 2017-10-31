@@ -1,8 +1,7 @@
 package ru.protei.portal.ui.company.client.activity.list;
 
 /**
- * Активность списка компаний
+ * Активность множества компаний
  */
 public interface AbstractCompanyGridActivity {
-    void onCreateClicked();
 }

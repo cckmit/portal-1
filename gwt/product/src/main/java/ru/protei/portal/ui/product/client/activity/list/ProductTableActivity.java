@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.company.client.activity.list;
+package ru.protei.portal.ui.product.client.activity.list;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
@@ -6,15 +6,15 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.brainworm.factory.widget.table.client.InfiniteLoadHandler;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
-import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
 import ru.protei.portal.ui.common.client.common.UiConstants;
-import ru.protei.portal.ui.common.client.events.CompanyEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.events.ProductEvents;
 import ru.protei.portal.ui.common.client.widget.viewtype.ViewType;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.winter.web.common.client.events.SectionEvents;
@@ -22,11 +22,11 @@ import ru.protei.winter.web.common.client.events.SectionEvents;
 import java.util.List;
 
 /**
- * Активность таблицы компаний
+ * Активность таблицы продуктов
  */
-public abstract class CompanyTableActivity extends CompanyGridActivity implements
-        AbstractPagerActivity, ClickColumn.Handler< Company >, EditClickColumn.EditHandler< Company >,
-        InfiniteLoadHandler<Company>, InfiniteTableWidget.PagerListener {
+public abstract class ProductTableActivity extends ProductGridActivity implements
+        AbstractPagerActivity, ClickColumn.Handler<DevUnit>, EditClickColumn.EditHandler< DevUnit >,
+        InfiniteLoadHandler<DevUnit>, InfiniteTableWidget.PagerListener {
 
     @PostConstruct
     public void init() {
@@ -37,39 +37,38 @@ public abstract class CompanyTableActivity extends CompanyGridActivity implement
     }
 
     @Event
-    public void onShow( CompanyEvents.Show event ) {
+    public void onShow( ProductEvents.Show event ) {
         if(filterView.viewType().getValue() != ViewType.TABLE)
             return;
 
-        init(this::requestCompaniesCount, view.asWidget(), pagerView.asWidget());
+        init(this::requestProductsCount, view.asWidget(), pagerView.asWidget());
         view.getFilterContainer().add(filterView.asWidget());
-        requestCompaniesCount();
+        requestProductsCount();
     }
 
     @Event
     public void onCreateClicked( SectionEvents.Clicked event ) {
-        if ( !(UiConstants.ActionBarIdentity.COMPANY.equals( event.identity ) && filterView.viewType().getValue() == ViewType.TABLE) ) {
+        if ( !(UiConstants.ActionBarIdentity.PRODUCT.equals( event.identity ) && filterView.viewType().getValue() == ViewType.TABLE) ) {
             return;
         }
 
-        fireEvent(new CompanyEvents.Edit(null));
+        fireEvent(new ProductEvents.Edit(null));
     }
 
     @Event
-    public void onChangeRow( CompanyEvents.ChangeCompany event ) {
-        companyService.getCompany( event.companyId, new RequestCallback<Company>() {
+    public void onChangeRow( ProductEvents.ChangeProduct event ) {
+        productService.getProduct( event.productId, new RequestCallback<DevUnit>() {
             @Override
             public void onError( Throwable throwable ) {
                 fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
             }
 
             @Override
-            public void onSuccess( Company company ) {
-                view.updateRow(company);
+            public void onSuccess( DevUnit product ) {
+                view.updateRow(product);
             }
         } );
     }
-
 
     @Override
     public void onFirstClicked() {
@@ -87,49 +86,49 @@ public abstract class CompanyTableActivity extends CompanyGridActivity implement
     }
 
     @Override
-    public void onItemClicked(Company value) {
+    public void onItemClicked(DevUnit value) {
         showPreview(value);
     }
 
     @Override
-    public void onEditClicked(Company value) {
-        fireEvent( new CompanyEvents.Edit ( value.getId() ));
+    public void onEditClicked(DevUnit value) {
+        fireEvent( new ProductEvents.Edit ( value.getId() ));
     }
 
-    private void showPreview (Company value ) {
+    private void showPreview (DevUnit value ) {
 
         if ( value == null ) {
             animation.closeDetails();
         } else {
             animation.showDetails();
-            fireEvent( new CompanyEvents.ShowPreview( view.getPreviewContainer(), value, true ) );
+            fireEvent( new ProductEvents.ShowPreview( view.getPreviewContainer(), value, true ) );
         }
     }
 
     @Override
-    public void loadData( int offset, int limit, AsyncCallback<List<Company>> asyncCallback ) {
+    public void loadData( int offset, int limit, AsyncCallback<List<DevUnit>> asyncCallback ) {
         query.setOffset( offset );
         query.setLimit( limit );
 
-        companyService.getCompanies(query, new RequestCallback< List <Company> >() {
+        productService.getProductList(query, new RequestCallback< List <DevUnit> >() {
             @Override
             public void onError( Throwable throwable ) {
                 fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
             }
 
             @Override
-            public void onSuccess( List< Company > companies ) {
-                asyncCallback.onSuccess( companies );
+            public void onSuccess( List< DevUnit > products ) {
+                asyncCallback.onSuccess( products );
             }
         });
 
     }
 
-    private void requestCompaniesCount() {
+    private void requestProductsCount() {
         view.clearRecords();
         animation.closeDetails();
 
-        companyService.getCompaniesCount(query, new RequestCallback< Long >() {
+        productService.getProductsCount(query, new RequestCallback< Long >() {
             @Override
             public void onError( Throwable throwable ) {
                 fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
@@ -144,7 +143,7 @@ public abstract class CompanyTableActivity extends CompanyGridActivity implement
     }
 
     @Inject
-    AbstractCompanyTableView view;
+    AbstractProductTableView view;
 
     @Inject
     TableAnimation animation;

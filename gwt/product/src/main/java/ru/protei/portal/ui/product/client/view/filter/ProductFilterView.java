@@ -14,6 +14,8 @@ import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
+import ru.protei.portal.ui.common.client.widget.viewtype.ViewType;
+import ru.protei.portal.ui.common.client.widget.viewtype.ViewTypeBtnGroup;
 import ru.protei.portal.ui.product.client.activity.filter.AbstractProductFilterActivity;
 import ru.protei.portal.ui.product.client.activity.filter.AbstractProductFilterView;
 
@@ -25,6 +27,7 @@ public class ProductFilterView extends Composite implements AbstractProductFilte
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
         search.getElement().setPropertyString( "placeholder", lang.search() );
+        viewType.setValue(ViewType.TABLE);
     }
 
     @Override
@@ -61,6 +64,9 @@ public class ProductFilterView extends Composite implements AbstractProductFilte
     public HasValue<String> searchPattern() {
         return search;
     }
+
+    @Override
+    public HasValue<ViewType> viewType(){ return viewType; }
 
     @Override
     public void resetFilter() {
@@ -105,6 +111,12 @@ public class ProductFilterView extends Composite implements AbstractProductFilte
         timer.schedule( 300 );
     }
 
+    @UiHandler( "viewType" )
+    public void onViewChange(ValueChangeEvent<ViewType> type) {
+        timer.cancel();
+        timer.schedule( 300 );
+    }
+
     Timer timer = new Timer() {
         @Override
         public void run() {
@@ -133,6 +145,10 @@ public class ProductFilterView extends Composite implements AbstractProductFilte
     @Inject
     @UiField
     Lang lang;
+
+    @Inject
+    @UiField( provided = true )
+    ViewTypeBtnGroup viewType;
 
     @Inject
     FixedPositioner positioner;

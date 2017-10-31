@@ -26,6 +26,15 @@ import java.util.List;
 public class ProductServiceImpl implements ProductService {
 
     @Override
+    public long getProductsCount(ProductQuery query) throws RequestFailedException{
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
+        log.debug( "getProductsCount(): query={}", query );
+        CoreResponse<Long> result = productService.count( descriptor.makeAuthToken(), query );
+        return result.isOk() ? result.getData() : 0L;
+    }
+
+    @Override
     public List< DevUnit > getProductList( ProductQuery productQuery ) throws RequestFailedException {
 
         log.debug( "getProductList(): search={} | showDeprecated={} | sortField={} | order={}",

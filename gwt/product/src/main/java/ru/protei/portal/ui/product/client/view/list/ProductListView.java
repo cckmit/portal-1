@@ -11,8 +11,8 @@ import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.events.AddEvent;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.platelist.PlateList;
-import ru.protei.portal.ui.product.client.activity.list.AbstractProductListActivity;
 import ru.protei.portal.ui.product.client.activity.list.AbstractProductListView;
+import ru.protei.portal.ui.product.client.activity.list.ProductListActivity;
 
 /**
  * Вид списка продуктов
@@ -24,7 +24,7 @@ public class ProductListView extends Composite implements AbstractProductListVie
         initWidget(ourUiBinder.createAndBindUi(this));
     }
 
-    public void setActivity(AbstractProductListActivity activity) { this.activity = activity;  }
+    public void setActivity(ProductListActivity activity) { this.activity = activity;  }
 
     @Override
     public HasWidgets getChildContainer() {
@@ -55,7 +55,7 @@ public class ProductListView extends Composite implements AbstractProductListVie
     @UiField
     Lang lang;
 
-    AbstractProductListActivity activity;
+    ProductListActivity activity;
 
     private static ProductViewUiBinder ourUiBinder = GWT.create (ProductViewUiBinder.class);
     interface ProductViewUiBinder extends UiBinder<HTMLPanel, ProductListView > {}

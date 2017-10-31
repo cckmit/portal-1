@@ -137,6 +137,5 @@ public class CompanyTableView extends Composite implements AbstractCompanyTableV
     CompanyTableActivity activity;
 
     private static CompanyTableViewUiBinder ourUiBinder = GWT.create(CompanyTableViewUiBinder.class);
-
     interface CompanyTableViewUiBinder extends UiBinder<HTMLPanel, CompanyTableView> {}
 }

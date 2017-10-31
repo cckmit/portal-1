@@ -195,6 +195,15 @@ public class CompanyServiceImpl implements CompanyService {
         return companySubscriptionResult.getData();
     }
 
+    @Override
+    public long getCompaniesCount(CompanyQuery query) throws RequestFailedException{
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
+        log.debug( "getCompaniesCount(): query={}", query );
+        CoreResponse<Long> result = companyService.countCompanies( descriptor.makeAuthToken(), query );
+        return result.isOk() ? result.getData() : 0L;
+    }
+
     private UserSessionDescriptor getDescriptorAndCheckSession() throws RequestFailedException {
         UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor( httpServletRequest );
         log.info( "userSessionDescriptor={}", descriptor );

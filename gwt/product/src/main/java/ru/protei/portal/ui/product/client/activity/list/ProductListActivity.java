@@ -4,24 +4,17 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.DevUnit;
-import ru.protei.portal.core.model.query.ProductQuery;
-import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.PlateListAnimation;
 import ru.protei.portal.ui.common.client.common.PeriodicTaskService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
-import ru.protei.portal.ui.common.client.events.*;
-import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.ProductServiceAsync;
+import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.events.ProductEvents;
+import ru.protei.portal.ui.common.client.widget.viewtype.ViewType;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
-import ru.protei.portal.ui.product.client.activity.filter.AbstractProductFilterActivity;
-import ru.protei.portal.ui.product.client.activity.filter.AbstractProductFilterView;
 import ru.protei.portal.ui.product.client.activity.item.AbstractProductItemActivity;
 import ru.protei.portal.ui.product.client.activity.item.AbstractProductItemView;
 import ru.protei.winter.web.common.client.events.SectionEvents;
@@ -34,57 +27,35 @@ import java.util.function.Consumer;
 /**
  * Активность списка продуктов
  */
-public abstract class ProductListActivity implements AbstractProductListActivity, AbstractProductItemActivity, AbstractProductFilterActivity, Activity {
+public abstract class ProductListActivity extends ProductGridActivity implements AbstractProductItemActivity {
 
     @PostConstruct
-    public void onInit() {
-        CREATE_ACTION = lang.buttonCreate();
-
-        view.setActivity(this);
-        filterView.setActivity( this );
-        view.getFilterContainer().add( filterView.asWidget() );
-    }
-
-    @Event
-    public void onAuthSuccess (AuthEvents.Success event) {
-        filterView.resetFilter();
+    public void init() {
+        view.setActivity( this );
     }
 
     @Event
     public void onShow( ProductEvents.Show event ) {
-        this.fireEvent(new AppEvents.InitPanelName(lang.products()));
-        init.parent.clear();
-        init.parent.add(view.asWidget());
+        if(filterView.viewType().getValue() != ViewType.LIST)
+            return;
 
-        fireEvent( policyService.hasPrivilegeFor( En_Privilege.PRODUCT_CREATE ) ?
-            new ActionBarEvents.Add( CREATE_ACTION, UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.PRODUCT ) :
-            new ActionBarEvents.Clear()
-        );
-
-        query = makeQuery();
+        init(this::requestProducts, view.asWidget());
+        view.getFilterContainer().add(filterView.asWidget());
         requestProducts();
     }
 
     @Event
     public void onCreateClicked( SectionEvents.Clicked event ) {
-        if ( !UiConstants.ActionBarIdentity.PRODUCT.equals( event.identity ) ) {
+        if ( !(UiConstants.ActionBarIdentity.PRODUCT.equals( event.identity ) && filterView.viewType().getValue() == ViewType.LIST)) {
             return;
         }
 
         fireEvent(new ProductEvents.Edit(null));
     }
 
-    @Event
-    public void onInitDetails(AppEvents.InitDetails event) {
-        this.init = event;
-    }
-
     @Override
-    public void onCreateClicked( ) { fireEvent(new ProductEvents.Edit()); }
-
-    @Override
-    public void onEditClicked( AbstractProductItemView itemView ) {
-        fireEvent( new ProductEvents.Edit( itemViewToModel.get( itemView ).getId()  ) );
+    public void onFavoriteClicked(AbstractProductItemView itemView) {
+        Window.alert( "On favorite clicked" );
     }
 
     @Override
@@ -94,23 +65,29 @@ public abstract class ProductListActivity implements AbstractProductListActivity
             return;
         }
 
-        fireEvent( new ProductEvents.ShowPreview( itemView.getPreviewContainer(), value ) );
+        fireEvent( new ProductEvents.ShowPreview( itemView.getPreviewContainer(), value, false ) );
         animation.showPreview(itemView, (IsWidget) itemView.getPreviewContainer());
     }
 
     @Override
-    public void onFavoriteClicked( AbstractProductItemView itemView ) {
-        Window.alert( "On favorite clicked" );
+    public void onEditClicked( AbstractProductItemView itemView ) {
+        fireEvent( new ProductEvents.Edit( itemViewToModel.get( itemView ).getId()  ) );
     }
 
-    @Override
-    public void onFilterChanged() {
-        query = makeQuery();
-        requestProducts();
+    public void onCreateClicked( ) { fireEvent(new ProductEvents.Edit()); }
+
+    private AbstractProductItemView makeView ( DevUnit product )
+    {
+        AbstractProductItemView itemView = factory.get();
+        itemView.setName(product.getName());
+        itemView.setDeprecated(product.getStateId() > 1);
+        itemView.setActivity(this);
+        itemView.setEditEnabled( policyService.hasPrivilegeFor( En_Privilege.PRODUCT_EDIT ) );
+
+        return itemView;
     }
 
     private void requestProducts() {
-
         if ( fillViewHandler != null ) {
             fillViewHandler.cancel();
         }
@@ -133,28 +110,7 @@ public abstract class ProductListActivity implements AbstractProductListActivity
                 });
     }
 
-    private ProductQuery makeQuery() {
-        query = new ProductQuery();
-        query.setSearchString(filterView.searchPattern().getValue());
-        query.setState(filterView.showDeprecated().getValue() ? null : En_DevUnitState.ACTIVE);
-        query.setSortField(filterView.sortField().getValue());
-        query.setSortDir(filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
-
-        return query;
-    };
-
-    private AbstractProductItemView makeView ( DevUnit product )
-    {
-        AbstractProductItemView itemView = factory.get();
-        itemView.setName(product.getName());
-        itemView.setDeprecated(product.getStateId() > 1);
-        itemView.setActivity(this);
-        itemView.setEditEnabled( policyService.hasPrivilegeFor( En_Privilege.PRODUCT_EDIT ) );
-
-        return itemView;
-    }
-
-     Consumer<DevUnit> fillViewer = new Consumer<DevUnit> () {
+    Consumer<DevUnit> fillViewer = new Consumer<DevUnit> () {
         @Override
         public void accept( DevUnit product ) {
             AbstractProductItemView itemView = makeView(product);
@@ -165,26 +121,15 @@ public abstract class ProductListActivity implements AbstractProductListActivity
     };
 
     @Inject
+    PlateListAnimation animation;
+    @Inject
     AbstractProductListView view;
-    @Inject
-    AbstractProductFilterView filterView;
-    @Inject
-    Lang lang;
     @Inject
     Provider<AbstractProductItemView> factory;
     @Inject
-    ProductServiceAsync productService;
-    @Inject
-    PlateListAnimation animation;
-    @Inject
     PeriodicTaskService taskService;
-    @Inject
-    PolicyService policyService;
     PeriodicTaskService.PeriodicTaskHandler fillViewHandler;
 
-    private Map<AbstractProductItemView, DevUnit > itemViewToModel = new HashMap<AbstractProductItemView, DevUnit>();
-    private AppEvents.InitDetails init;
-    private ProductQuery query;
+    private Map< AbstractProductItemView, DevUnit> itemViewToModel = new HashMap<AbstractProductItemView, DevUnit>();
 
-    private static String CREATE_ACTION;
 }

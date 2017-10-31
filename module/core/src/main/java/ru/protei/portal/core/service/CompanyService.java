@@ -20,7 +20,10 @@ import java.util.List;
  * Сервис управления компаниями
  */
 public interface CompanyService {
-    CoreResponse<Long> countCompanies (CompanyQuery query);
+
+    @Privileged({ En_Privilege.COMPANY_VIEW })
+    CoreResponse<Long> countCompanies (AuthToken token, CompanyQuery query);
+
     CoreResponse<Long> countGroups (CompanyGroupQuery query);
 
     CoreResponse<List<EntityOption>> companyOptionList(List<En_CompanyCategory> categories);

@@ -24,6 +24,7 @@ public abstract class ProductPreviewActivity implements AbstractProductPreviewAc
         event.parent.add( view.asWidget() );
 
         fillView( event.product );
+        view.watchForScroll( event.isWatchForScroll);
     }
 
     private void fillView( DevUnit product ) {

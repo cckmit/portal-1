@@ -3,7 +3,6 @@ package ru.protei.portal.ui.common.client.events;
 import com.google.gwt.user.client.ui.HasWidgets;
 import ru.brainworm.factory.context.client.annotation.Url;
 import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.ui.common.client.widget.viewtype.ViewType;
 
 /**
  * События по компаниям
@@ -25,13 +24,15 @@ public class CompanyEvents {
      */
     public static class ShowPreview {
 
-        public ShowPreview( HasWidgets parent, Company company ) {
+        public ShowPreview( HasWidgets parent, Company company, boolean isWatchForScroll ) {
             this.parent = parent;
             this.company = company;
+            this.isWatchForScroll = isWatchForScroll;
         }
 
         public HasWidgets parent;
         public Company company;
+        public boolean isWatchForScroll;
     }
 
     @Url( value = "company", primary = false )

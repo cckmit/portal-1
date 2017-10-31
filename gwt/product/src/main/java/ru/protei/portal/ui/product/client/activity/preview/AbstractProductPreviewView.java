@@ -8,6 +8,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 public interface AbstractProductPreviewView extends IsWidget {
 
     void setActivity( AbstractProductPreviewActivity activity );
+    void watchForScroll(boolean isWatch);
     void setInfo( String value );
 
 }

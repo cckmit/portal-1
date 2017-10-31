@@ -8,7 +8,7 @@ import com.google.gwt.user.client.ui.IsWidget;
  */
 public interface AbstractProductListView extends IsWidget {
 
-    void setActivity( AbstractProductListActivity activity );
+    void setActivity( ProductListActivity activity );
     HasWidgets getChildContainer();
     HasWidgets getFilterContainer ();
 

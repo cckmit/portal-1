@@ -11,4 +11,5 @@
             <g:HTMLPanel ui:field="filterContainer" styleName="filter-container col-xs-3"/>
         </div>
     </g:HTMLPanel>
+
 </ui:UiBinder>
