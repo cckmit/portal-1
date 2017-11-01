@@ -510,7 +510,7 @@ public class WorkerController {
                 return ServiceResult.failResult(En_ErrorCode.EMPTY_PHOTO.getCode(), En_ErrorCode.EMPTY_PHOTO.getMessage(), null);
             }
 
-            if (photo.getId() < 0) {
+            if (photo.getId() == null || photo.getId() < 0) {
                 logger.debug("error result, " + En_ErrorCode.EMPTY_PER_ID.getMessage());
                 return ServiceResult.failResult(En_ErrorCode.EMPTY_PER_ID.getCode(), En_ErrorCode.EMPTY_PER_ID.getMessage(), photo.getId());
             }
