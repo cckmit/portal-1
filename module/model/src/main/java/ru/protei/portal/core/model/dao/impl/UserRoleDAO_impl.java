@@ -3,6 +3,7 @@ package ru.protei.portal.core.model.dao.impl;
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.UserRoleDAO;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dict.En_Scope;
 import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.SqlCondition;
@@ -31,7 +32,7 @@ public class UserRoleDAO_impl extends PortalBaseJdbcDAO<UserRole> implements Use
 
 
     @Override
-    public UserRole ensureExists(String code, En_Privilege... privileges) {
+    public UserRole ensureExists( String code, En_Scope scope, En_Privilege... privileges) {
         UserRole role = getByCondition("role_code=?", code);
         if (role == null) {
             role = new UserRole();
@@ -47,6 +48,11 @@ public class UserRoleDAO_impl extends PortalBaseJdbcDAO<UserRole> implements Use
                     changes = true;
                     role.addPrivilege(priv);
                 }
+            }
+
+            if ( scope != null && !scope.equals( role.getScope() )) {
+                changes = true;
+                role.setScope( scope );
             }
 
             if (changes)
