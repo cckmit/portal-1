@@ -89,6 +89,7 @@ public abstract class RoleEditActivity implements AbstractRoleEditActivity, Acti
 
     private void applyChanges() {
         role.setCode( view.name().getValue() );
+        role.setScope( view.scope().getValue() );
         role.setInfo( view.description().getValue() );
     }
 
@@ -103,6 +104,7 @@ public abstract class RoleEditActivity implements AbstractRoleEditActivity, Acti
         view.name().setValue(role.getCode());
         view.description().setValue(role.getInfo());
         view.privileges().setValue(role.getPrivileges());
+        view.scope().setValue( role.getScope() );
     }
 
     @Inject

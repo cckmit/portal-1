@@ -667,4 +667,12 @@ public interface Lang extends Messages, ContactItemLang {
     String privilegeDashboard();
 
     String companySubscriptionUpdatedSuccessful();
+
+    String scopeAdmin();
+
+    String scopeCustomer();
+
+    String scopeSupport();
+
+    String roleScope();
 }

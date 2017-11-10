@@ -1,6 +1,7 @@
 package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dict.En_Scope;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.winter.jdbc.annotations.*;
 
@@ -25,6 +26,10 @@ public class UserRole extends AuditableObject {
     @JdbcEnumerated(EnumType.STRING)
     @JdbcColumnCollection(name = "privileges", separator = ",")
     private Set<En_Privilege> privileges;
+
+    @JdbcEnumerated(EnumType.STRING)
+    @JdbcColumn
+    private En_Scope scope;
 
     public UserRole() {}
 
@@ -71,6 +76,14 @@ public class UserRole extends AuditableObject {
         privileges.add(privilege);
     }
 
+    public En_Scope getScope() {
+        return scope;
+    }
+
+    public void setScope( En_Scope scope ) {
+        this.scope = scope;
+    }
+
     @Override
     public String getAuditType() {
         return "UserRole";
@@ -98,6 +111,7 @@ public class UserRole extends AuditableObject {
                 ", code='" + code + '\'' +
                 ", info='" + info + '\'' +
                 ", privileges=" + privileges +
+                ", scope=" + scope +
                 '}';
     }
 }
