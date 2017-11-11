@@ -147,7 +147,7 @@ public class MigratePersonAction implements MigrateAction {
             public void afterInsert(List<Person> insertedEntries) {
                 List<UserLogin> loginBatch = new ArrayList<>();
 
-                UserRole employeeRole = userRoleDAO.ensureExists(EMPLOYEE_ROLE_CODE, En_Scope.SUPPORT, DEF_EMPL_PRIV);
+                UserRole employeeRole = userRoleDAO.ensureExists(EMPLOYEE_ROLE_CODE, En_Scope.LOCAL, DEF_EMPL_PRIV);
 
                 Set<UserRole> roles = new HashSet<>();
                 roles.add(employeeRole);

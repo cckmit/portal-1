@@ -1,11 +1,14 @@
 package ru.protei.portal.ui.common.shared.model;
 
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dict.En_Scope;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.UserRole;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Клиентский профиль пользовател]
@@ -21,6 +24,8 @@ public class Profile implements Serializable {
     private Long id;
 
     private Set<En_Privilege> privileges;
+
+    private En_Scope scope;
 
     private Company company;
 
@@ -69,6 +74,19 @@ public class Profile implements Serializable {
             return false;
         }
         return privileges.contains( privilege );
+    }
+
+    public boolean hasScopeFor( En_Scope scope ) {
+        return getScopes().contains( scope );
+    }
+
+    private Set<En_Scope> getScopes() {
+        if ( login == null ) {
+            return Collections.EMPTY_SET;
+        }
+        return roles.stream()
+                .map( UserRole::getScope )
+                .collect( Collectors.toSet());
     }
 
     @Override

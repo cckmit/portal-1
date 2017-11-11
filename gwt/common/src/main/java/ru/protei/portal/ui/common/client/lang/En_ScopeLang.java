@@ -8,11 +8,11 @@ public class En_ScopeLang {
 
     public String getName( En_Scope value ) {
         switch (value) {
-            case ADMIN:
+            case SYSTEM:
                 return lang.scopeAdmin();
-            case CUSTOMER:
+            case COMPANY:
                 return lang.scopeCustomer();
-            case SUPPORT:
+            case LOCAL:
                 return lang.scopeSupport();
 
             default:

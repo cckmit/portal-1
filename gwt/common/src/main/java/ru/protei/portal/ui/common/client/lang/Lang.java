@@ -675,4 +675,6 @@ public interface Lang extends Messages, ContactItemLang {
     String scopeSupport();
 
     String roleScope();
+
+    String errConflictedScope();
 }

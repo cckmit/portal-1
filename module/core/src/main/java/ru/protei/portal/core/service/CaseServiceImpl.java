@@ -10,9 +10,7 @@ import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.event.CaseCommentEvent;
 import ru.protei.portal.core.event.CaseObjectEvent;
 import ru.protei.portal.core.model.dao.*;
-import ru.protei.portal.core.model.dict.En_CaseState;
-import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseQuery;
@@ -396,6 +394,14 @@ public class CaseServiceImpl implements CaseService {
     @Override
     public boolean isExistsAttachments(Long caseId) {
         return caseAttachmentDAO.checkExistsByCondition("case_id = ?", caseId);
+    }
+
+    private void fillQueryByScope( AuthToken token, CaseQuery query ) {
+        UserSessionDescriptor descriptor = authService.findSession( token );
+        if ( descriptor.hasScopeFor( En_Scope.COMPANY ) ) {
+            query.setCompanyId( descriptor.getCompany() == null ? null : descriptor.getCompany().getId() );
+            query.setPrivateAccess( false );
+        }
     }
 
     private boolean isChangeAvailable (Date date ) {

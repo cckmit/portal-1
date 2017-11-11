@@ -1,6 +1,13 @@
 package ru.protei.portal.core.model.ent;
 
 
+import ru.protei.portal.core.model.dict.En_Scope;
+
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 /**
  * Created by michael on 23.06.16.
  */
@@ -64,6 +71,17 @@ public class UserSessionDescriptor {
 
     public boolean isExpired () {
         return this.session != null && this.session.checkIsExpired();
+    }
+
+    private En_Scope getScope() {
+        if ( login == null ) {
+            return null;
+        }
+
+        return login.getRoles().stream()
+                .map( UserRole::getScope )
+                .min( Comparator.comparingInt( En_Scope::getWeight ) )
+                .orElse( null );
     }
 
     public AuthToken makeAuthToken() {
