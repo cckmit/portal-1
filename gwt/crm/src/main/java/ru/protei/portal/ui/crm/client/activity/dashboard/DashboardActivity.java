@@ -81,13 +81,11 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
 
     private CaseQuery generateActiveRecordsQuery(){
         CaseQuery query = new CaseQuery(En_CaseType.CRM_SUPPORT, null, En_SortField.last_update, En_SortDir.DESC);
-        if ( policyService.hasPrivilegeFor( En_Privilege.DASHBOARD_ALL_COMPANIES_VIEW ) ) {
+        // TODO : (?) подумать над логикой scope – надстройки фильтрации дб на уровне внутренней логики.
+        if ( !profile.getScope().equals( En_Scope.COMPANY ) ) {
             query.setManagerId( profile.getId() );
         }
-        else {
-            Company userCompany = policyService.getUserCompany();
-            query.setCompanyId( userCompany == null ? null : userCompany.getId() );
-        }
+
         query.setStates( issueStates.getActiveStates() );
         query.setPrivateAccess(policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRIVACY_VIEW ));
 
@@ -98,24 +96,15 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
         CaseQuery query = new CaseQuery(En_CaseType.CRM_SUPPORT, null, En_SortField.last_update, En_SortDir.DESC);
         query.setStates(Collections.singletonList(En_CaseState.CREATED));
         query.setManagerId(-1L);
-        if ( !policyService.hasPrivilegeFor( En_Privilege.DASHBOARD_ALL_COMPANIES_VIEW ) ) {
-            Company userCompany = policyService.getUserCompany();
-            query.setCompanyId( userCompany == null ? null : userCompany.getId() );
-        }
-
-        query.setPrivateAccess(policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRIVACY_VIEW ));
 
         return query;
     }
 
     private CaseQuery generateInactiveRecordsQuery(){
         CaseQuery query = new CaseQuery(En_CaseType.CRM_SUPPORT, null, En_SortField.last_update, En_SortDir.DESC);
-        if ( policyService.hasPrivilegeFor( En_Privilege.DASHBOARD_ALL_COMPANIES_VIEW ) ) {
+        // TODO : (?) подумать над логикой scope – надстройки фильтрации дб на уровне внутренней логики.
+        if ( !profile.getScope().equals( En_Scope.COMPANY ) ) {
             query.setManagerId( profile.getId() );
-        }
-        else {
-            Company userCompany = policyService.getUserCompany();
-            query.setCompanyId( userCompany == null ? null : userCompany.getId() );
         }
 
         List<En_CaseState> inactiveStates = new ArrayList<>(issueStates.getInactiveStates());

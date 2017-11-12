@@ -662,8 +662,6 @@ public interface Lang extends Messages, ContactItemLang {
 
     String privilegeIssuePrivacy();
 
-    String privilegeDashboardAllCompanies();
-
     String privilegeDashboard();
 
     String companySubscriptionUpdatedSuccessful();

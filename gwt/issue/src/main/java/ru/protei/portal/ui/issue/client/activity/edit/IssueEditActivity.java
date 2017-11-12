@@ -200,10 +200,11 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     }
 
     private void fillView(CaseObject issue) {
-        view.companyEnabled().setEnabled( policyService.hasPrivilegeFor( En_Privilege.ISSUE_COMPANY_EDIT ) );
-        view.productEnabled().setEnabled( policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRODUCT_EDIT ) );
-        view.managerEnabled().setEnabled( policyService.hasPrivilegeFor( En_Privilege.ISSUE_MANAGER_EDIT ) );
-        view.privacyVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRIVACY_VIEW ) );
+        boolean notIsCompanyScope = !policyService.isCompanyScope();
+        view.companyEnabled().setEnabled( notIsCompanyScope );
+        view.productEnabled().setEnabled( notIsCompanyScope );
+        view.managerEnabled().setEnabled( notIsCompanyScope );
+        view.privacyVisibility().setVisible( notIsCompanyScope );
 
         view.attachmentsContainer().clear();
         view.setCaseId(issue.getId());
@@ -229,7 +230,8 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         view.changeCompany(initiatorCompany);
         view.setSubscriptionEmails( "" );
 
-        if ( initiatorCompany == null && !policyService.hasPrivilegeFor( En_Privilege.ISSUE_COMPANY_EDIT ) ) {
+        // TODO: scope – разделение функций
+        if ( initiatorCompany == null && policyService.isCompanyScope() ) {
             Company userCompany = policyService.getUserCompany();
             view.company().setValue( userCompany == null ? null : userCompany.toEntityOption() );
             view.changeCompany( userCompany );
@@ -269,13 +271,8 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
         issue.setInitiatorCompany(Company.fromEntityOption(view.company().getValue()));
         issue.setInitiator(Person.fromPersonShortView(view.initiator().getValue()));
-
-        if ( policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRODUCT_EDIT ) ) {
-            issue.setProduct( DevUnit.fromProductShortView( view.product().getValue() ) );
-        }
-        if ( policyService.hasPrivilegeFor( En_Privilege.ISSUE_MANAGER_EDIT ) ) {
-            issue.setManager( Person.fromPersonShortView( view.manager().getValue() ) );
-        }
+        issue.setProduct( DevUnit.fromProductShortView( view.product().getValue() ) );
+        issue.setManager( Person.fromPersonShortView( view.manager().getValue() ) );
     }
 
     private boolean validateFieldsAndGetResult(){

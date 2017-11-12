@@ -73,7 +73,7 @@ public class UserSessionDescriptor {
         return this.session != null && this.session.checkIsExpired();
     }
 
-    private En_Scope getScope() {
+    public En_Scope getScope() {
         if ( login == null ) {
             return null;
         }

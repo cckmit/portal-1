@@ -61,6 +61,14 @@ public class Profile implements Serializable {
         this.id = id;
     }
 
+    public En_Scope getScope() {
+        return scope;
+    }
+
+    public void setScope( En_Scope scope ) {
+        this.scope = scope;
+    }
+
     public Set< En_Privilege > getPrivileges() {
         return privileges;
     }
@@ -74,19 +82,6 @@ public class Profile implements Serializable {
             return false;
         }
         return privileges.contains( privilege );
-    }
-
-    public boolean hasScopeFor( En_Scope scope ) {
-        return getScopes().contains( scope );
-    }
-
-    private Set<En_Scope> getScopes() {
-        if ( login == null ) {
-            return Collections.EMPTY_SET;
-        }
-        return roles.stream()
-                .map( UserRole::getScope )
-                .collect( Collectors.toSet());
     }
 
     @Override

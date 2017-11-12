@@ -60,7 +60,7 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     public CoreResponse<List<CaseShortView>> caseObjectList( AuthToken token, CaseQuery query ) {
-
+        applyFilterByScope( token, query );
         List<CaseShortView> list = caseShortViewDAO.getCases( query );
 
         if ( list == null )
@@ -323,7 +323,7 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     public CoreResponse<Long> count( AuthToken token, CaseQuery query ) {
-
+        applyFilterByScope( token, query );
         Long count = caseObjectDAO.count(query);
 
         if (count == null)
@@ -396,9 +396,9 @@ public class CaseServiceImpl implements CaseService {
         return caseAttachmentDAO.checkExistsByCondition("case_id = ?", caseId);
     }
 
-    private void fillQueryByScope( AuthToken token, CaseQuery query ) {
+    private void applyFilterByScope( AuthToken token, CaseQuery query ) {
         UserSessionDescriptor descriptor = authService.findSession( token );
-        if ( descriptor.hasScopeFor( En_Scope.COMPANY ) ) {
+        if ( descriptor.getScope().equals( En_Scope.COMPANY ) ) {
             query.setCompanyId( descriptor.getCompany() == null ? null : descriptor.getCompany().getId() );
             query.setPrivateAccess( false );
         }

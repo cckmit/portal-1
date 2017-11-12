@@ -115,18 +115,18 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     }
 
     @Override
-    public HasEnabled companyEnabled() {
+    public HasVisibility managerVisibility() {
+        return manager;
+    }
+
+    @Override
+    public HasVisibility companyVisibility() {
         return company;
     }
 
     @Override
-    public HasEnabled productEnabled() {
+    public HasVisibility productVisibility() {
         return product;
-    }
-
-    @Override
-    public HasEnabled managerEnabled() {
-        return manager;
     }
 
     @UiHandler( "resetBtn" )

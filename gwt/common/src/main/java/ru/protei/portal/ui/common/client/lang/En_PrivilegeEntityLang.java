@@ -40,8 +40,6 @@ public class En_PrivilegeEntityLang {
                 return lang.privilegeIssueManager();
             case ISSUE_PRIVACY:
                 return lang.privilegeIssuePrivacy();
-            case DASHBOARD_ALL_COMPANIES:
-                return lang.privilegeDashboardAllCompanies();
 
             default:
                 return lang.unknownField();
