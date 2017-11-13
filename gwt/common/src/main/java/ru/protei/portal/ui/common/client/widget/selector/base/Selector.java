@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.common.client.widget.selector.base;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -202,13 +203,19 @@ public abstract class Selector<T>
 
     protected void showPopup(IsWidget relative) {
         this.relative = relative;
+        GWT.log( "1" );
         popup.setSearchVisible(searchEnabled);
+        GWT.log( "2" );
         popup.setSearchAutoFocus(searchAutoFocusEnabled);
 
+        GWT.log( "3" );
         popup.showNear(relative);
+        GWT.log( "4" );
         popup.addValueChangeHandler(this);
+        GWT.log( "5" );
         popup.clearSearchField();
 
+        GWT.log( "6" );
         if (!searchEnabled) {
             selectFirstElement();
         }
@@ -261,7 +268,7 @@ public abstract class Selector<T>
     }
 
     @Inject
-    SelectorPopup popup;
+    protected SelectorPopup popup;
     @Inject
     Lang lang;
 

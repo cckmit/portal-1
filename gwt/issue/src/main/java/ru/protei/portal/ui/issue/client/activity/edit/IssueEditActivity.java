@@ -238,8 +238,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                 view.importanceValidator().isValid() &&
                 view.companyValidator().isValid() &&
                 view.initiatorValidator().isValid();
-//                view.productValidator().isValid() &&
-//                view.managerValidator().isValid();
     }
 
     private void addAttachmentsToCase(Collection<Attachment> attachments){
