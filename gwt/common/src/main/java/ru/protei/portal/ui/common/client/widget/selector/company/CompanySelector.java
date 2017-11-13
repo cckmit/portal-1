@@ -20,7 +20,7 @@ public class CompanySelector extends ButtonSelector< EntityOption > implements M
     @Inject
     public void init( CompanyModel companyModel ) {
         this.model = companyModel;
-        model.subscribe(this, categories);
+        model.subscribe(this, categories, excludeHomeCompanies);
 
         setSearchEnabled( true );
         setSearchAutoFocus( true );
@@ -42,6 +42,10 @@ public class CompanySelector extends ButtonSelector< EntityOption > implements M
         options.forEach(this :: addOption);
     }
 
+    public void setExcludeHomeCompanies( boolean excludeHomeCompanies ) {
+        this.excludeHomeCompanies = excludeHomeCompanies;
+    }
+
     public void setDefaultValue( String value ) {
         this.defaultValue = value;
     }
@@ -56,4 +60,5 @@ public class CompanySelector extends ButtonSelector< EntityOption > implements M
 
     private CompanyModel model;
     private String defaultValue = null;
+    private boolean excludeHomeCompanies = false;
 }

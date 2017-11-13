@@ -56,9 +56,16 @@ public enum En_Privilege {
 
     DASHBOARD_VIEW(DASHBOARD, VIEW),
 
-    ISSUE_PRODUCT_EDIT( ISSUE_PRODUCT, EDIT ),
-    ISSUE_MANAGER_EDIT( ISSUE_MANAGER, EDIT ),
-    ISSUE_PRIVACY_VIEW( ISSUE_PRIVACY, VIEW );
+    @Deprecated
+    ISSUE_COMPANY_EDIT(ISSUE, EDIT),
+    @Deprecated
+    ISSUE_PRODUCT_EDIT(ISSUE, EDIT),
+    @Deprecated
+    ISSUE_MANAGER_EDIT(ISSUE, EDIT),
+    @Deprecated
+    ISSUE_PRIVACY_VIEW(ISSUE, VIEW),
+    @Deprecated
+    DASHBOARD_ALL_COMPANIES_VIEW(DASHBOARD, VIEW);
 
     private final En_PrivilegeEntity entity;
     private final En_PrivilegeAction action;

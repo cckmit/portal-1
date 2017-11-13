@@ -46,6 +46,10 @@ public class CompanyDAO_Impl extends PortalBaseJdbcDAO<Company> implements Compa
                         )
                         .append(")");
             }
+
+            if ( query.isExcludeHomeCompanies() ) {
+                condition.append( " AND id NOT IN ( SELECT companyId from company_group_home )" );
+            }
         });
     }
 

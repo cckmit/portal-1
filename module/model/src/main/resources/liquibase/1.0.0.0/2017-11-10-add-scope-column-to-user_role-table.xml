@@ -6,18 +6,14 @@
 
     <changeSet author="ponomareva" id="add-scope-column-to-user_role-table">
         <addColumn tableName="user_role">
-            <column name="scope" type="VARCHAR(32)">
+            <column name="scope" type="VARCHAR(32)" defaultValue="LOCAL">
                 <constraints nullable="false"/>
             </column>
         </addColumn>
     </changeSet>
 
     <changeSet author="ponomareva" id="modify-equipment-comment-column-size">
-        <mo tableName="user_role">
-            <column name="scope" type="VARCHAR(32)">
-                <constraints nullable="false"/>
-            </column>
-        </mo>
+        <modifyDataType tableName="Equipment" columnName="comment" newDataType="VARCHAR(1024)"/>
     </changeSet>
 
 </databaseChangeLog>

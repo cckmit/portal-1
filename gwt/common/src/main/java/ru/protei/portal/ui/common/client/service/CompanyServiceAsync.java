@@ -62,10 +62,9 @@ public interface CompanyServiceAsync {
 
     /**
      * Получение списка сокращенного представления компании (name,id)
-     * @param categories
      * @param callback
      */
-    void getCompanyOptionList(List<En_CompanyCategory> categories, AsyncCallback<List<EntityOption>> callback);
+    void getCompanyOptionList(CompanyQuery query, AsyncCallback<List<EntityOption>> callback);
 
     /**
      * Получение списка сокращенного представления группы компаний (name,id)

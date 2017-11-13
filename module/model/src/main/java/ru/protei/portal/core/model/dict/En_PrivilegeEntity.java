@@ -17,11 +17,7 @@ public enum En_PrivilegeEntity {
     ACCOUNT,
     ROLE,
     OFFICIAL,
-    DASHBOARD,
-    ISSUE_COMPANY,
-    ISSUE_PRODUCT,
-    ISSUE_MANAGER,
-    ISSUE_PRIVACY;
+    DASHBOARD;
 
     public static En_Privilege[] getPrivileges(En_PrivilegeEntity category) {
         switch ( category ) {

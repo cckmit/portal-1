@@ -65,7 +65,7 @@ public class MigrateClientLoginAction implements MigrateAction {
         final Map<String, UserLogin> rtUnique = new HashMap<>();
         userLoginDAO.getAll().forEach(u -> rtUnique.put(u.getUlogin().toLowerCase(), u));
 
-        UserRole crmClientRole = userRoleDAO.ensureExists(DEF_CLIENT_ROLE_CODE, DEF_COMPANY_CLIENT_PRIV);
+        UserRole crmClientRole = userRoleDAO.ensureExists(DEF_CLIENT_ROLE_CODE, En_Scope.COMPANY, DEF_COMPANY_CLIENT_PRIV);
 
         Set<UserRole> roles = new HashSet<>();
         roles.add(crmClientRole);

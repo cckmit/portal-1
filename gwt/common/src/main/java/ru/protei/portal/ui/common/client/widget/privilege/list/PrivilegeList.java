@@ -64,6 +64,7 @@ public class PrivilegeList
     }
 
     private void buildWidget( List< En_Privilege > privileges ) {
+        container.clear();
         fillActionHeaders();
 
         for ( En_PrivilegeEntity entity : En_PrivilegeEntity.values() ) {
@@ -73,15 +74,12 @@ public class PrivilegeList
 
             for ( En_PrivilegeAction action : En_PrivilegeAction.values() ) {
                 En_Privilege privilege = En_Privilege.findPrivilege( entity, action );
-                if ( !privileges.contains( privilege ) ) {
-                    continue;
-                }
 
                 ToggleButton privilegeItem = new ToggleButton();
                 privilegeItem.setStyleName( "btn privilege-btn" );
 
                 entityItem.getContainer().add( privilegeItem.asWidget() );
-                if ( privilege == null ) {
+                if ( privilege == null || !privileges.contains( privilege ) ) {
                     privilegeItem.setEnabled( false );
                 } else {
                     modelToView.put( privilege, privilegeItem );

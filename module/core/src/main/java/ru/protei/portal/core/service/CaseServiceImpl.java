@@ -93,6 +93,7 @@ public class CaseServiceImpl implements CaseService {
         Date now = new Date();
         caseObject.setCreated(now);
         caseObject.setModified(now);
+        applyCaseByScope( token, caseObject );
 
         Long caseId = caseObjectDAO.insertCase(caseObject);
 
@@ -117,6 +118,7 @@ public class CaseServiceImpl implements CaseService {
 
         return new CoreResponse<CaseObject>().success( caseObject );
     }
+
 
     @Override
     @Transactional
@@ -401,6 +403,15 @@ public class CaseServiceImpl implements CaseService {
         if ( descriptor.getScope().equals( En_Scope.COMPANY ) ) {
             query.setCompanyId( descriptor.getCompany() == null ? null : descriptor.getCompany().getId() );
             query.setPrivateAccess( false );
+        }
+    }
+
+    private void applyCaseByScope( AuthToken token, CaseObject caseObject ) {
+        UserSessionDescriptor descriptor = authService.findSession( token );
+        if ( descriptor.getScope().equals( En_Scope.COMPANY ) ) {
+            caseObject.setPrivateCase( false );
+            caseObject.setInitiatorCompany( descriptor.getCompany() );
+            caseObject.setManagerId( null );
         }
     }
 

@@ -32,14 +32,6 @@ public class En_PrivilegeEntityLang {
                 return lang.privilegeCategoryOfficial();
             case DASHBOARD:
                 return lang.privilegeDashboard();
-            case ISSUE_COMPANY:
-                return lang.privilegeIssueFilterCompany();
-            case ISSUE_PRODUCT:
-                return lang.privilegeIssueProduct();
-            case ISSUE_MANAGER:
-                return lang.privilegeIssueManager();
-            case ISSUE_PRIVACY:
-                return lang.privilegeIssuePrivacy();
 
             default:
                 return lang.unknownField();

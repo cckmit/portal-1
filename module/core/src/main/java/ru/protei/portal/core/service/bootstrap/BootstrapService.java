@@ -44,7 +44,7 @@ public class BootstrapService {
         }
 
         List< UserRole > rolesHasObsoletePrivileges = all.stream()
-                .filter( role -> Collections.disjoint( role.getPrivileges(), obsoletePrivileges ) )
+                .filter( role -> !Collections.disjoint( role.getPrivileges(), obsoletePrivileges ) )
                 .peek( role -> role.getPrivileges().retainAll( obsoletePrivileges ) )
                 .collect( toList() );
 
@@ -56,5 +56,4 @@ public class BootstrapService {
         userRoleDAO.mergeBatch( rolesHasObsoletePrivileges );
         log.info( "Correction roles with obsolete privileges success" );
     }
-
 }

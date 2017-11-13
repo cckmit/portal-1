@@ -31,7 +31,6 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
 
     @Event
     public void onDashboardInit( AuthEvents.Success event ) {
-        profile = event.profile;
         activeRecordsQuery = generateActiveRecordsQuery();
         newRecordsQuery = generateNewRecordsQuery();
         inactiveRecordsQuery = generateInactiveRecordsQuery();
@@ -81,13 +80,8 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
 
     private CaseQuery generateActiveRecordsQuery(){
         CaseQuery query = new CaseQuery(En_CaseType.CRM_SUPPORT, null, En_SortField.last_update, En_SortDir.DESC);
-        // TODO : (?) подумать над логикой scope – надстройки фильтрации дб на уровне внутренней логики.
-        if ( !profile.getScope().equals( En_Scope.COMPANY ) ) {
-            query.setManagerId( profile.getId() );
-        }
-
         query.setStates( issueStates.getActiveStates() );
-        query.setPrivateAccess(policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRIVACY_VIEW ));
+        query.setManagerId( policyService.getProfile().getId() );
 
         return query;
     }
@@ -102,16 +96,10 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
 
     private CaseQuery generateInactiveRecordsQuery(){
         CaseQuery query = new CaseQuery(En_CaseType.CRM_SUPPORT, null, En_SortField.last_update, En_SortDir.DESC);
-        // TODO : (?) подумать над логикой scope – надстройки фильтрации дб на уровне внутренней логики.
-        if ( !profile.getScope().equals( En_Scope.COMPANY ) ) {
-            query.setManagerId( profile.getId() );
-        }
-
         List<En_CaseState> inactiveStates = new ArrayList<>(issueStates.getInactiveStates());
         inactiveStates.remove(En_CaseState.VERIFIED);
-
         query.setStates(inactiveStates);
-        query.setPrivateAccess(policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRIVACY_VIEW ));
+        query.setManagerId( policyService.getProfile().getId() );
 
         return query;
     }
@@ -129,7 +117,6 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
     PolicyService policyService;
 
     private AppEvents.InitDetails initDetails;
-    private Profile profile;
 
     private CaseQuery activeRecordsQuery;
     private CaseQuery newRecordsQuery;

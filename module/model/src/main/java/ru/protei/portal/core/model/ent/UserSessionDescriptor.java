@@ -3,10 +3,7 @@ package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_Scope;
 
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Created by michael on 23.06.16.

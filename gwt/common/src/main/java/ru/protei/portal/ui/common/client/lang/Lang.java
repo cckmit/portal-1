@@ -654,25 +654,15 @@ public interface Lang extends Messages, ContactItemLang {
 
     String equipmentNumberAlreadyInList();
 
-    String privilegeIssueFilterCompany();
-
-    String privilegeIssueProduct();
-
-    String privilegeIssueManager();
-
-    String privilegeIssuePrivacy();
-
     String privilegeDashboard();
 
     String companySubscriptionUpdatedSuccessful();
 
-    String scopeAdmin();
+    String scopeSystem();
 
-    String scopeCustomer();
+    String scopeCompany();
 
-    String scopeSupport();
+    String scopeLocal();
 
     String roleScope();
-
-    String errConflictedScope();
 }

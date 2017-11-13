@@ -65,9 +65,8 @@ public interface CompanyService extends RemoteService {
     /**
      * Получение списка сокращенного представления компании (name,id)
      * @return
-     * @param categories
      */
-    List< EntityOption > getCompanyOptionList(List<En_CompanyCategory> categories) throws RequestFailedException;
+    List< EntityOption > getCompanyOptionList(CompanyQuery query) throws RequestFailedException;
 
     /**
      * Получение списка сокращенного представления группы компаний (name,id)

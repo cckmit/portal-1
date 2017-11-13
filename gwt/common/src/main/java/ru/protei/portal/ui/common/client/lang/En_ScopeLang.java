@@ -9,11 +9,11 @@ public class En_ScopeLang {
     public String getName( En_Scope value ) {
         switch (value) {
             case SYSTEM:
-                return lang.scopeAdmin();
+                return lang.scopeSystem();
             case COMPANY:
-                return lang.scopeCustomer();
+                return lang.scopeCompany();
             case LOCAL:
-                return lang.scopeSupport();
+                return lang.scopeLocal();
 
             default:
                 return lang.unknownField();

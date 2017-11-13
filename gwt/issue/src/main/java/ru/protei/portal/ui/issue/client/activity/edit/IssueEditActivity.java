@@ -259,7 +259,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
     private void fillIssueObject(CaseObject issue){
         issue.setName(view.name().getValue());
-        issue.setPrivateCase( policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRIVACY_VIEW ) ? view.isLocal().getValue() : false );
+        issue.setPrivateCase( view.isLocal().getValue() );
         issue.setInfo(view.description().getText());
 
         isChangedStatus = false;
