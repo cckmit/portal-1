@@ -21,8 +21,8 @@ import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.dict.ImportanceButtonSelector;
-import ru.protei.portal.ui.common.client.widget.selector.person.ContactButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.person.PersonButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.ProductButtonSelector;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
@@ -45,6 +45,12 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         company.setDefaultValue(lang.selectIssueCompany());
         product.setDefaultValue(lang.selectIssueProduct());
         manager.setDefaultValue(lang.selectIssueManager());
+    }
+
+    @Override
+    protected void onAttach() {
+        super.onAttach();
+        saveButton.setEnabled(false);
     }
 
     @Override
@@ -204,13 +210,22 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         };
     }
 
-    @UiHandler("company")
-    public void onChangeCompany(ValueChangeEvent<EntityOption> event){
-        Company company = Company.fromEntityOption(event.getValue());
+    @UiHandler( "company" )
+    public void onChangeCompany( ValueChangeEvent< EntityOption > event ){
+        Company company = Company.fromEntityOption( event.getValue() );
 
-        initiator.setEnabled(company != null);
-        changeCompany(company);
-        initiator.setValue(null);
+        initiator.setEnabled( company != null );
+        changeCompany( company );
+        initiator.setValue( null );
+
+        if ( activity != null ) {
+            activity.onCompanyChanged();
+        }
+    }
+
+    @UiHandler( {"name", "description", "local", "company", "state", "product", "manager", "initiator", "importance"} )
+    public void onChange(ValueChangeEvent<?> event){
+        saveButton.setEnabled(activity.isIssueChanged());
     }
 
     @UiHandler( "saveButton" )
@@ -264,7 +279,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
 
     @Inject
     @UiField(provided = true)
-    ContactButtonSelector initiator;
+    PersonButtonSelector initiator;
 
     @Inject
     @UiField(provided = true)

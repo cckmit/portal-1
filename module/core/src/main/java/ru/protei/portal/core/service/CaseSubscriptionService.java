@@ -1,5 +1,6 @@
 package ru.protei.portal.core.service;
 
+import ru.protei.portal.core.event.CaseAttachmentEvent;
 import ru.protei.portal.core.event.CaseCommentEvent;
 import ru.protei.portal.core.event.CaseObjectEvent;
 import ru.protei.portal.core.model.struct.NotificationEntry;
@@ -13,5 +14,6 @@ public interface CaseSubscriptionService {
 
     Set<NotificationEntry> subscribers (CaseObjectEvent event);
     Set<NotificationEntry> subscribers (CaseCommentEvent event);
+    Set<NotificationEntry> subscribers (CaseAttachmentEvent event);
 
 }

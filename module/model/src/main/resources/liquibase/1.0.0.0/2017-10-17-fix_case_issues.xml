@@ -5,14 +5,15 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 <property name="now" value="CURRENT_TIMESTAMP" dbms="mysql"/>
 
-    <changeSet author="serebryakov" id="18-09-2017 12:15">
+    <changeSet author="zavedeev" id="17-10-2017 21:49">
         <preConditions onFail="MARK_RAN">
-            <not>
-                <columnExists columnName="ATTACHMENT_EXISTS" tableName="case_object" />
-            </not>
+             <indexExists indexName="UQ_CASE" columnNames="CASENO,CASE_TYPE" tableName="case_object"/>
         </preConditions>
-        <addColumn tableName="case_object">
-            <column name="ATTACHMENT_EXISTS" type="TINYINT(1)" defaultValue="0" />
-        </addColumn>
+        <dropIndex tableName="case_object" indexName="UQ_CASE" />
     </changeSet>
+
+    <changeSet author="zavedeev" id="17-10-2017 21:50">
+        <addUniqueConstraint tableName="case_object" columnNames="CASENO,CASE_TYPE" constraintName="UQ_CASE" />
+    </changeSet>
+
 </databaseChangeLog>

@@ -19,6 +19,7 @@ import ru.protei.portal.ui.common.client.events.IssueEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
+import ru.protei.portal.ui.common.client.service.CompanyServiceAsync;
 import ru.protei.portal.ui.common.client.service.IssueServiceAsync;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
@@ -26,6 +27,7 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -137,6 +139,44 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         });
     }
 
+    @Override
+    public void onCompanyChanged() {
+        if ( view.company().getValue() != null ) {
+            companyService.getCompany( view.company().getValue().getId(), new RequestCallback< Company >() {
+                @Override
+                public void onError( Throwable throwable ) {}
+
+                @Override
+                public void onSuccess( Company company ) {
+                    view.setSubscriptionEmails(
+                            company.getSubscriptions() == null ? ""
+                                    : company.getSubscriptions().stream()
+                                    .map( CompanySubscription::getEmail )
+                                    .collect( Collectors.joining( ", " ) ) );
+                }
+            });
+        }
+    }
+
+    @Override
+    public boolean isIssueChanged() {
+        return initialHash != calcHash();
+    }
+
+    private int calcHash(){
+        return Objects.hash(
+                view.name().getValue(),
+                view.description().getText(),
+                view.isLocal().getValue(),
+                view.state().getValue(),
+                view.importance().getValue(),
+                view.company().getValue(),
+                view.initiator().getValue(),
+                view.product().getValue(),
+                view.manager().getValue()
+        );
+    }
+
     private void resetState(){
 //        view.initiatorState().setEnabled(view.companyValidator().isValid());
     }
@@ -187,26 +227,32 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         Company initiatorCompany = issue.getInitiatorCompany();
         view.company().setValue(EntityOption.fromCompany(initiatorCompany));
         view.changeCompany(initiatorCompany);
+        view.setSubscriptionEmails( "" );
 
-        if ( initiatorCompany == null ) {
+        if ( initiatorCompany == null && !policyService.hasPrivilegeFor( En_Privilege.ISSUE_COMPANY_EDIT ) ) {
             Company userCompany = policyService.getUserCompany();
             view.company().setValue( userCompany == null ? null : userCompany.toEntityOption() );
-            view.changeCompany(userCompany);
+            view.changeCompany( userCompany );
+            view.setSubscriptionEmails(
+                    userCompany == null || userCompany.getSubscriptions() == null ? ""
+                            : userCompany.getSubscriptions().stream()
+                            .map( CompanySubscription::getEmail )
+                            .collect( Collectors.joining(", ") ) );
         }
-
-        view.initiator().setValue( PersonShortView.fromPerson(issue.getInitiator()));
         if ( issue.getInitiatorCompany() != null ) {
-            view.setSubscriptionEmails( issue.getInitiatorCompany().getSubscriptions() == null
-                    ? ""
-                    : issue.getInitiatorCompany().getSubscriptions()
-                    .stream()
-                    .map( CompanySubscription::getEmail )
-                    .collect( Collectors.joining(", ") ) );
+            view.setSubscriptionEmails(
+                    issue.getInitiatorCompany().getSubscriptions() == null ? ""
+                            : issue.getInitiatorCompany().getSubscriptions().stream()
+                            .map( CompanySubscription::getEmail )
+                            .collect( Collectors.joining(", ") ) );
         }
 
-        view.product().setValue( ProductShortView.fromProduct(issue.getProduct()));
-        view.manager().setValue(PersonShortView.fromPerson(issue.getManager()));
+        view.initiator().setValue( PersonShortView.fromPerson( issue.getInitiator() ) );
+        view.product().setValue( ProductShortView.fromProduct( issue.getProduct() ) );
+        view.manager().setValue( PersonShortView.fromPerson( issue.getManager() ) );
         view.saveVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_EDIT ) );
+
+        initialHash = calcHash();
     }
 
     private void fillIssueObject(CaseObject issue){
@@ -259,8 +305,11 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     Lang lang;
     @Inject
     PolicyService policyService;
+    @Inject
+    CompanyServiceAsync companyService;
 
     private AppEvents.InitDetails initDetails;
     private CaseObject issue;
     private boolean isChangedStatus = false;
+    private int initialHash;
 }

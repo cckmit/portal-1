@@ -4,16 +4,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.api.struct.FileStorage;
+import ru.protei.portal.core.event.CaseAttachmentEvent;
 import ru.protei.portal.core.model.dao.AttachmentDAO;
 import ru.protei.portal.core.model.dao.CaseAttachmentDAO;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.Attachment;
-import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.ent.CaseAttachment;
-import ru.protei.portal.core.model.ent.UserSessionDescriptor;
+import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.service.user.AuthService;
 
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by bondarenko on 23.01.17.
@@ -32,6 +31,12 @@ public class AttachmentServiceImpl implements AttachmentService {
     @Autowired
     FileStorage fileStorage;
 
+    @Autowired
+    EventPublisherService publisherService;
+
+    @Autowired
+    AuthService authService;
+
     /**
      * remove attachment from fileStorage, DataBase (item and relations)
      */
@@ -46,11 +51,30 @@ public class AttachmentServiceImpl implements AttachmentService {
 
             caseService.updateCaseModified( token, ca.getCaseId(), new Date() );
 
-            if (!caseService.isExistsAttachments(ca.getCaseId()))
+            if (!caseService.isExistsAttachments(ca.getCaseId())) {
                 caseService.updateExistsAttachmentsFlag(ca.getCaseId(), false);
-        }
+            }
 
-        return removeAttachment( token, id);
+            CoreResponse<CaseObject> issue = caseService.getCaseObject(token, ca.getCaseId());
+            Attachment attachment = attachmentDAO.get(id);
+            UserSessionDescriptor ud = authService.findSession( token );
+
+            CoreResponse<Boolean> result = removeAttachment( token, id);
+
+            if(result.isOk() && issue.isOk() && ud != null ) {
+                publisherService.publishEvent(new CaseAttachmentEvent(
+                        this,
+                        issue.getData(),
+                        null,
+                        Collections.singletonList(attachment),
+                        ud.getPerson()
+                ));
+            }
+
+            return result;
+        }else {
+            return removeAttachment( token, id);
+        }
     }
 
     /**
@@ -94,6 +118,17 @@ public class AttachmentServiceImpl implements AttachmentService {
             return new CoreResponse().error(En_ResultStatus.GET_DATA_ERROR);
 
         return new CoreResponse<List<Attachment>>().success(list);
+    }
+
+    @Override
+    public CoreResponse<List<Attachment>> getAttachments( AuthToken token, Collection<CaseAttachment> caseAttachments) {
+        if(caseAttachments == null || caseAttachments.isEmpty())
+            return new CoreResponse<List<Attachment>>().success(Collections.emptyList());
+
+        return getAttachments(
+                token,
+                caseAttachments.stream().map(CaseAttachment::getAttachmentId).collect(Collectors.toList())
+        );
     }
 
     @Override

@@ -22,6 +22,10 @@ public class CaseQuery extends BaseQuery {
     private En_CaseType type;
     private List<Integer> stateIds;
     private List<Integer> importanceIds;
+    /**
+     * if true then both states otherwise only non-private state
+     */
+    private boolean privateAccess = true;
 
     private Date from;
     private Date to;
@@ -99,6 +103,15 @@ public class CaseQuery extends BaseQuery {
 
     public void setManagerId ( Long managerId ) { this.managerId = managerId; }
 
+
+    public boolean isPrivateAccess() {
+        return privateAccess;
+    }
+
+    public void setPrivateAccess(boolean isPrivateAccess) {
+        this.privateAccess = isPrivateAccess;
+    }
+
     @Override
     public String toString () {
         return "CaseQuery{" +
@@ -110,6 +123,7 @@ public class CaseQuery extends BaseQuery {
                 ", importanceIds=" + importanceIds +
                 ", from=" + from +
                 ", to=" + to +
+                ", privateAccess=" + privateAccess +
                 '}';
     }
 }

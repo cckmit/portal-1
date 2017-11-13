@@ -59,10 +59,7 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Override
     public CoreResponse<List<EntityOption>> companyOptionList(List<En_CompanyCategory> categories) {
-        CompanyQuery query = new CompanyQuery("", En_SortField.comp_name, En_SortDir.ASC);
-        List<Long> ids = categories.stream().map(En_CompanyCategory::getId).collect(Collectors.toList());
-        query.setCategoryIds(ids);
-        List<Company> list = companyDAO.getListByQuery(query);
+        List<Company> list = companyDAO.getListByQuery(new CompanyQuery());
 
         if (list == null)
             new CoreResponse<List<EntityOption>>().error(En_ResultStatus.GET_DATA_ERROR);

@@ -52,11 +52,11 @@ public class MigrateClientLoginAction implements MigrateAction {
     private final static String DEF_CLIENT_ROLE_CODE="CRM_CLIENT";
 
     private final static En_Privilege [] DEF_COMPANY_CLIENT_PRIV = {
+            En_Privilege.ISSUE_CREATE,
             En_Privilege.ISSUE_EDIT,
-            En_Privilege.COMMON_PROFILE_EDIT,
             En_Privilege.ISSUE_VIEW,
-            En_Privilege.COMMON_PROFILE_VIEW,
-            En_Privilege.ISSUE_CREATE
+            En_Privilege.COMMON_PROFILE_EDIT,
+            En_Privilege.COMMON_PROFILE_VIEW
     };
 
     @Override

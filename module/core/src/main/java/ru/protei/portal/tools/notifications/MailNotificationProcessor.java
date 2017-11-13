@@ -7,6 +7,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.config.PortalConfig;
+import ru.protei.portal.core.event.CaseAttachmentEvent;
 import ru.protei.portal.core.event.CaseCommentEvent;
 import ru.protei.portal.core.event.CaseObjectEvent;
 import ru.protei.portal.core.mail.MailMessageFactory;
@@ -21,8 +22,10 @@ import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.template.PreparedTemplate;
 
 import javax.mail.MessagingException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -67,7 +70,17 @@ public class MailNotificationProcessor {
             oldManager = getManager( event.getOldState().getManagerId() );
         }
 
-        performNotification( event.getCaseObject(), oldManager, event, null, notificationEntries, event.getPerson() );
+        performNotification( event.getCaseObject(), oldManager, event, null, null, notificationEntries, event.getPerson() );
+    }
+
+    @EventListener
+    public void onCaseAttachmentsChanged( CaseAttachmentEvent event ) {
+        Set<NotificationEntry> notificationEntries = subscriptionService.subscribers( event );
+        if ( notificationEntries.isEmpty() ) {
+            return;
+        }
+
+        performNotification( event.getCaseObject(), null, null, null, event, notificationEntries, event.getPerson() );
     }
 
     @EventListener
@@ -77,13 +90,22 @@ public class MailNotificationProcessor {
             return;
         }
 
-        performNotification( event.getCaseObject(), null, null, event, notificationEntries, event.getPerson() );
+        performNotification( event.getCaseObject(), null, null, event, null, notificationEntries, event.getPerson() );
     }
 
     private void performNotification(
-        CaseObject caseObject, Person oldManager, CaseObjectEvent caseEvent, CaseCommentEvent commentEvent,
+        CaseObject caseObject, Person oldManager, CaseObjectEvent caseEvent, CaseCommentEvent commentEvent, CaseAttachmentEvent attachmentEvent,
         Set<NotificationEntry> notificationEntries, Person currentPerson
     ) {
+        Collection<NotificationEntry> notifiers =
+                caseObject.isPrivateCase()?
+                        filterProteiNotifiers(notificationEntries)
+                        :
+                        notificationEntries;
+
+        if(notifiers.isEmpty())
+            return;
+
         CoreResponse<List<CaseComment> > comments = caseService.getCaseCommentList( null, caseObject.getId() );
         if ( comments.isError() ) {
             log.error( "Failed to retrieve comments for caseId={}", caseObject.getId() );
@@ -95,11 +117,14 @@ public class MailNotificationProcessor {
             oldManager = manager;
         }
 
-        List<String> recipients = notificationEntries.stream().map( NotificationEntry::getAddress ).collect( toList() );
-        recipients.add( new PlainContactInfoFacade( currentPerson.getContactInfo() ).getEmail() );
+        List<String> recipients = notifiers.stream().map( NotificationEntry::getAddress ).collect( toList() );
+        String currentPersonEmail = new PlainContactInfoFacade( currentPerson.getContactInfo() ).getEmail();
+        if(currentPersonEmail != null){
+            recipients.add( currentPersonEmail );
+        }
 
         PreparedTemplate bodyTemplate = templateService.getCrmEmailNotificationBody(
-            caseEvent, comments.getData(), manager, oldManager, commentEvent,
+            caseEvent, comments.getData(), manager, oldManager, commentEvent, attachmentEvent,
             config.data().getCrmCaseUrl(), recipients
         );
         if ( bodyTemplate == null ) {
@@ -113,7 +138,7 @@ public class MailNotificationProcessor {
             return;
         }
 
-        notificationEntries.stream().forEach( (entry)->{
+        notifiers.stream().forEach( (entry)->{
             String body = bodyTemplate.getText( entry.getAddress(), entry.getLangCode() );
             String subject = subjectTemplate.getText( entry.getAddress(), entry.getLangCode() );
 
@@ -148,5 +173,9 @@ public class MailNotificationProcessor {
         }
 
         return managerResponse.getData();
+    }
+
+    private List<NotificationEntry> filterProteiNotifiers(Collection<NotificationEntry> notifiers){
+        return notifiers.stream().filter(entry -> entry.getAddress().endsWith("@protei.ru")).collect(Collectors.toList());
     }
 }
