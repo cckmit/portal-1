@@ -53,10 +53,6 @@ public abstract class PolicyService implements Activity {
         return true;
     }
 
-    public boolean isCompanyScope() {
-        return profile.getScope().equals( En_Scope.COMPANY );
-    }
-
     public Profile getProfile() {
         return profile;
     }

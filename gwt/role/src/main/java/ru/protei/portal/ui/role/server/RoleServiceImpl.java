@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.UserRoleQuery;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.service.UserRoleService;
 import ru.protei.portal.ui.common.client.service.RoleService;
 import ru.protei.portal.ui.common.server.service.SessionService;
@@ -74,6 +75,21 @@ public class RoleServiceImpl implements RoleService {
         }
 
         throw new RequestFailedException(response.getStatus());
+    }
+
+    @Override
+    public List< EntityOption > getRolesOptionList( UserRoleQuery query ) throws RequestFailedException {
+        log.debug( "getRolesOptionList(): searchPattern={} ",
+                query.getSearchString() );
+
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
+        CoreResponse<List<EntityOption>> response = roleService.userRoleOptionList( descriptor.makeAuthToken(), query );
+
+        if ( response.isError() ) {
+            throw new RequestFailedException( response.getStatus() );
+        }
+        return response.getData();
     }
 
     private UserSessionDescriptor getDescriptorAndCheckSession() throws RequestFailedException {

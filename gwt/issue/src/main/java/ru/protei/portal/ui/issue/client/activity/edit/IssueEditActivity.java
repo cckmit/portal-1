@@ -24,10 +24,7 @@ import ru.protei.portal.ui.common.client.service.IssueServiceAsync;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -141,16 +138,19 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
     @Override
     public void onCompanyChanged() {
-        if ( view.company().getValue() != null ) {
-            companyService.getCompany( view.company().getValue().getId(), new RequestCallback< Company >() {
+        if ( view.company().getValue() == null ) {
+            view.setSubscriptionEmails( "" );
+        } else {
+            companyService.getCompanySubscription( view.company().getValue().getId(), new RequestCallback< List<CompanySubscription> >() {
                 @Override
                 public void onError( Throwable throwable ) {}
 
                 @Override
-                public void onSuccess( Company company ) {
+                public void onSuccess( List<CompanySubscription> subscriptions ) {
                     view.setSubscriptionEmails(
-                            company.getSubscriptions() == null ? ""
-                                    : company.getSubscriptions().stream()
+                            subscriptions == null
+                                    ? ""
+                                    : subscriptions.stream()
                                     .map( CompanySubscription::getEmail )
                                     .collect( Collectors.joining( ", " ) ) );
                 }
@@ -177,14 +177,9 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         );
     }
 
-    private void resetState(){
-//        view.initiatorState().setEnabled(view.companyValidator().isValid());
-    }
-
     private void initialView(CaseObject issue){
         this.issue = issue;
         fillView(this.issue);
-        resetState();
     }
 
     private void requestIssue(Long id, Consumer<CaseObject> successAction){
@@ -200,11 +195,10 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     }
 
     private void fillView(CaseObject issue) {
-        boolean notIsCompanyScope = !policyService.isCompanyScope();
-        view.companyEnabled().setEnabled( notIsCompanyScope );
-        view.productEnabled().setEnabled( notIsCompanyScope );
-        view.managerEnabled().setEnabled( notIsCompanyScope );
-        view.privacyVisibility().setVisible( notIsCompanyScope );
+        view.companyEnabled().setEnabled( policyService.hasPrivilegeFor( En_Privilege.ISSUE_COMPANY_EDIT ) );
+        view.productEnabled().setEnabled( policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRODUCT_EDIT ) );
+        view.managerEnabled().setEnabled( policyService.hasPrivilegeFor( En_Privilege.ISSUE_MANAGER_EDIT) );
+        view.privacyVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRIVACY_VIEW ) );
 
         view.attachmentsContainer().clear();
         view.setCaseId(issue.getId());
@@ -226,29 +220,11 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         view.importance().setValue(issue.getId() == null ? En_ImportanceLevel.BASIC : En_ImportanceLevel.getById(issue.getImpLevel()));
 
         Company initiatorCompany = issue.getInitiatorCompany();
-        view.company().setValue(EntityOption.fromCompany(initiatorCompany));
-        view.changeCompany(initiatorCompany);
-        view.setSubscriptionEmails( "" );
-
-        // TODO: scope – разделение функций
-        if ( initiatorCompany == null && policyService.isCompanyScope() ) {
-            Company userCompany = policyService.getUserCompany();
-            view.company().setValue( userCompany == null ? null : userCompany.toEntityOption() );
-            view.changeCompany( userCompany );
-            view.setSubscriptionEmails(
-                    userCompany == null || userCompany.getSubscriptions() == null ? ""
-                            : userCompany.getSubscriptions().stream()
-                            .map( CompanySubscription::getEmail )
-                            .collect( Collectors.joining(", ") ) );
-        }
-        if ( issue.getInitiatorCompany() != null ) {
-            view.setSubscriptionEmails(
-                    issue.getInitiatorCompany().getSubscriptions() == null ? ""
-                            : issue.getInitiatorCompany().getSubscriptions().stream()
-                            .map( CompanySubscription::getEmail )
-                            .collect( Collectors.joining(", ") ) );
+        if ( initiatorCompany == null ) {
+            initiatorCompany = policyService.getUserCompany();
         }
 
+        view.company().setValue(EntityOption.fromCompany(initiatorCompany), true);
         view.initiator().setValue( PersonShortView.fromPerson( issue.getInitiator() ) );
         view.product().setValue( ProductShortView.fromProduct( issue.getProduct() ) );
         view.manager().setValue( PersonShortView.fromPerson( issue.getManager() ) );
@@ -281,8 +257,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                 view.importanceValidator().isValid() &&
                 view.companyValidator().isValid() &&
                 view.initiatorValidator().isValid();
-//                view.productValidator().isValid() &&
-//                view.managerValidator().isValid();
     }
 
     private void addAttachmentsToCase(Collection<Attachment> attachments){

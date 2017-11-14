@@ -195,6 +195,19 @@ public class CompanyServiceImpl implements CompanyService {
         return companySubscriptionResult.getData();
     }
 
+    @Override
+    public List< CompanySubscription > getCompanySubscription( Long companyId ) throws RequestFailedException {
+        log.debug( "getCompanySubscription()" );
+
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+        CoreResponse< List< CompanySubscription > > result = companyService.getCompanySubscriptions( descriptor.getCompany().getId() );
+
+        if ( result.isError() ) {
+            throw new RequestFailedException( result.getStatus() );
+        }
+        return result.getData();
+    }
+
     private UserSessionDescriptor getDescriptorAndCheckSession() throws RequestFailedException {
         UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor( httpServletRequest );
         log.info( "userSessionDescriptor={}", descriptor );

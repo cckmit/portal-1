@@ -19,5 +19,5 @@ public interface AbstractRoleEditView extends IsWidget {
 
     HasValue<Set<En_Privilege>> privileges();
 
-    HasValue< En_Scope > scope();
+    HasValue< Set< En_Scope > > scope();
 }

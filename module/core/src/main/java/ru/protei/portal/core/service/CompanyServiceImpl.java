@@ -85,17 +85,6 @@ public class CompanyServiceImpl implements CompanyService {
         return new CoreResponse<List<Company>>().success(list);
     }
 
-    private List<Company> getCompanyList(AuthToken token, CompanyQuery query) {
-        UserSessionDescriptor descriptor = authService.findSession( token );
-        if ( descriptor.getScope().equals( En_Scope.COMPANY ) ) {
-            Company company = companyDAO.get( descriptor.getCompany().getId() );
-            // TODO: need filter by query?
-            return Arrays.asList( company );
-        } else {
-            return companyDAO.getListByQuery(query);
-        }
-    }
-
     @Override
     public CoreResponse<CompanyGroup> createGroup(String name, String info) {
 
@@ -309,6 +298,20 @@ public class CompanyServiceImpl implements CompanyService {
                 !checkGroupExists(group.getName(), group.getId());
     }
 
+    private List<Company> getCompanyList(AuthToken token, CompanyQuery query) {
+        UserSessionDescriptor descriptor = authService.findSession( token );
+        if ( descriptor.hasScopeFor( En_Scope.SYSTEM ) ) {
+            return companyDAO.getListByQuery(query);
+        }
+
+        if ( descriptor.hasScopeFor( En_Scope.COMPANY ) ) {
+            Company company = companyDAO.get( descriptor.getCompany().getId() );
+            // TODO: need filter by query?
+            return Arrays.asList( company );
+        }
+
+        return null;
+    }
 
 
     private boolean checkCompanyExists (String name, Long excludeId) {

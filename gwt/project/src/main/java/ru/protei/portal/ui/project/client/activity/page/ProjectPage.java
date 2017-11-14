@@ -5,7 +5,6 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.ui.common.client.common.PolicyUtils;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.ActionBarEvents;
 import ru.protei.portal.ui.common.client.events.AuthEvents;

@@ -84,4 +84,11 @@ public interface CompanyServiceAsync {
      * @param callback
      */
     void updateSelfCompanySubscription( List<CompanySubscription> value, AsyncCallback<List<CompanySubscription>> callback );
+
+    /**
+     * Получение список рассылок по компании
+     *
+     * @param companyId
+     */
+    void getCompanySubscription( Long companyId, AsyncCallback< List< CompanySubscription > > async );
 }

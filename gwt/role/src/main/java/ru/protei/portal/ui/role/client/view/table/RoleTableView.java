@@ -20,6 +20,8 @@ import ru.protei.portal.ui.role.client.activity.table.AbstractRoleTableView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 /**
  * Представление таблицы роли
@@ -105,7 +107,9 @@ public class RoleTableView extends Composite implements AbstractRoleTableView {
 
             @Override
             public void fillColumnValue ( Element cell, UserRole value ) {
-                cell.setInnerText( scopeLang.getName( value.getScope() ) );
+                cell.setInnerText( value.getScopes() == null
+                        ? ""
+                        : value.getScopes().stream().map( sc -> scopeLang.getName( sc )).collect( Collectors.joining(", ") ) );
             }
         };
         columns.add( description );

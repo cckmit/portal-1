@@ -16,6 +16,7 @@ import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.crm.client.service.AuthService;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -64,10 +65,16 @@ public class AuthServiceImpl implements AuthService {
         profile.setName( sessionDescriptor.getPerson().getFirstName() );
         profile.setId( sessionDescriptor.getPerson().getId() );
         profile.setPrivileges( getAllPrivileges( roles ) );
+        applyPrivilegesByScopes( profile.getPrivileges(), sessionDescriptor.getScopes() );
         profile.setCompany( sessionDescriptor.getCompany() );
-        profile.setScope( sessionDescriptor.getScope() );
 
         return profile;
+    }
+
+    private void applyPrivilegesByScopes( Set< En_Privilege > privileges, Set< En_Scope > scopes ) {
+        if ( !scopes.contains( En_Scope.COMPANY ) ) {
+            privileges.addAll( Arrays.asList( En_Privilege.DEFAULT_SCOPE_PRIVILEGES ) );
+        }
     }
 
     private Set< En_Privilege > getAllPrivileges( Set< UserRole > roles ) {

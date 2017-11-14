@@ -38,8 +38,6 @@ public interface AbstractIssueEditView extends IsWidget {
 
     HasEnabled initiatorState();
 
-    void changeCompany(Company company);
-
     void setSubscriptionEmails( String value );
 
     HasWidgets getCommentsContainer();

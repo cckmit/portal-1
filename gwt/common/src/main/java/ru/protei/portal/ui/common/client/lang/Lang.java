@@ -662,7 +662,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String scopeCompany();
 
-    String scopeLocal();
+    String scopeRole();
 
     String roleScope();
 }

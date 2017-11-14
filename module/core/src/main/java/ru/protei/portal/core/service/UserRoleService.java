@@ -8,6 +8,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.query.UserRoleQuery;
+import ru.protei.portal.core.model.view.EntityOption;
 
 import java.util.List;
 
@@ -23,4 +24,6 @@ public interface UserRoleService {
     @Privileged( requireAny = { En_Privilege.ROLE_EDIT, En_Privilege.ROLE_CREATE } )
     @Auditable( En_AuditType.ROLE_MODIFY )
     CoreResponse<UserRole> saveUserRole( AuthToken authToken, UserRole userRole );
+
+    CoreResponse<List<EntityOption>> userRoleOptionList( AuthToken token, UserRoleQuery query );
 }

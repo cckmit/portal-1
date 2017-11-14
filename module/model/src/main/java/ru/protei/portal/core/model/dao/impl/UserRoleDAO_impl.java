@@ -8,10 +8,13 @@ import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.query.UserRoleQuery;
+import ru.protei.winter.core.utils.collections.CollectionUtils;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Created by michael on 16.06.16.
@@ -27,12 +30,20 @@ public class UserRoleDAO_impl extends PortalBaseJdbcDAO<UserRole> implements Use
                 condition.append(" and role_code like ?");
                 args.add(HelperFunc.makeLikeArg(query.getSearchString(), true));
             }
+
+            if ( CollectionUtils.isNotEmpty( query.getRoleIds() )) {
+                condition.append(" and id IN ( ");
+                condition.append( query.getRoleIds().stream()
+                                .map( String::valueOf )
+                                .collect( Collectors.joining(",")));
+                condition.append( " )");
+            }
         });
     }
 
 
     @Override
-    public UserRole ensureExists( String code, En_Scope scope, En_Privilege... privileges) {
+    public UserRole ensureExists( String code, En_Scope[] scopes, En_Privilege... privileges) {
         UserRole role = getByCondition("role_code=?", code);
         if (role == null) {
             role = new UserRole();
@@ -50,9 +61,11 @@ public class UserRoleDAO_impl extends PortalBaseJdbcDAO<UserRole> implements Use
                 }
             }
 
-            if ( scope != null && !scope.equals( role.getScope() )) {
-                changes = true;
-                role.setScope( scope );
+            for (En_Scope scope : scopes) {
+                if (!role.hasScope(scope)) {
+                    changes = true;
+                    role.addScope(scope);
+                }
             }
 
             if (changes)

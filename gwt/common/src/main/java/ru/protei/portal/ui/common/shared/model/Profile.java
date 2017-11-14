@@ -61,14 +61,6 @@ public class Profile implements Serializable {
         this.id = id;
     }
 
-    public En_Scope getScope() {
-        return scope;
-    }
-
-    public void setScope( En_Scope scope ) {
-        this.scope = scope;
-    }
-
     public Set< En_Privilege > getPrivileges() {
         return privileges;
     }

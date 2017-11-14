@@ -35,9 +35,9 @@ public abstract class CompanyModel implements Activity {
         refreshOptions();
     }
 
-    public void subscribe(ModelSelector<EntityOption> selector, List<En_CompanyCategory> categories, boolean excludeHomeCompany) {
+    public void subscribe(ModelSelector<EntityOption> selector, List<En_CompanyCategory> categories) {
         subscribers.add( selector );
-        CompanyQuery query = makeQuery( categories, excludeHomeCompany );
+        CompanyQuery query = makeQuery( categories );
         selectorToQuery.put(selector, query);
         requestOptions(selector, query);
     }
@@ -65,7 +65,7 @@ public abstract class CompanyModel implements Activity {
         } );
     }
 
-    private CompanyQuery makeQuery(List<En_CompanyCategory> categories, boolean excludeHomeCompany) {
+    private CompanyQuery makeQuery(List<En_CompanyCategory> categories) {
         CompanyQuery query = new CompanyQuery();
         if(categories != null) {
             query.setCategoryIds(
@@ -73,7 +73,6 @@ public abstract class CompanyModel implements Activity {
                             .map( En_CompanyCategory:: getId )
                             .collect( Collectors.toList() ) );
         }
-        query.setExcludeHomeCompanies( excludeHomeCompany );
         return query;
     }
 

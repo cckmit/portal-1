@@ -88,11 +88,7 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
     }
 
     private boolean ifPersonIsEmployee(final Person employee) {
-        return homeGroupCache.exists(new EntitySelector<CompanyHomeGroupItem>() {
-            public boolean matches(CompanyHomeGroupItem entity) {
-                return employee.getCompanyId().equals(entity.getCompanyId());
-            }
-        });
+        return homeGroupCache.exists( entity -> employee.getCompanyId().equals(entity.getCompanyId()) );
     }
 
     @Override

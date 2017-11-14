@@ -30,7 +30,7 @@
                             <ui:text from="{lang.roleScope}"/>
                         </label>
                         <div>
-                            <widget:ScopeBtnGroup ui:field="scope"/>
+                            <widget:ScopeBtnGroupMulti ui:field="scope"/>
                         </div>
                     </div>
 

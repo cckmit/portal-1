@@ -4,13 +4,20 @@ import ru.protei.portal.core.model.dict.En_AuthType;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 
+import java.util.List;
 import java.util.Set;
 
 /**
  * Фильтр по учетным записям
  */
 public class AccountQuery extends BaseQuery {
+
     private Set< En_AuthType > types;
+
+    /**
+     * Выборка пользователь с конкретными ролями
+     */
+    private List<Long> roleIds;
 
     public AccountQuery() {}
 
@@ -25,6 +32,14 @@ public class AccountQuery extends BaseQuery {
 
     public void setTypes( Set<En_AuthType> types ) {
         this.types = types;
+    }
+
+    public List< Long > getRoleIds() {
+        return roleIds;
+    }
+
+    public void setRoleIds( List< Long > roleIds ) {
+        this.roleIds = roleIds;
     }
 
     @Override

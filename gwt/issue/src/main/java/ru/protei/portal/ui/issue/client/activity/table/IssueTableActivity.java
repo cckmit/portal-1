@@ -251,11 +251,9 @@ public abstract class IssueTableActivity
     }
 
     private void applyFilterViewPrivileges() {
-        boolean notIsCompanyScope = !policyService.isCompanyScope();
-
-        filterView.companyVisibility().setVisible( notIsCompanyScope );
-        filterView.productVisibility().setVisible( notIsCompanyScope );
-        filterView.managerVisibility().setVisible( notIsCompanyScope );
+        filterView.companyVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_COMPANY_VIEW ) );
+        filterView.productVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_PRODUCT_VIEW ) );
+        filterView.managerVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_MANAGER_VIEW ) );
     }
 
     @Inject

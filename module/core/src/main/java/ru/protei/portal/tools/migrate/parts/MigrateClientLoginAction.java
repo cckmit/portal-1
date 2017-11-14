@@ -59,13 +59,17 @@ public class MigrateClientLoginAction implements MigrateAction {
             En_Privilege.COMMON_PROFILE_VIEW
     };
 
+    private final static En_Scope [] DEF_COMPANY_CLIENT_SCOPE = {
+            En_Scope.COMPANY
+    };
+
     @Override
     public void migrate(Connection sourceConnection) throws SQLException {
 
         final Map<String, UserLogin> rtUnique = new HashMap<>();
         userLoginDAO.getAll().forEach(u -> rtUnique.put(u.getUlogin().toLowerCase(), u));
 
-        UserRole crmClientRole = userRoleDAO.ensureExists(DEF_CLIENT_ROLE_CODE, En_Scope.COMPANY, DEF_COMPANY_CLIENT_PRIV);
+        UserRole crmClientRole = userRoleDAO.ensureExists(DEF_CLIENT_ROLE_CODE, DEF_COMPANY_CLIENT_SCOPE, DEF_COMPANY_CLIENT_PRIV);
 
         Set<UserRole> roles = new HashSet<>();
         roles.add(crmClientRole);

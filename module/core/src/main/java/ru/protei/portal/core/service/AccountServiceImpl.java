@@ -8,20 +8,18 @@ import org.springframework.util.DigestUtils;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.UserLoginDAO;
 import ru.protei.portal.core.model.dao.UserRoleDAO;
-import ru.protei.portal.core.model.dict.En_AdminState;
-import ru.protei.portal.core.model.dict.En_AuthType;
-import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.ent.UserRole;
+import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.AccountQuery;
+import ru.protei.portal.core.service.user.AuthService;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Реализация сервиса управления учетными записями
@@ -40,6 +38,9 @@ public class AccountServiceImpl implements AccountService {
 
     @Autowired
     PolicyService policyService;
+
+    @Autowired
+    AuthService authService;
 
     @Override
     public CoreResponse< List< UserLogin > > accountList(AuthToken token, AccountQuery query ) {
@@ -148,5 +149,18 @@ public class AccountServiceImpl implements AccountService {
         UserLogin userLogin = userLoginDAO.checkExistsByLogin( login );
 
         return userLogin == null || userLogin.getId().equals( excludeId );
+    }
+
+    private void applyFilterByScope( AuthToken token, AccountQuery query ) {
+        UserSessionDescriptor descriptor = authService.findSession( token );
+
+        if ( !descriptor.isGrantAccess() && descriptor.hasScopeFor( En_Scope.ROLE ) ) {
+            query.setRoleIds(
+                    Optional.ofNullable( descriptor.getLogin().getRoles())
+                            .orElse( Collections.emptySet() )
+                            .stream()
+                            .map( UserRole::getId )
+                            .collect( Collectors.toList()) );
+        }
     }
 }
