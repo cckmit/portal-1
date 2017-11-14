@@ -300,17 +300,14 @@ public class CompanyServiceImpl implements CompanyService {
 
     private List<Company> getCompanyList(AuthToken token, CompanyQuery query) {
         UserSessionDescriptor descriptor = authService.findSession( token );
-        if ( descriptor.hasScopeFor( En_Scope.SYSTEM ) ) {
-            return companyDAO.getListByQuery(query);
-        }
-
-        if ( descriptor.hasScopeFor( En_Scope.COMPANY ) ) {
+        Set< UserRole > roles = descriptor.getLogin().getRoles();
+        if ( !policyService.isGrantAccess( roles ) && policyService.hasScopeFor( roles, En_Scope.COMPANY ) ) {
             Company company = companyDAO.get( descriptor.getCompany().getId() );
             // TODO: need filter by query?
             return Arrays.asList( company );
+        } else {
+            return companyDAO.getListByQuery(query);
         }
-
-        return null;
     }
 
 

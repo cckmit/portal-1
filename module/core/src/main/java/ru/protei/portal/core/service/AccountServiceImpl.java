@@ -44,6 +44,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public CoreResponse< List< UserLogin > > accountList(AuthToken token, AccountQuery query ) {
+        applyFilterByScope(token, query);
         List< UserLogin > list = userLoginDAO.getAccounts( query );
 
         if (list == null)
@@ -55,6 +56,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public CoreResponse< Long > count( AuthToken authToken, AccountQuery query ) {
+        applyFilterByScope(authToken, query);
         Long count = userLoginDAO.count( query );
 
         if ( count == null )
@@ -130,16 +132,6 @@ public class AccountServiceImpl implements AccountService {
         return new CoreResponse< Boolean >().error( En_ResultStatus.INTERNAL_ERROR );
     }
 
-//    @Override
-//    public CoreResponse< List< UserRole > > roleList() {
-//        List< UserRole > list = userRoleDAO.getAll();
-//
-//        if (list == null)
-//            new CoreResponse< List< UserRole > >().error( En_ResultStatus.GET_DATA_ERROR );
-//
-//        return new CoreResponse< List< UserRole > >().success( list );
-//    }
-
     private boolean isValidLogin( UserLogin userLogin ) {
         return HelperFunc.isNotEmpty( userLogin.getUlogin() )
                 && userLogin.getPersonId() != null;
@@ -154,7 +146,7 @@ public class AccountServiceImpl implements AccountService {
     private void applyFilterByScope( AuthToken token, AccountQuery query ) {
         UserSessionDescriptor descriptor = authService.findSession( token );
 
-        if ( !descriptor.isGrantAccess() && descriptor.hasScopeFor( En_Scope.ROLE ) ) {
+        if ( policyService.hasScopeFor( descriptor.getLogin().getRoles(), En_Scope.ROLE ) ) {
             query.setRoleIds(
                     Optional.ofNullable( descriptor.getLogin().getRoles())
                             .orElse( Collections.emptySet() )
