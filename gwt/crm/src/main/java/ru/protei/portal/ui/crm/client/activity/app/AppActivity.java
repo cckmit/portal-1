@@ -4,7 +4,9 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -13,6 +15,8 @@ import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.ui.common.client.common.PageService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
+import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.PingServiceAsync;
 import ru.protei.portal.ui.crm.client.widget.localeselector.LocaleImage;
 import ru.protei.winter.web.common.client.events.MenuEvents;
 
@@ -43,7 +47,6 @@ public abstract class AppActivity
 
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
-        this.authEvent = event;
         init.parent.clear();
         init.parent.add( view.asWidget() );
 
@@ -58,6 +61,8 @@ public abstract class AppActivity
                 History.newItem( initialToken );
             }
         } );
+
+        startPingServerTimer();
     }
 
     @Override
@@ -101,13 +106,38 @@ public abstract class AppActivity
         Window.Location.replace( newHref );
     }
 
-    @Inject
-    AbstractAppView view;
+    private void pingServer() {
+        pingService.ping( new AsyncCallback<Void>() {
+            @Override
+            public void onFailure( Throwable caught ) {
+                fireEvent( new NotifyEvents.Show( lang.messageServerConnectionLost() ) );
+            }
+            @Override
+            public void onSuccess( Void result ) {}
+        } );
+    }
+
+    private void startPingServerTimer() {
+        pingTimer.cancel();
+        pingTimer.scheduleRepeating( 6000 );
+    }
 
     @Inject
+    AbstractAppView view;
+    @Inject
     PageService pageService;
+    @Inject
+    PingServiceAsync pingService;
+    @Inject
+    Lang lang;
 
     String initialToken;
     private AppEvents.Init init;
-    private AuthEvents.Success authEvent;
+
+    private Timer pingTimer = new Timer() {
+        @Override
+        public void run() {
+            pingServer();
+        }
+    };
 }

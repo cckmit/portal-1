@@ -44,6 +44,7 @@ public class UserLoginDAO_Impl extends PortalBaseJdbcDAO<UserLogin> implements U
         SqlCondition where = createSqlCondition( query );
 
         JdbcQueryParameters parameters = new JdbcQueryParameters();
+        boolean distinct = false;
 
         if ( where.isConditionDefined() ) {
             parameters.withCondition(where.condition, where.args);
@@ -51,12 +52,15 @@ public class UserLoginDAO_Impl extends PortalBaseJdbcDAO<UserLogin> implements U
 
         String join = "";
         if ( StringUtils.isNotEmpty( query.getSearchString() ) ) {
-            join += "LEFT JOIN person ON user_login.personId = person.id";
+            distinct = true;
+            join += " LEFT JOIN person ON user_login.personId = person.id";
         }
         if ( query.getRoleIds() != null ) {
-            join += " LEFT JOIN login_role_item ON user_login.id = login_role_item.login_id";
+            distinct = true;
+            join += " LEFT JOIN login_role_item LR ON user_login.id = LR.login_id";
         }
 
+        parameters.withDistinct( distinct );
         parameters.withJoins( join );
         parameters.withOffset( query.getOffset() );
         parameters.withLimit( query.getLimit() );
@@ -70,7 +74,7 @@ public class UserLoginDAO_Impl extends PortalBaseJdbcDAO<UserLogin> implements U
         boolean distinct = false;
 
         if ( StringUtils.isNotEmpty( query.getSearchString() ) ) {
-            join += "LEFT JOIN person ON user_login.personId = person.id";
+            join += " LEFT JOIN person ON user_login.personId = person.id";
             distinct = true;
         }
         if ( query.getRoleIds() != null ) {

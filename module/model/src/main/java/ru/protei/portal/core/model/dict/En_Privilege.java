@@ -73,6 +73,7 @@ public enum En_Privilege {
     private final En_PrivilegeAction action;
 
     public final static En_Privilege [] DEFAULT_SCOPE_PRIVILEGES = {
+            ISSUE_COMPANY_EDIT,
             ISSUE_PRODUCT_EDIT,
             ISSUE_MANAGER_EDIT,
             ISSUE_PRIVACY_VIEW,

@@ -5,6 +5,7 @@ import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.ui.common.client.animation.NotifyAnimation;
+import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 
 /**
@@ -13,15 +14,20 @@ import ru.protei.portal.ui.common.client.events.NotifyEvents;
 public abstract class NotifyActivity
         implements Activity, AbstractNotifyActivity {
 
+
     @Event
     public void onInit(NotifyEvents.Init event) {
-        event.parent.clear();
+        this.init = event;
         animation.setWrapper(event.parent);
     }
 
     @Event
-    public void onShow( NotifyEvents.Show event ) {
+    public void onAuthSuccess( AuthEvents.Success event ) {
+        init.parent.clear();
+    }
 
+    @Event
+    public void onShow( NotifyEvents.Show event ) {
         AbstractNotifyView view = provider.get();
         view.setActivity(this);
 
@@ -40,4 +46,6 @@ public abstract class NotifyActivity
     NotifyAnimation animation;
     @Inject
     Provider<AbstractNotifyView > provider;
+
+    private NotifyEvents.Init init;
 }
