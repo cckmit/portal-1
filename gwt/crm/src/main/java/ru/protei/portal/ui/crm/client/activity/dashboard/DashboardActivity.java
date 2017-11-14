@@ -38,7 +38,7 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
 
     @Event
     public void onCreateClicked( SectionEvents.Clicked event ) {
-        if ( !UiConstants.ActionBarIdentity.DASHBOARD.equals( event.identity ) || policyService.hasPrivilegeFor( En_Privilege.ISSUE_CREATE )) {
+        if ( !UiConstants.ActionBarIdentity.DASHBOARD.equals( event.identity ) && policyService.hasPrivilegeFor( En_Privilege.ISSUE_CREATE )) {
             return;
         }
 

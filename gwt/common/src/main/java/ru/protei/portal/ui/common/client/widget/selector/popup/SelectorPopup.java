@@ -149,9 +149,9 @@ public class SelectorPopup
 
     boolean searchVisible = false;
     @UiField
-    HTMLPanel childContainer;
+    public HTMLPanel childContainer;
     @UiField
-    TextBox search;
+    public TextBox search;
     @UiField
     DivElement searchContainer;
     @UiField
