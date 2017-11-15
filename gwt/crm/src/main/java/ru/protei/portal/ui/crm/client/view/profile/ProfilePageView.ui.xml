@@ -17,7 +17,7 @@
                         <h4>
                             <g:InlineLabel ui:field="name"/>
                             <small ui:field="company"/>
-                            <small ui:field="role"/>
+                            <!--small ui:field="role"/-->
                         </h4>
                         <div class="grid grid-indent">
                             <div class="col-xs-12">

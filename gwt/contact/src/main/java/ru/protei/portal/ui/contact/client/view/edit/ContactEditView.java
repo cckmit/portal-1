@@ -184,6 +184,11 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
         return saveButton;
     }
 
+    @Override
+    public HasEnabled companyEnabled () {
+        return company;
+    }
+
     @UiHandler( "saveButton" )
     public void onSaveClicked( ClickEvent event ) {
         if ( activity != null ) {

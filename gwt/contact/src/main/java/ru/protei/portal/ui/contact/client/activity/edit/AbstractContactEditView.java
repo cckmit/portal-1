@@ -1,9 +1,6 @@
 package ru.protei.portal.ui.contact.client.activity.edit;
 
-import com.google.gwt.user.client.ui.HasText;
-import com.google.gwt.user.client.ui.HasValue;
-import com.google.gwt.user.client.ui.HasVisibility;
-import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.common.NameStatus;
@@ -71,4 +68,6 @@ public interface AbstractContactEditView extends IsWidget {
     void showInfo( boolean isShow );
 
     HasVisibility saveVisibility();
+
+    HasEnabled companyEnabled ();
 }

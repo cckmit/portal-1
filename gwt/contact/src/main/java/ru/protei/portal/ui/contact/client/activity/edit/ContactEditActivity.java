@@ -209,6 +209,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
 
     private void fillView(Person person, UserLogin userLogin){
         view.company().setValue(person.getCompany() == null ? null : person.getCompany().toEntityOption());
+        view.companyEnabled().setEnabled(person.getId() == null);
         view.gender().setValue(person.getGender());
         view.firstName().setValue(person.getFirstName());
         view.lastName().setValue(person.getLastName());
