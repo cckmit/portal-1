@@ -1,7 +1,8 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:validablefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'
-             xmlns:list="urn:import:ru.protei.portal.ui.common.client.widget.privilege.list">
+             xmlns:list="urn:import:ru.protei.portal.ui.common.client.widget.privilege.list"
+             xmlns:widget="urn:import:ru.protei.portal.ui.role.client.widget">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
@@ -9,7 +10,7 @@
         <div class="panel panel-default">
             <div class="body">
                 <div class="grid grid-indent">
-                    <div class="form-group col-xs-4">
+                    <div class="form-group col-xs-3">
                         <label>
                             <ui:text from="{lang.roleName}"/>
                         </label>
@@ -17,19 +18,30 @@
                         <validablefield:ValidableTextBox ui:field="name" styleName="input-field" notNull="true"/>
 
                     </div>
-                    <div class="form-group col-xs-8">
+                    <div class="form-group col-xs-5">
                         <label >
                             <ui:text from="{lang.roleDescription}"/>
                         </label>
                         <g:TextBox ui:field="description" styleName="input-field"/>
                     </div>
 
-                    <div class="form-group col-xs-12">
+                    <div class="form-group col-xs-4">
                         <label >
+                            <ui:text from="{lang.roleScope}"/>
+                        </label>
+                        <div>
+                            <widget:ScopeBtnGroupMulti ui:field="scope"/>
+                        </div>
+                    </div>
+
+                    <div class="form-group col-xs-12">
+                        <label>
                             <ui:text from="{lang.rolePrivileges}"/>
                         </label>
                         <list:PrivilegeList ui:field="privileges"/>
                     </div>
+
+
                 </div>
             </div>
             <div class="footer">

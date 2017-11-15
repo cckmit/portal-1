@@ -205,7 +205,6 @@ public abstract class IssueTableActivity
         query.setType( En_CaseType.CRM_SUPPORT );
         query.setSortField( filterView.sortField().getValue() );
         query.setSortDir( filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC );
-        query.setPrivateAccess(isPrivateAccess);
 
         String value = filterView.searchPattern().getValue();
 
@@ -223,7 +222,7 @@ public abstract class IssueTableActivity
             }
         }
 
-        query.setCompanyId( getFilterCompanyId() );
+        query.setCompanyId( filterView.company().getValue() == null ? null : filterView.company().getValue().getId() );
         query.setProductId( filterView.product().getValue() == null ? null : filterView.product().getValue().getId() );
         query.setManagerId( filterView.manager().getValue() == null ? null : filterView.manager().getValue().getId() );
 
@@ -252,25 +251,9 @@ public abstract class IssueTableActivity
     }
 
     private void applyFilterViewPrivileges() {
-        filterView.companyEnabled().setEnabled( policyService.hasPrivilegeFor( En_Privilege.ISSUE_COMPANY_EDIT ) );
-        filterView.productEnabled().setEnabled( policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRODUCT_EDIT ) );
-        filterView.managerEnabled().setEnabled( policyService.hasPrivilegeFor( En_Privilege.ISSUE_MANAGER_EDIT ) );
-
-        if ( !policyService.hasPrivilegeFor( En_Privilege.ISSUE_COMPANY_EDIT ) ) {
-            Company userCompany = policyService.getUserCompany();
-            filterView.company().setValue(userCompany == null ? null : userCompany.toEntityOption());
-        }
-
-        isPrivateAccess = policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRIVACY_VIEW );
-    }
-
-    private Long getFilterCompanyId() {
-        if ( !policyService.hasPrivilegeFor( En_Privilege.ISSUE_COMPANY_EDIT ) ) {
-            Company userCompany = policyService.getUserCompany();
-            return userCompany == null ? null : userCompany.getId();
-        }
-
-        return filterView.company().getValue() == null ? null : filterView.company().getValue().getId();
+        filterView.companyVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_COMPANY_VIEW ) );
+        filterView.productVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_PRODUCT_VIEW ) );
+        filterView.managerVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_MANAGER_VIEW ) );
     }
 
     @Inject
@@ -303,5 +286,4 @@ public abstract class IssueTableActivity
     private AppEvents.InitDetails initDetails;
 
     private final RegExp caseNoPattern = RegExp.compile("\\d+");
-    private boolean isPrivateAccess = true;
 }

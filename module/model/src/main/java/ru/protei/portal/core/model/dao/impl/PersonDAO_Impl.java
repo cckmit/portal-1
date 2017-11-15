@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.CompanyGroupHomeDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
+import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.CompanyHomeGroupItem;
 import ru.protei.portal.core.model.ent.Person;
@@ -88,11 +89,7 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
     }
 
     private boolean ifPersonIsEmployee(final Person employee) {
-        return homeGroupCache.exists(new EntitySelector<CompanyHomeGroupItem>() {
-            public boolean matches(CompanyHomeGroupItem entity) {
-                return employee.getCompanyId().equals(entity.getCompanyId());
-            }
-        });
+        return homeGroupCache.exists( entity -> employee.getCompanyId().equals(entity.getCompanyId()) );
     }
 
     @Override
@@ -122,18 +119,15 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
     private StringBuilder buildHomeCompanyFilter(boolean inverse) {
         final StringBuilder expr = new StringBuilder();
 
-        homeGroupCache.walkThrough(new EntityCache.Visitor<CompanyHomeGroupItem>() {
-            @Override
-            public void visitEntry(long idx, CompanyHomeGroupItem item) {
-                if (idx == 0) {
-                    expr.append("company_id ").append(inverse ? "not in" : "in").append (" (");
-                }
-                else
-                    expr.append(",");
-
-                expr.append(item.getCompanyId());
+        homeGroupCache.walkThrough( ( idx, item ) -> {
+            if (idx == 0) {
+                expr.append("company_id ").append(inverse ? "not in" : "in").append (" (");
             }
-        });
+            else
+                expr.append(",");
+
+            expr.append(item.getCompanyId());
+        } );
 
         if (expr.length() > 0)
             expr.append(")");
@@ -211,6 +205,11 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
                 args.add(likeArg);
                 args.add(likeArg);
             }
+
+            if (query.getOnlyPeople() != null) {
+                condition.append(" and Person.sex != ?");
+                args.add( En_Gender.UNDEFINED.getCode() );
+            }
         });
     }
 
@@ -231,6 +230,16 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
 
                 args.add(likeArg);
                 args.add(likeArg);
+            }
+
+            if (query.getFired() != null) {
+                condition.append(" and Person.isfired=?");
+                args.add(query.getFired() ? 1 : 0);
+            }
+
+            if (query.getOnlyPeople() != null) {
+                condition.append(" and Person.sex != ?");
+                args.add( En_Gender.UNDEFINED.getCode() );
             }
         });
     }

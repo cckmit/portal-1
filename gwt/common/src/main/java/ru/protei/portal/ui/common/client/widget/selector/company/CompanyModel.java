@@ -4,7 +4,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.En_CompanyCategory;
-import ru.protei.portal.core.model.ent.CompanyCategory;
+import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.CompanyEvents;
@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Модель селектора компаний
@@ -26,29 +27,29 @@ public abstract class CompanyModel implements Activity {
 
     @Event
     public void onInit( AuthEvents.Success event ) {
-        notifySubscribers();
+        refreshOptions();
     }
 
     @Event
     public void onCompanyListChanged( CompanyEvents.ChangeModel event ) {
-        notifySubscribers();
+        refreshOptions();
     }
 
     public void subscribe(ModelSelector<EntityOption> selector, List<En_CompanyCategory> categories) {
         subscribers.add( selector );
-        selectorToCategories.put(selector, categories);
-        refreshOptions(selector, categories);
+        CompanyQuery query = makeQuery( categories );
+        selectorToQuery.put(selector, query);
+        requestOptions(selector, query);
     }
 
-    private void notifySubscribers() {
+    private void refreshOptions() {
         for ( ModelSelector< EntityOption > selector : subscribers ) {
-            List<En_CompanyCategory> categories = selectorToCategories.get(selector);
-            refreshOptions(selector, categories);
+            requestOptions(selector, selectorToQuery.get(selector));
         }
     }
 
-    private void refreshOptions(ModelSelector<EntityOption> selector, List<En_CompanyCategory> categories) {
-        companyService.getCompanyOptionList(categories, new RequestCallback<List<EntityOption>>() {
+    private void requestOptions( ModelSelector<EntityOption> selector, CompanyQuery query ) {
+        companyService.getCompanyOptionList(query, new RequestCallback<List<EntityOption>>() {
             @Override
             public void onError( Throwable throwable ) {
                 fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
@@ -64,6 +65,17 @@ public abstract class CompanyModel implements Activity {
         } );
     }
 
+    private CompanyQuery makeQuery(List<En_CompanyCategory> categories) {
+        CompanyQuery query = new CompanyQuery();
+        if(categories != null) {
+            query.setCategoryIds(
+                    categories.stream()
+                            .map( En_CompanyCategory:: getId )
+                            .collect( Collectors.toList() ) );
+        }
+        return query;
+    }
+
     @Inject
     CompanyServiceAsync companyService;
 
@@ -71,9 +83,7 @@ public abstract class CompanyModel implements Activity {
     Lang lang;
 
     private List< EntityOption > list = new ArrayList<>();
-
-    Map<ModelSelector< EntityOption >, List<En_CompanyCategory>> selectorToCategories = new HashMap<>();
-
-    List< ModelSelector< EntityOption > > subscribers = new ArrayList<>();
+    private Map<ModelSelector< EntityOption >, CompanyQuery> selectorToQuery = new HashMap<>();
+    private List< ModelSelector< EntityOption > > subscribers = new ArrayList<>();
 
 }

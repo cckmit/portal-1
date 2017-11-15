@@ -23,7 +23,7 @@ public interface CompanyService {
     CoreResponse<Long> countCompanies (CompanyQuery query);
     CoreResponse<Long> countGroups (CompanyGroupQuery query);
 
-    CoreResponse<List<EntityOption>> companyOptionList(List<En_CompanyCategory> categories);
+    CoreResponse<List<EntityOption>> companyOptionList(AuthToken token, CompanyQuery query);
 
     @Privileged( En_Privilege.COMPANY_VIEW )
     CoreResponse<List<Company>> companyList(AuthToken token, CompanyQuery query);

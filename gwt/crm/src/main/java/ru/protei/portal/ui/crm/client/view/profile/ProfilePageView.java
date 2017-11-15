@@ -2,6 +2,7 @@ package ru.protei.portal.ui.crm.client.view.profile;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -56,6 +57,11 @@ public class ProfilePageView extends Composite implements AbstractProfilePageVie
     }
 
     @Override
+    public void setCompany( String value ) {
+        this.company.setInnerText( value );
+    }
+
+    @Override
     public void setRoles( String value ) {
         this.role.setInnerText( value );
     }
@@ -63,6 +69,11 @@ public class ProfilePageView extends Composite implements AbstractProfilePageVie
     @Override
     public HasVisibility saveButtonVisibility() {
         return saveButton;
+    }
+
+    @Override
+    public void setIcon( String iconSrc ) {
+        this.icon.setSrc( iconSrc );
     }
 
     @UiHandler( "saveButton" )
@@ -84,6 +95,10 @@ public class ProfilePageView extends Composite implements AbstractProfilePageVie
     Element role;
     @UiField
     Button saveButton;
+    @UiField
+    Element company;
+    @UiField
+    ImageElement icon;
 
     @Inject
     FixedPositioner positioner;

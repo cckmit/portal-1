@@ -2,6 +2,7 @@ package ru.protei.portal.ui.issue.client.view.comment.item;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.LIElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -106,6 +107,11 @@ public class IssueCommentItemView
         options.removeFromParent();
     }
 
+    @Override
+    public void setIcon( String iconSrc ) {
+        this.icon.setSrc( iconSrc );
+    }
+
     @UiHandler( "remove" )
     public void onRemoveClicked( ClickEvent event ) {
         event.preventDefault();
@@ -162,6 +168,8 @@ public class IssueCommentItemView
     LIElement status;
     @UiField
     LIElement options;
+    @UiField
+    ImageElement icon;
     @Inject
     En_CaseStateLang stateLang;
 

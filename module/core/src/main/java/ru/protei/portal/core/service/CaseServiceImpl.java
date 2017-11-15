@@ -10,9 +10,7 @@ import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.event.CaseCommentEvent;
 import ru.protei.portal.core.event.CaseObjectEvent;
 import ru.protei.portal.core.model.dao.*;
-import ru.protei.portal.core.model.dict.En_CaseState;
-import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseQuery;
@@ -62,7 +60,7 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     public CoreResponse<List<CaseShortView>> caseObjectList( AuthToken token, CaseQuery query ) {
-
+        applyFilterByScope( token, query );
         List<CaseShortView> list = caseShortViewDAO.getCases( query );
 
         if ( list == null )
@@ -95,6 +93,7 @@ public class CaseServiceImpl implements CaseService {
         Date now = new Date();
         caseObject.setCreated(now);
         caseObject.setModified(now);
+        applyCaseByScope( token, caseObject );
 
         Long caseId = caseObjectDAO.insertCase(caseObject);
 
@@ -119,6 +118,7 @@ public class CaseServiceImpl implements CaseService {
 
         return new CoreResponse<CaseObject>().success( caseObject );
     }
+
 
     @Override
     @Transactional
@@ -325,7 +325,7 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     public CoreResponse<Long> count( AuthToken token, CaseQuery query ) {
-
+        applyFilterByScope( token, query );
         Long count = caseObjectDAO.count(query);
 
         if (count == null)
@@ -396,6 +396,25 @@ public class CaseServiceImpl implements CaseService {
     @Override
     public boolean isExistsAttachments(Long caseId) {
         return caseAttachmentDAO.checkExistsByCondition("case_id = ?", caseId);
+    }
+
+    private void applyFilterByScope( AuthToken token, CaseQuery query ) {
+        UserSessionDescriptor descriptor = authService.findSession( token );
+        Set< UserRole > roles = descriptor.getLogin().getRoles();
+        if ( !policyService.isGrantAccess( roles ) && policyService.hasScopeFor( roles, En_Scope.COMPANY ) ) {
+            query.setCompanyId( descriptor.getCompany() == null ? null : descriptor.getCompany().getId() );
+            query.setPrivateAccess( false );
+        }
+    }
+
+    private void applyCaseByScope( AuthToken token, CaseObject caseObject ) {
+        UserSessionDescriptor descriptor = authService.findSession( token );
+        Set< UserRole > roles = descriptor.getLogin().getRoles();
+        if ( !policyService.isGrantAccess( roles ) && policyService.hasScopeFor( roles, En_Scope.COMPANY ) ) {
+            caseObject.setPrivateCase( false );
+            caseObject.setInitiatorCompany( descriptor.getCompany() );
+            caseObject.setManagerId( null );
+        }
     }
 
     private boolean isChangeAvailable (Date date ) {

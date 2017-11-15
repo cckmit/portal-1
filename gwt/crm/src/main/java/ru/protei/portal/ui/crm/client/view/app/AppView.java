@@ -2,6 +2,7 @@ package ru.protei.portal.ui.crm.client.view.app;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.AnchorElement;
+import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.ParagraphElement;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -37,9 +38,10 @@ public class AppView extends Composite
     }
 
     @Override
-    public void setUsername( String username, String role ) {
+    public void setUser( String username, String company, String iconSrc ) {
         this.username.setInnerText( username );
-        this.role.setInnerText( role );
+        this.company.setInnerText( company );
+        this.icon.setSrc( iconSrc );
     }
 
     @Override
@@ -134,13 +136,15 @@ public class AppView extends Composite
     @UiField
     ParagraphElement username;
     @UiField
-    AnchorElement role;
+    AnchorElement company;
     @UiField
     HTMLPanel menuContainer;
     @UiField
     HTMLPanel actionBarContainer;
     @UiField
     HTMLPanel userPanel;
+    @UiField
+    ImageElement icon;
 
     AbstractAppActivity activity;
 

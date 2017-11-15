@@ -13,9 +13,11 @@ import ru.protei.portal.core.model.dict.En_PrivilegeAction;
 import ru.protei.portal.core.model.dict.En_PrivilegeEntity;
 import ru.protei.portal.ui.common.client.lang.En_PrivilegeActionLang;
 import ru.protei.portal.ui.common.client.lang.En_PrivilegeEntityLang;
+import ru.protei.portal.ui.common.client.widget.optionlist.base.ModelList;
 import ru.protei.portal.ui.common.client.widget.privilege.entity.PrivilegeEntity;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -24,12 +26,12 @@ import java.util.Set;
  */
 public class PrivilegeList 
         extends Composite 
-        implements HasValue<Set<En_Privilege>> {
+        implements HasValue<Set<En_Privilege>>, ModelList<En_Privilege> {
 
     @Inject
-    public void onInit() {
+    public void onInit( PrivilegeModel model ) {
         initWidget( ourUiBinder.createAndBindUi( this ) );
-        buildWidget();
+        model.subscribe( this );
     }
 
     @Override
@@ -56,7 +58,13 @@ public class PrivilegeList
         return addHandler( handler, ValueChangeEvent.getType() );
     }
 
-    private void buildWidget() {
+    @Override
+    public void fillOptions( List< En_Privilege > items ) {
+        buildWidget( items );
+    }
+
+    private void buildWidget( List< En_Privilege > privileges ) {
+        container.clear();
         fillActionHeaders();
 
         for ( En_PrivilegeEntity entity : En_PrivilegeEntity.values() ) {
@@ -66,11 +74,12 @@ public class PrivilegeList
 
             for ( En_PrivilegeAction action : En_PrivilegeAction.values() ) {
                 En_Privilege privilege = En_Privilege.findPrivilege( entity, action );
+
                 ToggleButton privilegeItem = new ToggleButton();
                 privilegeItem.setStyleName( "btn privilege-btn" );
 
                 entityItem.getContainer().add( privilegeItem.asWidget() );
-                if ( privilege == null ) {
+                if ( privilege == null || !privileges.contains( privilege ) ) {
                     privilegeItem.setEnabled( false );
                 } else {
                     modelToView.put( privilege, privilegeItem );

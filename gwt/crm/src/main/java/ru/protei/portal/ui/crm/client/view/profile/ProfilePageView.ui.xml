@@ -10,12 +10,13 @@
                 <div class="profile-section">
                     <div class="profile-left">
                         <div class="profile-image">
-                            <img src="./images/user-icon-m.png"/>
+                            <img src="./images/user-icon-m.png" ui:field="icon"/>
                         </div>
                     </div>
                     <div class="profile-right">
                         <h4>
                             <g:InlineLabel ui:field="name"/>
+                            <small ui:field="company"/>
                             <small ui:field="role"/>
                         </h4>
                         <div class="grid grid-indent">

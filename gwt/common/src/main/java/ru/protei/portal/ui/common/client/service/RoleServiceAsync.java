@@ -3,6 +3,7 @@ package ru.protei.portal.ui.common.client.service;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.query.UserRoleQuery;
+import ru.protei.portal.core.model.view.EntityOption;
 
 import java.util.List;
 
@@ -12,6 +13,8 @@ import java.util.List;
 public interface RoleServiceAsync {
 
     void getRoles( UserRoleQuery query, AsyncCallback< List< UserRole > > async );
+
+    void getRolesOptionList( UserRoleQuery query, AsyncCallback< List< EntityOption > > async );
 
     void getRole( Long id, AsyncCallback< UserRole > async );
 

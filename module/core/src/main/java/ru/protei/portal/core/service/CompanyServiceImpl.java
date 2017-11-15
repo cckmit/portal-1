@@ -15,6 +15,7 @@ import ru.protei.portal.core.model.query.CompanyGroupQuery;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.service.user.AuthService;
 import ru.protei.winter.core.utils.collections.CollectionUtils;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
@@ -46,6 +47,9 @@ public class CompanyServiceImpl implements CompanyService {
     @Autowired
     PolicyService policyService;
 
+    @Autowired
+    AuthService authService;
+
     @Override
     public CoreResponse<Long> countCompanies(CompanyQuery query) {
         return new CoreResponse<Long>().success(companyDAO.count(query));
@@ -58,8 +62,9 @@ public class CompanyServiceImpl implements CompanyService {
 
 
     @Override
-    public CoreResponse<List<EntityOption>> companyOptionList(List<En_CompanyCategory> categories) {
-        List<Company> list = companyDAO.getListByQuery(new CompanyQuery());
+    public CoreResponse<List<EntityOption>> companyOptionList(AuthToken token, CompanyQuery query) {
+        List<Company> list = getCompanyList(token, query);
+
 
         if (list == null)
             new CoreResponse<List<EntityOption>>().error(En_ResultStatus.GET_DATA_ERROR);
@@ -67,6 +72,17 @@ public class CompanyServiceImpl implements CompanyService {
         List<EntityOption> result = list.stream().map(Company::toEntityOption).collect(Collectors.toList());
 
         return new CoreResponse<List<EntityOption>>().success(result,result.size());
+    }
+
+    @Override
+    public CoreResponse<List<Company>> companyList( AuthToken token, CompanyQuery query ) {
+
+        List<Company> list = getCompanyList(token, query);
+
+        if (list == null)
+            new CoreResponse<List<Company>>().error(En_ResultStatus.GET_DATA_ERROR);
+
+        return new CoreResponse<List<Company>>().success(list);
     }
 
     @Override
@@ -108,16 +124,6 @@ public class CompanyServiceImpl implements CompanyService {
         return new CoreResponse<T>().error(En_ResultStatus.INTERNAL_ERROR);
     }
 
-    @Override
-    public CoreResponse<List<Company>> companyList( AuthToken token, CompanyQuery query ) {
-
-        List<Company> list = companyDAO.getListByQuery(query);
-
-        if (list == null)
-            new CoreResponse<List<Company>>().error(En_ResultStatus.GET_DATA_ERROR);
-
-        return new CoreResponse<List<Company>>().success(list);
-    }
 
     @Override
     public CoreResponse<List<EntityOption>> groupOptionList() {
@@ -292,6 +298,17 @@ public class CompanyServiceImpl implements CompanyService {
                 !checkGroupExists(group.getName(), group.getId());
     }
 
+    private List<Company> getCompanyList(AuthToken token, CompanyQuery query) {
+        UserSessionDescriptor descriptor = authService.findSession( token );
+        Set< UserRole > roles = descriptor.getLogin().getRoles();
+        if ( !policyService.isGrantAccess( roles ) && policyService.hasScopeFor( roles, En_Scope.COMPANY ) ) {
+            Company company = companyDAO.get( descriptor.getCompany().getId() );
+            // TODO: need filter by query?
+            return Arrays.asList( company );
+        } else {
+            return companyDAO.getListByQuery(query);
+        }
+    }
 
 
     private boolean checkCompanyExists (String name, Long excludeId) {

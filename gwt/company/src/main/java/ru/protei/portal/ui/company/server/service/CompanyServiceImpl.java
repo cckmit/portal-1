@@ -129,11 +129,11 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public List< EntityOption > getCompanyOptionList(List<En_CompanyCategory> categories) throws RequestFailedException {
-
+    public List< EntityOption > getCompanyOptionList(CompanyQuery query) throws RequestFailedException {
         log.debug( "getCompanyOptionList()" );
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse< List< EntityOption > > result = companyService.companyOptionList(categories);
+        CoreResponse< List< EntityOption > > result = companyService.companyOptionList( descriptor.makeAuthToken(), query);
 
         log.debug( "result status: {}, data-amount: {}", result.getStatus(), result.isOk() ? result.getDataAmountTotal() : 0 );
 
@@ -193,6 +193,19 @@ public class CompanyServiceImpl implements CompanyService {
         }
 
         return companySubscriptionResult.getData();
+    }
+
+    @Override
+    public List< CompanySubscription > getCompanySubscription( Long companyId ) throws RequestFailedException {
+        log.debug( "getCompanySubscription()" );
+
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+        CoreResponse< List< CompanySubscription > > result = companyService.getCompanySubscriptions( descriptor.getCompany().getId() );
+
+        if ( result.isError() ) {
+            throw new RequestFailedException( result.getStatus() );
+        }
+        return result.getData();
     }
 
     private UserSessionDescriptor getDescriptorAndCheckSession() throws RequestFailedException {

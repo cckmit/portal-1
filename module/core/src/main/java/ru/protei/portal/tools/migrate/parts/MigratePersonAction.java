@@ -5,10 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.core.model.dao.*;
-import ru.protei.portal.core.model.dict.En_AdminState;
-import ru.protei.portal.core.model.dict.En_AuthType;
-import ru.protei.portal.core.model.dict.En_Gender;
-import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.ent.UserRole;
@@ -131,16 +128,16 @@ public class MigratePersonAction implements MigrateAction {
             En_Privilege.ISSUE_EXPORT,
             En_Privilege.ISSUE_VIEW,
             En_Privilege.ISSUE_REPORT,
-            En_Privilege.ISSUE_COMPANY_EDIT,
-            En_Privilege.ISSUE_PRODUCT_EDIT,
-            En_Privilege.ISSUE_MANAGER_EDIT,
-            En_Privilege.ISSUE_PRIVACY_VIEW,
             En_Privilege.DASHBOARD_VIEW,
-            En_Privilege.DASHBOARD_ALL_COMPANIES_VIEW,
             En_Privilege.CONTACT_VIEW,
             En_Privilege.COMMON_PROFILE_VIEW,
             En_Privilege.COMPANY_VIEW
     };
+
+    private final static En_Scope [] DEF_EMPL_SCOPE = {
+            En_Scope.ROLE
+    };
+
 
     @Override
     public void migrate(Connection sourceConnection) throws SQLException {
@@ -151,7 +148,7 @@ public class MigratePersonAction implements MigrateAction {
             public void afterInsert(List<Person> insertedEntries) {
                 List<UserLogin> loginBatch = new ArrayList<>();
 
-                UserRole employeeRole = userRoleDAO.ensureExists(EMPLOYEE_ROLE_CODE, DEF_EMPL_PRIV);
+                UserRole employeeRole = userRoleDAO.ensureExists(EMPLOYEE_ROLE_CODE, DEF_EMPL_SCOPE, DEF_EMPL_PRIV);
 
                 Set<UserRole> roles = new HashSet<>();
                 roles.add(employeeRole);

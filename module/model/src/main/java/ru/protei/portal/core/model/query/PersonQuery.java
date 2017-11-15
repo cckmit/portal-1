@@ -10,17 +10,22 @@ import ru.protei.portal.core.model.view.EntityOption;
 public class PersonQuery extends BaseQuery {
     private Long companyId;
 
+    private Boolean onlyPeople;
+
+    private Boolean fired;
+
     public PersonQuery() {
         super( "", En_SortField.person_full_name, En_SortDir.ASC );
     }
 
-    public PersonQuery( EntityOption company, String searchString, En_SortField sortField, En_SortDir sortDir ) {
-        this ( company == null ? null : company.getId(), searchString, sortField, sortDir );
+    public PersonQuery( EntityOption company, Boolean onlyPeople, Boolean fired, String searchString, En_SortField sortField, En_SortDir sortDir ) {
+        this ( company == null ? null : company.getId(), onlyPeople, fired, searchString, sortField, sortDir );
     }
 
-    public PersonQuery( Long companyId, String searchString, En_SortField sortField, En_SortDir sortDir ) {
+    public PersonQuery( Long companyId, Boolean onlyPeople, Boolean fired, String searchString, En_SortField sortField, En_SortDir sortDir ) {
         super(searchString, sortField, sortDir);
         this.companyId = companyId;
+        this.onlyPeople = onlyPeople;
         this.limit = 1000;
     }
 
@@ -32,10 +37,27 @@ public class PersonQuery extends BaseQuery {
         this.companyId = companyId;
     }
 
+    public Boolean getOnlyPeople() {
+        return onlyPeople;
+    }
+
+    public void setOnlyPeople( Boolean onlyPeople ) {
+        this.onlyPeople = onlyPeople;
+    }
+
+    public Boolean getFired() {
+        return fired;
+    }
+
+    public void setFired( Boolean fired ) {
+        this.fired = fired;
+    }
+
     @Override
     public String toString() {
         return "PersonQuery{" +
                 "companyId=" + companyId +
+                "onlyPeople=" + onlyPeople +
                 '}';
     }
 }

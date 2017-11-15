@@ -9,6 +9,7 @@ import ru.protei.portal.core.model.ent.CompanySubscription;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
+import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.List;
 
@@ -65,9 +66,8 @@ public interface CompanyService extends RemoteService {
     /**
      * Получение списка сокращенного представления компании (name,id)
      * @return
-     * @param categories
      */
-    List< EntityOption > getCompanyOptionList(List<En_CompanyCategory> categories) throws RequestFailedException;
+    List< EntityOption > getCompanyOptionList(CompanyQuery query) throws RequestFailedException;
 
     /**
      * Получение списка сокращенного представления группы компаний (name,id)
@@ -87,4 +87,11 @@ public interface CompanyService extends RemoteService {
      * @param value
      */
     List<CompanySubscription> updateSelfCompanySubscription( List< CompanySubscription > value ) throws RequestFailedException;
+
+    /**
+     * Получение список рассылок по компании
+     *
+     * @param companyId
+     */
+    List<CompanySubscription> getCompanySubscription( Long companyId ) throws RequestFailedException;
 }

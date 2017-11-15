@@ -2,10 +2,10 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'>
     <g:HTMLPanel ui:field="root" tag="li">
         <g:Anchor ui:field="anchor" href='#'>
+            <img ui:field="image" src="" class="hide"/>
             <i ui:field="icon"/>
             <span ui:field="text"/>
             <link rel="icon"/>
-            <img ui:field="image" src="" class="hide"/>
         </g:Anchor>
     </g:HTMLPanel>
 </ui:UiBinder>

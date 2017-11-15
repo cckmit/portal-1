@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dict.En_Scope;
 import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.ui.common.server.service.SessionService;
@@ -15,8 +16,9 @@ import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.crm.client.service.AuthService;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+
+import static java.util.stream.Collectors.toSet;
 
 /**
  * Сервис авторизации
@@ -61,11 +63,20 @@ public class AuthServiceImpl implements AuthService {
         profile.setRoles( roles );
         profile.setLogin( sessionDescriptor.getLogin().getUlogin() );
         profile.setName( sessionDescriptor.getPerson().getFirstName() );
+        profile.setFullName( sessionDescriptor.getPerson().getDisplayName() );
         profile.setId( sessionDescriptor.getPerson().getId() );
         profile.setPrivileges( getAllPrivileges( roles ) );
+        profile.setGender( sessionDescriptor.getPerson().getGender() );
+        applyPrivilegesByScopes( profile.getPrivileges(), getAllScopes( roles ) );
         profile.setCompany( sessionDescriptor.getCompany() );
 
         return profile;
+    }
+
+    private void applyPrivilegesByScopes( Set< En_Privilege > privileges, Set< En_Scope > scopes ) {
+        if ( scopes.contains( En_Scope.SYSTEM ) || !scopes.contains( En_Scope.COMPANY ) ) {
+            privileges.addAll( Arrays.asList( En_Privilege.DEFAULT_SCOPE_PRIVILEGES ) );
+        }
     }
 
     private Set< En_Privilege > getAllPrivileges( Set< UserRole > roles ) {
@@ -83,6 +94,14 @@ public class AuthServiceImpl implements AuthService {
         }
 
         return privileges;
+    }
+
+    private Set< En_Scope > getAllScopes( Set<UserRole> roles ) {
+        return Optional.ofNullable( roles )
+                .orElse( Collections.emptySet() )
+                .stream()
+                .flatMap( role -> role.getScopes().stream() )
+                .collect( toSet() );
     }
 
     @Autowired

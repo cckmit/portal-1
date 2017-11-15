@@ -1,7 +1,10 @@
 package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dict.En_Scope;
 import ru.protei.portal.core.model.struct.AuditableObject;
+import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.EntityOptionSupport;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.util.HashSet;
@@ -11,7 +14,9 @@ import java.util.Set;
  * Created by michael on 16.06.16.
  */
 @JdbcEntity(table = "user_role")
-public class UserRole extends AuditableObject {
+public class UserRole extends AuditableObject implements EntityOptionSupport {
+
+
 
     @JdbcId(name = "id")
     private Long id;
@@ -23,10 +28,13 @@ public class UserRole extends AuditableObject {
     private String info;
 
     @JdbcEnumerated(EnumType.STRING)
-    @JdbcColumnCollection(name = "privileges", separator = ",")
+    @JdbcColumnCollection(separator = ",")
     private Set<En_Privilege> privileges;
 
-    public UserRole() {}
+    @JdbcEnumerated(EnumType.STRING)
+    @JdbcColumnCollection(separator = ",")
+    private  Set<En_Scope> scopes;
+
 
     public Long getId() {
         return id;
@@ -71,6 +79,39 @@ public class UserRole extends AuditableObject {
         privileges.add(privilege);
     }
 
+    public boolean hasScope( En_Scope scope ) {
+        return scopes != null && scopes.contains( scope );
+    }
+
+    public void addScope(En_Scope scope) {
+        if (scopes == null)
+            scopes = new HashSet<>();
+
+        scopes.add(scope);
+    }
+
+    public Set< En_Scope > getScopes() {
+        return scopes;
+    }
+
+    public void setScopes( Set< En_Scope > scopes ) {
+        this.scopes = scopes;
+    }
+
+    public static UserRole fromEntityOption( EntityOption entityOption){
+        if(entityOption == null)
+            return null;
+
+        UserRole userRole = new UserRole(entityOption.getId());
+        userRole.setCode(entityOption.getDisplayText());
+        return userRole;
+    }
+
+    @Override
+    public EntityOption toEntityOption() {
+        return new EntityOption(this.code, this.id);
+    }
+
     @Override
     public String getAuditType() {
         return "UserRole";
@@ -91,6 +132,12 @@ public class UserRole extends AuditableObject {
         return id != null ? id.hashCode() : 0;
     }
 
+    public UserRole() {}
+
+    public UserRole( Long id ) {
+        this.id = id;
+    }
+
     @Override
     public String toString () {
         return "UserRole{" +
@@ -98,6 +145,7 @@ public class UserRole extends AuditableObject {
                 ", code='" + code + '\'' +
                 ", info='" + info + '\'' +
                 ", privileges=" + privileges +
+                ", scope=" + scopes +
                 '}';
     }
 }

@@ -13,12 +13,15 @@ import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
+import ru.protei.portal.ui.common.client.lang.En_ScopeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.role.client.activity.table.AbstractRoleTableActivity;
 import ru.protei.portal.ui.role.client.activity.table.AbstractRoleTableView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 /**
  * Представление таблицы роли
@@ -96,7 +99,23 @@ public class RoleTableView extends Composite implements AbstractRoleTableView {
         };
         columns.add( description );
 
+        ClickColumn< UserRole > scope = new ClickColumn< UserRole >() {
+            @Override
+            protected void fillColumnHeader( Element element ) {
+                element.setInnerText( lang.roleScope() );
+            }
+
+            @Override
+            public void fillColumnValue ( Element cell, UserRole value ) {
+                cell.setInnerText( value.getScopes() == null
+                        ? ""
+                        : value.getScopes().stream().map( sc -> scopeLang.getName( sc )).collect( Collectors.joining(", ") ) );
+            }
+        };
+        columns.add( description );
+
         table.addColumn( name.header, name.values );
+        table.addColumn( scope.header, scope.values );
         table.addColumn( description.header, description.values );
         table.addColumn( editClickColumn.header, editClickColumn.values );
     }
@@ -111,15 +130,17 @@ public class RoleTableView extends Composite implements AbstractRoleTableView {
     @UiField
     HTMLPanel filterContainer;
 
-    @Inject
     @UiField
     Lang lang;
 
-    ClickColumnProvider<UserRole> columnProvider = new ClickColumnProvider<>();
-    EditClickColumn<UserRole > editClickColumn;
-    List<ClickColumn > columns = new ArrayList<>();
+    @Inject
+    private En_ScopeLang scopeLang;
 
-    AbstractRoleTableActivity activity;
+    private AbstractRoleTableActivity activity;
+
+    private ClickColumnProvider<UserRole> columnProvider = new ClickColumnProvider<>();
+    private EditClickColumn<UserRole > editClickColumn;
+    private List<ClickColumn > columns = new ArrayList<>();
 
     private static ContactTableViewUiBinder ourUiBinder = GWT.create( ContactTableViewUiBinder.class );
     interface ContactTableViewUiBinder extends UiBinder< HTMLPanel, RoleTableView > {}

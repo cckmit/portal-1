@@ -12,6 +12,7 @@ import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.ui.common.client.common.UserIconUtils;
 import ru.protei.portal.ui.common.client.events.AttachmentEvents;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.IssueEvents;
@@ -270,6 +271,7 @@ public abstract class IssueCommentListActivity
 
         itemView.setDate( DateFormatter.formatDateTime( value.getCreated() ) );
         itemView.setOwner( value.getAuthor() == null ? "Unknown" : value.getAuthor().getDisplayName() );
+        itemView.setIcon( UserIconUtils.getGenderIcon(value.getAuthor().getGender() ) );
         if ( HelperFunc.isNotEmpty( value.getText() ) ) {
             itemView.setMessage( value.getText() );
         } else {

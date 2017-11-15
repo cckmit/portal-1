@@ -1,0 +1,22 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet author="ponomareva" id="add-scope-column-to-user_role-table">
+        <addColumn tableName="user_role">
+            <column name="scopes" type="VARCHAR(1024)" defaultValue="SYSTEM">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="ponomareva" id="modify-equipment-comment-column-size">
+        <modifyDataType tableName="Equipment" columnName="comment" newDataType="VARCHAR(1024)"/>
+    </changeSet>
+
+    <changeSet author="ponomareva" id="modify-user_role-role_code-column-size">
+        <modifyDataType tableName="user_role" columnName="role_code" newDataType="VARCHAR(256)"/>
+    </changeSet>
+</databaseChangeLog>

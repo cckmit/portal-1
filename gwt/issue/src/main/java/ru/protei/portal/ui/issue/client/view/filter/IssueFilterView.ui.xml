@@ -30,17 +30,17 @@
                 </div>
             </div>
 
-            <div class="form-group col-xs-12">
-                <companyselector:CompanySelector ui:field="company" header="{lang.issueCompany}"/>
-            </div>
+            <companyselector:CompanySelector ui:field="company"
+                                             header="{lang.issueCompany}"
+                                             addStyleNames="form-group col-xs-12"/>
 
-            <div class="form-group col-xs-12">
-                <productselector:ProductButtonSelector ui:field="product" header="{lang.issueProduct}"/>
-            </div>
+            <productselector:ProductButtonSelector ui:field="product"
+                                                   header="{lang.issueProduct}"
+                                                   addStyleNames="form-group col-xs-12"/>
 
-            <div class="form-group col-xs-12">
-                <person:EmployeeButtonSelector ui:field="manager" header="{lang.issueManager}"/>
-            </div>
+            <person:EmployeeButtonSelector ui:field="manager"
+                                           header="{lang.issueManager}"
+                                           addStyleNames="form-group col-xs-12"/>
 
             <div class="form-group col-xs-12">
                 <label><ui:text from="{lang.issueImportance}"/></label>

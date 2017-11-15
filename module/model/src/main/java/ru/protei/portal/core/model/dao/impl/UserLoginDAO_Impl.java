@@ -44,15 +44,24 @@ public class UserLoginDAO_Impl extends PortalBaseJdbcDAO<UserLogin> implements U
         SqlCondition where = createSqlCondition( query );
 
         JdbcQueryParameters parameters = new JdbcQueryParameters();
+        boolean distinct = false;
 
         if ( where.isConditionDefined() ) {
             parameters.withCondition(where.condition, where.args);
         }
 
+        String join = "";
         if ( StringUtils.isNotEmpty( query.getSearchString() ) ) {
-            parameters.withJoins( "LEFT JOIN person ON user_login.personId = person.id" );
+            distinct = true;
+            join += " LEFT JOIN person ON user_login.personId = person.id";
+        }
+        if ( query.getRoleIds() != null ) {
+            distinct = true;
+            join += " LEFT JOIN login_role_item LR ON user_login.id = LR.login_id";
         }
 
+        parameters.withDistinct( distinct );
+        parameters.withJoins( join );
         parameters.withOffset( query.getOffset() );
         parameters.withLimit( query.getLimit() );
         parameters.withSort( TypeConverters.createSort( query ) );
@@ -61,12 +70,15 @@ public class UserLoginDAO_Impl extends PortalBaseJdbcDAO<UserLogin> implements U
 
     @Override
     public Long count( AccountQuery query ) {
-        String join = null;
+        String join = "";
         boolean distinct = false;
 
         if ( StringUtils.isNotEmpty( query.getSearchString() ) ) {
-            join = "LEFT JOIN person ON user_login.personId = person.id";
+            join += " LEFT JOIN person ON user_login.personId = person.id";
             distinct = true;
+        }
+        if ( query.getRoleIds() != null ) {
+            join += " LEFT JOIN login_role_item LR ON user_login.id = LR.login_id";
         }
 
         SqlCondition where = createSqlCondition( query );
@@ -91,6 +103,14 @@ public class UserLoginDAO_Impl extends PortalBaseJdbcDAO<UserLogin> implements U
                 String likeArg = HelperFunc.makeLikeArg( query.getSearchString(), true );
                 args.add( likeArg );
                 args.add( likeArg );
+            }
+
+            if ( CollectionUtils.isNotEmpty( query.getRoleIds() ) ) {
+                condition.append(" and LR.role_id IN ( ");
+                condition.append( query.getRoleIds().stream()
+                        .map( String::valueOf )
+                        .collect( Collectors.joining(",")));
+                condition.append( " )");
             }
         });
     }

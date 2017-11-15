@@ -11,6 +11,7 @@ import ru.protei.portal.core.controller.auth.AuthInterceptor;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
 import ru.protei.portal.core.service.*;
+import ru.protei.portal.core.service.bootstrap.BootstrapService;
 import ru.protei.portal.core.service.user.AuthService;
 import ru.protei.portal.core.service.user.AuthServiceImpl;
 import ru.protei.portal.core.service.user.LDAPAuthProvider;
@@ -326,6 +327,11 @@ public class MainConfiguration {
 
     @Bean
     public OfficialService getOfficialService() { return new OfficialServiceImpl(); }
+
+    @Bean
+    public BootstrapService getBootstrapService() {
+        return new BootstrapService();
+    }
 
     /** ASPECT/INTERCEPTORS **/
     @Bean

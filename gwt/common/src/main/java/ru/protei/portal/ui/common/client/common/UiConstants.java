@@ -39,6 +39,11 @@ public class UiConstants {
         String OFFICIAL = "official";
     }
 
+    public interface UserIcon {
+        String MALE = "./images/user-icon-m.svg";
+        String FEMALE = "./images/user-icon-f.svg";
+    }
+
     /**
      * from {@link ru.protei.portal.ui.common.client.events.AuthEvents}
      */

@@ -139,10 +139,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         return initiator;
     }
 
-    @Override
-    public void changeCompany(Company company){
-        initiator.updateCompany(company);
-    }
 
     @Override
     public void setSubscriptionEmails( String value ) {
@@ -215,7 +211,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         Company company = Company.fromEntityOption( event.getValue() );
 
         initiator.setEnabled( company != null );
-        changeCompany( company );
+        initiator.updateCompany(company);
         initiator.setValue( null );
 
         if ( activity != null ) {
@@ -255,6 +251,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         else
             comments.addClassName("hide");
     }
+
 
     @UiField
     ValidableTextBox name;

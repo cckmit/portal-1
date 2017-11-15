@@ -23,7 +23,6 @@ public class SelectorItem
 
     public SelectorItem() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
-
     }
 
     @Override
