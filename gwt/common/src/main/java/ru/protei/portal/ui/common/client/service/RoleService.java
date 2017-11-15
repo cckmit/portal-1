@@ -22,4 +22,6 @@ public interface RoleService extends RemoteService {
     UserRole saveRole( UserRole role ) throws RequestFailedException;
 
     List< EntityOption > getRolesOptionList( UserRoleQuery query ) throws RequestFailedException;
+
+    boolean removeRole( Long id ) throws RequestFailedException;
 }

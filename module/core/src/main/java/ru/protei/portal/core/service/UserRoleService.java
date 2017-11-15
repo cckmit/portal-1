@@ -26,4 +26,8 @@ public interface UserRoleService {
     CoreResponse<UserRole> saveUserRole( AuthToken authToken, UserRole userRole );
 
     CoreResponse<List<EntityOption>> userRoleOptionList( AuthToken token, UserRoleQuery query );
+
+    @Privileged( En_Privilege.ROLE_REMOVE )
+    @Auditable( En_AuditType.ROLE_REMOVE )
+    CoreResponse<Boolean> removeRole( AuthToken authToken, Long id );
 }

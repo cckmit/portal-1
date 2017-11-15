@@ -20,8 +20,6 @@ public interface AbstractProfilePageView extends IsWidget {
 
     void setCompany( String value );
 
-    void setRoles( String value );
-
     HasVisibility saveButtonVisibility();
 
     void setIcon( String iconSrc );

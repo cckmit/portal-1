@@ -92,6 +92,22 @@ public class RoleServiceImpl implements RoleService {
         return response.getData();
     }
 
+    @Override
+    public boolean removeRole( Long id ) throws RequestFailedException {
+        log.debug( "removeRole(): id={}", id );
+
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
+        CoreResponse< Boolean > response = roleService.removeRole( descriptor.makeAuthToken(), id );
+        log.debug( "removeRole(): result={}", response.isOk() ? "ok" : response.getStatus() );
+
+        if (response.isOk()) {
+            return response.getData();
+        }
+
+        throw new RequestFailedException(response.getStatus());
+    }
+
     private UserSessionDescriptor getDescriptorAndCheckSession() throws RequestFailedException {
         UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor( httpServletRequest );
         log.info( "userSessionDescriptor={}", descriptor );

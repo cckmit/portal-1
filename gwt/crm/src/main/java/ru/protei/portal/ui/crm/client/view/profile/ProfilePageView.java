@@ -62,11 +62,6 @@ public class ProfilePageView extends Composite implements AbstractProfilePageVie
     }
 
     @Override
-    public void setRoles( String value ) {
-        this.role.setInnerText( value );
-    }
-
-    @Override
     public HasVisibility saveButtonVisibility() {
         return saveButton;
     }
@@ -91,8 +86,6 @@ public class ProfilePageView extends Composite implements AbstractProfilePageVie
     CompanySubscriptionList subscriptions;
     @UiField
     InlineLabel name;
-    @UiField
-    Element role;
     @UiField
     Button saveButton;
     @UiField

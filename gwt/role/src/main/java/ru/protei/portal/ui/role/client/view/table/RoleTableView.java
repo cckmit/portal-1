@@ -8,11 +8,13 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.TableWidget;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
+import ru.protei.portal.ui.common.client.columns.RemoveClickColumn;
 import ru.protei.portal.ui.common.client.lang.En_ScopeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.role.client.activity.table.AbstractRoleTableActivity;
@@ -27,10 +29,13 @@ import java.util.stream.Collectors;
  * Представление таблицы роли
  */
 public class RoleTableView extends Composite implements AbstractRoleTableView {
+
     @Inject
-    public void onInit(EditClickColumn<UserRole> editClickColumn) {
+    public void onInit( EditClickColumn<UserRole> editClickColumn, RemoveClickColumn< UserRole > removeClickColumn
+    ) {
         initWidget( ourUiBinder.createAndBindUi( this ) );
         this.editClickColumn = editClickColumn;
+        this.removeClickColumn = removeClickColumn;
         initTable();
     }
 
@@ -72,6 +77,7 @@ public class RoleTableView extends Composite implements AbstractRoleTableView {
 
     private void initTable () {
         editClickColumn.setPrivilege( En_Privilege.ROLE_EDIT );
+        removeClickColumn.setPrivilege( En_Privilege.ROLE_REMOVE );
 
         ClickColumn< UserRole > name = new ClickColumn< UserRole >() {
             @Override
@@ -118,6 +124,7 @@ public class RoleTableView extends Composite implements AbstractRoleTableView {
         table.addColumn( scope.header, scope.values );
         table.addColumn( description.header, description.values );
         table.addColumn( editClickColumn.header, editClickColumn.values );
+        table.addColumn( removeClickColumn.header, removeClickColumn.values );
     }
 
     @UiField
@@ -140,6 +147,7 @@ public class RoleTableView extends Composite implements AbstractRoleTableView {
 
     private ClickColumnProvider<UserRole> columnProvider = new ClickColumnProvider<>();
     private EditClickColumn<UserRole > editClickColumn;
+    private RemoveClickColumn<UserRole> removeClickColumn;
     private List<ClickColumn > columns = new ArrayList<>();
 
     private static ContactTableViewUiBinder ourUiBinder = GWT.create( ContactTableViewUiBinder.class );

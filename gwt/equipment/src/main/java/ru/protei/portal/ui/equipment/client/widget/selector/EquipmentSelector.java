@@ -1,7 +1,6 @@
 package ru.protei.portal.ui.equipment.client.widget.selector;
 
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
@@ -32,7 +31,7 @@ public class EquipmentSelector
                 if ( value == null ) {
                     sb.append( lang.equipmentPrimaryUseNotDefinied() );
                 } else {
-                    sb.append( value.getName() );
+                    sb.append( value.getName() == null ? "" : value.getName() );
                     if ( value.getDecimalNumbers() != null ) {
                         sb
                                 .append( " (" )

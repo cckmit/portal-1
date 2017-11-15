@@ -82,6 +82,15 @@ public class UserRoleServiceImpl implements UserRoleService {
         return new CoreResponse<List<EntityOption>>().success(result);
     }
 
+    @Override
+    public CoreResponse<Boolean> removeRole( AuthToken authToken, Long id ) {
+        if ( userRoleDAO.removeByKey( id ) ) {
+            return new CoreResponse< Boolean >().success( true );
+        }
+
+        return new CoreResponse< Boolean >().error( En_ResultStatus.INTERNAL_ERROR );
+    }
+
     private void applyFilterByScope( AuthToken token, UserRoleQuery query ) {
         UserSessionDescriptor descriptor = authService.findSession( token );
 

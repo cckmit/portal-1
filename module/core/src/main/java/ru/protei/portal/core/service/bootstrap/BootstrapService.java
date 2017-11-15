@@ -48,7 +48,7 @@ public class BootstrapService {
         }
 
         List< UserRole > rolesHasObsoletePrivileges = all.stream()
-                .filter( role -> !Collections.disjoint( role.getPrivileges(), obsoletePrivileges ) )
+                .filter( role -> role.getPrivileges() != null && !Collections.disjoint( role.getPrivileges(), obsoletePrivileges ) )
                 .peek( role -> role.getPrivileges().removeAll( obsoletePrivileges ) )
                 .collect( toList() );
 

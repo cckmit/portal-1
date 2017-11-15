@@ -667,4 +667,6 @@ public interface Lang extends Messages, ContactItemLang {
     String roleScope();
 
     String messageServerConnectionLost();
+
+    String roleRemoveSuccessed();
 }

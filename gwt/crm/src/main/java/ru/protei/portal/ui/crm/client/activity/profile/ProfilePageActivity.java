@@ -66,7 +66,6 @@ public abstract class ProfilePageActivity implements Activity, AbstractProfilePa
     private void fillView( Profile value ) {
         view.setName( value.getFullName() );
         view.setIcon( UserIconUtils.getGenderIcon(value.getGender() ) );
-        view.setRoles( value.getRoles().stream().map( UserRole::getCode ).collect( Collectors.joining(", ") ));
         if ( value.getCompany() != null ) {
             view.setCompany( value.getCompany().getCname() );
             view.companySubscription().setValue( value.getCompany().getSubscriptions() );

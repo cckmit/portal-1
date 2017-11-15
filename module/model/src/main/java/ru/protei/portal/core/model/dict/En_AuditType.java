@@ -45,7 +45,9 @@ public enum En_AuditType {
     EQUIPMENT_COPY( 28 ),
 
     OFFICIAL_MODIFY( 29 ),
-    OFFICIAL_CREATE( 30);
+    OFFICIAL_CREATE( 30),
+
+    ROLE_REMOVE( 31 );
 
     En_AuditType( int id ) {
         this.id = id;

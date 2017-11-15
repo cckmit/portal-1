@@ -4,11 +4,9 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.UserRole;
-import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.core.model.query.UserRoleQuery;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
@@ -30,6 +28,7 @@ public abstract class RoleTableActivity
         implements AbstractRoleTableActivity, AbstractRoleFilterActivity,
         Activity
 {
+
 
     @PostConstruct
     public void onInit() {
@@ -88,6 +87,24 @@ public abstract class RoleTableActivity
         this.init = initDetails;
     }
 
+    @Event
+    public void onConfirmRemove( ConfirmDialogEvents.Confirm event ) {
+        if ( !event.identity.equals( getClass().getName() ) ) {
+            return;
+        }
+        roleService.removeRole( roleIdForRemove, new RequestCallback< Boolean >() {
+            @Override
+            public void onError( Throwable throwable ) {}
+
+            @Override
+            public void onSuccess( Boolean aBoolean ) {
+                fireEvent( new RoleEvents.Show() );
+                fireEvent( new NotifyEvents.Show( lang.roleRemoveSuccessed(), NotifyEvents.NotifyType.SUCCESS ) );
+                roleIdForRemove = null;
+            }
+        } );
+    }
+
     @Override
     public void onItemClicked (UserRole value ) {
         if ( !isShowTable ) {
@@ -98,6 +115,14 @@ public abstract class RoleTableActivity
     @Override
     public void onEditClicked(UserRole value ) {
         fireEvent(new RoleEvents.Edit(value.getId()));
+    }
+
+    @Override
+    public void onRemoveClicked( UserRole value ) {
+        if ( value != null ) {
+            roleIdForRemove = value.getId();
+            fireEvent( new ConfirmDialogEvents.Show( getClass().getName(), lang.accountRemoveConfirmMessage() ) );
+        }
     }
 
     @Override
@@ -160,6 +185,7 @@ public abstract class RoleTableActivity
     PolicyService policyService;
 
     private boolean isShowTable = false;
+    private Long roleIdForRemove;
 
     private AppEvents.InitDetails init;
     private UserRoleQuery query;
