@@ -1911,3 +1911,47 @@ ul.privileges {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+div.select2-container {
+  border: 1px solid #ced2d7;
+  width: initial;
+
+  &:hover {
+    border: 1px solid #ccc;
+  }
+
+  ul.select2-choices {
+    list-style: none;
+    margin-top:5px;
+    padding-left: 10px;
+
+    li.select2-search-choice {
+      div {
+        display: inline-block;
+        width: initial;
+      }
+
+      a.select2-search-choice-close {
+        font: normal normal normal 14px/1 FontAwesome;
+        display: inline-block;
+
+        &:before {
+          content: "\f00d";
+        }
+      }
+    }
+  }
+
+  div.select2-button {
+    button {
+      background-color: white;
+      text-align: left;
+      height: 30px;
+    }
+
+    span.caret {
+      width: initial;
+      border: none;
+    }
+  }
+}

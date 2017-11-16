@@ -4,6 +4,7 @@ import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_AuthType;
 import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.ent.UserRole;
 
 import java.util.Set;
 
@@ -18,5 +19,8 @@ public interface AbstractAccountFilterView extends IsWidget {
     HasValue< En_SortField > sortField();
     HasValue< Boolean > sortDir();
     HasValue< Set< En_AuthType > > types();
+
+    HasValue< Set< UserRole > > roles();
+
     void resetFilter();
 }

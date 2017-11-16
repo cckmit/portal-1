@@ -46,6 +46,8 @@ public class RoleTableView extends Composite implements AbstractRoleTableView {
         editClickColumn.setHandler( activity );
         editClickColumn.setEditHandler( activity );
         editClickColumn.setColumnProvider( columnProvider );
+        removeClickColumn.setColumnProvider( columnProvider );
+        removeClickColumn.setRemoveHandler( activity );
         columns.forEach( clickColumn -> {
             clickColumn.setHandler( activity );
             clickColumn.setColumnProvider( columnProvider );

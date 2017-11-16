@@ -8,6 +8,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.UserLogin;
+import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.query.AccountQuery;
 import ru.protei.portal.ui.account.client.activity.filter.AbstractAccountFilterActivity;
 import ru.protei.portal.ui.account.client.activity.filter.AbstractAccountFilterView;
@@ -22,7 +23,11 @@ import ru.protei.portal.ui.common.client.service.AccountServiceAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.winter.web.common.client.events.SectionEvents;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Активность создания и редактирования учетной записи
@@ -189,10 +194,16 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
     }
 
     private AccountQuery makeQuery() {
-        return new AccountQuery( filterView.types().getValue(), filterView.searchPattern().getValue(), filterView.sortField().getValue(),
+        List<Long> roles = Optional.ofNullable( filterView.roles().getValue() )
+                .orElse( Collections.emptySet() )
+                .stream()
+                .map( UserRole::getId )
+                .collect( Collectors.toList());
+
+        return new AccountQuery( filterView.types().getValue(), roles, filterView.searchPattern().getValue(), filterView.sortField().getValue(),
                 filterView.sortDir().getValue()? En_SortDir.ASC: En_SortDir.DESC );
 
-    };
+    }
 
     @Inject
     Lang lang;

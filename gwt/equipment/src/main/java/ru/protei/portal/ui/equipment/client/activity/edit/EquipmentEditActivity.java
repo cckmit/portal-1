@@ -117,7 +117,11 @@ public abstract class EquipmentEditActivity
         view.comment().setValue( equipment.getComment() );
         view.type().setValue( isCreate ? En_EquipmentType.DETAIL : equipment.getType() );
         view.stage().setValue( equipment.getStage() );
-        view.linkedEquipment().setValue( new EquipmentShortView( null, equipment.getLinkedEquipmentId(), equipment.getLinkedEquipmentDecimalNumbers() ) );
+        EquipmentShortView linkedEquipment = null;
+        if ( equipment.getLinkedEquipmentId() != null ) {
+            linkedEquipment = new EquipmentShortView( null, equipment.getLinkedEquipmentId(), equipment.getLinkedEquipmentDecimalNumbers() );
+        }
+        view.linkedEquipment().setValue( linkedEquipment );
         view.numbers().setValue( equipment.getDecimalNumbers() );
         PersonShortView manager = new PersonShortView();
         manager.setId( equipment.getManagerId() );
