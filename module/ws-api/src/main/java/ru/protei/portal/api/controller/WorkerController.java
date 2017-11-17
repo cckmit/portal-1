@@ -65,7 +65,7 @@ public class WorkerController {
         try {
             if (id != null) {
                 Person person = personDAO.get (id);
-                if (person != null && person.getExternalCode() != null) {
+                if (person != null) {
                     return new WorkerRecord(person);
                 }
             }
@@ -259,7 +259,7 @@ public class WorkerController {
                         person = new Person ();
                         person.setCreated (new Date());
                         person.setCreator ("portal-api@" + Inet4Address.getLocalHost ().getHostAddress());
-                        person.setCompanyId (item.getCompanyId ());
+                        person.setCompanyId (item.getMainId());
                     }
 
                     copy (rec, person);

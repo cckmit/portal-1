@@ -292,8 +292,6 @@ public class WorkerRecord {
     }
 
     public void copy (Person p) {
-        setCompanyCode(p.getExternalCode());
-
         setId (p.getId ());
         setFirstName (p.getFirstName ());
         setLastName (p.getLastName ());
@@ -316,6 +314,7 @@ public class WorkerRecord {
     }
 
     public void copy (WorkerEntry w) {
+        setCompanyCode(w.getExternalCode());
         copy(w.getPerson());
         setWorkerId(w.getExternalId());
         setDepartmentId(w.getDepartment().getExternalId());

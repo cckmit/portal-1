@@ -31,6 +31,9 @@ public class WorkerEntry {
     @JdbcColumn(name="companyId")
     private Long companyId;
 
+    @JdbcJoinedColumn(localColumn = "companyId", table = "company_group_home", remoteColumn = "companyId", mappedColumn = "external_code")
+    private String externalCode;
+
     @JdbcColumn(name="positionId")
     private Long positionId;
 
@@ -107,6 +110,14 @@ public class WorkerEntry {
 
     public void setCompanyId(Long companyId) {
         this.companyId = companyId;
+    }
+
+    public String getExternalCode() {
+        return externalCode;
+    }
+
+    public void setExternalCode(String externalCode) {
+        this.externalCode = externalCode;
     }
 
     public Long getPositionId() {

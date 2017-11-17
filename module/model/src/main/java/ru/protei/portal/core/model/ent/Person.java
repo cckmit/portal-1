@@ -26,9 +26,6 @@ public class Person implements Serializable, PersonShortViewSupport {
     @JdbcColumn(name="company_id")
     private Long companyId;
 
-    @JdbcJoinedColumn(localColumn = "company_id", table = "company_group_home", remoteColumn = "companyId", mappedColumn = "external_code")
-    private String externalCode;
-
     @JdbcJoinedObject (localColumn = "company_id", remoteColumn = "id" )
     private Company company;
 
@@ -37,7 +34,6 @@ public class Person implements Serializable, PersonShortViewSupport {
 
     @JdbcColumn(name = "department")
     private String department;
-
 
     @JdbcColumn(name="firstname")
     private String firstName;
@@ -285,14 +281,6 @@ public class Person implements Serializable, PersonShortViewSupport {
 
     public void setGender (En_Gender gender) {
         this.genderCode = gender.getCode();
-    }
-
-    public String getExternalCode() {
-        return externalCode;
-    }
-
-    public void setExternalCode(String externalCode) {
-        this.externalCode = externalCode;
     }
 
     @Override

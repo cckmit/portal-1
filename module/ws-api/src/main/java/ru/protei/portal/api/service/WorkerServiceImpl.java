@@ -123,7 +123,7 @@ public class WorkerServiceImpl implements WorkerService {
                 person = new Person ();
                 person.setCreated (new Date ());
                 person.setCreator ("portal-api@" + Inet4Address.getLocalHost ().getHostAddress());
-                person.setCompanyId (item.getCompanyId ());
+                person.setCompanyId (item.getMainId());
             }
 
             copy (rec, person);

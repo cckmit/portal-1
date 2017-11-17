@@ -20,6 +20,9 @@ public class CompanyHomeGroupItem {
         @JdbcColumn(name = "external_code")
         private String externalCode;
 
+        @JdbcColumn(name = "mainId")
+        private Long mainId;
+
         public CompanyHomeGroupItem() {
         }
 
@@ -43,4 +46,12 @@ public class CompanyHomeGroupItem {
         public String getExternalCode() { return externalCode; }
 
         public void setExternalCode(String externalCode) { this.externalCode = externalCode; }
+
+        public Long getMainId() {
+                return mainId;
+        }
+
+        public void setMainId(Long mainId) {
+                this.mainId = mainId;
+        }
 }

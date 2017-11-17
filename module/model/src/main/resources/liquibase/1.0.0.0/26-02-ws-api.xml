@@ -49,8 +49,17 @@
     </changeSet>
 
     <changeSet author="turik" id="dropExtIdFromWorkerPosition">
-        <dropIndex tableName="worker_position" indexName="uq_ext_pos"/>
         <dropColumn columnName="pos_extId" tableName="worker_position"/>
+    </changeSet>
+
+    <changeSet author="turik" id="dropIndexFromWorkerPosition">
+        <dropForeignKeyConstraint baseTableName="worker_position" constraintName="FK_COMPANY_POS"/>
+        <dropIndex tableName="worker_position" indexName="uq_ext_pos"/>
+        <addForeignKeyConstraint baseColumnNames="company_id"
+                                 baseTableName="worker_position"
+                                 constraintName="FK_COMPANY_POS"
+                                 referencedColumnNames="id"
+                                 referencedTableName="company"/>
     </changeSet>
 
 <!--

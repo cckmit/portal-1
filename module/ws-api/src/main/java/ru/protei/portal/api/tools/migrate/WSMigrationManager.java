@@ -45,14 +45,14 @@ public class WSMigrationManager {
     public void firePerson(Person person) throws SQLException, UnknownHostException {
 
         logger.debug ("=== firePerson ===");
-        logger.debug ("=== id = " + person.getId());
+        logger.debug ("id = " + person.getId());
 
         Connection connection = getConnection ();
 
         ExternalPersonExtension externalPersonExtension = new ExternalPersonExtension (person);
         String tableName = Tm_SqlHelper.getTableName (ExternalPersonExtension.class);
         String sql = Tm_SqlHelper.getUpdateString (externalPersonExtension.getClass ());
-        logger.debug ("=== prepare statement = " + "update " + tableName + " set " + sql + " where nID = " + person.getId ());
+        logger.debug ("prepare statement = " + "update " + tableName + " set " + sql + " where nID = " + person.getId ());
         PreparedStatement st = connection.prepareStatement("update " + tableName + " set " + sql + " where nID = " + person.getId ());
         Tm_SqlHelper.setParams(st, externalPersonExtension, true);
         st.executeUpdate ();
@@ -63,14 +63,14 @@ public class WSMigrationManager {
     public void deletePerson(Person person) throws SQLException, UnknownHostException {
 
         logger.debug ("=== deletePerson ===");
-        logger.debug ("=== id = " + person.getId());
+        logger.debug ("id = " + person.getId());
 
         Connection connection = getConnection ();
 
         ExternalPerson externalPerson = new ExternalPerson (person);
         String tableName = Tm_SqlHelper.getTableName (ExternalPerson.class);
         String sql = Tm_SqlHelper.getUpdateString (externalPerson.getClass ());
-        logger.debug ("=== prepare statement = " + "update " + tableName + " set " + sql + " where nID = " + person.getId ());
+        logger.debug ("prepare statement = " + "update " + tableName + " set " + sql + " where nID = " + person.getId ());
         PreparedStatement st = connection.prepareStatement("update " + tableName + " set " + sql + " where nID = " + person.getId ());
         Tm_SqlHelper.setParams(st, externalPerson, true);
         st.executeUpdate ();
@@ -81,14 +81,14 @@ public class WSMigrationManager {
     private void persistPerson(Person person) throws SQLException, UnknownHostException {
 
         logger.debug ("=== persistPerson ===");
-        logger.debug ("=== id = " + person.getId());
+        logger.debug ("id = " + person.getId());
 
         Connection connection = getConnection ();
 
         ExternalPerson externalPerson = new ExternalPerson (person);
         String tableName = Tm_SqlHelper.getTableName (externalPerson.getClass ());
         String sql = Tm_SqlHelper.getInsertString (externalPerson.getClass (), false);
-        logger.debug ("=== prepare statement = " + "insert into " + tableName + sql);
+        logger.debug ("prepare statement = " + "insert into " + tableName + sql);
         PreparedStatement st = connection.prepareStatement("insert into " + tableName + sql);
         Tm_SqlHelper.setParams(st, externalPerson, false);
         st.execute();
@@ -98,7 +98,7 @@ public class WSMigrationManager {
         externalPersonExtension.setId(new Long(0));
         tableName = Tm_SqlHelper.getTableName (externalPersonExtension.getClass ());
         sql = Tm_SqlHelper.getInsertString (externalPersonExtension.getClass (), false);
-        logger.debug ("=== prepare statement = " + "insert into " + tableName + sql);
+        logger.debug ("prepare statement = " + "insert into " + tableName + sql);
         st = connection.prepareStatement("insert into " + tableName + sql);
         Tm_SqlHelper.setParams(st, externalPersonExtension, false);
         st.execute();
@@ -110,14 +110,14 @@ public class WSMigrationManager {
     private void mergePerson(Person person) throws SQLException, UnknownHostException {
 
         logger.debug ("=== mergePerson ===");
-        logger.debug ("=== id = " + person.getId());
+        logger.debug ("id = " + person.getId());
 
         Connection connection = getConnection ();
 
         ExternalPerson externalPerson = new ExternalPerson (person);
         String tableName = Tm_SqlHelper.getTableName (ExternalPerson.class);
         String sql = Tm_SqlHelper.getUpdateString (externalPerson.getClass ());
-        logger.debug ("=== prepare statement = " + "update " + tableName + " set " + sql + " where nID = " + person.getId ());
+        logger.debug ("prepare statement = " + "update " + tableName + " set " + sql + " where nID = " + person.getId ());
         PreparedStatement st = connection.prepareStatement("update " + tableName + " set " + sql + " where nID = " + person.getId ());
         Tm_SqlHelper.setParams(st, externalPerson, true);
         st.executeUpdate ();
@@ -127,7 +127,7 @@ public class WSMigrationManager {
         ExternalPersonExtension externalPersonExtension = new ExternalPersonExtension (person);
         tableName = Tm_SqlHelper.getTableName (ExternalPersonExtension.class);
         sql = Tm_SqlHelper.getUpdateString (externalPersonExtension.getClass ());
-        logger.debug ("=== prepare statement = " + "update " + tableName + " set " + sql + " where nID = " + person.getId ());
+        logger.debug ("prepare statement = " + "update " + tableName + " set " + sql + " where nID = " + person.getId ());
         st = connection.prepareStatement("update " + tableName + " set " + sql + " where nID = " + person.getId ());
         Tm_SqlHelper.setParams(st, externalPersonExtension, true);
         st.executeUpdate ();
