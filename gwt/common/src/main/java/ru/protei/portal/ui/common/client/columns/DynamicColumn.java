@@ -26,7 +26,7 @@ public class DynamicColumn<T> extends ClickColumn<T>{
         cell.addClassName(className);
 
         com.google.gwt.dom.client.Element divElement = DOM.createDiv();
-        divElement.setInnerText( valueGenerator.apply(value) );
+        divElement.setInnerHTML( valueGenerator.apply(value) );
 
         cell.appendChild( divElement );
     }

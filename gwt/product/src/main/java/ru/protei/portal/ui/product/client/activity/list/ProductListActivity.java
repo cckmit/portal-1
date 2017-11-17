@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.product.client.activity.list;
 
+import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
@@ -8,16 +9,19 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.DevUnit;
+import ru.protei.portal.core.model.query.ProductQuery;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.PlateListAnimation;
 import ru.protei.portal.ui.common.client.common.PeriodicTaskService;
-import ru.protei.portal.ui.common.client.common.UiConstants;
+import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.ProductEvents;
+import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.ProductServiceAsync;
 import ru.protei.portal.ui.common.client.widget.viewtype.ViewType;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.product.client.activity.item.AbstractProductItemActivity;
 import ru.protei.portal.ui.product.client.activity.item.AbstractProductItemView;
-import ru.protei.winter.web.common.client.events.SectionEvents;
 
 import java.util.HashMap;
 import java.util.List;
@@ -27,7 +31,7 @@ import java.util.function.Consumer;
 /**
  * Активность списка продуктов
  */
-public abstract class ProductListActivity extends ProductGridActivity implements AbstractProductItemActivity {
+public abstract class ProductListActivity implements Activity, AbstractProductItemActivity, AbstractProductListActivity {
 
     @PostConstruct
     public void init() {
@@ -35,22 +39,21 @@ public abstract class ProductListActivity extends ProductGridActivity implements
     }
 
     @Event
-    public void onShow( ProductEvents.Show event ) {
-        if(filterView.viewType().getValue() != ViewType.LIST)
-            return;
-
-        init(this::requestProducts, view.asWidget());
-        view.getFilterContainer().add(filterView.asWidget());
-        requestProducts();
+    public void onInitDetails(AppEvents.InitDetails event) {
+        this.init = event;
     }
 
     @Event
-    public void onCreateClicked( SectionEvents.Clicked event ) {
-        if ( !(UiConstants.ActionBarIdentity.PRODUCT.equals( event.identity ) && filterView.viewType().getValue() == ViewType.LIST)) {
+    public void onShow( ProductEvents.ShowDefinite event ) {
+        if(event.viewType != ViewType.LIST)
             return;
-        }
 
-        fireEvent(new ProductEvents.Edit(null));
+        this.query = event.query;
+        init.parent.clear();
+        init.parent.add( view.asWidget() );
+        view.getFilterContainer().add(event.filter);
+
+        requestProducts();
     }
 
     @Override
@@ -74,6 +77,7 @@ public abstract class ProductListActivity extends ProductGridActivity implements
         fireEvent( new ProductEvents.Edit( itemViewToModel.get( itemView ).getId()  ) );
     }
 
+    @Override
     public void onCreateClicked( ) { fireEvent(new ProductEvents.Edit()); }
 
     private AbstractProductItemView makeView ( DevUnit product )
@@ -128,8 +132,16 @@ public abstract class ProductListActivity extends ProductGridActivity implements
     Provider<AbstractProductItemView> factory;
     @Inject
     PeriodicTaskService taskService;
-    PeriodicTaskService.PeriodicTaskHandler fillViewHandler;
+    @Inject
+    ProductServiceAsync productService;
+    @Inject
+    PolicyService policyService;
+    @Inject
+    Lang lang;
 
+    private PeriodicTaskService.PeriodicTaskHandler fillViewHandler;
+    private AppEvents.InitDetails init;
+    private ProductQuery query;
     private Map< AbstractProductItemView, DevUnit> itemViewToModel = new HashMap<AbstractProductItemView, DevUnit>();
 
 }

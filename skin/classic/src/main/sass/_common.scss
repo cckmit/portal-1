@@ -908,6 +908,13 @@ label.bordered:after{
       display: none;
     }
   }
+
+  .companies{
+    .company-category,
+    .company-group{
+      display: none;
+    }
+  }
 }
 
 .issues {
@@ -956,6 +963,41 @@ label.bordered:after{
       width: 15%;
     }
     .info {
+    }
+  }
+}
+
+
+
+.companies {
+  table {
+    tbody {
+      tr {
+        td {
+          height: 70px;
+          >div {
+            height: 70px;
+            max-height: 70px;
+            white-space: pre-line;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+        }
+      }
+    }
+    .company-name{
+      font-weight: bold;
+    }
+    .company-main-info {
+      width: 60%;
+    }
+    .company-category {
+      vertical-align: top !important;
+      width: 10%
+    }
+    .company-group {
+      vertical-align: top !important;
+      width: 30%;
     }
   }
 }
@@ -1889,17 +1931,3 @@ ul.privileges {
   padding-bottom: 12px;
   padding-right: 14px;
 }
-
-/********* filter block **********/
-
-.filter-view-type{
-  margin-bottom: 15px !important;
-  padding-bottom: 15px !important;
-  border-bottom: 1px solid #dbdbdb;
-}
-
-.filter-view-type i {
-  margin-right: 8px;
-}
-
-/*******************/

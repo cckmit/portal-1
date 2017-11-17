@@ -1,8 +1,10 @@
 package ru.protei.portal.ui.company.client.view.table;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
@@ -10,13 +12,14 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.DynamicColumn;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.company.client.activity.list.AbstractCompanyTableActivity;
 import ru.protei.portal.ui.company.client.activity.list.AbstractCompanyTableView;
-import ru.protei.portal.ui.company.client.activity.list.CompanyTableActivity;
 
 /**
  * Created by bondarenko on 30.10.17.
@@ -30,7 +33,7 @@ public class CompanyTableView extends Composite implements AbstractCompanyTableV
     }
 
     @Override
-    public void setActivity(CompanyTableActivity activity) {
+    public void setActivity(AbstractCompanyTableActivity activity) {
         this.activity = activity;
 
         editClickColumn.setHandler( activity );
@@ -96,7 +99,7 @@ public class CompanyTableView extends Composite implements AbstractCompanyTableV
 
     private void initTable () {
         editClickColumn.setPrivilege( En_Privilege.COMPANY_EDIT );
-        name = new DynamicColumn<>(lang.companyName(), "company-name", Company::getCname);
+        name = new DynamicColumn<>(lang.companyName(), "company-main-info", this::getCompanyInfoBlock);
         category = new DynamicColumn<>(
             lang.companyCategory(),
             "company-category",
@@ -112,6 +115,46 @@ public class CompanyTableView extends Composite implements AbstractCompanyTableV
         table.addColumn( category.header, category.values );
         table.addColumn( group.header, group.values );
         table.addColumn( editClickColumn.header, editClickColumn.values );
+    }
+
+    private String getCompanyInfoBlock(Company company){
+        Element companyInfo = DOM.createDiv();
+
+        Element cName = DOM.createDiv();
+        cName.addClassName("company-name");
+        cName.setInnerText(company.getCname());
+        companyInfo.appendChild(cName);
+
+        PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(company.getContactInfo());
+        String phones = infoFacade.allPhonesAsString();
+        String emails = infoFacade.allEmailsAsString();
+        String website = infoFacade.getWebSite();
+
+        if(!phones.isEmpty())
+            companyInfo.appendChild(buildContactsElement("fa fa-phone", phones));
+
+        if(!emails.isEmpty())
+            companyInfo.appendChild(buildContactsElement("fa fa-envelope", emails));
+
+        if(!website.isEmpty())
+            companyInfo.appendChild(buildContactsElement("fa fa-globe", website));
+
+        return companyInfo.getString();
+    }
+
+    private Element buildContactsElement(String iconClass, String contacts){
+        Element icon = DOM.createElement("i");
+        icon.addClassName(iconClass);
+
+        Element data = DOM.createSpan();
+        data.setInnerText(contacts);
+
+        Element wrapper = DOM.createDiv();
+        wrapper.addClassName("contacts");
+        wrapper.appendChild(icon);
+        wrapper.appendChild(data);
+
+        return wrapper;
     }
 
     @UiField
@@ -134,7 +177,7 @@ public class CompanyTableView extends Composite implements AbstractCompanyTableV
     DynamicColumn<Company> category;
     DynamicColumn<Company> group;
 
-    CompanyTableActivity activity;
+    AbstractCompanyTableActivity activity;
 
     private static CompanyTableViewUiBinder ourUiBinder = GWT.create(CompanyTableViewUiBinder.class);
     interface CompanyTableViewUiBinder extends UiBinder<HTMLPanel, CompanyTableView> {}

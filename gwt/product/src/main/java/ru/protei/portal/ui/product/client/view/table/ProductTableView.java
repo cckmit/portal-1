@@ -15,8 +15,8 @@ import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.DynamicColumn;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.product.client.activity.list.AbstractProductTableActivity;
 import ru.protei.portal.ui.product.client.activity.list.AbstractProductTableView;
-import ru.protei.portal.ui.product.client.activity.list.ProductTableActivity;
 
 public class ProductTableView extends Composite implements AbstractProductTableView{
 
@@ -28,7 +28,7 @@ public class ProductTableView extends Composite implements AbstractProductTableV
     }
 
     @Override
-    public void setActivity(ProductTableActivity activity) {
+    public void setActivity(AbstractProductTableActivity activity) {
         this.activity = activity;
 
         editClickColumn.setHandler( activity );
@@ -114,7 +114,7 @@ public class ProductTableView extends Composite implements AbstractProductTableV
     EditClickColumn< DevUnit > editClickColumn;
     DynamicColumn<DevUnit> name;
 
-    ProductTableActivity activity;
+    AbstractProductTableActivity activity;
 
     private static ProductTableViewUiBinder ourUiBinder = GWT.create(ProductTableViewUiBinder.class);
     interface ProductTableViewUiBinder extends UiBinder<HTMLPanel, ProductTableView> {}

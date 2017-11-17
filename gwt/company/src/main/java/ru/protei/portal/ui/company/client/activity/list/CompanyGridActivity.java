@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.company.client.activity.list;
 
-import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -13,10 +12,10 @@ import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.CompanyServiceAsync;
 import ru.protei.portal.ui.common.client.widget.viewtype.ViewType;
 import ru.protei.portal.ui.company.client.activity.filter.AbstractCompanyFilterActivity;
 import ru.protei.portal.ui.company.client.activity.filter.AbstractCompanyFilterView;
+import ru.protei.winter.web.common.client.events.SectionEvents;
 
 import java.util.stream.Collectors;
 
@@ -27,8 +26,9 @@ public abstract class CompanyGridActivity implements AbstractCompanyGridActivity
 
     @PostConstruct
     public void onInit() {
-        CREATE_ACTION = lang.buttonCreate();
         filterView.setActivity( this );
+        query = makeQuery();
+        currentViewType = ViewType.TABLE;
     }
 
     @Event
@@ -37,39 +37,46 @@ public abstract class CompanyGridActivity implements AbstractCompanyGridActivity
     }
 
     @Event
-    public void init(Runnable onFilterChangedAction, Widget... widgets) {
+    public void onShow( CompanyEvents.Show event ) {
         fireEvent(new AppEvents.InitPanelName(lang.companies()));
-        init.parent.clear();
 
-        this.onFilterChangedAction = onFilterChangedAction;
-        for(Widget widget: widgets){
-            init.parent.add(widget);
+        fireEvent(new ActionBarEvents.Clear());
+        if(policyService.hasPrivilegeFor( En_Privilege.COMPANY_CREATE )){
+            fireEvent(new ActionBarEvents.Add( lang.buttonCreate(), UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.COMPANY ));
         }
 
-        fireEvent( policyService.hasPrivilegeFor( En_Privilege.COMPANY_CREATE ) ?
-                new ActionBarEvents.Add( CREATE_ACTION, UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.COMPANY ) :
-                new ActionBarEvents.Clear()
-        );
+        boolean isListCurrent = currentViewType == ViewType.LIST;
+        fireEvent(new ActionBarEvents.Add(
+                isListCurrent? lang.table(): lang.list(),
+                isListCurrent? UiConstants.ActionBarIcons.TABLE: UiConstants.ActionBarIcons.LIST,
+                UiConstants.ActionBarIdentity.COMPANY_TYPE_VIEW
+        ));
 
-        query = makeQuery();
-        currentViewType = filterView.viewType().getValue();
+        fireEvent(new CompanyEvents.ShowDefinite(currentViewType, filterView.asWidget(), query));
     }
 
     @Event
-    public void onInitDetails( AppEvents.InitDetails event ) {
-        this.init = event;
+    public void onChangeViewClicked( SectionEvents.Clicked event ) {
+        if ( !(UiConstants.ActionBarIdentity.COMPANY_TYPE_VIEW.equals( event.identity )))
+            return;
+
+        currentViewType = currentViewType == ViewType.TABLE? ViewType.LIST: ViewType.TABLE;
+        onShow(new CompanyEvents.Show());
+    }
+
+    @Event
+    public void onCreateClicked( SectionEvents.Clicked event ) {
+        if ( !(UiConstants.ActionBarIdentity.COMPANY.equals( event.identity )) ) {
+            return;
+        }
+
+        fireEvent(new CompanyEvents.Edit(null));
     }
 
     @Override
     public void onFilterChanged() {
-        if(filterView.viewType().getValue() != currentViewType){
-            fireEvent(new CompanyEvents.Show());
-            return;
-        }
-
         query = makeQuery();
-        if(onFilterChangedAction != null)
-            onFilterChangedAction.run();
+        fireEvent(new CompanyEvents.ShowDefinite(currentViewType, filterView.asWidget(), query));
     }
 
     private CompanyQuery makeQuery() {
@@ -96,14 +103,8 @@ public abstract class CompanyGridActivity implements AbstractCompanyGridActivity
     @Inject
     Lang lang;
     @Inject
-    CompanyServiceAsync companyService;
-    @Inject
     PolicyService policyService;
 
-    private AppEvents.InitDetails init;
-    private static Runnable onFilterChangedAction;
-    private static String CREATE_ACTION;
-    private static ViewType currentViewType;
-
-    protected static CompanyQuery query;
+    private ViewType currentViewType;
+    private CompanyQuery query;
 }

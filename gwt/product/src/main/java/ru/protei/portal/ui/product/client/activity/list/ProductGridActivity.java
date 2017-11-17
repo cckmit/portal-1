@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.product.client.activity.list;
 
-import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -13,10 +12,10 @@ import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.ProductServiceAsync;
 import ru.protei.portal.ui.common.client.widget.viewtype.ViewType;
 import ru.protei.portal.ui.product.client.activity.filter.AbstractProductFilterActivity;
 import ru.protei.portal.ui.product.client.activity.filter.AbstractProductFilterView;
+import ru.protei.winter.web.common.client.events.SectionEvents;
 
 /**
  * Активность множества продуктов
@@ -25,8 +24,9 @@ public abstract class ProductGridActivity implements AbstractProductGridActivity
 
     @PostConstruct
     public void onInit() {
-        CREATE_ACTION = lang.buttonCreate();
         filterView.setActivity( this );
+        query = makeQuery();
+        currentViewType = ViewType.TABLE;
     }
 
     @Event
@@ -35,39 +35,46 @@ public abstract class ProductGridActivity implements AbstractProductGridActivity
     }
 
     @Event
-    public void init( Runnable onFilterChangedAction, Widget... widgets ) {
-        this.fireEvent(new AppEvents.InitPanelName(lang.products()));
-        init.parent.clear();
+    public void onShow( ProductEvents.Show event ) {
+        fireEvent(new AppEvents.InitPanelName(lang.products()));
 
-        this.onFilterChangedAction = onFilterChangedAction;
-        for(Widget widget: widgets){
-            init.parent.add(widget);
+        fireEvent(new ActionBarEvents.Clear());
+        if(policyService.hasPrivilegeFor( En_Privilege.PRODUCT_CREATE )){
+            fireEvent(new ActionBarEvents.Add( lang.buttonCreate(), UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.PRODUCT ));
         }
 
-        fireEvent( policyService.hasPrivilegeFor( En_Privilege.PRODUCT_CREATE ) ?
-                new ActionBarEvents.Add( CREATE_ACTION, UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.PRODUCT ) :
-                new ActionBarEvents.Clear()
-        );
+        boolean isListCurrent = currentViewType == ViewType.LIST;
+        fireEvent(new ActionBarEvents.Add(
+                isListCurrent? lang.table(): lang.list(),
+                isListCurrent? UiConstants.ActionBarIcons.TABLE: UiConstants.ActionBarIcons.LIST,
+                UiConstants.ActionBarIdentity.PRODUCT_TYPE_VIEW
+        ));
 
-        query = makeQuery();
-        currentViewType = filterView.viewType().getValue();
+        fireEvent(new ProductEvents.ShowDefinite(currentViewType, filterView.asWidget(), query));
     }
 
     @Event
-    public void onInitDetails(AppEvents.InitDetails event) {
-        this.init = event;
+    public void onChangeViewClicked( SectionEvents.Clicked event ) {
+        if ( !(UiConstants.ActionBarIdentity.PRODUCT_TYPE_VIEW.equals( event.identity )))
+            return;
+
+        currentViewType = currentViewType == ViewType.TABLE? ViewType.LIST: ViewType.TABLE;
+        onShow(new ProductEvents.Show());
+    }
+
+    @Event
+    public void onCreateClicked( SectionEvents.Clicked event ) {
+        if ( !(UiConstants.ActionBarIdentity.PRODUCT.equals( event.identity )) ) {
+            return;
+        }
+
+        fireEvent(new ProductEvents.Edit(null));
     }
 
     @Override
     public void onFilterChanged() {
-        if(filterView.viewType().getValue() != currentViewType){
-            fireEvent(new ProductEvents.Show());
-            return;
-        }
-
         query = makeQuery();
-        if(onFilterChangedAction != null)
-            onFilterChangedAction.run();
+        fireEvent(new ProductEvents.ShowDefinite(currentViewType, filterView.asWidget(), query));
     }
 
     private ProductQuery makeQuery() {
@@ -86,14 +93,8 @@ public abstract class ProductGridActivity implements AbstractProductGridActivity
     @Inject
     Lang lang;
     @Inject
-    ProductServiceAsync productService;
-    @Inject
     PolicyService policyService;
 
-    private AppEvents.InitDetails init;
-    private static Runnable onFilterChangedAction;
-    private static String CREATE_ACTION;
-    private static ViewType currentViewType;
-
-    protected static ProductQuery query;
+    private ViewType currentViewType;
+    private ProductQuery query;
 }

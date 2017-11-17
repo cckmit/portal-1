@@ -2,31 +2,29 @@ package ru.protei.portal.ui.company.client.activity.list;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
+import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.brainworm.factory.widget.table.client.InfiniteLoadHandler;
-import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
-import ru.protei.portal.ui.common.client.columns.ClickColumn;
-import ru.protei.portal.ui.common.client.columns.EditClickColumn;
-import ru.protei.portal.ui.common.client.common.UiConstants;
+import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.CompanyEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.CompanyServiceAsync;
 import ru.protei.portal.ui.common.client.widget.viewtype.ViewType;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
-import ru.protei.winter.web.common.client.events.SectionEvents;
 
 import java.util.List;
 
 /**
  * Активность таблицы компаний
  */
-public abstract class CompanyTableActivity extends CompanyGridActivity implements
-        AbstractPagerActivity, ClickColumn.Handler< Company >, EditClickColumn.EditHandler< Company >,
-        InfiniteLoadHandler<Company>, InfiniteTableWidget.PagerListener {
+public abstract class CompanyTableActivity implements
+        Activity, AbstractCompanyTableActivity, AbstractPagerActivity {
 
     @PostConstruct
     public void init() {
@@ -37,22 +35,22 @@ public abstract class CompanyTableActivity extends CompanyGridActivity implement
     }
 
     @Event
-    public void onShow( CompanyEvents.Show event ) {
-        if(filterView.viewType().getValue() != ViewType.TABLE)
-            return;
-
-        init(this::requestCompaniesCount, view.asWidget(), pagerView.asWidget());
-        view.getFilterContainer().add(filterView.asWidget());
-        requestCompaniesCount();
+    public void onInitDetails(AppEvents.InitDetails event) {
+        this.init = event;
     }
 
     @Event
-    public void onCreateClicked( SectionEvents.Clicked event ) {
-        if ( !(UiConstants.ActionBarIdentity.COMPANY.equals( event.identity ) && filterView.viewType().getValue() == ViewType.TABLE) ) {
+    public void onShow( CompanyEvents.ShowDefinite event ) {
+        if(event.viewType != ViewType.TABLE)
             return;
-        }
 
-        fireEvent(new CompanyEvents.Edit(null));
+        this.query = event.query;
+        init.parent.clear();
+        init.parent.add( view.asWidget() );
+        init.parent.add( pagerView.asWidget() );
+
+        view.getFilterContainer().add(event.filter);
+        requestCompaniesCount();
     }
 
     @Event
@@ -69,7 +67,6 @@ public abstract class CompanyTableActivity extends CompanyGridActivity implement
             }
         } );
     }
-
 
     @Override
     public void onFirstClicked() {
@@ -145,11 +142,16 @@ public abstract class CompanyTableActivity extends CompanyGridActivity implement
 
     @Inject
     AbstractCompanyTableView view;
-
     @Inject
     TableAnimation animation;
-
+    @Inject
+    Lang lang;
     @Inject
     AbstractPagerView pagerView;
+    @Inject
+    CompanyServiceAsync companyService;
+
+    private AppEvents.InitDetails init;
+    private CompanyQuery query;
 
 }

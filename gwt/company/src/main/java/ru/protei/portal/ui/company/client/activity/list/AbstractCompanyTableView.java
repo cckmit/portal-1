@@ -10,7 +10,7 @@ import ru.protei.portal.ui.common.client.animation.TableAnimation;
  */
 public interface AbstractCompanyTableView extends IsWidget {
 
-    void setActivity( CompanyTableActivity activity );
+    void setActivity( AbstractCompanyTableActivity activity );
     void setAnimation ( TableAnimation animation );
     void clearRecords();
     HasWidgets getPreviewContainer ();
