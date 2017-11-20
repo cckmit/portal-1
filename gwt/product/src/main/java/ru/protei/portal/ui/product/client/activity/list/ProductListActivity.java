@@ -68,7 +68,7 @@ public abstract class ProductListActivity implements Activity, AbstractProductIt
             return;
         }
 
-        fireEvent( new ProductEvents.ShowPreview( itemView.getPreviewContainer(), value, false ) );
+        fireEvent( new ProductEvents.ShowPreview( itemView.getPreviewContainer(), value, false, false ) );
         animation.showPreview(itemView, (IsWidget) itemView.getPreviewContainer());
     }
 

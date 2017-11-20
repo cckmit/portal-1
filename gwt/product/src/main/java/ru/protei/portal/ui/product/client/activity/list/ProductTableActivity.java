@@ -53,21 +53,6 @@ public abstract class ProductTableActivity implements
         requestProductsCount();
     }
 
-    @Event
-    public void onChangeRow( ProductEvents.ChangeProduct event ) {
-        productService.getProduct( event.productId, new RequestCallback<DevUnit>() {
-            @Override
-            public void onError( Throwable throwable ) {
-                fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
-            }
-
-            @Override
-            public void onSuccess( DevUnit product ) {
-                view.updateRow(product);
-            }
-        } );
-    }
-
     @Override
     public void onFirstClicked() {
         view.scrollTo( 0 );
@@ -99,7 +84,7 @@ public abstract class ProductTableActivity implements
             animation.closeDetails();
         } else {
             animation.showDetails();
-            fireEvent( new ProductEvents.ShowPreview( view.getPreviewContainer(), value, true ) );
+            fireEvent( new ProductEvents.ShowPreview( view.getPreviewContainer(), value, true, true ) );
         }
     }
 

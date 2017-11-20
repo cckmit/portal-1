@@ -24,7 +24,7 @@ public abstract class CompanyPreviewActivity
     @Event
     public void onShow( CompanyEvents.ShowPreview event ) {
         event.parent.clear();
-        event.parent.add( view.asWidget() );
+        event.parent.add(view.asWidget(event.isShouldWrap));
 
         fillView( event.company );
         view.watchForScroll( event.isWatchForScroll);
@@ -35,6 +35,8 @@ public abstract class CompanyPreviewActivity
         if ( value.getCompanyGroup() == null ) {
             view.setGroupVisible( false );
         }
+
+        view.setName(value.getCname());
 
         view.setGroupCompany( value.getCompanyGroup() == null ? "" : value.getCompanyGroup().getName() );
 

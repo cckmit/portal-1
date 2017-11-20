@@ -3,40 +3,45 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="preview grid">
-        <g:HTMLPanel ui:field="groupContainer" tag="fieldset" styleName="header">
-            <legend><ui:text from="{lang.companyCommonHeader}"/></legend>
-            <label><ui:text from="{lang.companyGroupLabel}"/></label>
-            <span ui:field="groupCompany"></span>
+    <g:HTMLPanel ui:field="rootWrapper">
+        <g:HTMLPanel styleName="preview grid">
+            <g:HTMLPanel ui:field="companyNameBlock" tag="fieldset" styleName="header" visible="false">
+                <legend ui:field="companyName"/>
+            </g:HTMLPanel>
+            <g:HTMLPanel ui:field="groupContainer" tag="fieldset" styleName="header">
+                <legend><ui:text from="{lang.companyCommonHeader}"/></legend>
+                <label><ui:text from="{lang.companyGroupLabel}"/></label>
+                <span ui:field="groupCompany"></span>
+            </g:HTMLPanel>
+
+            <fieldset ui:field="contacts" class="contacts">
+                <legend><ui:text from="{lang.companyInfoHeader}"/></legend>
+                <div class="col-xs-12">
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.phone}"/></label>
+                    <span class="col-xs-7 col-md-7" ui:field="phone"></span>
+                </div>
+                <div class="col-xs-12">
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.companyWebSite}"/></label>
+                    <span class="col-xs-7 col-md-7" ui:field="site"></span>
+                </div>
+                <div class="col-xs-12">
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.email}"/></label>
+                    <span class="col-xs-7 col-md-7" ui:field="email"></span>
+                </div>
+                <div class="col-xs-12">
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.companyActualAddress}"/></label>
+                    <span class="col-xs-7 col-md-7" ui:field="addressFact"></span>
+                </div>
+                <div class="col-xs-12">
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.companyLegalAddress}"/></label>
+                    <span class="col-xs-7 col-md-7" ui:field="addressDejure"></span>
+                </div>
+            </fieldset>
+
+            <fieldset class="comments">
+                <legend><ui:text from="{lang.companyAdditionalInfoHeader}"/></legend>
+                <span ui:field="info" class="pre-formatted-info"></span>
+            </fieldset>
         </g:HTMLPanel>
-
-        <fieldset class="contacts">
-            <legend><ui:text from="{lang.companyInfoHeader}"/></legend>
-            <div class="col-xs-12">
-                <label class="col-xs-5 col-md-5"><ui:text from="{lang.phone}"/></label>
-                <span class="col-xs-7 col-md-7" ui:field="phone"></span>
-            </div>
-            <div class="col-xs-12">
-                <label class="col-xs-5 col-md-5"><ui:text from="{lang.companyWebSite}"/></label>
-                <span class="col-xs-7 col-md-7" ui:field="site"></span>
-            </div>
-            <div class="col-xs-12">
-                <label class="col-xs-5 col-md-5"><ui:text from="{lang.email}"/></label>
-                <span class="col-xs-7 col-md-7" ui:field="email"></span>
-            </div>
-            <div class="col-xs-12">
-                <label class="col-xs-5 col-md-5"><ui:text from="{lang.companyActualAddress}"/></label>
-                <span class="col-xs-7 col-md-7" ui:field="addressFact"></span>
-            </div>
-            <div class="col-xs-12">
-                <label class="col-xs-5 col-md-5"><ui:text from="{lang.companyLegalAddress}"/></label>
-                <span class="col-xs-7 col-md-7" ui:field="addressDejure"></span>
-            </div>
-        </fieldset>
-
-        <fieldset class="comments">
-            <legend><ui:text from="{lang.companyAdditionalInfoHeader}"/></legend>
-            <span ui:field="info" class="pre-formatted-info"></span>
-        </fieldset>
     </g:HTMLPanel>
 </ui:UiBinder>

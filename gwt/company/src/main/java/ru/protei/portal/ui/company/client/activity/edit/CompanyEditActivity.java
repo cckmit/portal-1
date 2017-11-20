@@ -77,9 +77,6 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
             public void onSuccess(Boolean aBoolean) {
                 fireEvent(new CompanyEvents.Show());
                 fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-                if(tempCompany.getId() != null){
-                    fireEvent(new CompanyEvents.ChangeCompany(tempCompany.getId()));
-                }
                 fireEvent(new CompanyEvents.ChangeModel());
             }
         });

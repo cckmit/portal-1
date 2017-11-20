@@ -908,13 +908,6 @@ label.bordered:after{
       display: none;
     }
   }
-
-  .companies{
-    .company-category,
-    .company-group{
-      display: none;
-    }
-  }
 }
 
 .issues {
@@ -998,6 +991,35 @@ label.bordered:after{
     .company-group {
       vertical-align: top !important;
       width: 30%;
+    }
+    .contacts{
+      i{
+        padding-right: 5px;
+      }
+    }
+  }
+}
+
+
+
+.products {
+  table {
+    tbody {
+      tr {
+        td {
+          height: 70px;
+          >div {
+            height: 70px;
+            max-height: 70px;
+            white-space: pre-line;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+        }
+      }
+    }
+    .product-name{
+      width: 100%;
     }
   }
 }

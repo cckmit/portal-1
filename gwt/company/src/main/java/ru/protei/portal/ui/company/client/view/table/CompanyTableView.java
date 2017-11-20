@@ -136,25 +136,35 @@ public class CompanyTableView extends Composite implements AbstractCompanyTableV
         if(!emails.isEmpty())
             companyInfo.appendChild(buildContactsElement("fa fa-envelope", emails));
 
-        if(!website.isEmpty())
-            companyInfo.appendChild(buildContactsElement("fa fa-globe", website));
+        if(website != null && !website.isEmpty())
+            companyInfo.appendChild(buildContactsElement("fa fa-globe", buildAnchorElement(website)));
 
         return companyInfo.getString();
     }
 
     private Element buildContactsElement(String iconClass, String contacts){
-        Element icon = DOM.createElement("i");
-        icon.addClassName(iconClass);
-
         Element data = DOM.createSpan();
         data.setInnerText(contacts);
+        return buildContactsElement(iconClass, data);
+    }
+
+    private Element buildContactsElement(String iconClass, Element element){
+        Element icon = DOM.createElement("i");
+        icon.addClassName(iconClass);
 
         Element wrapper = DOM.createDiv();
         wrapper.addClassName("contacts");
         wrapper.appendChild(icon);
-        wrapper.appendChild(data);
+        wrapper.appendChild(element);
 
         return wrapper;
+    }
+
+    private Element buildAnchorElement(String link){
+        Element anchor = DOM.createAnchor();
+        anchor.setPropertyString("href", link);
+        anchor.setInnerText(link);
+        return anchor;
     }
 
     @UiField

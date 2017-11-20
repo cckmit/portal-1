@@ -71,7 +71,7 @@ public abstract class CompanyListActivity implements Activity, AbstractCompanyLi
             return;
         }
 
-        fireEvent(new CompanyEvents.ShowPreview(itemView.getPreviewContainer(), value, false));
+        fireEvent(new CompanyEvents.ShowPreview(itemView.getPreviewContainer(), value, false, false));
         animation.showPreview(itemView, (IsWidget) itemView.getPreviewContainer());
     }
 

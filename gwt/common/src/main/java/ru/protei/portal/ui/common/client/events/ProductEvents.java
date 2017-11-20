@@ -37,15 +37,17 @@ public class ProductEvents {
      */
     public static class ShowPreview {
 
-        public ShowPreview( HasWidgets parent, DevUnit product, boolean isWatchForScroll ) {
+        public ShowPreview( HasWidgets parent, DevUnit product, boolean isWatchForScroll, boolean isShouldWrap ) {
             this.parent = parent;
             this.product = product;
             this.isWatchForScroll = isWatchForScroll;
+            this.isShouldWrap = isShouldWrap;
         }
 
         public HasWidgets parent;
         public DevUnit product;
         public boolean isWatchForScroll;
+        public boolean isShouldWrap;
     }
 
     @Url( value = "product", primary = false )
@@ -60,14 +62,6 @@ public class ProductEvents {
         }
 
         public Long productId;
-    }
-
-    public static class ChangeProduct{
-        public long productId;
-
-        public ChangeProduct(long productId) {
-            this.productId = productId;
-        }
     }
 
     public static class ChangeModel {}

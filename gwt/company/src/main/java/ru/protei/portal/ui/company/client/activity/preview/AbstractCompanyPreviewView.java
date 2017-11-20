@@ -1,11 +1,14 @@
 package ru.protei.portal.ui.company.client.activity.preview;
 
 import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Абстракция представления превью компании
  */
 public interface AbstractCompanyPreviewView extends IsWidget {
+
+    void setName( String name );
 
     void setActivity( AbstractCompanyPreviewActivity activity );
 
@@ -26,4 +29,6 @@ public interface AbstractCompanyPreviewView extends IsWidget {
     void setInfo( String value );
 
     void setGroupVisible( boolean value );
+
+    Widget asWidget(boolean isForTableView);
 }

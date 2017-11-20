@@ -39,15 +39,17 @@ public class CompanyEvents {
      */
     public static class ShowPreview {
 
-        public ShowPreview( HasWidgets parent, Company company, boolean isWatchForScroll ) {
+        public ShowPreview( HasWidgets parent, Company company, boolean isWatchForScroll, boolean isShouldWrap ) {
             this.parent = parent;
             this.company = company;
             this.isWatchForScroll = isWatchForScroll;
+            this.isShouldWrap = isShouldWrap;
         }
 
         public HasWidgets parent;
         public Company company;
         public boolean isWatchForScroll;
+        public boolean isShouldWrap;
     }
 
     @Url( value = "company", primary = false )
@@ -63,14 +65,6 @@ public class CompanyEvents {
             return id;
         }
 
-    }
-
-    public static class ChangeCompany{
-        public long companyId;
-
-        public ChangeCompany(long companyId) {
-            this.companyId = companyId;
-        }
     }
 
     /**

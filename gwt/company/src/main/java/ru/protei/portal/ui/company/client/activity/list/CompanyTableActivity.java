@@ -53,21 +53,6 @@ public abstract class CompanyTableActivity implements
         requestCompaniesCount();
     }
 
-    @Event
-    public void onChangeRow( CompanyEvents.ChangeCompany event ) {
-        companyService.getCompany( event.companyId, new RequestCallback<Company>() {
-            @Override
-            public void onError( Throwable throwable ) {
-                fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
-            }
-
-            @Override
-            public void onSuccess( Company company ) {
-                view.updateRow(company);
-            }
-        } );
-    }
-
     @Override
     public void onFirstClicked() {
         view.scrollTo( 0 );
@@ -99,7 +84,7 @@ public abstract class CompanyTableActivity implements
             animation.closeDetails();
         } else {
             animation.showDetails();
-            fireEvent( new CompanyEvents.ShowPreview( view.getPreviewContainer(), value, true ) );
+            fireEvent( new CompanyEvents.ShowPreview( view.getPreviewContainer(), value, true, true ) );
         }
     }
 
