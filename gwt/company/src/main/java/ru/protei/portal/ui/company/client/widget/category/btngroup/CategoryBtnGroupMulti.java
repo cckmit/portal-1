@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.company.client.widget.category.btngroup;
 
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
 import ru.protei.portal.ui.common.client.widget.togglebtn.group.ToggleBtnGroupMulti;
@@ -23,6 +24,9 @@ public class CategoryBtnGroupMulti extends ToggleBtnGroupMulti< EntityOption > i
         clear();
 
         for ( EntityOption option : options ) {
+            if ( option.getId().equals( En_CompanyCategory.OFFICIAL.getId() )) {
+                continue;
+            }
             addBtn( option.getDisplayText(), option );
         }
     }

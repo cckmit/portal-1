@@ -122,5 +122,9 @@ public class CompanySelector extends ButtonSelector< EntityOption > implements M
     private HandlerRegistration regHandler;
     private HandlerRegistration vcHandler;
 
-    private List<En_CompanyCategory> categories = null;
+    private List<En_CompanyCategory> categories = Arrays.asList(
+            En_CompanyCategory.CUSTOMER,
+            En_CompanyCategory.PARTNER,
+            En_CompanyCategory.SUBCONTRACTOR,
+            En_CompanyCategory.HOME);
 }
