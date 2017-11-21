@@ -51,8 +51,13 @@ public class CompanyServiceImpl implements CompanyService {
     AuthService authService;
 
     @Override
-    public CoreResponse<Long> countCompanies(CompanyQuery query) {
-        return new CoreResponse<Long>().success(companyDAO.count(query));
+    public CoreResponse<Long> countCompanies(AuthToken token, CompanyQuery query) {
+        Long count = companyDAO.count(query);
+
+        if (count == null)
+            return new CoreResponse<Long>().error(En_ResultStatus.GET_DATA_ERROR, 0L);
+
+        return new CoreResponse<Long>().success(count);
     }
 
     @Override

@@ -23,6 +23,8 @@ public class UiConstants {
 
     public interface ActionBarIcons {
         String CREATE = "fa fa-plus";
+        String LIST = "fa fa-list-ul";
+        String TABLE = "fa fa-table";
         String IMPORT = "fa fa-upload";
     }
 
@@ -30,7 +32,9 @@ public class UiConstants {
         String CONTACT = "contact";
         String ISSUE = "issue";
         String COMPANY = "company";
+        String COMPANY_TYPE_VIEW = "companyTypeView";
         String PRODUCT = "product";
+        String PRODUCT_TYPE_VIEW = "productTypeView";
         String DASHBOARD = "dashboard";
         String EQUIPMENT = "equipment";
         String PROJECT = "project";

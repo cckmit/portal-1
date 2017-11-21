@@ -20,6 +20,12 @@ import java.util.List;
 public interface CompanyService extends RemoteService {
 
     /**
+     * Получение кол-ва компаний
+     * @param query запрос
+     */
+    long getCompaniesCount(CompanyQuery query) throws RequestFailedException;
+
+    /**
      * Получение списка компаний
      * @param query запрос
      * @return список компаний

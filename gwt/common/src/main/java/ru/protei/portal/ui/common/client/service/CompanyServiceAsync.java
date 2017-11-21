@@ -7,7 +7,6 @@ import ru.protei.portal.core.model.ent.CompanyGroup;
 import ru.protei.portal.core.model.ent.CompanySubscription;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.List;
 
@@ -15,6 +14,12 @@ import java.util.List;
  * Асинхронный сервис по работе с компаниями
  */
 public interface CompanyServiceAsync {
+
+    /**
+     * Получение кол-ва компаний
+     * @param query запрос
+     */
+    void getCompaniesCount( CompanyQuery query, AsyncCallback< Long > async );
 
     /**
      * Получение списка компаний

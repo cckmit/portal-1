@@ -15,6 +15,8 @@ import java.util.List;
  */
 public interface ProductServiceAsync {
 
+    void getProductsCount( ProductQuery query, AsyncCallback<Long> callback );
+
     void getProductList(ProductQuery query, AsyncCallback<List<DevUnit>> async);
 
     void getProduct( Long productId, AsyncCallback<DevUnit> async );

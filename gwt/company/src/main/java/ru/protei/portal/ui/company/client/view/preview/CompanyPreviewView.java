@@ -1,11 +1,14 @@
 package ru.protei.portal.ui.company.client.view.preview;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.FieldSetElement;
+import com.google.gwt.dom.client.LegendElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.*;
+import com.google.inject.Inject;
+import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.company.client.activity.preview.AbstractCompanyPreviewActivity;
 import ru.protei.portal.ui.company.client.activity.preview.AbstractCompanyPreviewView;
 
@@ -14,8 +17,28 @@ import ru.protei.portal.ui.company.client.activity.preview.AbstractCompanyPrevie
  */
 public class CompanyPreviewView extends Composite implements AbstractCompanyPreviewView {
 
-    public CompanyPreviewView() {
-        initWidget( ourUiBinder.createAndBindUi ( this ) );
+    @Inject
+    public void onInit() {
+        initWidget( ourUiBinder.createAndBindUi( this ) );
+    }
+
+    @Override
+    protected void onDetach() {
+        super.onDetach();
+        watchForScroll(false);
+    }
+
+    @Override
+    public void watchForScroll(boolean isWatch) {
+        if(isWatch)
+            positioner.watch(this, FixedPositioner.NAVBAR_TOP_OFFSET);
+        else
+            positioner.ignore(this);
+    }
+
+    @Override
+    public void setName( String name ) {
+        this.companyName.setInnerText(name);
     }
 
     @Override
@@ -63,6 +86,20 @@ public class CompanyPreviewView extends Composite implements AbstractCompanyPrev
 //        groupContainer.setVisible( value );
     }
 
+    @Override
+    public Widget asWidget(boolean isForTableView) {
+        if(isForTableView){
+            rootWrapper.addStyleName("preview-wrapper");
+            contacts.setClassName("header");
+        }else {
+            rootWrapper.removeStyleName("preview-wrapper");
+            contacts.setClassName("contacts");
+        }
+
+        companyNameBlock.setVisible(isForTableView);
+        return asWidget();
+    }
+
     @UiField
     SpanElement phone;
     @UiField
@@ -79,6 +116,17 @@ public class CompanyPreviewView extends Composite implements AbstractCompanyPrev
     SpanElement info;
     @UiField
     HTMLPanel groupContainer;
+    @UiField
+    FieldSetElement contacts;
+    @UiField
+    HTMLPanel companyNameBlock;
+    @UiField
+    LegendElement companyName;
+    @UiField
+    HTMLPanel rootWrapper;
+
+    @Inject
+    FixedPositioner positioner;
 
     AbstractCompanyPreviewActivity activity;
 

@@ -17,6 +17,8 @@ import java.util.List;
 @RemoteServiceRelativePath( "springGwtServices/ProductService" )
 public interface ProductService extends RemoteService {
 
+    long getProductsCount(ProductQuery query) throws RequestFailedException;
+
     List<DevUnit> getProductList (ProductQuery query) throws RequestFailedException;
 
     DevUnit getProduct( Long productId ) throws RequestFailedException;

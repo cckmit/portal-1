@@ -967,6 +967,70 @@ label.bordered:after{
   }
 }
 
+
+
+.companies {
+  table {
+    tbody {
+      tr {
+        td {
+          height: 70px;
+          >div {
+            height: 70px;
+            max-height: 70px;
+            white-space: pre-line;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+        }
+      }
+    }
+    .company-name{
+      font-weight: bold;
+    }
+    .company-main-info {
+      width: 60%;
+    }
+    .company-category {
+      vertical-align: top !important;
+      width: 10%
+    }
+    .company-group {
+      vertical-align: top !important;
+      width: 30%;
+    }
+    .contacts{
+      i{
+        padding-right: 5px;
+      }
+    }
+  }
+}
+
+
+
+.products {
+  table {
+    tbody {
+      tr {
+        td {
+          height: 70px;
+          >div {
+            height: 70px;
+            max-height: 70px;
+            white-space: pre-line;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+        }
+      }
+    }
+    .product-name{
+      width: 100%;
+    }
+  }
+}
+
 /* table expandable width */
 
 .no-width {

@@ -75,7 +75,6 @@ public class CompanyFilterView extends Composite implements AbstractCompanyFilte
         return search;
     }
 
-
     @UiHandler( "resetBtn" )
     public void onResetClicked ( ClickEvent event ) {
         if ( activity != null ) {

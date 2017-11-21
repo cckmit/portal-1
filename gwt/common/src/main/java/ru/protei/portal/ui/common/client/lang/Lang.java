@@ -671,4 +671,10 @@ public interface Lang extends Messages, ContactItemLang {
     String roleRemoveSuccessed();
 
     String roleAdd();
+
+    String view();
+
+    String list();
+
+    String table();
 }
