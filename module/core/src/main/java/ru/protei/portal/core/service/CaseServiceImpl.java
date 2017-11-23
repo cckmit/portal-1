@@ -99,8 +99,12 @@ public class CaseServiceImpl implements CaseService {
 
         if (caseId == null)
             return new CoreResponse().error(En_ResultStatus.NOT_CREATED);
+        else
+            caseObject.setId(caseId);
 
-        caseObject.setId(caseId);
+        Long messageId = createAndPersistStateMessage(initiator, caseId, En_CaseState.CREATED);
+        if(messageId == null)
+            log.error("State message for the issue %d not saved!", caseId);
 
         if(CollectionUtils.isNotEmpty(caseObject.getAttachments())){
             caseAttachmentDAO.persistBatch(
@@ -112,11 +116,11 @@ public class CaseServiceImpl implements CaseService {
         }
 
         // From GWT-side we get partially filled object, that's why we need to refresh state from db
-        CaseObject newState = caseObjectDAO.get(caseObject.getId());
+        CaseObject newState = caseObjectDAO.get(caseId);
         newState.setAttachments(caseObject.getAttachments());
         publisherService.publishEvent(new CaseObjectEvent(this, newState, initiator));
 
-        return new CoreResponse<CaseObject>().success( caseObject );
+        return new CoreResponse<CaseObject>().success( newState );
     }
 
 
@@ -139,6 +143,12 @@ public class CaseServiceImpl implements CaseService {
 
         if (!isUpdated)
             return new CoreResponse().error(En_ResultStatus.NOT_UPDATED);
+
+        if(oldState.getState() != caseObject.getState()){
+            Long messageId = createAndPersistStateMessage(initiator, caseObject.getId(), caseObject.getState());
+            if(messageId == null)
+                log.error("State message for the issue %d not saved!", caseObject.getId());
+        }
 
         // From GWT-side we get partially filled object, that's why we need to refresh state from db
         CaseObject newState = caseObjectDAO.get(caseObject.getId());
@@ -396,6 +406,15 @@ public class CaseServiceImpl implements CaseService {
     @Override
     public boolean isExistsAttachments(Long caseId) {
         return caseAttachmentDAO.checkExistsByCondition("case_id = ?", caseId);
+    }
+
+    private Long createAndPersistStateMessage(Person author, Long caseId, En_CaseState state){
+        CaseComment stateChangeMessage = new CaseComment();
+        stateChangeMessage.setAuthor(author);
+        stateChangeMessage.setCreated(new Date());
+        stateChangeMessage.setCaseId(caseId);
+        stateChangeMessage.setCaseStateId((long)state.getId());
+        return caseCommentDAO.persist(stateChangeMessage);
     }
 
     private void applyFilterByScope( AuthToken token, CaseQuery query ) {

@@ -85,7 +85,11 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
     @Override
     public void onSaveClicked() {
-        if(!validateFieldsAndGetResult()){
+        if(!isFieldsValid()){
+            return;
+        }
+        if(isNoChanges(issue)){
+            fireEvent(new NotifyEvents.Show(lang.noChanges(), NotifyEvents.NotifyType.INFO));
             return;
         }
 
@@ -102,7 +106,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                 fireEvent(new IssueEvents.ChangeModel());
                 fireEvent(new Back());
                 fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-                fireEvent(new IssueEvents.SaveComment(caseObject.getId(), isChangedStatus || issue.getId() == null ? caseObject.getStateId() : null));
             }
         });
     }
@@ -158,25 +161,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         }
     }
 
-    @Override
-    public boolean isIssueChanged() {
-        return initialHash != calcHash();
-    }
-
-    private int calcHash(){
-        return Objects.hash(
-                view.name().getValue(),
-                view.description().getText(),
-                view.isLocal().getValue(),
-                view.state().getValue(),
-                view.importance().getValue(),
-                view.company().getValue(),
-                view.initiator().getValue(),
-                view.product().getValue(),
-                view.manager().getValue()
-        );
-    }
-
     private void initialView(CaseObject issue){
         this.issue = issue;
         fillView(this.issue);
@@ -229,8 +213,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         view.product().setValue( ProductShortView.fromProduct( issue.getProduct() ) );
         view.manager().setValue( PersonShortView.fromPerson( issue.getManager() ) );
         view.saveVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_EDIT ) );
-
-        initialHash = calcHash();
     }
 
     private void fillIssueObject(CaseObject issue){
@@ -251,12 +233,25 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         issue.setManager( Person.fromPersonShortView( view.manager().getValue() ) );
     }
 
-    private boolean validateFieldsAndGetResult(){
+    private boolean isFieldsValid(){
         return view.nameValidator().isValid() &&
                 view.stateValidator().isValid() &&
                 view.importanceValidator().isValid() &&
                 view.companyValidator().isValid() &&
                 view.initiatorValidator().isValid();
+    }
+
+    private boolean isNoChanges(CaseObject issue){
+        return
+            Objects.equals(issue.getName(), view.name().getValue())
+            && Objects.equals(issue.getInfo(), view.description().getText())
+            && Objects.equals(issue.isPrivateCase(), view.isLocal().getValue())
+            && Objects.equals(issue.getState(), view.state().getValue())
+            && Objects.equals(issue.getImpLevel(), view.importance().getValue().getId())
+            && Objects.equals(issue.getInitiatorCompanyId(), view.company().getValue() == null? null: view.company().getValue().getId())
+            && Objects.equals(issue.getInitiatorId(), view.initiator().getValue() == null? null: view.initiator().getValue().getId())
+            && Objects.equals(issue.getProductId(), view.product().getValue() == null? null: view.product().getValue().getId())
+            && Objects.equals(issue.getManagerId(), view.manager().getValue() == null? null: view.manager().getValue().getId());
     }
 
     private void addAttachmentsToCase(Collection<Attachment> attachments){

@@ -60,13 +60,29 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                 </tr>
                 <tr>
                     <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 13px;color: #888888;">
-                        ${_description}
+                        ${_issue_private}
                     </td>
                     <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 13px;">
-                        <#if infoChanged>
-                            <@diff new="${(case.info)!''}" old="${(oldCase.info)!''}"/>
-                        <#else>
-                            ${(case.info)!''}
+                        <#if privacyChanged>
+                            <@changeTo old="${oldCase.privateCase?string(_yes,_no)}" new="${case.privateCase?string(_yes,_no)}"/>
+                            <#else>
+                                <#if case.privateCase == true>
+                                    ${_yes}
+                                    <#else>
+                                        ${_no}
+                                </#if>
+                        </#if>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 13px;color: #888888;">
+                        ${_customer}
+                    </td>
+                    <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 13px;">
+                        <#if customerChanged>
+                            <@changeTo old="${(oldInitiator.displayName)!''} (${(oldInitiatorCompany.cname)!''})" new="${(case.initiator.displayName)!''} (${(case.initiatorCompany.cname)!''})"/>
+                            <#else>
+                                ${(case.initiator.displayName)!''} (${(case.initiatorCompany.cname)!''})
                         </#if>
                     </td>
                 </tr>
@@ -77,8 +93,35 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                     <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 13px;">
                         <#if productChanged>
                             <@changeTo old="${(oldCase.product.name)!'?'}" new="${(case.product.name)!'?'}"/>
-                        <#else>
-                            ${(case.product.name)!'?'}
+                            <#else>
+                                ${(case.product.name)!'?'}
+                        </#if>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 13px;color: #888888;">
+                        ${_manager}
+                    </td>
+                    <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 13px;">
+                        <#if managerChanged>
+                            <@changeTo
+                            old="${(oldManager??)?then(((oldManager.displayName)!'') +' ('+ oldManager.company.cname +')', '?')}"
+                            new="${(manager??)?then(((manager.displayName)!'') +' ('+ manager.company.cname +')', '?')}"
+                            />
+                            <#else>
+                                <#if manager??>${(manager.displayName)!''} (${manager.company.cname})<#else>?</#if>
+                        </#if>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 13px;color: #888888;">
+                        ${_state}
+                    </td>
+                    <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 13px;">
+                        <#if caseChanged>
+                            <@changeTo old="${oldCaseState}" new="${caseState}"/>
+                            <#else>
+                                ${caseState}
                         </#if>
                     </td>
                 </tr>
@@ -112,56 +155,13 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                 </tr>
                 <tr>
                     <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 13px;color: #888888;">
-                        ${_state}
+                        ${_description}
                     </td>
                     <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 13px;">
-                        <#if caseChanged>
-                            <@changeTo old="${oldCaseState}" new="${caseState}"/>
+                        <#if infoChanged>
+                            <@diff new="${(case.info)!''}" old="${(oldCase.info)!''}"/>
                         <#else>
-                            ${caseState}
-                        </#if>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 13px;color: #888888;">
-                        ${_issue_private}
-                    </td>
-                    <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 13px;">
-                        <#if privacyChanged>
-                            <@changeTo old="${oldCase.privateCase?string(_yes,_no)}" new="${case.privateCase?string(_yes,_no)}"/>
-                        <#else>
-                            <#if case.privateCase == true>
-                                ${_yes}
-                            <#else>
-                                ${_no}
-                            </#if>
-                        </#if>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 13px;color: #888888;">
-                        ${_customer}
-                    </td>
-                    <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 13px;">
-                        <#if customerChanged>
-                            <@changeTo old="${(oldInitiator.displayName)!''} (${(oldInitiatorCompany.cname)!''})" new="${(case.initiator.displayName)!''} (${(case.initiatorCompany.cname)!''})"/>
-                        <#else>
-                            ${(case.initiator.displayName)!''} (${(case.initiatorCompany.cname)!''})
-                        </#if>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 13px;color: #888888;">
-                        ${_manager}
-                    </td>
-                    <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 13px;">
-                        <#if managerChanged>
-                            <@changeTo
-                                old="${(oldManager??)?then(((oldManager.displayName)!'') +' ('+ oldManager.company.cname +')', '?')}"
-                                new="${(manager??)?then(((manager.displayName)!'') +' ('+ manager.company.cname +')', '?')}"
-                            />
-                        <#else>
-                            <#if manager??>${(manager.displayName)!''} (${manager.company.cname})<#else>?</#if>
+                            ${(case.info)!''}
                         </#if>
                     </td>
                 </tr>

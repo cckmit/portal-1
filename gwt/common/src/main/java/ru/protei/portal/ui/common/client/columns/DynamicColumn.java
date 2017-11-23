@@ -6,7 +6,7 @@ import com.google.gwt.user.client.Element;
 import java.util.function.Function;
 
 /**
- * Created by bondarenko on 30.10.17.
+ * Колонока с динамическим html контентом
  */
 public class DynamicColumn<T> extends ClickColumn<T>{
 

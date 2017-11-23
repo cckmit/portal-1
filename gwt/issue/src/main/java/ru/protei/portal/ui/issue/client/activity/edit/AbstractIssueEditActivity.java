@@ -11,6 +11,4 @@ public interface AbstractIssueEditActivity {
     void onCancelClicked();
     void removeAttachment(Attachment attachment);
     void onCompanyChanged();
-
-    boolean isIssueChanged();
 }

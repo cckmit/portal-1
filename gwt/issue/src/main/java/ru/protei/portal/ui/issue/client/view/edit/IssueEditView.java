@@ -50,7 +50,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @Override
     protected void onAttach() {
         super.onAttach();
-        saveButton.setEnabled(false);
     }
 
     @Override
@@ -217,11 +216,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         if ( activity != null ) {
             activity.onCompanyChanged();
         }
-    }
-
-    @UiHandler( {"name", "description", "local", "company", "state", "product", "manager", "initiator", "importance"} )
-    public void onChange(ValueChangeEvent<?> event){
-        saveButton.setEnabled(activity.isIssueChanged());
     }
 
     @UiHandler( "saveButton" )

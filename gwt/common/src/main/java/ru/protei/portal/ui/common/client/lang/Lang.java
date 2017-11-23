@@ -678,4 +678,6 @@ public interface Lang extends Messages, ContactItemLang {
     String table();
 
     String issueNameHeader ();
+
+    String noChanges();
 }
