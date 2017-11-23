@@ -24,6 +24,8 @@ public interface AbstractCompanyPreviewView extends IsWidget {
 
     void setAddressFact( String value );
 
+    void setCategory( String value );
+
     void setGroupCompany( String value );
 
     void setInfo( String value );

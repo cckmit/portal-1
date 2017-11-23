@@ -72,6 +72,9 @@ public class CompanyPreviewView extends Composite implements AbstractCompanyPrev
     }
 
     @Override
+    public void setCategory ( String value ) { this.category.setInnerText( value ); }
+
+    @Override
     public void setGroupCompany( String value ) {
         this.groupCompany.setInnerText( value );
     }
@@ -91,9 +94,11 @@ public class CompanyPreviewView extends Composite implements AbstractCompanyPrev
         if(isForTableView){
             rootWrapper.addStyleName("preview-wrapper");
             contacts.setClassName("header");
+            comments.setClassName("header");
         }else {
             rootWrapper.removeStyleName("preview-wrapper");
             contacts.setClassName("contacts");
+            comments.setClassName("comments");
         }
 
         companyNameBlock.setVisible(isForTableView);
@@ -106,6 +111,8 @@ public class CompanyPreviewView extends Composite implements AbstractCompanyPrev
     SpanElement site;
     @UiField
     SpanElement email;
+    @UiField
+    SpanElement category;
     @UiField
     SpanElement groupCompany;
     @UiField
@@ -121,9 +128,11 @@ public class CompanyPreviewView extends Composite implements AbstractCompanyPrev
     @UiField
     HTMLPanel companyNameBlock;
     @UiField
-    LegendElement companyName;
+    SpanElement companyName;
     @UiField
     HTMLPanel rootWrapper;
+    @UiField
+    FieldSetElement comments;
 
     @Inject
     FixedPositioner positioner;

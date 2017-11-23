@@ -71,7 +71,8 @@ ul.plate-list {
 
     &.partner,
     &.customer,
-    &.subcontractor{
+    &.subcontractor,
+    &.home{
       .header-block {
         &:after {
           position: absolute;
@@ -97,6 +98,11 @@ ul.plate-list {
     &.customer .header-block:after {
       font-family: Ionicons, serif;
       content: "\f353";
+    }
+
+    &.home .header-block:after {
+      font-family: Ionicons, serif;
+      content: "\f448";
     }
 
     &:hover {

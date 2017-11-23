@@ -72,4 +72,16 @@ public class CompanyEvents {
      */
     public static class ChangeModel {}
 
+    /**
+     * Обновление списка компаний по фильтру
+     */
+    public static class UpdateData {
+        public UpdateData ( ViewType type, CompanyQuery query ) {
+            this.viewType = type;
+            this.query = query;
+        }
+
+        public ViewType viewType;
+        public CompanyQuery query;
+    }
 }

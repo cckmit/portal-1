@@ -38,6 +38,7 @@ public abstract class CompanyPreviewActivity
 
         view.setName(value.getCname());
 
+        view.setCategory( value.getCategory() == null ? "" : value.getCategory().getName() );
         view.setGroupCompany( value.getCompanyGroup() == null ? "" : value.getCompanyGroup().getName() );
 
         PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(value.getContactInfo());

@@ -989,15 +989,15 @@ label.bordered:after{
       font-weight: bold;
     }
     .company-main-info {
-      width: 60%;
+      width: 50%;
     }
     .company-category {
       vertical-align: top !important;
-      width: 10%
+      width: 15%
     }
     .company-group {
       vertical-align: top !important;
-      width: 30%;
+      width: 25%;
     }
     .contacts{
       i{
@@ -1026,7 +1026,7 @@ label.bordered:after{
       }
     }
     .product-name{
-      width: 100%;
+      width: 90%;
     }
   }
 }
@@ -1238,6 +1238,51 @@ td.info {
   color: #607D8B !important;
 }
 /****************/
+
+/**** COMPANY CATEGORY  ****/
+
+.category {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  color: teal;
+}
+
+.category-lg {
+  font-size: 2em;
+  line-height: .75em;
+  /*vertical-align: -15%*/
+}
+
+.icon-partner:before {
+  font-family: FontAwesome, serif;
+  content: "\f2b5";
+}
+
+.icon-subcontractor:before {
+  font-family: Ionicons, serif;
+  content: "\f212";
+}
+
+.icon-customer:before {
+  font-family: Ionicons, serif;
+  content: "\f353";
+}
+
+.icon-home:before {
+  font-family: Ionicons, serif;
+  content: "\f448";
+}
+
 
 /**** STATES ****/
 .state-created {
@@ -1492,6 +1537,12 @@ a {
   position: relative;
 }
 
+.dashboard .issue-name{
+  white-space: normal;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .dashboard .issue-description{
   max-height: 4.26em;
   white-space: normal;
@@ -1502,11 +1553,11 @@ a {
 .dashboard .info label{
   display: inline-block;
 }
-.dashboard .text-semimuted {
+/*.dashboard .text-semimuted {
   position: absolute;
   top: 1px;
   right: 0;
-}
+}*/
 
 .dashboard-section-name {
   padding-left: 15px;

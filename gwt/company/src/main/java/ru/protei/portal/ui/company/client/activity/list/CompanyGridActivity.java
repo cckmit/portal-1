@@ -76,7 +76,7 @@ public abstract class CompanyGridActivity implements AbstractCompanyGridActivity
     @Override
     public void onFilterChanged() {
         query = makeQuery();
-        fireEvent(new CompanyEvents.ShowDefinite(currentViewType, filterView.asWidget(), query));
+        fireEvent(new CompanyEvents.UpdateData(currentViewType, query));
     }
 
     private CompanyQuery makeQuery() {

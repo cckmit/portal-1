@@ -41,14 +41,12 @@ public class InfoColumn extends ClickColumn<CaseShortView>{
         Element productElement = DOM.createLabel();
         productElement.setInnerText( value == null ? "" : value.getProductName() == null ? "" : value.getProductName() );
 
-
-
         divElement.appendChild( productElement );
 
         Date created = value == null ? null : value.getCreated();
         if ( created != null ) {
             Element groupElement = DOM.createElement( "p" );
-            groupElement.addClassName( "text-semimuted" );
+            groupElement.addClassName( "text-semimuted pull-right" );
 
             Element i = DOM.createElement( "i" );
             i.addClassName( "fa fa-clock-o" );
@@ -60,6 +58,10 @@ public class InfoColumn extends ClickColumn<CaseShortView>{
 
             divElement.appendChild( groupElement );
         }
+
+        Element nameElement = DOM.createElement( "p" );
+        nameElement.setInnerText( value == null ? "" : value.getName() == null ? "" : value.getName() );
+        divElement.appendChild( nameElement );
 
         Element infoElement = DOM.createElement( "p" );
         infoElement.addClassName( "issue-description" );

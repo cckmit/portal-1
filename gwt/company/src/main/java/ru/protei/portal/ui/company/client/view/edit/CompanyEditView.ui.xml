@@ -34,13 +34,13 @@
                         <label>
                             <ui:text from="{lang.companyActualAddress}"/>
                         </label>
-                        <validablefield:ValidableTextArea ui:field="actualAddress" styleName="input-field description" notNull="true"/>
+                        <validablefield:ValidableTextArea ui:field="actualAddress" styleName="input-field description" notNull="false"/>
                     </div>
                     <div class="form-group col-xs-12 col-lg-6">
                         <label>
                             <ui:text from="{lang.companyLegalAddress}"/>
                         </label>
-                        <validablefield:ValidableTextArea ui:field="legalAddress" styleName="input-field description" notNull="true"/>
+                        <validablefield:ValidableTextArea ui:field="legalAddress" styleName="input-field description" notNull="false"/>
                     </div>
                     <div class="form-group col-xs-12">
                         <label>

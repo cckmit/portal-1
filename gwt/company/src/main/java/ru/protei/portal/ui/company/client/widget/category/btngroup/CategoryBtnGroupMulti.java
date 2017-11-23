@@ -27,7 +27,11 @@ public class CategoryBtnGroupMulti extends ToggleBtnGroupMulti< EntityOption > i
             if ( option.getId().equals( En_CompanyCategory.OFFICIAL.getId() )) {
                 continue;
             }
-            addBtn( option.getDisplayText(), option );
+            String styleName = En_CompanyCategory.findById( option.getId() ).name().toLowerCase();
+            addBtnWithIcon( "category category-lg icon-" + styleName,
+                    "btn btn-white btn-without-border " + styleName,
+                    null,
+                    option );
         }
     }
 }

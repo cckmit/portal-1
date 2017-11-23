@@ -68,7 +68,7 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
     @UiField
     HTMLPanel rootWrapper;
     @UiField
-    LegendElement productName;
+    SpanElement productName;
     @UiField
     HTMLPanel productNameBlock;
 

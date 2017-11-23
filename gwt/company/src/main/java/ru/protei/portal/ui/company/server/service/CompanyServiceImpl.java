@@ -208,8 +208,7 @@ public class CompanyServiceImpl implements CompanyService {
     public List< CompanySubscription > getCompanySubscription( Long companyId ) throws RequestFailedException {
         log.debug( "getCompanySubscription()" );
 
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-        CoreResponse< List< CompanySubscription > > result = companyService.getCompanySubscriptions( descriptor.getCompany().getId() );
+        CoreResponse< List< CompanySubscription > > result = companyService.getCompanySubscriptions( companyId );
 
         if ( result.isError() ) {
             throw new RequestFailedException( result.getStatus() );

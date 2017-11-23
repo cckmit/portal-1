@@ -53,6 +53,15 @@ public abstract class CompanyTableActivity implements
         requestCompaniesCount();
     }
 
+    @Event
+    public void onFilterChange( CompanyEvents.UpdateData event ) {
+        if(event.viewType != ViewType.TABLE)
+            return;
+
+        this.query = event.query;
+        requestCompaniesCount();
+    }
+
     @Override
     public void onFirstClicked() {
         view.scrollTo( 0 );

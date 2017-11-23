@@ -6,12 +6,19 @@
     <g:HTMLPanel ui:field="rootWrapper">
         <g:HTMLPanel styleName="preview grid">
             <g:HTMLPanel ui:field="companyNameBlock" tag="fieldset" styleName="header" visible="false">
-                <legend ui:field="companyName"/>
+                <legend><ui:text from="{lang.company}"/></legend>
+                <span ui:field="companyName"></span>
             </g:HTMLPanel>
             <g:HTMLPanel ui:field="groupContainer" tag="fieldset" styleName="header">
                 <legend><ui:text from="{lang.companyCommonHeader}"/></legend>
-                <label><ui:text from="{lang.companyGroupLabel}"/></label>
-                <span ui:field="groupCompany"></span>
+                <div class="col-xs-12">
+                    <label><ui:text from="{lang.companyCategory}"/></label>
+                    <span ui:field="category"></span>
+                </div>
+                <div class="col-xs-12">
+                    <label><ui:text from="{lang.companyGroupLabel}"/></label>
+                    <span ui:field="groupCompany"></span>
+                </div>
             </g:HTMLPanel>
 
             <fieldset ui:field="contacts" class="contacts">
@@ -38,7 +45,7 @@
                 </div>
             </fieldset>
 
-            <fieldset class="comments">
+            <fieldset ui:field="comments" class="comments">
                 <legend><ui:text from="{lang.companyAdditionalInfoHeader}"/></legend>
                 <span ui:field="info" class="pre-formatted-info"></span>
             </fieldset>

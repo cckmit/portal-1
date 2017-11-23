@@ -118,6 +118,11 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     }
 
     @Override
+    public void setName( String value ) {
+        this.name.setInnerText( value );
+    }
+
+    @Override
     public void setInfo( String value ) {
         this.info.setInnerText( value );
     }
@@ -200,6 +205,8 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     LabelElement ourCompany;
     @UiField
     SpanElement manager;
+    @UiField
+    SpanElement name;
     @UiField
     SpanElement info;
     @Inject

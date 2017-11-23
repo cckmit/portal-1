@@ -27,6 +27,9 @@ public class CaseShortView implements Serializable {
     @JdbcColumn(name = "MODIFIED")
     private Date modified;
 
+    @JdbcColumn(name = "CASE_NAME")
+    private String name;
+
     @JdbcColumn(name = "INFO")
     private String info;
 
@@ -120,6 +123,10 @@ public class CaseShortView implements Serializable {
     public void setCreated( Date created ) {
         this.created = created;
     }
+
+    public String getName () { return name; }
+
+    public void setName ( String name ) { this.name = name; }
 
     public String getInfo() {
         return info;
@@ -266,13 +273,14 @@ public class CaseShortView implements Serializable {
     }
 
     @Override
-    public String toString() {
+    public String toString () {
         return "CaseShortView{" +
-                "caseNumber=" + caseNumber +
-                ", id=" + id +
+                "id=" + id +
                 ", typeId=" + typeId +
+                ", caseNumber=" + caseNumber +
                 ", created=" + created +
                 ", modified=" + modified +
+                ", name='" + name + '\'' +
                 ", info='" + info + '\'' +
                 ", stateId=" + stateId +
                 ", impLevel=" + impLevel +
@@ -287,8 +295,8 @@ public class CaseShortView implements Serializable {
                 ", managerId=" + managerId +
                 ", managerName='" + managerName + '\'' +
                 ", managerShortName='" + managerShortName + '\'' +
+                ", isAttachmentExists=" + isAttachmentExists +
                 ", managerCompanyName='" + managerCompanyName + '\'' +
-                ", isAttachmentExists='" + isAttachmentExists + '\'' +
                 '}';
     }
 }

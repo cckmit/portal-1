@@ -59,6 +59,15 @@ public abstract class CompanyListActivity implements Activity, AbstractCompanyLi
         requestCompanies();
     }
 
+    @Event
+    public void onFilterChange( CompanyEvents.UpdateData event ) {
+        if(event.viewType != ViewType.LIST)
+            return;
+
+        this.query = event.query;
+        requestCompanies();
+    }
+
     @Override
     public void onFavoriteClicked(AbstractCompanyItemView itemView) {
         Window.alert("Clicked on favorite of company with id = " + itemViewToModel.get(itemView).getId() + "!");

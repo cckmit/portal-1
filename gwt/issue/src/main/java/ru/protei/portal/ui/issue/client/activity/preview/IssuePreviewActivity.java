@@ -21,7 +21,6 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -129,6 +128,7 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
         Company ourCompany = value.getManager() == null ? null : value.getManager().getCompany();
         view.setOurCompany( ourCompany == null ? "" : ourCompany.getCname() );
         view.setManager( value.getManager() == null ? "" : value.getManager().getDisplayName() );
+        view.setName( value.getName() == null ? "" : value.getName() );
         view.setInfo( value.getInfo() == null ? "" : value.getInfo() );
         Company initiator = value.getInitiatorCompany();
         if ( initiator == null ) {
