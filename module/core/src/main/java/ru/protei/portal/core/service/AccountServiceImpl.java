@@ -79,6 +79,19 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    public CoreResponse< UserLogin > getAccountByPersonId ( AuthToken authToken, long personId ) {
+        UserLogin userLogin = userLoginDAO.findByPersonId( personId );
+
+        if ( userLogin == null ) {
+            return  new CoreResponse< UserLogin >().error( En_ResultStatus.NOT_FOUND );
+        }
+
+        jdbcManyRelationsHelper.fill( userLogin, "roles" );
+
+        return new CoreResponse< UserLogin >().success( userLogin );
+    }
+
+    @Override
     @Transactional
     public CoreResponse< UserLogin > saveAccount( AuthToken token, UserLogin userLogin ) {
         if ( !isValidLogin( userLogin ) )

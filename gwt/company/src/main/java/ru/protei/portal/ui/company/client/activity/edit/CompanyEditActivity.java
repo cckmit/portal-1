@@ -112,9 +112,9 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
     }
 
     private boolean validateFieldsAndGetResult(){
-        return view.companyNameValidator().isValid() &&
+        return view.companyNameValidator().isValid() /*&&
                 view.actualAddressValidator().isValid() &&
-                view.legalAddressValidator().isValid();
+                view.legalAddressValidator().isValid()*/;
     }
 
     private void resetValidationStatus(){
@@ -168,6 +168,9 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         company.setCategory(CompanyCategory.fromEntityOption(view.companyCategory().getValue()));
         if(view.companyGroup().getValue() != null) {
             company.setGroupId(view.companyGroup().getValue().getId());
+        }
+        else {
+            company.setGroupId(null);
         }
         company.setSubscriptions(view.companySubscriptions().getValue());
         infoFacade.setWebSite(view.webSite().getText());

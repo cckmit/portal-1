@@ -67,7 +67,7 @@ public class CompanyServiceImpl implements CompanyService {
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
         if (isCompanyNameExists(company.getCname(), company.getId()))
-            throw new RequestFailedException();
+            throw new RequestFailedException(En_ResultStatus.ALREADY_EXIST);
         
         CoreResponse< Company > response;
 

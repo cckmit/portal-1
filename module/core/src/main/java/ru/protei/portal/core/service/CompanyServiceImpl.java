@@ -286,7 +286,7 @@ public class CompanyServiceImpl implements CompanyService {
         return company != null
                 && company.getCname() != null
                 && !company.getCname().trim().isEmpty()
-                && isValidContactInfo(company)
+                /*&& isValidContactInfo(company)*/
                 && !checkCompanyExists(company.getCname(), company.getId());
     }
 

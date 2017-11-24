@@ -4,19 +4,15 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.*;
-import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.IssueStates;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.winter.web.common.client.events.SectionEvents;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -88,7 +84,8 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
 
     private CaseQuery generateNewRecordsQuery(){
         CaseQuery query = new CaseQuery(En_CaseType.CRM_SUPPORT, null, En_SortField.last_update, En_SortDir.DESC);
-        query.setStates(Collections.singletonList(En_CaseState.CREATED));
+        // чтобы показать все обращения. где не задан менеджер
+        //query.setStates(Collections.singletonList(En_CaseState.CREATED));
         query.setManagerId(-1L);
 
         return query;
