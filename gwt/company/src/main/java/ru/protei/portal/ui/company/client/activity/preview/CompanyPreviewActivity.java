@@ -43,10 +43,10 @@ public abstract class CompanyPreviewActivity
 
         PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(value.getContactInfo());
 
-        view.setPhone( infoFacade.getWorkPhone() );
+        view.setPhone( infoFacade.allPhonesAsString() );
 
         view.setSite( infoFacade.getWebSite() );
-        view.setEmail( infoFacade.getEmail() );
+        view.setEmail( infoFacade.allEmailsAsString() );
 
         view.setAddressDejure( infoFacade.getLegalAddress() );
         view.setAddressFact( infoFacade.getFactAddress() );

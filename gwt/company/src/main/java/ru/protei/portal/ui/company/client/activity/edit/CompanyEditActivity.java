@@ -26,18 +26,17 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
     public CompanyEditActivity(){
         ALLOWED_PHONE_TYPES = new ArrayList<>(3);
+        ALLOWED_PHONE_TYPES.add(En_ContactItemType.MOBILE_PHONE);
+        ALLOWED_PHONE_TYPES.add(En_ContactItemType.GENERAL_PHONE);
+        ALLOWED_PHONE_TYPES.add(En_ContactItemType.FAX);
+
         ALLOWED_EMAIL_TYPES = new ArrayList<>(1);
+        ALLOWED_EMAIL_TYPES.add(En_ContactItemType.EMAIL);
     }
 
     @PostConstruct
     public void onInit() {
         view.setActivity( this );
-
-        ALLOWED_PHONE_TYPES.add(En_ContactItemType.MOBILE_PHONE);
-        ALLOWED_PHONE_TYPES.add(En_ContactItemType.GENERAL_PHONE);
-        ALLOWED_PHONE_TYPES.add(En_ContactItemType.FAX);
-
-        ALLOWED_EMAIL_TYPES.add(En_ContactItemType.EMAIL);
     }
 
     @Event
