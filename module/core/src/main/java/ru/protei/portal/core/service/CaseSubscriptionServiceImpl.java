@@ -42,7 +42,9 @@ public class CaseSubscriptionServiceImpl implements CaseSubscriptionService {
     private Set<NotificationEntry> getByCompanyRule (Long targetCompany) {
         Set<NotificationEntry> result = new HashSet<>();
         appendCompanySubscriptions(targetCompany, result);
-        companyGroupHomeDAO.getAll().forEach( hc -> appendCompanySubscriptions(hc.getCompanyId(), result));
+
+        //HomeCompany persons don't need to get notifications
+//        companyGroupHomeDAO.getAll().forEach( hc -> appendCompanySubscriptions(hc.getCompanyId(), result));
         return result;
     }
 

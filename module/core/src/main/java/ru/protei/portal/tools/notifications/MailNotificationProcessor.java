@@ -98,11 +98,10 @@ public class MailNotificationProcessor {
         CaseObject caseObject, Person oldManager, CaseObjectEvent caseEvent, CaseCommentEvent commentEvent, CaseAttachmentEvent attachmentEvent,
         Set<NotificationEntry> notificationEntries, Person currentPerson
     ) {
+
+        Person manager = getManager( caseObject.getManagerId() );
         Collection<NotificationEntry> notifiers =
-                caseObject.isPrivateCase()?
-                        filterProteiNotifiers(notificationEntries)
-                        :
-                        notificationEntries;
+                formNotifiers(notificationEntries, currentPerson, caseObject.getManager(), caseObject.isPrivateCase());
 
         if(notifiers.isEmpty())
             return;
@@ -113,16 +112,11 @@ public class MailNotificationProcessor {
             return;
         }
 
-        Person manager = getManager( caseObject.getManagerId() );
         if ( oldManager == null ) {
             oldManager = manager;
         }
 
         List<String> recipients = notifiers.stream().map( NotificationEntry::getAddress ).collect( toList() );
-//        String currentPersonEmail = new PlainContactInfoFacade( currentPerson.getContactInfo() ).getEmail();
-//        if(currentPersonEmail != null){
-//            recipients.add( currentPersonEmail );
-//        }
 
         PreparedTemplate bodyTemplate = templateService.getCrmEmailNotificationBody(
             caseEvent, comments.getData(), manager, oldManager, commentEvent, attachmentEvent,
@@ -178,5 +172,24 @@ public class MailNotificationProcessor {
 
     private List<NotificationEntry> filterProteiNotifiers(Collection<NotificationEntry> notifiers){
         return notifiers.stream().filter(entry -> entry.getAddress().endsWith("@protei.ru")).collect(Collectors.toList());
+    }
+
+    private Collection<NotificationEntry> formNotifiers(Set<NotificationEntry> allNotifiers, Person creator, Person manager, boolean isPrivateCase){
+        String creatorEmail = new PlainContactInfoFacade( creator.getContactInfo() ).getEmail();
+        String managerEmail = manager == null? null: new PlainContactInfoFacade( manager.getContactInfo() ).getEmail();
+
+        if( !(creatorEmail == null || creatorEmail.isEmpty()) ){
+            allNotifiers.add(
+                new NotificationEntry(creatorEmail, En_ContactItemType.EMAIL,  "ru")
+            );
+        }
+
+        if ( !(managerEmail == null || managerEmail.isEmpty()) ) {
+            allNotifiers.add(
+                new NotificationEntry(managerEmail, En_ContactItemType.EMAIL, "ru")
+            );
+        }
+
+        return isPrivateCase? filterProteiNotifiers(allNotifiers): allNotifiers;
     }
 }
