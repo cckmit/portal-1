@@ -95,7 +95,6 @@ public class WSMigrationManager {
         st.close();
 
         ExternalPersonExtension externalPersonExtension = new ExternalPersonExtension (person);
-        externalPersonExtension.setId(new Long(0));
         tableName = Tm_SqlHelper.getTableName (externalPersonExtension.getClass ());
         sql = Tm_SqlHelper.getInsertString (externalPersonExtension.getClass (), false);
         logger.debug ("prepare statement = " + "insert into " + tableName + sql);
@@ -122,7 +121,6 @@ public class WSMigrationManager {
         Tm_SqlHelper.setParams(st, externalPerson, true);
         st.executeUpdate ();
         st.close();
-        connection.commit ();
 
         ExternalPersonExtension externalPersonExtension = new ExternalPersonExtension (person);
         tableName = Tm_SqlHelper.getTableName (ExternalPersonExtension.class);
@@ -132,6 +130,7 @@ public class WSMigrationManager {
         Tm_SqlHelper.setParams(st, externalPersonExtension, true);
         st.executeUpdate ();
         st.close();
+
         connection.commit ();
     }
 

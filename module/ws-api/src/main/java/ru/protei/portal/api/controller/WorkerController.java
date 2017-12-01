@@ -229,6 +229,11 @@ public class WorkerController {
                 return isValid;
             }
 
+            if (rec.isDeleted() || rec.isFired()) {
+                logger.debug("error result, " + En_ErrorCode.DELETED_OR_FIRED_RECORD.getMessage());
+                return ServiceResult.failResult(En_ErrorCode.DELETED_OR_FIRED_RECORD.getCode(), En_ErrorCode.DELETED_OR_FIRED_RECORD.getMessage(), rec.getId());
+            }
+
             CompanyHomeGroupItem item = companyGroupHomeDAO.getByExternalCode(rec.getCompanyCode().trim());
             if (item == null) {
                 logger.debug("error result, " + En_ErrorCode.UNKNOWN_COMP.getMessage());
@@ -264,8 +269,12 @@ public class WorkerController {
 
                     copy (rec, person);
 
+                    person.setFired(false);
+                    person.setDeleted(false);
+
                     if (person.getId () == null) {
                         personDAO.persist(person);
+                        logger.debug("created person with id = " + person.getId());
                     } else {
                         personDAO.merge(person);
                     }
@@ -330,6 +339,11 @@ public class WorkerController {
                 return ServiceResult.failResult(En_ErrorCode.EMPTY_PER_ID.getCode(), En_ErrorCode.EMPTY_PER_ID.getMessage(), rec.getId());
             }
 
+            if (rec.isDeleted()) {
+                logger.debug("error result, " + En_ErrorCode.DELETED_OR_FIRED_RECORD.getMessage());
+                return ServiceResult.failResult(En_ErrorCode.DELETED_OR_FIRED_RECORD.getCode(), En_ErrorCode.DELETED_OR_FIRED_RECORD.getMessage(), rec.getId());
+            }
+
             CompanyHomeGroupItem item = companyGroupHomeDAO.getByExternalCode(rec.getCompanyCode ().trim ());
             if (item == null) {
                 logger.debug("error result, " + En_ErrorCode.UNKNOWN_COMP.getMessage());
@@ -360,8 +374,6 @@ public class WorkerController {
 
                     copy (rec, person);
 
-                    personDAO.merge (person);
-
                     if (rec.isFired ()) {
 
                         logger.debug("=== fireWorker ===");
@@ -370,15 +382,18 @@ public class WorkerController {
 
                         if (!workerEntryDAO.checkExistsByPersonId(person.getId())) {
                             person.setFired (true);
-                            personDAO.merge (person);
-                            if (WSConfig.getInstance().isEnableMigration()) {
-                                migrationManager.firePerson (person);
-                            }
+                        }
+
+                        personDAO.merge (person);
+                        if (WSConfig.getInstance().isEnableMigration()) {
+                            migrationManager.firePerson (person);
                         }
 
                         logger.debug("success result, workerRowId = " + worker.getId());
                         return ServiceResult.successResult (person.getId ());
                     }
+
+                    personDAO.merge (person);
 
                     WorkerPosition position = getValidPosition (rec.getPositionName (), item.getCompanyId ());
 
@@ -901,8 +916,6 @@ public class WorkerController {
         person.setIpAddress (HelperFunc.isEmpty(rec.getIpAddress ()) ? null : rec.getIpAddress ().trim ());
         person.setPassportInfo (HelperFunc.isEmpty(rec.getPassportInfo ()) ? null : rec.getPassportInfo ().trim ());
         person.setInfo (HelperFunc.isEmpty(rec.getInfo ()) ? null : rec.getInfo ().trim ());
-        person.setDeleted (rec.isDeleted ());
-        person.setFired(rec.isFired());
 
         PlainContactInfoFacade contactInfoFacade = new PlainContactInfoFacade(person.getContactInfo());
         contactInfoFacade.setWorkPhone (HelperFunc.isEmpty(rec.getPhoneWork ()) ? null : rec.getPhoneWork ().trim ());

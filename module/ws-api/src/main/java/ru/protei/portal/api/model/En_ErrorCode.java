@@ -32,7 +32,8 @@ public enum En_ErrorCode {
     EXIST_POS_WOR("WE-10025", "Exists workers with this position."),
     EXIST_POS("WE-10026", "Position already exist."),
     INV_FORMAT_DEP_CODE("WE-10027", "Invalid department code."),
-    INV_FORMAT_WOR_CODE("WE-10028", "Invalid worker code.");
+    INV_FORMAT_WOR_CODE("WE-10028", "Invalid worker code."),
+    DELETED_OR_FIRED_RECORD("WE-10029", "Deleted or fired record.");
 
 
     En_ErrorCode (String code, String message) {

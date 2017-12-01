@@ -310,6 +310,7 @@ public class WorkerRecord {
         setEmail (contactInfoFacade.getEmail ());
         setEmailOwn (contactInfoFacade.getEmail_own ());
         setFax (contactInfoFacade.getFax ());
+        setFired(p.isFired());
         setDeleted (p.isDeleted ());
     }
 
