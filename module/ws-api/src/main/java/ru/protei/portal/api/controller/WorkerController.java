@@ -648,6 +648,15 @@ public class WorkerController {
                 }
             }
 
+            WorkerEntry headWorker = null;
+            if (HelperFunc.isNotEmpty(rec.getHeadId())) {
+                headWorker = workerEntryDAO.getByExternalId(rec.getHeadId().trim(), item.getCompanyId ());
+                if (headWorker == null) {
+                    logger.debug("error result, " + En_ErrorCode.UNKNOWN_WOR.getMessage());
+                    return ServiceResult.failResult(En_ErrorCode.UNKNOWN_WOR.getCode(), En_ErrorCode.UNKNOWN_WOR.getMessage(), null);
+                }
+            }
+
             CompanyDepartment department = companyDepartmentDAO.getByExternalId(rec.getDepartmentId().trim(), item.getCompanyId ());
             if (department == null) {
                 department = new CompanyDepartment ();
@@ -659,7 +668,7 @@ public class WorkerController {
 
             department.setName (rec.getDepartmentName ().trim ());
             department.setParentId (parentDepartment == null ? null : parentDepartment.getId());
-            department.setHeadId (rec.getHeadId ());
+            department.setHeadId (headWorker == null ? null : headWorker.getId());
 
             if (department.getId () == null)
                 companyDepartmentDAO.persist (department);
@@ -896,10 +905,6 @@ public class WorkerController {
 
         if (HelperFunc.isEmpty(rec.getDepartmentName ())) {
             return ServiceResult.failResult(En_ErrorCode.EMPTY_DEP_NAME.getCode(), En_ErrorCode.EMPTY_DEP_NAME.getMessage(), null);
-        }
-
-        if (rec.getHeadId () != null && personDAO.get(rec.getHeadId()) == null) {
-            return ServiceResult.failResult(En_ErrorCode.UNKNOWN_HEAD_DEP.getCode(), En_ErrorCode.UNKNOWN_HEAD_DEP.getMessage(), null);
         }
 
         return ServiceResult.successResult (null);

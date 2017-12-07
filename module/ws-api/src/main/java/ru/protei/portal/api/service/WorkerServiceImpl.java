@@ -434,9 +434,18 @@ public class WorkerServiceImpl implements WorkerService {
                 department.setExternalId(rec.getDepartmentId());
             }
 
+            WorkerEntry headWorker = null;
+            if (HelperFunc.isNotEmpty(rec.getHeadId())) {
+                headWorker = workerEntryDAO.getByExternalId(rec.getHeadId().trim(), item.getCompanyId ());
+                if (headWorker == null) {
+                    logger.debug("error result, " + En_ErrorCode.UNKNOWN_WOR.getMessage());
+                    return ServiceResult.failResult(En_ErrorCode.UNKNOWN_WOR.getCode(), En_ErrorCode.UNKNOWN_WOR.getMessage(), null);
+                }
+            }
+
             department.setName (rec.getDepartmentName ().trim ());
             department.setParentId (parentDepartment == null ? null : parentDepartment.getId());
-            department.setHeadId (rec.getHeadId ());
+            department.setHeadId (headWorker == null ? null : headWorker.getId());
 
             if (department.getId () == null)
                 companyDepartmentDAO.persist (department);

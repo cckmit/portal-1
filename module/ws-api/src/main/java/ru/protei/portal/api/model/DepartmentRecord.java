@@ -19,7 +19,7 @@ public class DepartmentRecord {
 
     private String parentId;
 
-    private Long headId;
+    private String headId;
 
     public DepartmentRecord() {}
 
@@ -64,11 +64,11 @@ public class DepartmentRecord {
     }
 
     @XmlElement(name = "head-id")
-    public Long getHeadId() {
+    public String getHeadId() {
         return headId;
     }
 
-    public void setHeadId(Long headId) {
+    public void setHeadId(String headId) {
         this.headId = headId;
     }
 
@@ -78,6 +78,6 @@ public class DepartmentRecord {
         setDepartmentId(d.getExternalId());
         setDepartmentName(d.getName());
         setParentId(d.getParentExternalId());
-        setHeadId(d.getHeadId());
+        setHeadId(d.getHeadExternalId());
     }
 }

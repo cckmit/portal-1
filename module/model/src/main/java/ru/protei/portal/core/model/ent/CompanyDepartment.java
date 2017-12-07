@@ -40,6 +40,9 @@ public class CompanyDepartment {
     @JdbcColumn(name = "head_id")
     private Long headId;
 
+    @JdbcJoinedColumn(localColumn = "head_id", table = "worker_entry", remoteColumn = "id", mappedColumn = "worker_extId")
+    private String headExternalId;
+
     @JdbcColumn(name = "dep_extId")
     private String externalId;
 
@@ -132,5 +135,13 @@ public class CompanyDepartment {
 
     public void setParentExternalId(String parentExternalId) {
         this.parentExternalId = parentExternalId;
+    }
+
+    public String getHeadExternalId() {
+        return headExternalId;
+    }
+
+    public void setHeadExternalId(String headExternalId) {
+        this.headExternalId = headExternalId;
     }
 }

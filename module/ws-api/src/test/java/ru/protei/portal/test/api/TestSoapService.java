@@ -52,7 +52,7 @@ public class TestSoapService {
             origDepartment.setDepartmentId(props.getProperty ("departmentId"));
             origDepartment.setDepartmentName (props.getProperty ("departmentName"));
             origDepartment.setParentId (props.getProperty ("parentId") != null && !props.getProperty ("parentId").equals ("") ? props.getProperty ("parentId") : null );
-            origDepartment.setHeadId (props.getProperty ("headId") != null && !props.getProperty ("headId").equals ("") ? new Long (props.getProperty ("headId")) : null);
+            origDepartment.setHeadId (props.getProperty ("headId") != null && !props.getProperty ("headId").equals ("") ? props.getProperty ("headId") : null);
 
             origWorker.setCompanyCode (props.getProperty ("companyCode"));
             origWorker.setId (props.getProperty ("personId") != null && !props.getProperty ("personId").equals ("") ? new Long (props.getProperty ("personId")) : null);

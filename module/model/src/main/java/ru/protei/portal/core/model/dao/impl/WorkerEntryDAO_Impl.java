@@ -11,7 +11,7 @@ import java.util.List;
 public class WorkerEntryDAO_Impl extends PortalBaseJdbcDAO<WorkerEntry> implements WorkerEntryDAO {
     @Override
     public boolean checkExistsByExternalId(String extId, Long companyId) {
-        return checkExistsByCondition ("worker_extId=? and worker_entry.companyId=?", extId, companyId);
+        return checkExistsByCondition ("worker_entry.worker_extId=? and worker_entry.companyId=?", extId, companyId);
     }
 
     @Override
@@ -26,7 +26,7 @@ public class WorkerEntryDAO_Impl extends PortalBaseJdbcDAO<WorkerEntry> implemen
 
     @Override
     public WorkerEntry getByExternalId(String extId, Long companyId) {
-        return getByCondition ("worker_extId=? and worker_entry.companyId=?", extId, companyId);
+        return getByCondition ("worker_entry.worker_extId=? and worker_entry.companyId=?", extId, companyId);
     }
 
     @Override
