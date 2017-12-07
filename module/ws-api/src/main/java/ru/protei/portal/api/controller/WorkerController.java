@@ -194,7 +194,7 @@ public class WorkerController {
             exprDecode = Tm_SqlQueryHelper.makeLikeArgEx (exprDecode);
             logger.debug("expr = " + exprDecode);
 
-            EmployeeQuery query = new EmployeeQuery(null, false, exprDecode,
+            EmployeeQuery query = new EmployeeQuery(null, null, exprDecode,
                     En_SortField.person_full_name, En_SortDir.ASC);
             query.setSearchByContactInfo(false);
             List<Person> persons = personDAO.getEmployees(query);
@@ -339,11 +339,6 @@ public class WorkerController {
                 return ServiceResult.failResult(En_ErrorCode.EMPTY_PER_ID.getCode(), En_ErrorCode.EMPTY_PER_ID.getMessage(), rec.getId());
             }
 
-            if (rec.isDeleted()) {
-                logger.debug("error result, " + En_ErrorCode.DELETED_OR_FIRED_RECORD.getMessage());
-                return ServiceResult.failResult(En_ErrorCode.DELETED_OR_FIRED_RECORD.getCode(), En_ErrorCode.DELETED_OR_FIRED_RECORD.getMessage(), rec.getId());
-            }
-
             CompanyHomeGroupItem item = companyGroupHomeDAO.getByExternalCode(rec.getCompanyCode ().trim ());
             if (item == null) {
                 logger.debug("error result, " + En_ErrorCode.UNKNOWN_COMP.getMessage());
@@ -374,19 +369,25 @@ public class WorkerController {
 
                     copy (rec, person);
 
-                    if (rec.isFired ()) {
+                    if (rec.isFired () || rec.isDeleted()) {
 
-                        logger.debug("=== fireWorker ===");
+                        if (rec.isFired()) {
+                            logger.debug("=== fireWorker ===");
+                        }
+                        if (rec.isDeleted()) {
+                            logger.debug("=== deletedWorker ===");
+                        }
 
                         workerEntryDAO.remove (worker);
 
                         if (!workerEntryDAO.checkExistsByPersonId(person.getId())) {
-                            person.setFired (true);
+                            person.setFired (rec.isFired ());
+                            person.setDeleted(rec.isDeleted());
                         }
 
                         personDAO.merge (person);
                         if (WSConfig.getInstance().isEnableMigration()) {
-                            migrationManager.firePerson (person);
+                            migrationManager.savePerson (person);
                         }
 
                         logger.debug("success result, workerRowId = " + worker.getId());
