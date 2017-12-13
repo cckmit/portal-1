@@ -89,6 +89,11 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
     }
 
     @Override
+    public boolean isDecimalNumbersCorrect() {
+        return numbers.checkIfCorrect();
+    }
+
+    @Override
     public HasValue< PersonShortView > manager() {
         return manager;
     }

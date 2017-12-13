@@ -7,6 +7,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_EquipmentType;
+import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -62,6 +63,8 @@ public abstract class EquipmentEditActivity
         Equipment equipment = applyChanges();
         if ( equipment.getDecimalNumbers() == null || equipment.getDecimalNumbers().isEmpty() ) {
             fireEvent( new NotifyEvents.Show( lang.equipmentDecimalNumberNotDefinied(), NotifyEvents.NotifyType.ERROR ) );
+            return;
+        }else if(!view.isDecimalNumbersCorrect()){
             return;
         }
 

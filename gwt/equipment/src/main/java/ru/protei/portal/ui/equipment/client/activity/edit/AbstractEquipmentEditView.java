@@ -44,4 +44,6 @@ public interface AbstractEquipmentEditView extends IsWidget {
     HasValue<String> date();
 
     void setVisibilitySettingsForCreated(boolean isVisible);
+
+    boolean isDecimalNumbersCorrect();
 }

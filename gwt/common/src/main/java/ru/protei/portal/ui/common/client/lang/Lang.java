@@ -81,6 +81,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String msgOK();
 
+    String errFieldsRequired();
+
     String errConnectionError();
 
     String errInvalidSessionID();
@@ -680,4 +682,5 @@ public interface Lang extends Messages, ContactItemLang {
     String issueNameHeader ();
 
     String noChanges();
+
 }

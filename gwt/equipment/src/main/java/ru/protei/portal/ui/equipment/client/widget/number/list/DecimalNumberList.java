@@ -106,6 +106,21 @@ public class DecimalNumberList
         createEmptyBox(En_OrganizationCode.PDRA);
     }
 
+    public boolean checkIfCorrect(){
+        for(DecimalNumberBox box: numberBoxes){
+            DecimalNumber number = box.getValue();
+            if(number.getClassifierCode() == null || number.getRegisterNumber() == null){ // number.getModification() is nullable judging by DB
+                box.showMessage( lang.errFieldsRequired(), DisplayStyle.DANGER);
+                return false;
+            }
+            if ( numberExists( box.getValue() ) ) {
+                box.showMessage( lang.equipmentNumberAlreadyInList(), DisplayStyle.DANGER );
+                return false;
+            }
+        }
+        return true;
+    }
+
     private void clearBoxes() {
         pdraList.clear();
         pamrList.clear();
