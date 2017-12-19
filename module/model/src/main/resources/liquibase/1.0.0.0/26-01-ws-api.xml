@@ -76,4 +76,14 @@
                                  onUpdate="CASCADE"/>
     </changeSet>
 
+    <changeSet author="turik" id="fixFK_CD_HEAD_2">
+        <dropForeignKeyConstraint baseTableName="company_dep" constraintName="FK_CD_HEAD"/>
+        <addForeignKeyConstraint baseColumnNames="head_id"
+                                 baseTableName="company_dep"
+                                 constraintName="FK_CD_HEAD"
+                                 referencedColumnNames="id"
+                                 referencedTableName="worker_entry"
+                                 onDelete="SET NULL"/>
+    </changeSet>
+
 </databaseChangeLog>
