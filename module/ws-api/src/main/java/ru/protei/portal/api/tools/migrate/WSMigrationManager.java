@@ -27,7 +27,8 @@ public class WSMigrationManager {
     }
 
     private Connection getConnection() throws SQLException {
-        if (conn_src == null)
+
+        if (conn_src == null || conn_src.isClosed())
             conn_src = DriverManager.getConnection(PORTAL_SYBASE_JDBC_URL, "dba", "sql");
 
         return conn_src;
