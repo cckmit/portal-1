@@ -912,6 +912,8 @@ public class WorkerController {
 
     private void copy(WorkerRecord rec, Person person) throws ParseException {
 
+        person.setUpdated(new Date());
+
         person.setFirstName (rec.getFirstName ().trim ());
         person.setLastName (rec.getLastName ().trim ());
         person.setSecondName (HelperFunc.isEmpty(rec.getSecondName ()) ? null : rec.getSecondName ().trim ());

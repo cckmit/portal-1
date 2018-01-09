@@ -83,6 +83,9 @@ public class Person implements Serializable, PersonShortViewSupport {
     @JdbcColumn(name = "contactInfo", converterType = ConverterType.JSON)
     private ContactInfo contactInfo;
 
+    @JdbcColumn(name = "updated")
+    private Date updated;
+
     public static Person fromPersonShortView( PersonShortView personShortView ){
         if(personShortView == null)
             return null;
@@ -97,7 +100,6 @@ public class Person implements Serializable, PersonShortViewSupport {
     public Person () {
         this.contactInfo = new ContactInfo();
     }
-
 
     public Long getId() {
         return id;
@@ -281,6 +283,14 @@ public class Person implements Serializable, PersonShortViewSupport {
 
     public void setGender (En_Gender gender) {
         this.genderCode = gender.getCode();
+    }
+
+    public Date getUpdated() {
+        return updated;
+    }
+
+    public void setUpdated(Date updated) {
+        this.updated = updated;
     }
 
     @Override
