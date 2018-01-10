@@ -237,8 +237,8 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         return view.nameValidator().isValid() &&
                 view.stateValidator().isValid() &&
                 view.importanceValidator().isValid() &&
-                view.companyValidator().isValid() &&
-                view.initiatorValidator().isValid();
+                view.companyValidator().isValid();
+//        && view.initiatorValidator().isValid();
     }
 
     private boolean isNoChanges(CaseObject issue){
