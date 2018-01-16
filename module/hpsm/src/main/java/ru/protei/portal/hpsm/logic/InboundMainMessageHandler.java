@@ -21,6 +21,7 @@ import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.service.EventPublisherService;
 import ru.protei.portal.hpsm.api.HpsmSeverity;
 import ru.protei.portal.hpsm.api.HpsmStatus;
+import ru.protei.portal.hpsm.handlers.HpsmHandlerWrap;
 import ru.protei.portal.hpsm.struct.HpsmAttachment;
 import ru.protei.portal.hpsm.struct.HpsmMessage;
 import ru.protei.portal.hpsm.struct.HpsmMessageHeader;
@@ -161,6 +162,7 @@ public class InboundMainMessageHandler implements InboundMessageHandler {
 
         CaseObject object;
         final CaseObject oldState;
+        private final HpsmHandlerWrap handlerWrap = new HpsmHandlerWrap();
 
         public UpdateCaseHanler(CaseObject object, CaseObject oldState) {
             this.object = object;
@@ -199,31 +201,7 @@ public class InboundMainMessageHandler implements InboundMessageHandler {
 
 
             if (request.getSubject().getStatus() != null) {
-                switch (request.getSubject().getStatus()) {
-                    case IN_PROGRESS:
-                    case WAIT_SOLUTION:
-                    case REJECT_WA:
-                        if (object.getState() != En_CaseState.OPENED) {
-                            object.setState(En_CaseState.OPENED);
-                            comment.setCaseStateId(object.getStateId());
-                        }
-                        break;
-
-                    case CLOSED:
-                        if (object.getState() != En_CaseState.VERIFIED) {
-                            object.setState(En_CaseState.VERIFIED);
-                            comment.setCaseStateId(object.getStateId());
-                        }
-                        break;
-
-                    case TEST_SOLUTION:
-                    case TEST_WA:
-                        if (object.getState() != En_CaseState.TEST_CUST) {
-                            object.setState(En_CaseState.TEST_CUST);
-                            comment.setCaseStateId(object.getStateId());
-                        }
-                        break;
-                }
+                handlerWrap.handle(request.getSubject().getStatus(), comment, object);
             }
 
             currState.updateCustomerFields(request.getHpsmMessage());

@@ -5,6 +5,7 @@ import ru.protei.portal.core.model.dict.En_CaseState;
 /**
  * Created by michael on 24.04.17.
  */
+
 public enum HpsmStatus {
 
     NEW ("Новый", En_CaseState.CREATED),
