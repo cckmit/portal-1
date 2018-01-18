@@ -27,6 +27,6 @@
   <include file="2017-11-10-add-scope-column-to-user_role-table.xml" relativeToChangelogFile="true" />
   <include file="2017-11-16-add-equipment-constraint.xml" relativeToChangelogFile="true" />
   <include file="2017-11-20-insert-company_category-home.xml" relativeToChangelogFile="true"/>
-  <include file="2018-01-18-insert-case_notifiers.xml" relativeToChangelogFile="true"/>
+  <include file="2018-01-18-insert-case_notifier.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

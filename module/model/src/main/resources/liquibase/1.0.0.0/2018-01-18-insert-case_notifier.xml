@@ -4,8 +4,8 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
-    <changeSet author="bondarenko" id="insert-case_notifiers-table">
-        <createTable  tableName="case_notifiers">
+    <changeSet author="bondarenko" id="insert-case_notifier-table">
+        <createTable  tableName="case_notifier">
             <column name="id" autoIncrement="true" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
@@ -16,19 +16,19 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
-        <createIndex indexName="ix_ci_ref" tableName="case_notifiers">
+        <createIndex indexName="ix_ci_ref" tableName="case_notifier">
             <column name="CASE_ID"/>
         </createIndex>
-        <createIndex indexName="ix_pi_ref" tableName="case_notifiers">
+        <createIndex indexName="ix_pi_ref" tableName="case_notifier">
             <column name="PERSON_ID"/>
         </createIndex>
-        <createIndex indexName="uq_cipi" tableName="case_notifiers">
+        <createIndex indexName="uq_cipi" tableName="case_notifier">
             <column name="CASE_ID"/>
             <column name="PERSON_ID"/>
         </createIndex>
 
-        <addForeignKeyConstraint baseColumnNames="CASE_ID" baseTableName="case_notifiers" constraintName="FK_CI_REF" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="case_object"/>
-        <addForeignKeyConstraint baseColumnNames="PERSON_ID" baseTableName="case_notifiers" constraintName="FK_PI_REF" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="person"/>
+        <addForeignKeyConstraint baseColumnNames="CASE_ID" baseTableName="case_notifier" constraintName="FK_CI_REF" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="case_object"/>
+        <addForeignKeyConstraint baseColumnNames="PERSON_ID" baseTableName="case_notifier" constraintName="FK_PI_REF" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="person"/>
     </changeSet>
 
 </databaseChangeLog>

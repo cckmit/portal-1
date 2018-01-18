@@ -111,6 +111,9 @@ public class CaseObject extends AuditableObject {
     @JdbcColumn(name = "EXT_APP")
     private String extAppType;
 
+    @JdbcManyToMany(linkTable = "case_notifier", localLinkColumn = "case_id", remoteLinkColumn = "person_id")
+    private List<Person> notifiers;
+
     public CaseObject() {
 
     }
@@ -402,6 +405,14 @@ public class CaseObject extends AuditableObject {
 
     public En_ImportanceLevel importanceLevel () {
         return En_ImportanceLevel.getById(this.impLevel);
+    }
+
+    public List<Person> getNotifiers() {
+        return notifiers;
+    }
+
+    public void setNotifiers(List<Person> notifiers) {
+        this.notifiers = notifiers;
     }
 
     @Override
