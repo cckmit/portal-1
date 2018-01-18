@@ -71,7 +71,7 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
     }
 
     @Event
-    public void onCreateClicked( SectionEvents.Clicked event ) {
+    public void onCreateClicked( ActionBarEvents.Clicked event ) {
         if ( !UiConstants.ActionBarIdentity.ACCOUNT.equals( event.identity ) ) {
             return;
         }

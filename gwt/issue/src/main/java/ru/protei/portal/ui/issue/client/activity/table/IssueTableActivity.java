@@ -91,7 +91,7 @@ public abstract class IssueTableActivity
     }
 
     @Event
-    public void onCreateClicked( SectionEvents.Clicked event ) {
+    public void onCreateClicked( ActionBarEvents.Clicked event ) {
         if ( !UiConstants.ActionBarIdentity.ISSUE.equals( event.identity ) ) {
             return;
         }

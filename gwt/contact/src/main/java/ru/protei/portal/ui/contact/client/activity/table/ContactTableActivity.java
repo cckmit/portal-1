@@ -73,7 +73,7 @@ public abstract class ContactTableActivity
     }
 
     @Event
-    public void onCreateClicked( SectionEvents.Clicked event ) {
+    public void onCreateClicked( ActionBarEvents.Clicked event ) {
         if ( !UiConstants.ActionBarIdentity.CONTACT.equals( event.identity ) ) {
             return;
         }

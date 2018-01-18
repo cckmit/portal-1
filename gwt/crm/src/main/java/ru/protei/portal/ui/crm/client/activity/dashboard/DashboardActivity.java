@@ -33,8 +33,8 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
     }
 
     @Event
-    public void onCreateClicked( SectionEvents.Clicked event ) {
-        if ( !UiConstants.ActionBarIdentity.DASHBOARD.equals( event.identity ) && policyService.hasPrivilegeFor( En_Privilege.ISSUE_CREATE )) {
+    public void onCreateClicked( ActionBarEvents.Clicked event ) {
+        if ( !UiConstants.ActionBarIdentity.DASHBOARD.equals( event.identity ) || !policyService.hasPrivilegeFor( En_Privilege.ISSUE_CREATE )) {
             return;
         }
 
@@ -50,7 +50,7 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
         if ( policyService.hasPrivilegeFor( En_Privilege.ISSUE_CREATE ) ) {
             fireEvent(
                     new ActionBarEvents.Add(
-                            lang.buttonCreate(), UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.ISSUE ) );
+                            lang.buttonCreate(), UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.DASHBOARD ) );
         }
         initWidgets();
 

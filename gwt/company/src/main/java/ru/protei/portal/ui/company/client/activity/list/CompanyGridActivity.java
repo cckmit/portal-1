@@ -56,7 +56,7 @@ public abstract class CompanyGridActivity implements AbstractCompanyGridActivity
     }
 
     @Event
-    public void onChangeViewClicked( SectionEvents.Clicked event ) {
+    public void onChangeViewClicked( ActionBarEvents.Clicked event ) {
         if ( !(UiConstants.ActionBarIdentity.COMPANY_TYPE_VIEW.equals( event.identity )))
             return;
 
@@ -65,7 +65,7 @@ public abstract class CompanyGridActivity implements AbstractCompanyGridActivity
     }
 
     @Event
-    public void onCreateClicked( SectionEvents.Clicked event ) {
+    public void onCreateClicked( ActionBarEvents.Clicked event ) {
         if ( !(UiConstants.ActionBarIdentity.COMPANY.equals( event.identity )) ) {
             return;
         }

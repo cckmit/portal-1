@@ -54,7 +54,7 @@ public abstract class OfficialTableActivity
     }
 
     @Event
-    public void onCreateClicked(SectionEvents.Clicked event) {
+    public void onCreateClicked(ActionBarEvents.Clicked event) {
         if (!UiConstants.ActionBarIdentity.OFFICIAL.equals(event.identity)) {
             return;
         }

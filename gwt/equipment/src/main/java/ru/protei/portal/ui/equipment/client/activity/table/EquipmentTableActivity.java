@@ -73,7 +73,7 @@ public abstract class EquipmentTableActivity
     }
 
     @Event
-    public void onCreateClicked( SectionEvents.Clicked event ) {
+    public void onCreateClicked( ActionBarEvents.Clicked event ) {
         if ( !UiConstants.ActionBarIdentity.EQUIPMENT.equals( event.identity ) ) {
             return;
         }

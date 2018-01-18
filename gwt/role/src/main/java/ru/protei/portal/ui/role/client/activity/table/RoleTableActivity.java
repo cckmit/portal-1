@@ -63,7 +63,7 @@ public abstract class RoleTableActivity
     }
 
     @Event
-    public void onCreateClicked( SectionEvents.Clicked event ) {
+    public void onCreateClicked( ActionBarEvents.Clicked event ) {
         if ( !UiConstants.ActionBarIdentity.ROLE.equals( event.identity ) ) {
             return;
         }

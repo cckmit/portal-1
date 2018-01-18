@@ -54,7 +54,7 @@ public abstract class ProductGridActivity implements AbstractProductGridActivity
     }
 
     @Event
-    public void onChangeViewClicked( SectionEvents.Clicked event ) {
+    public void onChangeViewClicked( ActionBarEvents.Clicked event ) {
         if ( !(UiConstants.ActionBarIdentity.PRODUCT_TYPE_VIEW.equals( event.identity )))
             return;
 
@@ -63,7 +63,7 @@ public abstract class ProductGridActivity implements AbstractProductGridActivity
     }
 
     @Event
-    public void onCreateClicked( SectionEvents.Clicked event ) {
+    public void onCreateClicked( ActionBarEvents.Clicked event ) {
         if ( !(UiConstants.ActionBarIdentity.PRODUCT.equals( event.identity )) ) {
             return;
         }
