@@ -43,13 +43,14 @@ public class UserRoleDAO_impl extends PortalBaseJdbcDAO<UserRole> implements Use
 
 
     @Override
-    public UserRole ensureExists( String code, En_Scope[] scopes, En_Privilege... privileges) {
+    public UserRole ensureExists( String code, En_Scope scope, En_Privilege... privileges) {
         UserRole role = getByCondition("role_code=?", code);
         if (role == null) {
             role = new UserRole();
             role.setCode(code);
             role.setInfo("auto-created");
             role.setPrivileges(new HashSet<>(Arrays.asList(privileges)));
+            role.setScope( scope );
             persist(role);
         }
         else {
@@ -61,17 +62,15 @@ public class UserRoleDAO_impl extends PortalBaseJdbcDAO<UserRole> implements Use
                 }
             }
 
-            for (En_Scope scope : scopes) {
-                if (!role.hasScope(scope)) {
-                    changes = true;
-                    role.addScope(scope);
-                }
-            }
-
             if (changes)
                 merge(role);
         }
 
         return role;
+    }
+
+    @Override
+    public void trimScopeToSingleValue() {
+        jdbcTemplate.batchUpdate( "UPDATE user_role ur SET ur.scopes = LEFT(scopes, (LOCATE(',', scopes) - 1)) WHERE scopes LIKE '%,%'" );
     }
 }

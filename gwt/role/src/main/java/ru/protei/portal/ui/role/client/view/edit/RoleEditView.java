@@ -13,7 +13,7 @@ import ru.protei.portal.ui.common.client.widget.privilege.list.PrivilegeList;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.role.client.activity.edit.AbstractRoleEditActivity;
 import ru.protei.portal.ui.role.client.activity.edit.AbstractRoleEditView;
-import ru.protei.portal.ui.role.client.widget.ScopeBtnGroupMulti;
+import ru.protei.portal.ui.role.client.widget.ScopeBtnGroup;
 
 import java.util.Set;
 
@@ -48,7 +48,7 @@ public class RoleEditView extends Composite implements AbstractRoleEditView {
     }
 
     @Override
-    public HasValue< Set< En_Scope > > scope() {
+    public HasValue< En_Scope > scope() {
         return scope;
     }
 
@@ -80,7 +80,7 @@ public class RoleEditView extends Composite implements AbstractRoleEditView {
     PrivilegeList privileges;
     @Inject
     @UiField(provided = true)
-    ScopeBtnGroupMulti scope;
+    ScopeBtnGroup scope;
 
     AbstractRoleEditActivity activity;
 

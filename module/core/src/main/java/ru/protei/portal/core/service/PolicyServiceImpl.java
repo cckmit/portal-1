@@ -81,7 +81,7 @@ public class PolicyServiceImpl implements PolicyService {
         return Optional.ofNullable( roles )
                 .orElse( Collections.emptySet() )
                 .stream()
-                .flatMap( role -> role.getScopes().stream() )
+                .map( UserRole::getScope )
                 .collect( toSet() );
     }
 }

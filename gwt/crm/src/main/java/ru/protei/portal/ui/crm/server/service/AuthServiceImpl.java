@@ -100,7 +100,7 @@ public class AuthServiceImpl implements AuthService {
         return Optional.ofNullable( roles )
                 .orElse( Collections.emptySet() )
                 .stream()
-                .flatMap( role -> role.getScopes().stream() )
+                .map( UserRole::getScope )
                 .collect( toSet() );
     }
 
