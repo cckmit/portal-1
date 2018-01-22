@@ -134,10 +134,7 @@ public class MigratePersonAction implements MigrateAction {
             En_Privilege.COMPANY_VIEW
     };
 
-    private final static En_Scope [] DEF_EMPL_SCOPE = {
-            En_Scope.ROLE
-    };
-
+    private final static En_Scope DEF_EMPL_SCOPE = En_Scope.ROLE;
 
     @Override
     public void migrate(Connection sourceConnection) throws SQLException {

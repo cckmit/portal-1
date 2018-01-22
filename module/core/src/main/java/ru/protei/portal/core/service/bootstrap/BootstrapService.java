@@ -34,12 +34,18 @@ public class BootstrapService {
 
     @PostConstruct
     public void init() {
+        migrateUserRoleScopeToSingleValue();
         removeObsoletePrivileges();
+    }
+
+    private void migrateUserRoleScopeToSingleValue() {
+        log.info( "Start migrate user role scope to single values" );
+        userRoleDAO.trimScopeToSingleValue();
     }
 
     private void removeObsoletePrivileges() {
         List<En_Privilege> obsoletePrivileges = Arrays.asList(OBSOLETE_DB_PRIVILEGES);
-        log.info( "Start remove obsolete privileges = {}", obsoletePrivileges );
+        log.info( "Start remove obsolete privileges from user role = {}", obsoletePrivileges );
         List< UserRole > all = userRoleDAO.getAll();
 
         if ( all == null ) {

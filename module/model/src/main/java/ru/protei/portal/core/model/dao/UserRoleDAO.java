@@ -17,5 +17,7 @@ public interface UserRoleDAO extends PortalBaseDAO<UserRole> {
     @SqlConditionBuilder
     SqlCondition createSqlCondition( UserRoleQuery query);
 
-    UserRole ensureExists ( String code, En_Scope[] scopes, En_Privilege...privileges);
+    UserRole ensureExists ( String code, En_Scope scope, En_Privilege...privileges);
+
+    void trimScopeToSingleValue();
 }

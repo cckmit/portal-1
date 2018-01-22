@@ -84,7 +84,7 @@ public enum En_Privilege {
             ISSUE_FILTER_PRODUCT_VIEW
     };
 
-    En_Privilege( En_PrivilegeEntity entity, En_PrivilegeAction action ) {
+    private En_Privilege( En_PrivilegeEntity entity, En_PrivilegeAction action ) {
         this.entity = entity;
         this.action = action;
     }

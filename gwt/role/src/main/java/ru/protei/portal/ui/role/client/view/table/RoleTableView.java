@@ -8,7 +8,6 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.TableWidget;
 import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
@@ -22,7 +21,6 @@ import ru.protei.portal.ui.role.client.activity.table.AbstractRoleTableView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 /**
@@ -115,9 +113,9 @@ public class RoleTableView extends Composite implements AbstractRoleTableView {
 
             @Override
             public void fillColumnValue ( Element cell, UserRole value ) {
-                cell.setInnerText( value.getScopes() == null
+                cell.setInnerText( value.getScope() == null
                         ? ""
-                        : value.getScopes().stream().map( sc -> scopeLang.getName( sc )).collect( Collectors.joining(", ") ) );
+                        : scopeLang.getName( value.getScope() ));
             }
         };
         columns.add( description );

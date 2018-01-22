@@ -59,9 +59,7 @@ public class MigrateClientLoginAction implements MigrateAction {
             En_Privilege.COMMON_PROFILE_VIEW
     };
 
-    private final static En_Scope [] DEF_COMPANY_CLIENT_SCOPE = {
-            En_Scope.COMPANY
-    };
+    private final static En_Scope DEF_COMPANY_CLIENT_SCOPE = En_Scope.COMPANY;
 
     @Override
     public void migrate(Connection sourceConnection) throws SQLException {

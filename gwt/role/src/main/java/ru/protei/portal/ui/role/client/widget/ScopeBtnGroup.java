@@ -1,18 +1,15 @@
 package ru.protei.portal.ui.role.client.widget;
 
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_EquipmentType;
 import ru.protei.portal.core.model.dict.En_Scope;
-import ru.protei.portal.ui.common.client.lang.En_EquipmentTypeLang;
 import ru.protei.portal.ui.common.client.lang.En_ScopeLang;
 import ru.protei.portal.ui.common.client.widget.togglebtn.group.ToggleBtnGroup;
-import ru.protei.portal.ui.common.client.widget.togglebtn.group.ToggleBtnGroupMulti;
 
 
 /**
  * Типы областей видимости задачика
  */
-public class ScopeBtnGroupMulti extends ToggleBtnGroupMulti< En_Scope > {
+public class ScopeBtnGroup extends ToggleBtnGroup< En_Scope > {
 
     @Inject
     public void init() {

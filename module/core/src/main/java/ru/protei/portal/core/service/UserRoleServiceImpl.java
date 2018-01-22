@@ -93,9 +93,7 @@ public class UserRoleServiceImpl implements UserRoleService {
 
     private void applyFilterByScope( AuthToken token, UserRoleQuery query ) {
         UserSessionDescriptor descriptor = authService.findSession( token );
-        boolean isHasSystemRole = policyService.hasScopeFor(descriptor.getLogin().getRoles(), En_Scope.SYSTEM );
-
-        if ( !isHasSystemRole ) {
+        if ( !policyService.hasGrantAccessFor( descriptor.getLogin().getRoles(), En_Privilege.ROLE_VIEW ) ) {
             query.setRoleIds(
                             Optional.ofNullable( descriptor.getLogin().getRoles())
                                     .orElse( Collections.emptySet() )

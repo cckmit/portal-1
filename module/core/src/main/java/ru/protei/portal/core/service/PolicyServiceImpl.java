@@ -1,13 +1,12 @@
 package ru.protei.portal.core.service;
 
+import org.apache.commons.collections4.CollectionUtils;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dict.En_PrivilegeEntity;
 import ru.protei.portal.core.model.dict.En_Scope;
 import ru.protei.portal.core.model.ent.UserRole;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static java.util.stream.Collectors.toSet;
 
@@ -56,13 +55,27 @@ public class PolicyServiceImpl implements PolicyService {
     }
 
     @Override
-    public boolean hasScopeFor(Set<UserRole> roles, En_Scope scope) {
-        return getAllScopes( roles ).contains( scope );
+    public boolean hasGrantAccessFor( Set< UserRole > roles, En_Privilege privilege ) {
+        if ( privilege == null ) {
+            return false;
+        }
+
+        Set<En_Scope> privilegeScopes = collectPrivilegeToScopeMap( roles ).get( privilege );
+        if ( CollectionUtils.isEmpty( privilegeScopes ) ) {
+            return false;
+        }
+
+        // В случае, если для привилегии установлена системная область видимости – предоставляем доступ без ограничений
+        // Иначе если назначен scope в зависимости от entity или нет scope вообще – считаем что область видимости ограничена.
+        return privilegeScopes.contains( En_Scope.SYSTEM );
     }
 
     @Override
-    public boolean isGrantAccess(Set<UserRole> roles) {
-        return getAllScopes(roles).contains( En_Scope.SYSTEM );
+    public boolean hasScopeForPrivilege( Set< UserRole > roles, En_Privilege privilege, En_Scope scope ) {
+        Map< En_Privilege, Set< En_Scope > > privilegeToScope = collectPrivilegeToScopeMap( roles );
+        Set< En_Scope > privilegeScopes = privilegeToScope.get( privilege );
+
+        return !CollectionUtils.isEmpty( privilegeScopes ) && privilegeScopes.contains( scope );
     }
 
     private Set< En_Privilege > getAllPrivileges( Set< UserRole > roles ) {
@@ -77,11 +90,23 @@ public class PolicyServiceImpl implements PolicyService {
         return privileges;
     }
 
-    private Set< En_Scope > getAllScopes( Set<UserRole> roles ) {
-        return Optional.ofNullable( roles )
-                .orElse( Collections.emptySet() )
-                .stream()
-                .flatMap( role -> role.getScopes().stream() )
-                .collect( toSet() );
+    private Map<En_Privilege, Set<En_Scope>> collectPrivilegeToScopeMap( Set<UserRole> roles ) {
+        if ( roles == null ) {
+            return Collections.emptyMap();
+        }
+
+        Map<En_Privilege, Set<En_Scope>> privilegeToScope = new HashMap<>();
+        for ( UserRole role : roles ) {
+            if ( role.getPrivileges() == null || role.getScope() == null ) {
+                continue;
+            }
+
+            for ( En_Privilege privilege : role.getPrivileges() ) {
+                Set<En_Scope> scopes = privilegeToScope.computeIfAbsent(privilege, k -> new HashSet<>());
+                scopes.add( role.getScope() );
+            }
+        }
+
+        return privilegeToScope;
     }
 }

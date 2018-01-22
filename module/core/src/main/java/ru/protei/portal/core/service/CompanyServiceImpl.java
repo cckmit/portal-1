@@ -306,7 +306,7 @@ public class CompanyServiceImpl implements CompanyService {
     private List<Company> getCompanyList(AuthToken token, CompanyQuery query) {
         UserSessionDescriptor descriptor = authService.findSession( token );
         Set< UserRole > roles = descriptor.getLogin().getRoles();
-        if ( !policyService.isGrantAccess( roles ) && policyService.hasScopeFor( roles, En_Scope.COMPANY ) ) {
+        if ( !policyService.hasGrantAccessFor( roles, En_Privilege.COMPANY_VIEW ) ) {
             Company company = companyDAO.get( descriptor.getCompany().getId() );
             // TODO: need filter by query?
             return Arrays.asList( company );
@@ -314,7 +314,6 @@ public class CompanyServiceImpl implements CompanyService {
             return companyDAO.getListByQuery(query);
         }
     }
-
 
     private boolean checkCompanyExists (String name, Long excludeId) {
 

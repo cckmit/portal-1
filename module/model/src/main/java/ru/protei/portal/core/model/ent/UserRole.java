@@ -16,8 +16,6 @@ import java.util.Set;
 @JdbcEntity(table = "user_role")
 public class UserRole extends AuditableObject implements EntityOptionSupport, Removable {
 
-
-
     @JdbcId(name = "id")
     private Long id;
 
@@ -32,8 +30,8 @@ public class UserRole extends AuditableObject implements EntityOptionSupport, Re
     private Set<En_Privilege> privileges;
 
     @JdbcEnumerated(EnumType.STRING)
-    @JdbcColumnCollection(separator = ",")
-    private  Set<En_Scope> scopes;
+    @JdbcColumn(name = "scopes")
+    private En_Scope scope;
 
 
     public Long getId() {
@@ -79,23 +77,12 @@ public class UserRole extends AuditableObject implements EntityOptionSupport, Re
         privileges.add(privilege);
     }
 
-    public boolean hasScope( En_Scope scope ) {
-        return scopes != null && scopes.contains( scope );
+    public En_Scope getScope() {
+        return scope;
     }
 
-    public void addScope(En_Scope scope) {
-        if (scopes == null)
-            scopes = new HashSet<>();
-
-        scopes.add(scope);
-    }
-
-    public Set< En_Scope > getScopes() {
-        return scopes;
-    }
-
-    public void setScopes( Set< En_Scope > scopes ) {
-        this.scopes = scopes;
+    public void setScope( En_Scope scope ) {
+        this.scope = scope;
     }
 
     public static UserRole fromEntityOption( EntityOption entityOption){
@@ -150,7 +137,7 @@ public class UserRole extends AuditableObject implements EntityOptionSupport, Re
                 ", code='" + code + '\'' +
                 ", info='" + info + '\'' +
                 ", privileges=" + privileges +
-                ", scope=" + scopes +
+                ", scope=" + scope +
                 '}';
     }
 }

@@ -683,4 +683,5 @@ public interface Lang extends Messages, ContactItemLang {
 
     String noChanges();
 
+    String roleRemoveConfirmMessage();
 }
