@@ -121,7 +121,7 @@ public abstract class RoleTableActivity
     public void onRemoveClicked( UserRole value ) {
         if ( value != null ) {
             roleIdForRemove = value.getId();
-            fireEvent( new ConfirmDialogEvents.Show( getClass().getName(), lang.accountRemoveConfirmMessage() ) );
+            fireEvent( new ConfirmDialogEvents.Show( getClass().getName(), lang.roleRemoveConfirmMessage() ) );
         }
     }
 
