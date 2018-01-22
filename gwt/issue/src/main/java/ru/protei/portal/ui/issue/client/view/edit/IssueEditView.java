@@ -22,6 +22,7 @@ import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEve
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.dict.ImportanceButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.ProductButtonSelector;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
@@ -30,6 +31,8 @@ import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditActivity;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditView;
 import ru.protei.portal.ui.issue.client.widget.state.buttonselector.IssueStatesButtonSelector;
+
+import java.util.Set;
 
 /**
  * Вид создания и редактирования обращения
@@ -100,6 +103,11 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @Override
     public HasValue<Boolean> isLocal() {
         return local;
+    }
+
+    @Override
+    public HasValue<Set<PersonShortView>> notifiers() {
+        return notifiers;
     }
 
     @Override
@@ -182,6 +190,11 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @Override
     public HasEnabled managerEnabled() {
         return manager;
+    }
+
+    @Override
+    public HasEnabled notifiersEnabled() {
+        return notifiers;
     }
 
     @Override
@@ -279,6 +292,10 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @Inject
     @UiField(provided = true)
     EmployeeButtonSelector manager;
+
+    @Inject
+    @UiField(provided = true)
+    EmployeeMultiSelector notifiers;
 
     @UiField
     Button saveButton;

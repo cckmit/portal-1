@@ -196,6 +196,17 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             view.getCommentsContainer().clear();
         }
 
+        if(policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_MANAGER_VIEW)) { //TODO change rule
+            if(issue.getNotifiers() == null)
+                issue.setNotifiers(new HashSet<>());
+            Set<PersonShortView> notifiers = issue.getNotifiers().stream()
+                    .map(PersonShortView::fromPerson).collect(Collectors.toSet());
+            view.notifiers().setValue(notifiers);
+            view.notifiersEnabled().setEnabled(true);
+        }else{
+            view.notifiersEnabled().setEnabled(false);
+        }
+
         view.name().setValue(issue.getName());
         view.isLocal().setValue(issue.isPrivateCase());
         view.description().setText(issue.getInfo());
@@ -231,6 +242,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         issue.setInitiator(Person.fromPersonShortView(view.initiator().getValue()));
         issue.setProduct( DevUnit.fromProductShortView( view.product().getValue() ) );
         issue.setManager( Person.fromPersonShortView( view.manager().getValue() ) );
+        issue.setNotifiers(view.notifiers().getValue().stream().map(Person::fromPersonShortView).collect(Collectors.toSet()));
     }
 
     private boolean isFieldsValid(){
@@ -251,6 +263,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             && Objects.equals(issue.getInitiatorCompanyId(), view.company().getValue() == null? null: view.company().getValue().getId())
             && Objects.equals(issue.getInitiatorId(), view.initiator().getValue() == null? null: view.initiator().getValue().getId())
             && Objects.equals(issue.getProductId(), view.product().getValue() == null? null: view.product().getValue().getId())
+            && Objects.equals(issue.getNotifiers().stream().map(PersonShortView::fromPerson).collect(Collectors.toSet()), view.notifiers())
             && Objects.equals(issue.getManagerId(), view.manager().getValue() == null? null: view.manager().getValue().getId());
     }
 

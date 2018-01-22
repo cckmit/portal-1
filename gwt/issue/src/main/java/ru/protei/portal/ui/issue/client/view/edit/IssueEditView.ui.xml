@@ -75,10 +75,11 @@
 
 
                 <div class="form-group col-xs-12">
-                    <label>
+                    <label style="display:block">
                         <ui:text from="{lang.companySubscription}"/>
                     </label>
                     <div ui:field="subscriptions"/>
+                    <person:EmployeeMultiSelector styleName="case-subscribers" ui:field="notifiers"/>
                 </div>
 
 

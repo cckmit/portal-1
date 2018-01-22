@@ -8,6 +8,7 @@ import ru.protei.winter.jdbc.annotations.*;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by michael on 19.05.16.
@@ -112,7 +113,7 @@ public class CaseObject extends AuditableObject {
     private String extAppType;
 
     @JdbcManyToMany(linkTable = "case_notifier", localLinkColumn = "case_id", remoteLinkColumn = "person_id")
-    private List<Person> notifiers;
+    private Set<Person> notifiers; //may contain partially filled objects!
 
     public CaseObject() {
 
@@ -407,11 +408,11 @@ public class CaseObject extends AuditableObject {
         return En_ImportanceLevel.getById(this.impLevel);
     }
 
-    public List<Person> getNotifiers() {
+    public Set<Person> getNotifiers() {
         return notifiers;
     }
 
-    public void setNotifiers(List<Person> notifiers) {
+    public void setNotifiers(Set<Person> notifiers) {
         this.notifiers = notifiers;
     }
 

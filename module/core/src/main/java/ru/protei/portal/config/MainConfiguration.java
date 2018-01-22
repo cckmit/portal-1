@@ -194,6 +194,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public CaseNotifierDAO getCaseNotifierDAO() {
+        return new CaseNotifierDAO_Impl();
+    }
+
+    @Bean
     public AttachmentDAO getAttachmentDAO() {
         return new AttachmentDAO_Impl();
     }

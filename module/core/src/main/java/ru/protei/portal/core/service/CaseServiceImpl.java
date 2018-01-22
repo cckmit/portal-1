@@ -44,10 +44,16 @@ public class CaseServiceImpl implements CaseService {
     CaseCommentDAO caseCommentDAO;
 
     @Autowired
+    PersonDAO personDAO;
+
+    @Autowired
     EventPublisherService publisherService;
 
     @Autowired
     CaseAttachmentDAO caseAttachmentDAO;
+
+    @Autowired
+    CaseNotifierDAO caseNotifierDAO;
 
     @Autowired
     AttachmentService attachmentService;
@@ -79,6 +85,7 @@ public class CaseServiceImpl implements CaseService {
 
         jdbcManyRelationsHelper.fillAll( caseObject.getInitiatorCompany() );
         jdbcManyRelationsHelper.fill( caseObject, "attachments");
+        jdbcManyRelationsHelper.fill( caseObject, "notifiers");
 
         return new CoreResponse<CaseObject>().success(caseObject);
     }
@@ -115,9 +122,24 @@ public class CaseServiceImpl implements CaseService {
             );
         }
 
+        if(CollectionUtils.isNotEmpty(caseObject.getNotifiers())){
+            Set<Long> personIds = new HashSet<>(caseObject.getNotifiers().size());
+            Set<CaseNotifier> caseNotifiers = new HashSet<>(caseObject.getNotifiers().size());
+            for(Person person: caseObject.getNotifiers()){
+                personIds.add(person.getId());
+                caseNotifiers.add(new CaseNotifier(caseId, person.getId()));
+            }
+
+            caseNotifierDAO.persistBatch(caseNotifiers);
+            caseObject.setNotifiers(
+                new HashSet<>(personDAO.partialGetListByKeys(personIds, "id", "contactInfo"))
+            );
+        }
+
         // From GWT-side we get partially filled object, that's why we need to refresh state from db
         CaseObject newState = caseObjectDAO.get(caseId);
         newState.setAttachments(caseObject.getAttachments());
+        newState.setNotifiers(caseObject.getNotifiers());
         publisherService.publishEvent(new CaseObjectEvent(this, newState, initiator));
 
         return new CoreResponse<CaseObject>().success( newState );
@@ -131,6 +153,13 @@ public class CaseServiceImpl implements CaseService {
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
 
         caseObject.setModified(new Date());
+        if(CollectionUtils.isNotEmpty(caseObject.getNotifiers())) {
+            caseObject.setNotifiers(
+                    new HashSet<>(personDAO.partialGetListByKeys(
+                            caseObject.getNotifiers().stream().map(Person::getId).collect(Collectors.toList()
+                            ), "id", "contactInfo"))
+            );
+        }
 
         if (caseObject.getState() == En_CaseState.CREATED && caseObject.getManager() != null) {
             caseObject.setState(En_CaseState.OPENED);
@@ -138,11 +167,15 @@ public class CaseServiceImpl implements CaseService {
 
         CaseObject oldState = caseObjectDAO.get(caseObject.getId());
         jdbcManyRelationsHelper.fill( oldState, "attachments");
+        Collection<CaseNotifier> prevNotifiers = caseNotifierDAO.getByCaseId(caseObject.getId());
+
 
         boolean isUpdated = caseObjectDAO.merge(caseObject);
 
         if (!isUpdated)
             return new CoreResponse().error(En_ResultStatus.NOT_UPDATED);
+
+        synchronizeCaseNotifiers(prevNotifiers, caseObject.getNotifiers(), caseObject.getId());
 
         if(oldState.getState() != caseObject.getState()){
             Long messageId = createAndPersistStateMessage(initiator, caseObject.getId(), caseObject.getState());
@@ -153,6 +186,7 @@ public class CaseServiceImpl implements CaseService {
         // From GWT-side we get partially filled object, that's why we need to refresh state from db
         CaseObject newState = caseObjectDAO.get(caseObject.getId());
         newState.setAttachments(caseObject.getAttachments());
+        newState.setNotifiers(caseObject.getNotifiers());
 
         publisherService.publishEvent(new CaseObjectEvent(this, newState, oldState, initiator));
 
@@ -265,7 +299,7 @@ public class CaseServiceImpl implements CaseService {
 
 
         Collection<CaseAttachment> removedCaseAttachments =
-                caseAttachmentDAO.subtractDiffAndSynchronize(
+                caseAttachmentDAO.calcDiffAndSynchronize(
                         prevComment.getCaseAttachments(),
                         comment.getCaseAttachments()
                 );
@@ -447,6 +481,26 @@ public class CaseServiceImpl implements CaseService {
 
     private void removeAttachments( AuthToken token, Collection<CaseAttachment> list){
         list.forEach(ca -> attachmentService.removeAttachment( token, ca.getAttachmentId()));
+    }
+
+    private void synchronizeCaseNotifiers(Collection<CaseNotifier> oldNotifiers, Collection<Person> newList, Long caseId){
+        Map<Person, Long> personsToNotifierId = new HashMap<>(oldNotifiers.size());
+        for(CaseNotifier cn: oldNotifiers){
+            personsToNotifierId.put(new Person(cn.getPersonId()), cn.getId());
+        }
+        Collection<Person> oldList = personsToNotifierId.keySet();
+
+        Collection<CaseNotifier> forSave = HelperFunc.subtract(newList, oldList).stream()
+                .map(p -> new CaseNotifier(caseId, p.getId()))
+                .collect(Collectors.toSet());
+
+        Collection<Long> idsForDelete = HelperFunc.subtract(oldList, newList).stream()
+                .map(personsToNotifierId::get).collect(Collectors.toSet());
+
+        if(!forSave.isEmpty())
+            caseNotifierDAO.persistBatch(forSave);
+        if(!idsForDelete.isEmpty())
+            caseNotifierDAO.removeByKeys(idsForDelete);
     }
 
     static final long CHANGE_LIMIT_TIME = 300000;  // 5 минут  (в мсек)
