@@ -1,6 +1,7 @@
 package ru.protei.portal.core.service;
 
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dict.En_PrivilegeEntity;
 import ru.protei.portal.core.model.dict.En_Scope;
 import ru.protei.portal.core.model.ent.UserRole;
 
@@ -17,7 +18,7 @@ public interface PolicyService {
 
     boolean hasAnyPrivilegeOf( Set< UserRole > roles, En_Privilege... privileges );
 
-    boolean hasScopeFor( Set< UserRole > roles, En_Scope scope );
+    boolean hasGrantAccessFor( Set< UserRole > roles, En_Privilege privilege );
 
-    boolean isGrantAccess( Set< UserRole > roles );
+    boolean hasScopeForPrivilege( Set<UserRole> roles, En_Privilege privilege, En_Scope scope );
 }

@@ -117,7 +117,6 @@ public class AccountServiceImpl implements AccountService {
         }
 
         if ( userLoginDAO.saveOrUpdate( userLogin ) ) {
-
             jdbcManyRelationsHelper.persist( userLogin, "roles" );
 
             return new CoreResponse< UserLogin >().success( userLogin );
@@ -159,7 +158,7 @@ public class AccountServiceImpl implements AccountService {
     private void applyFilterByScope( AuthToken token, AccountQuery query ) {
         UserSessionDescriptor descriptor = authService.findSession( token );
 
-        if ( policyService.hasScopeFor( descriptor.getLogin().getRoles(), En_Scope.ROLE ) ) {
+        if ( !policyService.hasGrantAccessFor( descriptor.getLogin().getRoles(), En_Privilege.ACCOUNT_VIEW ) ) {
             query.setRoleIds(
                     Optional.ofNullable( descriptor.getLogin().getRoles())
                             .orElse( Collections.emptySet() )

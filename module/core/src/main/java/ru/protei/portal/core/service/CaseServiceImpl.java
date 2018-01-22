@@ -420,7 +420,7 @@ public class CaseServiceImpl implements CaseService {
     private void applyFilterByScope( AuthToken token, CaseQuery query ) {
         UserSessionDescriptor descriptor = authService.findSession( token );
         Set< UserRole > roles = descriptor.getLogin().getRoles();
-        if ( !policyService.isGrantAccess( roles ) && policyService.hasScopeFor( roles, En_Scope.COMPANY ) ) {
+        if ( !policyService.hasGrantAccessFor( roles, En_Privilege.ISSUE_VIEW ) ) {
             query.setCompanyId( descriptor.getCompany() == null ? null : descriptor.getCompany().getId() );
             query.setPrivateAccess( false );
         }
@@ -429,7 +429,7 @@ public class CaseServiceImpl implements CaseService {
     private void applyCaseByScope( AuthToken token, CaseObject caseObject ) {
         UserSessionDescriptor descriptor = authService.findSession( token );
         Set< UserRole > roles = descriptor.getLogin().getRoles();
-        if ( !policyService.isGrantAccess( roles ) && policyService.hasScopeFor( roles, En_Scope.COMPANY ) ) {
+        if ( !policyService.hasGrantAccessFor( roles, En_Privilege.ISSUE_CREATE ) && policyService.hasScopeForPrivilege( roles, En_Privilege.ISSUE_CREATE, En_Scope.COMPANY ) ) {
             caseObject.setPrivateCase( false );
             caseObject.setInitiatorCompany( descriptor.getCompany() );
             caseObject.setManagerId( null );
