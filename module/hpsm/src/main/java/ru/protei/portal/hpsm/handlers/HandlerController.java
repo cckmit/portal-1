@@ -15,7 +15,7 @@ import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class HpsmHandlerWrap {
+public class HandlerController {
     private final Map<HpsmStatus, BiConsumer> handlersMap = getHandlers();
 
     private Map<HpsmStatus, BiConsumer> getHandlers() {

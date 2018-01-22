@@ -6,7 +6,7 @@ import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.hpsm.api.HpsmStatus;
-import ru.protei.portal.hpsm.handlers.HpsmHandlerWrap;
+import ru.protei.portal.hpsm.handlers.HandlerController;
 
 import java.util.Date;
 
@@ -14,7 +14,7 @@ public class HandlerWrapTest {
 
     private final CaseObject object = new CaseObject(1337L);
     private final CaseComment comment = setupComment();
-    private final HpsmHandlerWrap handlerWrap = new HpsmHandlerWrap();
+    private final HandlerController handlerWrap = new HandlerController();
 
 
     private CaseComment setupComment() {

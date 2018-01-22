@@ -9,6 +9,7 @@ import ru.protei.portal.hpsm.struct.HpsmMessage;
  * Интерфейс для обработки событий внутри портала
  * Реализация должна учитывать правила смены состояний и отправлять почтовые уведомления по обратному каналу
  */
+@FunctionalInterface
 public interface BackChannelEventHandler {
     void handle (CaseObjectEvent event, HpsmMessage message, ServiceInstance instance) throws Exception;
 }

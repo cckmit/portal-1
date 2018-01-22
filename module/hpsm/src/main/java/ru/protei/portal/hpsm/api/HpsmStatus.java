@@ -40,7 +40,6 @@ public enum HpsmStatus {
         return caseState;
     }
 
-
     public static HpsmStatus parse (String code) {
         if (code == null || code.isEmpty())
             return null;
