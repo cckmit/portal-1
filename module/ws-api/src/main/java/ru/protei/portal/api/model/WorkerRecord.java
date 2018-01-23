@@ -324,4 +324,36 @@ public class WorkerRecord {
         setHireOrderNo(w.getHireOrderNo());
         setActive(w.getActiveFlag());
     }
+
+    @Override
+    public String toString() {
+        return "WorkerRecord{" +
+                "companyCode='" + companyCode + '\'' +
+                ", id=" + id +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", secondName='" + secondName + '\'' +
+                ", sex=" + sex +
+                ", birthday='" + birthday + '\'' +
+                ", phoneWork='" + phoneWork + '\'' +
+                ", phoneHome='" + phoneHome + '\'' +
+                ", phoneMobile='" + phoneMobile + '\'' +
+                ", email='" + email + '\'' +
+                ", emailOwn='" + emailOwn + '\'' +
+                ", fax='" + fax + '\'' +
+                ", address='" + address + '\'' +
+                ", addressHome='" + addressHome + '\'' +
+                ", passportInfo='" + passportInfo + '\'' +
+                ", info='" + info + '\'' +
+                ", ipAddress='" + ipAddress + '\'' +
+                ", isDeleted=" + isDeleted +
+                ", isFired=" + isFired +
+                ", workerId='" + workerId + '\'' +
+                ", departmentId='" + departmentId + '\'' +
+                ", hireDate='" + hireDate + '\'' +
+                ", hireOrderNo='" + hireOrderNo + '\'' +
+                ", active=" + active +
+                ", positionName='" + positionName + '\'' +
+                '}';
+    }
 }

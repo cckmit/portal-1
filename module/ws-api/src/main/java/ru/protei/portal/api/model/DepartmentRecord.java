@@ -80,4 +80,15 @@ public class DepartmentRecord {
         setParentId(d.getParentExternalId());
         setHeadId(d.getHeadExternalId());
     }
+
+    @Override
+    public String toString() {
+        return "DepartmentRecord{" +
+                "companyCode='" + companyCode + '\'' +
+                ", departmentId='" + departmentId + '\'' +
+                ", departmentName='" + departmentName + '\'' +
+                ", parentId='" + parentId + '\'' +
+                ", headId='" + headId + '\'' +
+                '}';
+    }
 }

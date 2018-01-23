@@ -19,4 +19,11 @@ public class IdList {
     public void setIds(List<Long> ids) {
         this.ids = ids;
     }
+
+    @Override
+    public String toString() {
+        return "IdList{" +
+                "ids=" + ids +
+                '}';
+    }
 }

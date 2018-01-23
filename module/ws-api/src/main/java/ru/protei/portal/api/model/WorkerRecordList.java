@@ -20,4 +20,11 @@ public class WorkerRecordList {
     public void setWorkerRecords(List<WorkerRecord> workerRecords) {
         this.workerRecords = workerRecords;
     }
+
+    @Override
+    public String toString() {
+        return "WorkerRecordList{" +
+                "size=" + workerRecords.size() +
+                '}';
+    }
 }

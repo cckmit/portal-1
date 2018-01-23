@@ -1,6 +1,8 @@
 package ru.protei.portal.test.api;
 
+import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
 import junit.framework.Assert;
+import org.apache.commons.codec.binary.Base64OutputStream;
 import org.apache.log4j.Logger;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -15,6 +17,7 @@ import ru.protei.portal.api.config.WSConfig;
 import ru.protei.portal.api.model.*;
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.util.*;
 
 public class TestRestService {
@@ -278,7 +281,7 @@ public class TestRestService {
     @Test
     public void testUpdatePhoto() {
 
-        Long id = new Long (155);
+        Long id = new Long (140);
         byte[] buf = read (id);
         logger.debug ("personId = " + id);
         logger.debug ("photo = " + buf);
@@ -293,7 +296,7 @@ public class TestRestService {
 
         Photo photo = new Photo();
         photo.setId(6989L);
-        photo.setContent(Base64.getEncoder().encodeToString(buf));
+        photo.setContent("");
         HttpEntity<Photo> entity = new HttpEntity<>(photo, headers);
 
         ResponseEntity<ServiceResult> response = restTemplate.exchange(URI, HttpMethod.PUT, entity, ServiceResult.class);
@@ -360,10 +363,10 @@ public class TestRestService {
             logger.debug ("Photo for id = " + p.getId () + " exist. Length of photo = " + p.getContent ().length());
             logger.debug("Photo's content in Base64 = " + p.getContent());
             String newFileName = WSConfig.getInstance ().getDirPhotos () + "new/" + p.getId() + ".jpg";
-            OutputStream out = null;
+            Base64OutputStream out = null;
             try {
-                out = new BufferedOutputStream(new FileOutputStream(newFileName));
-                out.write (Base64.getDecoder().decode(p.getContent()));
+                out = new Base64OutputStream(new FileOutputStream(newFileName),false);
+                out.write (p.getContent().getBytes());
                 //out.write (p.getContent());
             } catch (Exception e){
                 logger.error(e.getMessage(), e);

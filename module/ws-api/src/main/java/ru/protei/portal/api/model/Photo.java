@@ -13,7 +13,7 @@ public class Photo {
     private Long id;
     private String content;
 
-    @XmlElement(name = "id")
+    @XmlElement(name = "id", required = true)
     public Long getId() {
         return id;
     }
@@ -22,12 +22,20 @@ public class Photo {
         this.id = id;
     }
 
-    @XmlElement(name = "content")
+    @XmlElement(name = "content", required = true)
     public String getContent() {
         return content;
     }
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    @Override
+    public String toString() {
+        return "Photo{" +
+                "id=" + id +
+                ", length of content=" + (content == null ? null : content.length()) +
+                '}';
     }
 }

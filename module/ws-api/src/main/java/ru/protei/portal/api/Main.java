@@ -42,15 +42,15 @@ public class Main {
 
             webapp.addEventListener(new ContextLoaderListener(context));
 
-            CharacterEncodingFilter characterEncodingFilter = new CharacterEncodingFilter();
-            characterEncodingFilter.setEncoding("UTF-8");
-            characterEncodingFilter.setForceEncoding(true);
-            webapp.addFilter(new FilterHolder(characterEncodingFilter), "/*", EnumSet.of(DispatcherType.REQUEST));
-
             // SPRING servlet-dispatcher
             ServletHolder springHolder = new ServletHolder("dispatcher", new DispatcherServlet(context));
             springHolder.setInitOrder(2);
             webapp.addServlet(springHolder, MAPPING_URL);
+
+            CharacterEncodingFilter characterEncodingFilter = new CharacterEncodingFilter();
+            characterEncodingFilter.setEncoding("UTF-8");
+            characterEncodingFilter.setForceEncoding(true);
+            webapp.addFilter(new FilterHolder(characterEncodingFilter), "/*", EnumSet.of(DispatcherType.REQUEST));
 
             // CXF servlet-dispatcher
             //webapp.addServlet(new ServletHolder("cxf", new CXFServlet()), API_URL);
