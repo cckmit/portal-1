@@ -21,7 +21,6 @@ import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.service.EventPublisherService;
 import ru.protei.portal.hpsm.api.HpsmSeverity;
 import ru.protei.portal.hpsm.api.HpsmStatus;
-import ru.protei.portal.hpsm.handlers.HandlerController;
 import ru.protei.portal.hpsm.handlers.HpsmEventHandler;
 import ru.protei.portal.hpsm.logic.HpsmEvent;
 import ru.protei.portal.hpsm.logic.ServiceInstance;
@@ -169,7 +168,7 @@ public class HpsmEventHandlerFactoryImpl implements HpsmEventHandlerFactory{
 
         CaseObject object;
         final CaseObject oldState;
-        private final HandlerController handlerWrap = new HandlerController();
+        private final HpsmStatusHandlerFactory statusHandlerFactory = HpsmStatusHandlerFactoryImpl.getInstance();
 
         public UpdateCaseHandler(CaseObject object, CaseObject oldState) {
             this.object = object;
@@ -208,7 +207,7 @@ public class HpsmEventHandlerFactoryImpl implements HpsmEventHandlerFactory{
 
 
             if (request.getSubject().getStatus() != null) {
-                handlerWrap.handle(request.getSubject().getStatus(), comment, object);
+                statusHandlerFactory.createHandler(HpsmStatus.getByCaseState(oldState.getState()), request.getSubject().getStatus());
             }
 
             currState.updateCustomerFields(request.getHpsmMessage());

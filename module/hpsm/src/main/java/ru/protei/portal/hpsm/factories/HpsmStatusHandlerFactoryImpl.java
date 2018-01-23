@@ -2,26 +2,27 @@ package ru.protei.portal.hpsm.factories;
 
 import protei.utils.common.Tuple;
 import static ru.protei.portal.hpsm.api.HpsmStatus.*;
+
+import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.hpsm.api.HpsmStatus;
 import ru.protei.portal.hpsm.handlers.HpsmStatusHandler;
-import ru.protei.portal.hpsm.logic.HpsmEvent;
-import ru.protei.portal.hpsm.logic.ServiceInstance;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public final class HpsmStatusHandlerFactoryImpl implements HpsmStatusHandlerFactory {
+
     private HpsmStatusHandlerFactoryImpl() {
         statusHandlerMap = new HashMap<>();
-        statusHandlerMap.put(new Tuple<>(INFO_REQUEST, IN_PROGRESS), new InfoRequestToOpenHandler());
-        statusHandlerMap.put(new Tuple<>(WORKAROUND, TEST_WA), new WAToWACheckHandler());
-        statusHandlerMap.put(new Tuple<>(TEST_WA, REJECT_WA), new WACheckToWARejectHandler());
-        statusHandlerMap.put(new Tuple<>(TEST_WA, CONFIRM_WA), new WACheckToWAAcceptHandler());
-        statusHandlerMap.put(new Tuple<>(SOLVED, TEST_SOLUTION), new SolvedToSolvedCheckHandler());
-        statusHandlerMap.put(new Tuple<>(TEST_SOLUTION, IN_PROGRESS), new SolvedCheckToOpenHandler());
-        statusHandlerMap.put(new Tuple<>(TEST_SOLUTION, CLOSED), new SolvedCheckToClosedHandler());
+        statusHandlerMap.put(new Tuple2(INFO_REQUEST, IN_PROGRESS), new OpenCaseHandler());
+        statusHandlerMap.put(new Tuple2(WORKAROUND, TEST_WA), new WorkaroundCaseHandler());
+        statusHandlerMap.put(new Tuple2(TEST_WA, REJECT_WA), new OpenCaseHandler());
+        statusHandlerMap.put(new Tuple2(TEST_WA, CONFIRM_WA), new WorkaroundCaseHandler());
+        statusHandlerMap.put(new Tuple2(SOLVED, TEST_SOLUTION), new SolvedCheckHandler());
+        statusHandlerMap.put(new Tuple2(TEST_SOLUTION, REJECT_SOLUTION), new OpenCaseHandler());
+        statusHandlerMap.put(new Tuple2(TEST_SOLUTION, CLOSED), new ClosedCaseHandler());
     }
 
     public static HpsmStatusHandlerFactory getInstance() {
@@ -29,61 +30,73 @@ public final class HpsmStatusHandlerFactoryImpl implements HpsmStatusHandlerFact
     }
 
     @Override
-    public HpsmStatusHandler createHandler(CaseObject object, CaseComment comment) {
-        return null;
+    public HpsmStatusHandler createHandler(HpsmStatus oldStatus, HpsmStatus newStatus) {
+        return statusHandlerMap.get(new Tuple2(oldStatus, newStatus));
     }
 
-    public final class InfoRequestToOpenHandler implements HpsmStatusHandler {
-
+    public final class WorkaroundCaseHandler implements HpsmStatusHandler {
         @Override
-        public void handle(HpsmEvent request, ServiceInstance instance) throws Exception {
-
+        public void handle(CaseObject object, CaseComment comment) {
+            if (object.getState() != En_CaseState.WORKAROUND) {
+                object.setState(En_CaseState.WORKAROUND);
+                comment.setCaseStateId(object.getStateId());
+            }
         }
     }
 
-    public final class WAToWACheckHandler implements HpsmStatusHandler {
+    public final class OpenCaseHandler implements HpsmStatusHandler {
         @Override
-        public void handle(HpsmEvent request, ServiceInstance instance) throws Exception {
-
+        public void handle(CaseObject object, CaseComment comment) {
+            if (object.getState() != En_CaseState.OPENED) {
+                object.setState(En_CaseState.OPENED);
+                comment.setCaseStateId(object.getStateId());
+            }
         }
     }
 
-    public final class WACheckToWARejectHandler implements HpsmStatusHandler {
-        @Override
-        public void handle(HpsmEvent request, ServiceInstance instance) throws Exception {
+    public final class SolvedCheckHandler implements HpsmStatusHandler {
 
+        @Override
+        public void handle(CaseObject object, CaseComment comment) {
+            if (object.getState() != En_CaseState.CLOSED) {
+                object.setState(En_CaseState.CLOSED);
+                comment.setCaseStateId(object.getStateId());
+            }
         }
     }
 
-    public final class WACheckToWAAcceptHandler implements HpsmStatusHandler {
+    public final class ClosedCaseHandler implements HpsmStatusHandler {
 
         @Override
-        public void handle(HpsmEvent request, ServiceInstance instance) throws Exception {
-
+        public void handle(CaseObject object, CaseComment comment) {
+            if (object.getState() != En_CaseState.VERIFIED) {
+                object.setState(En_CaseState.VERIFIED);
+                comment.setCaseStateId(object.getStateId());
+            }
         }
     }
 
-    public final class SolvedToSolvedCheckHandler implements HpsmStatusHandler {
+    private final class Tuple2 extends Tuple<HpsmStatus, HpsmStatus> {
 
-        @Override
-        public void handle(HpsmEvent request, ServiceInstance instance) throws Exception {
-
+        public Tuple2(HpsmStatus hpsmStatus, HpsmStatus hpsmStatus2) {
+            super(hpsmStatus, hpsmStatus2);
         }
-    }
-
-    public final class SolvedCheckToOpenHandler implements HpsmStatusHandler {
 
         @Override
-        public void handle(HpsmEvent request, ServiceInstance instance) throws Exception {
-
+        public int hashCode() {
+            int result = a.hashCode();
+            result = 31 * result + b.hashCode();
+            return result;
         }
-    }
-
-    public final class SolvedCheckToClosedHandler implements HpsmStatusHandler {
 
         @Override
-        public void handle(HpsmEvent request, ServiceInstance instance) throws Exception {
+        public boolean equals(Object obj) {
+            if (this == obj) return true;
+            if (obj == null || getClass() != obj.getClass()) return false;
 
+            Tuple2 tuple = (Tuple2) obj;
+            if (!a.equals(tuple.a)) return false;
+            return b.equals(tuple.b);
         }
     }
 

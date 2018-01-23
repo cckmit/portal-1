@@ -2,6 +2,8 @@ package ru.protei.portal.hpsm.api;
 
 import ru.protei.portal.core.model.dict.En_CaseState;
 
+import java.util.Arrays;
+
 /**
  * Created by michael on 24.04.17.
  */
@@ -18,6 +20,7 @@ public enum HpsmStatus {
     TEST_WA ("Проверка временного решения", En_CaseState.TEST_CUST),
     TEST_SOLUTION ("Проверка постоянного решения", En_CaseState.TEST_CUST),
     WAIT_SOLUTION ("Ожидание постоянного решения", En_CaseState.OPENED),
+    REJECT_SOLUTION ("Постоянное решение отклонено", En_CaseState.OPENED),
     REJECT_WA ("Временное решение отклонено", En_CaseState.OPENED),
     CONFIRM_WA ("Временное решение принято", En_CaseState.TEST_CUST),
     CLOSED ("Закрыт", En_CaseState.VERIFIED);
@@ -49,5 +52,9 @@ public enum HpsmStatus {
                 return it;
 
         return null;
+    }
+
+    public static HpsmStatus getByCaseState(En_CaseState caseState){
+        return Arrays.stream(HpsmStatus.values()).filter(x -> x.caseState.equals(caseState)).findFirst().orElseGet(null);
     }
 }

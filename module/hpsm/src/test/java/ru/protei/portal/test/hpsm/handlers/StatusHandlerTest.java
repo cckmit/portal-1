@@ -6,15 +6,19 @@ import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.hpsm.api.HpsmStatus;
-import ru.protei.portal.hpsm.handlers.HandlerController;
+import ru.protei.portal.hpsm.factories.HpsmStatusHandlerFactory;
+import ru.protei.portal.hpsm.factories.HpsmStatusHandlerFactoryImpl;
+import ru.protei.portal.hpsm.handlers.HpsmStatusHandler;
 
 import java.util.Date;
 
-public class HandlerWrapTest {
+import static ru.protei.portal.hpsm.api.HpsmStatus.*;
+
+public class StatusHandlerTest {
 
     private final CaseObject object = new CaseObject(1337L);
     private final CaseComment comment = setupComment();
-    private final HandlerController handlerWrap = new HandlerController();
+    private final HpsmStatusHandlerFactory statusHandlerFactory = HpsmStatusHandlerFactoryImpl.getInstance();
 
 
     private CaseComment setupComment() {
@@ -30,37 +34,23 @@ public class HandlerWrapTest {
     public void objectStateToOpen() {
         object.setState(En_CaseState.DISCUSS);
 
-        //wait -> open
-        handlerWrap.handle(HpsmStatus.WAIT_SOLUTION, comment, object);
+        statusHandlerFactory.createHandler(TEST_WA, REJECT_WA).handle(object, comment);
         Assert.assertEquals(En_CaseState.OPENED, object.getState());
 
-        //rejectWA -> open
         object.setState(En_CaseState.CLOSED);
-        handlerWrap.handle(HpsmStatus.REJECT_WA, comment, object);
+        statusHandlerFactory.createHandler(INFO_REQUEST, IN_PROGRESS).handle(object, comment);
         Assert.assertEquals(En_CaseState.OPENED, object.getState());
 
         //inprogress -> open
         object.setState(En_CaseState.CLOSED);
-        handlerWrap.handle(HpsmStatus.IN_PROGRESS, comment, object);
+        statusHandlerFactory.createHandler(TEST_SOLUTION, REJECT_SOLUTION).handle(object, comment);
         Assert.assertEquals(En_CaseState.OPENED, object.getState());
     }
 
     @Test
     public void objectStateToVerified() {
         //closed -> verified
-        handlerWrap.handle(HpsmStatus.CLOSED, comment, object);
+        statusHandlerFactory.createHandler(TEST_SOLUTION, CLOSED).handle(object, comment);
         Assert.assertEquals(En_CaseState.VERIFIED, object.getState());
-    }
-
-    @Test
-    public void objectStateToTestCust() {
-        //test_wa -> test_cust
-        handlerWrap.handle(HpsmStatus.TEST_WA, comment, object);
-        Assert.assertEquals(En_CaseState.TEST_CUST, object.getState());
-
-        //test_solution -> test_cust
-        object.setState(En_CaseState.CLOSED);
-        handlerWrap.handle(HpsmStatus.TEST_SOLUTION, comment, object);
-        Assert.assertEquals(En_CaseState.TEST_CUST, object.getState());
     }
 }

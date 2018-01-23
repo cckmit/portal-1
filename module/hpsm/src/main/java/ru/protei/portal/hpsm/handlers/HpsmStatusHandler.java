@@ -1,8 +1,8 @@
 package ru.protei.portal.hpsm.handlers;
 
-import ru.protei.portal.hpsm.logic.HpsmEvent;
-import ru.protei.portal.hpsm.logic.ServiceInstance;
+import ru.protei.portal.core.model.ent.CaseComment;
+import ru.protei.portal.core.model.ent.CaseObject;
 
 public interface HpsmStatusHandler {
-    void handle(HpsmEvent request, ServiceInstance instance) throws Exception;
+    void handle(CaseObject object, CaseComment comment);
 }
