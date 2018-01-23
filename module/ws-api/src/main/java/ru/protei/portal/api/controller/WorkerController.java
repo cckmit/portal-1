@@ -28,6 +28,8 @@ import java.text.ParseException;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 @RestController
 @RequestMapping(value = "/api/worker", headers = "Accept=application/xml")
@@ -59,12 +61,35 @@ public class WorkerController {
     @RequestMapping(method = RequestMethod.GET, value = "/get.person")
     public @ResponseBody WorkerRecord getPerson(@RequestParam(name = "id") Long id) {
 
+        /**
+         * @review нужно объединить в один вызов logger.debug, не надо выделять сообщения строками вида "==="
+         * для логирования вызовов функций сервиса можно вообще написать аспект
+         */
         logger.debug("=== getPerson ===");
+
+        /**
+         * @review Юля, использование log4j буду запрещать на уровне приказа по отделу,
+         * используйте slf4j в качестве front-end api и log4j или logback в качестве основы,
+         * тогда код отладочного вывода становится и читабельнее, и эффективнее с точки зрения производительности
+         */
         logger.debug("id = " + id);
 
         try {
+
+            /**
+             * @review слишком много проверочного кода, который бесполезен.
+             * ok, пусть id будет null, зачем нужна проверка и как она повлияет на конечный результат?
+             * никак. будет либо NPE, либо dao точно также вернет null в качестве результата.
+             *
+             */
             if (id != null) {
                 Person person = personDAO.get (id);
+
+                /**
+                 * @review тоже самое здесь. если person будет Null, то будет NPE и функция вернет null
+                 * зачем тогда нужна проверка?
+                 *
+                 */
                 if (person != null) {
                     return new WorkerRecord(person);
                 }
@@ -73,11 +98,24 @@ public class WorkerController {
             logger.error ("error while get worker", e);
         }
         return null;
+        /**
+         * @review вот мое видение, как нужно реализовать данный метод:
+         *
+         * logger.debug ("get person by id {}", id)
+         * try {
+         *     return new WorkerRecord (personDAO.get(id));
+         * }
+         * catch (Throwable e) {
+         *     logger.error ("...", e);
+         * }
+         * return null;
+         */
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/get.worker")
     public @ResponseBody WorkerRecord getWorker(@RequestParam(name = "id") String id, @RequestParam(name = "companyCode") String companyCode) {
 
+        // @review далее, я уже не буду повторять про одно и тоже
         logger.debug("=== getWorker ===");
 
         try {
@@ -88,8 +126,16 @@ public class WorkerController {
             String idDecode = URLDecoder.decode(id, "UTF-8");
             logger.debug("id = " + id);
 
+            /**
+             * если в @RequestParam обозначить параметр как обязательный, то проверка ниже не требуется
+             */
             if (id != null && HelperFunc.isNotEmpty(companyDecode)) {
                 CompanyHomeGroupItem item = companyGroupHomeDAO.getByExternalCode(companyDecode.trim());
+
+                /** Далее код эквивалентен:
+                 *
+                 * return item == null ? null : new WorkerRecord (workerEntryDAO.getByExternalId(idDecode.trim(), item.getCompanyId()));
+                 */
                 if (item != null) {
                     WorkerEntry worker = workerEntryDAO.getByExternalId(idDecode.trim(), item.getCompanyId());
                     if (worker != null) {
@@ -104,12 +150,40 @@ public class WorkerController {
     }
 
 
+    private <R> R withHomeCompany (String id, String companyCode, BiFunction<String,CompanyHomeGroupItem, R> func) throws Exception {
+        String companyDecode = URLDecoder.decode(companyCode, "UTF-8").trim();
+        logger.debug("companyCode = " + companyDecode);
+
+        String idDecode = URLDecoder.decode(id, "UTF-8").trim();
+        logger.debug("id = " + id);
+
+        if (id != null && HelperFunc.isNotEmpty(companyDecode)) {
+            CompanyHomeGroupItem item = companyGroupHomeDAO.getByExternalCode(companyDecode.trim());
+            return item == null ? null : func.apply(id, item);
+        }
+
+        return null;
+    }
+
+
     @RequestMapping(method = RequestMethod.GET, value = "/get.department")
     public @ResponseBody DepartmentRecord getDepartment(@RequestParam(name = "id") String id, @RequestParam(name = "companyCode") String companyCode) {
 
         logger.debug("=== getDepartment ===");
 
         try {
+
+            /**
+             * @review обрати внимание, что код этого метода практически дублирует код предыдущего
+             * я добавляю метод withHomeCompany (см. выше), после чего твой код транслируется в это:
+             *
+             * return withHomeCompany(id, companyCode,
+             *      (recid,item) -> new DepartmentRecord(companyDepartmentDAO.getByExternalId(recid, item.getCompanyId()))
+             * );
+             *
+             * не правда ли компактнее?
+             */
+
 
             String companyDecode = URLDecoder.decode(companyCode, "UTF-8");
             logger.debug("companyCode = " + companyDecode);
@@ -197,6 +271,12 @@ public class WorkerController {
             EmployeeQuery query = new EmployeeQuery(null, null, exprDecode,
                     En_SortField.person_full_name, En_SortDir.ASC);
             query.setSearchByContactInfo(false);
+
+            /**
+             * @review а почему не просто:
+             *
+             * return personDAO.getEmployees(query).stream().map(p->new WorkerRecord(p)).collect(..)
+             */
             List<Person> persons = personDAO.getEmployees(query);
 
             persons.forEach(person ->
@@ -321,6 +401,9 @@ public class WorkerController {
 
         try {
 
+            /** @review
+             *  дублирование, напиши отдельный метод dumpBeanInfo (object)
+             */
             BeanInfo infoRec = Introspector.getBeanInfo(rec.getClass());
 
             logger.debug("properties from 1C:");
@@ -434,6 +517,7 @@ public class WorkerController {
         ServiceResultList results = new ServiceResultList();
 
         try {
+            // @review, бесполезная проверка. NPE или пустой список на входе приведут к пустому списку на выходе и без нее
             if (list != null && list.getWorkerRecords() != null && !list.getWorkerRecords().isEmpty ()) {
                 for (WorkerRecord wr : list.getWorkerRecords()) {
                     results.getServiceResults().add(updateWorker(wr));
@@ -517,47 +601,49 @@ public class WorkerController {
         logger.debug("photo's length = " + (photo == null || photo.getContent() == null ? null : photo.getContent().length()));
         logger.debug("photo's content in Base64 = " + (photo == null ? null : photo.getContent()));
 
-        OutputStream out = null;
+        /**
+         * @review
+         * Здесь я сдался и начал менять код
+         */
 
-        try {
+        if (photo == null) {
+            logger.debug("error result, " + En_ErrorCode.EMPTY_PHOTO.getMessage());
+            return ServiceResult.failResult(En_ErrorCode.EMPTY_PHOTO.getCode(), En_ErrorCode.EMPTY_PHOTO.getMessage(), null);
+        }
 
-            if (photo == null) {
-                logger.debug("error result, " + En_ErrorCode.EMPTY_PHOTO.getMessage());
-                return ServiceResult.failResult(En_ErrorCode.EMPTY_PHOTO.getCode(), En_ErrorCode.EMPTY_PHOTO.getMessage(), null);
-            }
+        if (photo.getId() == null || photo.getId() < 0) {
+            logger.debug("error result, " + En_ErrorCode.EMPTY_PER_ID.getMessage());
+            return ServiceResult.failResult(En_ErrorCode.EMPTY_PER_ID.getCode(), En_ErrorCode.EMPTY_PER_ID.getMessage(), photo.getId());
+        }
 
-            if (photo.getId() == null || photo.getId() < 0) {
-                logger.debug("error result, " + En_ErrorCode.EMPTY_PER_ID.getMessage());
-                return ServiceResult.failResult(En_ErrorCode.EMPTY_PER_ID.getCode(), En_ErrorCode.EMPTY_PER_ID.getMessage(), photo.getId());
-            }
+        if (HelperFunc.isEmpty(photo.getContent())) {
+            logger.debug("error result, " + En_ErrorCode.EMPTY_PHOTO_CONTENT.getMessage());
+            return ServiceResult.failResult(En_ErrorCode.EMPTY_PHOTO_CONTENT.getCode(), En_ErrorCode.EMPTY_PHOTO_CONTENT.getMessage(), photo.getId());
+        }
 
-            if (HelperFunc.isEmpty(photo.getContent())) {
-                logger.debug("error result, " + En_ErrorCode.EMPTY_PHOTO_CONTENT.getMessage());
-                return ServiceResult.failResult(En_ErrorCode.EMPTY_PHOTO_CONTENT.getCode(), En_ErrorCode.EMPTY_PHOTO_CONTENT.getMessage(), photo.getId());
-            }
+        Person person = personDAO.get (photo.getId());
+        if (person == null) {
+            logger.debug("error result, " + En_ErrorCode.UNKNOWN_PER.getMessage());
+            return ServiceResult.failResult(En_ErrorCode.UNKNOWN_PER.getCode(), En_ErrorCode.UNKNOWN_PER.getMessage(), photo.getId());
+        }
 
-            Person person = personDAO.get (photo.getId());
-            if (person == null) {
-                logger.debug("error result, " + En_ErrorCode.UNKNOWN_PER.getMessage());
-                return ServiceResult.failResult(En_ErrorCode.UNKNOWN_PER.getCode(), En_ErrorCode.UNKNOWN_PER.getMessage(), photo.getId());
-            }
+        /** лучше бы сделать отдельно реализацию для формирования из Photo строки с именем файла, дабы править потом в одном месте
+         *
+         */
+        String fileName = WSConfig.getInstance ().getDirPhotos () + photo.getId() + ".jpg";
 
-            String fileName = WSConfig.getInstance ().getDirPhotos () + photo.getId() + ".jpg";
+        try (OutputStream out = new BufferedOutputStream(new FileOutputStream(fileName))) {
+
             logger.debug("fileName = " + fileName);
 
-            out = new BufferedOutputStream(new FileOutputStream(fileName));
             out.write (Base64.getDecoder().decode(photo.getContent()));
+            out.flush();
 
             logger.debug("success result, personId = " + photo.getId());
             return ServiceResult.successResult (photo.getId());
 
         } catch (Exception e) {
             logger.error ("error while update photo", e);
-        } finally {
-            try {
-                if (out != null)
-                    out.close();
-            } catch (Exception e) {}
         }
 
         return ServiceResult.failResult (En_ErrorCode.NOT_UPDATE.getCode (), En_ErrorCode.NOT_UPDATE.getMessage (), null);
@@ -582,6 +668,14 @@ public class WorkerController {
                 logger.debug("fileName = " + fileName);
                 File file = new File(fileName);
                 if (file.exists()) {
+
+                    /**
+                     * @review мне кажется, что у apache-commons или apache-io должны быть уже
+                     * реализованы методы по чтению и конвертации файлов в base64
+                     * здесь у тебя дважды выделяется память: для buf и потом еще для строки
+                     * И еще, мне кажется бесполезно создавать BufferedInput если ты сама создаешь буфер
+                     * на весь файл и делаешь одну операцию чтения.
+                     */
                     in = new BufferedInputStream(new FileInputStream(file));
                     Long size = file.length();
                     byte[] buf = new byte[size.intValue()];
@@ -612,6 +706,11 @@ public class WorkerController {
         logger.debug("result, size of photo's list = " + photos.getPhotos().size());
         return photos;
     }
+
+    /*
+        @review, все здесь я остановился. далее нужно либо дождаться исправления первичных замечаний,
+        либо обсуждать устно.
+     */
 
     @RequestMapping(method = RequestMethod.PUT, value = "/update.department")
     public @ResponseBody ServiceResult updateDepartment(@RequestBody DepartmentRecord rec) {
