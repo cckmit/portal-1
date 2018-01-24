@@ -128,18 +128,18 @@ public class WorkerController {
 
         logger.debug ("addWorker(): rec={}", rec);
 
+        ServiceResult isValid = isValidWorkerRecord (rec);
+        if (!isValid.isSuccess ()) {
+            logger.debug("error result: {}", isValid.getErrInfo());
+            return isValid;
+        }
+
+        if (rec.isDeleted() || rec.isFired()) {
+            logger.debug("error result: {}", En_ErrorCode.DELETED_OR_FIRED_RECORD.getMessage());
+            return ServiceResult.failResult(En_ErrorCode.DELETED_OR_FIRED_RECORD.getCode(), En_ErrorCode.DELETED_OR_FIRED_RECORD.getMessage(), rec.getId());
+        }
+
         try {
-
-            ServiceResult isValid = isValidWorkerRecord (rec);
-            if (!isValid.isSuccess ()) {
-                logger.debug("error result: {}", isValid.getErrInfo());
-                return isValid;
-            }
-
-            if (rec.isDeleted() || rec.isFired()) {
-                logger.debug("error result: {}", En_ErrorCode.DELETED_OR_FIRED_RECORD.getMessage());
-                return ServiceResult.failResult(En_ErrorCode.DELETED_OR_FIRED_RECORD.getCode(), En_ErrorCode.DELETED_OR_FIRED_RECORD.getMessage(), rec.getId());
-            }
 
             CompanyHomeGroupItem item = companyGroupHomeDAO.getByExternalCode(rec.getCompanyCode().trim());
             if (item == null) {
@@ -209,16 +209,15 @@ public class WorkerController {
                     return ServiceResult.successResult (person.getId ());
 
                 } catch (Exception e) {
-                    logger.error ("error while transaction execution", e);
-                    throw new RuntimeException();
+                    throw new RuntimeException(e);
                 }
             });
 
-
         } catch (Exception e) {
             logger.error ("error while add worker's record", e);
-            return ServiceResult.failResult (En_ErrorCode.NOT_CREATE.getCode (), En_ErrorCode.NOT_CREATE.getMessage (), null);
         }
+
+        return ServiceResult.failResult (En_ErrorCode.NOT_CREATE.getCode (), En_ErrorCode.NOT_CREATE.getMessage (), null);
     }
 
     @RequestMapping(method = RequestMethod.PUT, value = "/update.worker")
@@ -226,13 +225,13 @@ public class WorkerController {
 
         logger.debug ("updateWorker(): rec={}", rec);
 
-        try {
+        ServiceResult isValid = isValidWorkerRecord (rec);
+        if (!isValid.isSuccess ()) {
+            logger.debug("error result: {}", isValid.getErrInfo());
+            return isValid;
+        }
 
-            ServiceResult isValid = isValidWorkerRecord (rec);
-            if (!isValid.isSuccess ()) {
-                logger.debug("error result: {}", isValid.getErrInfo());
-                return isValid;
-            }
+        try {
 
             CompanyHomeGroupItem item = companyGroupHomeDAO.getByExternalCode(rec.getCompanyCode ().trim ());
             if (item == null) {
@@ -303,15 +302,15 @@ public class WorkerController {
                     return ServiceResult.successResult (person.getId ());
 
                 } catch (Exception e) {
-                    logger.error ("error while transaction execution", e);
-                    throw new RuntimeException();
+                    throw new RuntimeException(e);
                 }
             });
 
         } catch (Exception e) {
             logger.error ("error while update worker's record", e);
-            return ServiceResult.failResult (En_ErrorCode.NOT_UPDATE.getCode (), En_ErrorCode.NOT_UPDATE.getCode (), null);
         }
+
+        return ServiceResult.failResult (En_ErrorCode.NOT_UPDATE.getCode (), En_ErrorCode.NOT_UPDATE.getCode (), null);
     }
 
     @RequestMapping(method = RequestMethod.PUT, value = "/update.workers")
@@ -369,15 +368,15 @@ public class WorkerController {
                     return ServiceResult.successResult (worker.getId());
 
                 } catch (Exception e) {
-                    logger.error ("error while transaction execution", e);
-                    throw new RuntimeException();
+                    throw new RuntimeException(e);
                 }
             });
 
         } catch (Exception e) {
             logger.error ("error while remove worker's record", e);
-            return ServiceResult.failResult (En_ErrorCode.NOT_DELETE.getCode (), En_ErrorCode.NOT_DELETE.getMessage (), null);
         }
+
+        return ServiceResult.failResult (En_ErrorCode.NOT_DELETE.getCode (), En_ErrorCode.NOT_DELETE.getMessage (), null);
     }
 
     @RequestMapping(method = RequestMethod.PUT, value = "/update.photo")
@@ -390,19 +389,22 @@ public class WorkerController {
             return ServiceResult.failResult(En_ErrorCode.EMPTY_PHOTO_CONTENT.getCode(), En_ErrorCode.EMPTY_PHOTO_CONTENT.getMessage(), photo.getId());
         }
 
-        Person person = personDAO.get (photo.getId());
-        if (person == null) {
-            logger.debug("error result: {}", En_ErrorCode.UNKNOWN_PER.getMessage());
-            return ServiceResult.failResult(En_ErrorCode.UNKNOWN_PER.getCode(), En_ErrorCode.UNKNOWN_PER.getMessage(), photo.getId());
-        }
+        try {
 
-        try (Base64OutputStream out = new Base64OutputStream(new FileOutputStream(makeFileName(photo.getId())),false)) {
+            Person person = personDAO.get(photo.getId());
+            if (person == null) {
+                logger.debug("error result: {}", En_ErrorCode.UNKNOWN_PER.getMessage());
+                return ServiceResult.failResult(En_ErrorCode.UNKNOWN_PER.getCode(), En_ErrorCode.UNKNOWN_PER.getMessage(), photo.getId());
+            }
 
-            out.write(photo.getContent().getBytes());
-            out.flush();
+            try (Base64OutputStream out = new Base64OutputStream(new FileOutputStream(makeFileName(photo.getId())),false)) {
 
-            logger.debug("success result, personId={}", photo.getId());
-            return ServiceResult.successResult (photo.getId());
+                out.write(photo.getContent().getBytes());
+                out.flush();
+
+                logger.debug("success result, personId={}", photo.getId());
+                return ServiceResult.successResult (photo.getId());
+            }
 
         } catch (Exception e) {
             logger.error ("error while update photo", e);
@@ -464,13 +466,13 @@ public class WorkerController {
 
         logger.debug ("updateDepartment(): rec={}", rec);
 
-        try {
+        ServiceResult isValid = isValidDepartmentRecord (rec);
+        if (!isValid.isSuccess ()) {
+            logger.debug("error result: " + isValid.getErrInfo());
+            return isValid;
+        }
 
-            ServiceResult isValid = isValidDepartmentRecord (rec);
-            if (!isValid.isSuccess ()) {
-                logger.debug("error result: " + isValid.getErrInfo());
-                return isValid;
-            }
+        try {
 
             CompanyHomeGroupItem item = companyGroupHomeDAO.getByExternalCode(rec.getCompanyCode ().trim ());
             if (item == null) {
@@ -570,12 +572,12 @@ public class WorkerController {
 
         logger.debug ("updatePosition(): oldName={}, newName={}, companyCode={}", oldName, newName, companyCode);
 
-        try {
+        if (HelperFunc.isEmpty(oldName) || HelperFunc.isEmpty(newName)) {
+            logger.debug("error result: " + En_ErrorCode.EMPTY_POS.getMessage());
+            return ServiceResult.failResult(En_ErrorCode.EMPTY_POS.getCode(), En_ErrorCode.EMPTY_POS.getMessage(), null);
+        }
 
-            if (HelperFunc.isEmpty(oldName) || HelperFunc.isEmpty(newName)) {
-                logger.debug("error result: " + En_ErrorCode.EMPTY_POS.getMessage());
-                return ServiceResult.failResult(En_ErrorCode.EMPTY_POS.getCode(), En_ErrorCode.EMPTY_POS.getMessage(), null);
-            }
+        try {
 
             CompanyHomeGroupItem item = companyGroupHomeDAO.getByExternalCode(companyCode.trim ());
             if (item == null) {

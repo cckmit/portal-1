@@ -295,7 +295,7 @@ public class TestRestService {
 
         Photo photo = new Photo();
         photo.setId(6989L);
-        photo.setContent("");
+        photo.setContent(Base64.getEncoder().encodeToString(buf));
         HttpEntity<Photo> entity = new HttpEntity<>(photo, headers);
 
         ResponseEntity<ServiceResult> response = restTemplate.exchange(URI, HttpMethod.PUT, entity, ServiceResult.class);
