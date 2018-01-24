@@ -13,7 +13,7 @@ public class Photo {
     private Long id;
     private String content;
 
-    @XmlElement(name = "id", required = true)
+    @XmlElement(name = "id")
     public Long getId() {
         return id;
     }
@@ -22,7 +22,7 @@ public class Photo {
         this.id = id;
     }
 
-    @XmlElement(name = "content", required = true)
+    @XmlElement(name = "content")
     public String getContent() {
         return content;
     }

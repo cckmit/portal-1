@@ -1,9 +1,9 @@
 package ru.protei.portal.test.api;
 
-import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
 import junit.framework.Assert;
 import org.apache.commons.codec.binary.Base64OutputStream;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.http.*;
@@ -17,11 +17,10 @@ import ru.protei.portal.api.config.WSConfig;
 import ru.protei.portal.api.model.*;
 
 import java.io.*;
-import java.nio.charset.Charset;
 import java.util.*;
 
 public class TestRestService {
-    private static Logger logger = Logger.getLogger(TestRestService.class);
+    private static Logger logger = LoggerFactory.getLogger(TestRestService.class);
 
     private static String BASE_URI;
     private static String dirPhotos;
@@ -98,7 +97,7 @@ public class TestRestService {
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(URI).queryParam("id", 148L);
-        String uriBuilder = builder.build().encode().toUriString();
+        String uriBuilder = builder.build().toUriString();
 
         ResponseEntity<WorkerRecord> response = restTemplate.exchange(uriBuilder, HttpMethod.GET, entity, WorkerRecord.class);
         WorkerRecord wr = response.getBody();
@@ -138,7 +137,7 @@ public class TestRestService {
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(URI)
                 .queryParam("id", origWorker.getWorkerId())
                 .queryParam("companyCode", origWorker.getCompanyCode());
-        String uriBuilder = builder.build().encode().toUriString();
+        String uriBuilder = builder.build().toUriString();
 
         ResponseEntity<WorkerRecord> response = restTemplate.exchange(uriBuilder, HttpMethod.GET, entity, WorkerRecord.class);
         WorkerRecord wr = response.getBody();
@@ -240,6 +239,7 @@ public class TestRestService {
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.setMessageConverters(getMessageConverters());
 
+        origWorker.setCompanyCode(null);
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_XML));
         HttpEntity<WorkerRecord> entity = new HttpEntity<>(origWorker, headers);
@@ -267,7 +267,7 @@ public class TestRestService {
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(URI)
                 .queryParam("externalId", origWorker.getWorkerId())
                 .queryParam("companyCode", origWorker.getCompanyCode());
-        String uriBuilder = builder.build().encode().toUriString();
+        String uriBuilder = builder.build().toUriString();
 
         ResponseEntity<ServiceResult> response = restTemplate.exchange(uriBuilder, HttpMethod.DELETE, entity, ServiceResult.class);
         ServiceResult sr = response.getBody();
@@ -315,7 +315,7 @@ public class TestRestService {
 
         try {
             String fileName = dirPhotos + id + ".jpg";
-            logger.debug("=== fileName = " + fileName);
+            logger.debug("fileName = " + fileName);
             File file = new File(fileName);
             if (file.exists()) {
 
@@ -325,9 +325,9 @@ public class TestRestService {
                 while ((data = input.read()) != -1){
                     out.write(data);
                 }
-                logger.debug("=== file exists");
+                logger.debug("file exists");
             } else {
-                logger.debug ("=== file doesn't exist");
+                logger.debug ("file doesn't exist");
             }
         } catch (Exception e) {
             logger.error ("error while update photo", e);
@@ -393,7 +393,7 @@ public class TestRestService {
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(URI)
                 .queryParam("externalId", origDepartment.getDepartmentId())
                 .queryParam("companyCode", origDepartment.getCompanyCode());
-        String uriBuilder = builder.build().encode().toUriString();
+        String uriBuilder = builder.build().toUriString();
 
         ResponseEntity<ServiceResult> response = restTemplate.exchange(uriBuilder, HttpMethod.DELETE, entity, ServiceResult.class);
         ServiceResult sr = response.getBody();
@@ -418,7 +418,7 @@ public class TestRestService {
                 .queryParam("oldName", origWorker.getPositionName())
                 .queryParam("newName", newPosition)
                 .queryParam("companyCode", origWorker.getCompanyCode());
-        String uriBuilder = builder.build().encode().toUriString();
+        String uriBuilder = builder.build().toUriString();
 
         ResponseEntity<ServiceResult> response = restTemplate.exchange(uriBuilder, HttpMethod.PUT, entity, ServiceResult.class);
         ServiceResult sr = response.getBody();
@@ -444,7 +444,7 @@ public class TestRestService {
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(URI)
                 .queryParam("name", origWorker.getPositionName())
                 .queryParam("companyCode", origWorker.getCompanyCode());
-        String uriBuilder = builder.build().encode().toUriString();
+        String uriBuilder = builder.build().toUriString();
 
         ResponseEntity<ServiceResult> response = restTemplate.exchange(uriBuilder, HttpMethod.DELETE, entity, ServiceResult.class);
         ServiceResult sr = response.getBody();

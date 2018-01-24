@@ -22,7 +22,16 @@ import ru.protei.portal.core.model.dao.impl.*;
 import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
+import javax.xml.XMLConstants;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.SchemaOutputResolver;
+import javax.xml.transform.Result;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.validation.SchemaFactory;
 import javax.xml.ws.Endpoint;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -68,12 +77,12 @@ public class APIConfigurationContext extends WebMvcConfigurerAdapter {
     @Bean
     public WSMigrationManager getWSMigrationManager () { return new WSMigrationManager (); }
 
+/*
     @Bean
     public WorkerService createWorkerWebService () {
         return new WorkerServiceImpl ();
     }
 
-/*
     @Bean(name= Bus.DEFAULT_BUS_ID)
     public SpringBus springBus() {
         return new SpringBus();

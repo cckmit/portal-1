@@ -24,10 +24,9 @@ import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 
 import java.io.*;
 import java.net.Inet4Address;
-import java.net.URLDecoder;
 import java.text.ParseException;
 import java.util.Date;
-import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @RestController
@@ -77,8 +76,8 @@ public class WorkerController {
 
         try {
 
-            return withHomeCompany( id, companyCode,
-                    (decid, item) -> new WorkerRecord (workerEntryDAO.getByExternalId(decid.trim(), item.getCompanyId())));
+            return withHomeCompany(companyCode,
+                    item -> new WorkerRecord (workerEntryDAO.getByExternalId(id.trim(), item.getCompanyId())));
 
         } catch (Throwable e) {
             logger.error ("error while get worker", e);
@@ -93,8 +92,8 @@ public class WorkerController {
 
         try {
 
-            return withHomeCompany(id, companyCode,
-                    (decid, item) ->  new DepartmentRecord(companyDepartmentDAO.getByExternalId(decid, item.getCompanyId())));
+            return withHomeCompany(companyCode,
+                    item ->  new DepartmentRecord(companyDepartmentDAO.getByExternalId(id, item.getCompanyId())));
 
         } catch (Exception e) {
             logger.error ("error while get department", e);
@@ -111,11 +110,9 @@ public class WorkerController {
         WorkerRecordList persons = new WorkerRecordList();
 
         try {
-            String exprDecode = URLDecoder.decode( expr, "UTF-8" );
-            exprDecode = Tm_SqlQueryHelper.makeLikeArgEx (exprDecode);
 
-            EmployeeQuery query = new EmployeeQuery(null, null, exprDecode,
-                    En_SortField.person_full_name, En_SortDir.ASC);
+            EmployeeQuery query = new EmployeeQuery(null, null,
+                    Tm_SqlQueryHelper.makeLikeArgEx (expr.trim()), En_SortField.person_full_name, En_SortDir.ASC);
             query.setSearchByContactInfo(false);
 
             persons.getWorkerRecords().addAll(personDAO.getEmployees(query).stream().map(p->new WorkerRecord(p)).collect(Collectors.toList()));
@@ -341,20 +338,13 @@ public class WorkerController {
 
         try {
 
-            String externalIdDecode = URLDecoder.decode(externalId, "UTF-8");
-            logger.debug("externalIdDecode={}", externalIdDecode);
-
-            String companyDecode = URLDecoder.decode(companyCode, "UTF-8");
-            logger.debug("companyDecode={}", companyDecode);
-
-
-            CompanyHomeGroupItem item = companyGroupHomeDAO.getByExternalCode(companyDecode.trim ());
+            CompanyHomeGroupItem item = companyGroupHomeDAO.getByExternalCode(companyCode.trim ());
             if (item == null) {
                 logger.debug("error result: {}", En_ErrorCode.UNKNOWN_COMP.getMessage());
                 return ServiceResult.failResult(En_ErrorCode.UNKNOWN_COMP.getCode(), En_ErrorCode.UNKNOWN_COMP.getMessage(), null);
             }
 
-            WorkerEntry worker = workerEntryDAO.getByExternalId(externalIdDecode.trim(), item.getCompanyId ());
+            WorkerEntry worker = workerEntryDAO.getByExternalId(externalId.trim(), item.getCompanyId ());
             if (worker == null) {
                 logger.debug("error result: {}", En_ErrorCode.UNKNOWN_WOR.getMessage());
                 return ServiceResult.failResult(En_ErrorCode.UNKNOWN_WOR.getCode(), En_ErrorCode.UNKNOWN_WOR.getMessage(), null);
@@ -406,7 +396,7 @@ public class WorkerController {
             return ServiceResult.failResult(En_ErrorCode.UNKNOWN_PER.getCode(), En_ErrorCode.UNKNOWN_PER.getMessage(), photo.getId());
         }
 
-        try (Base64OutputStream out = new Base64OutputStream(new FileOutputStream(makeFileName(photo.getId())))) {
+        try (Base64OutputStream out = new Base64OutputStream(new FileOutputStream(makeFileName(photo.getId())),false)) {
 
             out.write(photo.getContent().getBytes());
             out.flush();
@@ -541,18 +531,13 @@ public class WorkerController {
 
         try {
 
-            String companyDecode = URLDecoder.decode( companyCode, "UTF-8" );
-            logger.debug("companyDecode = " + companyDecode);
-            String externalIdDecode = URLDecoder.decode(externalId, "UTF-8");
-            logger.debug("externalIdDecode = " + externalIdDecode);
-
-            CompanyHomeGroupItem item = companyGroupHomeDAO.getByExternalCode(companyDecode.trim ());
+            CompanyHomeGroupItem item = companyGroupHomeDAO.getByExternalCode(companyCode.trim ());
             if (item == null) {
                 logger.debug("error result: " + En_ErrorCode.UNKNOWN_COMP.getMessage());
                 return ServiceResult.failResult(En_ErrorCode.UNKNOWN_COMP.getCode(), En_ErrorCode.UNKNOWN_COMP.getMessage(), null);
             }
 
-            CompanyDepartment department = companyDepartmentDAO.getByExternalId(externalIdDecode.trim(), item.getCompanyId ());
+            CompanyDepartment department = companyDepartmentDAO.getByExternalId(externalId.trim(), item.getCompanyId ());
             if (department == null) {
                 logger.debug("error result: " + En_ErrorCode.UNKNOWN_DEP.getMessage());
                 return ServiceResult.failResult(En_ErrorCode.UNKNOWN_DEP.getCode(), En_ErrorCode.UNKNOWN_DEP.getMessage(), null);
@@ -592,32 +577,25 @@ public class WorkerController {
                 return ServiceResult.failResult(En_ErrorCode.EMPTY_POS.getCode(), En_ErrorCode.EMPTY_POS.getMessage(), null);
             }
 
-            String oldNameDecode = URLDecoder.decode(oldName, "UTF-8");
-            logger.debug("oldNameDecode = " + oldNameDecode);
-            String newNameDecode = URLDecoder.decode(newName, "UTF-8");
-            logger.debug("newNameDecode = " + newNameDecode);
-            String companyDecode = URLDecoder.decode(companyCode, "UTF-8");
-            logger.debug("companyDecode = " + companyDecode);
-
-            CompanyHomeGroupItem item = companyGroupHomeDAO.getByExternalCode(companyDecode.trim ());
+            CompanyHomeGroupItem item = companyGroupHomeDAO.getByExternalCode(companyCode.trim ());
             if (item == null) {
                 logger.debug("error result: " + En_ErrorCode.UNKNOWN_COMP.getMessage());
                 return ServiceResult.failResult(En_ErrorCode.UNKNOWN_COMP.getCode(), En_ErrorCode.UNKNOWN_COMP.getMessage(), null);
             }
 
-            WorkerPosition existsPosition = workerPositionDAO.getByName(newNameDecode.trim(), item.getCompanyId());
+            WorkerPosition existsPosition = workerPositionDAO.getByName(newName.trim(), item.getCompanyId());
             if (existsPosition != null) {
                 logger.debug("error result: " + En_ErrorCode.EXIST_POS.getMessage());
                 return ServiceResult.failResult(En_ErrorCode.EXIST_POS.getCode(), En_ErrorCode.EXIST_POS.getMessage(), null);
             }
 
-            WorkerPosition position = workerPositionDAO.getByName(oldNameDecode.trim(), item.getCompanyId());
+            WorkerPosition position = workerPositionDAO.getByName(oldName.trim(), item.getCompanyId());
             if (position == null) {
                 logger.debug("error result: " + En_ErrorCode.UNKNOWN_POS.getMessage());
                 return ServiceResult.failResult(En_ErrorCode.UNKNOWN_POS.getCode(), En_ErrorCode.UNKNOWN_POS.getMessage(), null);
             }
 
-            position.setName(newNameDecode.trim());
+            position.setName(newName.trim());
 
             workerPositionDAO.merge(position);
 
@@ -638,18 +616,13 @@ public class WorkerController {
 
         try {
 
-            String nameDecode = URLDecoder.decode( name, "UTF-8" );
-            logger.debug("nameDecode = " + nameDecode);
-            String companyDecode = URLDecoder.decode( companyCode, "UTF-8" );
-            logger.debug("companyDecode = " + companyDecode);
-
-            CompanyHomeGroupItem item = companyGroupHomeDAO.getByExternalCode(companyDecode.trim ());
+            CompanyHomeGroupItem item = companyGroupHomeDAO.getByExternalCode(companyCode.trim ());
             if (item == null) {
                 logger.debug("error result: " + En_ErrorCode.UNKNOWN_COMP.getMessage());
                 return ServiceResult.failResult(En_ErrorCode.UNKNOWN_COMP.getCode(), En_ErrorCode.UNKNOWN_COMP.getMessage(), null);
             }
 
-            WorkerPosition position = workerPositionDAO.getByName(nameDecode, item.getCompanyId ());
+            WorkerPosition position = workerPositionDAO.getByName(name, item.getCompanyId ());
             if (position == null) {
                 logger.debug("error result: " + En_ErrorCode.UNKNOWN_POS.getMessage());
                 return ServiceResult.failResult(En_ErrorCode.UNKNOWN_POS.getCode(), En_ErrorCode.UNKNOWN_POS.getMessage(), null);
@@ -672,15 +645,9 @@ public class WorkerController {
         return ServiceResult.failResult (En_ErrorCode.NOT_DELETE.getCode (), En_ErrorCode.NOT_DELETE.getMessage (), null);
     }
 
-    private <R> R withHomeCompany (String id, String companyCode, BiFunction<String,CompanyHomeGroupItem, R> func) throws Exception {
-        String companyDecode = URLDecoder.decode(companyCode, "UTF-8").trim();
-        logger.debug("companyDecode={}", companyDecode);
-
-        String idDecode = URLDecoder.decode(id, "UTF-8").trim();
-        logger.debug("idDecode={}", id);
-
-        CompanyHomeGroupItem item = companyGroupHomeDAO.getByExternalCode(companyDecode.trim());
-        return item == null ? null : func.apply(idDecode, item);
+    private <R> R withHomeCompany (String companyCode, Function<CompanyHomeGroupItem, R> func) throws Exception {
+        CompanyHomeGroupItem item = companyGroupHomeDAO.getByExternalCode(companyCode.trim());
+        return item == null ? null : func.apply(item);
     }
 
     private ServiceResult isValidWorkerRecord(WorkerRecord rec) {
@@ -691,10 +658,6 @@ public class WorkerController {
 
         if (HelperFunc.isEmpty(rec.getDepartmentId())) {
             return ServiceResult.failResult(En_ErrorCode.EMPTY_DEP_ID.getCode(), En_ErrorCode.EMPTY_DEP_ID.getMessage(), rec.getId());
-        }
-
-        if (!rec.getDepartmentId().trim ().matches("^\\S{1,30}$")) {
-            return ServiceResult.failResult(En_ErrorCode.INV_FORMAT_DEP_CODE.getCode(), En_ErrorCode.INV_FORMAT_DEP_CODE.getMessage(), rec.getId());
         }
 
         if (HelperFunc.isEmpty(rec.getPositionName ())) {

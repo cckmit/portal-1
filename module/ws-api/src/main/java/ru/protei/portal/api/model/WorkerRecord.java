@@ -57,7 +57,7 @@ public class WorkerRecord {
         copy (w);
     }
 
-    @XmlElement(name = "company-code", required = true)
+    @XmlElement(name = "company-code")
     public String getCompanyCode() {
         return companyCode;
     }
@@ -75,7 +75,7 @@ public class WorkerRecord {
         this.id = id;
     }
 
-    @XmlElement(name = "first-name", required = true)
+    @XmlElement(name = "first-name")
     public String getFirstName() {
         return firstName;
     }
@@ -84,7 +84,7 @@ public class WorkerRecord {
         this.firstName = firstName;
     }
 
-    @XmlElement(name = "last-name", required = true)
+    @XmlElement(name = "last-name")
     public String getLastName() {
         return lastName;
     }
@@ -102,7 +102,7 @@ public class WorkerRecord {
         this.secondName = secondName;
     }
 
-    @XmlElement(name = "gender", required = true)
+    @XmlElement(name = "gender")
     public Integer getSex() {
         return sex;
     }
@@ -219,7 +219,7 @@ public class WorkerRecord {
         this.ipAddress = ipAddress;
     }
 
-    @XmlElement(name = "deleted", required = true)
+    @XmlElement(name = "deleted")
     public boolean isDeleted() {
         return isDeleted;
     }
@@ -228,7 +228,7 @@ public class WorkerRecord {
         this.isDeleted = isDeleted;
     }
 
-    @XmlElement(name = "fired", required = true)
+    @XmlElement(name = "fired")
     public boolean isFired() {
         return isFired;
     }
@@ -237,7 +237,7 @@ public class WorkerRecord {
         this.isFired = isFired;
     }
 
-    @XmlElement(name = "worker-id", required = true)
+    @XmlElement(name = "worker-id")
     public String getWorkerId() {
         return workerId;
     }
@@ -246,7 +246,7 @@ public class WorkerRecord {
         this.workerId = workerId;
     }
 
-    @XmlElement(name = "department-id", required = true)
+    @XmlElement(name = "department-id")
     public String getDepartmentId() {
         return departmentId;
     }
@@ -273,7 +273,7 @@ public class WorkerRecord {
         this.hireOrderNo = hireOrderNo;
     }
 
-    @XmlElement(name = "active", required = true)
+    @XmlElement(name = "active")
     public int getActive() {
         return active;
     }
@@ -282,7 +282,7 @@ public class WorkerRecord {
         this.active = active;
     }
 
-    @XmlElement(name = "position-name", required = true)
+    @XmlElement(name = "position-name")
     public String getPositionName() {
         return positionName;
     }

@@ -27,7 +27,7 @@ public class DepartmentRecord {
         copy(d);
     }
 
-    @XmlElement(name = "company-code", required = true)
+    @XmlElement(name = "company-code")
     public String getCompanyCode() {
         return companyCode;
     }
@@ -36,7 +36,7 @@ public class DepartmentRecord {
         this.companyCode = companyCode;
     }
 
-    @XmlElement(name = "id", required = true)
+    @XmlElement(name = "id")
     public String getDepartmentId() {
         return departmentId;
     }
@@ -45,7 +45,7 @@ public class DepartmentRecord {
         this.departmentId = departmentId;
     }
 
-    @XmlElement(name = "name", required = true)
+    @XmlElement(name = "name")
     public String getDepartmentName() {
         return departmentName;
     }
