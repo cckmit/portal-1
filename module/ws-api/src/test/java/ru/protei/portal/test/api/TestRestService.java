@@ -239,7 +239,6 @@ public class TestRestService {
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.setMessageConverters(getMessageConverters());
 
-        origWorker.setCompanyCode(null);
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_XML));
         HttpEntity<WorkerRecord> entity = new HttpEntity<>(origWorker, headers);

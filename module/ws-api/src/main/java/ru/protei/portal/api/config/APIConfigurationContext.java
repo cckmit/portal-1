@@ -1,10 +1,5 @@
 package ru.protei.portal.api.config;
 
-import org.apache.cxf.Bus;
-import org.apache.cxf.aegis.databinding.AegisDatabinding;
-import org.apache.cxf.bus.spring.SpringBus;
-import org.apache.cxf.jaxws.EndpointImpl;
-import org.apache.cxf.jaxws.support.JaxWsServiceFactoryBean;
 import org.springframework.context.annotation.*;
 import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -14,26 +9,12 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import ru.protei.portal.api.model.*;
-import ru.protei.portal.api.service.WorkerService;
-import ru.protei.portal.api.service.WorkerServiceImpl;
 import ru.protei.portal.api.tools.migrate.WSMigrationManager;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
 import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
-import javax.xml.XMLConstants;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.SchemaOutputResolver;
-import javax.xml.transform.Result;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.validation.SchemaFactory;
-import javax.xml.ws.Endpoint;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @EnableTransactionManagement
