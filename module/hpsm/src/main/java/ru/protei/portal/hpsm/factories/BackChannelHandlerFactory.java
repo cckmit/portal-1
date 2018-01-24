@@ -1,6 +1,7 @@
-package ru.protei.portal.hpsm.logic;
+package ru.protei.portal.hpsm.factories;
 
 import ru.protei.portal.core.event.CaseObjectEvent;
+import ru.protei.portal.hpsm.handlers.BackChannelEventHandler;
 import ru.protei.portal.hpsm.struct.HpsmMessage;
 
 /**

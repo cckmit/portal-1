@@ -31,7 +31,7 @@ public final class HpsmStatusHandlerFactoryImpl implements HpsmStatusHandlerFact
 
     @Override
     public HpsmStatusHandler createHandler(HpsmStatus oldStatus, HpsmStatus newStatus) {
-        return statusHandlerMap.get(new Tuple<>(oldStatus, newStatus));
+        return statusHandlerMap.getOrDefault(new Tuple<>(oldStatus, newStatus), new DefaultCaseHandler());
     }
 
     public final class WorkaroundCaseHandler implements HpsmStatusHandler {
@@ -41,6 +41,13 @@ public final class HpsmStatusHandlerFactoryImpl implements HpsmStatusHandlerFact
                 object.setState(En_CaseState.WORKAROUND);
                 comment.setCaseStateId(object.getStateId());
             }
+        }
+    }
+
+    public final class DefaultCaseHandler implements HpsmStatusHandler {
+        @Override
+        public void handle(CaseObject object, CaseComment comment) {
+            //Just a stub ¯\_(ツ)_/¯
         }
     }
 

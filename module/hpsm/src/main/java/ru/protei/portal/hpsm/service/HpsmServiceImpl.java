@@ -21,6 +21,8 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.hpsm.api.HpsmMessageFactory;
 import ru.protei.portal.core.mail.MailSendChannel;
 import ru.protei.portal.hpsm.config.HpsmEnvConfig;
+import ru.protei.portal.hpsm.factories.BackChannelHandlerFactory;
+import ru.protei.portal.hpsm.handlers.BackChannelEventHandler;
 import ru.protei.portal.hpsm.logic.*;
 import ru.protei.portal.hpsm.struct.HpsmAttachment;
 import ru.protei.portal.hpsm.struct.HpsmMessage;

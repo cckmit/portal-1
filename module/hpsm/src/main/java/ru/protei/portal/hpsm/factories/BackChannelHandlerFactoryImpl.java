@@ -1,27 +1,27 @@
-package ru.protei.portal.hpsm.logic;
+package ru.protei.portal.hpsm.factories;
 
 import com.thoughtworks.xstream.XStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import ru.protei.portal.config.PortalConfig;
+import protei.utils.common.Tuple;
 import ru.protei.portal.core.event.CaseObjectEvent;
-import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.ExternalCaseAppDAO;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.ExternalCaseAppData;
-import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.HelperFunc;
-import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
-import ru.protei.portal.hpsm.api.HpsmSeverity;
 import ru.protei.portal.hpsm.api.HpsmStatus;
+import ru.protei.portal.hpsm.handlers.BackChannelEventHandler;
+import ru.protei.portal.hpsm.logic.ServiceInstance;
 import ru.protei.portal.hpsm.struct.HpsmMessage;
 import ru.protei.portal.hpsm.struct.HpsmMessageHeader;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static ru.protei.portal.core.model.dict.En_CaseState.*;
 
 /**
  * Created by michael on 15.05.17.
@@ -37,20 +37,23 @@ public class BackChannelHandlerFactoryImpl implements BackChannelHandlerFactory 
     @Autowired
     ExternalCaseAppDAO externalCaseAppDAO;
 
-    private Map<En_CaseState, BackChannelEventHandler> stateHandlerMap;
+    private Map<Tuple<En_CaseState, En_CaseState>, BackChannelEventHandler> stateHandlerMap;
 
 
     public BackChannelHandlerFactoryImpl() {
         stateHandlerMap = new HashMap<>();
-        stateHandlerMap.put(En_CaseState.CREATED, new  ToNewStateHandler ());
-        stateHandlerMap.put(En_CaseState.OPENED, new  OpenStateHandler ());
+        stateHandlerMap.put(new Tuple<>(CREATED, OPENED), new OpenStateHandler ());
+        stateHandlerMap.put(new Tuple<>(OPENED, INFO_REQUEST), new InfoRequestStateHandler());
+        stateHandlerMap.put(new Tuple<>(OPENED, WORKAROUND), new WorkAroundStateHandler());
+        stateHandlerMap.put(new Tuple<>(OPENED, DONE), new DoneStateHandler());
+        /*stateHandlerMap.put(En_CaseState.OPENED, new  OpenStateHandler ());
         stateHandlerMap.put(En_CaseState.DONE, new DoneStateHandler());
         stateHandlerMap.put(En_CaseState.VERIFIED, new VerifiedStateHandler());
         stateHandlerMap.put(En_CaseState.ACTIVE, new InProcessStateHandler());
         stateHandlerMap.put(En_CaseState.TEST_LOCAL, new LocalTestStateHandler());
         stateHandlerMap.put(En_CaseState.TEST_CUST, new CustomerTestStateHandler());
         stateHandlerMap.put(En_CaseState.WORKAROUND, new WorkAroundStateHandler());
-        stateHandlerMap.put(En_CaseState.INFO_REQUEST, new InfoRequestStateHandler());
+        stateHandlerMap.put(En_CaseState.INFO_REQUEST, new InfoRequestStateHandler());*/
     }
 
 
@@ -62,7 +65,7 @@ public class BackChannelHandlerFactoryImpl implements BackChannelHandlerFactory 
         }
 
         if (event.isCaseStateChanged()) {
-            return stateHandlerMap.getOrDefault(event.getNewState().getState(), new MakeMessageAction ());
+            return stateHandlerMap.getOrDefault(new Tuple<>(event.getOldState().getState(), event.getNewState().getState()), new MakeMessageAction ());
         }
 
         // by default
