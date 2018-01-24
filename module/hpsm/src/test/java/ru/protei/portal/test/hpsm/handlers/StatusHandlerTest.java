@@ -43,7 +43,7 @@ public class StatusHandlerTest {
 
         //inprogress -> open
         object.setState(En_CaseState.CLOSED);
-        statusHandlerFactory.createHandler(TEST_SOLUTION, REJECT_SOLUTION).handle(object, comment);
+        statusHandlerFactory.createHandler(TEST_SOLUTION, IN_PROGRESS).handle(object, comment);
         Assert.assertEquals(En_CaseState.OPENED, object.getState());
     }
 

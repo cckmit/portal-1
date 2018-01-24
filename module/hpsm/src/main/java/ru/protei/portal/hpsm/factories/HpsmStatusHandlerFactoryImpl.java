@@ -16,13 +16,13 @@ public final class HpsmStatusHandlerFactoryImpl implements HpsmStatusHandlerFact
 
     private HpsmStatusHandlerFactoryImpl() {
         statusHandlerMap = new HashMap<>();
-        statusHandlerMap.put(new Tuple2(INFO_REQUEST, IN_PROGRESS), new OpenCaseHandler());
-        statusHandlerMap.put(new Tuple2(WORKAROUND, TEST_WA), new WorkaroundCaseHandler());
-        statusHandlerMap.put(new Tuple2(TEST_WA, REJECT_WA), new OpenCaseHandler());
-        statusHandlerMap.put(new Tuple2(TEST_WA, CONFIRM_WA), new WorkaroundCaseHandler());
-        statusHandlerMap.put(new Tuple2(SOLVED, TEST_SOLUTION), new SolvedCheckHandler());
-        statusHandlerMap.put(new Tuple2(TEST_SOLUTION, REJECT_SOLUTION), new OpenCaseHandler());
-        statusHandlerMap.put(new Tuple2(TEST_SOLUTION, CLOSED), new ClosedCaseHandler());
+        statusHandlerMap.put(new Tuple<>(INFO_REQUEST, IN_PROGRESS), new OpenCaseHandler());
+        statusHandlerMap.put(new Tuple<>(WORKAROUND, TEST_WA), new WorkaroundCaseHandler());
+        statusHandlerMap.put(new Tuple<>(TEST_WA, REJECT_WA), new OpenCaseHandler());
+        statusHandlerMap.put(new Tuple<>(TEST_WA, CONFIRM_WA), new WorkaroundCaseHandler());
+        statusHandlerMap.put(new Tuple<>(SOLVED, TEST_SOLUTION), new SolvedCheckHandler());
+        statusHandlerMap.put(new Tuple<>(TEST_SOLUTION, IN_PROGRESS), new OpenCaseHandler());
+        statusHandlerMap.put(new Tuple<>(TEST_SOLUTION, CLOSED), new ClosedCaseHandler());
     }
 
     public static HpsmStatusHandlerFactory getInstance() {
@@ -31,7 +31,7 @@ public final class HpsmStatusHandlerFactoryImpl implements HpsmStatusHandlerFact
 
     @Override
     public HpsmStatusHandler createHandler(HpsmStatus oldStatus, HpsmStatus newStatus) {
-        return statusHandlerMap.get(new Tuple2(oldStatus, newStatus));
+        return statusHandlerMap.get(new Tuple<>(oldStatus, newStatus));
     }
 
     public final class WorkaroundCaseHandler implements HpsmStatusHandler {
@@ -73,30 +73,6 @@ public final class HpsmStatusHandlerFactoryImpl implements HpsmStatusHandlerFact
                 object.setState(En_CaseState.VERIFIED);
                 comment.setCaseStateId(object.getStateId());
             }
-        }
-    }
-
-    private final class Tuple2 extends Tuple<HpsmStatus, HpsmStatus> {
-
-        public Tuple2(HpsmStatus hpsmStatus, HpsmStatus hpsmStatus2) {
-            super(hpsmStatus, hpsmStatus2);
-        }
-
-        @Override
-        public int hashCode() {
-            int result = a.hashCode();
-            result = 31 * result + b.hashCode();
-            return result;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj) return true;
-            if (obj == null || getClass() != obj.getClass()) return false;
-
-            Tuple2 tuple = (Tuple2) obj;
-            if (!a.equals(tuple.a)) return false;
-            return b.equals(tuple.b);
         }
     }
 

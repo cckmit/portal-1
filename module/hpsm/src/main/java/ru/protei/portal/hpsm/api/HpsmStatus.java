@@ -20,7 +20,6 @@ public enum HpsmStatus {
     TEST_WA ("Проверка временного решения", En_CaseState.TEST_CUST),
     TEST_SOLUTION ("Проверка постоянного решения", En_CaseState.TEST_CUST),
     WAIT_SOLUTION ("Ожидание постоянного решения", En_CaseState.OPENED),
-    REJECT_SOLUTION ("Постоянное решение отклонено", En_CaseState.OPENED),
     REJECT_WA ("Временное решение отклонено", En_CaseState.OPENED),
     CONFIRM_WA ("Временное решение принято", En_CaseState.TEST_CUST),
     CLOSED ("Закрыт", En_CaseState.VERIFIED);
