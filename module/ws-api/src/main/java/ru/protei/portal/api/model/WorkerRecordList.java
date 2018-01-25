@@ -21,6 +21,10 @@ public class WorkerRecordList {
         this.workerRecords = workerRecords;
     }
 
+    public void append (WorkerRecord record) {
+        this.workerRecords.add(record);
+    }
+
     @Override
     public String toString() {
         return "WorkerRecordList{" +

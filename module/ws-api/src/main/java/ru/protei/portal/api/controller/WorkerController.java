@@ -115,7 +115,9 @@ public class WorkerController {
                     Tm_SqlQueryHelper.makeLikeArgEx (expr.trim()), En_SortField.person_full_name, En_SortDir.ASC);
             query.setSearchByContactInfo(false);
 
-            persons.getWorkerRecords().addAll(personDAO.getEmployees(query).stream().map(p->new WorkerRecord(p)).collect(Collectors.toList()));
+            personDAO.getEmployees(query).forEach (
+                    p -> persons.append(new WorkerRecord(p))
+            );
 
         } catch (Exception e) {
             logger.error ("error while get persons", e);
@@ -174,7 +176,7 @@ public class WorkerController {
                         person.setCompanyId (item.getMainId());
                     }
 
-                    copy (rec, person);
+                    convert(rec, person);
 
                     person.setFired(false);
                     person.setDeleted(false);
@@ -261,7 +263,7 @@ public class WorkerController {
 
                 try {
 
-                    copy (rec, person);
+                    convert(rec, person);
 
                     if (rec.isFired () || rec.isDeleted ()) {
 
@@ -322,7 +324,9 @@ public class WorkerController {
 
         try {
 
-            results.getServiceResults().addAll(list.getWorkerRecords().stream().map(p->updateWorker(p)).collect(Collectors.toList()));
+            list.getWorkerRecords().forEach(
+                    p -> results.append(updateWorker(p))
+            );
 
         } catch (Exception e) {
             logger.error ("error while update workers", e);
@@ -438,6 +442,9 @@ public class WorkerController {
                     photos.getPhotos().add (photo);
 
                     logger.debug("file exists, photo={}", photo );
+
+                    //@review пропустила закрытие
+                    IOUtils.closeQuietly(in);
                 } else {
                     logger.debug ("file doesn't exist");
                 }
@@ -446,10 +453,7 @@ public class WorkerController {
         } catch (Exception e) {
             logger.error ("error while get photos", e);
         } finally {
-            try {
-                if (in != null)
-                    in.close();
-            } catch (Exception e) {}
+            IOUtils.closeQuietly(in);
         }
 
         logger.debug("result, size of photo's list {}", photos.getPhotos().size());
@@ -711,7 +715,7 @@ public class WorkerController {
         return ServiceResult.successResult (null);
     }
 
-    private void copy(WorkerRecord rec, Person person) throws ParseException {
+    private void convert(WorkerRecord rec, Person person) throws ParseException {
 
         person.setUpdated(new Date());
 

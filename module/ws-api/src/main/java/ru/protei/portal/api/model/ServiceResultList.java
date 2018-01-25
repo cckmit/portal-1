@@ -16,6 +16,10 @@ public class ServiceResultList {
         return serviceResults;
     }
 
+    public void append (ServiceResult result) {
+        this.serviceResults.add(result);
+    }
+
     public void setServiceResults(List<ServiceResult> serviceResults) {
         this.serviceResults = serviceResults;
     }
