@@ -120,10 +120,11 @@ public class WorkerServiceImpl implements WorkerService {
             }
 
             if (person == null) {
-                person = new Person ();
-                person.setCreated (new Date ());
-                person.setCreator ("portal-api@" + Inet4Address.getLocalHost ().getHostAddress());
-                person.setCompanyId (item.getMainId());
+                person = personDAO.createNewPerson(item.getMainId());
+//                person = new Person ();
+//                person.setCreated (new Date ());
+//                person.setCreator ("portal-api@" + Inet4Address.getLocalHost ().getHostAddress());
+//                person.setCompanyId (item.getMainId());
             }
 
             copy (rec, person);
