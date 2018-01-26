@@ -41,9 +41,9 @@ public class ExternalPerson {
         setCompanyId (new Long (1));
         setFirstName (person.getFirstName ());
         setLastName (person.getLastName ());
-        setSecondName (person.getSecondName ());
-        setPassportInfo (person.getPassportInfo ());
-        setInfo (person.getInfo ());
+        setSecondName (person.getSecondName () == null ? "" : person.getSecondName ());
+        setPassportInfo (person.getPassportInfo () == null ? "" : person.getPassportInfo ());
+        setInfo (person.getInfo () == null ? "" : person.getInfo ());
         setBirthday (person.getBirthday ());
         setSex (person.getGender() != null ? person.getGender().equals (En_Gender.MALE) ? new Integer (1) : person.getGender().equals (En_Gender.FEMALE) ? new Integer (2) : null : null);
         setDeleted (person.isDeleted ());

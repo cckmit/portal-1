@@ -38,16 +38,16 @@ public class ExternalPersonExtension {
         setId (person.getId ());
         setPersonId (person.getId ());
         PlainContactInfoFacade contactInfoFacade = new PlainContactInfoFacade(person.getContactInfo());
-        setEmail (contactInfoFacade.getEmail ());
-        setOtherEmail (contactInfoFacade.getEmail_own ());
-        setFax (contactInfoFacade.getFax ());
-        setHomeTel (contactInfoFacade.getHomePhone ());
-        setMobileTel (contactInfoFacade.getMobilePhone ());
-        setWorkTel (contactInfoFacade.getWorkPhone ());
-        setActualAddress (contactInfoFacade.getHomeAddress ());
-        setOfficialAddress (contactInfoFacade.getLegalAddress());
+        setEmail (contactInfoFacade.getEmail () == null ? "" : contactInfoFacade.getEmail ());
+        setOtherEmail (contactInfoFacade.getEmail_own () == null ? "" : contactInfoFacade.getEmail_own ());
+        setFax (contactInfoFacade.getFax () == null ? "" : contactInfoFacade.getFax ());
+        setHomeTel (contactInfoFacade.getHomePhone () == null ? "" : contactInfoFacade.getHomePhone ());
+        setMobileTel (contactInfoFacade.getMobilePhone () == null ? "" : contactInfoFacade.getMobilePhone ());
+        setWorkTel (contactInfoFacade.getWorkPhone () == null ? "" : contactInfoFacade.getWorkPhone ());
+        setActualAddress (contactInfoFacade.getHomeAddress () == null ? "" : contactInfoFacade.getHomeAddress ());
+        setOfficialAddress (contactInfoFacade.getLegalAddress() == null ? "" : contactInfoFacade.getLegalAddress());
         setRetired (person.isFired ());
-        setIpAddress (person.getIpAddress ());
+        setIpAddress (person.getIpAddress () == null ? "" : person.getIpAddress ());
         //setRetireDate (null);
         //setManager (false);
     }
