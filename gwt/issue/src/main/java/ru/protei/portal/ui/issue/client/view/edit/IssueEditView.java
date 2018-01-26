@@ -193,7 +193,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
-    public HasEnabled notifiersEnabled() {
+    public HasVisibility notifiersEnabled() {
         return notifiers;
     }
 

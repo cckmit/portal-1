@@ -88,11 +88,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         if(!isFieldsValid()){
             return;
         }
-        if(isNoChanges(issue)){
-            fireEvent(new NotifyEvents.Show(lang.noChanges(), NotifyEvents.NotifyType.INFO));
-            return;
-        }
-
         fillIssueObject(issue);
 
         issueService.saveIssue(issue, new RequestCallback<CaseObject>() {
@@ -197,18 +192,11 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         }
 
         if(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_MANAGER_VIEW)) { //TODO change rule
-
-/* @review
-            if(issue.getNotifiers() == null)
-                issue.setNotifiers(new HashSet<>());
-            Set<PersonShortView> notifiers = issue.getNotifiers().stream()
-                    .map(PersonShortView::fromPerson).collect(Collectors.toSet());
-*/
             view.notifiers().setValue(issue.getNotifiers() == null ? new HashSet<>() :
                     issue.getNotifiers().stream().map(PersonShortView::fromPerson).collect(Collectors.toSet()));
-            view.notifiersEnabled().setEnabled(true);
+            view.notifiersEnabled().setVisible(true);
         }else{
-            view.notifiersEnabled().setEnabled(false);
+            view.notifiersEnabled().setVisible(false);
         }
 
         view.name().setValue(issue.getName());
@@ -235,10 +223,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         issue.setPrivateCase( view.isLocal().getValue() );
         issue.setInfo(view.description().getText());
 
-        isChangedStatus = false;
-        if (issue.getStateId() != view.state().getValue().getId()) {
-            isChangedStatus = true;
-        }
         issue.setStateId(view.state().getValue().getId());
         issue.setImpLevel(view.importance().getValue().getId());
 
@@ -255,20 +239,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                 view.importanceValidator().isValid() &&
                 view.companyValidator().isValid();
 //        && view.initiatorValidator().isValid();
-    }
-
-    private boolean isNoChanges(CaseObject issue){
-        return
-            Objects.equals(issue.getName(), view.name().getValue())
-            && Objects.equals(issue.getInfo(), view.description().getText())
-            && Objects.equals(issue.isPrivateCase(), view.isLocal().getValue())
-            && Objects.equals(issue.getState(), view.state().getValue())
-            && Objects.equals(issue.getImpLevel(), view.importance().getValue().getId())
-            && Objects.equals(issue.getInitiatorCompanyId(), view.company().getValue() == null? null: view.company().getValue().getId())
-            && Objects.equals(issue.getInitiatorId(), view.initiator().getValue() == null? null: view.initiator().getValue().getId())
-            && Objects.equals(issue.getProductId(), view.product().getValue() == null? null: view.product().getValue().getId())
-            && Objects.equals(issue.getNotifiers().stream().map(PersonShortView::fromPerson).collect(Collectors.toSet()), view.notifiers())
-            && Objects.equals(issue.getManagerId(), view.manager().getValue() == null? null: view.manager().getValue().getId());
     }
 
     private void addAttachmentsToCase(Collection<Attachment> attachments){
@@ -295,6 +265,4 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
     private AppEvents.InitDetails initDetails;
     private CaseObject issue;
-    private boolean isChangedStatus = false;
-    private int initialHash;
 }

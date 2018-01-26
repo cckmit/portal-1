@@ -123,27 +123,13 @@ public class CaseServiceImpl implements CaseService {
         }
 
         if(CollectionUtils.isNotEmpty(caseObject.getNotifiers())){
-
-/* @review
-            Set<Long> personIds = new HashSet<>(caseObject.getNotifiers().size());
-            Set<CaseNotifier> caseNotifiers = new HashSet<>(caseObject.getNotifiers().size());
-            for(Person person: caseObject.getNotifiers()){
-                personIds.add(person.getId());
-                caseNotifiers.add(new CaseNotifier(caseId, person.getId()));
-            }
-
-            caseNotifierDAO.persistBatch(caseNotifiers);
-            caseObject.setNotifiers(
-                    new HashSet<>(personDAO.partialGetListByKeys(personIds, "id", "contactInfo"))
-            );
-*/
-
             caseNotifierDAO.persistBatch(
                     caseObject.getNotifiers()
                             .stream()
                             .map(person -> new CaseNotifier(caseId, person.getId()))
                             .collect(Collectors.toList()));
 
+            // update partially filled objects
             caseObject.setNotifiers(new HashSet<>(personDAO.partialGetListByKeys(
                             caseObject.getNotifiers()
                                     .stream()
@@ -168,8 +154,16 @@ public class CaseServiceImpl implements CaseService {
         if (caseObject == null)
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
 
+        jdbcManyRelationsHelper.persist(caseObject, "notifiers");
+        CaseObject oldState = caseObjectDAO.get(caseObject.getId());
+
+        if(isCaseHasNoChanges(caseObject, oldState))
+            return new CoreResponse<CaseObject>().success( caseObject ); //ignore
+
+
         caseObject.setModified(new Date());
         if(CollectionUtils.isNotEmpty(caseObject.getNotifiers())) {
+            // update partially filled objects
             caseObject.setNotifiers(
                     new HashSet<>(personDAO.partialGetListByKeys(
                             caseObject.getNotifiers().stream().map(Person::getId).collect(Collectors.toList()
@@ -181,18 +175,9 @@ public class CaseServiceImpl implements CaseService {
             caseObject.setState(En_CaseState.OPENED);
         }
 
-        CaseObject oldState = caseObjectDAO.get(caseObject.getId());
-        jdbcManyRelationsHelper.fill( oldState, "attachments");
-        // @review jdbcManyRelationsHelper.fill( oldState, "notifiers");
-        Collection<CaseNotifier> prevNotifiers = caseNotifierDAO.getByCaseId(caseObject.getId());
-
-
         boolean isUpdated = caseObjectDAO.merge(caseObject);
-
         if (!isUpdated)
             return new CoreResponse().error(En_ResultStatus.NOT_UPDATED);
-
-        synchronizeCaseNotifiers(prevNotifiers, caseObject.getNotifiers(), caseObject.getId());
 
         if(oldState.getState() != caseObject.getState()){
             Long messageId = createAndPersistStateMessage(initiator, caseObject.getId(), caseObject.getState());
@@ -204,6 +189,7 @@ public class CaseServiceImpl implements CaseService {
         CaseObject newState = caseObjectDAO.get(caseObject.getId());
         newState.setAttachments(caseObject.getAttachments());
         newState.setNotifiers(caseObject.getNotifiers());
+        jdbcManyRelationsHelper.fill( oldState, "attachments");
 
         publisherService.publishEvent(new CaseObjectEvent(this, newState, oldState, initiator));
 
@@ -500,29 +486,18 @@ public class CaseServiceImpl implements CaseService {
         list.forEach(ca -> attachmentService.removeAttachment( token, ca.getAttachmentId()));
     }
 
-    private void synchronizeCaseNotifiers(Collection<CaseNotifier> oldNotifiers, Collection<Person> newList, Long caseId){
-
-/* @review
-        Map<Person, Long> personsToNotifierId = new HashMap<>(oldNotifiers.size());
-        for(CaseNotifier cn: oldNotifiers){
-            personsToNotifierId.put(new Person(cn.getPersonId()), cn.getId());
-        }
-*/
-        Map<Person, Long> personsToNotifierId = oldNotifiers.stream()
-                .collect(Collectors.toMap(n -> new Person(n.getPersonId()), n -> n.getId()));
-        Collection<Person> oldList = personsToNotifierId.keySet();
-
-        Collection<CaseNotifier> forSave = HelperFunc.subtract(newList, oldList).stream()
-                .map(p -> new CaseNotifier(caseId, p.getId()))
-                .collect(Collectors.toSet());
-
-        Collection<Long> idsForDelete = HelperFunc.subtract(oldList, newList).stream()
-                .map(personsToNotifierId::get).collect(Collectors.toSet());
-
-        if(!forSave.isEmpty())
-            caseNotifierDAO.persistBatch(forSave);
-        if(!idsForDelete.isEmpty())
-            caseNotifierDAO.removeByKeys(idsForDelete);
+    private boolean isCaseHasNoChanges(CaseObject co1, CaseObject co2){
+        //without notifiers
+        return
+                Objects.equals(co1.getName(), co2.getName())
+                && Objects.equals(co1.getInfo(), co2.getInfo())
+                && Objects.equals(co1.isPrivateCase(), co2.isPrivateCase())
+                && Objects.equals(co1.getState(), co2.getState())
+                && Objects.equals(co1.getImpLevel(), co2.getImpLevel())
+                && Objects.equals(co1.getInitiatorCompanyId(), co2.getInitiatorCompanyId())
+                && Objects.equals(co1.getInitiatorId(), co2.getInitiatorId())
+                && Objects.equals(co1.getProductId(), co2.getProductId())
+                && Objects.equals(co1.getManagerId(), co2.getManagerId());
     }
 
     static final long CHANGE_LIMIT_TIME = 300000;  // 5 минут  (в мсек)
