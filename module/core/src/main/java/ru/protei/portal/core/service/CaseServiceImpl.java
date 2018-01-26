@@ -123,6 +123,8 @@ public class CaseServiceImpl implements CaseService {
         }
 
         if(CollectionUtils.isNotEmpty(caseObject.getNotifiers())){
+
+/* @review
             Set<Long> personIds = new HashSet<>(caseObject.getNotifiers().size());
             Set<CaseNotifier> caseNotifiers = new HashSet<>(caseObject.getNotifiers().size());
             for(Person person: caseObject.getNotifiers()){
@@ -132,7 +134,21 @@ public class CaseServiceImpl implements CaseService {
 
             caseNotifierDAO.persistBatch(caseNotifiers);
             caseObject.setNotifiers(
-                new HashSet<>(personDAO.partialGetListByKeys(personIds, "id", "contactInfo"))
+                    new HashSet<>(personDAO.partialGetListByKeys(personIds, "id", "contactInfo"))
+            );
+*/
+
+            caseNotifierDAO.persistBatch(
+                    caseObject.getNotifiers()
+                            .stream()
+                            .map(person -> new CaseNotifier(caseId, person.getId()))
+                            .collect(Collectors.toList()));
+
+            caseObject.setNotifiers(new HashSet<>(personDAO.partialGetListByKeys(
+                            caseObject.getNotifiers()
+                                    .stream()
+                                    .map(person ->  person.getId())
+                                    .collect(Collectors.toList()), "id", "contactInfo"))
             );
         }
 
@@ -167,6 +183,7 @@ public class CaseServiceImpl implements CaseService {
 
         CaseObject oldState = caseObjectDAO.get(caseObject.getId());
         jdbcManyRelationsHelper.fill( oldState, "attachments");
+        // @review jdbcManyRelationsHelper.fill( oldState, "notifiers");
         Collection<CaseNotifier> prevNotifiers = caseNotifierDAO.getByCaseId(caseObject.getId());
 
 
@@ -484,10 +501,15 @@ public class CaseServiceImpl implements CaseService {
     }
 
     private void synchronizeCaseNotifiers(Collection<CaseNotifier> oldNotifiers, Collection<Person> newList, Long caseId){
+
+/* @review
         Map<Person, Long> personsToNotifierId = new HashMap<>(oldNotifiers.size());
         for(CaseNotifier cn: oldNotifiers){
             personsToNotifierId.put(new Person(cn.getPersonId()), cn.getId());
         }
+*/
+        Map<Person, Long> personsToNotifierId = oldNotifiers.stream()
+                .collect(Collectors.toMap(n -> new Person(n.getPersonId()), n -> n.getId()));
         Collection<Person> oldList = personsToNotifierId.keySet();
 
         Collection<CaseNotifier> forSave = HelperFunc.subtract(newList, oldList).stream()

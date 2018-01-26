@@ -196,12 +196,16 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             view.getCommentsContainer().clear();
         }
 
-        if(policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_MANAGER_VIEW)) { //TODO change rule
+        if(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_MANAGER_VIEW)) { //TODO change rule
+
+/* @review
             if(issue.getNotifiers() == null)
                 issue.setNotifiers(new HashSet<>());
             Set<PersonShortView> notifiers = issue.getNotifiers().stream()
                     .map(PersonShortView::fromPerson).collect(Collectors.toSet());
-            view.notifiers().setValue(notifiers);
+*/
+            view.notifiers().setValue(issue.getNotifiers() == null ? new HashSet<>() :
+                    issue.getNotifiers().stream().map(PersonShortView::fromPerson).collect(Collectors.toSet()));
             view.notifiersEnabled().setEnabled(true);
         }else{
             view.notifiersEnabled().setEnabled(false);
