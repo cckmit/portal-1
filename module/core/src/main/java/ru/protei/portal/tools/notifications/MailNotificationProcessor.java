@@ -62,9 +62,6 @@ public class MailNotificationProcessor {
     @EventListener
     public void onCaseObjectChanged( CaseObjectEvent event ) {
         Set<NotificationEntry> notificationEntries = subscriptionService.subscribers( event );
-        if ( notificationEntries.isEmpty() ) {
-            return;
-        }
 
         Person oldManager = null;
         if ( event.isManagerChanged() ) {
@@ -77,20 +74,12 @@ public class MailNotificationProcessor {
     @EventListener
     public void onCaseAttachmentsChanged( CaseAttachmentEvent event ) {
         Set<NotificationEntry> notificationEntries = subscriptionService.subscribers( event );
-        if ( notificationEntries.isEmpty() ) {
-            return;
-        }
-
         performNotification( event.getCaseObject(), null, null, null, event, notificationEntries, event.getPerson() );
     }
 
     @EventListener
     public void onCaseCommentChanged(CaseCommentEvent event ) {
         Set<NotificationEntry> notificationEntries = subscriptionService.subscribers( event );
-        if ( notificationEntries.isEmpty() ) {
-            return;
-        }
-
         performNotification( event.getCaseObject(), null, null, event, null, notificationEntries, event.getPerson() );
     }
 
@@ -101,7 +90,7 @@ public class MailNotificationProcessor {
 
         Person manager = getManager( caseObject.getManagerId() );
         Collection<NotificationEntry> notifiers =
-                formNotifiers(notificationEntries, currentPerson, caseObject.getManager(), caseObject.isPrivateCase());
+                formNotifiers(notificationEntries, currentPerson, manager, caseObject.isPrivateCase());
 
         if(notifiers.isEmpty())
             return;

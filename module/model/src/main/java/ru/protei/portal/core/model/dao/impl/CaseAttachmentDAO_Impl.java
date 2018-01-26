@@ -62,7 +62,7 @@ public class CaseAttachmentDAO_Impl extends PortalBaseJdbcDAO<CaseAttachment> im
     }
 
     @Override
-    public Collection<CaseAttachment> subtractDiffAndSynchronize(Collection<CaseAttachment> oldList, Collection<CaseAttachment> newList) {
+    public Collection<CaseAttachment> calcDiffAndSynchronize(Collection<CaseAttachment> oldList, Collection<CaseAttachment> newList) {
         if(newList == null)
             newList = Collections.emptyList();
 

@@ -4,10 +4,9 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.ent.Attachment;
-import ru.protei.portal.core.model.ent.CaseObject;
-import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.core.model.ent.CompanySubscription;
+import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.AttachmentEvents;
@@ -22,6 +21,7 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Активность превью обращения
@@ -135,13 +135,8 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
             view.setCompany( "" );
         } else {
             view.setCompany( initiator.getCname() );
-            view.setSubscriptionEmails( initiator.getSubscriptions() == null
-                    ? ""
-                    : initiator.getSubscriptions()
-                    .stream()
-                    .map( CompanySubscription::getEmail )
-                    .collect( Collectors.joining(", ") ) );
         }
+        view.setSubscriptionEmails(formSubscribers(value, policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_MANAGER_VIEW))); //TODO change rule
 
         view.attachmentsContainer().clear();
         view.attachmentsContainer().add(value.getAttachments());
@@ -167,19 +162,21 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
                 fillView( caseObject );
             }
         } );
+    }
 
-//        attachmentService.getAttachmentsByCaseId(id, new RequestCallback<List<Attachment>>() {
-//            @Override
-//            public void onError(Throwable throwable) {
-//                fireEvent( new NotifyEvents.Show( lang.attachmentsNotLoaded(), NotifyEvents.NotifyType.ERROR ) );
-//            }
-//
-//            @Override
-//            public void onSuccess(List<Attachment> result) {
-//                view.attachmentsContainer().clear();
-//                IssuePreviewActivity.this.addAttachments(result);
-//            }
-//        });
+    private String formSubscribers(CaseObject value, boolean isPersonsAllowed){
+        Company initiator = value.getInitiatorCompany();
+
+        Stream<String> companySubscribers = Stream.empty();
+        if ( initiator != null && initiator.getSubscriptions() != null ) {
+             companySubscribers = initiator.getSubscriptions().stream().map( CompanySubscription::getEmail );
+        }
+
+        Stream<String> personSubscribers = Stream.empty();
+        if(isPersonsAllowed && value.getNotifiers() != null){
+            personSubscribers = value.getNotifiers().stream().map(Person::getDisplayShortName);
+        }
+        return Stream.concat(companySubscribers, personSubscribers).collect(Collectors.joining(", "));
     }
 
     private void addAttachments(Collection<Attachment> attachs){
@@ -197,6 +194,8 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
     IssueServiceAsync issueService;
     @Inject
     AttachmentServiceAsync attachmentService;
+    @Inject
+    PolicyService policyService;
 
     private Long issueId;
     private AppEvents.InitDetails initDetails;

@@ -8,6 +8,7 @@ import ru.protei.portal.core.model.view.PersonShortViewSupport;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * Created by michael on 30.03.16.
@@ -96,6 +97,11 @@ public class Person extends AuditableObject implements PersonShortViewSupport {
         person.setDisplayShortName( personShortView.getDisplayShortName());
         person.setFired( personShortView.isFired());
         return person;
+    }
+
+    public Person(Long personId){
+        this();
+        this.id = personId;
     }
 
     public Person () {
@@ -300,6 +306,11 @@ public class Person extends AuditableObject implements PersonShortViewSupport {
     @Override
     public PersonShortView toFullNameShortView() {
         return new PersonShortView(this.displayName, this.getId(), this.isFired);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Person && Objects.equals(id, ((Person)obj).getId());
     }
 
     public String getRelations() {

@@ -632,15 +632,14 @@ label.required:after {
   margin: 0 -7px;
 }
 
-.grid-indent [class*='col-']{
-  padding: 0 7px;
-  box-sizing: border-box;
-}
-
 [class*='col-'] [class*='col-']{
   padding: 0;
 }
 
+.grid-indent > [class*='col-']{
+  padding: 0 7px !important;
+  box-sizing: border-box;
+}
 .panelField .label{
   padding: 0 12px;
   background: #a9b4bb;
@@ -2061,6 +2060,26 @@ div.select2-container {
     span.caret {
       width: initial;
       border: none;
+    }
+  }
+}
+
+.case-subscribers{
+  div.select2-container{
+    border: 0 !important;
+    ul.select2-choices{
+      padding-left: 0;
+      margin-bottom: 5px;
+      li.select2-search-choice{
+        display: inline !important;
+        padding-right: 10px;
+      }
+    }
+    div.select2-button {
+      button {
+        background: teal;
+        color: white;
+      }
     }
   }
 }

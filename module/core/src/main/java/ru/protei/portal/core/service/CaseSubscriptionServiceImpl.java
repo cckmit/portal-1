@@ -6,7 +6,12 @@ import ru.protei.portal.core.event.CaseCommentEvent;
 import ru.protei.portal.core.event.CaseObjectEvent;
 import ru.protei.portal.core.model.dao.CompanyGroupHomeDAO;
 import ru.protei.portal.core.model.dao.CompanySubscriptionDAO;
+import ru.protei.portal.core.model.dict.En_ContactDataAccess;
+import ru.protei.portal.core.model.dict.En_ContactItemType;
+import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.CompanySubscription;
+import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.core.model.struct.NotificationEntry;
 
 import java.util.*;
@@ -25,24 +30,30 @@ public class CaseSubscriptionServiceImpl implements CaseSubscriptionService {
 
     @Override
     public Set<NotificationEntry> subscribers(CaseObjectEvent event) {
-        return getByCompanyRule(event.getCaseObject().getInitiatorCompanyId());
+        return getByCase(event.getCaseObject());
     }
 
     @Override
     public Set<NotificationEntry> subscribers(CaseCommentEvent event) {
-        return getByCompanyRule(event.getCaseObject().getInitiatorCompanyId());
+        return getByCase(event.getCaseObject());
     }
 
     @Override
     public Set<NotificationEntry> subscribers(CaseAttachmentEvent event) {
-        return getByCompanyRule(event.getCaseObject().getInitiatorCompanyId());
+        return getByCase(event.getCaseObject());
     }
 
-
-    private Set<NotificationEntry> getByCompanyRule (Long targetCompany) {
+    private Set<NotificationEntry> getByCase (CaseObject caseObject){
         Set<NotificationEntry> result = new HashSet<>();
-        appendCompanySubscriptions(targetCompany, result);
-
+        appendCompanySubscriptions(caseObject.getInitiatorCompanyId(), result);
+        if(caseObject.getNotifiers() != null){
+            for(Person notifier: caseObject.getNotifiers()){
+                ContactItem email = notifier.getContactInfo().findFirst(En_ContactItemType.EMAIL, En_ContactDataAccess.PUBLIC);
+                if(email == null)
+                    continue;
+                result.add(NotificationEntry.email(email.value(), "ru"));
+            }
+        }
         //HomeCompany persons don't need to get notifications
 //        companyGroupHomeDAO.getAll().forEach( hc -> appendCompanySubscriptions(hc.getCompanyId(), result));
         return result;

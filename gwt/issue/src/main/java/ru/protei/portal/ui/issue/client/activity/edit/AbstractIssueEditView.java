@@ -10,6 +10,8 @@ import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
+import java.util.Set;
+
 /**
  * Представление создания и редактирования обращения
  */
@@ -26,6 +28,7 @@ public interface AbstractIssueEditView extends IsWidget {
     HasValue<PersonShortView> manager();
     HasValue<ProductShortView> product();
     HasValue<Boolean> isLocal();
+    HasValue<Set<PersonShortView>> notifiers();
 
     HasValidable nameValidator();
     HasValidable stateValidator();
@@ -53,5 +56,6 @@ public interface AbstractIssueEditView extends IsWidget {
     HasEnabled companyEnabled();
     HasEnabled productEnabled();
     HasEnabled managerEnabled();
+    HasVisibility notifiersEnabled();
     HasVisibility privacyVisibility();
 }
