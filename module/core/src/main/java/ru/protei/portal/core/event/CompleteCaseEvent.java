@@ -2,6 +2,7 @@ package ru.protei.portal.core.event;
 
 import org.springframework.context.ApplicationEvent;
 import ru.protei.portal.core.ServiceModule;
+import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.HelperFunc;
@@ -12,29 +13,45 @@ import java.time.LocalTime;
 import java.time.ZoneOffset;
 import java.util.Date;
 
-public class CollectingCaseObjectEvent extends ApplicationEvent {
+public class CompleteCaseEvent extends ApplicationEvent {
 
     private CaseObject lastState;
     private CaseObject initState;
+    private CaseComment comment;
     private Person person;
     private ServiceModule serviceModule;
-    private final LocalTime timeCreated = LocalTime.now(ZoneOffset.UTC);
-    private LocalTime lastUpdated = timeCreated;
+    private final LocalTime timeCreated;
+    private LocalTime lastUpdated;
 
-    public CollectingCaseObjectEvent(CaseService caseService, CaseObject lastState, Person initiator ) {
+    public CompleteCaseEvent(CaseService caseService, CaseObject lastState, Person initiator ) {
         this (ServiceModule.GENERAL, caseService, lastState, null, initiator);
     }
 
-    public CollectingCaseObjectEvent(CaseService caseService, CaseObject lastState, CaseObject initState, Person currentPerson ){
+    public CompleteCaseEvent(CaseService caseService, CaseObject lastState, CaseObject initState, Person currentPerson ){
         this (ServiceModule.GENERAL, caseService, lastState, initState, currentPerson);
     }
 
-    public CollectingCaseObjectEvent(ServiceModule module, CaseService caseService, CaseObject lastState, CaseObject initState, Person currentPerson ) {
+    public CompleteCaseEvent(CaseObjectEvent objectEvent) {
+        this (objectEvent.getServiceModule(), objectEvent.getCaseService(), objectEvent.getNewState()
+                , objectEvent.getOldState(), objectEvent.getPerson());
+    }
+
+    public CompleteCaseEvent(ServiceModule module, CaseService caseService, CaseObject lastState, CaseObject initState, Person currentPerson ) {
         super( caseService );
         this.lastState = lastState;
         this.initState = initState;
         this.person = currentPerson;
         this.serviceModule = module;
+        this.timeCreated = LocalTime.now(ZoneOffset.UTC);
+        this.lastUpdated = timeCreated;
+    }
+
+    public CaseComment getComment() {
+        return comment;
+    }
+
+    public void setComment(CaseComment comment) {
+        this.comment = comment;
     }
 
     public boolean isCreateEvent () {
@@ -85,8 +102,12 @@ public class CollectingCaseObjectEvent extends ApplicationEvent {
         return Duration.between(timeCreated, LocalTime.now(ZoneOffset.UTC)).toMillis() / 1000L;
     }
 
-    public void attachCaseObjectEvent() {
+    public void attachCaseObjectEvent(CaseObjectEvent caseObjectEvent) {
+        //TODO
+    }
 
+    public void attachCaseCommentEvent(CaseCommentEvent caseCommentEvent) {
+        //TODO
     }
 
     public ServiceModule getServiceModule() {

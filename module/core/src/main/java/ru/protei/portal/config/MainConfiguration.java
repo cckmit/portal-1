@@ -333,6 +333,11 @@ public class MainConfiguration {
         return new BootstrapService();
     }
 
+    @Bean
+    public EventAssemblerService getEventAssemblerService() {
+        return new EventAssemblerServiceImpl();
+    }
+
     /** ASPECT/INTERCEPTORS **/
     @Bean
     public ServiceLayerInterceptor getServiceLayerInterceptor () {

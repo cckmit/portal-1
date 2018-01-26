@@ -207,7 +207,7 @@ public class HpsmEventHandlerFactoryImpl implements HpsmEventHandlerFactory{
 
 
             if (request.getSubject().getStatus() != null) {
-                statusHandlerFactory.createHandler(currState.status(), request.getSubject().getStatus());
+                statusHandlerFactory.createHandler(currState, request.getSubject().getStatus());
             }
 
             currState.updateCustomerFields(request.getHpsmMessage());
