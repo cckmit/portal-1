@@ -302,4 +302,31 @@ public class Person implements Serializable, PersonShortViewSupport {
     public PersonShortView toFullNameShortView() {
         return new PersonShortView(this.displayName, this.getId(), this.isFired);
     }
+
+    @Override
+    public String toString() {
+        return "Person{" +
+                "id=" + id +
+                ", created=" + created +
+                ", creator='" + creator + '\'' +
+                ", companyId=" + companyId +
+                ", company=" + company +
+                ", position='" + position + '\'' +
+                ", department='" + department + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", secondName='" + secondName + '\'' +
+                ", displayName='" + displayName + '\'' +
+                ", displayShortName='" + displayShortName + '\'' +
+                ", genderCode='" + genderCode + '\'' +
+                ", birthday=" + birthday +
+                ", ipAddress='" + ipAddress + '\'' +
+                ", passportInfo='" + passportInfo + '\'' +
+                ", info='" + info + '\'' +
+                ", isDeleted=" + isDeleted +
+                ", isFired=" + isFired +
+                ", contactInfo=" + contactInfo +
+                ", updated=" + updated +
+                '}';
+    }
 }

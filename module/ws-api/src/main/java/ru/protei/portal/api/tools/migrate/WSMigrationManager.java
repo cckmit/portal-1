@@ -46,7 +46,7 @@ public class WSMigrationManager {
 
     public void deletePerson(Person person) throws SQLException, UnknownHostException {
 
-        logger.debug ("deletePerson(): id={}" + person.getId());
+        logger.debug ("deletePerson(): person={}" + person);
 
         Connection connection = getConnection ();
 
@@ -63,7 +63,7 @@ public class WSMigrationManager {
 
     private void persistPerson(Person person) throws SQLException, UnknownHostException {
 
-        logger.debug ("persistPerson(): id={}" + person.getId());
+        logger.debug ("persistPerson(): person={}" + person);
 
         Connection connection = getConnection ();
 
@@ -90,7 +90,7 @@ public class WSMigrationManager {
 
     private void mergePerson(Person person) throws SQLException, UnknownHostException {
 
-        logger.debug ("mergePerson(): id={}" + person.getId());
+        logger.debug ("mergePerson(): person={}" + person);
 
         Connection connection = getConnection ();
 

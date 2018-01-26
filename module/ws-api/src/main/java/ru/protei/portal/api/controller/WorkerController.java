@@ -242,31 +242,33 @@ public class WorkerController {
 
                 try {
 
-                    convert(rec, operationData.person());
+                    Person person = operationData.person();
+                    WorkerEntry worker = operationData.worker();
+
+                    convert(rec, person);
 
                     if (rec.isFired() || rec.isDeleted()) {
 
-                        workerEntryDAO.remove(operationData.worker());
+                        workerEntryDAO.remove(worker);
 
-                        if (!workerEntryDAO.checkExistsByPersonId(operationData.person().getId())) {
-                            operationData.person().setFired(rec.isFired());
-                            operationData.person().setDeleted(rec.isDeleted());
+                        if (!workerEntryDAO.checkExistsByPersonId(person.getId())) {
+                            person.setFired(rec.isFired());
+                            person.setDeleted(rec.isDeleted());
                         }
 
-                        personDAO.merge(operationData.person());
+                        personDAO.merge(person);
                         if (WSConfig.getInstance().isEnableMigration()) {
-                            migrationManager.savePerson(operationData.person());
+                            migrationManager.savePerson(person);
                         }
 
-                        logger.debug("success result, workerRowId={}", operationData.worker().getId());
-                        return ServiceResult.successResult(operationData.person().getId());
+                        logger.debug("success result, workerRowId={}", worker.getId());
+                        return ServiceResult.successResult(person.getId());
                     }
 
-                    personDAO.merge(operationData.person());
+                    personDAO.merge(person);
 
                     WorkerPosition position = getValidPosition(rec.getPositionName(), operationData.homeItem().getCompanyId());
 
-                    WorkerEntry worker = operationData.worker();
                     worker.setDepartmentId(operationData.department().getId());
                     worker.setPositionId(position.getId());
                     worker.setHireDate(HelperFunc.isNotEmpty(rec.getHireDate()) ? HelperService.DATE.parse(rec.getHireDate()) : null);
@@ -276,11 +278,11 @@ public class WorkerController {
                     workerEntryDAO.merge(worker);
 
                     if (WSConfig.getInstance().isEnableMigration()) {
-                        migrationManager.savePerson(operationData.person());
+                        migrationManager.savePerson(person);
                     }
 
                     logger.debug("success result, workerRowId={}", worker.getId());
-                    return ServiceResult.successResult(operationData.person().getId());
+                    return ServiceResult.successResult(person.getId());
 
                 } catch (Exception e) {
                     throw new RuntimeException(e);
@@ -332,8 +334,9 @@ public class WorkerController {
             return transactionTemplate.execute(transactionStatus -> {
                 try {
 
-                    Long personId = operationData.worker().getPersonId();
                     WorkerEntry worker = operationData.worker();
+                    Long personId = worker.getPersonId();
+
                     workerEntryDAO.remove(worker);
 
                     if (!workerEntryDAO.checkExistsByPersonId(personId)) {
