@@ -7,5 +7,6 @@ import ru.protei.portal.core.model.ent.CompanyDepartment;
  */
 public interface CompanyDepartmentDAO extends PortalBaseDAO<CompanyDepartment> {
     boolean checkExistsByParentId(Long departmentId);
+    boolean checkExistsByParent(String extId, Long companyId);
     CompanyDepartment getByExternalId(String extId, Long companyId);
 }

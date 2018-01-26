@@ -147,30 +147,14 @@ public class WorkerController {
         }
 
         try {
+
             OperationData operationData = new OperationData(rec)
                     .requireHomeItem()
                     .requireDepartment(null)
-                    .requireNotExists();
+                    .requireNotExistsWorker();
 
             if (!operationData.isValid())
                 return operationData.failResult();
-
-//            CompanyHomeGroupItem item = companyGroupHomeDAO.getByExternalCode(rec.getCompanyCode().trim());
-//            if (item == null) {
-//                logger.debug("error result: {}", En_ErrorCode.UNKNOWN_COMP.getMessage());
-//                return ServiceResult.failResult(En_ErrorCode.UNKNOWN_COMP.getCode(), En_ErrorCode.UNKNOWN_COMP.getMessage(), rec.getId());
-//            }
-//
-//            CompanyDepartment department = companyDepartmentDAO.getByExternalId(rec.getDepartmentId().trim(), item.getCompanyId());
-//            if (department == null) {
-//                logger.debug("error result: {}", En_ErrorCode.UNKNOWN_DEP.getMessage());
-//                return ServiceResult.failResult(En_ErrorCode.UNKNOWN_DEP.getCode(), En_ErrorCode.UNKNOWN_DEP.getMessage(), rec.getId());
-//            }
-//
-//            if (workerEntryDAO.checkExistsByExternalId(rec.getWorkerId().trim(), item.getCompanyId())) {
-//                logger.debug("error result: {}", En_ErrorCode.EXIST_WOR.getMessage());
-//                return ServiceResult.failResult(En_ErrorCode.EXIST_WOR.getCode(), En_ErrorCode.EXIST_WOR.getMessage(), rec.getId());
-//            }
 
             return transactionTemplate.execute(transactionStatus -> {
 
@@ -254,32 +238,6 @@ public class WorkerController {
             if (!operationData.isValid())
                 return operationData.failResult();
 
-/*
-            CompanyHomeGroupItem item = companyGroupHomeDAO.getByExternalCode(rec.getCompanyCode().trim());
-            if (item == null) {
-                logger.debug("error result: {}", En_ErrorCode.UNKNOWN_COMP.getMessage());
-                return ServiceResult.failResult(En_ErrorCode.UNKNOWN_COMP.getCode(), En_ErrorCode.UNKNOWN_COMP.getMessage(), rec.getId());
-            }
-
-            CompanyDepartment department = companyDepartmentDAO.getByExternalId(rec.getDepartmentId().trim(), item.getCompanyId());
-            if (department == null) {
-                logger.debug("error result: {}", En_ErrorCode.UNKNOWN_DEP.getMessage());
-                return ServiceResult.failResult(En_ErrorCode.UNKNOWN_DEP.getCode(), En_ErrorCode.UNKNOWN_DEP.getMessage(), rec.getId());
-            }
-
-            Person person = personDAO.get(rec.getId());
-            if (person == null) {
-                logger.debug("error result: {}", En_ErrorCode.UNKNOWN_PER.getMessage());
-                return ServiceResult.failResult(En_ErrorCode.UNKNOWN_PER.getCode(), En_ErrorCode.UNKNOWN_PER.getMessage(), rec.getId());
-            }
-
-            WorkerEntry worker = workerEntryDAO.getByExternalId(rec.getWorkerId().trim(), item.getCompanyId());
-            if (worker == null || !worker.getPersonId().equals(person.getId())) {
-                logger.debug("error result: {}", En_ErrorCode.UNKNOWN_WOR.getMessage());
-                return ServiceResult.failResult(En_ErrorCode.UNKNOWN_WOR.getCode(), En_ErrorCode.UNKNOWN_WOR.getMessage(), rec.getId());
-            }
-*/
-
             return transactionTemplate.execute(transactionStatus -> {
 
                 try {
@@ -308,19 +266,20 @@ public class WorkerController {
 
                     WorkerPosition position = getValidPosition(rec.getPositionName(), operationData.homeItem().getCompanyId());
 
-                    operationData.worker().setDepartmentId(operationData.department().getId());
-                    operationData.worker().setPositionId(position.getId());
-                    operationData.worker().setHireDate(HelperFunc.isNotEmpty(rec.getHireDate()) ? HelperService.DATE.parse(rec.getHireDate()) : null);
-                    operationData.worker().setHireOrderNo(HelperFunc.isNotEmpty(rec.getHireOrderNo()) ? rec.getHireOrderNo().trim() : null);
-                    operationData.worker().setActiveFlag(rec.getActive());
+                    WorkerEntry worker = operationData.worker();
+                    worker.setDepartmentId(operationData.department().getId());
+                    worker.setPositionId(position.getId());
+                    worker.setHireDate(HelperFunc.isNotEmpty(rec.getHireDate()) ? HelperService.DATE.parse(rec.getHireDate()) : null);
+                    worker.setHireOrderNo(HelperFunc.isNotEmpty(rec.getHireOrderNo()) ? rec.getHireOrderNo().trim() : null);
+                    worker.setActiveFlag(rec.getActive());
 
-                    workerEntryDAO.merge(operationData.worker());
+                    workerEntryDAO.merge(worker);
 
                     if (WSConfig.getInstance().isEnableMigration()) {
                         migrationManager.savePerson(operationData.person());
                     }
 
-                    logger.debug("success result, workerRowId={}", operationData.worker().getId());
+                    logger.debug("success result, workerRowId={}", worker.getId());
                     return ServiceResult.successResult(operationData.person().getId());
 
                 } catch (Exception e) {
@@ -363,33 +322,19 @@ public class WorkerController {
 
         try {
 
-            OperationData operationData = new OperationData(companyCode, null, externalId, null)
+            OperationData operationData = new OperationData(companyCode, null, externalId)
                     .requireHomeItem()
                     .requireWorker(null);
 
             if (!operationData.isValid())
                 return operationData.failResult();
 
-/*
-            CompanyHomeGroupItem item = companyGroupHomeDAO.getByExternalCode(companyCode.trim());
-            if (item == null) {
-                logger.debug("error result: {}", En_ErrorCode.UNKNOWN_COMP.getMessage());
-                return ServiceResult.failResult(En_ErrorCode.UNKNOWN_COMP.getCode(), En_ErrorCode.UNKNOWN_COMP.getMessage(), null);
-            }
-
-            WorkerEntry worker = workerEntryDAO.getByExternalId(externalId.trim(), item.getCompanyId());
-            if (worker == null) {
-                logger.debug("error result: {}", En_ErrorCode.UNKNOWN_WOR.getMessage());
-                return ServiceResult.failResult(En_ErrorCode.UNKNOWN_WOR.getCode(), En_ErrorCode.UNKNOWN_WOR.getMessage(), null);
-            }
-*/
-
             return transactionTemplate.execute(transactionStatus -> {
                 try {
 
                     Long personId = operationData.worker().getPersonId();
-
-                    workerEntryDAO.remove(operationData.worker());
+                    WorkerEntry worker = operationData.worker();
+                    workerEntryDAO.remove(worker);
 
                     if (!workerEntryDAO.checkExistsByPersonId(personId)) {
                         Person person = personDAO.get(personId);
@@ -399,8 +344,8 @@ public class WorkerController {
                             migrationManager.deletePerson(person);
                         }
                     }
-                    logger.debug("success result, workerRowId={}", operationData.worker().getId());
-                    return ServiceResult.successResult(operationData.worker().getId());
+                    logger.debug("success result, workerRowId={}", worker.getId());
+                    return ServiceResult.successResult(worker.getId());
 
                 } catch (Exception e) {
                     throw new RuntimeException(e);
@@ -427,19 +372,11 @@ public class WorkerController {
 
         try {
 
-            OperationData operationData = new OperationData(null, null, null, photo.getId())
+            OperationData operationData = new OperationData(null, photo.getId(), null, null)
                     .requirePerson(null);
 
             if (!operationData.isValid())
                 return operationData.failResult();
-
-/*
-            Person person = personDAO.get(photo.getId());
-            if (person == null) {
-                logger.debug("error result: {}", En_ErrorCode.UNKNOWN_PER.getMessage());
-                return ServiceResult.failResult(En_ErrorCode.UNKNOWN_PER.getCode(), En_ErrorCode.UNKNOWN_PER.getMessage(), photo.getId());
-            }
-*/
 
             try (Base64OutputStream out = new Base64OutputStream(new FileOutputStream(makeFileName(photo.getId())), false)) {
 
@@ -500,11 +437,6 @@ public class WorkerController {
         return photos;
     }
 
-    /*
-        @review, все здесь я остановился. далее нужно либо дождаться исправления первичных замечаний,
-        либо обсуждать устно.
-     */
-
     @RequestMapping(method = RequestMethod.PUT, value = "/update.department")
     public @ResponseBody
     ServiceResult updateDepartment(@RequestBody DepartmentRecord rec) {
@@ -523,57 +455,28 @@ public class WorkerController {
                     .requireHomeItem()
                     .requireParentDepartment(null)
                     .requireHeadDepartment(null)
-                    .requireWorker(null)
                     .requireDepartment(CompanyDepartment::new);
 
             if (!operationData.isValid())
                 return operationData.failResult();
 
-/*
-            CompanyHomeGroupItem item = companyGroupHomeDAO.getByExternalCode(rec.getCompanyCode().trim());
-            if (item == null) {
-                logger.debug("error result: " + En_ErrorCode.UNKNOWN_COMP.getMessage());
-                return ServiceResult.failResult(En_ErrorCode.UNKNOWN_COMP.getCode(), En_ErrorCode.UNKNOWN_COMP.getMessage(), null);
+            CompanyDepartment department = operationData.department();
+            department.setName(rec.getDepartmentName().trim());
+            department.setParentId(operationData.parentDepartment() == null ? null : operationData.parentDepartment().getId());
+            department.setHeadId(operationData.headDepartment() == null ? null : operationData.headDepartment().getId());
+
+            if (department.getId() == null) {
+                department.setCreated(new Date());
+                department.setCompanyId(operationData.homeItem().getCompanyId());
+                department.setTypeId(1);
+                department.setExternalId(rec.getDepartmentId().trim());
+                companyDepartmentDAO.persist(department);
+            } else {
+                companyDepartmentDAO.merge(department);
             }
 
-            CompanyDepartment parentDepartment = null;
-            if (HelperFunc.isNotEmpty(rec.getParentId())) {
-                parentDepartment = companyDepartmentDAO.getByExternalId(rec.getParentId().trim(), item.getCompanyId());
-                if (parentDepartment == null) {
-                    logger.debug("error result: " + En_ErrorCode.UNKNOWN_PAR_DEP.getMessage());
-                    return ServiceResult.failResult(En_ErrorCode.UNKNOWN_PAR_DEP.getCode(), En_ErrorCode.UNKNOWN_PAR_DEP.getMessage(), null);
-                }
-            }
-
-            WorkerEntry headWorker = null;
-            if (HelperFunc.isNotEmpty(rec.getHeadId())) {
-                headWorker = workerEntryDAO.getByExternalId(rec.getHeadId().trim(), item.getCompanyId());
-                if (headWorker == null) {
-                    logger.debug("error result: " + En_ErrorCode.UNKNOWN_WOR.getMessage());
-                    return ServiceResult.failResult(En_ErrorCode.UNKNOWN_WOR.getCode(), En_ErrorCode.UNKNOWN_WOR.getMessage(), null);
-                }
-            }
-
-            CompanyDepartment department = companyDepartmentDAO.getByExternalId(rec.getDepartmentId().trim(), item.getCompanyId());
-*/
-            if (operationData.department().getId() == null) {
-                operationData.department().setCreated(new Date());
-                operationData.department().setCompanyId(operationData.homeItem().getCompanyId());
-                operationData.department().setTypeId(1);
-                operationData.department().setExternalId(rec.getDepartmentId().trim());
-            }
-
-            operationData.department().setName(rec.getDepartmentName().trim());
-            operationData.department().setParentId(operationData.parentDepartment() == null ? null : operationData.parentDepartment().getId());
-            operationData.department().setHeadId(operationData.headDepartment() == null ? null : operationData.headDepartment().getId());
-
-            if (operationData.department().getId() == null)
-                companyDepartmentDAO.persist(operationData.department());
-            else
-                companyDepartmentDAO.merge(operationData.department());
-
-            logger.debug("success result, departmentRowId={}", operationData.department().getId());
-            return ServiceResult.successResult(operationData.department().getId());
+            logger.debug("success result, departmentRowId={}", department.getId());
+            return ServiceResult.successResult(department.getId());
 
         } catch (Exception e) {
             logger.error("error while update department's record", e);
@@ -590,28 +493,16 @@ public class WorkerController {
 
         try {
 
-            CompanyHomeGroupItem item = companyGroupHomeDAO.getByExternalCode(companyCode.trim());
-            if (item == null) {
-                logger.debug("error result: " + En_ErrorCode.UNKNOWN_COMP.getMessage());
-                return ServiceResult.failResult(En_ErrorCode.UNKNOWN_COMP.getCode(), En_ErrorCode.UNKNOWN_COMP.getMessage(), null);
-            }
+            OperationData operationData = new OperationData(companyCode, externalId, null)
+                    .requireHomeItem()
+                    .requireDepartment(null)
+                    .requireNotExistsChildDepartment()
+                    .requireNotExistsDepartmentWorker();
 
-            CompanyDepartment department = companyDepartmentDAO.getByExternalId(externalId.trim(), item.getCompanyId());
-            if (department == null) {
-                logger.debug("error result: " + En_ErrorCode.UNKNOWN_DEP.getMessage());
-                return ServiceResult.failResult(En_ErrorCode.UNKNOWN_DEP.getCode(), En_ErrorCode.UNKNOWN_DEP.getMessage(), null);
-            }
+            if (!operationData.isValid())
+                return operationData.failResult();
 
-            if (companyDepartmentDAO.checkExistsByParentId(department.getId())) {
-                logger.debug("error result: " + En_ErrorCode.EXIST_CHILD_DEP.getMessage());
-                return ServiceResult.failResult(En_ErrorCode.EXIST_CHILD_DEP.getCode(), En_ErrorCode.EXIST_CHILD_DEP.getMessage(), null);
-            }
-
-            if (workerEntryDAO.checkExistsByDepId(department.getId())) {
-                logger.debug("error result: " + En_ErrorCode.EXIST_DEP_WOR.getMessage());
-                return ServiceResult.failResult(En_ErrorCode.EXIST_DEP_WOR.getCode(), En_ErrorCode.EXIST_DEP_WOR.getMessage(), null);
-            }
-
+            CompanyDepartment department = operationData.department();
             companyDepartmentDAO.remove(department);
 
             logger.debug("success result, departmentRowId={}", department.getId());
@@ -637,24 +528,15 @@ public class WorkerController {
 
         try {
 
-            CompanyHomeGroupItem item = companyGroupHomeDAO.getByExternalCode(companyCode.trim());
-            if (item == null) {
-                logger.debug("error result: " + En_ErrorCode.UNKNOWN_COMP.getMessage());
-                return ServiceResult.failResult(En_ErrorCode.UNKNOWN_COMP.getCode(), En_ErrorCode.UNKNOWN_COMP.getMessage(), null);
-            }
+            OperationData operationData = new OperationData(companyCode, null, oldName, newName)
+                    .requireHomeItem()
+                    .requirePosition(null)
+                    .requireNotExistsNewPosition();
 
-            WorkerPosition existsPosition = workerPositionDAO.getByName(newName.trim(), item.getCompanyId());
-            if (existsPosition != null) {
-                logger.debug("error result: " + En_ErrorCode.EXIST_POS.getMessage());
-                return ServiceResult.failResult(En_ErrorCode.EXIST_POS.getCode(), En_ErrorCode.EXIST_POS.getMessage(), null);
-            }
+            if (!operationData.isValid())
+                return operationData.failResult();
 
-            WorkerPosition position = workerPositionDAO.getByName(oldName.trim(), item.getCompanyId());
-            if (position == null) {
-                logger.debug("error result: " + En_ErrorCode.UNKNOWN_POS.getMessage());
-                return ServiceResult.failResult(En_ErrorCode.UNKNOWN_POS.getCode(), En_ErrorCode.UNKNOWN_POS.getMessage(), null);
-            }
-
+            WorkerPosition position = operationData.position();
             position.setName(newName.trim());
 
             workerPositionDAO.merge(position);
@@ -677,23 +559,15 @@ public class WorkerController {
 
         try {
 
-            CompanyHomeGroupItem item = companyGroupHomeDAO.getByExternalCode(companyCode.trim());
-            if (item == null) {
-                logger.debug("error result: " + En_ErrorCode.UNKNOWN_COMP.getMessage());
-                return ServiceResult.failResult(En_ErrorCode.UNKNOWN_COMP.getCode(), En_ErrorCode.UNKNOWN_COMP.getMessage(), null);
-            }
+            OperationData operationData = new OperationData(companyCode, null, name, null)
+                    .requireHomeItem()
+                    .requirePosition(null)
+                    .requireNotExistsPositionWorker();
 
-            WorkerPosition position = workerPositionDAO.getByName(name, item.getCompanyId());
-            if (position == null) {
-                logger.debug("error result: " + En_ErrorCode.UNKNOWN_POS.getMessage());
-                return ServiceResult.failResult(En_ErrorCode.UNKNOWN_POS.getCode(), En_ErrorCode.UNKNOWN_POS.getMessage(), null);
-            }
+            if (!operationData.isValid())
+                return operationData.failResult();
 
-            if (workerEntryDAO.checkExistsByPosId(position.getId())) {
-                logger.debug("error result: " + En_ErrorCode.EXIST_POS_WOR.getMessage());
-                return ServiceResult.failResult(En_ErrorCode.EXIST_POS_WOR.getCode(), En_ErrorCode.EXIST_POS_WOR.getMessage(), null);
-            }
-
+            WorkerPosition position = operationData.position();
             workerPositionDAO.remove(position);
 
             logger.debug("success result, positionRowId={}", position.getId());
@@ -827,11 +701,11 @@ public class WorkerController {
 
         CompanyHomeGroupItem homeGroupItem;
         CompanyDepartment department;
-        WorkerEntry worker;
-        Person person;
-
         CompanyDepartment parentDepartment;
         WorkerEntry headDepartment;
+        WorkerEntry worker;
+        Person person;
+        WorkerPosition position;
 
         Record record;
 
@@ -845,8 +719,12 @@ public class WorkerController {
             this.record = new Record(record);
         }
 
-        public OperationData(String companyCode, String departmentId, String workerId, Long personId) {
-            this.record = new Record(companyCode, departmentId, workerId, personId);
+        public OperationData(String companyCode, String departmentId, String workerId) {
+            this.record = new Record(companyCode, departmentId, workerId, null, null, null);
+        }
+
+        public OperationData(String companyCode, Long personId, String positionName, String newPositionName) {
+            this.record = new Record(companyCode, null, null, personId, positionName, newPositionName);
         }
 
         public OperationData requireHomeItem() {
@@ -886,7 +764,8 @@ public class WorkerController {
         public OperationData requireParentDepartment(Supplier<CompanyDepartment> optional) {
             requireHomeItem();
             if (isValid())
-                this.parentDepartment = handle(companyDepartmentDAO.getByExternalId(record.getParentDepartmentId().trim(), homeGroupItem.getCompanyId()), optional, En_ErrorCode.UNKNOWN_PAR_DEP, true);
+                this.parentDepartment = handle(record.getParentDepartmentId() == null ? null :
+                        companyDepartmentDAO.getByExternalId(record.getParentDepartmentId().trim(), homeGroupItem.getCompanyId()), optional, En_ErrorCode.UNKNOWN_PAR_DEP, true);
 
             return this;
         }
@@ -894,12 +773,21 @@ public class WorkerController {
         public OperationData requireHeadDepartment(Supplier<WorkerEntry> optional) {
             requireHomeItem();
             if (isValid())
-                this.headDepartment = handle(workerEntryDAO.getByExternalId(record.getHeadDepartmentId().trim(), homeItem().getCompanyId()), optional, En_ErrorCode.UNKNOWN_WOR, true);
+                this.headDepartment = handle(record.getHeadDepartmentId() == null ? null :
+                        workerEntryDAO.getByExternalId(record.getHeadDepartmentId().trim(), homeGroupItem.getCompanyId()), optional, En_ErrorCode.UNKNOWN_WOR, true);
 
             return this;
         }
 
-        public OperationData requireNotExists() {
+        public OperationData requirePosition(Supplier<WorkerPosition> optional) {
+            requireHomeItem();
+            if (isValid())
+                this.position = handle(workerPositionDAO.getByName(record.getPositionName().trim(), homeGroupItem.getCompanyId()), optional, En_ErrorCode.UNKNOWN_POS);
+
+            return this;
+        }
+
+        public OperationData requireNotExistsWorker() {
             requireHomeItem();
             if (!isValid())
                 return this;
@@ -911,6 +799,53 @@ public class WorkerController {
             return this;
         }
 
+        public OperationData requireNotExistsChildDepartment() {
+            requireHomeItem();
+            if (!isValid())
+                return this;
+
+            if (companyDepartmentDAO.checkExistsByParent(record.getDepartmentId().trim(), homeGroupItem.getCompanyId())) {
+                lastError = En_ErrorCode.EXIST_CHILD_DEP;
+            }
+
+            return this;
+        }
+
+        public OperationData requireNotExistsDepartmentWorker() {
+            requireHomeItem();
+            if (!isValid())
+                return this;
+
+            if (workerEntryDAO.checkExistsByDep(record.getDepartmentId().trim(), homeGroupItem.getCompanyId())) {
+                lastError = En_ErrorCode.EXIST_DEP_WOR;
+            }
+
+            return this;
+        }
+
+        public OperationData requireNotExistsNewPosition() {
+            requireHomeItem();
+            if (!isValid())
+                return this;
+
+            if (workerPositionDAO.checkExistsByName(record.getNewPositionName().trim(), homeGroupItem.getCompanyId())) {
+                lastError = En_ErrorCode.EXIST_POS;
+            }
+
+            return this;
+        }
+
+        public OperationData requireNotExistsPositionWorker() {
+            requireHomeItem();
+            if (!isValid())
+                return this;
+
+            if (workerEntryDAO.checkExistsByPosName(record.getPositionName().trim(), homeGroupItem.getCompanyId())) {
+                lastError = En_ErrorCode.EXIST_POS_WOR;
+            }
+
+            return this;
+        }
 
         private <T> T handle(T value, Supplier<T> optional, En_ErrorCode failCode) {
             return handle(value, optional, failCode, false);
@@ -947,14 +882,6 @@ public class WorkerController {
             return department;
         }
 
-        public Person person() {
-            return person;
-        }
-
-        public WorkerEntry worker() {
-            return worker;
-        }
-
         public CompanyDepartment parentDepartment() {
             return parentDepartment;
         }
@@ -963,14 +890,27 @@ public class WorkerController {
             return headDepartment;
         }
 
+        public Person person() {
+            return person;
+        }
+
+        public WorkerEntry worker() {
+            return worker;
+        }
+
+        public WorkerPosition position() {
+            return position;
+        }
+
         public class Record {
             String companyCode;
             String departmentId;
-            String workerId;
-            Long personId;
-
             String parentDepartmentId;
             String headDepartmentId;
+            String workerId;
+            Long personId;
+            String positionName;
+            String newPositionName;
 
             public Record(WorkerRecord workerRecord) {
                 this.companyCode = workerRecord.getCompanyCode();
@@ -986,11 +926,13 @@ public class WorkerController {
                 this.headDepartmentId = departmentRecord.getHeadId();
             }
 
-            public Record(String companyCode, String departmentId, String workerId, Long personId) {
+            public Record(String companyCode, String departmentId, String workerId, Long personId, String positionName, String newPositionName) {
                 this.companyCode = companyCode;
                 this.departmentId = departmentId;
                 this.workerId = workerId;
                 this.personId = personId;
+                this.positionName = positionName;
+                this.newPositionName = newPositionName;
             }
 
             public String getCompanyCode() {
@@ -1001,6 +943,14 @@ public class WorkerController {
                 return departmentId;
             }
 
+            public String getParentDepartmentId() {
+                return parentDepartmentId;
+            }
+
+            public String getHeadDepartmentId() {
+                return headDepartmentId;
+            }
+
             public String getWorkerId() {
                 return workerId;
             }
@@ -1009,12 +959,12 @@ public class WorkerController {
                 return personId;
             }
 
-            public String getParentDepartmentId() {
-                return parentDepartmentId;
+            public String getPositionName() {
+                return positionName;
             }
 
-            public String getHeadDepartmentId() {
-                return headDepartmentId;
+            public String getNewPositionName() {
+                return newPositionName;
             }
         }
     }

@@ -294,7 +294,7 @@ public class TestRestService {
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_XML));
 
         Photo photo = new Photo();
-        photo.setId(6989L);
+        photo.setId(origWorker.getId());
         photo.setContent(Base64.getEncoder().encodeToString(buf));
         HttpEntity<Photo> entity = new HttpEntity<>(photo, headers);
 

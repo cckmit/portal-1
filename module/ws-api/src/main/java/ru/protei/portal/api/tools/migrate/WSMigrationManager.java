@@ -1,6 +1,7 @@
 package ru.protei.portal.api.tools.migrate;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import protei.sql.Tm_SqlHelper;
 import ru.protei.portal.core.model.ent.Person;
 
@@ -14,7 +15,7 @@ public class WSMigrationManager {
 
     public static final String PORTAL_SYBASE_JDBC_URL = "jdbc:sybase:Tds:192.168.1.55:2638/PORTAL2017";
 
-    private static Logger logger = Logger.getLogger(WSMigrationManager.class);
+    private static Logger logger = LoggerFactory.getLogger(WSMigrationManager.class);
 
     Connection conn_src;
 
@@ -45,8 +46,7 @@ public class WSMigrationManager {
 
     public void deletePerson(Person person) throws SQLException, UnknownHostException {
 
-        logger.debug ("=== deletePerson ===");
-        logger.debug ("id = " + person.getId());
+        logger.debug ("deletePerson(): id={}" + person.getId());
 
         Connection connection = getConnection ();
 
@@ -63,8 +63,7 @@ public class WSMigrationManager {
 
     private void persistPerson(Person person) throws SQLException, UnknownHostException {
 
-        logger.debug ("=== persistPerson ===");
-        logger.debug ("id = " + person.getId());
+        logger.debug ("persistPerson(): id={}" + person.getId());
 
         Connection connection = getConnection ();
 
@@ -91,8 +90,7 @@ public class WSMigrationManager {
 
     private void mergePerson(Person person) throws SQLException, UnknownHostException {
 
-        logger.debug ("=== mergePerson ===");
-        logger.debug ("id = " + person.getId());
+        logger.debug ("mergePerson(): id={}" + person.getId());
 
         Connection connection = getConnection ();
 

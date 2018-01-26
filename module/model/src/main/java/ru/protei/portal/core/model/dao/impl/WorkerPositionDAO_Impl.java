@@ -11,4 +11,9 @@ public class WorkerPositionDAO_Impl extends PortalBaseJdbcDAO<WorkerPosition> im
     public WorkerPosition getByName(String name, Long companyId) {
         return getByCondition ("pos_name=? and company_id=?", name, companyId);
     }
+
+    @Override
+    public boolean checkExistsByName(String name, Long companyId) {
+        return checkExistsByCondition ("pos_name=? and company_id=?", name, companyId);
+    }
 }
