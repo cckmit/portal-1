@@ -23,6 +23,7 @@ public class CaseCommentEvent extends ApplicationEvent {
     private ServiceModule serviceModule;
     private Collection<Attachment> addedAttachments;
     private Collection<Attachment> removedAttachments;
+    private CaseService caseService;
 
     public CaseCommentEvent(CaseService source, CaseObject caseObject, CaseComment comment, Collection<Attachment> attachments, Person currentPerson) {
         this(ServiceModule.GENERAL, source, caseObject, null, null, comment, attachments, currentPerson);
@@ -45,6 +46,7 @@ public class CaseCommentEvent extends ApplicationEvent {
             CaseComment comment, Collection<Attachment> addedAttachments,
             Person currentPerson) {
         super(source);
+        this.caseService = source;
         this.caseObject = caseObject;
         this.caseComment = comment;
         this.oldCaseComment = oldComment;
@@ -80,5 +82,9 @@ public class CaseCommentEvent extends ApplicationEvent {
 
     public Collection<Attachment> getRemovedAttachments() {
         return removedAttachments == null? Collections.emptyList(): removedAttachments;
+    }
+
+    public CaseService getCaseService() {
+        return caseService;
     }
 }

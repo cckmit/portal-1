@@ -46,14 +46,10 @@ public class BackChannelHandlerFactoryImpl implements BackChannelHandlerFactory 
         stateHandlerMap.put(new Tuple<>(OPENED, INFO_REQUEST), new InfoRequestStateHandler());
         stateHandlerMap.put(new Tuple<>(OPENED, WORKAROUND), new WorkAroundStateHandler());
         stateHandlerMap.put(new Tuple<>(OPENED, DONE), new DoneStateHandler());
-        /*stateHandlerMap.put(En_CaseState.OPENED, new  OpenStateHandler ());
-        stateHandlerMap.put(En_CaseState.DONE, new DoneStateHandler());
-        stateHandlerMap.put(En_CaseState.VERIFIED, new VerifiedStateHandler());
-        stateHandlerMap.put(En_CaseState.ACTIVE, new InProcessStateHandler());
-        stateHandlerMap.put(En_CaseState.TEST_LOCAL, new LocalTestStateHandler());
-        stateHandlerMap.put(En_CaseState.TEST_CUST, new CustomerTestStateHandler());
-        stateHandlerMap.put(En_CaseState.WORKAROUND, new WorkAroundStateHandler());
-        stateHandlerMap.put(En_CaseState.INFO_REQUEST, new InfoRequestStateHandler());*/
+        stateHandlerMap.put(new Tuple<>(DONE, VERIFIED), new VerifiedStateHandler());
+        stateHandlerMap.put(new Tuple<>(CREATED, ACTIVE), new InProcessStateHandler());
+        stateHandlerMap.put(new Tuple<>(OPENED, TEST_LOCAL), new LocalTestStateHandler());
+        stateHandlerMap.put(new Tuple<>(TEST_LOCAL, TEST_CUST), new CustomerTestStateHandler());
     }
 
 

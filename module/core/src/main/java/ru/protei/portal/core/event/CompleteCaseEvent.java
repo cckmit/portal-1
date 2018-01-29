@@ -8,10 +8,10 @@ import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.service.CaseService;
 
-import java.time.Duration;
-import java.time.LocalTime;
-import java.time.ZoneOffset;
 import java.util.Date;
+
+import static java.lang.System.nanoTime;
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
 
 public class CompleteCaseEvent extends ApplicationEvent {
 
@@ -20,29 +20,36 @@ public class CompleteCaseEvent extends ApplicationEvent {
     private CaseComment comment;
     private Person person;
     private ServiceModule serviceModule;
-    private final LocalTime timeCreated;
-    private LocalTime lastUpdated;
+    private final long timeCreated;
+    private long lastUpdated;
 
-    public CompleteCaseEvent(CaseService caseService, CaseObject lastState, Person initiator ) {
-        this (ServiceModule.GENERAL, caseService, lastState, null, initiator);
+    public CompleteCaseEvent(CaseService caseService, CaseObject lastState, Person initiator) {
+        this(ServiceModule.GENERAL, caseService, lastState, initiator);
     }
 
-    public CompleteCaseEvent(CaseService caseService, CaseObject lastState, CaseObject initState, Person currentPerson ){
-        this (ServiceModule.GENERAL, caseService, lastState, initState, currentPerson);
+    public CompleteCaseEvent(CaseService caseService, CaseObject lastState, CaseObject initState,
+                             Person currentPerson) {
+        this(ServiceModule.GENERAL, caseService, lastState, currentPerson);
     }
 
     public CompleteCaseEvent(CaseObjectEvent objectEvent) {
-        this (objectEvent.getServiceModule(), objectEvent.getCaseService(), objectEvent.getNewState()
-                , objectEvent.getOldState(), objectEvent.getPerson());
+        this(objectEvent.getServiceModule(), objectEvent.getCaseService(), objectEvent.getNewState()
+                , objectEvent.getPerson());
     }
 
-    public CompleteCaseEvent(ServiceModule module, CaseService caseService, CaseObject lastState, CaseObject initState, Person currentPerson ) {
-        super( caseService );
-        this.lastState = lastState;
+    public CompleteCaseEvent(CaseCommentEvent commentEvent) {
+        this(commentEvent.getServiceModule(), commentEvent.getCaseService(), commentEvent.getCaseObject(),
+                commentEvent.getPerson());
+    }
+
+    public CompleteCaseEvent(ServiceModule module, CaseService caseService,
+                             CaseObject initState, Person currentPerson) {
+        super(caseService);
+        this.lastState = null;
         this.initState = initState;
         this.person = currentPerson;
         this.serviceModule = module;
-        this.timeCreated = LocalTime.now(ZoneOffset.UTC);
+        this.timeCreated = NANOSECONDS.toSeconds(nanoTime());
         this.lastUpdated = timeCreated;
     }
 
@@ -54,71 +61,81 @@ public class CompleteCaseEvent extends ApplicationEvent {
         this.comment = comment;
     }
 
-    public boolean isCreateEvent () {
+    public boolean isLastStateSet() {
+        return lastState != null;
+    }
+
+    public boolean isCreateEvent() {
         return this.initState == null;
     }
 
-    public boolean isUpdateEvent () {
+    public boolean isUpdateEvent() {
         return this.initState != null;
     }
 
-    public boolean isCaseStateChanged () {
+    public boolean isCaseStateChanged() {
         return isUpdateEvent() && lastState.getState() != initState.getState();
     }
 
-    public boolean isCaseImportanceChanged () {
+    public boolean isCaseImportanceChanged() {
         return isUpdateEvent() && !lastState.getImpLevel().equals(initState.getImpLevel());
     }
 
-    public boolean isManagerChanged () {
+    public boolean isManagerChanged() {
         return isUpdateEvent() && !HelperFunc.equals(lastState.getManagerId(), initState.getManagerId());
     }
 
     public boolean isProductChanged() {
-        return isUpdateEvent() && !HelperFunc.equals( lastState.getProductId(), initState.getProductId() );
+        return isUpdateEvent() && !HelperFunc.equals(lastState.getProductId(), initState.getProductId());
     }
 
     public boolean isInitiatorChanged() {
-        return isUpdateEvent() && !HelperFunc.equals( lastState.getInitiatorId(), initState.getInitiatorId() );
+        return isUpdateEvent() && !HelperFunc.equals(lastState.getInitiatorId(), initState.getInitiatorId());
     }
 
     public boolean isInitiatorCompanyChanged() {
-        return isUpdateEvent() && !HelperFunc.equals( lastState.getInitiatorCompanyId(), initState.getInitiatorCompanyId() );
+        return isUpdateEvent() && !HelperFunc.equals(lastState.getInitiatorCompanyId(), initState.getInitiatorCompanyId());
     }
 
     public boolean isInfoChanged() {
-        return isUpdateEvent() && !HelperFunc.equals( lastState.getInfo(), initState.getInfo() );
+        return isUpdateEvent() && !HelperFunc.equals(lastState.getInfo(), initState.getInfo());
     }
 
     public boolean isNameChanged() {
-        return isUpdateEvent() && !HelperFunc.equals( lastState.getName(), initState.getName() );
+        return isUpdateEvent() && !HelperFunc.equals(lastState.getName(), initState.getName());
     }
 
-    public boolean isPrivacyChanged(){
+    public boolean isPrivacyChanged() {
         return isUpdateEvent() && lastState.isPrivateCase() != initState.isPrivateCase();
     }
 
-    public long timeElapsed() {
-        return Duration.between(timeCreated, LocalTime.now(ZoneOffset.UTC)).toMillis() / 1000L;
-    }
-
     public void attachCaseObjectEvent(CaseObjectEvent caseObjectEvent) {
-        //TODO
+        lastState = caseObjectEvent.getCaseObject();
+        lastUpdated = NANOSECONDS.toSeconds(nanoTime());
     }
 
     public void attachCaseCommentEvent(CaseCommentEvent caseCommentEvent) {
-        //TODO
+        comment = caseCommentEvent.getCaseComment();
+        lastUpdated = NANOSECONDS.toSeconds(nanoTime());
+    }
+
+    public long getTimeCreated() {
+        return timeCreated;
+    }
+
+    public long getLastUpdated() {
+        return lastUpdated;
     }
 
     public ServiceModule getServiceModule() {
         return serviceModule != null ? serviceModule : ServiceModule.GENERAL;
     }
 
-    public Date getEventDate () {
+    public Date getEventDate() {
         return new Date(getTimestamp());
     }
 
-    public CaseObject getCaseObject () {
+    public CaseObject getCaseObject() {
         return lastState != null ? lastState : initState;
     }
 
@@ -130,7 +147,7 @@ public class CompleteCaseEvent extends ApplicationEvent {
         return initState;
     }
 
-    public CaseService getCaseService () {
+    public CaseService getCaseService() {
         return (CaseService) getSource();
     }
 

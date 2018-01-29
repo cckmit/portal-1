@@ -2,7 +2,7 @@ package ru.protei.portal.core.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
-import org.springframework.stereotype.Component;
+import org.springframework.scheduling.annotation.Scheduled;
 import ru.protei.portal.core.event.CaseCommentEvent;
 import ru.protei.portal.core.event.CaseObjectEvent;
 import ru.protei.portal.core.event.CompleteCaseEvent;
@@ -19,10 +19,17 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
     @EventListener
     public void onCaseObjectEvent(CaseObjectEvent event) {
         Person eventRelatedPerson = event.getPerson();
-        if (personsCompleteEvents.keySet().stream().noneMatch(p -> p.equals(eventRelatedPerson))) {
+        if (personsCompleteEvents.containsKey(eventRelatedPerson)) {
+            CompleteCaseEvent caseEvent = personsCompleteEvents.get(eventRelatedPerson);
+            if (caseEvent.isLastStateSet()) {
+                publishAndClear(eventRelatedPerson);
+            } else {
+                caseEvent.attachCaseObjectEvent(event);
+                personsCompleteEvents.put(eventRelatedPerson, caseEvent);
+                publishAndClear(eventRelatedPerson);
+            }
+        } else
             personsCompleteEvents.put(eventRelatedPerson, new CompleteCaseEvent(event));
-        }
-        objectEvents.add(event);
     }
 
     @Override
@@ -31,29 +38,42 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
         Person eventRelatedPerson = event.getPerson();
         boolean isSecondComment
                 = commentEvents.stream().map(x -> x.getPerson().getId()).anyMatch(x -> eventRelatedPerson.getId().equals(x));
-        if (isSecondComment)
-            assemblyAndPublish(eventRelatedPerson);
-        commentEvents.add(event);
+        if (isSecondComment) {
+            publishAndClear(eventRelatedPerson);
+            commentEvents.add(event);
+        } else {
+            CompleteCaseEvent completeCaseEvent = new CompleteCaseEvent(event);
+            if (personsCompleteEvents.containsKey(eventRelatedPerson)) {
+                completeCaseEvent = personsCompleteEvents.get(eventRelatedPerson);
+                completeCaseEvent.attachCaseCommentEvent(event);
+            }
+            personsCompleteEvents.put(eventRelatedPerson, completeCaseEvent);
+        }
     }
 
-    private void assemblyAndPublish(Person person) {
+    @Scheduled(fixedRate = 5000)
+    public void checkEventsMap() {
+        final long currentTime = java.util.concurrent.TimeUnit.NANOSECONDS.toSeconds(System.nanoTime());
+        personsCompleteEvents.values().stream().filter(x -> currentTime - x.getLastUpdated() >= 30)
+                .map(CompleteCaseEvent::getPerson)
+                .distinct()
+                .forEach(this::publishAndClear);
+    }
+
+    private void publishAndClear(Person person) {
         CompleteCaseEvent personsEvent = personsCompleteEvents.get(person);
-        objectEvents.stream().filter(x -> x.getPerson().equals(person))
-                .forEach(personsEvent::attachCaseObjectEvent);
-        commentEvents.stream().filter(x -> x.getPerson().equals(person)).forEach(personsEvent::attachCaseCommentEvent);
         publisherService.publishEvent(personsEvent);
         clear(person);
     }
 
     private void clear(Person person) {
         personsCompleteEvents.remove(person);
-        objectEvents.removeIf(x -> x.getPerson().equals(person));
         commentEvents.removeIf(x -> x.getPerson().equals(person));
     }
 
     private final Map<Person, CompleteCaseEvent> personsCompleteEvents = new HashMap<>();
-    private final List<CaseObjectEvent> objectEvents = new ArrayList<>();
     private final List<CaseCommentEvent> commentEvents = new ArrayList<>();
+    private final List<CaseObjectEvent> objectEvents = new ArrayList<>();
 
     @Autowired
     EventPublisherService publisherService;
