@@ -5,6 +5,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.events.PersonEvents;
+import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 
 import java.util.List;
@@ -14,16 +15,11 @@ import java.util.List;
  */
 public class ContactButtonSelector extends ButtonSelector<PersonShortView> {
 
-    @Event
-    public void onPersonListChanged( PersonEvents.ChangePersonModel event ) {
-        if( company!= null && event.company.getId().equals( company.getId() ) )
-            updatePersons();
-    }
-
     @Inject
     public void init() {
         setSearchEnabled( true );
         setSearchAutoFocus( true );
+        setDisplayOptionCreator( value -> new DisplayOption( value == null ? defaultValue : value.getDisplayShortName() ) );
     }
 
     @Override
@@ -39,10 +35,10 @@ public class ContactButtonSelector extends ButtonSelector<PersonShortView> {
         clearOptions();
 
         if( defaultValue != null ) {
-            addOption( defaultValue, null );
+            addOption( null );
         }
 
-        persons.forEach( person -> addOption( person.getDisplayShortName(), person ) );
+        persons.forEach(this::addOption);
 
         super.setValue( deferred );
         deferred = null;

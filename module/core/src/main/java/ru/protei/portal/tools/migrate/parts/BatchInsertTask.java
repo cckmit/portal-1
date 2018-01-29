@@ -1,6 +1,7 @@
 package ru.protei.portal.tools.migrate.parts;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import protei.sql.Tm_SqlHelper;
 import protei.sql.query.Tm_BaseQueryCmd;
 import protei.sql.utils.Tm_QueryExecutor;
@@ -21,7 +22,7 @@ public class BatchInsertTask {
 
 //    String query;
 
-    private static Logger logger = Logger.getLogger(BatchInsertTask.class);
+    private static Logger logger = LoggerFactory.getLogger(BatchInsertTask.class);
 
     int fetchSize = 1000;
     int batchSize = 1000;
@@ -87,6 +88,8 @@ public class BatchInsertTask {
         MigrationEntry migrationEntry = migrationDAO.getOrCreateEntry(this.stateEntryId);
 
         queryCmd.addParam(migrationEntry.getLastId());
+
+        logger.debug("insert task for entry {}, last-id={}", stateEntryId, migrationEntry.getLastId());
 
         try (PreparedStatement st = conn.prepareStatement(queryCmd.getCommand(), ResultSet.TYPE_FORWARD_ONLY,ResultSet.CONCUR_READ_ONLY)) {
 

@@ -1,13 +1,18 @@
 package ru.protei.portal.ui.common.shared.model;
 
+import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dict.En_Scope;
+import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.UserRole;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
- * Клиентский профиль пользовател]
+ * Клиентский профиль пользователя
  */
 public class Profile implements Serializable {
 
@@ -17,9 +22,15 @@ public class Profile implements Serializable {
 
     private String name;
 
+    private String fullName;
+
     private Long id;
 
     private Set<En_Privilege> privileges;
+
+    private En_Gender gender;
+
+    private Company company;
 
     public Set<UserRole> getRoles() {
         return roles;
@@ -53,6 +64,14 @@ public class Profile implements Serializable {
         this.id = id;
     }
 
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName( String fullName ) {
+        this.fullName = fullName;
+    }
+
     public Set< En_Privilege > getPrivileges() {
         return privileges;
     }
@@ -68,6 +87,14 @@ public class Profile implements Serializable {
         return privileges.contains( privilege );
     }
 
+    public En_Gender getGender() {
+        return gender;
+    }
+
+    public void setGender( En_Gender gender ) {
+        this.gender = gender;
+    }
+
     @Override
     public String toString() {
         return "Profile{" +
@@ -76,6 +103,15 @@ public class Profile implements Serializable {
             ", name='" + name + '\'' +
             ", id=" + id +
             ", privileges=" + privileges +
+            ", company=" + company +
             '}';
+    }
+
+    public void setCompany( Company company ) {
+        this.company = company;
+    }
+
+    public Company getCompany() {
+        return company;
     }
 }

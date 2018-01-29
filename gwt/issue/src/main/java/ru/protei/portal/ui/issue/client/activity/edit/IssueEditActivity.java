@@ -13,18 +13,18 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
-import ru.protei.portal.ui.common.client.common.AttachmentCollection;
 import ru.protei.portal.ui.common.client.events.AppEvents;
+import ru.protei.portal.ui.common.client.events.AttachmentEvents;
 import ru.protei.portal.ui.common.client.events.IssueEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
+import ru.protei.portal.ui.common.client.service.CompanyServiceAsync;
 import ru.protei.portal.ui.common.client.service.IssueServiceAsync;
-import ru.protei.portal.ui.common.client.widget.uploader.FileUploader;
+import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -36,10 +36,10 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     @PostConstruct
     public void onInit() {
         view.setActivity( this );
-        view.setFileUploadHandler(new FileUploader.FileUploadHandler() {
+        view.setFileUploadHandler(new AttachmentUploader.FileUploadHandler() {
             @Override
             public void onSuccess(Attachment attachment) {
-                attachmentCollection.addAttachment(attachment);
+                addAttachmentsToCase(Collections.singleton(attachment));
             }
             @Override
             public void onError() {
@@ -57,7 +57,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     public void onShow( IssueEvents.Edit event ) {
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
-        attachmentCollection.clear();
 
         if(event.id == null) {
             fireEvent(new AppEvents.InitPanelName(lang.newIssue()));
@@ -68,22 +67,37 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         }
     }
 
+    @Event
+    public void onAddingAttachments( AttachmentEvents.Add event ) {
+        if(view.isAttached() && issue.getId().equals(event.caseId)) {
+            addAttachmentsToCase(event.attachments);
+        }
+    }
+
+    @Event
+    public void onRemovingAttachments( AttachmentEvents.Remove event ) {
+        if(view.isAttached() && issue.getId().equals(event.caseId)) {
+            event.attachments.forEach(view.attachmentsContainer()::remove);
+            issue.getAttachments().removeAll(event.attachments);
+            issue.setAttachmentExists(!issue.getAttachments().isEmpty());
+        }
+    }
+
     @Override
     public void onSaveClicked() {
-        if(!validateFieldsAndGetResult()){
+        if(!isFieldsValid()){
             return;
         }
-
         fillIssueObject(issue);
 
-        issueService.saveIssue(issue, new RequestCallback<Boolean>() {
+        issueService.saveIssue(issue, new RequestCallback<CaseObject>() {
             @Override
             public void onError(Throwable throwable) {
                 fireEvent(new NotifyEvents.Show(throwable.getMessage(), NotifyEvents.NotifyType.SUCCESS));
             }
 
             @Override
-            public void onSuccess(Boolean aBoolean) {
+            public void onSuccess(CaseObject caseObject) {
                 fireEvent(new IssueEvents.ChangeModel());
                 fireEvent(new Back());
                 fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
@@ -98,34 +112,53 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
     @Override
     public void removeAttachment(Attachment attachment) {
-        if(issue.getId() == null || issue.getAttachmentsIds() == null || !issue.getAttachmentsIds().contains(attachment.getId())){
-            attachmentService.removeAttachmentEverywhere(attachment.getId(), new RequestCallback<Boolean>() {
-                @Override
-                public void onError(Throwable throwable) {
-                    fireEvent(new NotifyEvents.Show(lang.removeFileError(), NotifyEvents.NotifyType.ERROR));
+        attachmentService.removeAttachmentEverywhere(attachment.getId(), new RequestCallback<Boolean>() {
+            @Override
+            public void onError(Throwable throwable) {
+                fireEvent(new NotifyEvents.Show(lang.removeFileError(), NotifyEvents.NotifyType.ERROR));
+            }
+            @Override
+            public void onSuccess(Boolean result) {
+                if(!result){
+                    onError(null);
+                    return;
                 }
-                @Override
-                public void onSuccess(Boolean result) {
-                    if(!result){
-                        onError(null);
-                    }
-                    attachmentCollection.removeAttachment(attachment);
-                    if(issue.getId() != null)
-                        fireEvent( new IssueEvents.ShowComments( view.getCommentsContainer(), issue.getId(), attachmentCollection ) );
-                }
-            });
-        }else
-            attachmentCollection.removeAttachment(attachment);
+
+                view.attachmentsContainer().remove(attachment);
+                issue.getAttachments().remove(attachment);
+                issue.setAttachmentExists(!issue.getAttachments().isEmpty());
+                if(issue.getId() != null)
+                    fireEvent( new IssueEvents.ShowComments( view.getCommentsContainer(), issue.getId() ) );
+
+            }
+        });
     }
 
-    private void resetState(){
-        view.initiatorState().setEnabled(view.companyValidator().isValid());
+    @Override
+    public void onCompanyChanged() {
+        if ( view.company().getValue() == null ) {
+            view.setSubscriptionEmails( "" );
+        } else {
+            companyService.getCompanySubscription( view.company().getValue().getId(), new RequestCallback< List<CompanySubscription> >() {
+                @Override
+                public void onError( Throwable throwable ) {}
+
+                @Override
+                public void onSuccess( List<CompanySubscription> subscriptions ) {
+                    view.setSubscriptionEmails(
+                            subscriptions == null
+                                    ? ""
+                                    : subscriptions.stream()
+                                    .map( CompanySubscription::getEmail )
+                                    .collect( Collectors.joining( ", " ) ) );
+                }
+            });
+        }
     }
 
     private void initialView(CaseObject issue){
         this.issue = issue;
         fillView(this.issue);
-        resetState();
     }
 
     private void requestIssue(Long id, Consumer<CaseObject> successAction){
@@ -138,27 +171,32 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                 successAction.accept(issue);
             }
         });
-        attachmentService.getAttachmentsByCaseId(id, new RequestCallback<List<Attachment>>() {
-            @Override
-            public void onError(Throwable throwable) {
-                fireEvent( new NotifyEvents.Show( lang.attachmentsNotLoaded(), NotifyEvents.NotifyType.ERROR ) );
-            }
-            @Override
-            public void onSuccess(List<Attachment> result) {
-                view.attachmentsContainer().clear();
-                result.forEach(attachmentCollection::addAttachment);
-            }
-        });
     }
 
     private void fillView(CaseObject issue) {
+        view.companyEnabled().setEnabled( policyService.hasPrivilegeFor( En_Privilege.ISSUE_COMPANY_EDIT ) && issue.getId() == null );
+        view.productEnabled().setEnabled( policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRODUCT_EDIT ) );
+        view.managerEnabled().setEnabled( policyService.hasPrivilegeFor( En_Privilege.ISSUE_MANAGER_EDIT) );
+        view.privacyVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRIVACY_VIEW ) );
+
+        view.attachmentsContainer().clear();
+        view.setCaseId(issue.getId());
+
         if ( issue.getId() != null ) {
             view.showComments(true);
-            fireEvent( new IssueEvents.ShowComments( view.getCommentsContainer(), issue.getId(), attachmentCollection) );
+            view.attachmentsContainer().add(issue.getAttachments());
+            fireEvent( new IssueEvents.ShowComments( view.getCommentsContainer(), issue.getId()) );
         }else {
             view.showComments(false);
             view.getCommentsContainer().clear();
-            view.attachmentsContainer().clear();
+        }
+
+        if(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_MANAGER_VIEW)) { //TODO change rule
+            view.notifiers().setValue(issue.getNotifiers() == null ? new HashSet<>() :
+                    issue.getNotifiers().stream().map(PersonShortView::fromPerson).collect(Collectors.toSet()));
+            view.notifiersEnabled().setVisible(true);
+        }else{
+            view.notifiersEnabled().setVisible(false);
         }
 
         view.name().setValue(issue.getName());
@@ -169,26 +207,20 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         view.importance().setValue(issue.getId() == null ? En_ImportanceLevel.BASIC : En_ImportanceLevel.getById(issue.getImpLevel()));
 
         Company initiatorCompany = issue.getInitiatorCompany();
-        view.company().setValue(EntityOption.fromCompany(initiatorCompany));
-        view.changeCompany(initiatorCompany);
-        view.initiator().setValue( PersonShortView.fromPerson(issue.getInitiator()));
-        if ( issue.getInitiatorCompany() != null ) {
-            view.setSubscriptionEmails( issue.getInitiatorCompany().getSubscriptions() == null
-                    ? ""
-                    : issue.getInitiatorCompany().getSubscriptions()
-                    .stream()
-                    .map( CompanySubscription::getEmail )
-                    .collect( Collectors.joining(", ") ) );
+        if ( initiatorCompany == null ) {
+            initiatorCompany = policyService.getUserCompany();
         }
 
-        view.product().setValue( ProductShortView.fromProduct(issue.getProduct()));
-        view.manager().setValue(PersonShortView.fromPerson(issue.getManager()));
+        view.company().setValue(EntityOption.fromCompany(initiatorCompany), true);
+        view.initiator().setValue( PersonShortView.fromPerson( issue.getInitiator() ) );
+        view.product().setValue( ProductShortView.fromProduct( issue.getProduct() ) );
+        view.manager().setValue( PersonShortView.fromPerson( issue.getManager() ) );
         view.saveVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_EDIT ) );
     }
 
     private void fillIssueObject(CaseObject issue){
         issue.setName(view.name().getValue());
-        issue.setPrivateCase(view.isLocal().getValue());
+        issue.setPrivateCase( view.isLocal().getValue() );
         issue.setInfo(view.description().getText());
 
         issue.setStateId(view.state().getValue().getId());
@@ -196,21 +228,26 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
         issue.setInitiatorCompany(Company.fromEntityOption(view.company().getValue()));
         issue.setInitiator(Person.fromPersonShortView(view.initiator().getValue()));
-
-        issue.setProduct(DevUnit.fromProductShortView(view.product().getValue()));
-        issue.setManager(Person.fromPersonShortView( view.manager().getValue()));
-
-        issue.setAttachmentsIds(new ArrayList<>(attachmentCollection.keySet()));
+        issue.setProduct( DevUnit.fromProductShortView( view.product().getValue() ) );
+        issue.setManager( Person.fromPersonShortView( view.manager().getValue() ) );
+        issue.setNotifiers(view.notifiers().getValue().stream().map(Person::fromPersonShortView).collect(Collectors.toSet()));
     }
 
-    private boolean validateFieldsAndGetResult(){
+    private boolean isFieldsValid(){
         return view.nameValidator().isValid() &&
                 view.stateValidator().isValid() &&
                 view.importanceValidator().isValid() &&
-                view.companyValidator().isValid() &&
-                view.initiatorValidator().isValid() &&
-                view.productValidator().isValid() &&
-                view.managerValidator().isValid();
+                view.companyValidator().isValid();
+//        && view.initiatorValidator().isValid();
+    }
+
+    private void addAttachmentsToCase(Collection<Attachment> attachments){
+        view.attachmentsContainer().add(attachments);
+        if(issue.getAttachments() == null)
+            issue.setAttachments(new ArrayList<>());
+
+        issue.getAttachments().addAll(attachments);
+        issue.setAttachmentExists(true);
     }
 
     @Inject
@@ -223,20 +260,8 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     Lang lang;
     @Inject
     PolicyService policyService;
-
-    private AttachmentCollection attachmentCollection = new AttachmentCollection() {
-        @Override
-        public void addAttachment(Attachment attachment) {
-            put(attachment.getId(), attachment);
-            view.attachmentsContainer().add(attachment);
-        }
-
-        @Override
-        public void removeAttachment(Attachment attachment) {
-            remove(attachment.getId());
-            view.attachmentsContainer().remove(attachment);
-        }
-    };
+    @Inject
+    CompanyServiceAsync companyService;
 
     private AppEvents.InitDetails initDetails;
     private CaseObject issue;

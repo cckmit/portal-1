@@ -2,6 +2,7 @@ package ru.protei.portal.ui.issue.client.view.comment.item;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.LIElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -41,11 +42,23 @@ public class IssueCommentItemView
 
     @Override
     public void setOwner( String value ) {
-        this.owner.setInnerText( value );
+        if ( root.getStyleName().contains( "right" ) ) {
+            this.status.setInnerText( value );
+            this.status.removeClassName( "status" );
+            this.status.addClassName( "name" );
+        } else {
+            this.owner.setInnerText( value );
+        }
     }
 
     @Override
     public void setMessage( String value ) {
+        if ( value == null ) {
+            this.message.getElement().setInnerText("");
+            this.messageBlock.addClassName( "hide" );
+            this.hideOptions();
+            return;
+        }
         this.message.getElement().setInnerHTML( value );
         this.messageBlock.removeClassName( "hide" );
     }
@@ -57,9 +70,17 @@ public class IssueCommentItemView
 
     @Override
     public void setStatus( En_CaseState value ) {
-        status.setClassName( "case-" + value.name().toLowerCase() );
-        this.status.setInnerText( stateLang.getStateName( value ) );
-        this.info.removeClassName( "hide" );
+        if ( root.getStyleName().contains( "right" ) ) {
+            owner.addClassName( "case-" + value.name().toLowerCase() );
+            this.owner.setInnerText( stateLang.getStateName( value ) );
+            this.owner.removeClassName( "name" );
+            this.owner.addClassName( "status" );
+            this.info.removeClassName( "hide" );
+        } else {
+            status.addClassName( "case-" + value.name().toLowerCase() );
+            this.status.setInnerText( stateLang.getStateName( value ) );
+            this.info.removeClassName( "hide" );
+        }
     }
 
     @Override
@@ -69,16 +90,26 @@ public class IssueCommentItemView
     }
 
     @Override
-    public void showAttachments(boolean isShow){
-        if(isShow)
-            attachBlock.removeClassName("hide");
+    public void showAttachments( boolean isShow ){
+        if( isShow )
+            attachBlock.removeClassName( "hide" );
         else
-            attachBlock.addClassName("hide");
+            attachBlock.addClassName( "hide" );
     }
 
     @Override
     public HasAttachments attachmentContainer(){
         return attachList;
+    }
+
+    @Override
+    public void hideOptions() {
+        options.removeFromParent();
+    }
+
+    @Override
+    public void setIcon( String iconSrc ) {
+        this.icon.setSrc( iconSrc );
     }
 
     @UiHandler( "remove" )
@@ -135,6 +166,10 @@ public class IssueCommentItemView
     LIElement info;
     @UiField
     LIElement status;
+    @UiField
+    LIElement options;
+    @UiField
+    ImageElement icon;
     @Inject
     En_CaseStateLang stateLang;
 

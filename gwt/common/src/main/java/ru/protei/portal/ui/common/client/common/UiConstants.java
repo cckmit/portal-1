@@ -18,10 +18,13 @@ public class UiConstants {
         String EQUIPMENT = "fa fa-server";
         String ACCOUNT = "fa fa-group";
         String ROLE = "fa fa-user";
+        String OFFICIAL = "fa fa-book";
     }
 
     public interface ActionBarIcons {
         String CREATE = "fa fa-plus";
+        String LIST = "fa fa-list-ul";
+        String TABLE = "fa fa-table";
         String IMPORT = "fa fa-upload";
     }
 
@@ -29,16 +32,25 @@ public class UiConstants {
         String CONTACT = "contact";
         String ISSUE = "issue";
         String COMPANY = "company";
+        String COMPANY_TYPE_VIEW = "companyTypeView";
         String PRODUCT = "product";
+        String PRODUCT_TYPE_VIEW = "productTypeView";
         String DASHBOARD = "dashboard";
         String EQUIPMENT = "equipment";
         String PROJECT = "project";
         String ACCOUNT = "account";
         String ROLE = "role";
+        String OFFICIAL = "official";
+    }
+
+    public interface UserIcon {
+        String MALE = "./images/user-icon-m.svg";
+        String FEMALE = "./images/user-icon-f.svg";
     }
 
     /**
      * from {@link ru.protei.portal.ui.common.client.events.AuthEvents}
      */
     public static final String LOGIN_PAGE = "login";
+    public static final String UNDEFINED_ENTRY = "undefined";
 }

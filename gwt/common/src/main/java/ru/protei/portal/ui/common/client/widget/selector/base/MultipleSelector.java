@@ -121,16 +121,12 @@ public abstract class MultipleSelector<T>
 
     protected void showPopup( IsWidget relative ) {
         this.relative = relative;
-//        popup.setUseNearWidgetWidth( true );
         popup.showNear( relative );
         popup.setSearchVisible( true );
         popup.setSearchAutoFocus( true );
-        popup.addValueChangeHandler( new ValueChangeHandler< String >() {
-            @Override
-            public void onValueChange( ValueChangeEvent< String > event ) {
-                String searchText = event.getValue().toLowerCase();
-                onSearchChanged( searchText );
-            }
+        popup.addValueChangeHandler( event -> {
+            String searchText = event.getValue().toLowerCase();
+            onSearchChanged( searchText );
         } );
     }
 

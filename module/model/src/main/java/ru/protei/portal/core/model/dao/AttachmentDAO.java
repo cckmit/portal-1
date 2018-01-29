@@ -7,6 +7,4 @@ import ru.protei.portal.core.model.ent.Attachment;
  */
 public interface AttachmentDAO extends PortalBaseDAO<Attachment>{
 
-    Long saveAttachment(Attachment attachment);
-
 }

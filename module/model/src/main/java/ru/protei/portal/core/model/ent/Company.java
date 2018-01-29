@@ -1,11 +1,11 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.struct.ContactInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.EntityOptionSupport;
 import ru.protei.winter.jdbc.annotations.*;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -13,7 +13,7 @@ import java.util.List;
  * @author michael
  */
 @JdbcEntity(table = "Company")
-public class Company implements Serializable, EntityOptionSupport {
+public class Company extends AuditableObject implements EntityOptionSupport {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -144,6 +144,11 @@ public class Company implements Serializable, EntityOptionSupport {
 
     public void setSubscriptions( List< CompanySubscription > subscriptions ) {
         this.subscriptions = subscriptions;
+    }
+
+    @Override
+    public String getAuditType() {
+        return "Company";
     }
 
     @Override

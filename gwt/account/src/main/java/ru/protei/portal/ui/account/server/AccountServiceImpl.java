@@ -52,6 +52,20 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    public UserLogin getAccountByPersonId( long personId ) throws RequestFailedException {
+        log.debug( "getAccount(): personId={}", personId );
+
+        //TODO используется для отображения аккаунта при редактировании контакта, думаю проверка роли ACCOUNT_VIEW логична
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
+        CoreResponse< UserLogin > response = accountService.getAccountByPersonId( descriptor.makeAuthToken(), personId );
+
+        log.debug( "getAccount(): personId={} -> {} ", personId, response.isError() ? "error" : response.getData().getUlogin() );
+
+        return response.getData();
+    }
+
+    @Override
     public UserLogin saveAccount( UserLogin userLogin ) throws RequestFailedException {
         log.debug( "saveAccount(): account={} ", userLogin );
 

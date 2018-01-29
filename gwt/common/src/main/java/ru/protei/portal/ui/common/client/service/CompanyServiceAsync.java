@@ -1,8 +1,10 @@
 package ru.protei.portal.ui.common.client.service;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanyGroup;
+import ru.protei.portal.core.model.ent.CompanySubscription;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 
@@ -12,6 +14,12 @@ import java.util.List;
  * Асинхронный сервис по работе с компаниями
  */
 public interface CompanyServiceAsync {
+
+    /**
+     * Получение кол-ва компаний
+     * @param query запрос
+     */
+    void getCompaniesCount( CompanyQuery query, AsyncCallback< Long > async );
 
     /**
      * Получение списка компаний
@@ -61,7 +69,7 @@ public interface CompanyServiceAsync {
      * Получение списка сокращенного представления компании (name,id)
      * @param callback
      */
-    void getCompanyOptionList( AsyncCallback< List< EntityOption > > callback );
+    void getCompanyOptionList(CompanyQuery query, AsyncCallback<List<EntityOption>> callback);
 
     /**
      * Получение списка сокращенного представления группы компаний (name,id)
@@ -74,4 +82,18 @@ public interface CompanyServiceAsync {
      * @param callback
      */
     void getCategoryOptionList( AsyncCallback< List< EntityOption > > callback );
+
+    /**
+     * Обновить адреса подписок своей компании
+     * @param value
+     * @param callback
+     */
+    void updateSelfCompanySubscription( List<CompanySubscription> value, AsyncCallback<List<CompanySubscription>> callback );
+
+    /**
+     * Получение список рассылок по компании
+     *
+     * @param companyId
+     */
+    void getCompanySubscription( Long companyId, AsyncCallback< List< CompanySubscription > > async );
 }

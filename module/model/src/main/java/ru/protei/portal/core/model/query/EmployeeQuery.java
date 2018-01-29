@@ -10,19 +10,16 @@ public class EmployeeQuery extends BaseQuery {
 
     private Boolean fired;
 
-    private Boolean deleted;
-
-    private boolean searchByContactInfo = true;
+    private Boolean onlyPeople;
 
     public EmployeeQuery() {
         fired = false;
-        deleted = false;
     }
 
-    public EmployeeQuery(Boolean fired, Boolean deleted, String searchString, En_SortField sortField, En_SortDir sortDir) {
+    public EmployeeQuery(Boolean fired, Boolean onlyPeople, String searchString, En_SortField sortField, En_SortDir sortDir) {
         super(searchString, sortField, sortDir);
         this.fired = fired;
-        this.deleted = deleted;
+        this.onlyPeople = onlyPeople;
         this.limit = 1000;
     }
 
@@ -34,27 +31,19 @@ public class EmployeeQuery extends BaseQuery {
         this.fired = fired;
     }
 
-    public Boolean getDeleted() {
-        return deleted;
+    public Boolean getOnlyPeople() {
+        return onlyPeople;
     }
 
-    public void setDeleted(Boolean deleted) {
-        this.deleted = deleted;
-    }
-
-    public boolean getSearchByContactInfo() {
-        return searchByContactInfo;
-    }
-
-    public void setSearchByContactInfo(boolean searchByContactInfo) {
-        this.searchByContactInfo = searchByContactInfo;
+    public void setOnlyPeople( Boolean onlyPeople ) {
+        this.onlyPeople = onlyPeople;
     }
 
     @Override
     public String toString() {
         return "EmployeeQuery{" +
                 "fired=" + fired +
-                ", deleted=" + deleted +
+                "onlyPeople=" + onlyPeople +
                 '}';
     }
 }

@@ -3,13 +3,14 @@ package ru.protei.portal.ui.issue.client.activity.edit;
 import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
-import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
-import ru.protei.portal.ui.common.client.widget.uploader.FileUploader;
+import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
+
+import java.util.Set;
 
 /**
  * Представление создания и редактирования обращения
@@ -27,6 +28,7 @@ public interface AbstractIssueEditView extends IsWidget {
     HasValue<PersonShortView> manager();
     HasValue<ProductShortView> product();
     HasValue<Boolean> isLocal();
+    HasValue<Set<PersonShortView>> notifiers();
 
     HasValidable nameValidator();
     HasValidable stateValidator();
@@ -38,15 +40,22 @@ public interface AbstractIssueEditView extends IsWidget {
 
     HasEnabled initiatorState();
 
-    void changeCompany(Company company);
-
     void setSubscriptionEmails( String value );
 
     HasWidgets getCommentsContainer();
     HasAttachments attachmentsContainer();
-    void setFileUploadHandler(FileUploader.FileUploadHandler handler);
+    void setFileUploadHandler(AttachmentUploader.FileUploadHandler handler);
+    void setCaseId(Long caseId);
 
     void showComments(boolean isShow);
+    boolean isAttached();
+
 
     HasVisibility saveVisibility();
+
+    HasEnabled companyEnabled();
+    HasEnabled productEnabled();
+    HasEnabled managerEnabled();
+    HasVisibility notifiersEnabled();
+    HasVisibility privacyVisibility();
 }

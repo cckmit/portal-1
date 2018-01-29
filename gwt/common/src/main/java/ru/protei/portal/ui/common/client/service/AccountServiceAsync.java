@@ -2,7 +2,6 @@ package ru.protei.portal.ui.common.client.service;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import ru.protei.portal.core.model.ent.UserLogin;
-import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.query.AccountQuery;
 
 import java.util.List;
@@ -21,6 +20,8 @@ public interface AccountServiceAsync {
 
     void getAccount ( long id, AsyncCallback< UserLogin > callback );
 
+    void getAccountByPersonId ( long personId, AsyncCallback< UserLogin > async );
+
     void saveAccount ( UserLogin userLogin, AsyncCallback< UserLogin > callback );
 
     void getAccountsCount( AccountQuery query, AsyncCallback< Long > async );
@@ -28,4 +29,5 @@ public interface AccountServiceAsync {
     void isLoginUnique( String login, Long exceptId, AsyncCallback< Boolean > async );
 
     void removeAccount( Long accountId, AsyncCallback< Boolean > async );
+
 }

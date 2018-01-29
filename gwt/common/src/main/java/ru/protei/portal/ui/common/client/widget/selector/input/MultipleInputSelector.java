@@ -63,6 +63,7 @@ public class MultipleInputSelector<T> extends MultipleSelector<T> implements Has
 
     public void setAddName( String string ) {
         add.setInnerText( string );
+        add.removeClassName( "caret" );
     }
 
     private void addItem( final String val ) {
@@ -70,12 +71,7 @@ public class MultipleInputSelector<T> extends MultipleSelector<T> implements Has
         itemView.setValue( val );
 
         itemViews.add( itemView );
-        itemView.setActivity( new SelectItemView.CloseHandler() {
-            @Override
-            public void onCloseClicked( SelectItemView itemView ) {
-                removeItem( itemView, val );
-            }
-        } );
+        itemView.setActivity( itemView1 -> removeItem( itemView1, val ) );
         itemContainer.add( itemView );
     }
 
@@ -88,12 +84,7 @@ public class MultipleInputSelector<T> extends MultipleSelector<T> implements Has
 
 
     private void initHandlers() {
-        itemContainer.addDomHandler( new ClickHandler() {
-            @Override
-            public void onClick( ClickEvent event ) {
-                showPopup( itemContainer );
-            }
-        }, ClickEvent.getType() );
+        itemContainer.addDomHandler( event -> showPopup( itemContainer ), ClickEvent.getType() );
     }
 
     @UiField

@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.UserRoleQuery;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.service.UserRoleService;
 import ru.protei.portal.ui.common.client.service.RoleService;
 import ru.protei.portal.ui.common.server.service.SessionService;
@@ -70,6 +71,37 @@ public class RoleServiceImpl implements RoleService {
 
         if (response.isOk()) {
             log.debug("store role, applied id: {}", response.getData().getId());
+            return response.getData();
+        }
+
+        throw new RequestFailedException(response.getStatus());
+    }
+
+    @Override
+    public List< EntityOption > getRolesOptionList( UserRoleQuery query ) throws RequestFailedException {
+        log.debug( "getRolesOptionList(): searchPattern={} ",
+                query.getSearchString() );
+
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
+        CoreResponse<List<EntityOption>> response = roleService.userRoleOptionList( descriptor.makeAuthToken(), query );
+
+        if ( response.isError() ) {
+            throw new RequestFailedException( response.getStatus() );
+        }
+        return response.getData();
+    }
+
+    @Override
+    public boolean removeRole( Long id ) throws RequestFailedException {
+        log.debug( "removeRole(): id={}", id );
+
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
+        CoreResponse< Boolean > response = roleService.removeRole( descriptor.makeAuthToken(), id );
+        log.debug( "removeRole(): result={}", response.isOk() ? "ok" : response.getStatus() );
+
+        if (response.isOk()) {
             return response.getData();
         }
 

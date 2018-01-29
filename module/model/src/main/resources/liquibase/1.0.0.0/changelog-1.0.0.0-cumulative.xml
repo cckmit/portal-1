@@ -22,5 +22,14 @@
   <include file="26-02-ws-api.xml" relativeToChangelogFile="true" />
   <include file="26-03-ws-api.xml" relativeToChangelogFile="true" />
   <include file="26-04-ws-api.xml" relativeToChangelogFile="true" />
-
+  <include file="16-01-create-audit.xml" relativeToChangelogFile="true" />
+  <include file="matrix-official_audit.xml" relativeToChangelogFile="true" />
+  <include file="18-09-add_attachment_exists.xml" relativeToChangelogFile="true" />
+  <include file="2017-10-17-fix_case_issues.xml" relativeToChangelogFile="true" />
+  <include file="2017-10-17-add-missed_dict.xml" relativeToChangelogFile="true" />
+  <include file="2017-10-17-setup_case_id_gen.xml" relativeToChangelogFile="true" />
+  <include file="2017-11-10-add-scope-column-to-user_role-table.xml" relativeToChangelogFile="true" />
+  <include file="2017-11-16-add-equipment-constraint.xml" relativeToChangelogFile="true" />
+  <include file="2017-11-20-insert-company_category-home.xml" relativeToChangelogFile="true"/>
+  <include file="2018-01-18-insert-case_notifier.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

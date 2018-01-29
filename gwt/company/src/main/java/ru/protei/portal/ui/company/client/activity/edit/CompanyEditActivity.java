@@ -26,18 +26,17 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
     public CompanyEditActivity(){
         ALLOWED_PHONE_TYPES = new ArrayList<>(3);
+        ALLOWED_PHONE_TYPES.add(En_ContactItemType.MOBILE_PHONE);
+        ALLOWED_PHONE_TYPES.add(En_ContactItemType.GENERAL_PHONE);
+        ALLOWED_PHONE_TYPES.add(En_ContactItemType.FAX);
+
         ALLOWED_EMAIL_TYPES = new ArrayList<>(1);
+        ALLOWED_EMAIL_TYPES.add(En_ContactItemType.EMAIL);
     }
 
     @PostConstruct
     public void onInit() {
         view.setActivity( this );
-
-        ALLOWED_PHONE_TYPES.add(En_ContactItemType.MOBILE_PHONE);
-        ALLOWED_PHONE_TYPES.add(En_ContactItemType.GENERAL_PHONE);
-        ALLOWED_PHONE_TYPES.add(En_ContactItemType.FAX);
-
-        ALLOWED_EMAIL_TYPES.add(En_ContactItemType.EMAIL);
     }
 
     @Event
@@ -112,9 +111,9 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
     }
 
     private boolean validateFieldsAndGetResult(){
-        return view.companyNameValidator().isValid() &&
+        return view.companyNameValidator().isValid() /*&&
                 view.actualAddressValidator().isValid() &&
-                view.legalAddressValidator().isValid();
+                view.legalAddressValidator().isValid()*/;
     }
 
     private void resetValidationStatus(){
@@ -166,7 +165,12 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         infoFacade.setFactAddress(view.actualAddress().getValue());
         company.setInfo(view.comment().getText());
         company.setCategory(CompanyCategory.fromEntityOption(view.companyCategory().getValue()));
-        company.setGroupId(view.companyGroup().getValue().getId());
+        if(view.companyGroup().getValue() != null) {
+            company.setGroupId(view.companyGroup().getValue().getId());
+        }
+        else {
+            company.setGroupId(null);
+        }
         company.setSubscriptions(view.companySubscriptions().getValue());
         infoFacade.setWebSite(view.webSite().getText());
     }

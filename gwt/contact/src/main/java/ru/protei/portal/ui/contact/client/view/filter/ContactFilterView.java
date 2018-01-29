@@ -10,6 +10,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
@@ -19,6 +20,8 @@ import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.contact.client.activity.filter.AbstractContactFilterActivity;
 import ru.protei.portal.ui.contact.client.activity.filter.AbstractContactFilterView;
+
+import java.util.Arrays;
 
 /**
  * Представление фильтра контактов

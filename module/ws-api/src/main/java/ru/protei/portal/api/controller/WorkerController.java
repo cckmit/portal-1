@@ -116,7 +116,6 @@ public class WorkerController {
 
             EmployeeQuery query = new EmployeeQuery(null, null,
                     Tm_SqlQueryHelper.makeLikeArgEx(expr.trim()), En_SortField.person_full_name, En_SortDir.ASC);
-            query.setSearchByContactInfo(false);
 
             personDAO.getEmployees(query).forEach(
                     p -> persons.append(new WorkerRecord(p))
@@ -649,7 +648,7 @@ public class WorkerController {
 
     private void convert(WorkerRecord rec, Person person) throws ParseException {
 
-        person.setUpdated(new Date());
+        //person.setUpdated(new Date());
 
         person.setFirstName(rec.getFirstName().trim());
         person.setLastName(rec.getLastName().trim());

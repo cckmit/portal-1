@@ -3,18 +3,18 @@ package ru.protei.portal.core.model.ent;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
+import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.winter.jdbc.annotations.*;
 
-import java.io.Serializable;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by michael on 19.05.16.
  */
 @JdbcEntity(table = "case_object")
-public class CaseObject implements Serializable {
+public class CaseObject extends AuditableObject {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -100,7 +100,9 @@ public class CaseObject implements Serializable {
     @JdbcColumn(name = "ATTACHMENT_EXISTS")
     private boolean isAttachmentExists;
 
-    private Collection<Long> attachmentsIds;
+    @JdbcManyToMany(linkTable = "case_attachment", localLinkColumn = "case_id", remoteLinkColumn = "att_id")
+    private List<Attachment> attachments;
+
     @JdbcOneToMany(table = "case_location", localColumn = "id", remoteColumn = "CASE_ID" )
     private List<CaseLocation> locations;
 
@@ -109,6 +111,9 @@ public class CaseObject implements Serializable {
 
     @JdbcColumn(name = "EXT_APP")
     private String extAppType;
+
+    @JdbcManyToMany(linkTable = "case_notifier", localLinkColumn = "case_id", remoteLinkColumn = "person_id")
+    private Set<Person> notifiers; //may contain partially filled objects!
 
     public CaseObject() {
 
@@ -349,12 +354,12 @@ public class CaseObject implements Serializable {
         this.typeId = type.getId();
     }
 
-    public Collection<Long> getAttachmentsIds() {
-        return attachmentsIds;
+    public List<Attachment> getAttachments() {
+        return attachments;
     }
 
-    public void setAttachmentsIds(Collection<Long> attachmentsIds) {
-        this.attachmentsIds = attachmentsIds;
+    public void setAttachments(List<Attachment> attachments) {
+        this.attachments = attachments;
     }
 
     public boolean isAttachmentExists() {
@@ -403,6 +408,18 @@ public class CaseObject implements Serializable {
         return En_ImportanceLevel.getById(this.impLevel);
     }
 
+    public Set<Person> getNotifiers() {
+        return notifiers;
+    }
+
+    public void setNotifiers(Set<Person> notifiers) {
+        this.notifiers = notifiers;
+    }
+
+    @Override
+    public String getAuditType() {
+        return "CaseObject";
+    }
 
     @Override
     public String toString() {

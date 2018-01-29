@@ -1,18 +1,23 @@
 package ru.protei.portal.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.context.support.ResourceBundleMessageSource;
+import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.core.aspect.ServiceLayerInterceptor;
 import ru.protei.portal.core.controller.auth.AuthInterceptor;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
 import ru.protei.portal.core.service.*;
+import ru.protei.portal.core.service.bootstrap.BootstrapService;
 import ru.protei.portal.core.service.user.AuthService;
 import ru.protei.portal.core.service.user.AuthServiceImpl;
 import ru.protei.portal.core.service.user.LDAPAuthProvider;
 import ru.protei.portal.core.utils.SessionIdGen;
 import ru.protei.portal.core.utils.SimpleSidGenerator;
+import ru.protei.portal.core.Lang;
 import ru.protei.winter.core.utils.config.exception.ConfigException;
 
 @EnableAspectJAutoProxy
@@ -26,6 +31,20 @@ public class MainConfiguration {
     @Bean
     public PortalConfig getPortalConfig () throws ConfigException{
         return new PortalConfig("portal.properties");
+    }
+
+    @Bean
+    public FileStorage getFileStorage (@Autowired PortalConfig config){
+        PortalConfigData.CloudConfig cloud = config.data().cloud();
+        return new FileStorage(cloud.getStoragePath(), cloud.getUser(), cloud.getPassword());
+    }
+
+    @Bean
+    public Lang lang() {
+        ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+        messageSource.setBasenames("Lang");
+        messageSource.setDefaultEncoding("UTF-8");
+        return new Lang(messageSource);
     }
 
     @Bean
@@ -114,6 +133,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public AuditObjectDAO getAuditDAO() {
+        return new AuditObjectDAO_Impl();
+    }
+
+    @Bean
     public UserSessionDAO getUserSessionDAO() {
         return new UserSessionDAO_Impl();
     }
@@ -167,6 +191,11 @@ public class MainConfiguration {
     @Bean
     public CaseAttachmentDAO getCaseAttachmentDAO() {
         return new CaseAttachmentDAO_Impl();
+    }
+
+    @Bean
+    public CaseNotifierDAO getCaseNotifierDAO() {
+        return new CaseNotifierDAO_Impl();
     }
 
     @Bean
@@ -254,6 +283,11 @@ public class MainConfiguration {
     public CaseService getCaseService() { return new CaseServiceImpl(); }
 
     @Bean
+    public AuditService getAuditService() {
+        return new AuditServiceImpl();
+    }
+
+    @Bean
     public AttachmentService getAttachmentService() { return new AttachmentServiceImpl(); }
 
     @Bean
@@ -295,6 +329,14 @@ public class MainConfiguration {
 
     @Bean
     public PolicyService getPolicyService() { return new PolicyServiceImpl(); }
+
+    @Bean
+    public OfficialService getOfficialService() { return new OfficialServiceImpl(); }
+
+    @Bean
+    public BootstrapService getBootstrapService() {
+        return new BootstrapService();
+    }
 
     /** ASPECT/INTERCEPTORS **/
     @Bean

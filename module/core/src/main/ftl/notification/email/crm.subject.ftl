@@ -1,0 +1,1 @@
+${issue}<#noparse> CRM-${case.caseNumber} [${(author.displayName)!''}] ${caseState} ${importanceLevel} ${(case.product.name)!''}</#noparse>

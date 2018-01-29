@@ -4,9 +4,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.SpanElement;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.HasClickHandlers;
+import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -14,14 +12,13 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.Image;
 
 /**
  * Вид одного элемента из выпадайки селектора
  */
 public class SelectorItem
         extends Composite
-        implements HasClickHandlers
+        implements HasClickHandlers, HasKeyUpHandlers
 {
 
     public SelectorItem() {
@@ -31,6 +28,11 @@ public class SelectorItem
     @Override
     public HandlerRegistration addClickHandler( ClickHandler handler ) {
         return addHandler( handler, ClickEvent.getType() );
+    }
+
+    @Override
+    public HandlerRegistration addKeyUpHandler(KeyUpHandler keyUpHandler) {
+        return addHandler( keyUpHandler, KeyUpEvent.getType() );
     }
 
     public void setName( String name ) {
@@ -46,6 +48,7 @@ public class SelectorItem
     }
 
     public void setImage( String src ) {
+        image.removeClassName( "hide" );
         image.setSrc( src );
     }
 
@@ -56,16 +59,32 @@ public class SelectorItem
         ClickEvent.fireNativeEvent( event.getNativeEvent(), this );
     }
 
+    @UiHandler("anchor")
+    public void onKeyUpEvent( KeyUpEvent event) {
+        event.preventDefault();
+
+        KeyUpEvent.fireNativeEvent(event.getNativeEvent(), this);
+    }
+
+    public void setFocus(boolean isFocused) {
+        anchor.setFocus(isFocused);
+    }
+
     @UiField
     HTMLPanel root;
+
     @UiField
     Anchor anchor;
+
     @UiField
     Element icon;
+
     @UiField
     SpanElement text;
+
     @UiField
     ImageElement image;
+
 
     interface SelectorItemViewUiBinder extends UiBinder<HTMLPanel, SelectorItem > {}
     private static SelectorItemViewUiBinder ourUiBinder = GWT.create( SelectorItemViewUiBinder.class );

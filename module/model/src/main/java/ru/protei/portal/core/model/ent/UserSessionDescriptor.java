@@ -1,7 +1,14 @@
 package ru.protei.portal.core.model.ent;
 
 
-import java.util.List;
+import ru.protei.portal.core.model.dict.En_Scope;
+
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Optional;
+import java.util.Set;
+
+import static java.util.stream.Collectors.toSet;
 
 /**
  * Created by michael on 23.06.16.
@@ -26,6 +33,7 @@ public class UserSessionDescriptor {
         this.company = c;
         this.person = p;
     }
+
 
     public void close () {
         this.session = null;

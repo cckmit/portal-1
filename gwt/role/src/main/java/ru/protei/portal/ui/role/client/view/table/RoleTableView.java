@@ -13,21 +13,27 @@ import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
+import ru.protei.portal.ui.common.client.columns.RemoveClickColumn;
+import ru.protei.portal.ui.common.client.lang.En_ScopeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.role.client.activity.table.AbstractRoleTableActivity;
 import ru.protei.portal.ui.role.client.activity.table.AbstractRoleTableView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Представление таблицы роли
  */
 public class RoleTableView extends Composite implements AbstractRoleTableView {
+
     @Inject
-    public void onInit(EditClickColumn<UserRole> editClickColumn) {
+    public void onInit( EditClickColumn<UserRole> editClickColumn, RemoveClickColumn< UserRole > removeClickColumn
+    ) {
         initWidget( ourUiBinder.createAndBindUi( this ) );
         this.editClickColumn = editClickColumn;
+        this.removeClickColumn = removeClickColumn;
         initTable();
     }
 
@@ -38,6 +44,8 @@ public class RoleTableView extends Composite implements AbstractRoleTableView {
         editClickColumn.setHandler( activity );
         editClickColumn.setEditHandler( activity );
         editClickColumn.setColumnProvider( columnProvider );
+        removeClickColumn.setColumnProvider( columnProvider );
+        removeClickColumn.setRemoveHandler( activity );
         columns.forEach( clickColumn -> {
             clickColumn.setHandler( activity );
             clickColumn.setColumnProvider( columnProvider );
@@ -69,6 +77,7 @@ public class RoleTableView extends Composite implements AbstractRoleTableView {
 
     private void initTable () {
         editClickColumn.setPrivilege( En_Privilege.ROLE_EDIT );
+        removeClickColumn.setPrivilege( En_Privilege.ROLE_REMOVE );
 
         ClickColumn< UserRole > name = new ClickColumn< UserRole >() {
             @Override
@@ -96,9 +105,26 @@ public class RoleTableView extends Composite implements AbstractRoleTableView {
         };
         columns.add( description );
 
+        ClickColumn< UserRole > scope = new ClickColumn< UserRole >() {
+            @Override
+            protected void fillColumnHeader( Element element ) {
+                element.setInnerText( lang.roleScope() );
+            }
+
+            @Override
+            public void fillColumnValue ( Element cell, UserRole value ) {
+                cell.setInnerText( value.getScope() == null
+                        ? ""
+                        : scopeLang.getName( value.getScope() ));
+            }
+        };
+        columns.add( description );
+
         table.addColumn( name.header, name.values );
+        table.addColumn( scope.header, scope.values );
         table.addColumn( description.header, description.values );
         table.addColumn( editClickColumn.header, editClickColumn.values );
+        table.addColumn( removeClickColumn.header, removeClickColumn.values );
     }
 
     @UiField
@@ -111,15 +137,18 @@ public class RoleTableView extends Composite implements AbstractRoleTableView {
     @UiField
     HTMLPanel filterContainer;
 
-    @Inject
     @UiField
     Lang lang;
 
-    ClickColumnProvider<UserRole> columnProvider = new ClickColumnProvider<>();
-    EditClickColumn<UserRole > editClickColumn;
-    List<ClickColumn > columns = new ArrayList<>();
+    @Inject
+    private En_ScopeLang scopeLang;
 
-    AbstractRoleTableActivity activity;
+    private AbstractRoleTableActivity activity;
+
+    private ClickColumnProvider<UserRole> columnProvider = new ClickColumnProvider<>();
+    private EditClickColumn<UserRole > editClickColumn;
+    private RemoveClickColumn<UserRole> removeClickColumn;
+    private List<ClickColumn > columns = new ArrayList<>();
 
     private static ContactTableViewUiBinder ourUiBinder = GWT.create( ContactTableViewUiBinder.class );
     interface ContactTableViewUiBinder extends UiBinder< HTMLPanel, RoleTableView > {}

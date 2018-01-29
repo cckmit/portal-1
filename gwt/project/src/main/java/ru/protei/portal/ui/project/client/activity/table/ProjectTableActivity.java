@@ -63,7 +63,7 @@ public abstract class ProjectTableActivity
     }
 
     @Event
-    public void onCreateClicked( SectionEvents.Clicked event ) {
+    public void onCreateClicked( ActionBarEvents.Clicked event ) {
         if ( !UiConstants.ActionBarIdentity.PROJECT.equals( event.identity ) ) {
             return;
         }

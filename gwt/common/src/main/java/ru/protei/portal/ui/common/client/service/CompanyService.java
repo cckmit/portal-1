@@ -2,11 +2,14 @@ package ru.protei.portal.ui.common.client.service;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanyGroup;
+import ru.protei.portal.core.model.ent.CompanySubscription;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
+import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.List;
 
@@ -15,6 +18,12 @@ import java.util.List;
  */
 @RemoteServiceRelativePath( "springGwtServices/CompanyService" )
 public interface CompanyService extends RemoteService {
+
+    /**
+     * Получение кол-ва компаний
+     * @param query запрос
+     */
+    long getCompaniesCount(CompanyQuery query) throws RequestFailedException;
 
     /**
      * Получение списка компаний
@@ -64,7 +73,7 @@ public interface CompanyService extends RemoteService {
      * Получение списка сокращенного представления компании (name,id)
      * @return
      */
-    List< EntityOption > getCompanyOptionList() throws RequestFailedException;
+    List< EntityOption > getCompanyOptionList(CompanyQuery query) throws RequestFailedException;
 
     /**
      * Получение списка сокращенного представления группы компаний (name,id)
@@ -77,4 +86,18 @@ public interface CompanyService extends RemoteService {
      * @return
      */
     List< EntityOption > getCategoryOptionList() throws RequestFailedException;
+
+    /**
+     * Обновить адреса подписок своей компании
+     *
+     * @param value
+     */
+    List<CompanySubscription> updateSelfCompanySubscription( List< CompanySubscription > value ) throws RequestFailedException;
+
+    /**
+     * Получение список рассылок по компании
+     *
+     * @param companyId
+     */
+    List<CompanySubscription> getCompanySubscription( Long companyId ) throws RequestFailedException;
 }

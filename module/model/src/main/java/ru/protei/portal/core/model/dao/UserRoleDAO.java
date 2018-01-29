@@ -1,6 +1,8 @@
 package ru.protei.portal.core.model.dao;
 
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
+import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dict.En_Scope;
 import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.query.UserRoleQuery;
@@ -14,4 +16,8 @@ public interface UserRoleDAO extends PortalBaseDAO<UserRole> {
 
     @SqlConditionBuilder
     SqlCondition createSqlCondition( UserRoleQuery query);
+
+    UserRole ensureExists ( String code, En_Scope scope, En_Privilege...privileges);
+
+    void trimScopeToSingleValue();
 }

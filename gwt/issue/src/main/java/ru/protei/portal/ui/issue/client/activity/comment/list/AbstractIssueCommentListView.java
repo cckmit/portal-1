@@ -5,7 +5,7 @@ import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
-import ru.protei.portal.ui.common.client.widget.uploader.FileUploader;
+import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 
 /**
  * Представление списка комментариев
@@ -20,7 +20,7 @@ public interface AbstractIssueCommentListView extends IsWidget {
 
     void focus();
 
-    void setFileUploadHandler(FileUploader.FileUploadHandler handler);
+    void setFileUploadHandler(AttachmentUploader.FileUploadHandler handler);
 
     HasAttachments attachmentContainer();
 

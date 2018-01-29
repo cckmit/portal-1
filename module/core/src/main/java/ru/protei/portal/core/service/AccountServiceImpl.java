@@ -8,20 +8,18 @@ import org.springframework.util.DigestUtils;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.UserLoginDAO;
 import ru.protei.portal.core.model.dao.UserRoleDAO;
-import ru.protei.portal.core.model.dict.En_AdminState;
-import ru.protei.portal.core.model.dict.En_AuthType;
-import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.ent.UserRole;
+import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.AccountQuery;
+import ru.protei.portal.core.service.user.AuthService;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Реализация сервиса управления учетными записями
@@ -41,8 +39,12 @@ public class AccountServiceImpl implements AccountService {
     @Autowired
     PolicyService policyService;
 
+    @Autowired
+    AuthService authService;
+
     @Override
     public CoreResponse< List< UserLogin > > accountList(AuthToken token, AccountQuery query ) {
+        applyFilterByScope(token, query);
         List< UserLogin > list = userLoginDAO.getAccounts( query );
 
         if (list == null)
@@ -54,6 +56,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public CoreResponse< Long > count( AuthToken authToken, AccountQuery query ) {
+        applyFilterByScope(authToken, query);
         Long count = userLoginDAO.count( query );
 
         if ( count == null )
@@ -65,6 +68,19 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public CoreResponse< UserLogin > getAccount( AuthToken token, long id ) {
         UserLogin userLogin = userLoginDAO.get( id );
+
+        if ( userLogin == null ) {
+            return  new CoreResponse< UserLogin >().error( En_ResultStatus.NOT_FOUND );
+        }
+
+        jdbcManyRelationsHelper.fill( userLogin, "roles" );
+
+        return new CoreResponse< UserLogin >().success( userLogin );
+    }
+
+    @Override
+    public CoreResponse< UserLogin > getAccountByPersonId ( AuthToken authToken, long personId ) {
+        UserLogin userLogin = userLoginDAO.findByPersonId( personId );
 
         if ( userLogin == null ) {
             return  new CoreResponse< UserLogin >().error( En_ResultStatus.NOT_FOUND );
@@ -101,7 +117,6 @@ public class AccountServiceImpl implements AccountService {
         }
 
         if ( userLoginDAO.saveOrUpdate( userLogin ) ) {
-
             jdbcManyRelationsHelper.persist( userLogin, "roles" );
 
             return new CoreResponse< UserLogin >().success( userLogin );
@@ -129,16 +144,6 @@ public class AccountServiceImpl implements AccountService {
         return new CoreResponse< Boolean >().error( En_ResultStatus.INTERNAL_ERROR );
     }
 
-//    @Override
-//    public CoreResponse< List< UserRole > > roleList() {
-//        List< UserRole > list = userRoleDAO.getAll();
-//
-//        if (list == null)
-//            new CoreResponse< List< UserRole > >().error( En_ResultStatus.GET_DATA_ERROR );
-//
-//        return new CoreResponse< List< UserRole > >().success( list );
-//    }
-
     private boolean isValidLogin( UserLogin userLogin ) {
         return HelperFunc.isNotEmpty( userLogin.getUlogin() )
                 && userLogin.getPersonId() != null;
@@ -148,5 +153,18 @@ public class AccountServiceImpl implements AccountService {
         UserLogin userLogin = userLoginDAO.checkExistsByLogin( login );
 
         return userLogin == null || userLogin.getId().equals( excludeId );
+    }
+
+    private void applyFilterByScope( AuthToken token, AccountQuery query ) {
+        UserSessionDescriptor descriptor = authService.findSession( token );
+
+        if ( !policyService.hasGrantAccessFor( descriptor.getLogin().getRoles(), En_Privilege.ACCOUNT_VIEW ) ) {
+            query.setRoleIds(
+                    Optional.ofNullable( descriptor.getLogin().getRoles())
+                            .orElse( Collections.emptySet() )
+                            .stream()
+                            .map( UserRole::getId )
+                            .collect( Collectors.toList()) );
+        }
     }
 }

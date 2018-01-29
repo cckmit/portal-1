@@ -73,7 +73,7 @@ public abstract class EquipmentTableActivity
     }
 
     @Event
-    public void onCreateClicked( SectionEvents.Clicked event ) {
+    public void onCreateClicked( ActionBarEvents.Clicked event ) {
         if ( !UiConstants.ActionBarIdentity.EQUIPMENT.equals( event.identity ) ) {
             return;
         }
@@ -163,10 +163,10 @@ public abstract class EquipmentTableActivity
     private EquipmentQuery makeQuery() {
         Long managerId = filterView.manager().getValue() == null ? null : filterView.manager().getValue().getId();
         En_SortDir sortDir = filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC;
-
+        Long equipmentId = filterView.equipment().getValue() == null ? null : filterView.equipment().getValue().getId();
         return new EquipmentQuery( filterView.name().getValue(), filterView.sortField().getValue(), sortDir,
                 filterView.organizationCodes().getValue(), filterView.stages().getValue(), filterView.types().getValue(),
-                filterView.classifierCode().getValue(), filterView.registerNumber().getValue(), managerId );
+                filterView.classifierCode().getValue(), filterView.registerNumber().getValue(), managerId, equipmentId );
     }
 
     @Inject

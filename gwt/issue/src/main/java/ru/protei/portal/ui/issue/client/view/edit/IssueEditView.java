@@ -21,15 +21,18 @@ import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.dict.ImportanceButtonSelector;
-import ru.protei.portal.ui.common.client.widget.selector.person.ContactButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
+import ru.protei.portal.ui.common.client.widget.selector.person.PersonButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.ProductButtonSelector;
-import ru.protei.portal.ui.common.client.widget.uploader.FileUploader;
+import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditActivity;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditView;
 import ru.protei.portal.ui.issue.client.widget.state.buttonselector.IssueStatesButtonSelector;
+
+import java.util.Set;
 
 /**
  * Вид создания и редактирования обращения
@@ -45,6 +48,11 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         company.setDefaultValue(lang.selectIssueCompany());
         product.setDefaultValue(lang.selectIssueProduct());
         manager.setDefaultValue(lang.selectIssueManager());
+    }
+
+    @Override
+    protected void onAttach() {
+        super.onAttach();
     }
 
     @Override
@@ -98,6 +106,11 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
+    public HasValue<Set<PersonShortView>> notifiers() {
+        return notifiers;
+    }
+
+    @Override
     public HasValidable nameValidator() {
         return name;
     }
@@ -133,10 +146,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         return initiator;
     }
 
-    @Override
-    public void changeCompany(Company company){
-        initiator.updateCompany(company);
-    }
 
     @Override
     public void setSubscriptionEmails( String value ) {
@@ -154,8 +163,13 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
-    public void setFileUploadHandler(FileUploader.FileUploadHandler handler){
-        fileUploader.setFileUploadHandler(handler);
+    public void setFileUploadHandler(AttachmentUploader.FileUploadHandler handler){
+        fileUploader.setUploadHandler(handler);
+    }
+
+    @Override
+    public void setCaseId(Long caseId) {
+        fileUploader.autoBindingToCase(caseId);
     }
 
     @Override
@@ -163,13 +177,58 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         return saveButton;
     }
 
-    @UiHandler("company")
-    public void onChangeCompany(ValueChangeEvent<EntityOption> event){
-        Company company = Company.fromEntityOption(event.getValue());
+    @Override
+    public HasEnabled companyEnabled() {
+        return company;
+    }
 
-        initiator.setEnabled(company != null);
-        changeCompany(company);
-        initiator.setValue(null);
+    @Override
+    public HasEnabled productEnabled() {
+        return product;
+    }
+
+    @Override
+    public HasEnabled managerEnabled() {
+        return manager;
+    }
+
+    @Override
+    public HasVisibility notifiersEnabled() {
+        return notifiers;
+    }
+
+    @Override
+    public HasVisibility privacyVisibility() {
+        return new HasVisibility() {
+            @Override
+            public boolean isVisible() {
+                return local.isVisible();
+            }
+
+            @Override
+            public void setVisible( boolean b ) {
+                if ( b ) {
+                    nameInputGroupContainer.add( name );
+                }
+                else {
+                    nameContainer.add( name );
+                }
+                local.setVisible( b );
+            }
+        };
+    }
+
+    @UiHandler( "company" )
+    public void onChangeCompany( ValueChangeEvent< EntityOption > event ){
+        Company company = Company.fromEntityOption( event.getValue() );
+
+        initiator.setEnabled( company != null );
+        initiator.updateCompany(company);
+        initiator.setValue( null );
+
+        if ( activity != null ) {
+            activity.onCompanyChanged();
+        }
     }
 
     @UiHandler( "saveButton" )
@@ -200,6 +259,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
             comments.addClassName("hide");
     }
 
+
     @UiField
     ValidableTextBox name;
 
@@ -223,7 +283,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
 
     @Inject
     @UiField(provided = true)
-    ContactButtonSelector initiator;
+    PersonButtonSelector initiator;
 
     @Inject
     @UiField(provided = true)
@@ -232,6 +292,10 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @Inject
     @UiField(provided = true)
     EmployeeButtonSelector manager;
+
+    @Inject
+    @UiField(provided = true)
+    EmployeeMultiSelector notifiers;
 
     @UiField
     Button saveButton;
@@ -243,17 +307,19 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @UiField
     HTMLPanel commentsContainer;
     @UiField
-    FileUploader uploader;
-    @UiField
     DivElement comments;
     @Inject
     @UiField
-    FileUploader fileUploader;
+    AttachmentUploader fileUploader;
     @Inject
     @UiField(provided = true)
     AttachmentList attachmentContainer;
     @UiField
     DivElement subscriptions;
+    @UiField
+    HTMLPanel nameInputGroupContainer;
+    @UiField
+    HTMLPanel nameContainer;
 
 
     private AbstractIssueEditActivity activity;

@@ -6,7 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.tools.migrate.tools.BatchProcess;
 import ru.protei.portal.tools.migrate.tools.MigrateAction;
+import ru.protei.winter.jdbc.JdbcDAO;
+import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -36,11 +39,27 @@ public class MigrateClientLoginAction implements MigrateAction {
     @Autowired
     private MigrationEntryDAO migrationEntryDAO;
 
+    @Autowired
+    JdbcManyRelationsHelper jdbcManyRelationsHelper;
+
 
     @Override
     public int orderOfExec() {
         return 2;
     }
+
+
+    private final static String DEF_CLIENT_ROLE_CODE="CRM_CLIENT";
+
+    private final static En_Privilege [] DEF_COMPANY_CLIENT_PRIV = {
+            En_Privilege.ISSUE_CREATE,
+            En_Privilege.ISSUE_EDIT,
+            En_Privilege.ISSUE_VIEW,
+            En_Privilege.COMMON_PROFILE_EDIT,
+            En_Privilege.COMMON_PROFILE_VIEW
+    };
+
+    private final static En_Scope DEF_COMPANY_CLIENT_SCOPE = En_Scope.COMPANY;
 
     @Override
     public void migrate(Connection sourceConnection) throws SQLException {
@@ -48,14 +67,24 @@ public class MigrateClientLoginAction implements MigrateAction {
         final Map<String, UserLogin> rtUnique = new HashMap<>();
         userLoginDAO.getAll().forEach(u -> rtUnique.put(u.getUlogin().toLowerCase(), u));
 
-        UserRole crmClient = userRoleDAO.get(4L);
+        UserRole crmClientRole = userRoleDAO.ensureExists(DEF_CLIENT_ROLE_CODE, DEF_COMPANY_CLIENT_SCOPE, DEF_COMPANY_CLIENT_PRIV);
+
         Set<UserRole> roles = new HashSet<>();
-        roles.add(crmClient);
+        roles.add(crmClientRole);
+
+
+        BatchProcess<UserLogin> processBatch = new BaseBatchProcess<UserLogin>() {
+            @Override
+            public void afterInsert(List<UserLogin> insertedEntries) {
+                logger.debug("persist client login roles");
+                jdbcManyRelationsHelper.persist( insertedEntries, "roles" );
+            }
+        };
 
         new BatchInsertTask(migrationEntryDAO, MIGRATE_ITEM_CODE)
                 .forTable("\"resource\".Tm_CompanyLogin", "nID", null)
                 .skipEmptyEntity(true)
-                .process(sourceConnection, userLoginDAO, new BaseBatchProcess<>(), row -> {
+                .process(sourceConnection, userLoginDAO, processBatch, row -> {
                     UserLogin ulogin = new UserLogin();
 
                     ulogin.setUlogin((String) row.get("strLogin"));

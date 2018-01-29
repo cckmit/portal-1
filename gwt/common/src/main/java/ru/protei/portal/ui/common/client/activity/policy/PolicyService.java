@@ -3,6 +3,8 @@ package ru.protei.portal.ui.common.client.activity.policy;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dict.En_Scope;
+import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.shared.model.Profile;
@@ -49,6 +51,18 @@ public abstract class PolicyService implements Activity {
         }
 
         return true;
+    }
+
+    public Profile getProfile() {
+        return profile;
+    }
+
+    public Company getUserCompany() {
+        if ( profile == null ) {
+            return null;
+        }
+
+        return profile.getCompany();
     }
 
     @Event

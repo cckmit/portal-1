@@ -5,6 +5,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import ru.protei.portal.core.ServiceModule;
+import ru.protei.portal.core.controller.cloud.FileController;
+import ru.protei.portal.core.event.CaseCommentEvent;
+import ru.protei.portal.core.event.CaseObjectEvent;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
@@ -13,13 +17,17 @@ import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
+import ru.protei.portal.core.service.CaseService;
+import ru.protei.portal.core.service.EventPublisherService;
+import ru.protei.portal.hpsm.api.HpsmSeverity;
 import ru.protei.portal.hpsm.api.HpsmStatus;
+import ru.protei.portal.hpsm.struct.HpsmAttachment;
 import ru.protei.portal.hpsm.struct.HpsmMessage;
 import ru.protei.portal.hpsm.struct.HpsmMessageHeader;
 import ru.protei.portal.hpsm.utils.HpsmUtils;
 
 import javax.mail.internet.MimeMessage;
-import java.util.Date;
+import java.util.*;
 
 /**
  * Created by michael on 25.04.17.
@@ -47,6 +55,15 @@ public class InboundMainMessageHandler implements InboundMessageHandler {
     @Autowired
     private ExternalCaseAppDAO externalCaseAppDAO;
 
+    @Autowired
+    private EventPublisherService eventPublisherService;
+
+    @Autowired
+    private CaseService caseService;
+
+    @Autowired
+    private FileController fileController;
+
 
     @Override
     public boolean handle(MimeMessage msg, ServiceInstance instance) {
@@ -73,6 +90,9 @@ public class InboundMainMessageHandler implements InboundMessageHandler {
             logger.debug("created handler : {}", handler);
 
             handler.handle(request, instance);
+
+            logger.debug("handler invocation completed for {}", request.getSubject().getHpsmId());
+
         } catch (Throwable e) {
             logger.debug("error on event message handle", e);
         }
@@ -98,29 +118,39 @@ public class InboundMainMessageHandler implements InboundMessageHandler {
 
         Company company = instance.getCompanyByBranch(hpsmEvent.getHpsmMessage().getCompanyBranch());
 
-        if (company == null) {
+        if (company == null && subject.isNewCaseRequest()) {
             logger.debug("unable to map company by branch name : {}", hpsmEvent.getHpsmMessage().getCompanyBranch());
             return null;
         }
+        else {
+            hpsmEvent.assign(company);
+        }
 
-        return hpsmEvent.assign(company);
+        return hpsmEvent;
     }
 
 
     private HpsmEventHandler createHandler (HpsmEvent request, ServiceInstance instance) {
-        if (request.getSubject().isNewCaseRequest())
+        if (request.getSubject().isNewCaseRequest()) {
+            logger.debug("new case creation handler");
             return new CreateNewCaseHandler();
+        }
 
+        logger.debug("prepare case update handler");
         ExternalCaseAppData appData = externalCaseAppDAO.getByExternalAppId(request.getSubject().getHpsmId());
 
         CaseObject object = appData == null ? null : caseObjectDAO.get(appData.getId());
 
         if (object != null && HpsmUtils.testBind(object, instance)) {
 
-            if (object.getInitiatorCompanyId() == null || !object.getInitiatorCompanyId().equals(request.getCompany().getId()))
-                return new RejectHandler("Wrong company");
+//            if (object.getInitiatorCompanyId() == null || !object.getInitiatorCompanyId().equals(request.getCompany().getId()))
+//                return new RejectHandler("Wrong company");
 
-            return new UpdateCaseHanler(object);
+            logger.debug("return update handler");
+            return new UpdateCaseHanler(object, caseObjectDAO.get(object.getId()));
+        }
+        else {
+            logger.debug("case {} is not bound to service instance {}", request.getSubject().getHpsmId(), instance.id());
         }
 
         return new RejectHandler("Case object was not found");
@@ -130,56 +160,110 @@ public class InboundMainMessageHandler implements InboundMessageHandler {
     class UpdateCaseHanler implements HpsmEventHandler {
 
         CaseObject object;
+        final CaseObject oldState;
 
-        public UpdateCaseHanler(CaseObject object) {
+        public UpdateCaseHanler(CaseObject object, CaseObject oldState) {
             this.object = object;
+            this.oldState = oldState;
         }
 
         @Override
         public void handle(HpsmEvent request, ServiceInstance instance) throws Exception {
-            Person contactPerson = getAssignedPerson(request.getCompany().getId(), request.getHpsmMessage());
+            Person contactPerson = request.getCompany() != null ? getAssignedPerson(request.getCompany().getId(), request.getHpsmMessage()) : null;
+
             if (contactPerson == null) {
                 contactPerson = this.object.getInitiator();
             }
 
-            ExternalCaseAppData appData = externalCaseAppDAO.get(object.getId());
+            logger.debug("contact-person : {} (id={})", contactPerson.getDisplayName(), contactPerson.getId());
 
+            ExternalCaseAppData appData = externalCaseAppDAO.get(object.getId());
 
             HpsmMessage currState = (HpsmMessage) xstream.fromXML(appData.getExtAppData());
 
             StringBuilder commentText = new StringBuilder();
 
-            if (currState.status() != request.getSubject().getStatus()) {
-                commentText.append(currState.status()).append(" -> ").append(request.getSubject().getStatus());
+            CaseComment comment = new CaseComment();
+            comment.setCreated(new Date());
+            comment.setAuthor(contactPerson);
+            comment.setCaseId(object.getId());
+            comment.setClientIp("hpsm");
+
+            if (request.getSubject().getStatus() != null && currState.status() != request.getSubject().getStatus()) {
+                commentText.append(currState.status()).append(" -> ").append(request.getSubject().getStatus()).append("\n");
+
+                logger.debug("change case {} state from {} to {}", appData.getExtAppCaseId(), currState.status(), request.getSubject().getStatus());
 
                 currState.status(request.getSubject().getStatus());
+            }
+
+
+            if (request.getSubject().getStatus() != null) {
+                switch (request.getSubject().getStatus()) {
+                    case IN_PROGRESS:
+                    case WAIT_SOLUTION:
+                    case REJECT_WA:
+                        if (object.getState() != En_CaseState.OPENED) {
+                            object.setState(En_CaseState.OPENED);
+                            comment.setCaseStateId(object.getStateId());
+                        }
+                        break;
+
+                    case CLOSED:
+                        if (object.getState() != En_CaseState.VERIFIED) {
+                            object.setState(En_CaseState.VERIFIED);
+                            comment.setCaseStateId(object.getStateId());
+                        }
+                        break;
+
+                    case TEST_SOLUTION:
+                    case TEST_WA:
+                        if (object.getState() != En_CaseState.TEST_CUST) {
+                            object.setState(En_CaseState.TEST_CUST);
+                            comment.setCaseStateId(object.getStateId());
+                        }
+                        break;
+                }
             }
 
             currState.updateCustomerFields(request.getHpsmMessage());
             appData.setExtAppData(xstream.toXML(currState));
 
+            logger.debug("case {} state after merge: {}", appData.getExtAppCaseId(), appData.getExtAppData());
+
             if (!contactPerson.getId().equals(object.getInitiatorId())) {
+                logger.debug("change initiator from {} to {}", object.getInitiator().getDisplayName(), contactPerson.getDisplayName());
                 object.setInitiator(contactPerson);
             }
 
-            object.setImpLevel(request.getHpsmMessage().severity().getCaseImpLevel().getId());
+            if (request.getHpsmMessage().severity() != null) {
+                logger.debug("set severity to {}", request.getHpsmMessage().severity());
+                object.setImpLevel(request.getHpsmMessage().severity().getCaseImpLevel().getId());
+            }
 
             caseObjectDAO.merge(object);
             externalCaseAppDAO.merge(appData);
 
+            logger.debug("case and data stored in db for {}", appData.getExtAppCaseId());
+
+            logger.debug("publish event on update case id={}, ext={}", object.getId(), object.getExtId());
+
+            eventPublisherService.publishEvent(new CaseObjectEvent(ServiceModule.HPSM, caseService, object, oldState, contactPerson));
+
+
             if (HelperFunc.isNotEmpty(request.getHpsmMessage().getMessage())) {
+                logger.debug("append comment text from message");
                 commentText.append(request.getHpsmMessage().getMessage());
             }
 
-            CaseComment comment = new CaseComment();
-            comment.setCreated(new Date());
-            comment.setAuthor(contactPerson);
-            comment.setCaseId(object.getId());
-            comment.setCaseStateId(object.getStateId());
-            comment.setClientIp("hpsm");
+            logger.debug("case {}, add comment: {}", appData.getExtAppCaseId(), commentText.toString());
+
             comment.setText(commentText.toString());
 
-            commentDAO.persist(comment);
+            processStoreComment(request, contactPerson, object, object.getId(), comment);
+
+            logger.debug("comment added in db, id={}", comment.getId());
+
         }
     }
 
@@ -206,7 +290,6 @@ public class InboundMainMessageHandler implements InboundMessageHandler {
             }
 
 
-
             CaseObject obj = new CaseObject();
             obj.setCreated(new Date());
             obj.setModified(new Date());
@@ -222,7 +305,7 @@ public class InboundMainMessageHandler implements InboundMessageHandler {
             if (HelperFunc.isNotEmpty(request.getHpsmMessage().getContactPersonEmail()))
                 obj.setEmails(request.getHpsmMessage().getContactPersonEmail());
 
-            obj.setImpLevel(request.getHpsmMessage().severity().getCaseImpLevel().getId());
+            obj.setImpLevel(HelperFunc.nvlt(request.getHpsmMessage().severity(), HpsmSeverity.LEVEL3).getCaseImpLevel().getId());
             obj.setName(HelperFunc.nvlt(request.getHpsmMessage().getShortDescription(),request.getSubject().getHpsmId()));
             obj.setInfo(request.getHpsmMessage().getDescription());
             obj.setLocal(0);
@@ -232,21 +315,6 @@ public class InboundMainMessageHandler implements InboundMessageHandler {
             Long caseObjId = caseObjectDAO.insertCase(obj);
 
             if (caseObjId != null && caseObjId > 0L) {
-
-                StringBuilder commentText = new StringBuilder();
-                if (HelperFunc.isNotEmpty(request.getHpsmMessage().getMessage())) {
-                    commentText.append(request.getHpsmMessage().getMessage());
-                }
-
-                CaseComment comment = new CaseComment();
-                comment.setCreated(new Date());
-                comment.setAuthor(contactPerson);
-                comment.setCaseId(caseObjId);
-                comment.setCaseStateId(obj.getStateId());
-                comment.setClientIp("hpsm");
-                comment.setText(appendCommentInfo (commentText, request.getHpsmMessage()).toString());
-
-                commentDAO.persist(comment);
 
                 HpsmMessageHeader replySubj = new HpsmMessageHeader(request.getSubject().getHpsmId(), obj.getExtId(), HpsmStatus.REGISTERED);
                 HpsmMessage replyEvent = request.getHpsmMessage().createCopy();
@@ -263,6 +331,12 @@ public class InboundMainMessageHandler implements InboundMessageHandler {
 
                 externalCaseAppDAO.merge(appData);
 
+                logger.debug("publish event on create case id={}, ext={}", obj.getId(), obj.getExtId());
+
+                eventPublisherService.publishEvent(new CaseObjectEvent(ServiceModule.HPSM, caseService, obj, null, contactPerson));
+
+                createComment(request, contactPerson, obj, caseObjId);
+
                 instance.sendReply(request.getEmailSourceAddr(), replySubj, replyEvent);
             }
             else {
@@ -271,6 +345,77 @@ public class InboundMainMessageHandler implements InboundMessageHandler {
         }
     }
 
+    private CaseComment createComment(HpsmEvent request, Person contactPerson, CaseObject obj, Long caseObjId) {
+        StringBuilder commentText = new StringBuilder();
+        if (HelperFunc.isNotEmpty(request.getHpsmMessage().getMessage())) {
+            commentText.append(request.getHpsmMessage().getMessage());
+        }
+
+        CaseComment comment = new CaseComment();
+        comment.setCreated(new Date());
+        comment.setAuthor(contactPerson);
+        comment.setCaseId(caseObjId);
+        comment.setCaseStateId(obj.getStateId());
+        comment.setClientIp("hpsm");
+        comment.setText(appendCommentInfo (commentText, request.getHpsmMessage()).toString());
+
+        return processStoreComment(request, contactPerson, obj, caseObjId, comment);
+    }
+
+    private CaseComment processStoreComment(HpsmEvent request, Person contactPerson, CaseObject obj, Long caseObjId, CaseComment comment) {
+        commentDAO.persist(comment);
+        logger.debug("add comment to new case, case-id={}, comment={}", caseObjId, comment.getId());
+
+
+        Collection<Attachment> addedAttachments = null;
+        if (request.hasAttachments()) {
+            logger.debug("process attachments for new case, id={}", caseObjId);
+
+            List<CaseAttachment> caseAttachments = new ArrayList<>(request.getAttachments().size());
+            addedAttachments = new ArrayList<>(request.getAttachments().size());
+
+            for (HpsmAttachment in : request.getAttachments()) {
+                Attachment a = new Attachment();
+                a.setCreated(new Date());
+                a.setCreatorId(contactPerson.getId());
+                a.setDataSize((long)in.getSize());
+                a.setFileName(in.getFileName());
+                a.setMimeType(in.getContentType());
+                a.setLabelText(in.getDescription());
+
+                addedAttachments.add(a);
+
+                try {
+                    logger.debug("invoke file controller to store attachment {} (size={})", in.getFileName(), in.getSize());
+                    Long caId = fileController.saveAttachment(a, in.getStreamSource(), caseObjId);
+                    logger.debug("result from file controller = {} for {} (size={})", caId, in.getFileName(), in.getSize());
+
+                    if (caId != null) {
+                        caseAttachments.add(new CaseAttachment(caseObjId, a.getId(), comment.getId(), caId));
+                    }
+                }
+                catch (Exception e) {
+                    logger.debug("unable to process attachment {}", in.getFileName());
+                    logger.debug("trace", e);
+                }
+            }
+
+            comment.setCaseAttachments(caseAttachments);
+        }
+
+        eventPublisherService.publishEvent(new CaseCommentEvent(
+                ServiceModule.HPSM,
+                caseService,
+                obj,
+                null,
+                null,
+                comment,
+                addedAttachments,
+                contactPerson
+        ));
+
+        return comment;
+    }
 
 
     class RejectHandler implements HpsmEventHandler {

@@ -35,13 +35,12 @@ public class ActionBarEvents {
     /**
      * Выбрано действие
      */
-    public static class Clicked extends SectionEvents.Clicked {
-        public Clicked() {
-        }
-
+    public static class Clicked {
         public Clicked( String identity ) {
             this.identity = identity;
         }
+
+        public String identity;
     }
 
     /**

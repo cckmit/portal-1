@@ -1,16 +1,20 @@
 package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dict.En_Scope;
+import ru.protei.portal.core.model.struct.AuditableObject;
+import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.EntityOptionSupport;
 import ru.protei.winter.jdbc.annotations.*;
 
-import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
  * Created by michael on 16.06.16.
  */
 @JdbcEntity(table = "user_role")
-public class UserRole implements Serializable {
+public class UserRole extends AuditableObject implements EntityOptionSupport, Removable {
 
     @JdbcId(name = "id")
     private Long id;
@@ -22,10 +26,13 @@ public class UserRole implements Serializable {
     private String info;
 
     @JdbcEnumerated(EnumType.STRING)
-    @JdbcColumnCollection(name = "privileges", separator = ",")
+    @JdbcColumnCollection(separator = ",")
     private Set<En_Privilege> privileges;
 
-    public UserRole() {}
+    @JdbcEnumerated(EnumType.STRING)
+    @JdbcColumn(name = "scopes")
+    private En_Scope scope;
+
 
     public Long getId() {
         return id;
@@ -60,7 +67,41 @@ public class UserRole implements Serializable {
     }
 
     public boolean hasPrivilege( En_Privilege privilege ){
-        return privileges.contains( privilege );
+        return privileges != null && privileges.contains( privilege );
+    }
+
+    public void addPrivilege(En_Privilege privilege) {
+        if (privileges == null)
+            privileges = new HashSet<>();
+
+        privileges.add(privilege);
+    }
+
+    public En_Scope getScope() {
+        return scope;
+    }
+
+    public void setScope( En_Scope scope ) {
+        this.scope = scope;
+    }
+
+    public static UserRole fromEntityOption( EntityOption entityOption){
+        if(entityOption == null)
+            return null;
+
+        UserRole userRole = new UserRole(entityOption.getId());
+        userRole.setCode(entityOption.getDisplayText());
+        return userRole;
+    }
+
+    @Override
+    public EntityOption toEntityOption() {
+        return new EntityOption(this.code, this.id);
+    }
+
+    @Override
+    public String getAuditType() {
+        return "UserRole";
     }
 
     @Override
@@ -74,8 +115,19 @@ public class UserRole implements Serializable {
     }
 
     @Override
+    public boolean isAllowedRemove() {
+        return true;
+    }
+
+    @Override
     public int hashCode() {
         return id != null ? id.hashCode() : 0;
+    }
+
+    public UserRole() {}
+
+    public UserRole( Long id ) {
+        this.id = id;
     }
 
     @Override
@@ -85,6 +137,7 @@ public class UserRole implements Serializable {
                 ", code='" + code + '\'' +
                 ", info='" + info + '\'' +
                 ", privileges=" + privileges +
+                ", scope=" + scope +
                 '}';
     }
 }

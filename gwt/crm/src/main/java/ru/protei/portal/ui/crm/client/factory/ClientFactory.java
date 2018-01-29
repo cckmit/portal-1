@@ -10,6 +10,7 @@ import ru.protei.portal.ui.common.client.factory.CommonClientModule;
 import ru.protei.portal.ui.company.client.factory.CompanyClientModule;
 import ru.protei.portal.ui.crm.client.activity.app.AppActivity;
 import ru.protei.portal.ui.issue.client.factory.IssueClientModule;
+import ru.protei.portal.ui.official.client.factory.OfficialClientModule;
 import ru.protei.portal.ui.product.client.factory.ProductClientModule;
 import ru.protei.portal.ui.project.client.factory.ProjectClientModule;
 import ru.protei.portal.ui.region.client.factory.RegionClientModule;
@@ -21,7 +22,8 @@ import ru.protei.portal.ui.role.client.factory.RoleClientModule;
 @GinModules({
         ClientModule.class, CommonClientModule.class, CompanyClientModule.class, ContactClientModule.class,
         ProductClientModule.class, ProjectClientModule.class, RegionClientModule.class,
-        IssueClientModule.class, EquipmentClientModule.class, RoleClientModule.class, AccountClientModule.class
+        IssueClientModule.class, EquipmentClientModule.class, RoleClientModule.class, AccountClientModule.class,
+        OfficialClientModule.class
 })
 public interface ClientFactory
         extends FactoryInjector

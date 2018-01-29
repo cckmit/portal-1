@@ -2,11 +2,9 @@ package ru.protei.portal.ui.crm.client.view.app;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.AnchorElement;
+import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.ParagraphElement;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -40,9 +38,10 @@ public class AppView extends Composite
     }
 
     @Override
-    public void setUsername( String username, String role ) {
+    public void setUser( String username, String company, String iconSrc ) {
         this.username.setInnerText( username );
-        //this.role.setInnerText( role );
+        this.company.setInnerText( company );
+        this.icon.setSrc( iconSrc );
     }
 
     @Override
@@ -108,6 +107,13 @@ public class AppView extends Composite
     private void initHandlers() {
         RootPanel.get().sinkEvents( Event.ONKEYUP );
         RootPanel.get().addHandler( this, KeyUpEvent.getType() );
+
+        userPanel.sinkEvents( Event.ONCLICK );
+        userPanel.addHandler( event -> {
+            if ( activity != null ) {
+                activity.onUserClicked();
+            }
+        }, ClickEvent.getType() );
     }
 
     @UiField
@@ -130,11 +136,15 @@ public class AppView extends Composite
     @UiField
     ParagraphElement username;
     @UiField
-    AnchorElement role;
+    AnchorElement company;
     @UiField
     HTMLPanel menuContainer;
     @UiField
     HTMLPanel actionBarContainer;
+    @UiField
+    HTMLPanel userPanel;
+    @UiField
+    ImageElement icon;
 
     AbstractAppActivity activity;
 

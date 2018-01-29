@@ -27,7 +27,7 @@ public class ButtonSelector<T> extends Selector<T> implements HasValidable, HasE
     @Override
     public void fillSelectorView(DisplayOption selectedValue) {
         text.setInnerHTML(selectedValue == null ? "" : selectedValue.getName() == null ? "" : selectedValue.getName());
-        text.setClassName(selectedValue == null ? "" : selectedValue.getStyle() == null ? "" : selectedValue.getStyle());
+        text.setClassName("selector-val "+ (selectedValue != null && selectedValue.getStyle() != null? selectedValue.getStyle(): ""));
         icon.setClassName(selectedValue == null ? "" : selectedValue.getIcon() == null ? "" : selectedValue.getIcon());
     }
 

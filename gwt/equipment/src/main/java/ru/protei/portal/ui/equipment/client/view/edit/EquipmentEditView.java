@@ -1,7 +1,9 @@
 package ru.protei.portal.ui.equipment.client.view.edit;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.InputElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -11,6 +13,7 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_EquipmentStage;
 import ru.protei.portal.core.model.dict.En_EquipmentType;
 import ru.protei.portal.core.model.ent.Equipment;
+import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
@@ -76,13 +79,18 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
     }
 
     @Override
-    public HasValue< Equipment > linkedEquipment() {
+    public HasValue< EquipmentShortView > linkedEquipment() {
         return linkedEquipment;
     }
 
     @Override
     public HasValue< List<DecimalNumber> > numbers() {
         return numbers;
+    }
+
+    @Override
+    public boolean isDecimalNumbersCorrect() {
+        return numbers.checkIfCorrect();
     }
 
     @Override
@@ -93,6 +101,11 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
     @Override
     public HasValue< String > project() {
         return project;
+    }
+
+    @Override
+    public HasValue<String> date() {
+        return dateTextBox;
     }
 
     @UiHandler( "saveButton" )
@@ -107,6 +120,24 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
         if ( activity != null ) {
             activity.onCancelClicked();
         }
+    }
+
+    @Override
+    public void setVisibilitySettingsForCreated(boolean isVisible) {
+        if (!isVisible) {
+            projectBox.removeStyleName("col-xs-5");
+            projectBox.addStyleName("col-xs-7");
+            managerBox.removeStyleName("col-xs-4");
+            managerBox.addStyleName("col-xs-5");
+        }
+        else {
+            projectBox.removeStyleName("col-xs-7");
+            projectBox.addStyleName("col-xs-5");
+            managerBox.removeStyleName("col-xs-5");
+            managerBox.addStyleName("col-xs-4");
+        }
+        date.setVisible(isVisible);
+        dateTextBox.setEnabled(false);
     }
 
     @UiField
@@ -137,6 +168,14 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
     EmployeeButtonSelector manager;
     @UiField
     TextBox project;
+    @UiField
+    HTMLPanel date;
+    @UiField
+    TextBox dateTextBox;
+    @UiField
+    HTMLPanel projectBox;
+    @UiField
+    HTMLPanel managerBox;
 
     AbstractEquipmentEditActivity activity;
 

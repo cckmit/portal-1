@@ -28,7 +28,7 @@ public interface CaseAttachmentDAO extends PortalBaseDAO<CaseAttachment>{
      * Высчитывает разницу между старым и новым списками сохраняя и удаляя нужные связи
      * @return удалённые CaseAttachments
      */
-    Collection<CaseAttachment> subtractDiffAndSynchronize(Collection<CaseAttachment> oldList, Collection<CaseAttachment> newList);
+    Collection<CaseAttachment> calcDiffAndSynchronize(Collection<CaseAttachment> oldList, Collection<CaseAttachment> newList);
 
 
 }

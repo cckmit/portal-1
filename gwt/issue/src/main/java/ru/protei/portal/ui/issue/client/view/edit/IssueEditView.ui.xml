@@ -5,7 +5,6 @@
              xmlns:importance='urn:import:ru.protei.portal.ui.common.client.widget.selector.dict'
              xmlns:state='urn:import:ru.protei.portal.ui.issue.client.widget.state.buttonselector'
              xmlns:person='urn:import:ru.protei.portal.ui.common.client.widget.selector.person'
-             xmlns:fileupload='urn:import:ru.protei.portal.ui.common.client.widget.uploader'
              xmlns:validablefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'
              xmlns:fileuploader='urn:import:ru.protei.portal.ui.common.client.widget.uploader'
              xmlns:attachment='urn:import:ru.protei.portal.ui.common.client.widget.attachment.list'>
@@ -13,20 +12,18 @@
 
     <g:HTMLPanel ui:field="root" styleName="panel">
 
-        <fileupload:FileUploader ui:field="uploader"/>
-
         <div class="body">
             <div class="grid grid-indent">
 
-                <div class="form-group  col-xs-12">
+                <g:HTMLPanel ui:field="nameContainer" styleName="form-group  col-xs-12">
                     <label><ui:text from="{lang.issueName}"/></label>
-                    <div class="input-group">
+                    <g:HTMLPanel ui:field="nameInputGroupContainer" styleName="input-group">
                         <div class="input-group-btn">
                             <g:ToggleButton ui:field="local" styleName="btn btn-danger private-btn"/>
                         </div>
                         <validablefield:ValidableTextBox ui:field="name" styleName="input-field" notNull="true"/>
-                    </div>
-                </div>
+                    </g:HTMLPanel>
+                </g:HTMLPanel>
             </div>
             <div class="grid grid-indent">
                 <div class="form-group col-xs-6">
@@ -46,27 +43,27 @@
                     <label>
                         <ui:text from="{lang.issueCompany}"/>
                     </label>
-                    <company:CompanySelector ui:field="company" validation="true"/>
+                    <company:CompanySelector ui:field="company" validation="false"/>
                 </div>
                 <div class="form-group col-xs-3">
                     <label>
                         <ui:text from="{lang.issueInitiator}"/>
                     </label>
-                    <person:ContactButtonSelector ui:field="initiator" validation="true"/>
+                    <person:PersonButtonSelector ui:field="initiator" validation="false"/>
                 </div>
 
                 <div class="form-group col-xs-3">
                     <label>
                         <ui:text from="{lang.issueProduct}"/>
                     </label>
-                    <product:ProductButtonSelector ui:field="product" validation="true"/>
+                    <product:ProductButtonSelector ui:field="product" validation="false"/>
                 </div>
 
                 <div class="form-group col-xs-3">
                     <label>
                         <ui:text from="{lang.issueManager}"/>
                     </label>
-                    <person:EmployeeButtonSelector ui:field="manager" validation="true"/>
+                    <person:EmployeeButtonSelector ui:field="manager" validation="false"/>
                 </div>
 
                 <div class="form-group col-xs-12">
@@ -78,10 +75,11 @@
 
 
                 <div class="form-group col-xs-12">
-                    <label>
+                    <label style="display:block">
                         <ui:text from="{lang.companySubscription}"/>
                     </label>
                     <div ui:field="subscriptions"/>
+                    <person:EmployeeMultiSelector styleName="case-subscribers" ui:field="notifiers"/>
                 </div>
 
 
@@ -91,9 +89,12 @@
                         <div class="panel">
                             <div class="body">
                                 <div class="attach attach-add">
-                                    <fileuploader:FileUploader ui:field="fileUploader">
-                                        <i class="fa-2x ion-plus-circled"/>
-                                    </fileuploader:FileUploader>
+                                    <fileuploader:AttachmentUploader ui:field="fileUploader">
+                                        <div class="attach-add-circle">
+                                            <i class="ion-plus"/>
+                                            <i class="icon-verifiable"/>
+                                        </div>
+                                    </fileuploader:AttachmentUploader>
                                 </div>
                                 <attachment:AttachmentList ui:field="attachmentContainer" />
                             </div>

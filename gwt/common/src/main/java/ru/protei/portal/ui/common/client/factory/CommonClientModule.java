@@ -24,6 +24,7 @@ import ru.protei.portal.ui.common.client.view.contactitem.list.ContactItemListVi
 import ru.protei.portal.ui.common.client.view.dialogdetails.DialogDetailsView;
 import ru.protei.portal.ui.common.client.view.notify.NotifyView;
 import ru.protei.portal.ui.common.client.view.view.PagerView;
+import ru.protei.portal.ui.common.client.widget.privilege.list.PrivilegeModel;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeModel;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
@@ -63,6 +64,7 @@ public class CommonClientModule extends AbstractGinModule {
         bind( AbstractConfirmDialogView.class ).to( ConfirmDialogView.class ).in( Singleton.class );
 
         bind( PolicyService.class ).asEagerSingleton();
+        bind( PrivilegeModel.class ).asEagerSingleton();
 
         requestStaticInjection(RequestCallback.class);
     }

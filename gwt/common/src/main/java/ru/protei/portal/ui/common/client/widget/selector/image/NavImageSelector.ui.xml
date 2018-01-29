@@ -8,7 +8,7 @@
         <g:Anchor ui:field="anchor" href="#">
             <img ui:field="image" src=""/>
             <span ui:field="label"/>
-            <i class="caret"/>
+            <i class="caret-icon"/>
         </g:Anchor>
 
     </g:HTMLPanel>

@@ -1,0 +1,37 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet author="ponomareva" id="insert-role-remove-audit-type">
+        <insert tableName="audit_type">
+            <column name="id" value="31"/>
+            <column name="code" value="ROLE_REMOVE"/>
+            <column name="info" type="Удаление роли"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="ponomareva" id="add-fk-equipment-to-person">
+        <addForeignKeyConstraint constraintName="equipment_author_id_fk"
+                                 baseTableName="equipment"
+                                 baseColumnNames="author_id"
+
+                                 referencedColumnNames="id"
+                                 referencedTableName="person"
+
+                                 onDelete="NO ACTION"
+                                 onUpdate="NO ACTION"/>
+
+        <addForeignKeyConstraint constraintName="equipment_manager_id_fk"
+                                 baseTableName="equipment"
+                                 baseColumnNames="manager_id"
+
+                                 referencedColumnNames="id"
+                                 referencedTableName="person"
+
+                                 onDelete="NO ACTION"
+                                 onUpdate="NO ACTION"/>
+    </changeSet>
+
+</databaseChangeLog>

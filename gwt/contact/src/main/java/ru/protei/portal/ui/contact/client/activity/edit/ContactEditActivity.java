@@ -8,7 +8,6 @@ import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.helper.HelperFunc;
@@ -59,7 +58,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
 
                 @Override
                 public void onSuccess(Person person) {
-                    accountService.getAccount(person.getId(), new RequestCallback<UserLogin>() {
+                    accountService.getAccountByPersonId (person.getId(), new RequestCallback<UserLogin>() {
                         @Override
                         public void onError(Throwable throwable) {}
 
@@ -186,6 +185,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
     }
 
     private UserLogin applyChangesLogin() {
+        /*@todo аккаунт заказчика надо создавать с соответствующей ролью */
         account.setUlogin(view.login().getText());
         if (!HelperFunc.isEmpty(view.password().getText())) {
             account.setUpass(view.password().getText());
@@ -209,6 +209,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
 
     private void fillView(Person person, UserLogin userLogin){
         view.company().setValue(person.getCompany() == null ? null : person.getCompany().toEntityOption());
+        view.companyEnabled().setEnabled(person.getId() == null);
         view.gender().setValue(person.getGender());
         view.firstName().setValue(person.getFirstName());
         view.lastName().setValue(person.getLastName());

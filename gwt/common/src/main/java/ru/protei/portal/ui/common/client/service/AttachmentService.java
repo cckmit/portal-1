@@ -16,8 +16,6 @@ public interface AttachmentService extends RemoteService {
 
     List<Attachment> getAttachmentsByCaseId(Long caseId) throws RequestFailedException;
 
-    List<Attachment> getAttachmentsByCommentId(Long caseId);
-
     List<Attachment> getAttachments(List<Long> attachmentIds) throws RequestFailedException;
 
     /**
@@ -27,13 +25,4 @@ public interface AttachmentService extends RemoteService {
      * и из облака
      */
     boolean removeAttachmentEverywhere(Long attachmentId) throws RequestFailedException;
-
-    boolean bindAttachmentToCase(List<Attachment> attachments, Long caseId);
-
-    /**
-     * Удаляет вложение из таблиц
-     * {@link Attachment},
-     * {@link ru.protei.portal.core.model.ent.CaseAttachment}
-     * и из облака
-     */
 }

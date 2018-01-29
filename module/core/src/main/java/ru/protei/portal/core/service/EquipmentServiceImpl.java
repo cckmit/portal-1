@@ -8,20 +8,17 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.DecimalNumberDAO;
 import ru.protei.portal.core.model.dao.EquipmentDAO;
-import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.ent.DecimalNumber;
-import ru.protei.portal.core.model.ent.Equipment;
-import ru.protei.portal.core.model.ent.UserRole;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.EquipmentQuery;
+import ru.protei.portal.core.model.struct.DecimalNumberQuery;
+import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.EquipmentShortView;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.winter.core.utils.collections.CollectionUtils;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -56,6 +53,19 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
+    public CoreResponse< List< EquipmentShortView > > shortViewList( AuthToken token, EquipmentQuery query ) {
+        List<Equipment > list = equipmentDAO.getListByQuery(query);
+
+        if (list == null)
+            new CoreResponse<List<PersonShortView >>().error(En_ResultStatus.GET_DATA_ERROR);
+        jdbcManyRelationsHelper.fillAll( list );
+
+        List<EquipmentShortView> result = list.stream().map(EquipmentShortView::fromEquipment).collect(Collectors.toList());
+
+        return new CoreResponse<List<EquipmentShortView>>().success(result,result.size());
+    }
+
+    @Override
     public CoreResponse<Equipment> getEquipment( AuthToken token, long id) {
 
         Equipment equipment = equipmentDAO.get(id);
@@ -84,42 +94,25 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
-    public CoreResponse<DecimalNumber> getNextAvailableDecimalNumber( AuthToken token, DecimalNumber number ) {
-        Integer maxNum = decimalNumberDAO.getMaxRegisterNumber( number );
-        number.setModification( null );
-
-        if ( maxNum == null ) {
-            number.setRegisterNumber( 1 );
-            return new CoreResponse<DecimalNumber>().success( number );
+    public CoreResponse<Integer> getNextAvailableDecimalNumber( AuthToken token, DecimalNumberQuery query ) {
+        if ( query == null || query.getNumber() == null
+                || query.getNumber().getOrganizationCode() == null
+                || query.getNumber().getClassifierCode() == null ) {
+            return new CoreResponse<Integer>().error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        boolean ifExist = true;
-        while ( ifExist && maxNum < 999 ) {
-            maxNum += 1;
-            number.setRegisterNumber( maxNum );
-            ifExist = decimalNumberDAO.checkIfExist( number );
-        }
-
-        return new CoreResponse<DecimalNumber>().success( number );
+        Integer regNumber = decimalNumberDAO.getNextAvailableRegNumber(query);
+        return new CoreResponse<Integer>().success( regNumber );
     }
 
     @Override
-    public CoreResponse<DecimalNumber> getNextAvailableDecimalNumberModification( AuthToken token, DecimalNumber number ) {
-        Integer maxNum = decimalNumberDAO.getMaxModification( number );
-
-        if ( maxNum == null ) {
-            number.setModification( 1 );
-            return new CoreResponse<DecimalNumber>().success( number );
+    public CoreResponse<Integer> getNextAvailableDecimalNumberModification( AuthToken token, DecimalNumberQuery query ) {
+        if ( query == null || query.getNumber() == null || query.getNumber().isEmpty() ) {
+            return new CoreResponse<Integer>().error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        boolean ifExist = true;
-        while ( ifExist && maxNum < 999 ) {
-            maxNum += 1;
-            number.setModification( maxNum );
-            ifExist = decimalNumberDAO.checkIfExist( number );
-        }
-
-        return new CoreResponse<DecimalNumber>().success( number );
+        Integer modification = decimalNumberDAO.getNextAvailableModification(query);
+        return new CoreResponse<Integer>().success( modification );
     }
 
     @Override
@@ -130,7 +123,6 @@ public class EquipmentServiceImpl implements EquipmentService {
 
     @Override
     public CoreResponse<Long> copyEquipment( AuthToken token, Long equipmentId, String newName, Long authorId ) {
-
         if (equipmentId == null || newName == null) {
             return new CoreResponse<Long>().error(En_ResultStatus.INCORRECT_PARAMS);
         }

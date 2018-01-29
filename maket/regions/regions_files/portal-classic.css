@@ -5799,7 +5799,7 @@ body {
   font-size: 10px;
   padding-left: 5px;
   color: #e27a17;
-  content: "Сегодня день рождения!";
+  content: "Ð¡ÐµÐ³Ð¾Ð´Ð½Ñ Ð´ÐµÐ½ÑŒ Ñ€Ð¾Ð¶Ð´ÐµÐ½Ð¸Ñ!";
 }
 
 .body_global > .rightBlock .caseListsBlock table.caseList tr.case .extraButtons {
@@ -5895,7 +5895,7 @@ body {
   background-color: #67af53;
   font-weight: bold;
   color: #fff;
-  content: "Сейчас работает";
+  content: "Ð¡ÐµÐ¹Ñ‡Ð°Ñ Ñ€Ð°Ð±Ð¾Ñ‚Ð°ÐµÑ‚";
   margin-right: 14px;
 }
 
@@ -6382,7 +6382,7 @@ body {
 .body_global > .rightBlock .reportBlock .userPassport .logsBlock .activityFeed > .wrapper .date .logs .logEntry .content > .head > .case:before,
 .body_global > .rightBlock .productListsBlock.reportBlock > .block .productPassport .logsBlock .activityFeed > .wrapper .date .logs .logEntry .content > .head > .case:before,
 .body_global > .rightBlock .componentListsBlock.reportBlock > .block .componentPassport .logsBlock .activityFeed > .wrapper .date .logs .logEntry .content > .head > .case:before {
-  content: "в";
+  content: "Ð²";
   padding-right: 1ex;
 }
 
@@ -6802,7 +6802,7 @@ body {
 .body_global > .rightBlock .userListsBlock.list_showing .userList .user > .wrapper > .wrapper .birthday.today:after {
   padding-left: 5px;
   color: #e27a17;
-  content: "Сегодня день рождения!";
+  content: "Ð¡ÐµÐ³Ð¾Ð´Ð½Ñ Ð´ÐµÐ½ÑŒ Ñ€Ð¾Ð¶Ð´ÐµÐ½Ð¸Ñ!";
   font-weight: bold;
 }
 
@@ -11952,7 +11952,7 @@ body {
   background-color: #67af53;
   font-weight: bold;
   color: #fff;
-  content: "Сейчас работает";
+  content: "Ð¡ÐµÐ¹Ñ‡Ð°Ñ Ñ€Ð°Ð±Ð¾Ñ‚Ð°ÐµÑ‚";
   margin-right: 14px;
 }
 
@@ -12160,7 +12160,7 @@ body {
 }
 
 .body_global .LogsBlock .activityFeed > .wrapper .date .logs .logEntry .content > .head > .case:before {
-  content: "в";
+  content: "Ð²";
   padding-right: 1ex;
 }
 
@@ -12451,7 +12451,7 @@ body {
 }
 
 .body_global .Subscriptions table.rules tr.rule > td.creator.automatically:before {
-  content: "Автоматически";
+  content: "ÐÐ²Ñ‚Ð¾Ð¼Ð°Ñ‚Ð¸Ñ‡ÐµÑÐºÐ¸";
 }
 
 .body_global .Subscriptions table.rules tr.rule > td.filter {
@@ -12609,11 +12609,11 @@ body {
 }
 
 .body_global .Subscriptions table.rules tr.ruleFilter > td .t_wrapper .objects table.properties tr td.content .or:before {
-  content: "или";
+  content: "Ð¸Ð»Ð¸";
 }
 
 .body_global .Subscriptions table.rules tr.ruleFilter > td .t_wrapper .objects table.properties tr td.content .and:before {
-  content: "и";
+  content: "Ð¸";
 }
 
 .body_global .Subscriptions table.rules tr.ruleFilter > td .t_wrapper .objects table.properties tr td.content .detailedProperties {
@@ -16881,7 +16881,7 @@ body {
   font-size: 10px;
   padding-left: 5px;
   color: #e27a17;
-  content: "Сегодня день рождения!";
+  content: "Ð¡ÐµÐ³Ð¾Ð´Ð½Ñ Ð´ÐµÐ½ÑŒ Ñ€Ð¾Ð¶Ð´ÐµÐ½Ð¸Ñ!";
 }
 
 .caseListsBlock table.caseList tr.case .extraButtons {
@@ -22462,10 +22462,10 @@ ul.plate-list li .plate-list-expander {
   padding-left: 10px;
   padding-right: 10px;
 }
-.preview fieldset div {
+.preview fieldset > div {
   width: 100%;
 }
-.preview fieldset span {
+.preview fieldset > span {
   line-height: 25px;
   vertical-align: baseline;
   color: #636363;

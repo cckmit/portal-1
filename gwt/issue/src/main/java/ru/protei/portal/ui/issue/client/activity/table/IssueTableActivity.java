@@ -11,6 +11,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.Attachment;
+import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
@@ -60,6 +61,7 @@ public abstract class IssueTableActivity
 
     @Event
     public void onShow( IssueEvents.Show event ) {
+        applyFilterViewPrivileges();
 
         this.fireEvent( new AppEvents.InitPanelName( lang.issues() ) );
         initDetails.parent.clear();
@@ -74,7 +76,22 @@ public abstract class IssueTableActivity
     }
 
     @Event
-    public void onCreateClicked( SectionEvents.Clicked event ) {
+    public void onChangeRow( IssueEvents.ChangeIssue event ) {
+        issueService.getIssues( new CaseQuery(event.id), new RequestCallback<List<CaseShortView>>() {
+            @Override
+            public void onError( Throwable throwable ) {
+                fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
+            }
+
+            @Override
+            public void onSuccess( List<CaseShortView> caseObjects ) {
+                view.updateRow(caseObjects.get(0));
+            }
+        } );
+    }
+
+    @Event
+    public void onCreateClicked( ActionBarEvents.Clicked event ) {
         if ( !UiConstants.ActionBarIdentity.ISSUE.equals( event.identity ) ) {
             return;
         }
@@ -130,21 +147,6 @@ public abstract class IssueTableActivity
     @Override
     public void onFirstClicked() {
         view.scrollTo( 0 );
-    }
-
-    @Override
-    public void updateRow(Long issueId){
-        issueService.getIssues( new CaseQuery(issueId), new RequestCallback<List<CaseShortView>>() {
-            @Override
-            public void onError( Throwable throwable ) {
-                fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
-            }
-
-            @Override
-            public void onSuccess( List<CaseShortView> caseObjects ) {
-                view.updateRow(caseObjects.get(0));
-            }
-        } );
     }
 
     @Override
@@ -246,6 +248,12 @@ public abstract class IssueTableActivity
         }
 
         return query;
+    }
+
+    private void applyFilterViewPrivileges() {
+        filterView.companyVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_COMPANY_VIEW ) );
+        filterView.productVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_PRODUCT_VIEW ) );
+        filterView.managerVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_MANAGER_VIEW ) );
     }
 
     @Inject

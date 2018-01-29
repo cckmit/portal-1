@@ -1,5 +1,6 @@
 .attachment-block {
-  background: rgba(243, 240, 240, 0.4);
+  $background: "rgba(243, 240, 240,.4)";
+  background: #{$background};
   padding: 6px 10px;
   white-space: normal;
   .attachment-list{
@@ -15,7 +16,8 @@
 
 .attachment-list-simple {
   vertical-align: middle;
-  padding-left: 23px;
+  margin: 0;
+  padding-left: 8px;
 
   .attach:hover{
       .attach-info{
@@ -25,7 +27,6 @@
         background: none;
       }
   }
-
 }
 
 .attach {
@@ -40,46 +41,68 @@
   }
 
   &.attach-minimize{
+    border: 0;
+
     .attach-thumb{
       display: none;
     }
     .attach-controls{
       display: inline !important;
-      vertical-align: sub;
       position: static;
       background: none;
       margin-right: 3px;
+      padding: 0;
+      text-shadow: none;
+    }
+    .attach-preview-btn{
+      display: none;
+    }
+    .attach-remove-btn{
+      line-height: 0;
+      font-size: 15px;
+      display: inline;
+      vertical-align: middle;
+      color: #5daeae;
+      &:hover{
+        color: teal;
+      }
     }
     .attach-info{
       display: inline;
+      line-height: 31px;
+      vertical-align: top;
     }
-    .attach-delete{
-      position: static;
-    }
-    .ion-android-close{
-      font-size: 1.2em;
-      //vertical-align: middle;
+    .attach-lnk{
+      color: #2d2d2d !important;
     }
   }
-  &.attach-hide-controls{
-    .attach-controls{
-      display: none;
+  &.attach-hide-remove-btn{
+    .attach-remove-btn{
+      display: none !important;
+    }
+  }
+  &.attach-hide-preview-btn{
+    .attach-preview-btn{
+      display: none !important;
+    }
+  }
+
+  &:hover{
+    overflow: visible;
+    z-index: 20;
+    .attach-info {
+      overflow: visible;
+    }
+    .attach-lnk {
+      background: #fff;
     }
   }
 }
-
-
 
 .attach-add {
   height: 70px;
   padding-top: 11px;
   box-sizing: border-box;
-}
-
-.attach-add i {
-  color: lightgray;
-  position: relative;
-  top: 10%;
 }
 
 .attach-info {
@@ -90,65 +113,85 @@
   white-space: nowrap;
 }
 
+
 .attach-thumb {
+  $shadow: "0 1px 2px 0 rgba(120, 120, 120,0.7)";
+  -webkit-box-shadow:#{$shadow};
+  box-shadow:#{$shadow};
   position: relative;
-  width: 50px;
+  width: 55px;
   height: 40px;
   margin-right: 5px;
   margin-bottom: 2px;
   overflow: hidden;
   background-color: #fff;
   border: 1px solid #fff;
-  box-shadow:0 1px 2px 0 rgba(120, 120, 120, 0.7);
-  -moz-box-shadow:0 1px 2px 0 rgba(120, 120, 120, 0.7);
-  -wbkit-box-shadow:0px 1px 2px 0 rgba(120, 120, 120, 0.7);
+
+  &.icon-verifiable{
+    display: flex;
+    &:before{
+      font-size: 19px;
+      animation: animation-8 1s linear 0s infinite normal forwards running;
+      margin: auto;
+      color: #bdbdbd;
+    }
+    .pic{
+      display: none;
+    }
+  }
+  .pic {
+    display: table-cell;
+    max-height: 40px;
+    text-align: center;
+    vertical-align: top;
+    margin: auto;
+  }
 }
 
-.attach-thumb .pic {
-  display: table-cell;
-  max-width: 50px;
-  max-height: 50px;
-  text-align: center;
-  vertical-align: top;
-}
+.attach:not(.attach-minimize) {
+  &:hover .attach-controls {
+      display: flex;
+  }
+  .attach-controls {
+    $background: "rgba(106,106,106,0.7)";
+    background: #{$background};
+    position: absolute;
+    width: 55px;
+    height: 40px;
+    top: 1px;
+    left: 1px;
+    display: none;
+    align-content: space-between;
+    box-sizing: border-box;
+    padding: 0 3px;
 
-
-.attach-controls {
-  display: none;
-  position: absolute;
-  top: 0px;
-  width: 50px;
-  height: 40px;
-  background: rgba(255,255,255,0.7);
-}
-
-.attach-controls > a {
-  position: relative;
-  top: 15%;
-  left: 40%;
-}
-.attach:hover {
-  overflow: visible;
-  z-index: 20;
-}
-
-.attach:hover .attach-info {
-  overflow: visible;
-}
-
-.attach:hover .attach-lnk {
-  background: #fff;
-  padding-right: 3px;
-}
-
-.attach:hover .attach-controls {
-  display: block;
-}
-
-.attach-author {
-  color: #898989;
-  font-size: 80%;
-  text-align: center;
+    a {
+      color: white;
+    }
+    .fa-search-plus {
+      $textShadow: "1px 1px 1px rgba(0,0,0,0.3)";
+      text-shadow: #{$textShadow};
+      font-size: 20px;
+      line-height: 40px;
+      margin: auto;
+    }
+    .fa-times:not(.minimize) {
+      $boxShadow: "-1px 1px 1px 0px rgba(0, 0, 0, 0.37)";
+      box-shadow: #{$boxShadow};
+      background: rgb(207, 30, 30);
+      position: absolute;
+      top: 0;
+      right: 0;
+      line-height: 15px;
+      height: 15px;
+      width: 15px;
+      text-align: center;
+      border-bottom-left-radius: 3px;
+      &:hover {
+        background: red;
+      }
+    }
+  }
 }
 
 .attach-size {
@@ -159,16 +202,20 @@
   white-space: nowrap;
   color: #888 !important;
   zoom: 1;
+  &:hover{
+    border-bottom: 1px solid;
+  }
 }
 
 .attachment-popup{
+  $shadow: "1px 1px 3px -1px rgba(136,153,178,0.68)";
   top: 10px;
   left: 0;
   z-index: 1000;
-  max-width: 301px;
+  max-width: 330px;
   background: #fff;
-  box-shadow: 1px 1px 3px -1px rgba(136, 153, 178, 0.68);
-  -webkit-box-shadow: 1px 1px 3px -1px rgba(136, 153, 178, 0.68);
+  -webkit-box-shadow: #{$shadow};
+  box-shadow: #{$shadow};
   border: 1px solid #ced2d7;
   max-height: 152px;
   overflow-y: auto;
@@ -182,5 +229,87 @@
     &:nth-child(4n+1) {
       margin-left: 10px;
     }
+  }
+}
+
+.attach-add-circle {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  border-radius: 50%;
+  background: #ced2d7;
+  color: white;
+  font-size: 20px;
+
+  & > i {
+    margin: auto;
+  }
+  & .icon-verifiable {
+    display: none;
+    animation: animation-8 1s linear 0s infinite normal forwards running;
+  }
+  &:hover{
+    background: #c1c1c1;
+    cursor: pointer;
+  }
+}
+.attach-add-btn {
+  & > i {
+    font-size: 14px;
+    color: #75808f;
+    vertical-align: middle;
+    width: 16px;
+  }
+  .ion-plus{
+    line-height: 0;
+    display: inline-block;
+  }
+  .icon-verifiable {
+    display: none;
+    animation: animation-8 1s linear 0s infinite normal forwards running;
+  }
+}
+
+.attachment-uploading {
+  .attach-add-circle {
+    background: #008080 !important;
+    transition-duration: 0.2s;
+    cursor: not-allowed;
+  }
+  .ion-plus {
+    display: none;
+  }
+  .icon-verifiable {
+    display: block;
+  }
+  .attach-add-btn {
+    background: #e2e7eb;
+    .icon-verifiable {
+      display: inline-block;
+    }
+    &:active{
+      box-shadow: none;
+    }
+  }
+}
+
+.attachment-preview-area{
+  $background: "rgba(0, 0, 0, 0.3)";
+  display: flex;
+  position: fixed;
+  z-index: 9999;
+  width: 100%;
+  height: 100%;
+  background: #{$background};
+  padding: 1.2%;
+  box-sizing: border-box;
+
+  img{
+    $shadow: "0 2px 30px 1px rgba(0, 0, 0, 0.3)";
+    background: white;
+    margin: auto;
+    max-height: 100%;
+    max-width: 100%;
+    box-shadow: #{$shadow};
   }
 }

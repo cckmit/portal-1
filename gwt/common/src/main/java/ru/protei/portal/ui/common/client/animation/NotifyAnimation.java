@@ -5,8 +5,6 @@ import com.google.gwt.user.client.*;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 
-import java.awt.*;
-
 /**
  * Анимация уведомления
  */

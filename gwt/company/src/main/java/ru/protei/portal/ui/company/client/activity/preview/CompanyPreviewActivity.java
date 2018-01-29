@@ -24,9 +24,10 @@ public abstract class CompanyPreviewActivity
     @Event
     public void onShow( CompanyEvents.ShowPreview event ) {
         event.parent.clear();
-        event.parent.add( view.asWidget() );
+        event.parent.add(view.asWidget(event.isShouldWrap));
 
         fillView( event.company );
+        view.watchForScroll( event.isWatchForScroll);
     }
 
     private void fillView( Company value ) {
@@ -35,14 +36,17 @@ public abstract class CompanyPreviewActivity
             view.setGroupVisible( false );
         }
 
+        view.setName(value.getCname());
+
+        view.setCategory( value.getCategory() == null ? "" : value.getCategory().getName() );
         view.setGroupCompany( value.getCompanyGroup() == null ? "" : value.getCompanyGroup().getName() );
 
         PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(value.getContactInfo());
 
-        view.setPhone( infoFacade.getWorkPhone() );
+        view.setPhone( infoFacade.allPhonesAsString() );
 
         view.setSite( infoFacade.getWebSite() );
-        view.setEmail( infoFacade.getEmail() );
+        view.setEmail( infoFacade.allEmailsAsString() );
 
         view.setAddressDejure( infoFacade.getLegalAddress() );
         view.setAddressFact( infoFacade.getFactAddress() );

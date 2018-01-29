@@ -1,19 +1,20 @@
 package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_Gender;
+import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.struct.ContactInfo;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.PersonShortViewSupport;
 import ru.protei.winter.jdbc.annotations.*;
 
-import java.io.Serializable;
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * Created by michael on 30.03.16.
  */
 @JdbcEntity(table = "Person")
-public class Person implements Serializable, PersonShortViewSupport {
+public class Person extends AuditableObject implements PersonShortViewSupport {
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
 
@@ -83,8 +84,13 @@ public class Person implements Serializable, PersonShortViewSupport {
     @JdbcColumn(name = "contactInfo", converterType = ConverterType.JSON)
     private ContactInfo contactInfo;
 
+/*
     @JdbcColumn(name = "updated")
     private Date updated;
+*/
+
+    @JdbcColumn(name = "relations")
+    private String relations;
 
     public static Person fromPersonShortView( PersonShortView personShortView ){
         if(personShortView == null)
@@ -95,6 +101,11 @@ public class Person implements Serializable, PersonShortViewSupport {
         person.setDisplayShortName( personShortView.getDisplayShortName());
         person.setFired( personShortView.isFired());
         return person;
+    }
+
+    public Person(Long personId){
+        this();
+        this.id = personId;
     }
 
     public Person () {
@@ -285,6 +296,12 @@ public class Person implements Serializable, PersonShortViewSupport {
         this.genderCode = gender.getCode();
     }
 
+    @Override
+    public String getAuditType() {
+        return "Person";
+    }
+
+/*
     public Date getUpdated() {
         return updated;
     }
@@ -292,6 +309,7 @@ public class Person implements Serializable, PersonShortViewSupport {
     public void setUpdated(Date updated) {
         this.updated = updated;
     }
+*/
 
     @Override
     public PersonShortView toShortNameShortView() {
@@ -301,6 +319,19 @@ public class Person implements Serializable, PersonShortViewSupport {
     @Override
     public PersonShortView toFullNameShortView() {
         return new PersonShortView(this.displayName, this.getId(), this.isFired);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Person && Objects.equals(id, ((Person)obj).getId());
+    }
+
+    public String getRelations() {
+        return relations;
+    }
+
+    public void setRelations(String relations) {
+        this.relations = relations;
     }
 
     @Override
@@ -326,7 +357,7 @@ public class Person implements Serializable, PersonShortViewSupport {
                 ", isDeleted=" + isDeleted +
                 ", isFired=" + isFired +
                 ", contactInfo=" + contactInfo +
-                ", updated=" + updated +
+                ", relations='" + relations + '\'' +
                 '}';
     }
 }

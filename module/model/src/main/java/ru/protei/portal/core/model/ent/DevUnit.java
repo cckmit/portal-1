@@ -2,6 +2,7 @@ package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
+import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.ProductShortView;
@@ -11,14 +12,13 @@ import ru.protei.winter.jdbc.annotations.JdbcColumn;
 import ru.protei.winter.jdbc.annotations.JdbcEntity;
 import ru.protei.winter.jdbc.annotations.JdbcId;
 
-import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Created by michael on 23.05.16.
  */
 @JdbcEntity(table = "dev_unit")
-public class DevUnit implements Serializable, ProductShortViewSupport {
+public class DevUnit extends AuditableObject implements ProductShortViewSupport {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -162,6 +162,11 @@ public class DevUnit implements Serializable, ProductShortViewSupport {
 
     public En_DevUnitType getType () {
         return En_DevUnitType.forId(this.typeId);
+    }
+
+    @Override
+    public String getAuditType() {
+        return "DevUnit";
     }
 
     @Override

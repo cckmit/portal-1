@@ -2,7 +2,7 @@ package ru.protei.portal.core.model.dao.impl;
 
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.ent.CaseComment;
-import ru.protei.portal.core.model.ent.Company;
+import ru.protei.winter.jdbc.JdbcSort;
 
 import java.util.List;
 
@@ -12,6 +12,7 @@ import java.util.List;
 public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implements CaseCommentDAO {
     @Override
     public List<CaseComment> getCaseComments( long caseId ) {
-        return getListByCondition(" case_id=? ", caseId);
+        JdbcSort sort = new JdbcSort(JdbcSort.Direction.ASC, "created");
+        return getListByCondition(" case_id=? ", sort, caseId);
     }
 }

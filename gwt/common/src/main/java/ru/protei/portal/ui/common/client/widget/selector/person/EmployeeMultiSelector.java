@@ -9,7 +9,7 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * Селектор типа санкции
+ * Селектор сотрудников
  */
 public class EmployeeMultiSelector
         extends MultipleInputSelector<PersonShortView>

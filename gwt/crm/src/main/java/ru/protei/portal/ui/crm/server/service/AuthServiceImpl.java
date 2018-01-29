@@ -1,11 +1,14 @@
 package ru.protei.portal.ui.crm.server.service;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dict.En_PrivilegeEntity;
+import ru.protei.portal.core.model.dict.En_Scope;
 import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.ui.common.server.service.SessionService;
@@ -15,8 +18,7 @@ import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.crm.client.service.AuthService;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Сервис авторизации
@@ -61,27 +63,41 @@ public class AuthServiceImpl implements AuthService {
         profile.setRoles( roles );
         profile.setLogin( sessionDescriptor.getLogin().getUlogin() );
         profile.setName( sessionDescriptor.getPerson().getFirstName() );
+        profile.setFullName( sessionDescriptor.getPerson().getDisplayName() );
         profile.setId( sessionDescriptor.getPerson().getId() );
-        profile.setPrivileges( getAllPrivileges( roles ) );
+        profile.setPrivileges( collectPrivileges( roles ) );
+        profile.setGender( sessionDescriptor.getPerson().getGender() );
+        profile.setCompany( sessionDescriptor.getCompany() );
 
         return profile;
     }
 
-    private Set< En_Privilege > getAllPrivileges( Set< UserRole > roles ) {
-        Set< En_Privilege > privileges = new HashSet<>();
+    private Set< En_Privilege > collectPrivileges( Set< UserRole > roles ) {
         if ( roles == null ) {
-            return privileges;
+            return Collections.emptySet();
         }
 
+        Set<En_Privilege> userPrivileges = new HashSet<>();
+        Map<En_PrivilegeEntity, Set<En_Scope>> privilegeEntityToScope = new HashMap<>();
         for ( UserRole role : roles ) {
-            if ( role.getPrivileges() == null ) {
+            if ( role.getPrivileges() == null || role.getScope() == null ) {
                 continue;
             }
 
-            privileges.addAll(role.getPrivileges());
+            userPrivileges.addAll( role.getPrivileges() );
+            for ( En_Privilege privilege : role.getPrivileges() ) {
+                Set<En_Scope> scopes = privilegeEntityToScope.computeIfAbsent(privilege.getEntity(), k -> new HashSet<>());
+                scopes.add( role.getScope() );
+            }
         }
 
-        return privileges;
+        // дополняем список клиентских привилегий по scope
+        Set<En_Scope> scopesIssueEntity = privilegeEntityToScope.get( En_PrivilegeEntity.ISSUE );
+        if ( !CollectionUtils.isEmpty( scopesIssueEntity ) && scopesIssueEntity.contains( En_Scope.SYSTEM ) ) {
+            userPrivileges.addAll( Arrays.asList( En_Privilege.DEFAULT_SCOPE_PRIVILEGES ) );
+        }
+
+        return userPrivileges;
     }
 
     @Autowired

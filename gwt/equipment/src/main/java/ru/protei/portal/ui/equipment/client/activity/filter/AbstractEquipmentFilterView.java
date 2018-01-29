@@ -3,6 +3,7 @@ package ru.protei.portal.ui.equipment.client.activity.filter;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
 
 import java.util.Set;
@@ -33,4 +34,6 @@ public interface AbstractEquipmentFilterView extends IsWidget {
     HasValue<En_SortField> sortField();
 
     HasValue<Boolean> sortDir();
+
+    HasValue< EquipmentShortView > equipment();
 }

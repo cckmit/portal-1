@@ -2,10 +2,8 @@ package ru.protei.portal.ui.crm.client.widget.localeselector;
 
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.inject.Inject;
+import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.image.NavImageSelector;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Селектор языков приложения
@@ -13,8 +11,10 @@ import java.util.List;
 public class LocaleSelector extends NavImageSelector<LocaleImage> {
 
     @Inject
-    public void onInit(){
+    public void onInit() {
+        setDisplayOptionCreator( value -> new DisplayOption( LocaleInfo.getLocaleNativeDisplayName( value.getLocale() ), value.getImageUrl() ) );
         fillOptions();
+        addStyleName( "locale-selector" );
     }
 
     private void fillOptions() {
@@ -25,7 +25,7 @@ public class LocaleSelector extends NavImageSelector<LocaleImage> {
             if ( image == null ) {
                 continue;
             }
-            addOption( image.getLocale(), image, image.getImageUrl() );
+            addOption( image );
         }
     }
 }

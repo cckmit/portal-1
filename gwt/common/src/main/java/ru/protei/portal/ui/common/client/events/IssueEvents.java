@@ -4,7 +4,6 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import ru.brainworm.factory.context.client.annotation.Name;
 import ru.brainworm.factory.context.client.annotation.Url;
 import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.ui.common.client.common.AttachmentCollection;
 
 /**
  * Created by turik on 28.10.16.
@@ -72,6 +71,13 @@ public class IssueEvents {
         }
     }
 
+    public static class ChangeIssue {
+        public Long id;
+        public ChangeIssue(Long issueId){
+            id = issueId;
+        }
+    }
+
     /**
      * Изменения статусов обращения
      */
@@ -91,15 +97,18 @@ public class IssueEvents {
             this.caseId = caseId;
         }
 
-        public ShowComments(HasWidgets parent, Long caseId, AttachmentCollection attachmentCollection) {
-            this(parent, caseId);
-            this.attachmentCollection = attachmentCollection;
-        }
-
         public Long caseId;
         public HasWidgets parent;
-        public AttachmentCollection attachmentCollection;
 
+    }
+
+    public static class SaveComment {
+        public SaveComment( Long id, Long stateId ) {
+            this.id = id;
+            this.stateId = stateId;
+        }
+        public Long id;
+        public Long stateId;
     }
 }
 

@@ -21,7 +21,7 @@ public interface IssueService extends RemoteService {
 
     CaseObject getIssue( long id ) throws RequestFailedException;
 
-    Boolean saveIssue( CaseObject p ) throws RequestFailedException;
+    CaseObject saveIssue( CaseObject p ) throws RequestFailedException;
 
     /**
      * Получение списка статусов

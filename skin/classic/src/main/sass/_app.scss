@@ -264,6 +264,7 @@ body {
   .user-panel {
     padding: 10px;
     overflow: hidden;
+    cursor: pointer;
 
     &:before, &:after {
       content: " ";
@@ -277,6 +278,10 @@ body {
       position: absolute;
       left: 55px;
       color: #fff;
+      text-overflow: ellipsis;
+      width: 160px;
+      white-space: nowrap;
+      overflow: hidden;
 
       p {
         font-weight: 600;
@@ -449,4 +454,56 @@ body {
       }
     }
   }
+}
+
+.profile-section {
+  .profile-left {
+    width: 200px;
+    float: left;
+
+    .profile-image {
+      height: 175px;
+      line-height: 175px;
+      text-align: center;
+      font-size: 72px;
+      margin-bottom: 10px;
+      overflow: hidden;
+      -webkit-border-radius: 4px;
+      -moz-border-radius: 4px;
+      border-radius: 4px;
+
+      img {
+        display: block;
+        max-width: 100%;
+        max-height: 100%;
+        margin: auto;
+      }
+    }
+  }
+
+  .profile-right {
+    margin-left: 240px;
+    padding-right: 20px;
+  }
+
+  h4 {
+    font-size: 20px;
+    margin: 0;
+    margin-bottom: 10px;
+
+    small {
+      display: block;
+      font-size: 12px;
+      font-weight: 400;
+      margin-top: 5px;
+    }
+
+    &.title {
+      font-size: 14px;
+    }
+  }
+}
+
+.locale-selector img {
+  margin-right: 15px;
 }

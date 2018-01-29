@@ -81,6 +81,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String msgOK();
 
+    String errFieldsRequired();
+
     String errConnectionError();
 
     String errInvalidSessionID();
@@ -471,6 +473,10 @@ public interface Lang extends Messages, ContactItemLang {
 
     String attachmentsNotLoaded();
 
+    String attachmentRemoveConfirmMessage();
+
+    String attachmentAuthor();
+
     String accountPassword();
 
     String accountPasswordNotDefinied();
@@ -574,4 +580,108 @@ public interface Lang extends Messages, ContactItemLang {
     String privilegeRemove();
 
     String buttonLocale();
+
+    String privilegeCategoryOfficial();
+
+    String matrixSolutions();
+
+    String officialTableProduct();
+
+    String officialTableInfo();
+
+    String officialTableNumberEmployees();
+
+    String selectOfficialRegion();
+
+    String officialRegion();
+
+    String officialGeneralInfo();
+
+    String officialFaces();
+
+    String officialPreviewSearch();
+
+    String officialOrganization();
+
+    String officialRelations();
+
+    String officialAmplua();
+
+    String selectOfficialCompany();
+
+    String errOfficialRemove();
+
+    String errOfficialMemberRemove();
+
+    String officialComment();
+
+    String selectOfficialAmplua();
+
+    String personHeadManager();
+
+    String personDeployManager();
+
+    String officialInRelationsWith();
+
+    String selectOfficialProduct();
+
+    String personDecisionCenter();
+
+    String personChiefDecisionMaker();
+
+    String personDecisionKeeper();
+
+    String personTechSpecialist();
+
+    String personInfluenceMaker();
+
+    String personChielInfluenceMaker();
+
+    String personEconomist();
+
+    String personWellWisher();
+
+    String personReceptivityCenter();
+
+    String equipmentGetNextModification();
+
+    String formNextMod();
+
+    String buttonAddPdra();
+
+    String buttonAddPamr();
+
+    String equipmentManagerNotDefined();
+
+    String equipmentNumberAlreadyInList();
+
+    String privilegeDashboard();
+
+    String companySubscriptionUpdatedSuccessful();
+
+    String scopeSystem();
+
+    String scopeCompany();
+
+    String scopeRole();
+
+    String roleScope();
+
+    String messageServerConnectionLost();
+
+    String roleRemoveSuccessed();
+
+    String roleAdd();
+
+    String view();
+
+    String list();
+
+    String table();
+
+    String issueNameHeader ();
+
+    String noChanges();
+
+    String roleRemoveConfirmMessage();
 }

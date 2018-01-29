@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<!-- saved from url=(0039)http://127.0.0.1:8888/crm.html#products -->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="gwt:property" content="locale=ru">
+
+    <title>Protei UI :: CRM</title>
+    <link rel="stylesheet" href="../regions/regions_files/portal-classic.css">
+    <link rel="stylesheet" href="../regions/regions_files/animate.css">
+    <link rel="stylesheet" href="../regions/regions_files/modal.css">
+    <link rel="stylesheet" href="../regions/regions_files/font-awesome.min.css">
+    <link rel="stylesheet" href="../regions/regions_files/importance.css">
+    <link rel="stylesheet" href="../regions/regions_files/ionicons.min.css">
+    <link rel="stylesheet" href="../regions/regions_files/datetimepicker.css">
+    <link rel="stylesheet" href="../regions/regions_files/table-widget.css">
+    <link rel="stylesheet" href="../regions/regions_files/pager.css">
+
+    <style>
+        .region-picture {
+            position: relative;
+            display: block;
+            left: calc(100% - 120px);
+            top: -20px;
+            opacity: 0.3;
+        }
+
+        .region-picture > img {
+            width: 70%;
+        }
+
+        .region-picture > i {
+            position: relative;
+            display: block;
+            top: -46px;
+            left: 0px;
+
+            font-size: 10em;
+        }
+
+        .header-block {
+            overflow: hidden;
+        }
+
+        .status-group > button {
+            padding: 5px 8px;
+            border-color: #ffffff;
+        }
+
+        .status-group > button:hover {
+            background-color: #ffffff;
+        }
+
+        table > tbody > tr > td.region {
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body class="content-wrapper">
+<noscript>
+    &lt;div style="width: 22em; position: absolute; left: 50%; margin-left: -11em; color: red; background-color: white;
+    border: 1px solid red; padding: 4px; font-family: sans-serif"&gt;
+    Your web browser must have JavaScript enabled
+    in order for this application to display correctly.
+    &lt;/div&gt;
+</noscript>
+
+
+<div aria-hidden="true" style="display: none;"></div>
+<div class="global">
+    <header class="main-header"><a class="logo" href="http://protei.ru/"> <span class="logo-lg"> <img
+            src="./regions_files/logo.svg"> <b>PROTEI</b> LTD </span> <span class="logo-mini"> <img
+            src="./regions_files/logo.svg"> </span> </a>
+        <nav class="navbar"><a class="sidebar-toggle" href="http://127.0.0.1:8888/crm.html#"><span class="sr-only">Toggle navigation</span></a>
+            <ul class="nav navbar-nav navbar-left">
+                <li><a class="gwt-Anchor" href="http://127.0.0.1:8888/crm.html#"><i class="fa fa-plus"></i> <span>Создать</span></a>
+                    <span class="count" aria-hidden="true" style="display: none;"></span></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li class="nav-search" aria-hidden="true" style="display: none;"><a class="gwt-Anchor"><i
+                        class="fa fa-search"></i></a> <input type="text" class="gwt-TextBox"></li>
+                <li><a class="gwt-Anchor" href="http://127.0.0.1:8888/crm.html#" title="Выйти (you can use Ctrl+F4)"><i
+                        class="fa fa-lg fa-sign-out"></i></a></li>
+            </ul>
+        </nav>
+    </header>
+    <div class="main-sidebar">
+        <section class="sidebar">
+            <div class="user-panel">
+                <div class="pull-left image"><img class="img-circle" src="./regions_files/user-icon-m.png"></div>
+                <div class="pull-left info"><p>Евгений</p> <a>portal_employee</a></div>
+            </div>
+            <ul class="sidebar-menu">
+                <li class="header">Навигация</li>
+            </ul>
+            <div class="sidebar-menu">
+                <li><a class="gwt-Anchor" href="http://127.0.0.1:8888/crm.html#"><i class="fa fa-dashboard"></i> <span>Доска задач</span></a>
+                    <span class="count" aria-hidden="true" style="display: none;"></span></li>
+                <li class=""><a class="gwt-Anchor" href="http://127.0.0.1:8888/crm.html#"><i
+                        class="icon icon-organization"></i> <span>Компании</span></a> <span class="count"
+                                                                                            aria-hidden="true"
+                                                                                            style="display: none;"></span>
+                </li>
+                <li class=""><a class="gwt-Anchor" href="http://127.0.0.1:8888/crm.html#"><i
+                        class="icon icon-product"></i> <span>Продукты</span></a> <span class="count" aria-hidden="true"
+                                                                                       style="display: none;"></span>
+                </li>
+                <li><a class="gwt-Anchor" href="http://127.0.0.1:8888/crm.html#"><i class="fa fa-group"></i> <span>Контактные лица</span></a>
+                    <span class="count" aria-hidden="true" style="display: none;"></span></li>
+                <li class=""><a class="gwt-Anchor" href="http://127.0.0.1:8888/crm.html#"><i class="fa fa-tasks"></i>
+                    <span>Обращения</span></a> <span class="count" aria-hidden="true" style="display: none;"></span>
+                </li>
+                <li class=""><a class="gwt-Anchor" href="http://127.0.0.1:8888/crm.html#"><i class="fa fa-globe"></i>
+                    <span>Регионы</span></a> <span class="count" aria-hidden="true" style="display: none;"></span>
+                </li>
+                <li class="active"><a class="gwt-Anchor" href="http://127.0.0.1:8888/crm.html#"><i
+                        class="fa fa-archive"></i>
+                    <span>Матрица принятия решений</span></a> <span class="count" aria-hidden="true"
+                                                                    style="display: none;"></span>
+                </li>
+            </div>
+        </section>
+    </div>
+
+    <div class="right-side">
+        <div class="main-content grid">
+            <div class="global-table-container col-xs-9">
+                <div class="table-hover projects">
+                    <div class="scroller left"></div>
+                    <div class="scroller right"></div>
+                    <div class="table-container">
+                        <table class="table">
+                            <thead class="">
+                            <tr>
+                                <th class="number">Продукт</th>
+                                <th class="info">Описание</th>
+                                <th>Количество</th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr style="height: 0px;"></tr>
+                            <tr>
+                                <td class="region" colspan="5">
+                                    <div><b>Алтайский край</b></div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="number" style="cursor: pointer;">
+                                    Система 112
+                                </td>
+                                <td class="info" style="cursor: pointer;">
+                                    Экстренные вызовы 112<br>05.08.2017
+
+                                </td>
+                                <td>55</td>
+                                <td style="cursor: pointer;"><a href="#" class="fa fa-lg fa-paperclip">
+                                </a></td>
+                                <td style="cursor: pointer;"><a href="#" class="fa fa-lg fa-pencil-square-o"
+                                                                title="Редактирование"></a></td>
+                            </tr>
+                            <tr>
+                                <td class="region" colspan="5">
+                                    <div><b>Нижегородская область</b></div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="direction" style="cursor: pointer;">
+                                    СОРМ
+                                </td>
+                                <td class="info" style="cursor: pointer;">
+                                    Разыскные мероприятия<br>03.01.2001
+                                </td>
+                                <td>10</td>
+                                <td style="cursor: pointer;"><a href="#" class="fa fa-lg fa-paperclip">
+                                </a></td>
+                                <td style="cursor: pointer;"><a href="#" class="fa fa-lg fa-pencil-square-o"
+                                                                title="Редактирование"></a></td>
+                            </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="filter-container col-xs-3">
+                <div class="panel">
+                    <div class="body">
+
+                        <div class="form-group local-search col-xs-12"><span class="icon local-search-icon"></span>
+                            <input type="text" class="input-field" placeholder="Поиск"></div>
+                        <div class="col-xs-12"><label class="bold">Дата создания</label>
+                            <div class="form-group">
+                                <div class="input-group date"><input type="text" class="form-control"
+                                                                     placeholder="Выберите дату">
+                                    <div class="input-group-btn">
+                                        <button type="button" class="btn btn-default"><i class="fa fa-calendar"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="control-label range-message" aria-hidden="true"
+                                     style="display: none;"></div>
+                            </div>
+                        </div>
+                        <div class="form-group col-xs-12">
+                            <label>Продукт</label>
+                            <div class="control-group">
+                                <div class="btn-selector">
+                                    <label></label>
+                                    <button type="button" class="btn btn-white">
+                                        <i class=""></i>
+                                        <span class="">Выберите продукт</span>
+                                        <span class="caret"></span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group col-xs-12">
+                            <label>Регион</label>
+                            <div class="control-group">
+                                <div class="btn-selector">
+                                    <label></label>
+                                    <button type="button" class="btn btn-white">
+                                        <i class=""></i>
+                                        <span class="">Выберите регион</span>
+                                        <span class="caret"></span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group col-xs-12">
+                            <label>Сортировать по</label>
+                            <div class="control-group">
+                                <div class="btn-selector">
+                                    <label></label>
+                                    <button type="button" class="btn btn-white">
+                                        <i class=""></i>
+                                        <span class="">Регион</span>
+                                        <span class="caret"></span>
+                                    </button>
+                                </div>
+                                <div tabindex="0" class="btn btn-white sorting_button btn-down" role="button"
+                                     aria-pressed="true">
+                                    <input type="text" tabindex="-1" role="presentation"
+                                           style="opacity: 0; height: 1px; width: 1px; z-index: -1; overflow: hidden; position: absolute;">
+                                    <div></div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="footer">
+                        <button type="button" class="btn btn-white">Сбросить</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="notifyPanel"></div>
+</div>
+</body>
+</html>

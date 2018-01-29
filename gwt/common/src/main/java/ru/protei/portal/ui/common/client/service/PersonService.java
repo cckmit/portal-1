@@ -6,7 +6,9 @@ import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Сервис управления person
@@ -19,5 +21,7 @@ public interface PersonService extends RemoteService {
      * @return
      */
     List< PersonShortView > getPersonViewList( PersonQuery query ) throws RequestFailedException;
+
+    Map<Long, String> getPersonNames(Collection<Long> ids) throws RequestFailedException;
 
 }

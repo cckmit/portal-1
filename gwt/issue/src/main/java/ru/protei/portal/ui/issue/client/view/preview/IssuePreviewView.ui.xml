@@ -54,6 +54,13 @@
             </fieldset>
 
             <fieldset class="header">
+                <legend><ui:text from="{lang.issueNameHeader}"/></legend>
+                <div class="col-xs-12">
+                    <span class="col-xs-12 col-md-12" ui:field="name"></span>
+                </div>
+            </fieldset>
+
+            <fieldset class="header">
                 <legend><ui:text from="{lang.issueInfoHeader}"/></legend>
                 <div class="col-xs-12">
                     <span class="col-xs-12 col-md-12 pre-formatted-info" ui:field="info"></span>
@@ -65,9 +72,12 @@
                     <div class="panel">
                         <div class="body">
                             <div class="attach attach-add">
-                                <fileuploader:FileUploader ui:field="fileUploader">
-                                    <i class="fa-2x ion-plus-circled"/>
-                                </fileuploader:FileUploader>
+                                <fileuploader:AttachmentUploader ui:field="fileUploader">
+                                    <div class="attach-add-circle">
+                                        <i class="ion-plus"/>
+                                        <i class="icon-verifiable"/>
+                                    </div>
+                                </fileuploader:AttachmentUploader>
                             </div>
                             <attachment:AttachmentList ui:field="attachmentContainer" />
                         </div>

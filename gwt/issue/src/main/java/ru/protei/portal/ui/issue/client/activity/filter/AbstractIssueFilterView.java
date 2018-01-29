@@ -1,6 +1,8 @@
 package ru.protei.portal.ui.issue.client.activity.filter;
 
+import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
+import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.protei.portal.core.model.dict.En_CaseState;
@@ -10,6 +12,7 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
 
+import javax.accessibility.AccessibleComponent;
 import java.util.Set;
 
 /**
@@ -29,4 +32,8 @@ public interface AbstractIssueFilterView extends IsWidget {
     HasValue< Boolean > sortDir();
     HasValue< String > searchPattern();
     void resetFilter();
+
+    HasVisibility companyVisibility();
+    HasVisibility productVisibility();
+    HasVisibility managerVisibility();
 }

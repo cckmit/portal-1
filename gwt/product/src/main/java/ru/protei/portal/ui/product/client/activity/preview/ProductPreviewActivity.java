@@ -21,12 +21,14 @@ public abstract class ProductPreviewActivity implements AbstractProductPreviewAc
     @Event
     public void onShow( ProductEvents.ShowPreview event ) {
         event.parent.clear();
-        event.parent.add( view.asWidget() );
+        event.parent.add( view.asWidget(event.isShouldWrap) );
 
         fillView( event.product );
+        view.watchForScroll( event.isWatchForScroll);
     }
 
     private void fillView( DevUnit product ) {
+        view.setName(product.getName());
         view.setInfo( product.getInfo() );
     }
 

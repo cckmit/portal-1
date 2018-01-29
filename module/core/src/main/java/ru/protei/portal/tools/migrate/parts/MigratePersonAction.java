@@ -5,9 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.core.model.dao.*;
-import ru.protei.portal.core.model.dict.En_AdminState;
-import ru.protei.portal.core.model.dict.En_AuthType;
-import ru.protei.portal.core.model.dict.En_Gender;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.ent.UserRole;
@@ -16,6 +14,7 @@ import ru.protei.portal.tools.migrate.tools.BatchProcess;
 import ru.protei.portal.tools.migrate.tools.MigrateAction;
 import ru.protei.portal.tools.migrate.tools.MigrateAdapter;
 import ru.protei.portal.tools.migrate.tools.MigrateUtils;
+import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -28,6 +27,7 @@ import java.util.regex.Pattern;
  */
 public class MigratePersonAction implements MigrateAction {
 
+    public static final String EMPLOYEE_ROLE_CODE = "employee";
     private static Logger logger = LoggerFactory.getLogger(MigratePersonAction.class);
 
     public static final String TM_PERSON_ITEM_CODE = "Tm_Person";
@@ -48,6 +48,10 @@ public class MigratePersonAction implements MigrateAction {
 
     @Autowired
     UserRoleDAO userRoleDAO;
+
+    @Autowired
+    JdbcManyRelationsHelper jdbcManyRelationsHelper;
+
 
     Map<String, String> email2loginMap;
 
@@ -117,16 +121,34 @@ public class MigratePersonAction implements MigrateAction {
         return email.substring(0, email.indexOf('@'));
     }
 
+
+    private final static En_Privilege [] DEF_EMPL_PRIV = {
+            En_Privilege.ISSUE_CREATE,
+            En_Privilege.ISSUE_EDIT,
+            En_Privilege.ISSUE_EXPORT,
+            En_Privilege.ISSUE_VIEW,
+            En_Privilege.ISSUE_REPORT,
+            En_Privilege.DASHBOARD_VIEW,
+            En_Privilege.CONTACT_VIEW,
+            En_Privilege.COMMON_PROFILE_VIEW,
+            En_Privilege.COMPANY_VIEW
+    };
+
+    private final static En_Scope DEF_EMPL_SCOPE = En_Scope.ROLE;
+
     @Override
     public void migrate(Connection sourceConnection) throws SQLException {
+
+
 
         BatchProcess<Person> workersBatchProcess = new BaseBatchProcess<Person>() {
             public void afterInsert(List<Person> insertedEntries) {
                 List<UserLogin> loginBatch = new ArrayList<>();
 
-                UserRole employee = userRoleDAO.get(1L);
+                UserRole employeeRole = userRoleDAO.ensureExists(EMPLOYEE_ROLE_CODE, DEF_EMPL_SCOPE, DEF_EMPL_PRIV);
+
                 Set<UserRole> roles = new HashSet<>();
-                roles.add(employee);
+                roles.add(employeeRole);
 
                 for (Person p : insertedEntries) {
                     if (groupHomeDAO.checkIfHome(p.getCompanyId()) && !p.isDeleted() && !p.isFired()) {
@@ -151,8 +173,11 @@ public class MigratePersonAction implements MigrateAction {
                     }
                 }
 
-                if (!loginBatch.isEmpty())
+                if (!loginBatch.isEmpty()) {
+//                    loginBatch.forEach(user -> userLoginDAO.persist(user));
                     userLoginDAO.persistBatch(loginBatch);
+                    jdbcManyRelationsHelper.persist( loginBatch, "roles" );
+                }
             }
         };
 

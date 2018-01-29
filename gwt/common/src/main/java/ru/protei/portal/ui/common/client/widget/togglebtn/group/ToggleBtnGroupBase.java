@@ -70,7 +70,7 @@ public class ToggleBtnGroupBase<T>
     public void addBtnWithIcon( String iconStyle, String buttonStyle, String caption, T value ) {
         ToggleButton itemView = addBtn( caption, value, buttonStyle );
         if ( iconStyle != null ) {
-            itemView.setIcon( iconStyle );
+            itemView.setIcon( iconStyle, false );
         }
     }
 

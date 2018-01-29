@@ -66,42 +66,10 @@ public class IconSelector<T> extends Selector<T> implements HasEnabled {
     }
 
     @Override
-    public void clearOptions() {
-        itemModelToIcon.clear();
-        super.clearOptions();
-    }
-
-    @Override
     public void fillSelectorView( DisplayOption selectedValue ) {
-        T selected = getValue();
-        String icon = itemModelToIcon.get( selected );
-        if ( selected != null ) {
-            removeOldStyleNames();
-            anchorIcon.addStyleName( icon );
-        }
+        anchorIcon.setStyleName( selectedValue.getIcon() );
         anchorIcon.setTitle( selectedValue.getIcon() );
     }
-
-    public void addOption( String name, T value, String icon ) {
-        super.addOption( name, value );
-        itemModelToIcon.put( value, icon );
-
-        SelectorItem selectorItem = itemToViewModel.get( value );
-        if ( selectorItem != null ) {
-            selectorItem.setIcon( icon );
-        }
-    }
-
-    private void removeOldStyleNames() {
-        for ( String styleName : itemModelToIcon.values() ) {
-            List<String> styleItems = Arrays.asList( styleName.split( "\\s+" ) );
-            for ( String styleItem : styleItems ) {
-                anchorIcon.removeStyleName( styleItem );
-            }
-        }
-    }
-
-    private Map<T, String> itemModelToIcon = new HashMap<>();
 
     @UiField
     Anchor anchorIcon;

@@ -24,7 +24,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
-import ru.protei.portal.ui.common.client.widget.uploader.FileUploader;
+import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.issue.client.activity.preview.AbstractIssuePreviewActivity;
 import ru.protei.portal.ui.issue.client.activity.preview.AbstractIssuePreviewView;
 
@@ -118,6 +118,11 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     }
 
     @Override
+    public void setName( String value ) {
+        this.name.setInnerText( value );
+    }
+
+    @Override
     public void setInfo( String value ) {
         this.info.setInnerText( value );
     }
@@ -149,13 +154,15 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
 
     @Override
     public void setCaseId(Long caseId) {
-        fileUploader.autoBindingFilesToCase(caseId);
+        fileUploader.autoBindingToCase(caseId);
     }
 
     @Override
-    public void setFileUploadHandler(FileUploader.FileUploadHandler handler){
-        fileUploader.setFileUploadHandler(handler);
+    public void setFileUploadHandler(AttachmentUploader.FileUploadHandler handler){
+        fileUploader.setUploadHandler(handler);
     }
+
+
 
     @UiHandler( "fullScreen" )
     public void onFullScreenClicked ( ClickEvent event) {
@@ -199,6 +206,8 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     @UiField
     SpanElement manager;
     @UiField
+    SpanElement name;
+    @UiField
     SpanElement info;
     @Inject
     @UiField
@@ -207,7 +216,7 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     HTMLPanel commentsContainer;
     @Inject
     @UiField
-    FileUploader fileUploader;
+    AttachmentUploader fileUploader;
     @Inject
     @UiField(provided = true)
     AttachmentList attachmentContainer;

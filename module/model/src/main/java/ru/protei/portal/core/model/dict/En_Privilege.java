@@ -49,12 +49,42 @@ public enum En_Privilege {
 
     ROLE_VIEW (ROLE, VIEW),
     ROLE_EDIT (ROLE, EDIT),
-    ROLE_CREATE (ROLE, CREATE);
+    ROLE_CREATE (ROLE, CREATE),
+    ROLE_REMOVE (ROLE, REMOVE),
+
+    OFFICIAL_VIEW(OFFICIAL, VIEW),
+    OFFICIAL_EDIT(OFFICIAL, EDIT),
+
+    DASHBOARD_VIEW(DASHBOARD, VIEW),
+
+    // Набор дополнительных привилегий, которые вычисляются по scope и не пишутся в базу. Устанавливаются без action
+    ISSUE_COMPANY_EDIT(ISSUE, null),
+    ISSUE_PRODUCT_EDIT(ISSUE, null),
+    ISSUE_MANAGER_EDIT(ISSUE, null),
+    ISSUE_PRIVACY_VIEW(ISSUE, null),
+
+    ISSUE_FILTER_COMPANY_VIEW(ISSUE, null),
+    ISSUE_FILTER_MANAGER_VIEW(ISSUE, null),
+    ISSUE_FILTER_PRODUCT_VIEW(ISSUE, null),
+
+    @Deprecated
+    DASHBOARD_ALL_COMPANIES_VIEW(DASHBOARD, VIEW);
 
     private final En_PrivilegeEntity entity;
     private final En_PrivilegeAction action;
 
-    En_Privilege( En_PrivilegeEntity entity, En_PrivilegeAction action ) {
+    public final static En_Privilege [] DEFAULT_SCOPE_PRIVILEGES = {
+            ISSUE_COMPANY_EDIT,
+            ISSUE_PRODUCT_EDIT,
+            ISSUE_MANAGER_EDIT,
+            ISSUE_PRIVACY_VIEW,
+
+            ISSUE_FILTER_COMPANY_VIEW,
+            ISSUE_FILTER_MANAGER_VIEW,
+            ISSUE_FILTER_PRODUCT_VIEW
+    };
+
+    private En_Privilege( En_PrivilegeEntity entity, En_PrivilegeAction action ) {
         this.entity = entity;
         this.action = action;
     }
@@ -69,6 +99,10 @@ public enum En_Privilege {
 
     public static En_Privilege findPrivilege( En_PrivilegeEntity entity, En_PrivilegeAction action ) {
         for ( En_Privilege privilege : values() ) {
+            if ( privilege.action == null ) {
+                continue;
+            }
+
             if ( privilege.action.equals( action ) && privilege.entity.equals( entity ) ) {
                 return privilege;
             }
@@ -76,4 +110,5 @@ public enum En_Privilege {
 
         return null;
     }
+
 }

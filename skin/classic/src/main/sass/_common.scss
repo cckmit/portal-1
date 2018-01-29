@@ -28,6 +28,10 @@ body {
   padding-left: 0 !important
 }
 
+.p-l-5 {
+  padding-left: 5px !important
+}
+
 .p-l-10 {
   padding-left: 10px !important
 }
@@ -38,6 +42,10 @@ body {
 
 .p-r-0 {
   padding-right: 0 !important
+}
+
+.p-r-5 {
+  padding-right: 5px !important
 }
 
 .p-r-10 {
@@ -442,6 +450,13 @@ body {
   white-space: normal;
 }
 
+.dropdown-menu ul > li > a > img {
+  margin-right: 12px;
+  float: left;
+  margin-top: 2px;
+  top: 0;
+}
+
 .not-active,
 .dropdown-menu ul > li > a.not-active {
   color: #b6b6b6;
@@ -617,15 +632,14 @@ label.required:after {
   margin: 0 -7px;
 }
 
-.grid-indent [class*='col-']{
-  padding: 0 7px;
-  box-sizing: border-box;
-}
-
 [class*='col-'] [class*='col-']{
   padding: 0;
 }
 
+.grid-indent > [class*='col-']{
+  padding: 0 7px !important;
+  box-sizing: border-box;
+}
 .panelField .label{
   padding: 0 12px;
   background: #a9b4bb;
@@ -952,6 +966,70 @@ label.bordered:after{
   }
 }
 
+
+
+.companies {
+  table {
+    tbody {
+      tr {
+        td {
+          height: 70px;
+          >div {
+            height: 70px;
+            max-height: 70px;
+            white-space: pre-line;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+        }
+      }
+    }
+    .company-name{
+      font-weight: bold;
+    }
+    .company-main-info {
+      width: 50%;
+    }
+    .company-category {
+      vertical-align: top !important;
+      width: 15%
+    }
+    .company-group {
+      vertical-align: top !important;
+      width: 25%;
+    }
+    .contacts{
+      i{
+        padding-right: 5px;
+      }
+    }
+  }
+}
+
+
+
+.products {
+  table {
+    tbody {
+      tr {
+        td {
+          height: 70px;
+          >div {
+            height: 70px;
+            max-height: 70px;
+            white-space: pre-line;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+        }
+      }
+    }
+    .product-name{
+      width: 90%;
+    }
+  }
+}
+
 /* table expandable width */
 
 .no-width {
@@ -1159,6 +1237,51 @@ td.info {
   color: #607D8B !important;
 }
 /****************/
+
+/**** COMPANY CATEGORY  ****/
+
+.category {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  color: teal;
+}
+
+.category-lg {
+  font-size: 2em;
+  line-height: .75em;
+  /*vertical-align: -15%*/
+}
+
+.icon-partner:before {
+  font-family: FontAwesome, serif;
+  content: "\f2b5";
+}
+
+.icon-subcontractor:before {
+  font-family: Ionicons, serif;
+  content: "\f212";
+}
+
+.icon-customer:before {
+  font-family: Ionicons, serif;
+  content: "\f353";
+}
+
+.icon-home:before {
+  font-family: Ionicons, serif;
+  content: "\f448";
+}
+
 
 /**** STATES ****/
 .state-created {
@@ -1423,11 +1546,11 @@ a {
 .dashboard .info label{
   display: inline-block;
 }
-.dashboard .text-semimuted {
+/*.dashboard .text-semimuted {
   position: absolute;
   top: 1px;
   right: 0;
-}
+}*/
 
 .dashboard-section-name {
   padding-left: 15px;
@@ -1571,8 +1694,9 @@ a {
       min-width: 50px;
     }
 
-    .dn-org-code button {
-      width: 80px;
+    .dn-org-code {
+      width: 55px;
+      background: white;
     }
 
     .dn-reserve.btn {
@@ -1794,4 +1918,168 @@ ul.privileges {
 
 .list-inline>li {
   display: inline-block;
+}
+
+.no-margin {
+  margin: 0px;
+}
+
+.user-official {
+  font-weight: bold;
+  padding-bottom: 5px;
+  font-size: 1.3em;
+}
+
+.truncate-users {
+  font-size: 12px;
+  width: 330px;
+  margin-top: 7px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  word-break: break-word;
+}
+
+.truncate-users:hover {
+  position: absolute;
+  width: 85%;
+  white-space: inherit;
+  background-color: white;
+  z-index: 1;
+}
+
+.user-dolznost {
+  font-size: 1.3em;
+}
+
+.truncate-holder {
+  height: 12px;
+}
+
+.truncate {
+  font-size: 12px;
+  width: 375px;
+  margin-top: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.truncate:hover {
+  position: absolute;
+  width: 95%;
+  white-space: inherit;
+  background-color: white;
+  z-index: 1;
+}
+
+.official-item {
+  padding-bottom: 60px;
+}
+
+.modtooltip {
+  position: relative;
+}
+
+.modtooltip > label {
+  position: absolute;
+  opacity: 0;
+}
+
+.modtooltip > input:focus + label {
+  position: absolute;
+  font-size: 10.5px;
+  opacity: 1;
+  transition: 0.2s;
+  font-weight: normal;
+  width: 25em;
+  color: #4378c3;
+  line-height: 8px;
+  bottom: -15px;
+  left: -30px;
+}
+
+.dn-add-button {
+  float: right;
+  padding-bottom: 12px;
+  padding-right: 14px;
+}
+
+.caret-icon:after {
+  content: "\f3d0";
+  font-family: Ionicons;
+  display: inline-block;
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  margin-top: -11px;
+  font-size: 16px;
+  line-height: 1;
+  color: inherit;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+div.select2-container {
+  border: 1px solid #ced2d7;
+  width: initial;
+
+  &:hover {
+    border: 1px solid #ccc;
+  }
+
+  ul.select2-choices {
+    list-style: none;
+    margin-top:5px;
+    padding-left: 10px;
+
+    li.select2-search-choice {
+      div {
+        display: inline-block;
+        width: initial;
+      }
+
+      a.select2-search-choice-close {
+        font: normal normal normal 14px/1 FontAwesome;
+        display: inline-block;
+
+        &:before {
+          content: "\f00d";
+        }
+      }
+    }
+  }
+
+  div.select2-button {
+    button {
+      background-color: white;
+      text-align: left;
+      height: 30px;
+    }
+
+    span.caret {
+      width: initial;
+      border: none;
+    }
+  }
+}
+
+.case-subscribers{
+  div.select2-container{
+    border: 0 !important;
+    ul.select2-choices{
+      padding-left: 0;
+      margin-bottom: 5px;
+      li.select2-search-choice{
+        display: inline !important;
+        padding-right: 10px;
+      }
+    }
+    div.select2-button {
+      button {
+        background: teal;
+        color: white;
+      }
+    }
+  }
 }

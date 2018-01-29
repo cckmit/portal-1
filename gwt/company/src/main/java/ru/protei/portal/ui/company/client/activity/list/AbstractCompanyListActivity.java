@@ -1,7 +1,7 @@
 package ru.protei.portal.ui.company.client.activity.list;
 
 /**
- * Активность списка компаний
+ * Created by bondarenko on 17.11.17.
  */
 public interface AbstractCompanyListActivity {
     void onCreateClicked();
