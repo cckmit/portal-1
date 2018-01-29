@@ -30,6 +30,9 @@ public class ExternalPerson {
     private Integer sex;
     private Boolean isDeleted;
 
+    private String department;
+    private String position;
+
     public ExternalPerson() {}
 
     public ExternalPerson(Person person) throws UnknownHostException {
@@ -179,5 +182,25 @@ public class ExternalPerson {
     @Column(name="strClientIP")
     public void setClientIP(String clientIP) {
         this.clientIP = clientIP;
+    }
+
+    @Column(name="strDepartment")
+    public String getDepartment() {
+        return department;
+    }
+
+    @Column(name="strDepartment")
+    public void setDepartment(String department) {
+        this.department = department;
+    }
+
+    @Column(name="strPosition")
+    public String getPosition() {
+        return position;
+    }
+
+    @Column(name="strPosition")
+    public void setPosition(String position) {
+        this.position = position;
     }
 }

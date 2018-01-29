@@ -23,4 +23,14 @@ ALTER view "Resource".VIEW_Worker
 	//number(*) as nNumber
 
 	from "Resource".Tm_PersonPROTEI_Extension key join("Resource".Tm_Person left outer join "Resource".Tm_Company) left outer join "OK".Tm_Position
-	where (Tm_Company.nID = 1) and ((Tm_PersonPROTEI_Extension.strE_Mail is not null) or (strLastName = 'коллектив'))
+	where (Tm_Company.nID = 1) and ((Tm_PersonPROTEI_Extension.strE_Mail is not null) or (strLastName = 'коллектив'));
+
+alter table "Resource".Tm_Person add strDepartment Dm_DictionaryValue2;
+
+comment on column "Resource".Tm_Person.strDepartment is 'Отдел компании';
+
+update "Resource".Tm_Person set strDepartment = (
+select d.strDescription
+from "Resource".Tm_PersonPROTEI_Extension pe
+left outer join "OK".Tm_Department d on d.nID = pe.nDepartmentID
+where "Resource".Tm_Person.nID = pe.nID);
