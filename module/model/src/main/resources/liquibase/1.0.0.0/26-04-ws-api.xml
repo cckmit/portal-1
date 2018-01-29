@@ -1,0 +1,72 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+<!--
+    <changeSet author="turik" id="addCompanies">
+        <update tableName="company">
+            <column name="cname" value='Протей' type="varchar(512)"/>
+            <where>id=1</where>
+        </update>
+
+        <insert tableName="company">
+            <column name="created" value="now()" />
+            <column name="cname" value="НТЦ Протей" />
+            <column name="contactInfo" value='{"items": []}' />
+        </insert>
+
+        <insert tableName="company">
+            <column name="created" value="now()" />
+            <column name="cname" value="Протей СТ" />
+            <column name="contactInfo" value='{"items": []}' />
+        </insert>
+    </changeSet>
+-->
+
+    <changeSet author="turik" id="addMainIdToCompanyGroupHome">
+        <addColumn tableName="company_group_home">
+            <column name="mainId" type="bigint(20)">
+                <constraints nullable="true" unique="false"/>
+            </column>
+        </addColumn>
+
+        <addForeignKeyConstraint baseColumnNames="mainId"
+                                 baseTableName="company_group_home"
+                                 constraintName="FK_CGH_MAIN"
+                                 onDelete="CASCADE"
+                                 referencedColumnNames="id"
+                                 referencedTableName="company"/>
+    </changeSet>
+
+    <changeSet author="turik" id="dropNotNullExteranalCode">
+        <dropNotNullConstraint columnDataType="varchar(32)"
+                               columnName="external_code"
+                               tableName="company_group_home"/>
+    </changeSet>
+
+<!--
+    <changeSet author="turik" id="updateCompanyGroupHome">
+        <update tableName="company_group_home">
+            <column name="external_code" type="varchar(512)"/>
+            <where>companyId=1</where>
+        </update>
+    </changeSet>
+
+    <changeSet author="turik" id="addCompaniesToGroupHome">
+        <sql>
+            insert into company_group_home (companyId, external_code, mainId) select id, 'protei', 1 from company where cname = 'НТЦ Протей';
+            insert into company_group_home (companyId, external_code, mainId) select id, 'protei-st', 1 from company where cname = 'Протей СТ';
+        </sql>
+    </changeSet>
+
+    <changeSet author="turik" id="updateHomeCompanies">
+        <sql>
+            update company set category_id = (select id from company_category where category_name = 'Домашняя компания' ) where cname  = 'НТЦ Протей';
+            update company set category_id = (select id from company_category where category_name = 'Домашняя компания' ) where cname  = 'Протей СТ';
+        </sql>
+    </changeSet>
+-->
+
+</databaseChangeLog>

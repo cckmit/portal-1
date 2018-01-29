@@ -7,6 +7,8 @@ import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 
+import java.net.Inet4Address;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -40,5 +42,14 @@ public interface PersonDAO extends PortalBaseDAO<Person> {
 
     @SqlConditionBuilder
     SqlCondition createPersonSqlCondition(PersonQuery query);
+
+
+    default Person createNewPerson (Long companyId) throws Exception {
+        Person person = new Person ();
+        person.setCreated (new Date());
+        person.setCreator ("portal-api@" + Inet4Address.getLocalHost ().getHostAddress());
+        person.setCompanyId (companyId);
+        return person;
+    }
 
 }

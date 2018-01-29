@@ -1,9 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.winter.jdbc.annotations.IdInsertMode;
-import ru.protei.winter.jdbc.annotations.JdbcColumn;
-import ru.protei.winter.jdbc.annotations.JdbcEntity;
-import ru.protei.winter.jdbc.annotations.JdbcId;
+import ru.protei.winter.jdbc.annotations.*;
 
 import java.util.Date;
 
@@ -19,6 +16,9 @@ public class CompanyDepartment {
     @JdbcColumn(name = "company_id")
     private Long companyId;
 
+    @JdbcJoinedColumn(localColumn = "company_id", table = "company_group_home", remoteColumn = "companyId", mappedColumn = "external_code")
+    private String companyExternalCode;
+
     @JdbcColumn(name = "created")
     private Date created;
 
@@ -31,14 +31,20 @@ public class CompanyDepartment {
     @JdbcColumn(name = "dep_info")
     private String info;
 
-    @JdbcColumn(name = "parent_department")
+    @JdbcColumn(name = "parent_dep")
     private Long parentId;
+
+    @JdbcJoinedColumn(localColumn = "parent_dep", table = "company_dep", remoteColumn = "id", mappedColumn = "dep_extId")
+    private String parentExternalId;
 
     @JdbcColumn(name = "head_id")
     private Long headId;
 
+    @JdbcJoinedColumn(localColumn = "head_id", table = "worker_entry", remoteColumn = "id", mappedColumn = "worker_extId")
+    private String headExternalId;
+
     @JdbcColumn(name = "dep_extId")
-    private Long externalId;
+    private String externalId;
 
     public CompanyDepartment() {
     }
@@ -107,11 +113,35 @@ public class CompanyDepartment {
         this.headId = headId;
     }
 
-    public Long getExternalId() {
+    public String getExternalId() {
         return externalId;
     }
 
-    public void setExternalId(Long externalId) {
+    public void setExternalId(String externalId) {
         this.externalId = externalId;
+    }
+
+    public String getCompanyExternalCode() {
+        return companyExternalCode;
+    }
+
+    public void setCompanyExternalCode(String companyExternalCode) {
+        this.companyExternalCode = companyExternalCode;
+    }
+
+    public String getParentExternalId() {
+        return parentExternalId;
+    }
+
+    public void setParentExternalId(String parentExternalId) {
+        this.parentExternalId = parentExternalId;
+    }
+
+    public String getHeadExternalId() {
+        return headExternalId;
+    }
+
+    public void setHeadExternalId(String headExternalId) {
+        this.headExternalId = headExternalId;
     }
 }

@@ -1,0 +1,89 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet author="turik" id="addColumnsToDepartment">
+        <addColumn tableName="company_dep">
+            <column name="parent_dep" type="bigint(20)">
+                <constraints nullable="true" unique="false" />
+            </column>
+
+            <column name="head_id" type="bigint(20)">
+                <constraints nullable="true" unique="false" />
+            </column>
+
+            <column name="dep_extId" type="bigint(20)" defaultValue="0">
+                <constraints nullable="false" unique="false"/>
+            </column>
+        </addColumn>
+
+        <addForeignKeyConstraint baseColumnNames="parent_dep"
+                                 baseTableName="company_dep"
+                                 constraintName="FK_CD_PARENT"
+                                 onDelete="CASCADE"
+                                 referencedColumnNames="id"
+                                 referencedTableName="company_dep"/>
+
+        <addForeignKeyConstraint baseColumnNames="head_id"
+                                 baseTableName="company_dep"
+                                 constraintName="FK_CD_HEAD"
+                                 referencedColumnNames="id"
+                                 referencedTableName="person"/>
+
+        <createIndex indexName="uq_ext_dep" tableName="company_dep">
+            <column name="company_id"/>
+            <column name="dep_extId"/>
+        </createIndex>
+
+    </changeSet>
+
+    <changeSet author="turik" id="dropDefaultValueFromCompanyDep">
+        <dropDefaultValue columnDataType="bigint"
+                          columnName="dep_extId"
+                          tableName="company_dep"/>
+    </changeSet>
+
+    <changeSet author="turik" id="fixFK_CD_PARENT">
+        <dropForeignKeyConstraint baseTableName="company_dep" constraintName="FK_CD_PARENT"/>
+        <addForeignKeyConstraint baseColumnNames="parent_dep"
+                                 baseTableName="company_dep"
+                                 constraintName="FK_CD_PARENT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="company_dep"/>
+    </changeSet>
+
+    <changeSet author="turik" id="modify_dep_extId">
+        <modifyDataType columnName="dep_extId"
+                        newDataType="varchar(32)"
+                        tableName="company_dep"/>
+    </changeSet>
+
+    <changeSet author="turik" id="not_null_dep_extId">
+        <addNotNullConstraint columnDataType="varchar(32)"
+                              columnName="dep_extId"
+                              tableName="company_dep"/>
+    </changeSet>
+
+    <changeSet author="turik" id="fixFK_CD_HEAD">
+        <dropForeignKeyConstraint baseTableName="company_dep" constraintName="FK_CD_HEAD"/>
+        <addForeignKeyConstraint baseColumnNames="head_id"
+                                 baseTableName="company_dep"
+                                 constraintName="FK_CD_HEAD"
+                                 referencedColumnNames="id"
+                                 referencedTableName="worker_entry"
+                                 onUpdate="CASCADE"/>
+    </changeSet>
+
+    <changeSet author="turik" id="fixFK_CD_HEAD_2">
+        <dropForeignKeyConstraint baseTableName="company_dep" constraintName="FK_CD_HEAD"/>
+        <addForeignKeyConstraint baseColumnNames="head_id"
+                                 baseTableName="company_dep"
+                                 constraintName="FK_CD_HEAD"
+                                 referencedColumnNames="id"
+                                 referencedTableName="worker_entry"
+                                 onDelete="SET NULL"/>
+    </changeSet>
+
+</databaseChangeLog>

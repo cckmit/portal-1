@@ -6,4 +6,11 @@ import ru.protei.portal.core.model.ent.WorkerEntry;
  * Created by turik on 19.08.16.
  */
 public interface WorkerEntryDAO extends PortalBaseDAO<WorkerEntry> {
+    boolean checkExistsByExternalId(String extId, Long companyId);
+    boolean checkExistsByPersonId(Long personId);
+    boolean checkExistsByDepId(Long depId);
+    boolean checkExistsByDep(String extId, Long companyId);
+    boolean checkExistsByPosId(Long posId);
+    boolean checkExistsByPosName(String name, Long companyId);
+    WorkerEntry getByExternalId(String extId, Long companyId);
 }

@@ -1,9 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.winter.jdbc.annotations.IdInsertMode;
-import ru.protei.winter.jdbc.annotations.JdbcColumn;
-import ru.protei.winter.jdbc.annotations.JdbcEntity;
-import ru.protei.winter.jdbc.annotations.JdbcId;
+import ru.protei.winter.jdbc.annotations.*;
 
 import java.util.Date;
 
@@ -22,32 +19,38 @@ public class WorkerEntry {
     @JdbcColumn(name="personId")
     private Long personId;
 
+    @JdbcJoinedObject(localColumn = "personId", remoteColumn = "id")
+    private Person person;
+
     @JdbcColumn(name="dep_id")
     private Long departmentId;
+
+    @JdbcJoinedObject(localColumn = "dep_id", remoteColumn = "id")
+    private CompanyDepartment department;
 
     @JdbcColumn(name="companyId")
     private Long companyId;
 
+    @JdbcJoinedColumn(localColumn = "companyId", table = "company_group_home", remoteColumn = "companyId", mappedColumn = "external_code")
+    private String externalCode;
+
     @JdbcColumn(name="positionId")
     private Long positionId;
+
+    @JdbcJoinedObject(localColumn = "positionId", remoteColumn = "id")
+    private WorkerPosition position;
 
     @JdbcColumn(name="hireDate")
     private Date hireDate;
 
-    @JdbcColumn(name="fireDate")
-    private Date fireDate;
-
     @JdbcColumn(name="hireOrderNo")
     private String hireOrderNo;
-
-    @JdbcColumn(name="fireOrderNo")
-    private String fireOrderNo;
 
     @JdbcColumn(name="active")
     private int activeFlag;
 
     @JdbcColumn(name = "worker_extId")
-    private Long externalId;
+    private String externalId;
 
     public WorkerEntry () {
         this.activeFlag = 1;
@@ -77,12 +80,28 @@ public class WorkerEntry {
         this.personId = personId;
     }
 
+    public Person getPerson() {
+        return person;
+    }
+
+    public void setPerson(Person person) {
+        this.person = person;
+    }
+
     public Long getDepartmentId() {
         return departmentId;
     }
 
     public void setDepartmentId(Long departmentId) {
         this.departmentId = departmentId;
+    }
+
+    public CompanyDepartment getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(CompanyDepartment department) {
+        this.department = department;
     }
 
     public Long getCompanyId() {
@@ -93,12 +112,28 @@ public class WorkerEntry {
         this.companyId = companyId;
     }
 
+    public String getExternalCode() {
+        return externalCode;
+    }
+
+    public void setExternalCode(String externalCode) {
+        this.externalCode = externalCode;
+    }
+
     public Long getPositionId() {
         return positionId;
     }
 
     public void setPositionId(Long positionId) {
         this.positionId = positionId;
+    }
+
+    public WorkerPosition getPosition() {
+        return position;
+    }
+
+    public void setPosition(WorkerPosition position) {
+        this.position = position;
     }
 
     public Date getHireDate() {
@@ -109,28 +144,12 @@ public class WorkerEntry {
         this.hireDate = hireDate;
     }
 
-    public Date getFireDate() {
-        return fireDate;
-    }
-
-    public void setFireDate(Date fireDate) {
-        this.fireDate = fireDate;
-    }
-
     public String getHireOrderNo() {
         return hireOrderNo;
     }
 
     public void setHireOrderNo(String hireOrderNo) {
         this.hireOrderNo = hireOrderNo;
-    }
-
-    public String getFireOrderNo() {
-        return fireOrderNo;
-    }
-
-    public void setFireOrderNo(String fireOrderNo) {
-        this.fireOrderNo = fireOrderNo;
     }
 
     public int getActiveFlag() {
@@ -141,11 +160,11 @@ public class WorkerEntry {
         this.activeFlag = activeFlag;
     }
 
-    public Long getExternalId() {
+    public String getExternalId() {
         return externalId;
     }
 
-    public void setExternalId(Long externalId) {
+    public void setExternalId(String externalId) {
         this.externalId = externalId;
     }
 }

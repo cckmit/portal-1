@@ -36,7 +36,6 @@ public class Person extends AuditableObject implements PersonShortViewSupport {
     @JdbcColumn(name = "department")
     private String department;
 
-
     @JdbcColumn(name="firstname")
     private String firstName;
 
@@ -85,6 +84,11 @@ public class Person extends AuditableObject implements PersonShortViewSupport {
     @JdbcColumn(name = "contactInfo", converterType = ConverterType.JSON)
     private ContactInfo contactInfo;
 
+/*
+    @JdbcColumn(name = "updated")
+    private Date updated;
+*/
+
     @JdbcColumn(name = "relations")
     private String relations;
 
@@ -107,7 +111,6 @@ public class Person extends AuditableObject implements PersonShortViewSupport {
     public Person () {
         this.contactInfo = new ContactInfo();
     }
-
 
     public Long getId() {
         return id;
@@ -298,6 +301,16 @@ public class Person extends AuditableObject implements PersonShortViewSupport {
         return "Person";
     }
 
+/*
+    public Date getUpdated() {
+        return updated;
+    }
+
+    public void setUpdated(Date updated) {
+        this.updated = updated;
+    }
+*/
+
     @Override
     public PersonShortView toShortNameShortView() {
         return new PersonShortView(this.displayShortName, this.getId(), this.isFired);
@@ -319,5 +332,32 @@ public class Person extends AuditableObject implements PersonShortViewSupport {
 
     public void setRelations(String relations) {
         this.relations = relations;
+    }
+
+    @Override
+    public String toString() {
+        return "Person{" +
+                "id=" + id +
+                ", created=" + created +
+                ", creator='" + creator + '\'' +
+                ", companyId=" + companyId +
+                ", company=" + company +
+                ", position='" + position + '\'' +
+                ", department='" + department + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", secondName='" + secondName + '\'' +
+                ", displayName='" + displayName + '\'' +
+                ", displayShortName='" + displayShortName + '\'' +
+                ", genderCode='" + genderCode + '\'' +
+                ", birthday=" + birthday +
+                ", ipAddress='" + ipAddress + '\'' +
+                ", passportInfo='" + passportInfo + '\'' +
+                ", info='" + info + '\'' +
+                ", isDeleted=" + isDeleted +
+                ", isFired=" + isFired +
+                ", contactInfo=" + contactInfo +
+                ", relations='" + relations + '\'' +
+                '}';
     }
 }

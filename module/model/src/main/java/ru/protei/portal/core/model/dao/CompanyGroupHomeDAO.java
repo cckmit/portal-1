@@ -7,5 +7,6 @@ import ru.protei.portal.core.model.ent.CompanyHomeGroupItem;
  */
 public interface CompanyGroupHomeDAO extends PortalBaseDAO<CompanyHomeGroupItem> {
 
-    public boolean checkIfHome (Long id);
+    boolean checkIfHome (Long id);
+    CompanyHomeGroupItem getByExternalCode(String externalCode);
 }

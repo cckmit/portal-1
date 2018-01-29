@@ -20,12 +20,7 @@ public class WorkerPosition {
     @JdbcColumn(name = "company_id")
     private Long companyId;
 
-    @JdbcColumn(name="pos_extId")
-    private Long externalId;
-
-    public WorkerPosition () {
-
-    }
+    public WorkerPosition () {}
 
     public Long getId() {
         return id;
@@ -49,13 +44,5 @@ public class WorkerPosition {
 
     public void setCompanyId(Long companyId) {
         this.companyId = companyId;
-    }
-
-    public Long getExternalId() {
-        return externalId;
-    }
-
-    public void setExternalId(Long externalId) {
-        this.externalId = externalId;
     }
 }
