@@ -48,7 +48,9 @@ public class CompanyDAO_Impl extends PortalBaseJdbcDAO<Company> implements Compa
             }
 
             if ( query.isExcludeHomeCompanies() ) {
-                condition.append( " AND id NOT IN ( SELECT companyId from company_group_home )" );
+                condition.append( " and company.id not in ( select companyId from company_group_home )" );
+            } else {
+                condition.append( " and company.id not in ( select companyId from company_group_home where mainId is not null )" );
             }
         });
     }

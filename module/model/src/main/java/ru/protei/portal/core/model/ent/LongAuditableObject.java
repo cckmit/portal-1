@@ -7,6 +7,12 @@ import ru.protei.portal.core.model.struct.AuditableObject;
  */
 public class LongAuditableObject extends AuditableObject {
 
+    public LongAuditableObject() {}
+
+    public LongAuditableObject(Long id) {
+        this.id = id;
+    }
+
     private Long id;
 
     public Long getId() {

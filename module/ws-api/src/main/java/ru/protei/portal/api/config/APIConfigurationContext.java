@@ -58,6 +58,11 @@ public class APIConfigurationContext extends WebMvcConfigurerAdapter {
     @Bean
     public WSMigrationManager getWSMigrationManager () { return new WSMigrationManager (); }
 
+    @Bean
+    public AuditObjectDAO getAuditDAO() {
+        return new AuditObjectDAO_Impl();
+    }
+
 /*
     @Bean
     public WorkerService createWorkerWebService () {

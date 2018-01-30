@@ -27,6 +27,15 @@ public class ExternalPersonExtension {
     private Boolean isRetired;
     private String ipAddress;
 
+    private String inn = "";
+    private String pension = "";
+    private String url = "";
+    private String icq = "";
+    private String startOrder = "";
+    private String retireOrder = "";
+    private String educationDocument = "";
+
+
     public ExternalPersonExtension() {}
 
     public ExternalPersonExtension(Person person) {
@@ -186,5 +195,75 @@ public class ExternalPersonExtension {
     @Column(name="strWorkTel")
     public void setWorkTel(String workTel) {
         this.workTel = workTel;
+    }
+
+    @Column(name="strINN")
+    public String getInn() {
+        return inn;
+    }
+
+    @Column(name="strINN")
+    public void setInn(String inn) {
+        this.inn = inn;
+    }
+
+    @Column(name="strPension")
+    public String getPension() {
+        return pension;
+    }
+
+    @Column(name="strPension")
+    public void setPension(String pension) {
+        this.pension = pension;
+    }
+
+    @Column(name="strURL")
+    public String getUrl() {
+        return url;
+    }
+
+    @Column(name="strURL")
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    @Column(name="strICQ")
+    public String getIcq() {
+        return icq;
+    }
+
+    @Column(name="strICQ")
+    public void setIcq(String icq) {
+        this.icq = icq;
+    }
+
+    @Column(name="strStartOrder")
+    public String getStartOrder() {
+        return startOrder;
+    }
+
+    @Column(name="strStartOrder")
+    public void setStartOrder(String startOrder) {
+        this.startOrder = startOrder;
+    }
+
+    @Column(name="strRetireOrder")
+    public String getRetireOrder() {
+        return retireOrder;
+    }
+
+    @Column(name="strRetireOrder")
+    public void setRetireOrder(String retireOrder) {
+        this.retireOrder = retireOrder;
+    }
+
+    @Column(name="strEducationDocument")
+    public String getEducationDocument() {
+        return educationDocument;
+    }
+
+    @Column(name="strEducationDocument")
+    public void setEducationDocument(String educationDocument) {
+        this.educationDocument = educationDocument;
     }
 }

@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * @author michael
  */
-@JdbcEntity(table = "Company")
+@JdbcEntity(table = "company")
 public class Company extends AuditableObject implements EntityOptionSupport {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
