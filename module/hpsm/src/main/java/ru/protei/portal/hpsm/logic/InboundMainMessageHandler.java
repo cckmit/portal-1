@@ -86,7 +86,8 @@ public class InboundMainMessageHandler implements InboundMessageHandler {
     @Qualifier("hpsmSerializer")
     private XStream xstream;
 
-    private final HpsmEventHandlerFactory handlerFactory = HpsmEventHandlerFactoryImpl.getInstance();
+    @Autowired
+    private HpsmEventHandlerFactory handlerFactory;
 
     private static Logger logger = LoggerFactory.getLogger(InboundMainMessageHandler.class);
 }

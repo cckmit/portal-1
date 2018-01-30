@@ -1,4 +1,4 @@
-package ru.protei.portal.test.hpsm;
+package ru.protei.portal.test.hpsm.handlers.inbound;
 
 import org.junit.*;
 import org.springframework.context.ApplicationContext;
@@ -17,11 +17,8 @@ import ru.protei.portal.test.hpsm.config.HpsmTestConfiguration;
 
 import javax.mail.internet.MimeMessage;
 
-/**
- * Created by Mike on 01.05.2017.
- */
-public class CreateEventTest {
-    public static final String HPSM_TEST_CASE_ID1 = "hpsm-create-test-1";
+public class CaseHandlersTest {
+    public static final String HPSM_TEST_CASE_ID2 = "hpsm-update-test-1";
     static ApplicationContext ctx;
 
     @BeforeClass
@@ -39,7 +36,7 @@ public class CreateEventTest {
 
         HpsmTestUtils testUtils = ctx.getBean(HpsmTestUtils.class);
 
-        boolean result = handler.handle(testUtils.createNewRequest(HPSM_TEST_CASE_ID1), testServiceInstance);
+        boolean result = handler.handle(testUtils.createNewRequest(HPSM_TEST_CASE_ID2), testServiceInstance);
 
         Assert.assertTrue(result);
 
@@ -59,7 +56,7 @@ public class CreateEventTest {
 
         System.out.println(responseEvent.getSubject());
 
-        ExternalCaseAppData appData = externalCaseAppDAO.getByExternalAppId(HPSM_TEST_CASE_ID1);
+        ExternalCaseAppData appData = externalCaseAppDAO.getByExternalAppId(HPSM_TEST_CASE_ID2);
 
         Assert.assertNotNull(appData);
 
@@ -77,6 +74,6 @@ public class CreateEventTest {
 
     @After
     public void cleanup () {
-        ctx.getBean(CaseControlService.class).deleteByExtAppId (HPSM_TEST_CASE_ID1);
+        ctx.getBean(CaseControlService.class).deleteByExtAppId (HPSM_TEST_CASE_ID2);
     }
 }

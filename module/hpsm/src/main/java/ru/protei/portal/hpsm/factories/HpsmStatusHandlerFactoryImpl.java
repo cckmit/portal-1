@@ -15,7 +15,7 @@ import static ru.protei.portal.hpsm.api.HpsmStatus.*;
 
 public final class HpsmStatusHandlerFactoryImpl implements HpsmStatusHandlerFactory {
 
-    private HpsmStatusHandlerFactoryImpl() {
+    public HpsmStatusHandlerFactoryImpl() {
         statusHandlerMap = new HashMap<>();
         statusHandlerMap.put(new Tuple<>(INFO_REQUEST, IN_PROGRESS), new OpenCaseHandler());
         statusHandlerMap.put(new Tuple<>(WORKAROUND, TEST_WA), new WorkaroundCaseHandler());
@@ -24,10 +24,6 @@ public final class HpsmStatusHandlerFactoryImpl implements HpsmStatusHandlerFact
         statusHandlerMap.put(new Tuple<>(SOLVED, TEST_SOLUTION), new SolvedCheckHandler());
         statusHandlerMap.put(new Tuple<>(TEST_SOLUTION, IN_PROGRESS), new RejectWAHandler());
         statusHandlerMap.put(new Tuple<>(TEST_SOLUTION, CLOSED), new ClosedCaseHandler());
-    }
-
-    public static HpsmStatusHandlerFactory getInstance() {
-        return instance;
     }
 
     @Override
@@ -120,9 +116,6 @@ public final class HpsmStatusHandlerFactoryImpl implements HpsmStatusHandlerFact
     }
 
     private final Map<Tuple<HpsmStatus, HpsmStatus>, HpsmStatusHandler> statusHandlerMap;
-
-    private final static HpsmStatusHandlerFactory instance = new HpsmStatusHandlerFactoryImpl();
-
     private En_CaseState newState;
     private HpsmMessage msg;
 }

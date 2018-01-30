@@ -37,7 +37,8 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
     public void onCaseCommentEvent(CaseCommentEvent event) {
         Person eventRelatedPerson = event.getPerson();
         boolean isSecondComment
-                = commentEvents.stream().map(x -> x.getPerson().getId()).anyMatch(x -> eventRelatedPerson.getId().equals(x));
+                = commentEvents.stream().map(x -> x.getPerson().getId())
+                .anyMatch(x -> eventRelatedPerson.getId().equals(x));
         if (isSecondComment) {
             publishAndClear(eventRelatedPerson);
             commentEvents.add(event);
@@ -73,7 +74,6 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
 
     private final Map<Person, CompleteCaseEvent> personsCompleteEvents = new HashMap<>();
     private final List<CaseCommentEvent> commentEvents = new ArrayList<>();
-    private final List<CaseObjectEvent> objectEvents = new ArrayList<>();
 
     @Autowired
     EventPublisherService publisherService;

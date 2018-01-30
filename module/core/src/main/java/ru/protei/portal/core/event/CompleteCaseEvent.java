@@ -53,7 +53,7 @@ public class CompleteCaseEvent extends ApplicationEvent {
         this.lastUpdated = timeCreated;
     }
 
-    public CaseComment getComment() {
+    public CaseComment getCaseComment() {
         return comment;
     }
 

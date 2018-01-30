@@ -1,6 +1,6 @@
 package ru.protei.portal.hpsm.handlers;
 
-import ru.protei.portal.core.event.CaseObjectEvent;
+import ru.protei.portal.core.event.CompleteCaseEvent;
 import ru.protei.portal.hpsm.logic.ServiceInstance;
 import ru.protei.portal.hpsm.struct.HpsmMessage;
 
@@ -12,5 +12,5 @@ import ru.protei.portal.hpsm.struct.HpsmMessage;
  */
 @FunctionalInterface
 public interface BackChannelEventHandler {
-    void handle (CaseObjectEvent event, HpsmMessage message, ServiceInstance instance) throws Exception;
+    void handle (CompleteCaseEvent event, HpsmMessage message, ServiceInstance instance) throws Exception;
 }

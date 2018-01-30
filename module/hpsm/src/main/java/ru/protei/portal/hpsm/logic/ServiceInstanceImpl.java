@@ -3,7 +3,6 @@ package ru.protei.portal.hpsm.logic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.integration.mail.MailReceivingMessageSource;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.messaging.Message;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Company;
@@ -102,7 +101,11 @@ public class ServiceInstanceImpl implements ServiceInstance {
 
     @Override
     public void sendReply(HpsmMessageHeader replyHeader, HpsmMessage replyMessage) throws Exception {
-        sendReply(this.serviceConfig.getOutboundChannel().getSendTo(), replyHeader, replyMessage);
+        try {
+            sendReply(this.serviceConfig.getOutboundChannel().getSendTo(), replyHeader, replyMessage);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

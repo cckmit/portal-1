@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.controller.cloud.FileController;
 import ru.protei.portal.core.event.CaseCommentEvent;
@@ -36,11 +37,7 @@ import java.util.List;
 
 public class HpsmEventHandlerFactoryImpl implements HpsmEventHandlerFactory{
 
-    private HpsmEventHandlerFactoryImpl() { }
-
-    public static HpsmEventHandlerFactory getInstance() {
-        return instance;
-    }
+    public HpsmEventHandlerFactoryImpl() { }
 
     @Override
     public HpsmEventHandler createHandler (HpsmEvent request, ServiceInstance instance) {
@@ -168,7 +165,7 @@ public class HpsmEventHandlerFactoryImpl implements HpsmEventHandlerFactory{
 
         CaseObject object;
         final CaseObject oldState;
-        private final HpsmStatusHandlerFactory statusHandlerFactory = HpsmStatusHandlerFactoryImpl.getInstance();
+        private final HpsmStatusHandlerFactory statusHandlerFactory = new HpsmStatusHandlerFactoryImpl();
 
         public UpdateCaseHandler(CaseObject object, CaseObject oldState) {
             this.object = object;
@@ -454,7 +451,5 @@ public class HpsmEventHandlerFactoryImpl implements HpsmEventHandlerFactory{
     private CaseService caseService;
 
     private static Logger logger = LoggerFactory.getLogger(HpsmEventHandlerFactoryImpl.class);
-
-    private static final HpsmEventHandlerFactory instance = new HpsmEventHandlerFactoryImpl();
 
 }
