@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.util.Date;
@@ -8,7 +9,7 @@ import java.util.Date;
  * Created by michael on 17.05.16.
  */
 @JdbcEntity(table = "worker_entry")
-public class WorkerEntry {
+public class WorkerEntry extends AuditableObject {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -166,5 +167,10 @@ public class WorkerEntry {
 
     public void setExternalId(String externalId) {
         this.externalId = externalId;
+    }
+
+    @Override
+    public String getAuditType() {
+        return "Worker";
     }
 }

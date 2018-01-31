@@ -12,6 +12,7 @@ import ru.protei.portal.api.model.*;
 import ru.protei.portal.api.tools.migrate.WSMigrationManager;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
+import ru.protei.portal.core.model.struct.Photo;
 import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
@@ -57,6 +58,11 @@ public class APIConfigurationContext extends WebMvcConfigurerAdapter {
 
     @Bean
     public WSMigrationManager getWSMigrationManager () { return new WSMigrationManager (); }
+
+    @Bean
+    public AuditObjectDAO getAuditDAO() {
+        return new AuditObjectDAO_Impl();
+    }
 
 /*
     @Bean

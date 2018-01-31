@@ -11,6 +11,7 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
+import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.common.NameStatus;
@@ -21,7 +22,7 @@ import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.contact.client.activity.edit.AbstractContactEditActivity;
 import ru.protei.portal.ui.contact.client.activity.edit.AbstractContactEditView;
 
-import java.util.Date;
+import java.util.*;
 
 /**
  * Представление создания и редактирования контактного лица
@@ -31,6 +32,10 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+        company.setCategories( Arrays.asList(
+                En_CompanyCategory.CUSTOMER,
+                En_CompanyCategory.PARTNER,
+                En_CompanyCategory.SUBCONTRACTOR ) );
     }
 
     @Override

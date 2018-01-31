@@ -24,11 +24,6 @@ public class CompanyQuery extends BaseQuery {
      */
     public List<Long> categoryIds;
 
-    /**
-     * exclude protei companies
-     */
-    public boolean excludeHomeCompanies = false;
-
     public CompanyQuery() {
         super("", En_SortField.comp_name, En_SortDir.ASC);
     }
@@ -52,13 +47,5 @@ public class CompanyQuery extends BaseQuery {
     public void setCategoryIds(List<Long> categoryIds) {
         this.categoryIds = categoryIds;
     };
-
-    public boolean isExcludeHomeCompanies() {
-        return excludeHomeCompanies;
-    }
-
-    public void setExcludeHomeCompanies( boolean excludeHomeCompanies ) {
-        this.excludeHomeCompanies = excludeHomeCompanies;
-    }
 }
 

@@ -30,9 +30,12 @@ public class ExternalPerson {
     private Integer sex;
     private Boolean isDeleted;
 
+    private String department;
+    private String position;
+
     public ExternalPerson() {}
 
-    public ExternalPerson(Person person) throws UnknownHostException {
+    public ExternalPerson(Person person, String departmentName, String positionName) throws UnknownHostException {
 
         setId (person.getId ());
         setCreator ("DBA");
@@ -47,6 +50,8 @@ public class ExternalPerson {
         setBirthday (person.getBirthday ());
         setSex (person.getGender() != null ? person.getGender().equals (En_Gender.MALE) ? new Integer (1) : person.getGender().equals (En_Gender.FEMALE) ? new Integer (2) : null : null);
         setDeleted (person.isDeleted ());
+        setDepartment(departmentName);
+        setPosition(positionName);
     }
 
     @PrimaryKey
@@ -179,5 +184,25 @@ public class ExternalPerson {
     @Column(name="strClientIP")
     public void setClientIP(String clientIP) {
         this.clientIP = clientIP;
+    }
+
+    @Column(name="strDepartment")
+    public String getDepartment() {
+        return department;
+    }
+
+    @Column(name="strDepartment")
+    public void setDepartment(String department) {
+        this.department = department;
+    }
+
+    @Column(name="strPosition")
+    public String getPosition() {
+        return position;
+    }
+
+    @Column(name="strPosition")
+    public void setPosition(String position) {
+        this.position = position;
     }
 }

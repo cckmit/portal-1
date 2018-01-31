@@ -31,7 +31,8 @@ public class CompanyDAO_Impl extends PortalBaseJdbcDAO<Company> implements Compa
     @SqlConditionBuilder
     public SqlCondition createSqlCondition(CompanyQuery query) {
         return new SqlCondition().build((condition, args) -> {
-            condition.append("cname like ?");
+            condition.append( "company.id not in ( select companyId from company_group_home where mainId is not null )" );
+            condition.append(" and cname like ?");
             args.add(HelperFunc.makeLikeArg(query.getSearchString(), true));
 
             if (query.getGroupId() != null && query.getGroupId()> 0) {
@@ -45,10 +46,6 @@ public class CompanyDAO_Impl extends PortalBaseJdbcDAO<Company> implements Compa
                                 query.getCategoryIds().stream().map(Object::toString).collect(Collectors.joining(","))
                         )
                         .append(")");
-            }
-
-            if ( query.isExcludeHomeCompanies() ) {
-                condition.append( " AND id NOT IN ( SELECT companyId from company_group_home )" );
             }
         });
     }

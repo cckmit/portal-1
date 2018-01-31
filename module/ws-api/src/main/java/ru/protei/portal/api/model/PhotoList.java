@@ -1,5 +1,7 @@
 package ru.protei.portal.api.model;
 
+import ru.protei.portal.core.model.struct.Photo;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;

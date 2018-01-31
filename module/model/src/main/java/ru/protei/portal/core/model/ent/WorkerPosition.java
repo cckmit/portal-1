@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.winter.jdbc.annotations.IdInsertMode;
 import ru.protei.winter.jdbc.annotations.JdbcColumn;
 import ru.protei.winter.jdbc.annotations.JdbcEntity;
@@ -9,7 +10,7 @@ import ru.protei.winter.jdbc.annotations.JdbcId;
  * Created by michael on 17.05.16.
  */
 @JdbcEntity(table = "worker_position")
-public class WorkerPosition {
+public class WorkerPosition extends AuditableObject {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -44,5 +45,10 @@ public class WorkerPosition {
 
     public void setCompanyId(Long companyId) {
         this.companyId = companyId;
+    }
+
+    @Override
+    public String getAuditType() {
+        return "Position";
     }
 }

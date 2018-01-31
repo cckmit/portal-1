@@ -1,4 +1,6 @@
-package ru.protei.portal.api.model;
+package ru.protei.portal.core.model.struct;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -7,7 +9,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * Created by turik on 19.08.16.
  */
 @XmlRootElement(name = "photo")
-public class Photo {
+public class Photo extends AuditableObject {
 
     private Long id;
     private String content;
@@ -21,6 +23,7 @@ public class Photo {
         this.id = id;
     }
 
+    @JsonIgnore
     @XmlElement(name = "content")
     public String getContent() {
         return content;
@@ -28,6 +31,11 @@ public class Photo {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    @Override
+    public String getAuditType() {
+        return "Photo";
     }
 
     @Override

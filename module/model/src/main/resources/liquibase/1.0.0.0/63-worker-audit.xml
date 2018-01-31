@@ -1,0 +1,81 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+    <property name="now" value="CURRENT_TIMESTAMP" dbms="mysql"/>
+
+    <changeSet author="turik" id="addAuditType">
+        <insert tableName="audit_type">
+            <column name="id" value="32"/>
+            <column name="code" value="EMPLOYEE_MODIFY"/>
+            <column name="info" value="Изменение сотрудника"/>
+        </insert>
+        <insert tableName="audit_type">
+            <column name="id" value="33"/>
+            <column name="code" value="EMPLOYEE_CREATE"/>
+            <column name="info" value="Создание сотрудника"/>
+        </insert>
+
+        <insert tableName="audit_type">
+            <column name="id" value="34"/>
+            <column name="code" value="DEPARTMENT_MODIFY"/>
+            <column name="info" value="Изменение отдела"/>
+        </insert>
+        <insert tableName="audit_type">
+            <column name="id" value="35"/>
+            <column name="code" value="DEPARTMENT_CREATE"/>
+            <column name="info" value="Создание отдела"/>
+        </insert>
+        <insert tableName="audit_type">
+            <column name="id" value="36"/>
+            <column name="code" value="DEPARTMENT_REMOVE"/>
+            <column name="info" value="Удаление отдела"/>
+        </insert>
+
+        <insert tableName="audit_type">
+            <column name="id" value="37"/>
+            <column name="code" value="WORKER_MODIFY"/>
+            <column name="info" value="Изменение записи о сотруднике"/>
+        </insert>
+        <insert tableName="audit_type">
+            <column name="id" value="38"/>
+            <column name="code" value="WORKER_CREATE"/>
+            <column name="info" value="Создание записи о сотруднике"/>
+        </insert>
+        <insert tableName="audit_type">
+            <column name="id" value="39"/>
+            <column name="code" value="WORKER_REMOVE"/>
+            <column name="info" value="Удаление записи о сотруднике"/>
+        </insert>
+
+        <insert tableName="audit_type">
+            <column name="id" value="40"/>
+            <column name="code" value="POSITION_MODIFY"/>
+            <column name="info" value="Изменение должности"/>
+        </insert>
+        <insert tableName="audit_type">
+            <column name="id" value="41"/>
+            <column name="code" value="POSITION_CREATE"/>
+            <column name="info" value="Создание должности"/>
+        </insert>
+        <insert tableName="audit_type">
+            <column name="id" value="42"/>
+            <column name="code" value="POSITION_REMOVE"/>
+            <column name="info" value="Удаление должности"/>
+        </insert>
+
+        <insert tableName="audit_type">
+            <column name="id" value="43"/>
+            <column name="code" value="PHOTO_UPLOAD"/>
+            <column name="info" value="Загрузка фотографии сотрудника"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="turik" id="updateAuditType">
+        <update tableName="audit_type">
+            <column name="info" value="Удаление роли"/>
+            <where>id = 31</where>
+        </update>
+    </changeSet>
+</databaseChangeLog>

@@ -23,7 +23,8 @@ public class CompanySelector extends ButtonSelector< EntityOption > implements M
 
     @Inject
     public void init( CompanyModel companyModel ) {
-        companyModel.subscribe(this, categories);
+        model = companyModel;
+        model.subscribe(this, categories);
 
         setSearchEnabled( true );
         setSearchAutoFocus( true );
@@ -101,16 +102,19 @@ public class CompanySelector extends ButtonSelector< EntityOption > implements M
     }
 
     public void fillOptions( List< EntityOption > options ) {
-        this.options = options;
         clearOptions();
+        this.options = options;
     }
 
     public void setDefaultValue( String value ) {
         this.defaultValue = value;
     }
 
-    public void setCategories(List<En_CompanyCategory> categories) {
+    public void setCategories( List< En_CompanyCategory > categories ) {
         this.categories = categories;
+        if ( model != null ) {
+            model.updateQuery( this, this.categories );
+        }
     }
 
     @Inject
@@ -127,4 +131,6 @@ public class CompanySelector extends ButtonSelector< EntityOption > implements M
             En_CompanyCategory.PARTNER,
             En_CompanyCategory.SUBCONTRACTOR,
             En_CompanyCategory.HOME);
+
+    private CompanyModel model;
 }

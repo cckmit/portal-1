@@ -14,15 +14,20 @@ import ru.protei.portal.api.model.*;
 import ru.protei.portal.api.tools.migrate.WSMigrationManager;
 import ru.protei.portal.api.utils.HelperService;
 import ru.protei.portal.core.model.dao.*;
+import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.EmployeeQuery;
+import ru.protei.portal.core.model.struct.AuditObject;
+import ru.protei.portal.core.model.struct.AuditableObject;
+import ru.protei.portal.core.model.struct.Photo;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 
 import java.io.*;
+import java.net.Inet4Address;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.function.Function;
@@ -54,6 +59,9 @@ public class WorkerController {
 
     @Autowired
     WSMigrationManager migrationManager;
+
+    @Autowired
+    AuditObjectDAO auditObjectDAO;
 
     @RequestMapping(method = RequestMethod.GET, value = "/get.person")
     public @ResponseBody
@@ -174,10 +182,10 @@ public class WorkerController {
                     person.setDeleted(false);
 
                     if (person.getId() == null) {
-                        personDAO.persist(person);
+                        persistPerson(person);
                         logger.debug("created person with id={}", person.getId());
                     } else {
-                        personDAO.merge(person);
+                        mergePerson(person);
                     }
 
                     WorkerPosition position = getValidPosition(rec.getPositionName(), operationData.homeItem().getCompanyId());
@@ -193,11 +201,12 @@ public class WorkerController {
                     worker.setActiveFlag(rec.getActive());
                     worker.setExternalId(rec.getWorkerId().trim());
 
-                    workerEntryDAO.persist(worker);
+                    persistWorker(worker);
 
                     if (WSConfig.getInstance().isEnableMigration()) {
-                        migrationManager.savePerson(person);
+                        migrationManager.savePerson(person, operationData.department().getName(), position.getName());
                     }
+
 
                     logger.debug("success result, workerRowId={}", worker.getId());
                     return ServiceResult.successResult(person.getId());
@@ -255,16 +264,17 @@ public class WorkerController {
                             person.setDeleted(rec.isDeleted());
                         }
 
-                        personDAO.merge(person);
+                        mergePerson(person);
+
                         if (WSConfig.getInstance().isEnableMigration()) {
-                            migrationManager.savePerson(person);
+                            migrationManager.savePerson(person, "", "");
                         }
 
                         logger.debug("success result, workerRowId={}", worker.getId());
                         return ServiceResult.successResult(person.getId());
                     }
 
-                    personDAO.merge(person);
+                    mergePerson(person);
 
                     WorkerPosition position = getValidPosition(rec.getPositionName(), operationData.homeItem().getCompanyId());
 
@@ -274,10 +284,10 @@ public class WorkerController {
                     worker.setHireOrderNo(HelperFunc.isNotEmpty(rec.getHireOrderNo()) ? rec.getHireOrderNo().trim() : null);
                     worker.setActiveFlag(rec.getActive());
 
-                    workerEntryDAO.merge(worker);
+                    mergeWorker(worker);
 
                     if (WSConfig.getInstance().isEnableMigration()) {
-                        migrationManager.savePerson(person);
+                        migrationManager.savePerson(person, worker.getDepartment().getName(), position.getName());
                     }
 
                     logger.debug("success result, workerRowId={}", worker.getId());
@@ -336,12 +346,13 @@ public class WorkerController {
                     WorkerEntry worker = operationData.worker();
                     Long personId = worker.getPersonId();
 
-                    workerEntryDAO.remove(worker);
+                    removeWorker(worker);
 
                     if (!workerEntryDAO.checkExistsByPersonId(personId)) {
                         Person person = personDAO.get(personId);
                         person.setDeleted(true);
-                        personDAO.merge(person);
+                        mergePerson(person);
+
                         if (WSConfig.getInstance().isEnableMigration()) {
                             migrationManager.deletePerson(person);
                         }
@@ -384,6 +395,8 @@ public class WorkerController {
 
                 out.write(photo.getContent().getBytes());
                 out.flush();
+
+                makeAudit(photo, En_AuditType.PHOTO_UPLOAD);
 
                 logger.debug("success result, personId={}", photo.getId());
                 return ServiceResult.successResult(photo.getId());
@@ -472,9 +485,9 @@ public class WorkerController {
                 department.setCompanyId(operationData.homeItem().getCompanyId());
                 department.setTypeId(1);
                 department.setExternalId(rec.getDepartmentId().trim());
-                companyDepartmentDAO.persist(department);
+                persistDepartment(department);
             } else {
-                companyDepartmentDAO.merge(department);
+                mergeDepartment(department);
             }
 
             logger.debug("success result, departmentRowId={}", department.getId());
@@ -505,7 +518,7 @@ public class WorkerController {
                 return operationData.failResult();
 
             CompanyDepartment department = operationData.department();
-            companyDepartmentDAO.remove(department);
+            removeDepartment(department);
 
             logger.debug("success result, departmentRowId={}", department.getId());
             return ServiceResult.successResult(department.getId());
@@ -541,7 +554,7 @@ public class WorkerController {
             WorkerPosition position = operationData.position();
             position.setName(newName.trim());
 
-            workerPositionDAO.merge(position);
+            mergePosition(position);
 
             logger.debug("success result, positionRowId={}", position.getId());
             return ServiceResult.successResult(position.getId());
@@ -570,7 +583,7 @@ public class WorkerController {
                 return operationData.failResult();
 
             WorkerPosition position = operationData.position();
-            workerPositionDAO.remove(position);
+            removePosition(position);
 
             logger.debug("success result, positionRowId={}", position.getId());
             return ServiceResult.successResult(position.getId());
@@ -672,7 +685,7 @@ public class WorkerController {
         contactInfoFacade.setFax(HelperFunc.isEmpty(rec.getFax()) ? null : rec.getFax().trim());
     }
 
-    private WorkerPosition getValidPosition(String positionName, Long companyId) {
+    private WorkerPosition getValidPosition(String positionName, Long companyId) throws Exception {
 
         WorkerPosition position = workerPositionDAO.getByName(positionName.trim(), companyId);
 
@@ -682,8 +695,8 @@ public class WorkerController {
         position = new WorkerPosition();
         position.setCompanyId(companyId);
         position.setName(positionName.trim());
-        Long id = workerPositionDAO.persist(position);
-        position.setId(id);
+
+        persistPosition(position);
 
         return position;
     }
@@ -694,6 +707,72 @@ public class WorkerController {
         return fileName;
     }
 
+    private void persistPerson(Person person) throws Exception {
+        personDAO.persist(person);
+        makeAudit(person, En_AuditType.EMPLOYEE_CREATE);
+    }
+
+    private void mergePerson(Person person) throws Exception {
+        personDAO.merge(person);
+        makeAudit(person, En_AuditType.EMPLOYEE_MODIFY);
+    }
+
+    private void persistWorker(WorkerEntry worker) throws Exception {
+        workerEntryDAO.persist(worker);
+        makeAudit(worker, En_AuditType.WORKER_CREATE);
+    }
+
+    private void mergeWorker(WorkerEntry worker) throws Exception {
+        workerEntryDAO.merge(worker);
+        makeAudit(worker, En_AuditType.WORKER_MODIFY);
+    }
+
+    private void removeWorker(WorkerEntry worker) throws Exception {
+        workerEntryDAO.remove(worker);
+        makeAudit(new LongAuditableObject(worker.getId()), En_AuditType.WORKER_REMOVE);
+    }
+
+    private void persistDepartment(CompanyDepartment department) throws Exception {
+        companyDepartmentDAO.persist(department);
+        makeAudit(department, En_AuditType.DEPARTMENT_CREATE);
+    }
+
+    private void mergeDepartment(CompanyDepartment department) throws Exception {
+        companyDepartmentDAO.merge(department);
+        makeAudit(department, En_AuditType.DEPARTMENT_MODIFY);
+    }
+
+    private void removeDepartment(CompanyDepartment department) throws Exception {
+        companyDepartmentDAO.remove(department);
+        makeAudit(new LongAuditableObject(department.getId()), En_AuditType.DEPARTMENT_REMOVE);
+    }
+
+    private void persistPosition(WorkerPosition position) throws Exception {
+        workerPositionDAO.persist(position);
+        makeAudit(position, En_AuditType.POSITION_CREATE);
+    }
+
+    private void mergePosition(WorkerPosition position) throws Exception {
+        workerPositionDAO.merge(position);
+        makeAudit(position, En_AuditType.POSITION_MODIFY);
+    }
+
+    private void removePosition(WorkerPosition position) throws Exception {
+        workerPositionDAO.remove(position);
+        makeAudit(new LongAuditableObject(position.getId()), En_AuditType.POSITION_REMOVE);
+    }
+
+    private void makeAudit(AuditableObject object, En_AuditType type) throws Exception {
+        AuditObject auditObject = new AuditObject();
+        auditObject.setCreated( new Date() );
+        auditObject.setTypeId(type.getId());
+        auditObject.setCreatorId( 0L );
+        auditObject.setCreatorIp(Inet4Address.getLocalHost ().getHostAddress());
+        auditObject.setCreatorShortName("portal-api");
+        auditObject.setEntryInfo(object);
+
+        auditObjectDAO.insertAudit(auditObject);
+    }
 
     /**
      * utility
@@ -830,7 +909,11 @@ public class WorkerController {
             if (!isValid())
                 return this;
 
-            if (workerPositionDAO.checkExistsByName(record.getNewPositionName().trim(), homeGroupItem.getCompanyId())) {
+            if (position == null && workerPositionDAO.checkExistsByName(record.getNewPositionName().trim(), homeGroupItem.getCompanyId())) {
+                lastError = En_ErrorCode.EXIST_POS;
+            }
+
+            if (position != null && workerPositionDAO.checkExistsByName(record.getNewPositionName().trim(), homeGroupItem.getCompanyId(), position.getId())) {
                 lastError = En_ErrorCode.EXIST_POS;
             }
 
