@@ -103,12 +103,10 @@ public class IssueEvents {
     }
 
     public static class SaveComment {
-        public SaveComment( Long id, Long stateId ) {
+        public SaveComment( Long id ) {
             this.id = id;
-            this.stateId = stateId;
         }
         public Long id;
-        public Long stateId;
     }
 }
 

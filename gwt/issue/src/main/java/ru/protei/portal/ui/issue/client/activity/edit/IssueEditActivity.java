@@ -97,14 +97,12 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         issueService.saveIssue(issue, new RequestCallback<CaseObject>() {
             @Override
             public void onError(Throwable throwable) {
-                fireEvent(new NotifyEvents.Show(throwable.getMessage(), NotifyEvents.NotifyType.SUCCESS));
+                fireEvent(new NotifyEvents.Show(throwable.getMessage(), NotifyEvents.NotifyType.ERROR));
             }
 
             @Override
             public void onSuccess(CaseObject caseObject) {
-                fireEvent(new IssueEvents.ChangeModel());
-                fireEvent(new Back());
-                fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+                fireEvent(new IssueEvents.SaveComment(caseObject.getId()));
             }
         });
     }

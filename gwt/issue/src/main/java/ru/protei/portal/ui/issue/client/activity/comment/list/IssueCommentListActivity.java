@@ -2,6 +2,7 @@ package ru.protei.portal.ui.issue.client.activity.comment.list;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.En_CaseState;
@@ -74,7 +75,11 @@ public abstract class IssueCommentListActivity
 
     @Event
     public  void onSaveComment( IssueEvents.SaveComment event ) {
-        send( event.id, event.stateId );
+        if(!HelperFunc.isEmpty(view.message().getValue()))
+            send( event.id, true );
+        else{
+            issueSavedAlso(true);
+        }
     }
 
     @Override
@@ -167,7 +172,7 @@ public abstract class IssueCommentListActivity
 
     @Override
     public void onSendClicked() {
-        send( null, null );
+        send( null, false );
     }
 
     @Override
@@ -340,7 +345,7 @@ public abstract class IssueCommentListActivity
                 list.stream().map(CaseAttachment::getAttachmentId).collect(Collectors.toList());
     }
 
-    private void send( Long id, Long stateId ) {
+    private void send( Long id, boolean isIssueSavedAlso ) {
         if ( comment == null ) {
             comment = new CaseComment();
             comment.setAuthorId( profile.getId() );
@@ -350,15 +355,14 @@ public abstract class IssueCommentListActivity
         boolean isEdit = comment.getId() != null;
 
         String message = view.message().getValue();
-        if ( stateId == null && HelperFunc.isEmpty( message ) ) {
+        if ( HelperFunc.isEmpty( message ) ) {
             if ( id == null ) {
                 fireEvent(new NotifyEvents.Show(lang.errEditIssueCommentEmpty(), NotifyEvents.NotifyType.ERROR));
             }
             return;
         }
 
-        comment.setText( message == null ? null : IssueCommentUtils.prewrapMessage( message ) );
-        comment.setCaseStateId( stateId );
+        comment.setText( IssueCommentUtils.prewrapMessage( message ) );
         comment.setCaseAttachments(
                 tempAttachments.stream()
                         .map(a -> new CaseAttachment(show.caseId, a.getId(), isEdit? comment.getId(): null))
@@ -368,13 +372,15 @@ public abstract class IssueCommentListActivity
         issueService.editIssueComment( comment, new RequestCallback<CaseComment>() {
             @Override
             public void onError( Throwable throwable ) {
+                if(isIssueSavedAlso)
+                    issueSavedAlso(false);
                 fireEvent( new NotifyEvents.Show( lang.errEditIssueComment(), NotifyEvents.NotifyType.ERROR ) );
             }
 
             @Override
             public void onSuccess( CaseComment result ) {
-                if(result == null){
-                    onError(null);
+                if(isIssueSavedAlso){
+                    issueSavedAlso(true);
                     return;
                 }
                 result.setCaseAttachments(comment.getCaseAttachments());
@@ -405,6 +411,13 @@ public abstract class IssueCommentListActivity
             }
         } );
     };
+
+    private void issueSavedAlso(boolean withComeback){
+        fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+        fireEvent(new IssueEvents.ChangeModel());
+        if(withComeback)
+            fireEvent(new Back());
+    }
 
     @Inject
     Lang lang;
