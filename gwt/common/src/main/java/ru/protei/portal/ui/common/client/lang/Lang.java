@@ -690,4 +690,6 @@ public interface Lang extends Messages, ContactItemLang {
     String issueCompanySubscriptionNeedSelectCompany();
 
     String caseSubscription();
+
+    String errCreatedStateSelected();
 }

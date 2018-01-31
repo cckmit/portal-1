@@ -88,6 +88,10 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         if(!isFieldsValid()){
             return;
         }
+        if(issue.getManagerId() != null && view.state().getValue() == En_CaseState.CREATED){
+            fireEvent(new NotifyEvents.Show(lang.errCreatedStateSelected(), NotifyEvents.NotifyType.ERROR));
+            return;
+        }
         fillIssueObject(issue);
 
         issueService.saveIssue(issue, new RequestCallback<CaseObject>() {

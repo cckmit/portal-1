@@ -101,10 +101,6 @@ public class MailNotificationProcessor {
             return;
         }
 
-        if ( oldManager == null ) {
-            oldManager = manager;
-        }
-
         List<String> recipients = notifiers.stream().map( NotificationEntry::getAddress ).collect( toList() );
 
         PreparedTemplate bodyTemplate = templateService.getCrmEmailNotificationBody(
