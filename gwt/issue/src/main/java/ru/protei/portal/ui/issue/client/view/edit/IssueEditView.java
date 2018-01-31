@@ -193,8 +193,8 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
-    public HasVisibility notifiersEnabled() {
-        return notifiers;
+    public HasVisibility caseSubscriptionContainer() {
+        return caseSubscriptionContainers;
     }
 
     @Override
@@ -320,6 +320,8 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     HTMLPanel nameInputGroupContainer;
     @UiField
     HTMLPanel nameContainer;
+    @UiField
+    HTMLPanel caseSubscriptionContainers;
 
 
     private AbstractIssueEditActivity activity;

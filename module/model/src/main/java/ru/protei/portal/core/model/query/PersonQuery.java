@@ -27,6 +27,7 @@ public class PersonQuery extends BaseQuery {
         this.companyId = companyId;
         this.onlyPeople = onlyPeople;
         this.limit = 1000;
+        this.fired = fired;
     }
 
     public Long getCompanyId() {

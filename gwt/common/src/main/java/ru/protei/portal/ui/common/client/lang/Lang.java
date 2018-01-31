@@ -684,4 +684,10 @@ public interface Lang extends Messages, ContactItemLang {
     String noChanges();
 
     String roleRemoveConfirmMessage();
+
+    String issueCompanySubscriptionNotDefined();
+
+    String issueCompanySubscriptionNeedSelectCompany();
+
+    String caseSubscription();
 }

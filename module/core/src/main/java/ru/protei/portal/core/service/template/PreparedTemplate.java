@@ -2,7 +2,6 @@ package ru.protei.portal.core.service.template;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
-import ru.protei.portal.core.model.ent.Person;
 
 import java.io.StringWriter;
 import java.io.Writer;

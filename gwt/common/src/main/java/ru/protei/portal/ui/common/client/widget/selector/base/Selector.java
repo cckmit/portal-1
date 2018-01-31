@@ -87,7 +87,9 @@ public abstract class Selector<T>
         DisplayOption option = displayOptionCreator.makeDisplayOption( value );
         SelectorItem itemView = buildItemView(option.getName(),
                 option.getStyle(), itemHandler);
-        itemView.setImage(option.getImageSrc());
+        if ( option.getImageSrc() != null ) {
+            itemView.setImage(option.getImageSrc());
+        }
         itemView.setIcon(option.getIcon());
 
         itemViewToModel.put(itemView, value);

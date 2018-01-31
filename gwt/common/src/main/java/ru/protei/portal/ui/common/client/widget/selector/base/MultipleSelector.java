@@ -124,6 +124,7 @@ public abstract class MultipleSelector<T>
         popup.showNear( relative );
         popup.setSearchVisible( true );
         popup.setSearchAutoFocus( true );
+        popup.clearSearchField();
         popup.addValueChangeHandler( event -> {
             String searchText = event.getValue().toLowerCase();
             onSearchChanged( searchText );

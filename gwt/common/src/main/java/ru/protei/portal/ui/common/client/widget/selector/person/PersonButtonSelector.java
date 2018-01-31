@@ -17,7 +17,16 @@ public class PersonButtonSelector extends ButtonSelector< PersonShortView > {
     public void init() {
         setSearchEnabled( true );
         setSearchAutoFocus( true );
-        setDisplayOptionCreator( value -> new DisplayOption( value == null ? defaultValue : value.getDisplayShortName() ) );
+        setDisplayOptionCreator( value -> {
+            if ( value == null ) {
+                return new DisplayOption( defaultValue );
+            }
+
+            return new DisplayOption(
+                    value.getDisplayShortName(),
+                    value.isFired() ? "not-active" : "",
+                    value.isFired() ? "fa fa-ban ban" : "" );
+        } );
     }
 
     @Override
@@ -58,7 +67,7 @@ public class PersonButtonSelector extends ButtonSelector< PersonShortView > {
     }
 
     private void updatePersons(){
-        personModel.requestPersonList( company, this::fillOptions );
+        personModel.requestPersonList( company, fired, this::fillOptions );
     }
 
     @Inject
@@ -68,5 +77,5 @@ public class PersonButtonSelector extends ButtonSelector< PersonShortView > {
 
     private Company company;
     private String defaultValue;
-    private Boolean fired;
+    private Boolean fired = null;
 }
