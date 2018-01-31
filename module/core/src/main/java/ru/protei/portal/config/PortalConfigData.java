@@ -10,12 +10,14 @@ public class PortalConfigData {
 
     private SmtpConfig smtpConfig;
     private CloudConfig cloudConfig;
+    private final HpsmConfig hpsmConfig;
 
     private final String crmCaseUrl;
 
     public PortalConfigData (PropertiesWrapper wrapper) throws ConfigException {
         smtpConfig = new SmtpConfig(wrapper);
         cloudConfig = new CloudConfig(wrapper);
+        hpsmConfig = new HpsmConfig(wrapper);
 
         crmCaseUrl = wrapper.getProperty( "crm.case.url", "http://127.0.0.1:8888/crm.html#issues/issue:id=%d;" );
     }
@@ -30,6 +32,10 @@ public class PortalConfigData {
 
     public CloudConfig cloud() {
         return cloudConfig;
+    }
+
+    public HpsmConfig hpsm() {
+        return hpsmConfig;
     }
 
     public static class SmtpConfig {
@@ -83,6 +89,24 @@ public class PortalConfigData {
 
         public String getPassword() {
             return password;
+        }
+    }
+
+    public static class HpsmConfig {
+        private final Long timeout;
+        private final Long check_time;
+
+        public HpsmConfig(PropertiesWrapper properties) throws ConfigException {
+            timeout = Long.valueOf(properties.getProperty("hpsm.timeout", "30000"));
+            check_time = Long.valueOf(properties.getProperty("hpsm.check_time", "5000"));
+        }
+
+        public Long getTimeout() {
+            return timeout;
+        }
+
+        public Long getCheck_time() {
+            return check_time;
         }
     }
 

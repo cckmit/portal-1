@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.event.EventListener;
 import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.core.ServiceModule;
-import ru.protei.portal.core.event.CompleteCaseEvent;
+import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.mail.MailSendChannel;
 import ru.protei.portal.core.model.dao.AttachmentDAO;
 import ru.protei.portal.core.model.dao.ExternalCaseAppDAO;
@@ -124,7 +124,7 @@ public class HpsmServiceImpl implements HpsmService {
 
     @Override
     @EventListener
-    public void onCompleteCaseEvent(CompleteCaseEvent event) {
+    public void onCompleteCaseEvent(AssembledCaseEvent event) {
         //FROM COMMENT HANDLER
 
         if (event.getServiceModule() == ServiceModule.HPSM) {
@@ -150,11 +150,13 @@ public class HpsmServiceImpl implements HpsmService {
             return;
         }
 
-        /**
-         * Bug CRM-30
-         *
-         *
-         * @review Это не должно быть здесь на самом деле. Это же логика завязанная на изменение состояния,
+        /*
+          Bug CRM-30
+
+
+         * @review
+         * @solved
+         * Это не должно быть здесь на самом деле. Это же логика завязанная на изменение состояния,
          * для которой так мучительно придумывали схему обработки. Ну перенести это отсюда в соответствующие
          * обработчики для back-channel.
          * В идеале, код, который размещается здесь должен просто выполнить элементарные проверки пред-фильтрации события,
@@ -166,54 +168,11 @@ public class HpsmServiceImpl implements HpsmService {
          *
          * нужно убирать (переносить в соответствующий обработчик, а не выделить и нажать DEL :))
          */
-        if (object.getState() == En_CaseState.WORKAROUND && HelperFunc.isEmpty(msg.getWorkaroundText())) {
-            msg.setWorkaroundText(event.getCaseComment().getText());
-            msg.setTxOurWorkaroundTime(String.valueOf(event.getTimestamp()));
-            appData.setExtAppData(xStream.toXML(msg));
-            externalCaseAppDAO.saveExtAppData(appData);
-        }
-
-        HpsmMessageHeader header = new HpsmMessageHeader(appData.getExtAppCaseId(), object.getExtId(), msg.status());
-        msg.setMessage(event.getCaseComment().getText());
-        instance.fillReplyMessageAttributes(msg, object);
-
-        List<HpsmAttachment> replyAttachments = null;
-
-        if (event.getCaseComment().getCaseAttachments() != null && !event.getCaseComment().getCaseAttachments().isEmpty()) {
-            logger.debug("process attachments case-id={}", object.getId());
-            replyAttachments = new ArrayList<>();
-            for (CaseAttachment in : event.getCaseComment().getCaseAttachments()) {
-                Attachment a = attachmentDAO.get(in.getAttachmentId());
-                if (a == null) {
-                    logger.debug("case attachment not found, case-id={}, attachment-id={}", object.getId(), in.getAttachmentId());
-                    continue;
-                }
-
-                logger.debug("append reply attachment file = {}, ext-link={}", a.getFileName(), a.getExtLink());
-
-                replyAttachments.add(new HpsmAttachment(
-                        a.getFileName(),
-                        a.getMimeType(),
-                        a.getLabelText(),
-                        a.getDataSize().intValue(),
-                        new AttachmentFileStreamSource(fileStorage, a.getExtLink())));
-            }
-        }
 
         BackChannelEventHandler handler = backChannelHandlerFactory.createHandler(msg, event);
         if (handler == null) {
             logger.debug("unable to create event handler, case {}", event.getCaseObject().getExtId());
             return;
-        }
-
-        logger.debug("ready to send mail, comment-event, case-id={}, ext={}, header={}, data={}",
-                object.getId(), appData.getExtAppCaseId(), header.toString(), xStream.toXML(msg));
-
-        try {
-            instance.sendReply(header, msg, replyAttachments);
-            logger.debug("case-comment event handled for case {}", object.getExtId());
-        } catch (Exception e) {
-            logger.error("error while attempt to send mail", e);
         }
 
         try {

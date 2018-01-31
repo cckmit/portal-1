@@ -338,6 +338,11 @@ public class MainConfiguration {
         return new EventAssemblerServiceImpl();
     }
 
+    @Bean
+    public EventExpirationControl getEventExpirationControl() {
+        return new EventExpirationControl();
+    }
+
     /** ASPECT/INTERCEPTORS **/
     @Bean
     public ServiceLayerInterceptor getServiceLayerInterceptor () {

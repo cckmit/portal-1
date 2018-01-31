@@ -16,13 +16,12 @@ import static ru.protei.portal.hpsm.api.HpsmStatus.*;
 public final class HpsmStatusHandlerFactoryImpl implements HpsmStatusHandlerFactory {
 
     public HpsmStatusHandlerFactoryImpl() {
-        statusHandlerMap = new HashMap<>();
         statusHandlerMap.put(new Tuple<>(INFO_REQUEST, IN_PROGRESS), new OpenCaseHandler());
         statusHandlerMap.put(new Tuple<>(WORKAROUND, TEST_WA), new WorkaroundCaseHandler());
-        statusHandlerMap.put(new Tuple<>(TEST_WA, REJECT_WA), new RejectSolutionHandler());
+        statusHandlerMap.put(new Tuple<>(TEST_WA, REJECT_WA), new RejectWAHandler());
         statusHandlerMap.put(new Tuple<>(TEST_WA, CONFIRM_WA), new ConfirmWACaseHandler());
         statusHandlerMap.put(new Tuple<>(SOLVED, TEST_SOLUTION), new SolvedCheckHandler());
-        statusHandlerMap.put(new Tuple<>(TEST_SOLUTION, IN_PROGRESS), new RejectWAHandler());
+        statusHandlerMap.put(new Tuple<>(TEST_SOLUTION, IN_PROGRESS), new RejectSolutionHandler());
         statusHandlerMap.put(new Tuple<>(TEST_SOLUTION, CLOSED), new ClosedCaseHandler());
     }
 
@@ -115,7 +114,7 @@ public final class HpsmStatusHandlerFactoryImpl implements HpsmStatusHandlerFact
         }
     }
 
-    private final Map<Tuple<HpsmStatus, HpsmStatus>, HpsmStatusHandler> statusHandlerMap;
+    private final Map<Tuple<HpsmStatus, HpsmStatus>, HpsmStatusHandler> statusHandlerMap = new HashMap<>();
     private En_CaseState newState;
     private HpsmMessage msg;
 }

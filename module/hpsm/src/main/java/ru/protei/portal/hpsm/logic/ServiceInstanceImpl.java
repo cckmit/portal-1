@@ -102,6 +102,7 @@ public class ServiceInstanceImpl implements ServiceInstance {
     @Override
     public void sendReply(HpsmMessageHeader replyHeader, HpsmMessage replyMessage) throws Exception {
         /** @review
+         *  @solved
          *  Вот так делать не надо.
          *  Исключение - это сигнал об ошибке. Исключительные ситуации должны по возможности обрабатываться
          *  в одном месте, как можно выше по уровню программы. По крайней мере, обработкой исключений
@@ -112,11 +113,7 @@ public class ServiceInstanceImpl implements ServiceInstance {
          *  Рекомендация - убирай try-catch, сделай обработку исключения на одном уровне и если это
          *  только запись в лог, то через логгер (slf4j)
          */
-        try {
-            sendReply(this.serviceConfig.getOutboundChannel().getSendTo(), replyHeader, replyMessage);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        sendReply(this.serviceConfig.getOutboundChannel().getSendTo(), replyHeader, replyMessage);
     }
 
     @Override
