@@ -157,9 +157,12 @@ public class CaseServiceImpl implements CaseService {
         jdbcManyRelationsHelper.persist(caseObject, "notifiers");
         CaseObject oldState = caseObjectDAO.get(caseObject.getId());
 
+        if (caseObject.getState() == En_CaseState.CREATED && caseObject.getManager() != null) {
+            caseObject.setState(En_CaseState.OPENED);
+        }
+
         if(isCaseHasNoChanges(caseObject, oldState))
             return new CoreResponse<CaseObject>().success( caseObject ); //ignore
-
 
         caseObject.setModified(new Date());
         if(CollectionUtils.isNotEmpty(caseObject.getNotifiers())) {
@@ -169,10 +172,6 @@ public class CaseServiceImpl implements CaseService {
                             caseObject.getNotifiers().stream().map(Person::getId).collect(Collectors.toList()
                             ), "id", "contactInfo"))
             );
-        }
-
-        if (caseObject.getState() == En_CaseState.CREATED && caseObject.getManager() != null) {
-            caseObject.setState(En_CaseState.OPENED);
         }
 
         boolean isUpdated = caseObjectDAO.merge(caseObject);
