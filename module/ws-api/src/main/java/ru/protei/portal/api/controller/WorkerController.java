@@ -23,6 +23,7 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.struct.AuditObject;
 import ru.protei.portal.core.model.struct.AuditableObject;
+import ru.protei.portal.core.model.struct.Photo;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 
 import java.io.*;
@@ -403,6 +404,8 @@ public class WorkerController {
                 out.write(photo.getContent().getBytes());
                 out.flush();
 
+                makeAudit(photo, En_AuditType.PHOTO_UPLOAD);
+
                 logger.debug("success result, personId={}", photo.getId());
                 return ServiceResult.successResult(photo.getId());
             }
@@ -564,6 +567,8 @@ public class WorkerController {
 
             workerPositionDAO.merge(position);
 
+            makeAudit(position, En_AuditType.POSITION_MODIFY);
+
             logger.debug("success result, positionRowId={}", position.getId());
             return ServiceResult.successResult(position.getId());
 
@@ -592,6 +597,8 @@ public class WorkerController {
 
             WorkerPosition position = operationData.position();
             workerPositionDAO.remove(position);
+
+            makeAudit(new LongAuditableObject(position.getId()), En_AuditType.POSITION_REMOVE);
 
             logger.debug("success result, positionRowId={}", position.getId());
             return ServiceResult.successResult(position.getId());
@@ -693,7 +700,7 @@ public class WorkerController {
         contactInfoFacade.setFax(HelperFunc.isEmpty(rec.getFax()) ? null : rec.getFax().trim());
     }
 
-    private WorkerPosition getValidPosition(String positionName, Long companyId) {
+    private WorkerPosition getValidPosition(String positionName, Long companyId) throws Exception {
 
         WorkerPosition position = workerPositionDAO.getByName(positionName.trim(), companyId);
 
@@ -705,6 +712,8 @@ public class WorkerController {
         position.setName(positionName.trim());
         Long id = workerPositionDAO.persist(position);
         position.setId(id);
+
+        makeAudit(position, En_AuditType.POSITION_CREATE);
 
         return position;
     }
@@ -863,7 +872,11 @@ public class WorkerController {
             if (!isValid())
                 return this;
 
-            if (workerPositionDAO.checkExistsByName(record.getNewPositionName().trim(), homeGroupItem.getCompanyId())) {
+            if (position == null && workerPositionDAO.checkExistsByName(record.getNewPositionName().trim(), homeGroupItem.getCompanyId())) {
+                lastError = En_ErrorCode.EXIST_POS;
+            }
+
+            if (position != null && workerPositionDAO.checkExistsByName(record.getNewPositionName().trim(), homeGroupItem.getCompanyId(), position.getId())) {
                 lastError = En_ErrorCode.EXIST_POS;
             }
 

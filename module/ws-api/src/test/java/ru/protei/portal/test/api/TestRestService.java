@@ -15,6 +15,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import ru.protei.portal.api.config.WSConfig;
 import ru.protei.portal.api.model.*;
+import ru.protei.portal.core.model.struct.Photo;
 
 import java.io.*;
 import java.util.*;

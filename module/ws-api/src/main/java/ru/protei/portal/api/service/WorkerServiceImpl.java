@@ -10,6 +10,7 @@ import ru.protei.portal.api.config.WSConfig;
 import ru.protei.portal.api.model.*;
 import ru.protei.portal.api.utils.HelperService;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.struct.Photo;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.winter.jdbc.JdbcSort;
 
@@ -18,7 +19,6 @@ import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.io.*;
-import java.net.Inet4Address;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;

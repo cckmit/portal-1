@@ -8,4 +8,5 @@ import ru.protei.portal.core.model.ent.WorkerPosition;
 public interface WorkerPositionDAO extends PortalBaseDAO<WorkerPosition> {
     WorkerPosition getByName(String name, Long companyId);
     boolean checkExistsByName(String name, Long companyId);
+    boolean checkExistsByName(String name, Long companyId, Long id);
 }

@@ -1,7 +1,7 @@
 package ru.protei.portal.api.service;
 
 import ru.protei.portal.api.model.DepartmentRecord;
-import ru.protei.portal.api.model.Photo;
+import ru.protei.portal.core.model.struct.Photo;
 import ru.protei.portal.api.model.ServiceResult;
 import ru.protei.portal.api.model.WorkerRecord;
 

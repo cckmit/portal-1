@@ -35,8 +35,12 @@ public abstract class CompanyModel implements Activity {
         refreshOptions();
     }
 
-    public void subscribe(ModelSelector<EntityOption> selector, List<En_CompanyCategory> categories) {
+    public void subscribe( ModelSelector<EntityOption> selector, List<En_CompanyCategory> categories ) {
         subscribers.add( selector );
+        updateQuery( selector, categories );
+    }
+
+    public void updateQuery( ModelSelector<EntityOption> selector, List<En_CompanyCategory> categories ) {
         CompanyQuery query = makeQuery( categories );
         selectorToQuery.put(selector, query);
         requestOptions(selector, query);
@@ -57,15 +61,13 @@ public abstract class CompanyModel implements Activity {
 
             @Override
             public void onSuccess( List<EntityOption> options ) {
-                list.clear();
-                list.addAll( options );
-                selector.fillOptions( list );
+                selector.fillOptions( options );
                 selector.refreshValue();
             }
         } );
     }
 
-    private CompanyQuery makeQuery(List<En_CompanyCategory> categories) {
+    private CompanyQuery makeQuery( List<En_CompanyCategory> categories ) {
         CompanyQuery query = new CompanyQuery();
         if(categories != null) {
             query.setCategoryIds(
@@ -82,8 +84,6 @@ public abstract class CompanyModel implements Activity {
     @Inject
     Lang lang;
 
-    private List< EntityOption > list = new ArrayList<>();
     private Map<ModelSelector< EntityOption >, CompanyQuery> selectorToQuery = new HashMap<>();
     private List< ModelSelector< EntityOption > > subscribers = new ArrayList<>();
-
 }

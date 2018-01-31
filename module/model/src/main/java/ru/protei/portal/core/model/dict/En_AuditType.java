@@ -58,7 +58,13 @@ public enum En_AuditType {
 
     WORKER_MODIFY( 37 ),
     WORKER_CREATE( 38 ),
-    WORKER_REMOVE( 39 );
+    WORKER_REMOVE( 39 ),
+
+    POSITION_MODIFY( 40 ),
+    POSITION_CREATE( 41 ),
+    POSITION_REMOVE( 42 ),
+
+    PHOTO_UPLOAD( 43 );
 
     En_AuditType( int id ) {
         this.id = id;
