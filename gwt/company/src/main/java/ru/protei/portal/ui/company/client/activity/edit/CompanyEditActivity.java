@@ -111,7 +111,9 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
     }
 
     private boolean validateFieldsAndGetResult(){
-        return view.companyNameValidator().isValid() /*&&
+        return view.companyNameValidator().isValid()
+                && view.companySubscriptionsValidator().isValid()
+                /*&&
                 view.actualAddressValidator().isValid() &&
                 view.legalAddressValidator().isValid()*/;
     }

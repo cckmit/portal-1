@@ -102,6 +102,11 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     }
 
     @Override
+    public HasValidable companySubscriptionsValidator() {
+        return subscriptions;
+    }
+
+    @Override
     public HasWidgets phonesContainer() {
         return phonesContainer;
     }

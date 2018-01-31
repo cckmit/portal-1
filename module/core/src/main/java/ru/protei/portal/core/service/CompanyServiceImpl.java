@@ -257,6 +257,15 @@ public class CompanyServiceImpl implements CompanyService {
             }
         } );
 
+        toRemoveNumberIds.removeAll( oldSubscriptions.stream().map(CompanySubscription::getId).collect( Collectors.toList() ) );
+        if ( !CollectionUtils.isEmpty( toRemoveNumberIds ) ) {
+            log.info( "remove company subscriptions = {} for companyId = {}", toRemoveNumberIds, companyId );
+            int countRemoved = companySubscriptionDAO.removeByKeys( toRemoveNumberIds );
+            if ( countRemoved != toRemoveNumberIds.size() ) {
+                return false;
+            }
+        }
+
         if ( !CollectionUtils.isEmpty( newSubscriptions ) ) {
             log.info( "persist company subscriptions = {} for companyId = {}", newSubscriptions, companyId );
             companySubscriptionDAO.persistBatch( newSubscriptions );
@@ -266,15 +275,6 @@ public class CompanyServiceImpl implements CompanyService {
             log.info( "merge company subscriptions = {} for companyId = {}", oldSubscriptions, companyId );
             int countMerged = companySubscriptionDAO.mergeBatch( oldSubscriptions );
             if ( countMerged != oldSubscriptions.size() ) {
-                return false;
-            }
-        }
-
-        toRemoveNumberIds.removeAll( oldSubscriptions.stream().map(CompanySubscription::getId).collect( Collectors.toList() ) );
-        if ( !CollectionUtils.isEmpty( toRemoveNumberIds ) ) {
-            log.info( "remove company subscriptions = {} for companyId = {}", toRemoveNumberIds, companyId );
-            int countRemoved = companySubscriptionDAO.removeByKeys( toRemoveNumberIds );
-            if ( countRemoved != toRemoveNumberIds.size() ) {
                 return false;
             }
         }

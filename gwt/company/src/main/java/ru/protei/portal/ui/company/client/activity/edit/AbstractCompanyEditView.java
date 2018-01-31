@@ -33,6 +33,7 @@ public interface AbstractCompanyEditView extends IsWidget {
     HasValue<EntityOption> companyCategory();
 
     HasValue<List<CompanySubscription> > companySubscriptions();
+    HasValidable companySubscriptionsValidator();
 
     HasWidgets phonesContainer();
     HasWidgets emailsContainer();

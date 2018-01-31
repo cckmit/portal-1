@@ -82,6 +82,10 @@ public class CompanySubscriptionItem
         value.setLangCode( locale.getValue() );
     }
 
+    public boolean isValid(){
+        return email.getValue().isEmpty() || email.isValid();
+    }
+
     private boolean isChangedStatusFromNewToFilled() {
         return ( value.getEmail() == null || value.getEmail().trim().isEmpty() )
                 && email.getValue().length() > 0;

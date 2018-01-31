@@ -11,20 +11,18 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.protei.portal.core.model.ent.CompanySubscription;
 import ru.protei.portal.ui.common.client.widget.subscription.item.CompanySubscriptionItem;
+import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 /**
  * Список подписчиков на рассылку для компании
  */
 public class CompanySubscriptionList
         extends Composite
-        implements HasValue<List<CompanySubscription>>
+        implements HasValue<List<CompanySubscription>>, HasValidable
 {
     public CompanySubscriptionList() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
@@ -52,6 +50,15 @@ public class CompanySubscriptionList
         }
     }
 
+    @Override
+    public void setValid(boolean isValid) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean isValid() {
+        return modelToView.keySet().stream().allMatch(CompanySubscriptionItem::isValid);
+    }
 
     public void clear() {
         container.clear();
@@ -68,12 +75,15 @@ public class CompanySubscriptionList
         CompanySubscriptionItem subscriptionItemWidget = itemProvider.get();
         subscriptionItemWidget.setValue( subscription );
         subscriptionItemWidget.addCloseHandler( event -> {
-            if ( container.getWidgetCount() < 2 ) {
+            if ( container.getWidgetCount() == 1 ) {
                 return;
             }
             container.remove( event.getTarget() );
             CompanySubscription remove = modelToView.remove( event.getTarget() );
             value.remove( remove );
+            boolean isHasEmptyItem = modelToView.values().stream().anyMatch(s -> s.getEmail() == null || s.getEmail().isEmpty());
+            if(!isHasEmptyItem)
+                addEmptyItem();
         } );
 
         subscriptionItemWidget.addAddHandler( event -> {
@@ -91,9 +101,12 @@ public class CompanySubscriptionList
     }
 
     private List<CompanySubscription> prepareValue() {
-        return value.stream()
+        Collection<CompanySubscription> c = value.stream()
                 .filter(value -> value.getEmail() != null && !value.getEmail().isEmpty() )
-                .collect( toList() );
+                .collect(toMap( CompanySubscription::getEmail, p -> p, (p, q) -> p)) //filter by unique email
+                .values();
+
+        return new ArrayList<>(c);
     }
 
     @UiField
