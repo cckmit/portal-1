@@ -20,9 +20,9 @@ import java.util.function.Consumer;
  */
 public abstract class PersonModel implements Activity {
 
-    public void requestPersonList( Company company, Consumer< List< PersonShortView > > fillOptionsAction ){
+    public void requestPersonList( Company company, Boolean fired, Consumer< List< PersonShortView > > fillOptionsAction ){
         isPushing = true;
-        PersonQuery query = new PersonQuery( company.getId(), null, false, null, En_SortField.person_full_name, En_SortDir.ASC );
+        PersonQuery query = new PersonQuery( company.getId(), null, fired, null, En_SortField.person_full_name, En_SortDir.ASC );
         personService.getPersonViewList( query, new RequestCallback< List<PersonShortView> >() {
             @Override
             public void onError( Throwable throwable ) {

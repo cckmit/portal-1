@@ -137,7 +137,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     @Override
     public void onCompanyChanged() {
         if ( view.company().getValue() == null ) {
-            view.setSubscriptionEmails( "" );
+            view.setSubscriptionEmails( lang.issueCompanySubscriptionNeedSelectCompany() );
         } else {
             companyService.getCompanySubscription( view.company().getValue().getId(), new RequestCallback< List<CompanySubscription> >() {
                 @Override
@@ -146,8 +146,8 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                 @Override
                 public void onSuccess( List<CompanySubscription> subscriptions ) {
                     view.setSubscriptionEmails(
-                            subscriptions == null
-                                    ? ""
+                            subscriptions == null || subscriptions.isEmpty()
+                                    ? lang.issueCompanySubscriptionNotDefined()
                                     : subscriptions.stream()
                                     .map( CompanySubscription::getEmail )
                                     .collect( Collectors.joining( ", " ) ) );
@@ -194,9 +194,9 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         if(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_MANAGER_VIEW)) { //TODO change rule
             view.notifiers().setValue(issue.getNotifiers() == null ? new HashSet<>() :
                     issue.getNotifiers().stream().map(PersonShortView::fromPerson).collect(Collectors.toSet()));
-            view.notifiersEnabled().setVisible(true);
+            view.caseSubscriptionContainer().setVisible(true);
         }else{
-            view.notifiersEnabled().setVisible(false);
+            view.caseSubscriptionContainer().setVisible(false);
         }
 
         view.name().setValue(issue.getName());

@@ -4,7 +4,6 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
 
 <@set name="_issue_id" value="${issue_id}"/>
 <@set name="_issue_name" value="${issue_name}"/>
-<@set name="_issue_private" value="${issue_private}"/>
 <@set name="_yes" value="${yes}"/>
 <@set name="_no" value="${no}"/>
 <@set name="_createdBy" value="${created_by}"/>
@@ -55,22 +54,6 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                             <@diff new="${(case.name)!''}" old="${(oldCase.name)!''}"/>
                         <#else>
                             ${(case.name)!''}
-                        </#if>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 13px;color: #888888;">
-                        ${_issue_private}
-                    </td>
-                    <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 13px;">
-                        <#if privacyChanged>
-                            <@changeTo old="${oldCase.privateCase?string(_yes,_no)}" new="${case.privateCase?string(_yes,_no)}"/>
-                            <#else>
-                                <#if case.privateCase == true>
-                                    ${_yes}
-                                    <#else>
-                                        ${_no}
-                                </#if>
                         </#if>
                     </td>
                 </tr>
@@ -157,7 +140,7 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                     <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 13px;color: #888888;">
                         ${_description}
                     </td>
-                    <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 13px;">
+                    <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 13px;white-space:pre-wrap;">
                         <#if infoChanged>
                             <@diff new="${(case.info)!''}" old="${(oldCase.info)!''}"/>
                         <#else>

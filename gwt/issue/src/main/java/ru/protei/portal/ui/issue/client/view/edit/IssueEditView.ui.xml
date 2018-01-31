@@ -49,7 +49,7 @@
                     <label>
                         <ui:text from="{lang.issueInitiator}"/>
                     </label>
-                    <person:PersonButtonSelector ui:field="initiator" validation="false"/>
+                    <person:PersonButtonSelector ui:field="initiator" fired="false" validation="false"/>
                 </div>
 
                 <div class="form-group col-xs-3">
@@ -79,9 +79,14 @@
                         <ui:text from="{lang.companySubscription}"/>
                     </label>
                     <div ui:field="subscriptions"/>
-                    <person:EmployeeMultiSelector styleName="case-subscribers" ui:field="notifiers"/>
                 </div>
 
+                <g:HTMLPanel ui:field="caseSubscriptionContainers" styleName="form-group col-xs-12">
+                    <label>
+                        <ui:text from="{lang.caseSubscription}"/>
+                    </label>
+                    <person:EmployeeMultiSelector styleName="case-subscribers" ui:field="notifiers"/>
+                </g:HTMLPanel>
 
                 <div class="form-group col-xs-12">
                     <label><ui:text from="{lang.issueAttachments}"/></label>
