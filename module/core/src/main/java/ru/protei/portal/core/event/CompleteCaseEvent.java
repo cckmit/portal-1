@@ -13,11 +13,17 @@ import java.util.Date;
 import static java.lang.System.nanoTime;
 import static java.util.concurrent.TimeUnit.NANOSECONDS;
 
+/**
+ * @review Вот название AssemblyService мне очень понравилось, может и событие тогда будет AssembledCaseEvent ?
+ */
 public class CompleteCaseEvent extends ApplicationEvent {
 
     private CaseObject lastState;
     private CaseObject initState;
     private CaseComment comment;
+
+    /** @review лучше бы назвать initiator, а то непонятно, что за person и почему он тут
+     */
     private Person person;
     private ServiceModule serviceModule;
     private final long timeCreated;
@@ -49,6 +55,16 @@ public class CompleteCaseEvent extends ApplicationEvent {
         this.initState = initState;
         this.person = currentPerson;
         this.serviceModule = module;
+        /** @review ну, а чем System.currentTimeMillis() плох ?
+         *  Я не очень понял, зачем нужно именно нано-секунды превращать в секунды?
+         *  Я бы понял, если бы у тебя время фиксировалось в нано-секундах, типа для
+         *  точности и разрешения конфликтов, но в данном случае ты всеравно приводишь
+         *  значение к секундам, что кстати, хуже, чем хранить привычное значение для мс
+         *
+         *  Рекомендация: замени хранение времени на миллисекунды либо добавь хотя бы комментарии
+         *  к мемберам, чтобы все видели, в чем измеряется хранимое значение.
+         *
+         */
         this.timeCreated = NANOSECONDS.toSeconds(nanoTime());
         this.lastUpdated = timeCreated;
     }

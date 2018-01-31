@@ -152,6 +152,19 @@ public class HpsmServiceImpl implements HpsmService {
 
         /**
          * Bug CRM-30
+         *
+         *
+         * @review Это не должно быть здесь на самом деле. Это же логика завязанная на изменение состояния,
+         * для которой так мучительно придумывали схему обработки. Ну перенести это отсюда в соответствующие
+         * обработчики для back-channel.
+         * В идеале, код, который размещается здесь должен просто выполнить элементарные проверки пред-фильтрации события,
+         * подготовить данные и сделать вызовы для back-channel, никакой другой логики здесь быть не должно
+         *
+         * Другими словами, весь код ниже, до строки :
+         *
+         *    BackChannelEventHandler handler = backChannelHandlerFactory.createHandler(msg, event);
+         *
+         * нужно убирать (переносить в соответствующий обработчик, а не выделить и нажать DEL :))
          */
         if (object.getState() == En_CaseState.WORKAROUND && HelperFunc.isEmpty(msg.getWorkaroundText())) {
             msg.setWorkaroundText(event.getCaseComment().getText());
