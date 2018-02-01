@@ -1,5 +1,7 @@
 package ru.protei.portal.hpsm.factories;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import protei.utils.common.Tuple;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.ent.CaseComment;
@@ -27,6 +29,7 @@ public final class HpsmStatusHandlerFactoryImpl implements HpsmStatusHandlerFact
 
     @Override
     public HpsmStatusHandler createHandler(HpsmMessage msg, HpsmStatus newStatus) {
+        logger.debug("Creating handler for HPSM status");
         this.newState = newStatus.getCaseState();
         this.msg = msg;
         return statusHandlerMap.getOrDefault(new Tuple<>(msg.status(), newStatus), new DefaultCaseHandler());
@@ -35,6 +38,7 @@ public final class HpsmStatusHandlerFactoryImpl implements HpsmStatusHandlerFact
     public final class WorkaroundCaseHandler implements HpsmStatusHandler {
         @Override
         public void handle(CaseObject object, CaseComment comment) {
+            logger.debug("Applying handler for {} -> {} state", WORKAROUND.getHpsmCode(), TEST_WA.getHpsmCode());
             if (object.getState() != En_CaseState.WORKAROUND) {
                 object.setState(En_CaseState.WORKAROUND);
                 comment.setCaseStateId(object.getStateId());
@@ -45,6 +49,7 @@ public final class HpsmStatusHandlerFactoryImpl implements HpsmStatusHandlerFact
     public final class ConfirmWACaseHandler implements HpsmStatusHandler {
         @Override
         public void handle(CaseObject object, CaseComment comment) {
+            logger.debug("Applying handler for {} -> {} state", TEST_WA.getHpsmCode(), CONFIRM_WA.getHpsmCode());
             if (object.getState() != En_CaseState.WORKAROUND) {
                 object.setState(En_CaseState.WORKAROUND);
                 comment.setCaseStateId(object.getStateId());
@@ -55,6 +60,7 @@ public final class HpsmStatusHandlerFactoryImpl implements HpsmStatusHandlerFact
     public final class RejectWAHandler implements HpsmStatusHandler {
         @Override
         public void handle(CaseObject object, CaseComment comment) {
+            logger.debug("Applying handler for {} -> {} state", TEST_WA.getHpsmCode(), REJECT_WA.getHpsmCode());
             msg.setTxOurWorkaroundTime("");
             msg.setWorkaroundText("");
             if (object.getState() != En_CaseState.OPENED) {
@@ -67,6 +73,7 @@ public final class HpsmStatusHandlerFactoryImpl implements HpsmStatusHandlerFact
     public final class RejectSolutionHandler implements HpsmStatusHandler {
         @Override
         public void handle(CaseObject object, CaseComment comment) {
+            logger.debug("Applying handler for {} -> {} state", TEST_SOLUTION.getHpsmCode(), IN_PROGRESS.getHpsmCode());
             msg.setTxOurSolutionTime("");
             msg.setResolutionText("");
             if (object.getState() != En_CaseState.OPENED) {
@@ -79,6 +86,7 @@ public final class HpsmStatusHandlerFactoryImpl implements HpsmStatusHandlerFact
     public final class DefaultCaseHandler implements HpsmStatusHandler {
         @Override
         public void handle(CaseObject object, CaseComment comment) {
+            logger.debug("Applying default status handler");
             object.setState(newState);
             comment.setCaseStateId((long) newState.getId());
         }
@@ -87,6 +95,7 @@ public final class HpsmStatusHandlerFactoryImpl implements HpsmStatusHandlerFact
     public final class OpenCaseHandler implements HpsmStatusHandler {
         @Override
         public void handle(CaseObject object, CaseComment comment) {
+            logger.debug("Applying handler for {} -> {} state", INFO_REQUEST.getHpsmCode(), IN_PROGRESS.getHpsmCode());
             if (object.getState() != En_CaseState.OPENED) {
                 object.setState(En_CaseState.OPENED);
                 comment.setCaseStateId(object.getStateId());
@@ -97,6 +106,7 @@ public final class HpsmStatusHandlerFactoryImpl implements HpsmStatusHandlerFact
     public final class SolvedCheckHandler implements HpsmStatusHandler {
         @Override
         public void handle(CaseObject object, CaseComment comment) {
+            logger.debug("Applying handler for {} -> {} state", SOLVED.getHpsmCode(), TEST_SOLUTION.getHpsmCode());
             if (object.getState() != En_CaseState.CLOSED) {
                 object.setState(En_CaseState.CLOSED);
                 comment.setCaseStateId(object.getStateId());
@@ -107,6 +117,7 @@ public final class HpsmStatusHandlerFactoryImpl implements HpsmStatusHandlerFact
     public final class ClosedCaseHandler implements HpsmStatusHandler {
         @Override
         public void handle(CaseObject object, CaseComment comment) {
+            logger.debug("Applying handler for {} -> {} state", TEST_SOLUTION.getHpsmCode(), CLOSED.getHpsmCode());
             if (object.getState() != En_CaseState.VERIFIED) {
                 object.setState(En_CaseState.VERIFIED);
                 comment.setCaseStateId(object.getStateId());
@@ -117,4 +128,6 @@ public final class HpsmStatusHandlerFactoryImpl implements HpsmStatusHandlerFact
     private final Map<Tuple<HpsmStatus, HpsmStatus>, HpsmStatusHandler> statusHandlerMap = new HashMap<>();
     private En_CaseState newState;
     private HpsmMessage msg;
+
+    private final static Logger logger = LoggerFactory.getLogger(HpsmStatusHandlerFactoryImpl.class);
 }

@@ -147,10 +147,6 @@ public class HpsmEventHandlerFactoryImpl implements HpsmEventHandlerFactory{
 
         private String messageText;
 
-        public RejectHandler () {
-
-        }
-
         public RejectHandler(String message) {
             this.messageText = message;
         }

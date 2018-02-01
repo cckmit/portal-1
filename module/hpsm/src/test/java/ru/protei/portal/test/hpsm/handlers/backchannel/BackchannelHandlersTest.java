@@ -4,7 +4,6 @@ import org.junit.*;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import ru.protei.portal.core.event.AssembledCaseEvent;
-import ru.protei.portal.core.event.CaseCommentEvent;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Person;
@@ -20,7 +19,6 @@ import ru.protei.portal.hpsm.struct.HpsmMessage;
 import ru.protei.portal.hpsm.utils.HpsmUtils;
 import ru.protei.portal.test.hpsm.config.HpsmTestConfiguration;
 
-import static ru.protei.portal.core.model.dict.En_CaseState.OPENED;
 import static ru.protei.portal.core.model.dict.En_CaseState.WORKAROUND;
 
 public class BackchannelHandlersTest {

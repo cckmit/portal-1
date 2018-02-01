@@ -41,7 +41,6 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
         } else {
             //In order to update case events map in both cases:
             // person and event pair already exist or
-
             // person and event pair does not exist;
             AssembledCaseEvent assembledCaseEvent = new AssembledCaseEvent(event);
             if (assembledEventsMap.containsKey(eventRelatedPerson)) {

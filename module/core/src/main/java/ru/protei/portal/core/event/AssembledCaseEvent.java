@@ -16,17 +16,16 @@ import static java.util.concurrent.TimeUnit.NANOSECONDS;
 
 /**
  * @review
- * @solved
- * Вот название AssemblyService мне очень понравилось, может и событие тогда будет AssembledCaseEvent ?
+ * @solved Вот название AssemblyService мне очень понравилось, может и событие тогда будет AssembledCaseEvent ?
  */
 public class AssembledCaseEvent extends ApplicationEvent {
 
     private CaseObject lastState;
     private CaseObject initState;
     private CaseComment comment;
-    /** @review
-     * @solved
-     * лучше бы назвать initiator, а то непонятно, что за initiator и почему он тут
+    /**
+     * @review
+     * @solved лучше бы назвать initiator, а то непонятно, что за initiator и почему он тут
      */
     private Person initiator;
     private ServiceModule serviceModule;

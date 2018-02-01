@@ -55,7 +55,7 @@ public class InboundMainMessageHandler implements InboundMessageHandler {
         return subject != null;
     }
 
-    private HpsmEvent buildRequest (HpsmMessageHeader subject, ServiceInstance instance, MimeMessage msg) throws Exception {
+    private HpsmEvent buildRequest(HpsmMessageHeader subject, ServiceInstance instance, MimeMessage msg) throws Exception {
 
         logger.debug("Got inbound event-message {}", subject.toString());
 
@@ -63,8 +63,7 @@ public class InboundMainMessageHandler implements InboundMessageHandler {
 
         if (hpsmEvent.getHpsmMessage() != null) {
             logger.debug("event message parsed");
-        }
-        else {
+        } else {
             logger.debug("unable to parse event data");
             return null;
         }
@@ -74,8 +73,7 @@ public class InboundMainMessageHandler implements InboundMessageHandler {
         if (company == null && subject.isNewCaseRequest()) {
             logger.debug("unable to map company by branch name : {}", hpsmEvent.getHpsmMessage().getCompanyBranch());
             return null;
-        }
-        else {
+        } else {
             hpsmEvent.assign(company);
         }
 

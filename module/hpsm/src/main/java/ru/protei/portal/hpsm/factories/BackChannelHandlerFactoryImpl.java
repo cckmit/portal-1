@@ -33,24 +33,6 @@ import static ru.protei.portal.core.model.dict.En_CaseState.*;
  */
 public class BackChannelHandlerFactoryImpl implements BackChannelHandlerFactory {
 
-    private static Logger logger = LoggerFactory.getLogger(BackChannelHandlerFactoryImpl.class);
-
-    @Autowired
-    @Qualifier("hpsmSerializer")
-    private XStream xstream;
-
-    @Autowired
-    ExternalCaseAppDAO externalCaseAppDAO;
-
-    @Autowired
-    AttachmentDAO attachmentDAO;
-
-    @Autowired
-    FileStorage fileStorage;
-
-    private Map<Tuple<En_CaseState, En_CaseState>, BackChannelEventHandler> stateHandlerMap;
-
-
     public BackChannelHandlerFactoryImpl() {
         stateHandlerMap = new HashMap<>();
         stateHandlerMap.put(new Tuple<>(CREATED, ACTIVE), new OpenStateHandler());
@@ -58,7 +40,6 @@ public class BackChannelHandlerFactoryImpl implements BackChannelHandlerFactory 
         stateHandlerMap.put(new Tuple<>(ACTIVE, WORKAROUND), new WorkAroundStateHandler());
         stateHandlerMap.put(new Tuple<>(ACTIVE, DONE), new DoneStateHandler());
         stateHandlerMap.put(new Tuple<>(DONE, VERIFIED), new VerifiedStateHandler());
-        stateHandlerMap.put(new Tuple<>(CREATED, ACTIVE), new InProcessStateHandler());
         stateHandlerMap.put(new Tuple<>(ACTIVE, TEST_LOCAL), new LocalTestStateHandler());
         stateHandlerMap.put(new Tuple<>(TEST_LOCAL, TEST_CUST), new CustomerTestStateHandler());
     }
@@ -71,7 +52,7 @@ public class BackChannelHandlerFactoryImpl implements BackChannelHandlerFactory 
             return new NoActionHandler();
         }
         return stateHandlerMap.getOrDefault(new Tuple<>(currentState.status().getCaseState(),
-                    event.getLastState().getState()), new MakeMessageAction());
+                event.getLastState().getState()), new MakeMessageAction());
     }
 
 
@@ -79,9 +60,8 @@ public class BackChannelHandlerFactoryImpl implements BackChannelHandlerFactory 
 
         @Override
         public void handle(AssembledCaseEvent event, HpsmMessage message, ServiceInstance instance) throws Exception {
-
+            logger.debug("Applying back-channel handler for {} -> {} status", CREATED.getName(), ACTIVE.getName());
             message.status(HpsmStatus.IN_PROGRESS);
-
             if (HelperFunc.isEmpty(message.getTxOurOpenTime())) {
                 message.setOurOpenTime(event.getEventDate());
             }
@@ -94,6 +74,7 @@ public class BackChannelHandlerFactoryImpl implements BackChannelHandlerFactory 
 
         @Override
         public void handle(AssembledCaseEvent event, HpsmMessage message, ServiceInstance instance) throws Exception {
+            logger.debug("Applying back-channel handler for {} -> {} status", ACTIVE.getName(), INFO_REQUEST.getName());
             message.status(HpsmStatus.INFO_REQUEST);
             if (HelperFunc.isEmpty(message.getTxOurOpenTime())) {
                 message.setOurOpenTime(event.getEventDate());
@@ -102,17 +83,19 @@ public class BackChannelHandlerFactoryImpl implements BackChannelHandlerFactory 
         }
     }
 
-
     public class WorkAroundStateHandler implements BackChannelEventHandler {
 
         @Override
         public void handle(AssembledCaseEvent event, HpsmMessage message, ServiceInstance instance) throws Exception {
+            logger.debug("Applying back-channel handler for {} -> {} status", ACTIVE.getName(), WORKAROUND.getName());
             final CaseObject object = event.getCaseObject();
+
             message.status(HpsmStatus.WORKAROUND);
             message.setWorkaroundText(event.getCaseComment().getText());
             message.setOurWorkaroundTime(event.getEventDate());
             message.setWorkaroundTime(event.getEventDate());
             message.setMessage(event.getCaseComment().getText());
+
             instance.fillReplyMessageAttributes(message, object);
 
             updateAppDataAndSend(message, instance, event.getLastState(), event.getCaseComment());
@@ -124,6 +107,7 @@ public class BackChannelHandlerFactoryImpl implements BackChannelHandlerFactory 
 
         @Override
         public void handle(AssembledCaseEvent event, HpsmMessage message, ServiceInstance instance) throws Exception {
+            logger.debug("Applying back-channel handler for {} -> {} status", ACTIVE.getName(), DONE.getName());
             message.status(HpsmStatus.SOLVED);
 
             if (HelperFunc.isEmpty(message.getTxOurSolutionTime())) {
@@ -138,19 +122,8 @@ public class BackChannelHandlerFactoryImpl implements BackChannelHandlerFactory 
 
         @Override
         public void handle(AssembledCaseEvent event, HpsmMessage message, ServiceInstance instance) throws Exception {
+            logger.debug("Applying back-channel handler for {} -> {} status", INFO_REQUEST.getName(), CREATED.getName());
             message.status(HpsmStatus.INFO_REQUEST);
-            updateAppDataAndSend(message, instance, event.getLastState());
-        }
-    }
-
-    public class InProcessStateHandler implements BackChannelEventHandler {
-
-        @Override
-        public void handle(AssembledCaseEvent event, HpsmMessage message, ServiceInstance instance) throws Exception {
-            message.status(HpsmStatus.IN_PROGRESS);
-            if (HelperFunc.isEmpty(message.getTxOurOpenTime())) {
-                message.setOurOpenTime(event.getEventDate());
-            }
             updateAppDataAndSend(message, instance, event.getLastState());
         }
     }
@@ -159,6 +132,7 @@ public class BackChannelHandlerFactoryImpl implements BackChannelHandlerFactory 
 
         @Override
         public void handle(AssembledCaseEvent event, HpsmMessage message, ServiceInstance instance) throws Exception {
+            logger.debug("Applying back-channel handler for {} -> {} status", DONE.getName(), VERIFIED.getName());
             message.status(HpsmStatus.CLOSED);
 
             if (HelperFunc.isEmpty(message.getTxOurOpenTime())) {
@@ -177,6 +151,7 @@ public class BackChannelHandlerFactoryImpl implements BackChannelHandlerFactory 
 
         @Override
         public void handle(AssembledCaseEvent event, HpsmMessage message, ServiceInstance instance) throws Exception {
+            logger.debug("Applying back-channel handler for {} -> {} status", ACTIVE.getName(), TEST_LOCAL.getName());
             message.status(HpsmStatus.IN_PROGRESS);
             if (HelperFunc.isEmpty(message.getTxOurOpenTime())) {
                 message.setOurOpenTime(event.getEventDate());
@@ -190,6 +165,7 @@ public class BackChannelHandlerFactoryImpl implements BackChannelHandlerFactory 
 
         @Override
         public void handle(AssembledCaseEvent event, HpsmMessage message, ServiceInstance instance) throws Exception {
+            logger.debug("Applying back-channel handler for {} -> {} status", TEST_LOCAL.getName(), TEST_CUST.getName());
             message.status(HpsmStatus.TEST_SOLUTION);
 
             if (HelperFunc.isEmpty(message.getTxOurOpenTime())) {
@@ -218,7 +194,7 @@ public class BackChannelHandlerFactoryImpl implements BackChannelHandlerFactory 
         }
     }
 
-    private void updateAppDataAndSend(HpsmMessage message, ServiceInstance instance, CaseObject object) throws  Exception {
+    private void updateAppDataAndSend(HpsmMessage message, ServiceInstance instance, CaseObject object) throws Exception {
         updateAppDataAndSend(message, instance, object, null);
     }
 
@@ -269,4 +245,19 @@ public class BackChannelHandlerFactoryImpl implements BackChannelHandlerFactory 
         instance.sendReply(header, message);
     }
 
+    @Autowired
+    @Qualifier("hpsmSerializer")
+    private XStream xstream;
+
+    @Autowired
+    ExternalCaseAppDAO externalCaseAppDAO;
+
+    @Autowired
+    AttachmentDAO attachmentDAO;
+
+    @Autowired
+    FileStorage fileStorage;
+
+    private Map<Tuple<En_CaseState, En_CaseState>, BackChannelEventHandler> stateHandlerMap;
+    private static Logger logger = LoggerFactory.getLogger(BackChannelHandlerFactoryImpl.class);
 }
