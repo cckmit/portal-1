@@ -20,6 +20,12 @@ import static java.util.concurrent.TimeUnit.NANOSECONDS;
  */
 public class AssembledCaseEvent extends ApplicationEvent {
 
+    /*
+    @question Нужно ли нам хранить второй CaseObject, если в итоге мы пришли к тому, что в данном ивенте храним только объект
+    и комментарий? Т.е., насколько я помню из нашей дискуссии, при получении второго изменения статуса мы немедленно отправляем
+    собранный ивент, при это новое изменение статуса в него не входит. По-моему, из этого следует то, что мы можем ограничиться
+    одним экземпляром CaseObject в качестве поля.
+     */
     private CaseObject lastState;
     private CaseObject initState;
     private CaseComment comment;

@@ -86,7 +86,7 @@ public class LocalUpdateTest {
         caseService.addCaseComment(null, comment, testPerson );
 
         // wait event handling
-        Thread.sleep(200);
+        Thread.sleep(40000);
 
         responseMail = testServiceInstance.getSentMessage();
 
@@ -103,7 +103,7 @@ public class LocalUpdateTest {
         caseService.updateCaseObject(object, testPerson );
 
         // wait event handling
-        Thread.sleep(200);
+        Thread.sleep(40000);
 
         responseMail = testServiceInstance.getSentMessage();
 
@@ -162,7 +162,7 @@ public class LocalUpdateTest {
         caseService.updateCaseObject( object, testPerson);
 
         // wait event handling
-        Thread.sleep(200);
+        Thread.sleep(40000);
 
         responseMail = testServiceInstance.getSentMessage();
 

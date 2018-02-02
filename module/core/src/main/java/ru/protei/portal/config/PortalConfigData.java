@@ -10,14 +10,14 @@ public class PortalConfigData {
 
     private SmtpConfig smtpConfig;
     private CloudConfig cloudConfig;
-    private final HpsmConfig hpsmConfig;
+    private final EventAssemblyConfig eventAssemblyConfig;
 
     private final String crmCaseUrl;
 
     public PortalConfigData (PropertiesWrapper wrapper) throws ConfigException {
         smtpConfig = new SmtpConfig(wrapper);
         cloudConfig = new CloudConfig(wrapper);
-        hpsmConfig = new HpsmConfig(wrapper);
+        eventAssemblyConfig = new EventAssemblyConfig(wrapper);
 
         crmCaseUrl = wrapper.getProperty( "crm.case.url", "http://127.0.0.1:8888/crm.html#issues/issue:id=%d;" );
     }
@@ -34,8 +34,8 @@ public class PortalConfigData {
         return cloudConfig;
     }
 
-    public HpsmConfig hpsm() {
-        return hpsmConfig;
+    public EventAssemblyConfig hpsm() {
+        return eventAssemblyConfig;
     }
 
     public static class SmtpConfig {
@@ -92,22 +92,17 @@ public class PortalConfigData {
         }
     }
 
-    public static class HpsmConfig {
-        private final Long timeout;
-        private final Long check_time;
+    public static class EventAssemblyConfig {
+        private final Long waitingPeriod;
 
-        public HpsmConfig(PropertiesWrapper properties) throws ConfigException {
-            timeout = Long.valueOf(properties.getProperty("hpsm.timeout", "30000"));
-            check_time = Long.valueOf(properties.getProperty("hpsm.check_time", "5000"));
+        public EventAssemblyConfig(PropertiesWrapper properties) throws ConfigException {
+            waitingPeriod = Long.valueOf(properties.getProperty("core.waiting_period", "30000"));
         }
 
-        public Long getTimeout() {
-            return timeout;
+        public Long getWaitingPeriod() {
+            return waitingPeriod;
         }
 
-        public Long getCheck_time() {
-            return check_time;
-        }
     }
 
 }

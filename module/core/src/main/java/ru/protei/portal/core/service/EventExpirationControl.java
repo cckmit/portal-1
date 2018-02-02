@@ -9,7 +9,7 @@ import static java.lang.System.currentTimeMillis;
 public class EventExpirationControl {
 
     public boolean isExpired(AssembledCaseEvent event) {
-        return currentTimeMillis() - event.getLastUpdated() >= config.data().hpsm().getTimeout();
+        return currentTimeMillis() - event.getLastUpdated() >= config.data().hpsm().getWaitingPeriod();
     }
 
     @Autowired

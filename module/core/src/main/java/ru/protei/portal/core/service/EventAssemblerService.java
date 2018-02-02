@@ -13,5 +13,7 @@ public interface EventAssemblerService {
 
     void onCaseCommentEvent(CaseCommentEvent event);
 
-    Map<Person, AssembledCaseEvent> getAssembledEventsMap();
+    AssembledCaseEvent getPersonsEvent(Person person);
+
+    int getEventsCount();
 }

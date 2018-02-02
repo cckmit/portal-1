@@ -1,5 +1,6 @@
 package ru.protei.portal.core.service;
 
+import com.sun.istack.internal.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -51,6 +52,17 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
         }
     }
 
+    @Override
+    @Nullable
+    public AssembledCaseEvent getPersonsEvent(Person person) {
+        return assembledEventsMap.getOrDefault(person, null);
+    }
+
+    @Override
+    public int getEventsCount() {
+        return assembledEventsMap.size();
+    }
+
     @Scheduled(fixedRate = SCHEDULE_TIME)
     public void checkEventsMap() {
         /*
@@ -84,11 +96,6 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
 
     private void clear(Person person) {
         assembledEventsMap.remove(person);
-    }
-
-    @Override
-    public Map<Person, AssembledCaseEvent> getAssembledEventsMap() {
-        return assembledEventsMap;
     }
 
     private final Map<Person, AssembledCaseEvent> assembledEventsMap = new HashMap<>();

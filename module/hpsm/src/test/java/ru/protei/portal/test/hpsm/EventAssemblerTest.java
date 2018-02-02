@@ -43,25 +43,25 @@ public class EventAssemblerTest {
         assemblerService.onCaseCommentEvent(commentEvent);
 
         //Test on event assembling (comment + object)
-        Assert.assertEquals(1, assemblerService.getAssembledEventsMap().size());
-        Assert.assertEquals(assemblerService.getAssembledEventsMap().get(person).getLastState(), object);
-        Assert.assertEquals(assemblerService.getAssembledEventsMap().get(person).getCaseComment(), comment);
+        Assert.assertEquals(1, assemblerService.getEventsCount());
+        Assert.assertEquals(assemblerService.getPersonsEvent(person).getLastState(), object);
+        Assert.assertEquals(assemblerService.getPersonsEvent(person).getCaseComment(), comment);
 
         //Test on second case object for same person
         assemblerService.onCaseObjectEvent(secondEvent);
-        Assert.assertEquals(assemblerService.getAssembledEventsMap().get(person).getLastState(), newObject);
+        Assert.assertEquals(assemblerService.getPersonsEvent(person).getLastState(), newObject);
 
         //Test on time delay publishing
         Thread.sleep(35000);
-        Assert.assertEquals(0, assemblerService.getAssembledEventsMap().size());
+        Assert.assertEquals(0, assemblerService.getEventsCount());
 
         //Test on second case comment for same person
         assemblerService.onCaseObjectEvent(objectEvent);
         assemblerService.onCaseCommentEvent(commentEvent);
-        Assert.assertEquals(1, assemblerService.getAssembledEventsMap().size());
-        AssembledCaseEvent fistEvent = assemblerService.getAssembledEventsMap().get(person);
+        Assert.assertEquals(1, assemblerService.getEventsCount());
+        AssembledCaseEvent firstEvent = assemblerService.getPersonsEvent(person);
         assemblerService.onCaseCommentEvent(secondCommentEvent);
-        Assert.assertNotEquals(assemblerService.getAssembledEventsMap().get(person), fistEvent);
+        Assert.assertNotEquals(assemblerService.getPersonsEvent(person), firstEvent);
     }
 
 

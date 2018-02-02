@@ -2,7 +2,6 @@ package ru.protei.portal.test.hpsm.handlers.inbound;
 
 import org.junit.Assert;
 import org.junit.Test;
-import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
