@@ -65,22 +65,6 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
 
     @Scheduled(fixedRate = SCHEDULE_TIME)
     public void checkEventsMap() {
-        /*
-          @review
-          @solved
-         * 1) Опять тот же вопрос по поводу NANOSECONDS
-         * 2) Если уж делаешь хардкод значений, то делай хотя бы константу, а так я вообще то просил сделать это настройкой
-         *  Для этого есть все: конфиг общий - portal.properties, класс для работы с ним - PortalConfig + PortalConfigData
-         *  Делаешь просто @Autowired для PortalConfig  и у него метод data() возвращает тебе PortalConfigData
-         *  Для поддержки своего параметра залезь в PortalConfigData и посмотри как сделано для остальных, там вроде ничего сложного.
-         *
-         * 3) Лучше сделать объект ExpirationControl с методом boolean expired (Event),
-         * тогда проверка будет
-         *   x -> expiryControl.expired (x)
-
-
-         */
-
         //Measured in ms
         assembledEventsMap.values().stream().filter(x -> eventExpirationControl.isExpired(x))
                 .map(AssembledCaseEvent::getInitiator)

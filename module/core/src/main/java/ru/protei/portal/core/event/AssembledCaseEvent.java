@@ -14,25 +14,11 @@ import static java.lang.System.currentTimeMillis;
 import static java.lang.System.nanoTime;
 import static java.util.concurrent.TimeUnit.NANOSECONDS;
 
-/**
- * @review
- * @solved Вот название AssemblyService мне очень понравилось, может и событие тогда будет AssembledCaseEvent ?
- */
 public class AssembledCaseEvent extends ApplicationEvent {
 
-    /*
-    @question Нужно ли нам хранить второй CaseObject, если в итоге мы пришли к тому, что в данном ивенте храним только объект
-    и комментарий? Т.е., насколько я помню из нашей дискуссии, при получении второго изменения статуса мы немедленно отправляем
-    собранный ивент, при это новое изменение статуса в него не входит. По-моему, из этого следует то, что мы можем ограничиться
-    одним экземпляром CaseObject в качестве поля.
-     */
-    private CaseObject lastState;
+    private CaseObject lastState = null;
     private CaseObject initState;
     private CaseComment comment;
-    /**
-     * @review
-     * @solved лучше бы назвать initiator, а то непонятно, что за initiator и почему он тут
-     */
     private Person initiator;
     private ServiceModule serviceModule;
     // Measured in ms
@@ -61,22 +47,9 @@ public class AssembledCaseEvent extends ApplicationEvent {
     public AssembledCaseEvent(ServiceModule module, CaseService caseService,
                               CaseObject state, Person currentPerson) {
         super(caseService);
-        this.lastState = state;
         this.initState = state;
         this.initiator = currentPerson;
         this.serviceModule = module;
-        /* @review
-         * @solved
-         * ну, а чем System.currentTimeMillis() плох ?
-         *  Я не очень понял, зачем нужно именно нано-секунды превращать в секунды?
-         *  Я бы понял, если бы у тебя время фиксировалось в нано-секундах, типа для
-         *  точности и разрешения конфликтов, но в данном случае ты всеравно приводишь
-         *  значение к секундам, что кстати, хуже, чем хранить привычное значение для мс
-         *
-         *  Рекомендация: замени хранение времени на миллисекунды либо добавь хотя бы комментарии
-         *  к мемберам, чтобы все видели, в чем измеряется хранимое значение.
-
-         */
         this.timeCreated = currentTimeMillis();
         this.lastUpdated = timeCreated;
     }

@@ -125,8 +125,6 @@ public class HpsmServiceImpl implements HpsmService {
     @Override
     @EventListener
     public void onCompleteCaseEvent(AssembledCaseEvent event) {
-        //FROM COMMENT HANDLER
-
         if (event.getServiceModule() == ServiceModule.HPSM) {
             logger.debug("skip handle self-published event for {}", event.getCaseObject().getExtId());
             return;
@@ -150,25 +148,6 @@ public class HpsmServiceImpl implements HpsmService {
             return;
         }
 
-        /*
-          Bug CRM-30
-
-
-         * @review
-         * @solved
-         * Это не должно быть здесь на самом деле. Это же логика завязанная на изменение состояния,
-         * для которой так мучительно придумывали схему обработки. Ну перенести это отсюда в соответствующие
-         * обработчики для back-channel.
-         * В идеале, код, который размещается здесь должен просто выполнить элементарные проверки пред-фильтрации события,
-         * подготовить данные и сделать вызовы для back-channel, никакой другой логики здесь быть не должно
-         *
-         * Другими словами, весь код ниже, до строки :
-         *
-         *    BackChannelEventHandler handler = backChannelHandlerFactory.createHandler(msg, event);
-         *
-         * нужно убирать (переносить в соответствующий обработчик, а не выделить и нажать DEL :))
-         */
-
         BackChannelEventHandler handler = backChannelHandlerFactory.createHandler(msg, event);
         if (handler == null) {
             logger.debug("unable to create event handler, case {}", event.getCaseObject().getExtId());
@@ -181,123 +160,5 @@ public class HpsmServiceImpl implements HpsmService {
         } catch (Exception e) {
             logger.debug("error while handling event for case {}", event.getCaseObject().getExtId(), e);
         }
-
-        //FROM OBJECT HANDLER
     }
-
-    /*@Override
-    @EventListener
-    public void onCaseCommentEvent(CaseCommentEvent event) {
-
-        if (event.getServiceModule() == ServiceModule.HPSM) {
-            logger.debug("skip handle self-published event for {}", event.getCaseObject().getExtId());
-            return;
-        }
-
-        CaseObject object = event.getCaseObject();
-        ExternalCaseAppData appData = externalCaseAppDAO.get(object.getId());
-
-        logger.debug("eventAssemblyConfig, case-comment event, case {}, comment #{}", object.getExtId(),event.getCaseComment().getId());
-        ServiceInstance instance = serviceInstanceRegistry.find(event.getCaseObject());
-
-        if (instance == null) {
-            logger.debug("no handler instance found for case {}", object.getExtId());
-            return;
-        }
-
-        HpsmMessage msg = this.hpsmMessageFactory.parseMessage(appData.getExtAppData());
-
-        if (msg == null) {
-            logger.error("unable to parse app-data, case {}", object.getExtId());
-            return;
-        }
-
-        *//**
-     * Bug CRM-30
-     *//*
-        if (object.getState() == En_CaseState.WORKAROUND && HelperFunc.isEmpty(msg.getWorkaroundText())) {
-            msg.setWorkaroundText(event.getCaseComment().getText());
-            msg.setTxOurWorkaroundTime(String.valueOf(event.getTimestamp()));
-            appData.setExtAppData(xStream.toXML(msg));
-            externalCaseAppDAO.saveExtAppData(appData);
-        }
-
-        HpsmMessageHeader header = new HpsmMessageHeader(appData.getExtAppCaseId(), object.getExtId(), msg.status());
-        msg.setMessage(event.getCaseComment().getText());
-        instance.fillReplyMessageAttributes(msg, object);
-
-        List<HpsmAttachment> replyAttachments = null;
-
-
-
-        if (event.getCaseComment().getCaseAttachments() != null && !event.getCaseComment().getCaseAttachments().isEmpty()){
-            logger.debug("process attachments case-id={}", object.getId());
-            replyAttachments = new ArrayList<>();
-            for (CaseAttachment in : event.getCaseComment().getCaseAttachments()) {
-                Attachment a = attachmentDAO.get(in.getAttachmentId());
-                if (a == null) {
-                    logger.debug("case attachment not found, case-id={}, attachment-id={}", object.getId(), in.getAttachmentId());
-                    continue;
-                }
-
-                logger.debug("append reply attachment file = {}, ext-link={}", a.getFileName(), a.getExtLink());
-
-                replyAttachments.add(new HpsmAttachment(
-                        a.getFileName(),
-                        a.getMimeType(),
-                        a.getLabelText(),
-                        a.getDataSize().intValue(),
-                        new AttachmentFileStreamSource(fileStorage, a.getExtLink())));
-            }
-        }
-
-        logger.debug("ready to send mail, comment-event, case-id={}, ext={}, header={}, data={}",
-                object.getId(), appData.getExtAppCaseId(), header.toString(), xStream.toXML(msg));
-
-        try {
-            instance.sendReply(header, msg, replyAttachments);
-            logger.debug("case-comment event handled for case {}", object.getExtId());
-        }
-        catch (Exception e) {
-            logger.error("error while attempt to send mail", e);
-        }
-    }*/
-
-    /*@Override
-    @EventListener
-    public void onCaseObjectEvent(CaseObjectEvent event) {
-
-        if (event.getServiceModule() == ServiceModule.HPSM) {
-            logger.debug("skip handle self-published event for {}", event.getCaseObject().getExtId());
-            return;
-        }
-
-        ServiceInstance instance = serviceInstanceRegistry.find(event.getCaseObject());
-        if (instance == null) {
-            logger.debug("no handler instance found for case {}", event.getCaseObject().getExtId());
-            return;
-        }
-
-        ExternalCaseAppData appData = externalCaseAppDAO.get(event.getCaseObject().getId());
-
-        HpsmMessage msg = this.hpsmMessageFactory.parseMessage(appData.getExtAppData());
-
-        if (msg == null) {
-            logger.error("unable to parse app-data, case {}", event.getCaseObject().getExtId());
-            return;
-        }
-
-        BackChannelEventHandler handler = backChannelHandlerFactory.createHandler(msg, event);
-        if (handler == null) {
-            logger.debug("unable to create event handler, case {}", event.getCaseObject().getExtId());
-            return;
-        }
-
-        try {
-            handler.handle(event, msg, instance);
-        }
-        catch (Exception e) {
-            logger.debug("error while handling event for case {}", event.getCaseObject().getExtId(), e);
-        }
-    }*/
 }
