@@ -135,7 +135,7 @@ public class HpsmServiceImpl implements HpsmService {
         CaseObject object = event.getCaseObject();
         ExternalCaseAppData appData = externalCaseAppDAO.get(object.getId());
 
-        logger.debug("hpsm, case-comment event, case {}, comment #{}", object.getExtId(), event.getCaseComment().getId());
+        logger.debug("eventAssemblyConfig, case-comment event, case {}, comment #{}", object.getExtId(), event.getCaseComment().getId());
         ServiceInstance instance = serviceInstanceRegistry.find(event.getCaseObject());
 
         if (instance == null) {
@@ -197,7 +197,7 @@ public class HpsmServiceImpl implements HpsmService {
         CaseObject object = event.getCaseObject();
         ExternalCaseAppData appData = externalCaseAppDAO.get(object.getId());
 
-        logger.debug("hpsm, case-comment event, case {}, comment #{}", object.getExtId(),event.getCaseComment().getId());
+        logger.debug("eventAssemblyConfig, case-comment event, case {}, comment #{}", object.getExtId(),event.getCaseComment().getId());
         ServiceInstance instance = serviceInstanceRegistry.find(event.getCaseObject());
 
         if (instance == null) {

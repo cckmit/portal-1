@@ -30,7 +30,7 @@ import java.util.Set;
  * Created by Mike on 01.05.2017.
  */
 public class LocalUpdateTest {
-    public static final String HPSM_TEST_CASE_ID1 = "hpsm-create-test-1";
+    public static final String HPSM_TEST_CASE_ID1 = "eventAssemblyConfig-create-test-1";
     public static final long LOCAL_PERSON_ID = 18L;
     public static final String JUNIT_TEST_COMMENT = "junit-test-comment";
 

@@ -34,7 +34,7 @@ public class PortalConfigData {
         return cloudConfig;
     }
 
-    public EventAssemblyConfig hpsm() {
+    public EventAssemblyConfig eventAssemblyConfig() {
         return eventAssemblyConfig;
     }
 

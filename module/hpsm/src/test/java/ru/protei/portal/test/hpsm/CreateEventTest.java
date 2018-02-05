@@ -21,7 +21,7 @@ import javax.mail.internet.MimeMessage;
  * Created by Mike on 01.05.2017.
  */
 public class CreateEventTest {
-    public static final String HPSM_TEST_CASE_ID1 = "hpsm-create-test-1";
+    public static final String HPSM_TEST_CASE_ID1 = "eventAssemblyConfig-create-test-1";
     static ApplicationContext ctx;
 
     @BeforeClass
