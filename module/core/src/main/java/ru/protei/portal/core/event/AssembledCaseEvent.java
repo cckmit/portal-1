@@ -26,28 +26,29 @@ public class AssembledCaseEvent extends ApplicationEvent {
     private long lastUpdated;
 
     public AssembledCaseEvent(CaseService caseService, CaseObject lastState, Person initiator) {
-        this(ServiceModule.GENERAL, caseService, lastState, initiator);
+        this(ServiceModule.GENERAL, caseService, null, lastState, initiator);
     }
 
-    public AssembledCaseEvent(CaseService caseService, CaseObject lastState, CaseObject initState,
+    public AssembledCaseEvent(CaseService caseService, CaseObject initState, CaseObject lastState,
                               Person currentPerson) {
-        this(ServiceModule.GENERAL, caseService, lastState, currentPerson);
+        this(ServiceModule.GENERAL, caseService, initState, lastState, currentPerson);
     }
 
     public AssembledCaseEvent(CaseObjectEvent objectEvent) {
-        this(objectEvent.getServiceModule(), objectEvent.getCaseService(), objectEvent.getNewState()
-                , objectEvent.getPerson());
+        this(objectEvent.getServiceModule(), objectEvent.getCaseService(), objectEvent.getOldState(),
+                objectEvent.getNewState(), objectEvent.getPerson());
     }
 
     public AssembledCaseEvent(CaseCommentEvent commentEvent) {
-        this(commentEvent.getServiceModule(), commentEvent.getCaseService(), commentEvent.getCaseObject(),
+        this(commentEvent.getServiceModule(), commentEvent.getCaseService(), commentEvent.getCaseObject(), null,
                 commentEvent.getPerson());
     }
 
     public AssembledCaseEvent(ServiceModule module, CaseService caseService,
-                              CaseObject state, Person currentPerson) {
+                              CaseObject state, CaseObject lastState, Person currentPerson) {
         super(caseService);
         this.initState = state;
+        this.lastState = lastState;
         this.initiator = currentPerson;
         this.serviceModule = module;
         this.timeCreated = currentTimeMillis();

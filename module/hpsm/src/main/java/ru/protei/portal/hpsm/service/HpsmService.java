@@ -13,7 +13,7 @@ public interface HpsmService {
     void handleInboundRequest ();
 
     @EventListener
-    void onCompleteCaseEvent(AssembledCaseEvent event);
+    void onAssembledCaseEvent(AssembledCaseEvent event);
 
     /*void onCaseCommentEvent (CaseCommentEvent event);
     void onCaseObjectEvent (CaseObjectEvent event);*/

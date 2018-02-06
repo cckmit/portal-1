@@ -124,7 +124,7 @@ public class HpsmServiceImpl implements HpsmService {
 
     @Override
     @EventListener
-    public void onCompleteCaseEvent(AssembledCaseEvent event) {
+    public void onAssembledCaseEvent(AssembledCaseEvent event) {
         if (event.getServiceModule() == ServiceModule.HPSM) {
             logger.debug("skip handle self-published event for {}", event.getCaseObject().getExtId());
             return;
