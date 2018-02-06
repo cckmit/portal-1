@@ -1,7 +1,7 @@
 package ru.protei.portal.hpsm.service;
 
-import ru.protei.portal.core.event.CaseCommentEvent;
-import ru.protei.portal.core.event.CaseObjectEvent;
+import org.springframework.context.event.EventListener;
+import ru.protei.portal.core.event.AssembledCaseEvent;
 
 /**
  * Created by michael on 27.04.17.
@@ -12,6 +12,9 @@ public interface HpsmService {
 
     void handleInboundRequest ();
 
-    void onCaseCommentEvent (CaseCommentEvent event);
-    void onCaseObjectEvent (CaseObjectEvent event);
+    @EventListener
+    void onAssembledCaseEvent(AssembledCaseEvent event);
+
+    /*void onCaseCommentEvent (CaseCommentEvent event);
+    void onCaseObjectEvent (CaseObjectEvent event);*/
 }

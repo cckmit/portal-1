@@ -10,12 +10,14 @@ public class PortalConfigData {
 
     private SmtpConfig smtpConfig;
     private CloudConfig cloudConfig;
+    private final EventAssemblyConfig eventAssemblyConfig;
 
     private final String crmCaseUrl;
 
     public PortalConfigData (PropertiesWrapper wrapper) throws ConfigException {
         smtpConfig = new SmtpConfig(wrapper);
         cloudConfig = new CloudConfig(wrapper);
+        eventAssemblyConfig = new EventAssemblyConfig(wrapper);
 
         crmCaseUrl = wrapper.getProperty( "crm.case.url", "http://127.0.0.1:8888/crm.html#issues/issue:id=%d;" );
     }
@@ -30,6 +32,10 @@ public class PortalConfigData {
 
     public CloudConfig cloud() {
         return cloudConfig;
+    }
+
+    public EventAssemblyConfig eventAssemblyConfig() {
+        return eventAssemblyConfig;
     }
 
     public static class SmtpConfig {
@@ -84,6 +90,19 @@ public class PortalConfigData {
         public String getPassword() {
             return password;
         }
+    }
+
+    public static class EventAssemblyConfig {
+        private final Long waitingPeriod;
+
+        public EventAssemblyConfig(PropertiesWrapper properties) throws ConfigException {
+            waitingPeriod = Long.valueOf(properties.getProperty("core.waiting_period", "30000"));
+        }
+
+        public Long getWaitingPeriod() {
+            return waitingPeriod;
+        }
+
     }
 
 }

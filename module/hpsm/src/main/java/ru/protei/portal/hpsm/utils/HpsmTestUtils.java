@@ -63,18 +63,27 @@ public class HpsmTestUtils {
 
     public MimeMessage createNewRequest (String hpsmCaseId) throws Exception {
         HpsmMessageHeader requestSubject = new HpsmMessageHeader(hpsmCaseId, null, HpsmStatus.NEW);
+        return fillRequestMessage(requestSubject);
+    }
+
+    public MimeMessage createUpdateRequest (String hpsmCaseId, HpsmStatus newStatus) throws Exception {
+        HpsmMessageHeader requestSubject = new HpsmMessageHeader(hpsmCaseId, null, newStatus);
+        return fillRequestMessage(requestSubject);
+    }
+
+
+    private MimeMessage fillRequestMessage(HpsmMessageHeader header) throws Exception {
         HpsmMessage requestMessage = new HpsmMessage();
-        requestMessage.setHpsmId(requestSubject.getHpsmId());
-        requestMessage.setOurId(requestSubject.getOurId());
-        requestMessage.status(requestSubject.getStatus());
+        requestMessage.setHpsmId(header.getHpsmId());
+        requestMessage.setOurId(header.getOurId());
+        requestMessage.status(header.getStatus());
         requestMessage.setCompanyBranch("Северо-Западный Филиал");
         requestMessage.setContactPerson("Андреев Артем");
         requestMessage.setContactPersonEmail("Andreev.A@nwgsm.com");
         requestMessage.setProductName("ПРОТЕЙ_RG");
 
-        return hpsmMessageFactory.makeRequestMesssage(SEND_TO_ADDRESS,HPSM_MAIL_ADDRESS,requestSubject, requestMessage);
+        return hpsmMessageFactory.makeRequestMesssage(SEND_TO_ADDRESS,HPSM_MAIL_ADDRESS, header, requestMessage);
     }
-
 
     public HpsmEvent parseEvent (MimeMessage mimeMessage) throws Exception {
         return HpsmUtils.parseEvent(mimeMessage, xstream);

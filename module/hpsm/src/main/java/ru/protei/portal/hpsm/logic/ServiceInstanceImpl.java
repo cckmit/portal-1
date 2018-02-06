@@ -3,7 +3,6 @@ package ru.protei.portal.hpsm.logic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.integration.mail.MailReceivingMessageSource;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.messaging.Message;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Company;
@@ -50,9 +49,6 @@ public class ServiceInstanceImpl implements ServiceInstance {
         this.companyBranchMap = companyBranchMap;
         this.inboundSource = inboundSource;//createInboundSource(config);
     }
-
-    //protected abstract MailReceivingMessageSource createInboundSource (HpsmEnvConfig.ServiceConfig serviceConfig);
-
 
     @Override
     public HpsmEnvConfig.ServiceConfig config() {

@@ -39,7 +39,7 @@
         <dependency>
             <groupId>ru.protei</groupId>
             <artifactId>jmc</artifactId>
-            <version>3.6</version>
+            <version>3.6-SNAPSHOT</version>
         </dependency>
 
         <dependency>

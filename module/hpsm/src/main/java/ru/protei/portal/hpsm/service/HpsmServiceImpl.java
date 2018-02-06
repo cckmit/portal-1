@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.event.EventListener;
 import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.core.ServiceModule;
-import ru.protei.portal.core.event.CaseCommentEvent;
-import ru.protei.portal.core.event.CaseObjectEvent;
+import ru.protei.portal.core.event.AssembledCaseEvent;
+import ru.protei.portal.core.mail.MailSendChannel;
 import ru.protei.portal.core.model.dao.AttachmentDAO;
 import ru.protei.portal.core.model.dao.ExternalCaseAppDAO;
 import ru.protei.portal.core.model.dict.En_CaseState;
@@ -19,9 +19,12 @@ import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.ExternalCaseAppData;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.hpsm.api.HpsmMessageFactory;
-import ru.protei.portal.core.mail.MailSendChannel;
 import ru.protei.portal.hpsm.config.HpsmEnvConfig;
-import ru.protei.portal.hpsm.logic.*;
+import ru.protei.portal.hpsm.factories.BackChannelHandlerFactory;
+import ru.protei.portal.hpsm.handlers.BackChannelEventHandler;
+import ru.protei.portal.hpsm.logic.InboundMessageHandler;
+import ru.protei.portal.hpsm.logic.ServiceInstance;
+import ru.protei.portal.hpsm.logic.ServiceInstanceRegistry;
 import ru.protei.portal.hpsm.struct.HpsmAttachment;
 import ru.protei.portal.hpsm.struct.HpsmMessage;
 import ru.protei.portal.hpsm.struct.HpsmMessageHeader;
@@ -79,13 +82,12 @@ public class HpsmServiceImpl implements HpsmService {
     private InboundMessageHandler[] inboundHandlers;
 
 
-
-    public HpsmServiceImpl(InboundMessageHandler...handlers) {
+    public HpsmServiceImpl(InboundMessageHandler... handlers) {
         this.inboundHandlers = handlers;
     }
 
     @PostConstruct
-    private void postConstruct () {
+    private void postConstruct() {
         if (testServiceInstance != null) {
             serviceInstanceRegistry.add(testServiceInstance);
         }
@@ -114,18 +116,15 @@ public class HpsmServiceImpl implements HpsmService {
                 if (!handled) {
                     logger.warn("unable to handle message, subject : {}", HpsmUtils.getMessageSubject(msg));
                 }
-            }
-            else {
+            } else {
                 logger.debug("no incoming messages for {} instance", s.id());
             }
         });
     }
 
-
     @Override
     @EventListener
-    public void onCaseCommentEvent(CaseCommentEvent event) {
-
+    public void onAssembledCaseEvent(AssembledCaseEvent event) {
         if (event.getServiceModule() == ServiceModule.HPSM) {
             logger.debug("skip handle self-published event for {}", event.getCaseObject().getExtId());
             return;
@@ -134,7 +133,7 @@ public class HpsmServiceImpl implements HpsmService {
         CaseObject object = event.getCaseObject();
         ExternalCaseAppData appData = externalCaseAppDAO.get(object.getId());
 
-        logger.debug("hpsm, case-comment event, case {}, comment #{}", object.getExtId(),event.getCaseComment().getId());
+        logger.debug("eventAssemblyConfig, case-comment event, case {}, comment #{}", object.getExtId(), event.getCaseComment().getId());
         ServiceInstance instance = serviceInstanceRegistry.find(event.getCaseObject());
 
         if (instance == null) {
@@ -149,80 +148,6 @@ public class HpsmServiceImpl implements HpsmService {
             return;
         }
 
-        /**
-         * Bug CRM-30
-         */
-        if (object.getState() == En_CaseState.WORKAROUND && HelperFunc.isEmpty(msg.getWorkaroundText())) {
-            msg.setWorkaroundText(event.getCaseComment().getText());
-            appData.setExtAppData(xStream.toXML(msg));
-            externalCaseAppDAO.saveExtAppData(appData);
-        }
-
-        HpsmMessageHeader header = new HpsmMessageHeader(appData.getExtAppCaseId(), object.getExtId(), msg.status());
-        msg.setMessage(event.getCaseComment().getText());
-        instance.fillReplyMessageAttributes(msg, object);
-
-        List<HpsmAttachment> replyAttachments = null;
-
-
-
-        if (event.getCaseComment().getCaseAttachments() != null && !event.getCaseComment().getCaseAttachments().isEmpty()){
-            logger.debug("process attachments case-id={}", object.getId());
-            replyAttachments = new ArrayList<>();
-            for (CaseAttachment in : event.getCaseComment().getCaseAttachments()) {
-                Attachment a = attachmentDAO.get(in.getAttachmentId());
-                if (a == null) {
-                    logger.debug("case attachment not found, case-id={}, attachment-id={}", object.getId(), in.getAttachmentId());
-                    continue;
-                }
-
-                logger.debug("append reply attachment file = {}, ext-link={}", a.getFileName(), a.getExtLink());
-
-                replyAttachments.add(new HpsmAttachment(
-                        a.getFileName(),
-                        a.getMimeType(),
-                        a.getLabelText(),
-                        a.getDataSize().intValue(),
-                        new AttachmentFileStreamSource(fileStorage, a.getExtLink())));
-            }
-        }
-
-        logger.debug("ready to send mail, comment-event, case-id={}, ext={}, header={}, data={}",
-                object.getId(), appData.getExtAppCaseId(), header.toString(), xStream.toXML(msg));
-
-        try {
-            instance.sendReply(header, msg, replyAttachments);
-            logger.debug("case-comment event handled for case {}", object.getExtId());
-        }
-        catch (Exception e) {
-            logger.error("error while attempt to send mail", e);
-        }
-    }
-
-    @Override
-    @EventListener
-    public void onCaseObjectEvent(CaseObjectEvent event) {
-
-        if (event.getServiceModule() == ServiceModule.HPSM) {
-            logger.debug("skip handle self-published event for {}", event.getCaseObject().getExtId());
-            return;
-        }
-
-        ServiceInstance instance = serviceInstanceRegistry.find(event.getCaseObject());
-        if (instance == null) {
-            logger.debug("no handler instance found for case {}", event.getCaseObject().getExtId());
-            return;
-        }
-
-        ExternalCaseAppData appData = externalCaseAppDAO.get(event.getCaseObject().getId());
-
-        HpsmMessage msg = this.hpsmMessageFactory.parseMessage(appData.getExtAppData());
-
-        if (msg == null) {
-            logger.error("unable to parse app-data, case {}", event.getCaseObject().getExtId());
-            return;
-        }
-
         BackChannelEventHandler handler = backChannelHandlerFactory.createHandler(msg, event);
         if (handler == null) {
             logger.debug("unable to create event handler, case {}", event.getCaseObject().getExtId());
@@ -231,8 +156,8 @@ public class HpsmServiceImpl implements HpsmService {
 
         try {
             handler.handle(event, msg, instance);
-        }
-        catch (Exception e) {
+            logger.debug("case-object event handled for case {}", object.getExtId());
+        } catch (Exception e) {
             logger.debug("error while handling event for case {}", event.getCaseObject().getExtId(), e);
         }
     }
