@@ -1,11 +1,13 @@
 package ru.protei.portal.redmine.factories;
 
+import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.redmine.handlers.BackchannelEventHandler;
 
-public class BackchannelHandlerFactoryImpl {
+public class BackchannelHandlerFactoryImpl implements BackchannelHandlerFactory {
 
-    public BackchannelEventHandler createHandler() {
-
+    @Override
+    public BackchannelEventHandler createHandler(AssembledCaseEvent event) {
+        return new CreateIssueHandler();
     }
 
     public class CreateIssueHandler implements BackchannelEventHandler {
