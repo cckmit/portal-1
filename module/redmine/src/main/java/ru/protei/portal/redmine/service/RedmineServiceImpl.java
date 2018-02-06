@@ -39,6 +39,11 @@ public class RedmineServiceImpl implements RedmineService {
         return manager.getIssueManager().getIssues(params).getResults();
     }
 
+    @Override
+    public void createIssue() {
+
+    }
+
 
     private final String apiKey = "";
     private final String uri = "";

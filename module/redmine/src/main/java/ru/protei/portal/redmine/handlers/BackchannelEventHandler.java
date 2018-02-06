@@ -1,0 +1,5 @@
+package ru.protei.portal.redmine.handlers;
+
+public interface BackchannelEventHandler {
+    void handle();
+}

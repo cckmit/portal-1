@@ -6,15 +6,15 @@ import java.util.Date;
 
 public class RedmineUtils {
     public static String parseDateToAfter(Date date) {
-        return AFTER + formatter.format(date);
+        return AFTER + dateTimeFormatter.format(date);
     }
 
     public static String parseDateToBefore(Date date) {
-        return BEFORE + formatter.format(date);
+        return BEFORE + dateTimeFormatter.format(date);
     }
 
     public static String parseDateToRange(Date start, Date end) {
-        return RANGE + formatter.format(start) + RANGE_SEPARATOR + formatter.format(end);
+        return RANGE + dateTimeFormatter.format(start) + RANGE_SEPARATOR + dateTimeFormatter.format(end);
     }
 
 
@@ -24,5 +24,6 @@ public class RedmineUtils {
     private static final String RANGE_SEPARATOR = "|";
 
 
-    private static final Format formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+    private static final Format dateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+    private static final Format dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
 }
