@@ -2,16 +2,13 @@ package ru.protei.portal.redmine.service;
 
 import com.taskadapter.redmineapi.RedmineException;
 import com.taskadapter.redmineapi.bean.Issue;
+import ru.protei.portal.redmine.config.RedmineProjectConfig;
 
 import java.util.Date;
 import java.util.List;
 
 public interface RedmineService {
-    Issue getIssueById(int id) throws RedmineException;
+    void checkForNewIssues(RedmineProjectConfig config);
 
-    List<Issue> getIssuesAfterDate(Date date) throws RedmineException;
-
-    List<Issue> getIssuesBeforeDate(Date date) throws RedmineException;
-
-    List<Issue> getIssuesInDateRange(Date start, Date end) throws RedmineException;
+    void checkForIssuesUpdates();
 }
