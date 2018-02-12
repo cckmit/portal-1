@@ -50,7 +50,7 @@ public class RedmineNewIssueHandler implements RedmineEventHandler {
         createCaseComment(issue);
     }
 
-    private void createCaseObject (Issue issue) {
+    private void createCaseObject(Issue issue) {
         Person contactPerson = getAssignedPerson(issue);
         if (contactPerson == null) {
             logger.debug("no assigned person for issue with id {} from project with id", issue.getId(), issue.getProjectId());
@@ -72,7 +72,7 @@ public class RedmineNewIssueHandler implements RedmineEventHandler {
         caseObjectDAO.persist(obj);
     }
 
-    private void createCaseComment (Issue issue) {
+    private void createCaseComment(Issue issue) {
         Collection<Journal> journals = issue.getJournals();
         journals.stream().map(this::parseJournal).forEach(x -> {
             caseCommentDAO.persist(x);
@@ -80,12 +80,12 @@ public class RedmineNewIssueHandler implements RedmineEventHandler {
         });
     }
 
-    private void persistAttachments (Issue issue) {
+    private void persistAttachments(Issue issue) {
         List<Attachment> attachments = issue.getAttachments().stream().map(this::parseAttachment).collect(Collectors.toList());
         caseAttachmentDAO.persist(attachments);
     }
 
-    private Attachment parseAttachment (com.taskadapter.redmineapi.bean.Attachment attachment) {
+    private Attachment parseAttachment(com.taskadapter.redmineapi.bean.Attachment attachment) {
         Attachment proteiAttachment = new Attachment();
         proteiAttachment.setCreated(attachment.getCreatedOn());
         proteiAttachment.setCreatorId(Long.valueOf(attachment.getAuthor().getId()));
@@ -98,7 +98,7 @@ public class RedmineNewIssueHandler implements RedmineEventHandler {
         return proteiAttachment;
     }
 
-    private CaseComment parseJournal (Journal journal) {
+    private CaseComment parseJournal(Journal journal) {
         CaseComment comment = new CaseComment();
         comment.setCreated(journal.getCreatedOn());
         Person author = parseUser(journal.getUser());
@@ -108,7 +108,7 @@ public class RedmineNewIssueHandler implements RedmineEventHandler {
         return comment;
     }
 
-    private Person parseUser (User user) {
+    private Person parseUser(User user) {
         Person person = new Person();
         person.setFirstName(user.getFirstName());
         person.setId(Long.valueOf(user.getId()));
@@ -131,7 +131,7 @@ public class RedmineNewIssueHandler implements RedmineEventHandler {
                 Attachment a = new Attachment();
                 a.setCreated(new Date());
                 a.setCreatorId(contactPerson.getId());
-                a.setDataSize((long)in.getSize());
+                a.setDataSize((long) in.getSize());
                 a.setFileName(in.getFileName());
                 a.setMimeType(in.getContentType());
                 a.setLabelText(in.getDescription());
@@ -146,8 +146,7 @@ public class RedmineNewIssueHandler implements RedmineEventHandler {
                     if (caId != null) {
                         caseAttachments.add(new CaseAttachment(caseObjId, a.getId(), comment.getId(), caId));
                     }
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     logger.debug("unable to process attachment {}", in.getFileName());
                     logger.debug("trace", e);
                 }
@@ -170,16 +169,13 @@ public class RedmineNewIssueHandler implements RedmineEventHandler {
         return comment;
     }
 
-    private CaseAttachment createCaseAttachment (Issue issue) {}
-
-    private Person getAssignedPerson (Issue issue) {
+    private Person getAssignedPerson(Issue issue) {
 
         Person person = personDAO.get(Long.valueOf(issue.getAssigneeId()));
 
         if (person != null) {
             logger.debug("contact found: {} (id={})", person.getDisplayName(), person.getId());
-        }
-        else {
+        } else {
             logger.debug("unable to find contact person : id={}, create new one", issue.getAssigneeId());
             person = new Person();
             person.setCreated(new Date());
@@ -187,8 +183,7 @@ public class RedmineNewIssueHandler implements RedmineEventHandler {
             if (HelperFunc.isEmpty(issue.getAssigneeName())) {
                 person.setFirstName("?");
                 person.setLastName("?");
-            }
-            else {
+            } else {
                 String[] np = issue.getAssigneeName().split("\\s+");
                 person.setLastName(np[0]);
                 person.setFirstName(np.length > 1 ? np[1] : "?");
