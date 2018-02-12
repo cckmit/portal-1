@@ -25,7 +25,7 @@ import java.util.Date;
  */
 public class HpsmUtils {
 
-    public static final String COMMON_HPSM_TAG = "eventAssemblyConfig";
+    public static final String COMMON_HPSM_TAG = "hpsm";
     public static final String RTTS_HPSM_XML_REQUEST = "rtts_hpsm.xml";
     public static final String RTTS_HPSM_XML_REPLY = "rtts_vendor.xml";
 

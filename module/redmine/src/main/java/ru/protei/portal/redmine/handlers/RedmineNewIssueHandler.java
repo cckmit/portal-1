@@ -1,32 +1,43 @@
 package ru.protei.portal.redmine.handlers;
 
 import com.taskadapter.redmineapi.bean.Issue;
+import com.taskadapter.redmineapi.bean.Journal;
+import com.taskadapter.redmineapi.bean.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.protei.portal.core.model.dao.CaseAttachmentDAO;
-import ru.protei.portal.core.model.dao.CaseCommentDAO;
-import ru.protei.portal.core.model.dao.CaseObjectDAO;
-import ru.protei.portal.core.model.dao.PersonDAO;
+import ru.protei.portal.core.ServiceModule;
+import ru.protei.portal.core.controller.cloud.FileController;
+import ru.protei.portal.core.event.CaseCommentEvent;
+import ru.protei.portal.core.model.dao.*;
+import ru.protei.portal.core.model.dict.En_CaseState;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Gender;
-import ru.protei.portal.core.model.ent.CaseObject;
-import ru.protei.portal.core.model.ent.DevUnit;
-import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
-import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.redmine.api.RedmineStatus;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class RedmineNewIssueHandler implements RedmineEventHandler {
     @Autowired
-    CaseObjectDAO caseObjectDAO;
+    private CaseObjectDAO caseObjectDAO;
 
     @Autowired
-    CaseCommentDAO caseCommentDAO;
+    private CaseCommentDAO caseCommentDAO;
 
     @Autowired
-    CaseAttachmentDAO caseAttachmentDAO;
+    private CaseAttachmentDAO caseAttachmentDAO;
+
+    @Autowired
+    private ExternalCaseAppDAO externalCaseAppDAO;
+
+    @Autowired
+    private FileController fileController;
 
     @Autowired
     PersonDAO personDAO;
@@ -35,101 +46,131 @@ public class RedmineNewIssueHandler implements RedmineEventHandler {
 
     @Override
     public void handle(Issue issue) {
-        CaseObject caseObject = new CaseObject();
-        caseObject.setState(RedmineStatus.parse(issue.getStatusName()).getCaseState());
-        caseObject.setCreatorId(Long.valueOf(issue.getAuthorId()));
-        caseObject.setName(issue.getSubject());
+        createCaseObject(issue);
+        createCaseComment(issue);
+    }
 
-        //Author id
-        issue.getAuthorId();
-
-        issue.getSubject();
-
-        //Responsible person
-        issue.getAssigneeId();
-
-        //Status
-        issue.getStatusName();
-
-        //Date of creation
-        issue.getCreatedOn();
-
-        //Comments
-        issue.getJournals();
-
+    private void createCaseObject (Issue issue) {
         Person contactPerson = getAssignedPerson(issue);
         if (contactPerson == null) {
-            instance.sendReject(request, "No contact person provided");
+            logger.debug("no assigned person for issue with id {} from project with id", issue.getId(), issue.getProjectId());
             return;
         }
-
-        DevUnit product = getAssignedProduct(request.getHpsmMessage());
-        if (product == null) {
-            instance.sendReject(request, "product not found");
-            return;
-        }
-
-        CaseObject ex_test = caseObjectDAO.getByCondition("ext_app_id=?", request.getSubject().getHpsmId());
-        if (ex_test != null) {
-            instance.sendReject(request, "already_registered");
-            return;
-        }
-
-
         CaseObject obj = new CaseObject();
-        obj.setCreated(new Date());
-        obj.setModified(new Date());
-
-        HpsmUtils.bindCase(obj, instance);
-
-
+        obj.setCreated(issue.getCreatedOn());
+        obj.setModified(issue.getUpdatedOn());
         obj.setCaseType(En_CaseType.CRM_SUPPORT);
-        obj.setProduct(product);
+        //obj.setProduct(product);
         obj.setInitiator(contactPerson);
-        obj.setInitiatorCompany(request.getCompany());
-
-        if (HelperFunc.isNotEmpty(request.getHpsmMessage().getContactPersonEmail()))
-            obj.setEmails(request.getHpsmMessage().getContactPersonEmail());
-
-        obj.setImpLevel(HelperFunc.nvlt(request.getHpsmMessage().severity(), HpsmSeverity.LEVEL3).getCaseImpLevel().getId());
-        obj.setName(HelperFunc.nvlt(request.getHpsmMessage().getShortDescription(),request.getSubject().getHpsmId()));
-        obj.setInfo(request.getHpsmMessage().getDescription());
+        //obj.setInitiatorCompany();
+        obj.setImpLevel(issue.getPriorityId());
+        obj.setName(issue.getSubject());
+        obj.setInfo(issue.getDescription());
         obj.setLocal(0);
         obj.setStateId(En_CaseState.CREATED.getId());
-        obj.setProduct(product);
-
-        Long caseObjId = caseObjectDAO.insertCase(obj);
-
-        if (caseObjId != null && caseObjId > 0L) {
-
-            HpsmMessageHeader replySubj = new HpsmMessageHeader(request.getSubject().getHpsmId(), obj.getExtId(), HpsmStatus.REGISTERED);
-            HpsmMessage replyEvent = request.getHpsmMessage().createCopy();
-
-            replyEvent.status(HpsmStatus.REGISTERED);
-            replyEvent.setOurRegistrationTime(obj.getCreated());
-            replyEvent.setOurId(obj.getExtId());
-
-            ExternalCaseAppData appData = new ExternalCaseAppData(obj);
-            appData.setExtAppCaseId(request.getHpsmMessage().getHpsmId());
-            appData.setExtAppData(xstream.toXML(replyEvent));
-
-            logger.debug("create eventAssemblyConfig-case id={}, ext={}, data={}", appData.getId(), appData.getExtAppCaseId(), appData.getExtAppData());
-
-            externalCaseAppDAO.merge(appData);
-
-            logger.debug("publish event on create case id={}, ext={}", obj.getId(), obj.getExtId());
-
-            eventPublisherService.publishEvent(new CaseObjectEvent(ServiceModule.HPSM, caseService, obj, null, contactPerson));
-
-            createComment(request, contactPerson, obj, caseObjId);
-
-            instance.sendReply(request.getEmailSourceAddr(), replySubj, replyEvent);
-        }
-        else {
-            instance.sendReject(request.getEmailSourceAddr(), request, "system error");
-        }
-
+        //obj.setProduct(product);
+        caseObjectDAO.persist(obj);
     }
+
+    private void createCaseComment (Issue issue) {
+        Collection<Journal> journals = issue.getJournals();
+        journals.stream().map(this::parseJournal).forEach(x -> {
+            caseCommentDAO.persist(x);
+            logger.debug("add comment to new case, case-id={}, comment={}", issue.getId(), x.getId());
+        });
+    }
+
+    private void persistAttachments (Issue issue) {
+        List<Attachment> attachments = issue.getAttachments().stream().map(this::parseAttachment).collect(Collectors.toList());
+        caseAttachmentDAO.persist(attachments);
+    }
+
+    private Attachment parseAttachment (com.taskadapter.redmineapi.bean.Attachment attachment) {
+        Attachment proteiAttachment = new Attachment();
+        proteiAttachment.setCreated(attachment.getCreatedOn());
+        proteiAttachment.setCreatorId(Long.valueOf(attachment.getAuthor().getId()));
+        proteiAttachment.setDataSize(attachment.getFileSize());
+        proteiAttachment.setExtLink(attachment.getContentURL());
+        proteiAttachment.setFileName(attachment.getFileName());
+        proteiAttachment.setId(Long.valueOf(attachment.getId()));
+        proteiAttachment.setLabelText(attachment.getDescription());
+        proteiAttachment.setMimeType(attachment.getContentType());
+        return proteiAttachment;
+    }
+
+    private CaseComment parseJournal (Journal journal) {
+        CaseComment comment = new CaseComment();
+        comment.setCreated(journal.getCreatedOn());
+        Person author = parseUser(journal.getUser());
+        comment.setAuthor(author);
+        comment.setId(Long.valueOf(journal.getId()));
+        comment.setText(journal.getNotes());
+        return comment;
+    }
+
+    private Person parseUser (User user) {
+        Person person = new Person();
+        person.setFirstName(user.getFirstName());
+        person.setId(Long.valueOf(user.getId()));
+        person.setLastName(user.getLastName());
+        person.setCreated(user.getCreatedOn());
+        person.setDisplayName(user.getFirstName());
+        user.getStatus();
+        return person;
+    }
+
+    private CaseComment processStoreComment(HpsmEvent request, Person contactPerson, CaseObject obj, Long caseObjId, CaseComment comment) {
+        Collection<Attachment> addedAttachments = null;
+        if (request.hasAttachments()) {
+            logger.debug("process attachments for new case, id={}", caseObjId);
+
+            List<CaseAttachment> caseAttachments = new ArrayList<>(request.getAttachments().size());
+            addedAttachments = new ArrayList<>(request.getAttachments().size());
+
+            for (HpsmAttachment in : request.getAttachments()) {
+                Attachment a = new Attachment();
+                a.setCreated(new Date());
+                a.setCreatorId(contactPerson.getId());
+                a.setDataSize((long)in.getSize());
+                a.setFileName(in.getFileName());
+                a.setMimeType(in.getContentType());
+                a.setLabelText(in.getDescription());
+
+                addedAttachments.add(a);
+
+                try {
+                    logger.debug("invoke file controller to store attachment {} (size={})", in.getFileName(), in.getSize());
+                    Long caId = fileController.saveAttachment(a, in.getStreamSource(), caseObjId);
+                    logger.debug("result from file controller = {} for {} (size={})", caId, in.getFileName(), in.getSize());
+
+                    if (caId != null) {
+                        caseAttachments.add(new CaseAttachment(caseObjId, a.getId(), comment.getId(), caId));
+                    }
+                }
+                catch (Exception e) {
+                    logger.debug("unable to process attachment {}", in.getFileName());
+                    logger.debug("trace", e);
+                }
+            }
+
+            comment.setCaseAttachments(caseAttachments);
+        }
+
+        eventPublisherService.publishEvent(new CaseCommentEvent(
+                ServiceModule.HPSM,
+                caseService,
+                obj,
+                null,
+                null,
+                comment,
+                addedAttachments,
+                contactPerson
+        ));
+
+        return comment;
+    }
+
+    private CaseAttachment createCaseAttachment (Issue issue) {}
 
     private Person getAssignedPerson (Issue issue) {
 
@@ -142,7 +183,7 @@ public class RedmineNewIssueHandler implements RedmineEventHandler {
             logger.debug("unable to find contact person : id={}, create new one", issue.getAssigneeId());
             person = new Person();
             person.setCreated(new Date());
-            person.setCreator("eventAssemblyConfig");
+            person.setCreator("hpsm");
             if (HelperFunc.isEmpty(issue.getAssigneeName())) {
                 person.setFirstName("?");
                 person.setLastName("?");
@@ -155,7 +196,6 @@ public class RedmineNewIssueHandler implements RedmineEventHandler {
             }
 
             person.setDisplayName(issue.getAssigneeName());
-
             person.setGender(En_Gender.UNDEFINED);
             person.setDeleted(false);
             person.setFired(false);

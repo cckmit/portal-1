@@ -125,7 +125,7 @@ public class HpsmEventHandlerFactoryImpl implements HpsmEventHandlerFactory{
                 appData.setExtAppCaseId(request.getHpsmMessage().getHpsmId());
                 appData.setExtAppData(xstream.toXML(replyEvent));
 
-                logger.debug("create eventAssemblyConfig-case id={}, ext={}, data={}", appData.getId(), appData.getExtAppCaseId(), appData.getExtAppData());
+                logger.debug("create hpsm-case id={}, ext={}, data={}", appData.getId(), appData.getExtAppCaseId(), appData.getExtAppData());
 
                 externalCaseAppDAO.merge(appData);
 
