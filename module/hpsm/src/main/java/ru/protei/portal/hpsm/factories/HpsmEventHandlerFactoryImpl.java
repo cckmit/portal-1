@@ -382,7 +382,7 @@ public class HpsmEventHandlerFactoryImpl implements HpsmEventHandlerFactory{
         comment.setAuthor(contactPerson);
         comment.setCaseId(caseObjId);
         comment.setCaseStateId(obj.getStateId());
-        comment.setClientIp("eventAssemblyConfig");
+        comment.setClientIp("hpsm");
         comment.setText(appendCommentInfo (commentText, request.getHpsmMessage()).toString());
 
         return processStoreComment(request, contactPerson, obj, caseObjId, comment);

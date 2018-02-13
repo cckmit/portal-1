@@ -10,5 +10,5 @@ import java.util.List;
 public interface RedmineService {
     void checkForNewIssues(RedmineProjectConfig config);
 
-    void checkForIssuesUpdates();
+    void checkForIssuesUpdates(RedmineProjectConfig config);
 }

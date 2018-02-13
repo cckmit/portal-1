@@ -1,7 +1,8 @@
 package ru.protei.portal.redmine.handlers;
 
 import com.taskadapter.redmineapi.bean.Issue;
+import com.taskadapter.redmineapi.bean.User;
 
 public interface RedmineEventHandler {
-    void handle(Issue issue);
+    void handle(User user, Issue issue);
 }

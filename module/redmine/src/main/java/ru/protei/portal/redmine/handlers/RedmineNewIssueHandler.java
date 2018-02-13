@@ -6,22 +6,20 @@ import com.taskadapter.redmineapi.bean.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.protei.portal.core.ServiceModule;
+import org.springframework.core.io.UrlResource;
 import ru.protei.portal.core.controller.cloud.FileController;
-import ru.protei.portal.core.event.CaseCommentEvent;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
-import ru.protei.portal.redmine.api.RedmineStatus;
+import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class RedmineNewIssueHandler implements RedmineEventHandler {
     @Autowired
@@ -45,16 +43,16 @@ public class RedmineNewIssueHandler implements RedmineEventHandler {
     private final static Logger logger = LoggerFactory.getLogger(RedmineNewIssueHandler.class);
 
     @Override
-    public void handle(Issue issue) {
-        createCaseObject(issue);
-        createCaseComment(issue);
+    public void handle(User user, Issue issue) {
+        CaseObject object = createCaseObject(user, issue);
+        handleComments(issue, parseUser(user), object);
     }
 
-    private void createCaseObject(Issue issue) {
-        Person contactPerson = getAssignedPerson(issue);
+    private CaseObject createCaseObject(User user, Issue issue) {
+        Person contactPerson = getAssignedPerson(0L, user, issue);
         if (contactPerson == null) {
             logger.debug("no assigned person for issue with id {} from project with id", issue.getId(), issue.getProjectId());
-            return;
+            return null;
         }
         CaseObject obj = new CaseObject();
         obj.setCreated(issue.getCreatedOn());
@@ -69,23 +67,19 @@ public class RedmineNewIssueHandler implements RedmineEventHandler {
         obj.setLocal(0);
         obj.setStateId(En_CaseState.CREATED.getId());
         //obj.setProduct(product);
-        caseObjectDAO.persist(obj);
+        caseObjectDAO.saveOrUpdate(obj);
+        return obj;
     }
 
-    private void createCaseComment(Issue issue) {
+    private void handleComments(Issue issue, Person person, CaseObject obj) {
         Collection<Journal> journals = issue.getJournals();
-        journals.stream().map(this::parseJournal).forEach(x -> {
-            caseCommentDAO.persist(x);
-            logger.debug("add comment to new case, case-id={}, comment={}", issue.getId(), x.getId());
-        });
+        journals.stream()
+                .map(this::parseJournal)
+                .map(x -> processStoreComment(issue, person, obj, obj.getId(), x))
+                .forEach(caseCommentDAO::saveOrUpdate);
     }
 
-    private void persistAttachments(Issue issue) {
-        List<Attachment> attachments = issue.getAttachments().stream().map(this::parseAttachment).collect(Collectors.toList());
-        caseAttachmentDAO.persist(attachments);
-    }
-
-    private Attachment parseAttachment(com.taskadapter.redmineapi.bean.Attachment attachment) {
+    /*private Attachment parseAttachment(com.taskadapter.redmineapi.bean.Attachment attachment) {
         Attachment proteiAttachment = new Attachment();
         proteiAttachment.setCreated(attachment.getCreatedOn());
         proteiAttachment.setCreatorId(Long.valueOf(attachment.getAuthor().getId()));
@@ -96,7 +90,7 @@ public class RedmineNewIssueHandler implements RedmineEventHandler {
         proteiAttachment.setLabelText(attachment.getDescription());
         proteiAttachment.setMimeType(attachment.getContentType());
         return proteiAttachment;
-    }
+    }*/
 
     private CaseComment parseJournal(Journal journal) {
         CaseComment comment = new CaseComment();
@@ -119,43 +113,41 @@ public class RedmineNewIssueHandler implements RedmineEventHandler {
         return person;
     }
 
-    private CaseComment processStoreComment(HpsmEvent request, Person contactPerson, CaseObject obj, Long caseObjId, CaseComment comment) {
-        Collection<Attachment> addedAttachments = null;
-        if (request.hasAttachments()) {
+    private CaseComment processStoreComment(Issue issue, Person contactPerson, CaseObject obj, Long caseObjId, CaseComment comment) {
+        final Collection<Attachment> addedAttachments = new ArrayList<>(issue.getAttachments().size());
+        if (issue.getAttachments() != null && !issue.getAttachments().isEmpty()) {
             logger.debug("process attachments for new case, id={}", caseObjId);
 
-            List<CaseAttachment> caseAttachments = new ArrayList<>(request.getAttachments().size());
-            addedAttachments = new ArrayList<>(request.getAttachments().size());
+            List<CaseAttachment> caseAttachments = new ArrayList<>(issue.getAttachments().size());
 
-            for (HpsmAttachment in : request.getAttachments()) {
+            issue.getAttachments().forEach(x -> {
                 Attachment a = new Attachment();
                 a.setCreated(new Date());
                 a.setCreatorId(contactPerson.getId());
-                a.setDataSize((long) in.getSize());
-                a.setFileName(in.getFileName());
-                a.setMimeType(in.getContentType());
-                a.setLabelText(in.getDescription());
-
+                a.setDataSize(x.getFileSize());
+                a.setFileName(x.getFileName());
+                a.setMimeType(x.getContentType());
+                a.setLabelText(x.getDescription());
                 addedAttachments.add(a);
-
                 try {
-                    logger.debug("invoke file controller to store attachment {} (size={})", in.getFileName(), in.getSize());
-                    Long caId = fileController.saveAttachment(a, in.getStreamSource(), caseObjId);
-                    logger.debug("result from file controller = {} for {} (size={})", caId, in.getFileName(), in.getSize());
+                    logger.debug("invoke file controller to store attachment {} (size={})", x.getFileName(), x.getFileSize());
+                    Long caId = fileController.saveAttachment(a, new UrlResource(x.getContentURL()), caseObjId);
+                    logger.debug("result from file controller = {} for {} (size={})", caId, x.getFileName(), x.getFileSize());
 
                     if (caId != null) {
                         caseAttachments.add(new CaseAttachment(caseObjId, a.getId(), comment.getId(), caId));
                     }
                 } catch (Exception e) {
-                    logger.debug("unable to process attachment {}", in.getFileName());
+                    logger.debug("unable to process attachment {}", x.getFileName());
                     logger.debug("trace", e);
                 }
-            }
+            });
 
             comment.setCaseAttachments(caseAttachments);
         }
-
-        eventPublisherService.publishEvent(new CaseCommentEvent(
+        //@question
+        //Should we publish event here? Why are we doing this in HPSM module?
+        /*eventPublisherService.publishEvent(new CaseCommentEvent(
                 ServiceModule.HPSM,
                 caseService,
                 obj,
@@ -164,37 +156,63 @@ public class RedmineNewIssueHandler implements RedmineEventHandler {
                 comment,
                 addedAttachments,
                 contactPerson
-        ));
-
+        ));*/
         return comment;
     }
 
-    private Person getAssignedPerson(Issue issue) {
+    private Person getAssignedPerson(Long companyId, User user, Issue issue) {
 
-        Person person = personDAO.get(Long.valueOf(issue.getAssigneeId()));
+        Person person = null;
+
+        if (HelperFunc.isEmpty(user.getMail())) {
+            logger.debug("no contact data provided for request {}", issue.getId());
+            return null;
+        }
+
+        if (HelperFunc.isNotEmpty(user.getMail())) {
+            // try find by e-mail
+            person = personDAO.findContactByEmail(companyId, user.getMail());
+        }
+
+
+        if (person == null && HelperFunc.isNotEmpty(issue.getAssigneeName())) {
+            // try find by name
+            person = personDAO.findContactByName(companyId, issue.getAssigneeName());
+        }
+
 
         if (person != null) {
-            logger.debug("contact found: {} (id={})", person.getDisplayName(), person.getId());
+            logger.debug("contact found: {} (id={}), request {}", person.getDisplayName(), person.getId(), issue.getId());
         } else {
-            logger.debug("unable to find contact person : id={}, create new one", issue.getAssigneeId());
+            logger.debug("unable to find contact person : email={}, company={}, create new one", user.getMail(), companyId);
+
             person = new Person();
             person.setCreated(new Date());
-            person.setCreator("hpsm");
-            if (HelperFunc.isEmpty(issue.getAssigneeName())) {
+            person.setCreator("redmine");
+            //person.setCompanyId();
+
+            if (HelperFunc.isEmpty(user.getFirstName()) && HelperFunc.isEmpty(user.getLastName())) {
                 person.setFirstName("?");
                 person.setLastName("?");
             } else {
-                String[] np = issue.getAssigneeName().split("\\s+");
+                String[] np = user.getFullName().split("\\s+");
                 person.setLastName(np[0]);
                 person.setFirstName(np.length > 1 ? np[1] : "?");
                 person.setSecondName(np.length > 2 ? np[2] : "");
             }
 
-            person.setDisplayName(issue.getAssigneeName());
+            person.setDisplayName(user.getFullName());
+
+            PlainContactInfoFacade contactInfoFacade = new PlainContactInfoFacade();
+
+            if (user.getMail() != null)
+                contactInfoFacade.setEmail(user.getMail());
+
+            person.setContactInfo(contactInfoFacade.editInfo());
+
             person.setGender(En_Gender.UNDEFINED);
             person.setDeleted(false);
             person.setFired(false);
-
             personDAO.persist(person);
         }
 
