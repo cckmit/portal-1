@@ -33,4 +33,5 @@
   <include file="2017-11-20-insert-company_category-home.xml" relativeToChangelogFile="true"/>
   <include file="2018-01-18-insert-case_notifier.xml" relativeToChangelogFile="true"/>
   <include file="63-worker-audit.xml" relativeToChangelogFile="true"/>
+  <include file="2018-02-14-redmine-integration.xml" relativeToChangelogFile="true" />
 </databaseChangeLog>

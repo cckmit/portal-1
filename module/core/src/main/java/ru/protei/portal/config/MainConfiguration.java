@@ -232,6 +232,11 @@ public class MainConfiguration {
     public ExternalCaseAppDAO getExternalCaseAppDAO () {
         return new ExternalCaseAppDAO_Impl();
     }
+
+    @Bean
+    public RedmineEndpointDAO getRedmineEndpointDAO() {
+        return new RedmineEndpointDAO_Impl();
+    }
 /**
  *
  *

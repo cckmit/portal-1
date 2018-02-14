@@ -7,7 +7,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.UrlResource;
+import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.controller.cloud.FileController;
+import ru.protei.portal.core.event.CaseCommentEvent;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
@@ -15,6 +17,8 @@ import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
+import ru.protei.portal.core.service.CaseService;
+import ru.protei.portal.core.service.EventPublisherService;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -38,7 +42,13 @@ public class RedmineNewIssueHandler implements RedmineEventHandler {
     private FileController fileController;
 
     @Autowired
-    PersonDAO personDAO;
+    private PersonDAO personDAO;
+
+    @Autowired
+    private CaseService caseService;
+
+    @Autowired
+    private EventPublisherService eventPublisherService;
 
     private final static Logger logger = LoggerFactory.getLogger(RedmineNewIssueHandler.class);
 
@@ -79,19 +89,6 @@ public class RedmineNewIssueHandler implements RedmineEventHandler {
                 .forEach(caseCommentDAO::saveOrUpdate);
     }
 
-    /*private Attachment parseAttachment(com.taskadapter.redmineapi.bean.Attachment attachment) {
-        Attachment proteiAttachment = new Attachment();
-        proteiAttachment.setCreated(attachment.getCreatedOn());
-        proteiAttachment.setCreatorId(Long.valueOf(attachment.getAuthor().getId()));
-        proteiAttachment.setDataSize(attachment.getFileSize());
-        proteiAttachment.setExtLink(attachment.getContentURL());
-        proteiAttachment.setFileName(attachment.getFileName());
-        proteiAttachment.setId(Long.valueOf(attachment.getId()));
-        proteiAttachment.setLabelText(attachment.getDescription());
-        proteiAttachment.setMimeType(attachment.getContentType());
-        return proteiAttachment;
-    }*/
-
     private CaseComment parseJournal(Journal journal) {
         CaseComment comment = new CaseComment();
         comment.setCreated(journal.getCreatedOn());
@@ -114,6 +111,7 @@ public class RedmineNewIssueHandler implements RedmineEventHandler {
     }
 
     private CaseComment processStoreComment(Issue issue, Person contactPerson, CaseObject obj, Long caseObjId, CaseComment comment) {
+        caseCommentDAO.persist(comment);
         final Collection<Attachment> addedAttachments = new ArrayList<>(issue.getAttachments().size());
         if (issue.getAttachments() != null && !issue.getAttachments().isEmpty()) {
             logger.debug("process attachments for new case, id={}", caseObjId);
@@ -145,10 +143,8 @@ public class RedmineNewIssueHandler implements RedmineEventHandler {
 
             comment.setCaseAttachments(caseAttachments);
         }
-        //@question
-        //Should we publish event here? Why are we doing this in HPSM module?
-        /*eventPublisherService.publishEvent(new CaseCommentEvent(
-                ServiceModule.HPSM,
+        eventPublisherService.publishEvent(new CaseCommentEvent(
+                ServiceModule.REDMINE,
                 caseService,
                 obj,
                 null,
@@ -156,7 +152,7 @@ public class RedmineNewIssueHandler implements RedmineEventHandler {
                 comment,
                 addedAttachments,
                 contactPerson
-        ));*/
+        ));
         return comment;
     }
 
