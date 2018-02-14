@@ -2,9 +2,12 @@ package ru.protei.portal.hpsm.api;
 
 import ru.protei.portal.core.model.dict.En_CaseState;
 
+import java.util.Arrays;
+
 /**
  * Created by michael on 24.04.17.
  */
+
 public enum HpsmStatus {
 
     NEW ("Новый", En_CaseState.CREATED),
@@ -39,7 +42,6 @@ public enum HpsmStatus {
         return caseState;
     }
 
-
     public static HpsmStatus parse (String code) {
         if (code == null || code.isEmpty())
             return null;
@@ -49,5 +51,9 @@ public enum HpsmStatus {
                 return it;
 
         return null;
+    }
+
+    public static HpsmStatus getByCaseState(En_CaseState caseState){
+        return Arrays.stream(HpsmStatus.values()).filter(x -> x.caseState.equals(caseState)).findFirst().orElseGet(null);
     }
 }
