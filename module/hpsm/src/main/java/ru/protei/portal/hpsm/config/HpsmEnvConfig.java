@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * Created by michael on 25.04.17.
  */
-@XStreamAlias("eventAssemblyConfig-config")
+@XStreamAlias("hpsm-config")
 public class HpsmEnvConfig {
 
     public static final HpsmEnvConfig load(String file) throws IOException {

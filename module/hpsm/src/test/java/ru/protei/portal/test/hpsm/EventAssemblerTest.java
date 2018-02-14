@@ -18,7 +18,7 @@ import ru.protei.portal.hpsm.utils.TestServiceInstance;
 import ru.protei.portal.test.hpsm.config.HpsmTestConfiguration;
 
 public class EventAssemblerTest {
-    public static final String HPSM_TEST_CASE_ID2 = "eventAssemblyConfig-update-test-1";
+    public static final String HPSM_TEST_CASE_ID2 = "hpsm-update-test-1";
     static ApplicationContext ctx;
 
     @BeforeClass

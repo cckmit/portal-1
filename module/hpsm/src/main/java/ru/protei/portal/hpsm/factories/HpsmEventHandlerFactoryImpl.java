@@ -188,7 +188,7 @@ public class HpsmEventHandlerFactoryImpl implements HpsmEventHandlerFactory{
             comment.setCreated(new Date());
             comment.setAuthor(contactPerson);
             comment.setCaseId(object.getId());
-            comment.setClientIp("eventAssemblyConfig");
+            comment.setClientIp("hpsm");
 
             if (request.getSubject().getStatus() != null && currState.status() != request.getSubject().getStatus()) {
                 commentText.append(currState.status()).append(" -> ").append(request.getSubject().getStatus()).append("\n");
@@ -277,7 +277,7 @@ public class HpsmEventHandlerFactoryImpl implements HpsmEventHandlerFactory{
 
             person = new Person();
             person.setCreated(new Date());
-            person.setCreator("eventAssemblyConfig");
+            person.setCreator("hpsm");
             person.setCompanyId(companyId);
 
             if (HelperFunc.isEmpty(msg.getContactPerson())) {
