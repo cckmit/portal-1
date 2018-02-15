@@ -33,7 +33,7 @@ import java.util.List;
  */
 public class LiveSampleTest {
     public static final long LOCAL_PERSON_ID = 18L;
-    public static final String HPSM_TEST_CASE_ID1 = "eventAssemblyConfig-live-test1642";
+    public static final String HPSM_TEST_CASE_ID1 = "hpsm-live-test1642";
     static ApplicationContext ctx;
 
     @BeforeClass

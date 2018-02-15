@@ -125,7 +125,7 @@ public class HpsmEventHandlerFactoryImpl implements HpsmEventHandlerFactory{
                 appData.setExtAppCaseId(request.getHpsmMessage().getHpsmId());
                 appData.setExtAppData(xstream.toXML(replyEvent));
 
-                logger.debug("create eventAssemblyConfig-case id={}, ext={}, data={}", appData.getId(), appData.getExtAppCaseId(), appData.getExtAppData());
+                logger.debug("create hpsm-case id={}, ext={}, data={}", appData.getId(), appData.getExtAppCaseId(), appData.getExtAppData());
 
                 externalCaseAppDAO.merge(appData);
 
@@ -188,7 +188,7 @@ public class HpsmEventHandlerFactoryImpl implements HpsmEventHandlerFactory{
             comment.setCreated(new Date());
             comment.setAuthor(contactPerson);
             comment.setCaseId(object.getId());
-            comment.setClientIp("eventAssemblyConfig");
+            comment.setClientIp("hpsm");
 
             if (request.getSubject().getStatus() != null && currState.status() != request.getSubject().getStatus()) {
                 commentText.append(currState.status()).append(" -> ").append(request.getSubject().getStatus()).append("\n");
@@ -277,7 +277,7 @@ public class HpsmEventHandlerFactoryImpl implements HpsmEventHandlerFactory{
 
             person = new Person();
             person.setCreated(new Date());
-            person.setCreator("eventAssemblyConfig");
+            person.setCreator("hpsm");
             person.setCompanyId(companyId);
 
             if (HelperFunc.isEmpty(msg.getContactPerson())) {
@@ -382,7 +382,7 @@ public class HpsmEventHandlerFactoryImpl implements HpsmEventHandlerFactory{
         comment.setAuthor(contactPerson);
         comment.setCaseId(caseObjId);
         comment.setCaseStateId(obj.getStateId());
-        comment.setClientIp("eventAssemblyConfig");
+        comment.setClientIp("hpsm");
         comment.setText(appendCommentInfo (commentText, request.getHpsmMessage()).toString());
 
         return processStoreComment(request, contactPerson, obj, caseObjId, comment);

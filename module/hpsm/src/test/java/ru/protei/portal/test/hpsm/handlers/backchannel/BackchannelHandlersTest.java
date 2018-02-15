@@ -24,7 +24,7 @@ import static ru.protei.portal.core.model.dict.En_CaseState.WORKAROUND;
 public class BackchannelHandlersTest {
 
     static ApplicationContext ctx;
-    public static final String HPSM_TEST_CASE_ID3 = "eventAssemblyConfig-backchannel-test-1";
+    public static final String HPSM_TEST_CASE_ID3 = "hpsm-backchannel-test-1";
 
     @BeforeClass
     public static void init () {

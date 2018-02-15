@@ -206,7 +206,7 @@ public class BackChannelHandlerFactoryImpl implements BackChannelHandlerFactory 
 
         appData.setExtAppData(xstream.toXML(message));
 
-        logger.debug("update and send eventAssemblyConfig data, case-id={}, ext={}, data={}", object.getId(),
+        logger.debug("update and send hpsm data, case-id={}, ext={}, data={}", object.getId(),
                 appData.getExtAppCaseId(), appData.getExtAppData());
 
         externalCaseAppDAO.saveExtAppData(appData);
