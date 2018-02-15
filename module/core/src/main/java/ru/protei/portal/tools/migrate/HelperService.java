@@ -1,4 +1,4 @@
-package ru.protei.portal.api.utils;
+package ru.protei.portal.tools.migrate;
 
 import java.text.SimpleDateFormat;
 

@@ -1,4 +1,4 @@
-package ru.protei.portal.api.tools.migrate;
+package ru.protei.portal.tools.migrate.struct;
 
 import protei.sql.Column;
 import protei.sql.PrimaryKey;

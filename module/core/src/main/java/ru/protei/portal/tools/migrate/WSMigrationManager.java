@@ -1,9 +1,11 @@
-package ru.protei.portal.api.tools.migrate;
+package ru.protei.portal.tools.migrate;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import protei.sql.Tm_SqlHelper;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.tools.migrate.struct.ExternalPerson;
+import ru.protei.portal.tools.migrate.struct.ExternalPersonExtension;
 
 import java.net.UnknownHostException;
 import java.sql.*;

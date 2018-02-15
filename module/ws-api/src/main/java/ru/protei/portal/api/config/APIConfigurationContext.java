@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import ru.protei.portal.api.model.*;
-import ru.protei.portal.api.tools.migrate.WSMigrationManager;
+import ru.protei.portal.tools.migrate.WSMigrationManager;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
 import ru.protei.portal.core.model.struct.Photo;
