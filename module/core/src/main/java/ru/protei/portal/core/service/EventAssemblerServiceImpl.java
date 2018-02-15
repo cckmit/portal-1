@@ -10,8 +10,11 @@ import ru.protei.portal.core.event.CaseCommentEvent;
 import ru.protei.portal.core.event.CaseObjectEvent;
 import ru.protei.portal.core.model.ent.Person;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 public class EventAssemblerServiceImpl implements EventAssemblerService {
 
@@ -75,10 +78,16 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
     @Scheduled(fixedRate = SCHEDULE_TIME)
     public void checkEventsMap() {
         //Measured in ms
-        assembledEventsMap.values().stream().filter(x -> eventExpirationControl.isExpired(x))
+        logger.debug("event assembly, checkEventsMap, size={}", assembledEventsMap.size());
+        Collection<Person> events = assembledEventsMap.values().stream().filter(x -> eventExpirationControl.isExpired(x))
                 .map(AssembledCaseEvent::getInitiator)
                 .distinct()
-                .forEach(this::publishAndClear);
+                .collect(Collectors.toList());
+
+        if (!events.isEmpty()) {
+            logger.debug("publish set of events, initiators : {}", events.size());
+            events.forEach(this::publishAndClear);
+        }
     }
 
     private void publishAndClear(Person person) {
@@ -92,7 +101,7 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
         assembledEventsMap.remove(person);
     }
 
-    private final Map<Person, AssembledCaseEvent> assembledEventsMap = new HashMap<>();
+    private final Map<Person, AssembledCaseEvent> assembledEventsMap = new ConcurrentHashMap<>();
     //Time interval for events checking, MS
     private final static long SCHEDULE_TIME = 5000;
 
