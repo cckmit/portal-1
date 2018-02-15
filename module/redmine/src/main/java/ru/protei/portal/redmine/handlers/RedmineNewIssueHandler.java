@@ -53,7 +53,7 @@ public class RedmineNewIssueHandler implements RedmineEventHandler {
     private final static Logger logger = LoggerFactory.getLogger(RedmineNewIssueHandler.class);
 
     @Override
-    public void handle(User user, Issue issue) {
+    public void handle(User user, Issue issue, long CompanyId) {
         CaseObject object = createCaseObject(user, issue);
         handleComments(issue, parseUser(user), object);
     }
