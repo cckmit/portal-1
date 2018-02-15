@@ -9,8 +9,7 @@ import static java.lang.System.currentTimeMillis;
 public class EventExpirationControl {
 
     public boolean isExpired(AssembledCaseEvent event) {
-        //casting millis to seconds
-        return currentTimeMillis() / 1000 - event.getLastUpdated() >= config.data().eventAssemblyConfig().getWaitingPeriod();
+        return (currentTimeMillis() - event.getLastUpdated()) >= config.data().eventAssemblyConfig().getWaitingPeriodMillis();
     }
 
     @Autowired

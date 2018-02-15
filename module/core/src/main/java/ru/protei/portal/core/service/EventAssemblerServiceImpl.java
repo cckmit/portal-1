@@ -42,7 +42,8 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
     @EventListener
     public void onCaseCommentEvent(CaseCommentEvent event) {
         Person eventRelatedPerson = event.getPerson();
-        if (assembledEventsMap.get(eventRelatedPerson).isCaseCommentAttached()) {
+        if (assembledEventsMap.containsKey(eventRelatedPerson)
+                && assembledEventsMap.get(eventRelatedPerson).isCaseCommentAttached()) {
             logger.debug("onCaseCommentEvent, publish prev event on case {}", event.getCaseObject().defGUID());
             publishAndClear(eventRelatedPerson);
             assembledEventsMap.put(eventRelatedPerson, new AssembledCaseEvent(event));
