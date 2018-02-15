@@ -96,7 +96,7 @@ public class PortalConfigData {
         private final Long waitingPeriod;
 
         public EventAssemblyConfig(PropertiesWrapper properties) throws ConfigException {
-            waitingPeriod = Long.valueOf(properties.getProperty("core.waiting_period", "30000"));
+            waitingPeriod = Long.valueOf(properties.getProperty("core.waiting_period", "30"));
         }
 
         public Long getWaitingPeriod() {
