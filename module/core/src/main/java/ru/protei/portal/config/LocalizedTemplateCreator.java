@@ -24,12 +24,12 @@ public class LocalizedTemplateCreator {
      * Create localized templates
      * @param templates template paths
      */
-    public static void main(String[] templates) {
+    public static void main(String[] templates) throws Exception {
         if(templates.length == 0)
             return;
 
         Lang keys = getLang();
-        String basePackagePath = LocalizedTemplateCreator.class.getResource("/").getFile();
+        String basePackagePath = Paths.get(LocalizedTemplateCreator.class.getResource("/").toURI()).toFile().getAbsolutePath();
 
         Map<Locale, Object> models = new HashMap<>(LOCALES.length);
         for (Locale locale : LOCALES) {
