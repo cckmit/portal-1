@@ -6,6 +6,7 @@ import protei.sql.Table;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.tools.migrate.Const;
+import ru.protei.portal.tools.migrate.HelperService;
 
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
@@ -205,5 +206,14 @@ public class ExternalPerson {
     @Column(name="strPosition")
     public void setPosition(String position) {
         this.position = position;
+    }
+
+    @Override
+    public String toString() {
+        return new StringBuilder("person{")
+                .append(getId()).append("/")
+                .append(HelperService.generateDisplayName(this))
+                .append("}")
+                .toString();
     }
 }

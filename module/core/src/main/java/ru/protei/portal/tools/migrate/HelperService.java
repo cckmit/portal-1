@@ -1,5 +1,7 @@
 package ru.protei.portal.tools.migrate;
 
+import ru.protei.portal.tools.migrate.struct.ExternalPerson;
+
 import java.text.SimpleDateFormat;
 
 /**
@@ -8,6 +10,10 @@ import java.text.SimpleDateFormat;
 public class HelperService {
 
     public static SimpleDateFormat DATE = new SimpleDateFormat ("yyyy-MM-dd");
+
+    public static String generateDisplayName (ExternalPerson person) {
+        return generateDisplayName(person.getFirstName(), person.getLastName(), person.getSecondName());
+    }
 
     public static String generateDisplayName(String firstName, String lastName, String secondName) {
         return lastName + " " + firstName + (secondName != null ? (" " + secondName) : "");

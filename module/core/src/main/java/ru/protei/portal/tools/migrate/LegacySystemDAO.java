@@ -105,9 +105,21 @@ public class LegacySystemDAO {
         }
     }
 
+    public ExternalPerson getExternalPerson (long id) throws SQLException {
+        try (Connection connection = connProvider.getConnection()){
+            return Tm_SqlHelper.getObjectEx(connection, ExternalPerson.class, id);
+        }
+    }
+
+    public boolean isExistsPerson (long id) throws SQLException {
+        try (Connection connection = connProvider.getConnection()){
+            return Tm_SqlHelper.exists(connection, ExternalPerson.class, id);
+        }
+    }
+
     public boolean isExistPerson(Person person) throws SQLException {
         try (Connection connection = connProvider.getConnection()) {
-            return Tm_SqlHelper.countByExpression(connection, ExternalPerson.class, "nID=?", person.getId()) > 0;
+            return Tm_SqlHelper.exists(connection, ExternalPerson.class, person.getId());
 
 //            PreparedStatement st = connection.prepareStatement("select * from " + Tm_SqlHelper.getTableName (ExternalPerson.class) + " where nID = " + person.getId ());
 //            ResultSet rs = st.executeQuery ();
