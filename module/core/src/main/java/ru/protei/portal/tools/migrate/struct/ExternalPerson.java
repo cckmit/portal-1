@@ -5,6 +5,7 @@ import protei.sql.PrimaryKey;
 import protei.sql.Table;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.tools.migrate.Const;
 
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
@@ -17,9 +18,9 @@ import java.util.Date;
 public class ExternalPerson {
 
     private Long id;
-    private String creator = "DBA";
-    private String client = "portal-api";
-    private String clientIP = "localhost";
+    private String creator = Const.CREATOR_FIELD_VALUE;
+    private String client = Const.CLIENT_FIELD_VALUE;
+    private String clientIP = Const.CREATOR_HOST_VALUE;
     private Long companyId;
     private String firstName;
     private String lastName;

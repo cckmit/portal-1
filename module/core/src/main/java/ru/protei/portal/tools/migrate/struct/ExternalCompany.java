@@ -3,6 +3,7 @@ package ru.protei.portal.tools.migrate.struct;
 import protei.sql.Column;
 import protei.sql.PrimaryKey;
 import protei.sql.Table;
+import ru.protei.portal.tools.migrate.Const;
 
 import java.util.Date;
 
@@ -17,13 +18,13 @@ public class ExternalCompany {
     private Date created;
 
     @Column(name = "strCreator")
-    private String creator;
+    private String creator = Const.CREATOR_FIELD_VALUE;
 
     @Column(name = "strClient")
-    private String client;
+    private String client = Const.CLIENT_FIELD_VALUE;
 
     @Column(name = "strClientIP")
-    private String clientIp;
+    private String clientIp = Const.CREATOR_HOST_VALUE;
 
     @Column(name = "strName")
     private String name;
@@ -47,7 +48,7 @@ public class ExternalCompany {
     private Date lastUpdated;
 
     @Column(name = "ext_id")
-    private long externalId;
+    private Long externalId;
 
 
     public ExternalCompany() {
@@ -150,12 +151,11 @@ public class ExternalCompany {
         this.lastUpdated = lastUpdated;
     }
 
-
-    public long getExternalId() {
+    public Long getExternalId() {
         return externalId;
     }
 
-    public void setExternalId(long externalId) {
+    public void setExternalId(Long externalId) {
         this.externalId = externalId;
     }
 }

@@ -12,6 +12,9 @@ import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
 import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.bootstrap.BootstrapService;
+import ru.protei.portal.core.service.export.ActiveExportDataService;
+import ru.protei.portal.core.service.export.DummyExportDataService;
+import ru.protei.portal.core.service.export.ExportDataService;
 import ru.protei.portal.core.service.user.AuthService;
 import ru.protei.portal.core.service.user.AuthServiceImpl;
 import ru.protei.portal.core.service.user.LDAPAuthProvider;
@@ -232,6 +235,11 @@ public class MainConfiguration {
     public ExternalCaseAppDAO getExternalCaseAppDAO () {
         return new ExternalCaseAppDAO_Impl();
     }
+
+    @Bean
+    public ExportSybEntryDAO getExportSybEntryDAO () {
+        return new ExportSybEntryDAO_Impl();
+    }
 /**
  *
  *
@@ -346,6 +354,11 @@ public class MainConfiguration {
     @Bean
     public EventExpirationControl getEventExpirationControl() {
         return new EventExpirationControl();
+    }
+
+    @Bean
+    public ExportDataService getExportDataService (@Autowired PortalConfig config) {
+        return config.data().exportConfig().isEnabled() ? new ActiveExportDataService() : new DummyExportDataService();
     }
 
     /** ASPECT/INTERCEPTORS **/
