@@ -12,16 +12,21 @@ import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
 import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.bootstrap.BootstrapService;
-import ru.protei.portal.core.service.export.ActiveExportDataService;
-import ru.protei.portal.core.service.export.DummyExportDataService;
-import ru.protei.portal.core.service.export.ExportDataService;
+import ru.protei.portal.tools.migrate.export.ActiveExportDataService;
+import ru.protei.portal.tools.migrate.export.DummyExportDataService;
+import ru.protei.portal.tools.migrate.export.ExportDataService;
 import ru.protei.portal.core.service.user.AuthService;
 import ru.protei.portal.core.service.user.AuthServiceImpl;
 import ru.protei.portal.core.service.user.LDAPAuthProvider;
 import ru.protei.portal.core.utils.SessionIdGen;
 import ru.protei.portal.core.utils.SimpleSidGenerator;
 import ru.protei.portal.core.Lang;
+import ru.protei.portal.tools.migrate.LegacySystemDAO;
+import ru.protei.portal.tools.migrate.sybase.SybConnProvider;
+import ru.protei.portal.tools.migrate.sybase.SybConnWrapperImpl;
 import ru.protei.winter.core.utils.config.exception.ConfigException;
+
+import java.sql.SQLException;
 
 @EnableAspectJAutoProxy
 @Configuration
@@ -49,6 +54,16 @@ public class MainConfiguration {
         messageSource.setDefaultEncoding("UTF-8");
         return new Lang(messageSource);
     }
+
+    @Bean
+    public SybConnProvider getSybConnProvider (@Autowired PortalConfig config) throws SQLException {
+        return new SybConnWrapperImpl(config.data().legacySysConfig().getJdbcURL(),
+                config.data().legacySysConfig().getLogin(),
+                config.data().legacySysConfig().getPasswd());
+    }
+
+    @Bean
+    public LegacySystemDAO getLegacySystemDAO () { return new LegacySystemDAO(); }
 
     @Bean
     public LDAPAuthProvider getLDAPAuthProvider() {
@@ -358,7 +373,7 @@ public class MainConfiguration {
 
     @Bean
     public ExportDataService getExportDataService (@Autowired PortalConfig config) {
-        return config.data().exportConfig().isEnabled() ? new ActiveExportDataService() : new DummyExportDataService();
+        return config.data().legacySysConfig().isExportEnabled() ? new ActiveExportDataService() : new DummyExportDataService();
     }
 
     /** ASPECT/INTERCEPTORS **/

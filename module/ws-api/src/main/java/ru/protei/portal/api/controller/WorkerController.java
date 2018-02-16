@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import protei.sql.query.Tm_SqlQueryHelper;
 import ru.protei.portal.api.config.WSConfig;
 import ru.protei.portal.api.model.*;
-import ru.protei.portal.tools.migrate.WSMigrationManager;
+import ru.protei.portal.tools.migrate.LegacySystemDAO;
 import ru.protei.portal.tools.migrate.HelperService;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_AuditType;
@@ -58,7 +58,7 @@ public class WorkerController {
     TransactionTemplate transactionTemplate;
 
     @Autowired
-    WSMigrationManager migrationManager;
+    LegacySystemDAO migrationManager;
 
     @Autowired
     AuditObjectDAO auditObjectDAO;

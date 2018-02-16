@@ -1,4 +1,4 @@
-package ru.protei.portal.core.service.export;
+package ru.protei.portal.tools.migrate.export;
 
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.Company;

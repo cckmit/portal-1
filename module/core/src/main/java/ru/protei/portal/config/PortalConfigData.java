@@ -17,7 +17,7 @@ public class PortalConfigData {
     private SmtpConfig smtpConfig;
     private CloudConfig cloudConfig;
     private final EventAssemblyConfig eventAssemblyConfig;
-    private final ExportDataConfig exportDataConfig;
+    private final LegacySystemConfig legacySystemConfig;
 
     private final String crmCaseUrl;
 
@@ -25,13 +25,13 @@ public class PortalConfigData {
         smtpConfig = new SmtpConfig(wrapper);
         cloudConfig = new CloudConfig(wrapper);
         eventAssemblyConfig = new EventAssemblyConfig(wrapper);
-        exportDataConfig = new ExportDataConfig(wrapper);
+        legacySystemConfig = new LegacySystemConfig(wrapper);
 
         crmCaseUrl = wrapper.getProperty( "crm.case.url", "http://127.0.0.1:8888/crm.html#issues/issue:id=%d;" );
     }
 
-    public ExportDataConfig exportConfig () {
-        return exportDataConfig;
+    public LegacySystemConfig legacySysConfig() {
+        return legacySystemConfig;
     }
 
     public SmtpConfig smtp () {
@@ -131,21 +131,22 @@ public class PortalConfigData {
     }
 
 
-    public static class ExportDataConfig {
+    public static class LegacySystemConfig {
         private final String jdbcURL;
         private final String login;
         private final String passwd;
-        private final boolean enabled;
+        private final boolean exportEnabled;
 
         private final String instanceId;
 
-        public ExportDataConfig(PropertiesWrapper properties) throws ConfigException {
-            this.enabled = properties.getProperty("export.syb.enabled", Boolean.class,false);
-            this.jdbcURL = properties.getProperty("export.syb.jdbc.url", "jdbc:sybase:Tds:192.168.1.55:2638/PORTAL2017");
-            this.login = properties.getProperty("export.syb.jdbc.login", "dba");
-            this.passwd = properties.getProperty("export.syb.jdbc.pwd", "sql");
+        public LegacySystemConfig(PropertiesWrapper properties) throws ConfigException {
+            this.jdbcURL = properties.getProperty("syb.jdbc.url", "jdbc:sybase:Tds:192.168.1.55:2638/PORTAL2017");
+            this.login = properties.getProperty("syb.jdbc.login", "dba");
+            this.passwd = properties.getProperty("syb.jdbc.pwd", "sql");
+
+            this.exportEnabled = properties.getProperty("syb.export.enabled", Boolean.class,false);
             try {
-                this.instanceId = properties.getProperty("export.syb.identity", Inet4Address.getLocalHost().getHostAddress());
+                this.instanceId = properties.getProperty("syb.export.identity", Inet4Address.getLocalHost().getHostAddress());
             }
             catch (Exception e) {
                 logger.error("unable to get local ip address", e);
@@ -169,8 +170,8 @@ public class PortalConfigData {
             return passwd;
         }
 
-        public boolean isEnabled() {
-            return enabled;
+        public boolean isExportEnabled() {
+            return exportEnabled;
         }
     }
 }

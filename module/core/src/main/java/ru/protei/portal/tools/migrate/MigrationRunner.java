@@ -5,10 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import ru.protei.portal.tools.migrate.tools.MigrateAction;
+import ru.protei.portal.tools.migrate.sybase.SybConnProvider;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -18,7 +17,7 @@ import java.util.concurrent.locks.ReentrantLock;
 @Component
 public class MigrationRunner {
 
-    public static final String PORTAL_SYBASE_JDBC_URL = "jdbc:sybase:Tds:192.168.101.140:2638/RESV3";
+//    public static final String PORTAL_SYBASE_JDBC_URL = "jdbc:sybase:Tds:192.168.101.140:2638/RESV3";
 
     private static Logger logger = Logger.getLogger(MigrationRunner.class);
 
@@ -27,13 +26,15 @@ public class MigrationRunner {
     @Autowired
     MigrateSetup setup;
 
+    @Autowired
+    SybConnProvider connProvider;
 
     static {
-        try {
-            DriverManager.registerDriver(new com.sybase.jdbc3.jdbc.SybDriver());
-        } catch (SQLException e) {
-            logger.error("unable to init Sybase driver", e);
-        }
+//        try {
+//            DriverManager.registerDriver(new com.sybase.jdbc3.jdbc.SybDriver());
+//        } catch (SQLException e) {
+//            logger.error("unable to init Sybase driver", e);
+//        }
 
         runLock = new ReentrantLock();
     }
@@ -53,14 +54,13 @@ public class MigrationRunner {
     }
 
     private void doMigrate() {
-        try (Connection conn_src = DriverManager.getConnection(PORTAL_SYBASE_JDBC_URL, "dba", "sql")) {
+        try (Connection conn_src = connProvider.getConnection()) {
 
             logger.info("Start migration process in scheduled mode");
 
             for (MigrateAction a : setup.sortedList()) {
                 a.migrate(conn_src);
             }
-
 
             logger.info("Migration executed, wait till next time");
 

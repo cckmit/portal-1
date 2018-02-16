@@ -11,15 +11,15 @@ import ru.protei.portal.tools.migrate.tools.MigrateAction;
 @Configuration
 public class MigrateConfiguration {
 
-   @Bean
-   public MigrateAction getCompanyMigrateAction() {
-      return new MigrateCompaniesAction();
-   }
-
-   @Bean
-   MigrateAction getPersonMigrateAction() {
-      return new MigratePersonAction();
-   }
+//   @Bean
+//   public MigrateAction getCompanyMigrateAction() {
+//      return new MigrateCompaniesAction();
+//   }
+//
+//   @Bean
+//   MigrateAction getPersonMigrateAction() {
+//      return new MigratePersonAction();
+//   }
 
 
 //   @Bean
@@ -42,21 +42,21 @@ public class MigrateConfiguration {
 //        return new MigrateTasks();
 //    }
 
-    @Bean
-    public MigrateAction getDevUnitMigrateAction () {
-        return new MigrateDevUnits();
-    }
-
-
-    @Bean
-    public MigrateAction getClientLoginMigrateAction () {
-       return new MigrateClientLoginAction();
-    }
-
-    @Bean
-    public MigrateAction getCompanyEmailMigrateAction () {
-       return new MigrateCompanySubscriptionAction ();
-    }
+//    @Bean
+//    public MigrateAction getDevUnitMigrateAction () {
+//        return new MigrateDevUnits();
+//    }
+//
+//
+//    @Bean
+//    public MigrateAction getClientLoginMigrateAction () {
+//       return new MigrateClientLoginAction();
+//    }
+//
+//    @Bean
+//    public MigrateAction getCompanyEmailMigrateAction () {
+//       return new MigrateCompanySubscriptionAction ();
+//    }
 
 
 //    @Bean

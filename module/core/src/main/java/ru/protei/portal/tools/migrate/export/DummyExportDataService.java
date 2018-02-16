@@ -1,23 +1,23 @@
-package ru.protei.portal.core.service.export;
+package ru.protei.portal.tools.migrate.export;
 
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.ent.Person;
 
-public class ActiveExportDataService implements ExportDataService {
+public class DummyExportDataService implements ExportDataService {
     @Override
     public En_ResultStatus exportCompany(Company company) {
-        return null;
+        return En_ResultStatus.OK;
     }
 
     @Override
     public En_ResultStatus exportPerson(Person person) {
-        return null;
+        return En_ResultStatus.OK;
     }
 
     @Override
     public En_ResultStatus exportProduct(DevUnit product) {
-        return null;
+        return En_ResultStatus.OK;
     }
 }

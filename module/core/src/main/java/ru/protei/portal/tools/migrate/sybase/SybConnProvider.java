@@ -1,4 +1,4 @@
-package ru.protei.portal.tools.sybase;
+package ru.protei.portal.tools.migrate.sybase;
 
 import java.sql.Connection;
 import java.sql.SQLException;
