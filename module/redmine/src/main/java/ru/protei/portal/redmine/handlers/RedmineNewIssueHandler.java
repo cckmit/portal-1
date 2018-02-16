@@ -19,13 +19,14 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.service.EventPublisherService;
+import ru.protei.portal.redmine.utils.RedmineUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-public class RedmineNewIssueHandler implements RedmineEventHandler {
+public final class RedmineNewIssueHandler implements RedmineEventHandler {
     @Autowired
     private CaseObjectDAO caseObjectDAO;
 
@@ -53,13 +54,13 @@ public class RedmineNewIssueHandler implements RedmineEventHandler {
     private final static Logger logger = LoggerFactory.getLogger(RedmineNewIssueHandler.class);
 
     @Override
-    public void handle(User user, Issue issue, long CompanyId) {
-        CaseObject object = createCaseObject(user, issue);
-        handleComments(issue, parseUser(user), object);
+    public void handle(User user, Issue issue, long companyId) {
+        CaseObject object = createCaseObject(user, issue, companyId);
+        handleComments(issue, RedmineUtils.parseUser(user), object);
     }
 
-    private CaseObject createCaseObject(User user, Issue issue) {
-        Person contactPerson = getAssignedPerson(0L, user, issue);
+    private CaseObject createCaseObject(User user, Issue issue, long companyId) {
+        Person contactPerson = getAssignedPerson(companyId, user, issue);
         if (contactPerson == null) {
             logger.debug("no assigned person for issue with id {} from project with id", issue.getId(), issue.getProjectId());
             return null;
@@ -70,44 +71,22 @@ public class RedmineNewIssueHandler implements RedmineEventHandler {
         obj.setCaseType(En_CaseType.CRM_SUPPORT);
         //obj.setProduct(product);
         obj.setInitiator(contactPerson);
-        //obj.setInitiatorCompany();
         obj.setImpLevel(issue.getPriorityId());
         obj.setName(issue.getSubject());
         obj.setInfo(issue.getDescription());
         obj.setLocal(0);
+        obj.setInitiatorCompanyId(companyId);
         obj.setStateId(En_CaseState.CREATED.getId());
-        //obj.setProduct(product);
         caseObjectDAO.saveOrUpdate(obj);
         return obj;
     }
 
     private void handleComments(Issue issue, Person person, CaseObject obj) {
-        Collection<Journal> journals = issue.getJournals();
-        journals.stream()
-                .map(this::parseJournal)
+        issue.getJournals()
+                .stream()
+                .map(RedmineUtils::parseJournal)
                 .map(x -> processStoreComment(issue, person, obj, obj.getId(), x))
                 .forEach(caseCommentDAO::saveOrUpdate);
-    }
-
-    private CaseComment parseJournal(Journal journal) {
-        CaseComment comment = new CaseComment();
-        comment.setCreated(journal.getCreatedOn());
-        Person author = parseUser(journal.getUser());
-        comment.setAuthor(author);
-        comment.setId(Long.valueOf(journal.getId()));
-        comment.setText(journal.getNotes());
-        return comment;
-    }
-
-    private Person parseUser(User user) {
-        Person person = new Person();
-        person.setFirstName(user.getFirstName());
-        person.setId(Long.valueOf(user.getId()));
-        person.setLastName(user.getLastName());
-        person.setCreated(user.getCreatedOn());
-        person.setDisplayName(user.getFirstName());
-        user.getStatus();
-        return person;
     }
 
     private CaseComment processStoreComment(Issue issue, Person contactPerson, CaseObject obj, Long caseObjId, CaseComment comment) {
@@ -143,6 +122,7 @@ public class RedmineNewIssueHandler implements RedmineEventHandler {
 
             comment.setCaseAttachments(caseAttachments);
         }
+
         eventPublisherService.publishEvent(new CaseCommentEvent(
                 ServiceModule.REDMINE,
                 caseService,
@@ -153,6 +133,7 @@ public class RedmineNewIssueHandler implements RedmineEventHandler {
                 addedAttachments,
                 contactPerson
         ));
+
         return comment;
     }
 
@@ -185,7 +166,7 @@ public class RedmineNewIssueHandler implements RedmineEventHandler {
             person = new Person();
             person.setCreated(new Date());
             person.setCreator("redmine");
-            //person.setCompanyId();
+            person.setCompanyId(companyId);
 
             if (HelperFunc.isEmpty(user.getFirstName()) && HelperFunc.isEmpty(user.getLastName())) {
                 person.setFirstName("?");
