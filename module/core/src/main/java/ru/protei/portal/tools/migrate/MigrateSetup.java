@@ -1,7 +1,7 @@
 package ru.protei.portal.tools.migrate;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.protei.portal.tools.migrate.tools.MigrateAction;
+import ru.protei.portal.tools.migrate.utils.MigrateAction;
 
 import javax.annotation.PostConstruct;
 import java.util.Collections;

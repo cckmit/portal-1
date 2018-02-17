@@ -4,7 +4,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import ru.protei.portal.tools.migrate.tools.MigrateAction;
+import ru.protei.portal.tools.migrate.utils.MigrateAction;
 import ru.protei.portal.tools.migrate.sybase.SybConnProvider;
 
 import java.sql.Connection;

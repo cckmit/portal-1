@@ -2,7 +2,7 @@ package ru.protei.portal.tools.migrate;
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import ru.protei.portal.config.MainConfiguration;
-import ru.protei.portal.tools.migrate.tools.MigrateAction;
+import ru.protei.portal.tools.migrate.utils.MigrateAction;
 import ru.protei.portal.tools.migrate.sybase.SybConnProvider;
 import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;

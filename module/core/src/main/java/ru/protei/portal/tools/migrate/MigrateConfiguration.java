@@ -2,8 +2,6 @@ package ru.protei.portal.tools.migrate;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import ru.protei.portal.tools.migrate.parts.*;
-import ru.protei.portal.tools.migrate.tools.MigrateAction;
 
 /**
  * Created by michael on 01.04.16.
