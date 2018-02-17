@@ -7,7 +7,7 @@ import protei.sql.Table;
 import java.util.Date;
 
 @Table(name="\"Resource\".Tm_Product")
-public class ExternalProduct {
+public class ExternalProduct implements LegacyEntity {
 
     @PrimaryKey
     @Column(name = "nID")
@@ -29,7 +29,7 @@ public class ExternalProduct {
     private Date lastUpdate;
 
     @Column(name = "ext_id")
-    private Long extId;
+    private Long externalId;
 
     public ExternalProduct() {
     }
@@ -82,12 +82,12 @@ public class ExternalProduct {
         this.lastUpdate = lastUpdate;
     }
 
-    public Long getExtId() {
-        return extId;
+    public Long getExternalId() {
+        return externalId;
     }
 
-    public void setExtId(Long extId) {
-        this.extId = extId;
+    public void setExternalId(Long externalId) {
+        this.externalId = externalId;
     }
 
     @Override

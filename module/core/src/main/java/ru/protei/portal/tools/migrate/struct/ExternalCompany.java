@@ -8,7 +8,7 @@ import ru.protei.portal.tools.migrate.Const;
 import java.util.Date;
 
 @Table(name="\"Resource\".Tm_Company")
-public class ExternalCompany {
+public class ExternalCompany implements LegacyEntity {
 
     @PrimaryKey
     @Column(name = "nID")

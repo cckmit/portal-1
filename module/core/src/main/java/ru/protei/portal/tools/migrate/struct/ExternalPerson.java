@@ -16,7 +16,7 @@ import java.util.Date;
  * Created by turik on 08.09.16.
  */
 @Table(name="\"Resource\".Tm_Person")
-public class ExternalPerson {
+public class ExternalPerson implements LegacyEntity {
 
     private Long id;
     private String creator = Const.CREATOR_FIELD_VALUE;
@@ -34,6 +34,7 @@ public class ExternalPerson {
 
     private String department;
     private String position;
+    private Long externalId;
 
     public ExternalPerson() {}
 
@@ -206,6 +207,16 @@ public class ExternalPerson {
     @Column(name="strPosition")
     public void setPosition(String position) {
         this.position = position;
+    }
+
+    @Column(name = "ext_id")
+    public Long getExternalId() {
+        return externalId;
+    }
+
+    @Column(name = "ext_id")
+    public void setExternalId(Long externalId) {
+        this.externalId = externalId;
     }
 
     @Override
