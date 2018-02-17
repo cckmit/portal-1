@@ -5,11 +5,9 @@ import ru.protei.portal.core.model.dao.DevUnitDAO;
 import ru.protei.portal.core.model.dao.MigrationEntryDAO;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
-import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.DevUnit;
-import ru.protei.portal.tools.migrate.tools.MigrateAction;
-import ru.protei.portal.tools.migrate.tools.MigrateAdapter;
-import ru.protei.portal.tools.migrate.tools.MigrateUtils;
+import ru.protei.portal.tools.migrate.utils.MigrateAction;
+import ru.protei.portal.tools.migrate.utils.MigrateUtils;
 
 import java.sql.Connection;
 import java.sql.SQLException;

@@ -89,4 +89,9 @@ public class ExternalProduct {
     public void setExtId(Long extId) {
         this.extId = extId;
     }
+
+    @Override
+    public String toString() {
+        return new StringBuilder("product{").append(getId()).append("/").append(getName()).append("}").toString();
+    }
 }

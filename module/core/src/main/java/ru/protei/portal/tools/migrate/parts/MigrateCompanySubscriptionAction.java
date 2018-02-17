@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanySubscription;
-import ru.protei.portal.tools.migrate.tools.MigrateAction;
+import ru.protei.portal.tools.migrate.utils.MigrateAction;
 
 import java.sql.Connection;
 import java.sql.SQLException;

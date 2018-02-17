@@ -7,9 +7,8 @@ import ru.protei.portal.core.model.dao.CaseTaskDAO;
 import ru.protei.portal.core.model.dao.MigrationEntryDAO;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.CaseObject;
-import ru.protei.portal.tools.migrate.tools.BatchProcess;
-import ru.protei.portal.tools.migrate.tools.MigrateAction;
-import ru.protei.portal.tools.migrate.tools.MigrateUtils;
+import ru.protei.portal.tools.migrate.utils.MigrateAction;
+import ru.protei.portal.tools.migrate.utils.MigrateUtils;
 
 import java.sql.Connection;
 import java.sql.SQLException;

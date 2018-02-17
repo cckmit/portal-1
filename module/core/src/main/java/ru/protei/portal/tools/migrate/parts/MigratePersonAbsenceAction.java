@@ -5,9 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.core.model.dao.MigrationEntryDAO;
 import ru.protei.portal.core.model.dao.PersonAbsenceDAO;
 import ru.protei.portal.core.model.ent.PersonAbsence;
-import ru.protei.portal.tools.migrate.tools.BatchProcess;
-import ru.protei.portal.tools.migrate.tools.MigrateAction;
-import ru.protei.portal.tools.migrate.tools.MigrateUtils;
+import ru.protei.portal.tools.migrate.utils.BatchProcess;
+import ru.protei.portal.tools.migrate.utils.MigrateAction;
+import ru.protei.portal.tools.migrate.utils.MigrateUtils;
 import ru.protei.winter.jdbc.JdbcDAO;
 
 import java.sql.Connection;

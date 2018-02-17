@@ -8,8 +8,8 @@ import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanyCategory;
 import ru.protei.portal.core.model.ent.CompanyHomeGroupItem;
-import ru.protei.portal.tools.migrate.tools.MigrateAction;
-import ru.protei.portal.tools.migrate.tools.MigrateUtils;
+import ru.protei.portal.tools.migrate.utils.MigrateAction;
+import ru.protei.portal.tools.migrate.utils.MigrateUtils;
 
 import java.sql.Connection;
 import java.sql.SQLException;

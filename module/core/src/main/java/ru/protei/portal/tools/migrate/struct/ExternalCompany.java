@@ -158,4 +158,15 @@ public class ExternalCompany {
     public void setExternalId(Long externalId) {
         this.externalId = externalId;
     }
+
+
+    @Override
+    public String toString() {
+        return new StringBuilder("company{")
+                .append(getId())
+                .append("/")
+                .append(getName())
+                .append("}")
+                .toString();
+    }
 }

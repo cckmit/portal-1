@@ -204,7 +204,7 @@ public class WorkerController {
                     persistWorker(worker);
 
                     if (WSConfig.getInstance().isEnableMigration()) {
-                        migrationManager.savePerson(person, operationData.department().getName(), position.getName());
+                        migrationManager.saveExternalEmployee(person, operationData.department().getName(), position.getName());
                     }
 
 
@@ -267,7 +267,7 @@ public class WorkerController {
                         mergePerson(person);
 
                         if (WSConfig.getInstance().isEnableMigration()) {
-                            migrationManager.savePerson(person, "", "");
+                            migrationManager.saveExternalEmployee(person, "", "");
                         }
 
                         logger.debug("success result, workerRowId={}", worker.getId());
@@ -287,7 +287,7 @@ public class WorkerController {
                     mergeWorker(worker);
 
                     if (WSConfig.getInstance().isEnableMigration()) {
-                        migrationManager.savePerson(person, worker.getDepartment().getName(), position.getName());
+                        migrationManager.saveExternalEmployee(person, worker.getDepartment().getName(), position.getName());
                     }
 
                     logger.debug("success result, workerRowId={}", worker.getId());
@@ -354,7 +354,7 @@ public class WorkerController {
                         mergePerson(person);
 
                         if (WSConfig.getInstance().isEnableMigration()) {
-                            migrationManager.deletePerson(person);
+                            migrationManager.deleteExternalEmployee(person);
                         }
                     }
                     logger.debug("success result, workerRowId={}", worker.getId());

@@ -10,8 +10,8 @@ import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.query.ProductQuery;
-import ru.protei.portal.tools.migrate.tools.MigrateAction;
-import ru.protei.portal.tools.migrate.tools.MigrateUtils;
+import ru.protei.portal.tools.migrate.utils.MigrateAction;
+import ru.protei.portal.tools.migrate.utils.MigrateUtils;
 import ru.protei.winter.jdbc.JdbcDAO;
 
 import java.sql.Connection;

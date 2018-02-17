@@ -6,9 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.tools.migrate.tools.BatchProcess;
-import ru.protei.portal.tools.migrate.tools.MigrateAction;
-import ru.protei.winter.jdbc.JdbcDAO;
+import ru.protei.portal.tools.migrate.utils.BatchProcess;
+import ru.protei.portal.tools.migrate.utils.MigrateAction;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.sql.Connection;

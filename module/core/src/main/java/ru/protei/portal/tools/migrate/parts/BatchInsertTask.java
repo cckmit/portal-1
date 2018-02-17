@@ -7,8 +7,8 @@ import protei.sql.query.Tm_BaseQueryCmd;
 import protei.sql.utils.Tm_QueryExecutor;
 import ru.protei.portal.core.model.dao.MigrationEntryDAO;
 import ru.protei.portal.core.model.ent.MigrationEntry;
-import ru.protei.portal.tools.migrate.tools.BatchProcess;
-import ru.protei.portal.tools.migrate.tools.MigrateAdapter;
+import ru.protei.portal.tools.migrate.utils.BatchProcess;
+import ru.protei.portal.tools.migrate.utils.MigrateAdapter;
 import ru.protei.winter.jdbc.JdbcDAO;
 
 import java.sql.*;

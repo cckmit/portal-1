@@ -1,4 +1,4 @@
-package ru.protei.portal.tools.migrate.tools;
+package ru.protei.portal.tools.migrate.utils;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.databind.ObjectMapper;

@@ -1,4 +1,4 @@
-package ru.protei.portal.tools.migrate.tools;
+package ru.protei.portal.tools.migrate.utils;
 
 import java.util.Map;
 
@@ -6,5 +6,5 @@ import java.util.Map;
  * Created by michael on 20.05.16.
  */
 public interface MigrateAdapter<T> {
-    public T createEntity (Map<String,Object> from);
+    T createEntity (Map<String,Object> from);
 }
