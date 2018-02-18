@@ -3,6 +3,9 @@ package ru.protei.portal.tools.migrate.struct;
 import protei.sql.Column;
 import protei.sql.PrimaryKey;
 import protei.sql.Table;
+import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.tools.migrate.Const;
 
 import java.util.Date;
@@ -54,6 +57,23 @@ public class ExternalCompany implements LegacyEntity {
     public ExternalCompany() {
     }
 
+    public ExternalCompany (Company company) {
+        this.id = company.getId();
+        this.created = company.getCreated();
+        this.externalId = company.getId();
+        this.contactDataFrom(company);
+    }
+
+    public ExternalCompany contactDataFrom(Company company) {
+        this.name = company.getCname();
+        this.info = company.getInfo();
+        PlainContactInfoFacade contactInfo = new PlainContactInfoFacade(company.getContactInfo());
+        this.legalAddress = contactInfo.getLegalAddress();
+        this.address = HelperFunc.nvlt(contactInfo.getFactAddress(), contactInfo.getHomeAddress());
+        this.email = contactInfo.allEmailsAsString();
+        this.website = contactInfo.getWebSite();
+        return this;
+    }
 
     public Long getId() {
         return id;

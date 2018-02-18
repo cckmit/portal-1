@@ -8,8 +8,8 @@ import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.tools.migrate.struct.*;
 import ru.protei.portal.tools.migrate.sybase.SybConnProvider;
 
-import java.io.Closeable;
-import java.io.IOException;
+import javax.annotation.PostConstruct;
+import java.net.Inet4Address;
 import java.net.UnknownHostException;
 import java.sql.*;
 import java.util.HashMap;
@@ -28,6 +28,22 @@ public class LegacySystemDAO {
     @Autowired
     private SybConnProvider connProvider;
 
+    private String ourHost;
+
+    @PostConstruct
+    private void __init () {
+        try {
+            ourHost = Inet4Address.getLocalHost ().getHostAddress();
+        }
+        catch (Throwable e) {
+            ourHost = Const.CREATOR_HOST_VALUE;
+        }
+    }
+
+    public String getOurHost() {
+        return ourHost;
+    }
+
     public void saveExternalEmployee(Person person, String departmentName, String positionName) throws SQLException, UnknownHostException {
         if (person == null || person.getId () == null) return;
         if (isExistPerson(person)) {
@@ -42,7 +58,7 @@ public class LegacySystemDAO {
         logger.debug ("deleteExternalEmployee(): person={}", person);
 
         try (Connection connection = connProvider.getConnection()) {
-            ExternalPerson externalPerson = new ExternalPerson (person, "", "");
+            ExternalPerson externalPerson = new ExternalPerson (person, "", "", ourHost);
             Tm_SqlHelper.updateObjectEx(connection, externalPerson);
 //            String tableName = Tm_SqlHelper.getTableName (ExternalPerson.class);
 //            String sql = Tm_SqlHelper.getUpdateString (externalPerson.getClass ());
@@ -60,7 +76,7 @@ public class LegacySystemDAO {
         logger.debug ("persistEmployee(): person={}", person);
 
         try (Connection connection = connProvider.getConnection()) {
-            ExternalPerson externalPerson = new ExternalPerson(person, departmentName, positionName);
+            ExternalPerson externalPerson = new ExternalPerson(person, departmentName, positionName, ourHost);
             Tm_SqlHelper.saveObjectEx(connection, externalPerson);
 //            String tableName = Tm_SqlHelper.getTableName(externalPerson.getClass());
 //            String sql = Tm_SqlHelper.getInsertString(externalPerson.getClass(), false);
@@ -90,7 +106,7 @@ public class LegacySystemDAO {
 
         try (Connection connection = connProvider.getConnection()) {
 
-            ExternalPerson externalPerson = new ExternalPerson (person, departmentName, positionName);
+            ExternalPerson externalPerson = new ExternalPerson (person, departmentName, positionName, ourHost);
             Tm_SqlHelper.updateObjectEx(connection, externalPerson);
 //            String tableName = Tm_SqlHelper.getTableName (ExternalPerson.class);
 //            String sql = Tm_SqlHelper.getUpdateString (externalPerson.getClass ());
@@ -125,26 +141,50 @@ public class LegacySystemDAO {
     }
 
     public ExternalProduct getExternalProduct (long id) throws SQLException {
-        return runAction(factory -> factory.dao(ExternalProduct.class).get(id));
+        return runAction(transaction -> transaction.dao(ExternalProduct.class).get(id));
     }
 
     public ExternalCompany getExternalCompany (long id) throws SQLException {
-        return runAction(factory -> factory.dao(ExternalCompany.class).get(id));
+        return runAction(transaction -> transaction.dao(ExternalCompany.class).get(id));
     }
 
+//    public ExternalCompany findExportCompany (long ourId) throws SQLException {
+//        return runAction(transaction -> {
+//            LegacyEntityDAO<ExternalCompany> dao = transaction.dao(ExternalCompany.class);
+//            return findExportCompany(ourId, dao);
+//        });
+//    }
+//
+//    public ExternalCompany findExportCompany(long ourId, LegacyEntityDAO<ExternalCompany> dao) throws SQLException {
+//        ExternalCompany company = dao.get(ourId);
+//        if (company == null)
+//            company = dao.get("ext_id=? and strCreator=?", ourId, Const.CREATOR_FIELD_VALUE);
+//
+//        return company;
+//    }
+
     public ExternalPerson getExternalPerson (long id) throws SQLException {
-        return runAction(factory -> factory.dao(ExternalPerson.class).get(id));
+        return runAction(transaction -> transaction.dao(ExternalPerson.class).get(id));
     }
 
     public <R> R runAction (LegacyDAO_Action<R> action) throws SQLException {
-        try (LegacyEntityDAO_Factory daoFactory = new LegacyEntityDAO_Factory_impl(connProvider)){
+        try (LegacyDAO_Transaction daoFactory = new LegacyDAO_Transaction_impl(connProvider)){
             return action.doAction(daoFactory);
         }
     }
 
-    interface LegacyEntityDAO<T extends LegacyEntity> {
+    public interface LegacyEntityDAO<T extends LegacyEntity> {
         boolean exists (long id) throws SQLException;
         boolean exists (String cond, Object...args) throws SQLException;
+
+        /**
+         * Пытаемся сначала получить объект по id, потом по совпадению пармы ext_id + creator
+         * @param id
+         * @param <T>
+         * @return
+         * @throws SQLException
+         */
+        T findExportEntry (long id) throws SQLException;
 
         T get (long id) throws SQLException;
         T get (String cond, Object...args) throws SQLException;
@@ -161,22 +201,29 @@ public class LegacySystemDAO {
         void delete (long id) throws SQLException;
     }
 
-    interface LegacyEntityDAO_Factory extends AutoCloseable {
+    public interface LegacyDAO_Transaction extends AutoCloseable {
         <T extends LegacyEntity> LegacyEntityDAO<T> dao(Class<T> type) throws SQLException;
+        void commit () throws SQLException;
         void close();
     }
 
-    interface LegacyDAO_Action<R> {
-        R doAction (LegacyEntityDAO_Factory factory) throws SQLException;
+    public interface LegacyDAO_Action<R> {
+        R doAction (LegacyDAO_Transaction transaction) throws SQLException;
     }
 
-    static class LegacyEntityDAO_Factory_impl implements LegacyEntityDAO_Factory {
+    static class LegacyDAO_Transaction_impl implements LegacyDAO_Transaction {
         private Connection connection;
         private Map<Class<?>, LegacyEntityDAO<?>> daoMap;
 
-        public LegacyEntityDAO_Factory_impl(SybConnProvider provider) throws SQLException {
+        public LegacyDAO_Transaction_impl(SybConnProvider provider) throws SQLException {
             this.connection = provider.getConnection();
+            this.connection.setAutoCommit(false);
             this.daoMap = new HashMap<>();
+        }
+
+        @Override
+        public void commit() throws SQLException {
+            this.connection.commit();
         }
 
         @Override
@@ -212,6 +259,15 @@ public class LegacySystemDAO {
         @Override
         public boolean exists(String cond, Object... args) throws SQLException {
             return Tm_SqlHelper.exists(connection, entityType, cond, args);
+        }
+
+        @Override
+        public T findExportEntry(long id) throws SQLException {
+            T val = get(id);
+            if (val == null) {
+                val = get ("ext_id=? and strCreator=?", id, Const.CREATOR_FIELD_VALUE);
+            }
+            return val;
         }
 
         @Override

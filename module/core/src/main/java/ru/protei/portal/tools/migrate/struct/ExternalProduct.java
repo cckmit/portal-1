@@ -3,6 +3,8 @@ package ru.protei.portal.tools.migrate.struct;
 import protei.sql.Column;
 import protei.sql.PrimaryKey;
 import protei.sql.Table;
+import ru.protei.portal.core.model.ent.DevUnit;
+import ru.protei.portal.tools.migrate.Const;
 
 import java.util.Date;
 
@@ -17,7 +19,7 @@ public class ExternalProduct implements LegacyEntity {
     private Date created;
 
     @Column(name = "strCreator")
-    private String creator;
+    private String creator = Const.CREATOR_FIELD_VALUE;
 
     @Column(name = "strValue")
     private String name;
@@ -32,6 +34,21 @@ public class ExternalProduct implements LegacyEntity {
     private Long externalId;
 
     public ExternalProduct() {
+
+    }
+
+    public ExternalProduct (DevUnit unit) {
+        this.id = unit.getId();
+        this.created = unit.getCreated();
+        this.name = unit.getName();
+        this.info = unit.getInfo();
+        this.externalId = unit.getId();
+    }
+
+    public ExternalProduct updateFrom (DevUnit unit) {
+        this.info = unit.getInfo();
+        this.name = unit.getName();
+        return this;
     }
 
     public Long getId() {

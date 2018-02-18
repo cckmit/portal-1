@@ -38,12 +38,16 @@ public class ExternalPerson implements LegacyEntity {
 
     public ExternalPerson() {}
 
-    public ExternalPerson(Person person, String departmentName, String positionName) throws UnknownHostException {
+    public ExternalPerson (Person person, String host) {
+        this (person, person.getDepartment(), person.getPosition(), host);
+    }
+
+    public ExternalPerson(Person person, String departmentName, String positionName, String host) {
 
         setId (person.getId ());
-        setCreator ("DBA");
-        setClient ("portal-api");
-        setClientIP (Inet4Address.getLocalHost ().getHostAddress());
+        setCreator (Const.CREATOR_FIELD_VALUE);
+        setClient (Const.CLIENT_FIELD_VALUE);
+        setClientIP (host);
         setCompanyId (new Long (1));
         setFirstName (person.getFirstName ());
         setLastName (person.getLastName ());
@@ -55,6 +59,19 @@ public class ExternalPerson implements LegacyEntity {
         setDeleted (person.isDeleted ());
         setDepartment(departmentName);
         setPosition(positionName);
+    }
+
+    public ExternalPerson updateContactFrom(Person person) {
+        setFirstName (person.getFirstName ());
+        setLastName (person.getLastName ());
+        setSecondName (person.getSecondName () == null ? "" : person.getSecondName ());
+        setInfo (person.getInfo () == null ? "" : person.getInfo ());
+        setBirthday (person.getBirthday ());
+        setSex (person.getGender() != null ? person.getGender().equals (En_Gender.MALE) ? new Integer (1) : person.getGender().equals (En_Gender.FEMALE) ? new Integer (2) : null : null);
+        setDeleted (person.isDeleted ());
+        setDepartment(person.getDepartment());
+        setPosition(person.getPosition());
+        return this;
     }
 
     @PrimaryKey
