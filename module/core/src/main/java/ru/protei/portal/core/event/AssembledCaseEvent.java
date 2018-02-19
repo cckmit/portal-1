@@ -2,23 +2,23 @@ package ru.protei.portal.core.event;
 
 import org.springframework.context.ApplicationEvent;
 import ru.protei.portal.core.ServiceModule;
-import ru.protei.portal.core.model.ent.CaseComment;
-import ru.protei.portal.core.model.ent.CaseObject;
-import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.service.CaseService;
 
+import java.util.Collection;
 import java.util.Date;
 
 import static java.lang.System.currentTimeMillis;
-import static java.lang.System.nanoTime;
-import static java.util.concurrent.TimeUnit.NANOSECONDS;
 
 public class AssembledCaseEvent extends ApplicationEvent {
 
     private CaseObject lastState = null;
     private CaseObject initState;
     private CaseComment comment;
+    private CaseComment oldComment;
+    private Collection<Attachment> addedAttachments;
+    private Collection<Attachment> removedAttachments;
     private Person initiator;
     private ServiceModule serviceModule;
     // Measured in ms
@@ -42,6 +42,15 @@ public class AssembledCaseEvent extends ApplicationEvent {
     public AssembledCaseEvent(CaseCommentEvent commentEvent) {
         this(commentEvent.getServiceModule(), commentEvent.getCaseService(), commentEvent.getCaseObject(), null,
                 commentEvent.getPerson());
+        oldComment = commentEvent.getOldCaseComment();
+        addedAttachments = commentEvent.getAddedAttachments();
+        removedAttachments = commentEvent.getRemovedAttachments();
+    }
+
+    public AssembledCaseEvent(CaseAttachmentEvent attachmentEvent) {
+        this(attachmentEvent.getCaseService(), attachmentEvent.getCaseObject(), attachmentEvent.getPerson());
+        addedAttachments = attachmentEvent.getAddedAttachments();
+        removedAttachments = attachmentEvent.getRemovedAttachments();
     }
 
     public AssembledCaseEvent(ServiceModule module, CaseService caseService,
@@ -123,6 +132,32 @@ public class AssembledCaseEvent extends ApplicationEvent {
     public void attachCaseComment(CaseComment caseComment) {
         comment = caseComment;
         lastUpdated = currentTimeMillis();
+    }
+
+    public void attachAddedAttachments(Collection<Attachment> attachments) {
+        this.addedAttachments = attachments;
+        lastUpdated = currentTimeMillis();
+    }
+
+    public void attachRemovedAttachments(Collection<Attachment> attachments) {
+        this.removedAttachments = attachments;
+        lastUpdated = currentTimeMillis();
+    }
+
+    public CaseComment getComment() {
+        return comment;
+    }
+
+    public CaseComment getOldComment() {
+        return oldComment;
+    }
+
+    public Collection<Attachment> getAddedAttachments() {
+        return addedAttachments;
+    }
+
+    public Collection<Attachment> getRemovedAttachments() {
+        return removedAttachments;
     }
 
     public long getTimeCreated() {

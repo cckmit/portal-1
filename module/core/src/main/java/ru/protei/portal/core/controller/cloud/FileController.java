@@ -143,6 +143,7 @@ public class FileController {
         }
 
         publisherService.publishEvent(new CaseAttachmentEvent(
+                caseService,
                 this,
                 issue.getData(),
                 Collections.singletonList(attachment),
