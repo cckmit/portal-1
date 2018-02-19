@@ -174,19 +174,19 @@ public class LegacySystemDAO {
     }
 
     public interface LegacyEntityDAO<T extends LegacyEntity> {
-        boolean exists (long id) throws SQLException;
+        boolean exists (Long id) throws SQLException;
         boolean exists (String cond, Object...args) throws SQLException;
 
-        /**
-         * Пытаемся сначала получить объект по id, потом по совпадению пармы ext_id + creator
-         * @param id
-         * @param <T>
-         * @return
-         * @throws SQLException
-         */
-        T findExportEntry (long id) throws SQLException;
+//        /**
+//         * Пытаемся сначала получить объект по id, потом по совпадению пармы ext_id + creator
+//         * @param id
+//         * @param <T>
+//         * @return
+//         * @throws SQLException
+//         */
+//        T findExportEntry (long id) throws SQLException;
 
-        T get (long id) throws SQLException;
+        T get (Long id) throws SQLException;
         T get (String cond, Object...args) throws SQLException;
         List<T> list (String cond, Object...args) throws SQLException;
 
@@ -198,7 +198,7 @@ public class LegacySystemDAO {
         }
 
         T delete (T entity) throws SQLException;
-        void delete (long id) throws SQLException;
+        void delete (Long id) throws SQLException;
     }
 
     public interface LegacyDAO_Transaction extends AutoCloseable {
@@ -252,8 +252,8 @@ public class LegacySystemDAO {
         }
 
         @Override
-        public boolean exists(long id) throws SQLException {
-            return Tm_SqlHelper.exists(connection, entityType, id);
+        public boolean exists(Long id) throws SQLException {
+            return id != null && Tm_SqlHelper.exists(connection, entityType, id);
         }
 
         @Override
@@ -261,18 +261,18 @@ public class LegacySystemDAO {
             return Tm_SqlHelper.exists(connection, entityType, cond, args);
         }
 
-        @Override
-        public T findExportEntry(long id) throws SQLException {
-            T val = get(id);
-            if (val == null) {
-                val = get ("ext_id=? and strCreator=?", id, Const.CREATOR_FIELD_VALUE);
-            }
-            return val;
-        }
+//        @Override
+//        public T findExportEntry(long id) throws SQLException {
+//            T val = get(id);
+//            if (val == null) {
+//                val = get ("ext_id=? and strCreator=?", id, Const.CREATOR_FIELD_VALUE);
+//            }
+//            return val;
+//        }
 
         @Override
-        public T get(long id) throws SQLException {
-            return Tm_SqlHelper.getObjectEx(connection, entityType, id);
+        public T get(Long id) throws SQLException {
+            return id == null ? null : Tm_SqlHelper.getObjectEx(connection, entityType, id);
         }
 
         @Override
@@ -304,8 +304,9 @@ public class LegacySystemDAO {
         }
 
         @Override
-        public void delete(long id) throws SQLException {
-            Tm_SqlHelper.deleteObject(connection, entityType, id);
+        public void delete(Long id) throws SQLException {
+            if (id != null)
+                Tm_SqlHelper.deleteObject(connection, entityType, id);
         }
     }
 }

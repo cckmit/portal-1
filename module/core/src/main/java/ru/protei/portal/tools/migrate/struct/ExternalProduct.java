@@ -30,8 +30,6 @@ public class ExternalProduct implements LegacyEntity {
     @Column(name = "dtLastUpdate")
     private Date lastUpdate;
 
-    @Column(name = "ext_id")
-    private Long externalId;
 
     public ExternalProduct() {
 
@@ -42,7 +40,6 @@ public class ExternalProduct implements LegacyEntity {
         this.created = unit.getCreated();
         this.name = unit.getName();
         this.info = unit.getInfo();
-        this.externalId = unit.getId();
     }
 
     public ExternalProduct updateFrom (DevUnit unit) {
@@ -97,14 +94,6 @@ public class ExternalProduct implements LegacyEntity {
 
     public void setLastUpdate(Date lastUpdate) {
         this.lastUpdate = lastUpdate;
-    }
-
-    public Long getExternalId() {
-        return externalId;
-    }
-
-    public void setExternalId(Long externalId) {
-        this.externalId = externalId;
     }
 
     @Override

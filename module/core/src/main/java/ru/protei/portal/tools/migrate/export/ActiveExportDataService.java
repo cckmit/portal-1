@@ -46,16 +46,21 @@ public class ActiveExportDataService implements ExportDataService {
         }
     }
 
-    private ExternalCompany _doExportCompany(Company company, LegacySystemDAO.LegacyEntityDAO<ExternalCompany> compDAO) throws SQLException {
-        ExternalCompany externalCompany = compDAO.findExportEntry(company.getId());
+    private ExternalCompany _doExportCompany(Company company, LegacySystemDAO.LegacyEntityDAO<ExternalCompany> legacyDAO) throws SQLException {
+        ExternalCompany externalCompany = legacyDAO.get(company.getOldId());
 
         if (externalCompany != null) {
             // found company, update
-            compDAO.update(externalCompany.contactDataFrom(company));
+            legacyDAO.update(externalCompany.contactDataFrom(company));
+            logger.debug("legacy record updated, our id={}, legacy-id={}", company.getId(), externalCompany.getId());
         } else {
             // no company exists, create it
+            logger.debug("export company, new record for {}", company);
             externalCompany = new ExternalCompany(company);
-            compDAO.insert(externalCompany);
+            legacyDAO.insert(externalCompany);
+            company.setOldId(externalCompany.getId());
+            companyDAO.partialMerge(company, "old_id");
+            logger.debug("export new company done, our id={}, legacy-id={}", company.getId(), externalCompany.getId());
         }
 
         return externalCompany;
@@ -67,8 +72,11 @@ public class ActiveExportDataService implements ExportDataService {
             return En_ResultStatus.INCORRECT_PARAMS;
 
         try {
+            Company personCompany = companyDAO.get(person.getCompanyId());
+
             return legacyDAO.runAction(transaction -> {
-                ExternalCompany company = transaction.dao(ExternalCompany.class).findExportEntry(person.getCompanyId());
+                ExternalCompany company = transaction.dao(ExternalCompany.class).get(personCompany.getOldId());
+
                 if (company == null) {
                     // no company created yet for this person, let's fix it
                     company = new ExternalCompany(companyDAO.get(person.getCompanyId()));

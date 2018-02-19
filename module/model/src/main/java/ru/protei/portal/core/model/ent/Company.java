@@ -39,6 +39,9 @@ public class Company extends AuditableObject implements EntityOptionSupport {
     @JdbcColumn(name = "created")
     private Date created;
 
+    @JdbcColumn(name = "old_id")
+    private Long oldId;
+
     @JdbcOneToMany(table = "CompanySubscription", localColumn = "id", remoteColumn = "company_id" )
     private List<CompanySubscription> subscriptions;
 
@@ -124,6 +127,14 @@ public class Company extends AuditableObject implements EntityOptionSupport {
         return companyGroup;
     }
 
+    public Long getOldId() {
+        return oldId;
+    }
+
+    public void setOldId(Long oldId) {
+        this.oldId = oldId;
+    }
+
     @Override
     public int hashCode() {
         return this.id == null ? -1 : this.id.intValue();
@@ -163,6 +174,7 @@ public class Company extends AuditableObject implements EntityOptionSupport {
                 ", info='" + info + '\'' +
                 ", created=" + created +
                 ", subscriptions=" + subscriptions +
+                ", oldID=" + String.valueOf(oldId) +
                 '}';
     }
 }

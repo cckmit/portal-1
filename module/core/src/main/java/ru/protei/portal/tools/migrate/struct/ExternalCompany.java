@@ -50,9 +50,6 @@ public class ExternalCompany implements LegacyEntity {
     @Column(name = "dtLastUpdate")
     private Date lastUpdated;
 
-    @Column(name = "ext_id")
-    private Long externalId;
-
 
     public ExternalCompany() {
     }
@@ -60,7 +57,6 @@ public class ExternalCompany implements LegacyEntity {
     public ExternalCompany (Company company) {
         this.id = company.getId();
         this.created = company.getCreated();
-        this.externalId = company.getId();
         this.contactDataFrom(company);
     }
 
@@ -170,15 +166,6 @@ public class ExternalCompany implements LegacyEntity {
     public void setLastUpdated(Date lastUpdated) {
         this.lastUpdated = lastUpdated;
     }
-
-    public Long getExternalId() {
-        return externalId;
-    }
-
-    public void setExternalId(Long externalId) {
-        this.externalId = externalId;
-    }
-
 
     @Override
     public String toString() {
