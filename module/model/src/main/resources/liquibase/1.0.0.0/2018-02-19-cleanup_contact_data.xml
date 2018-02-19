@@ -1,0 +1,27 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet author="michael" id="2018-02-19-cleanup-contact-attributes">
+        <dropColumn tableName="Company" columnName="phone" />
+        <dropColumn tableName="Company" columnName="fax" />
+        <dropColumn tableName="Company" columnName="email" />
+        <dropColumn tableName="Company" columnName="website" />
+        <dropColumn tableName="Company" columnName="address_fact" />
+        <dropColumn tableName="Company" columnName="address_dejure" />
+
+        <dropColumn tableName="Person" columnName="phone_work" />
+        <dropColumn tableName="Person" columnName="phone_home" />
+        <dropColumn tableName="Person" columnName="phone_mobile" />
+        <dropColumn tableName="Person" columnName="email" />
+        <dropColumn tableName="Person" columnName="email_own" />
+        <dropColumn tableName="Person" columnName="fax" />
+        <dropColumn tableName="Person" columnName="fax_home" />
+        <dropColumn tableName="Person" columnName="address" />
+        <dropColumn tableName="Person" columnName="address_home" />
+        <dropColumn tableName="Person" columnName="icq" />
+        <dropColumn tableName="Person" columnName="jabber" />
+    </changeSet>
+</databaseChangeLog>

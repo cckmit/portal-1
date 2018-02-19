@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.core.model.dao.CompanyDAO;
+import ru.protei.portal.core.model.dao.DevUnitDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
@@ -30,12 +31,14 @@ public class ActiveExportDataService implements ExportDataService {
     @Autowired
     PersonDAO personDAO;
 
+    @Autowired
+    DevUnitDAO devUnitDAO;
 
     @Override
     public En_ResultStatus exportCompany(Company company) {
         try {
             return legacyDAO.runAction(transaction -> {
-                _doExportCompany(company, transaction.dao(ExternalCompany.class));
+                _doExportCompany(company, transaction);
                 transaction.commit();
                 return En_ResultStatus.OK;
             });
@@ -46,23 +49,34 @@ public class ActiveExportDataService implements ExportDataService {
         }
     }
 
-    private ExternalCompany _doExportCompany(Company company, LegacySystemDAO.LegacyEntityDAO<ExternalCompany> legacyDAO) throws SQLException {
-        ExternalCompany externalCompany = legacyDAO.get(company.getOldId());
+    private ExternalCompany _doExportCompany(Company company, LegacySystemDAO.LegacyDAO_Transaction transaction) throws SQLException {
+        ExternalCompany externalCompany = transaction.dao(ExternalCompany.class).get(company.getOldId());
 
         if (externalCompany != null) {
             // found company, update
-            legacyDAO.update(externalCompany.contactDataFrom(company));
+            transaction.dao(ExternalCompany.class).update(externalCompany.contactDataFrom(company));
             logger.debug("legacy record updated, our id={}, legacy-id={}", company.getId(), externalCompany.getId());
         } else {
             // no company exists, create it
-            logger.debug("export company, new record for {}", company);
-            externalCompany = new ExternalCompany(company);
-            legacyDAO.insert(externalCompany);
-            company.setOldId(externalCompany.getId());
-            companyDAO.partialMerge(company, "old_id");
-            logger.debug("export new company done, our id={}, legacy-id={}", company.getId(), externalCompany.getId());
+            externalCompany = createNewExternalCompany(company, transaction);
         }
 
+        return externalCompany;
+    }
+
+    private ExternalCompany createNewExternalCompany(Company company, LegacySystemDAO.LegacyDAO_Transaction transaction) throws SQLException {
+        ExternalCompany externalCompany;
+        logger.debug("export company, new record for {}", company);
+
+        externalCompany = new ExternalCompany(company);
+
+        transaction.dao(ExternalCompany.class).insert(externalCompany);
+
+        company.setOldId(externalCompany.getId());
+
+        companyDAO.partialMerge(company, "old_id");
+
+        logger.debug("export new company done, our id={}, legacy-id={}", company.getId(), externalCompany.getId());
         return externalCompany;
     }
 
@@ -72,29 +86,35 @@ public class ActiveExportDataService implements ExportDataService {
             return En_ResultStatus.INCORRECT_PARAMS;
 
         try {
-            Company personCompany = companyDAO.get(person.getCompanyId());
+            Company personCompany = person.getCompany();
 
             return legacyDAO.runAction(transaction -> {
-                ExternalCompany company = transaction.dao(ExternalCompany.class).get(personCompany.getOldId());
+                ExternalCompany externalCompany = transaction.dao(ExternalCompany.class).get(personCompany.getOldId());
 
-                if (company == null) {
-                    // no company created yet for this person, let's fix it
-                    company = new ExternalCompany(companyDAO.get(person.getCompanyId()));
-                    transaction.dao(ExternalCompany.class).insert(company);
+                if (externalCompany == null) {
+                    // no extrenal company created yet for this person, let's fix it
+                    externalCompany = createNewExternalCompany(personCompany, transaction);
                 }
 
-                ExternalPerson externalPerson = transaction.dao(ExternalPerson.class).findExportEntry(person.getId());
+                ExternalPerson externalPerson = transaction.dao(ExternalPerson.class).get(person.getOldId());
                 if (externalPerson != null) {
-                    externalPerson.updateContactFrom(person).setCompanyId(company.getId());
+                    externalPerson.setCompanyId(externalCompany.getId());
+                    externalPerson.updateContactFrom(person);
                     transaction.dao(ExternalPerson.class).update(externalPerson);
                     transaction.commit();
                     return En_ResultStatus.OK;
                 }
 
                 externalPerson = new ExternalPerson(person, legacyDAO.getOurHost());
-                externalPerson.setCompanyId(company.getId());
+                externalPerson.setCompanyId(externalCompany.getId());
                 transaction.dao(ExternalPerson.class).insert(externalPerson);
+
+                person.setOldId(externalPerson.getId());
+
+                personDAO.partialMerge(person, "old_id");
+
                 transaction.commit();
+
                 return En_ResultStatus.OK;
             });
         }
@@ -111,7 +131,7 @@ public class ActiveExportDataService implements ExportDataService {
 
         try {
             return legacyDAO.runAction(transaction -> {
-                ExternalProduct externalProduct = transaction.dao(ExternalProduct.class).findExportEntry(product.getId());
+                ExternalProduct externalProduct = transaction.dao(ExternalProduct.class).get(product.getOldId());
                 if (externalProduct != null) {
                     externalProduct.updateFrom(product);
                     transaction.dao(ExternalProduct.class).update(externalProduct);
@@ -119,6 +139,10 @@ public class ActiveExportDataService implements ExportDataService {
                 else {
                     externalProduct = new ExternalProduct(product);
                     transaction.dao(ExternalProduct.class).insert(externalProduct);
+
+                    product.setOldId(externalProduct.getId());
+
+                    devUnitDAO.partialMerge(product, "old_id");
                 }
 
                 transaction.commit();

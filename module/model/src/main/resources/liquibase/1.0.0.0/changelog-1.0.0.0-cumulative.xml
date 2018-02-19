@@ -34,4 +34,6 @@
   <include file="2018-01-18-insert-case_notifier.xml" relativeToChangelogFile="true"/>
   <include file="63-worker-audit.xml" relativeToChangelogFile="true"/>
   <include file="2018-02-16-export_sybase.xml" relativeToChangelogFile="true"/>
+  <include file="2018-02-19-export_sybase_2.xml" relativeToChangelogFile="true"/>
+  <include file="2018-02-19-cleanup_contact_data.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

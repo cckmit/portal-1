@@ -84,6 +84,9 @@ public class Person extends AuditableObject implements PersonShortViewSupport {
     @JdbcColumn(name = "contactInfo", converterType = ConverterType.JSON)
     private ContactInfo contactInfo;
 
+    @JdbcColumn(name = "old_id")
+    private Long oldId;
+
 /*
     @JdbcColumn(name = "updated")
     private Date updated;
@@ -334,30 +337,39 @@ public class Person extends AuditableObject implements PersonShortViewSupport {
         this.relations = relations;
     }
 
+    public Long getOldId() {
+        return oldId;
+    }
+
+    public void setOldId(Long oldId) {
+        this.oldId = oldId;
+    }
+
     @Override
     public String toString() {
         return "Person{" +
                 "id=" + id +
                 ", created=" + created +
-                ", creator='" + creator + '\'' +
+                ", creator='" + creator + '\"' +
                 ", companyId=" + companyId +
                 ", company=" + company +
-                ", position='" + position + '\'' +
-                ", department='" + department + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", secondName='" + secondName + '\'' +
-                ", displayName='" + displayName + '\'' +
-                ", displayShortName='" + displayShortName + '\'' +
-                ", genderCode='" + genderCode + '\'' +
+                ", position='" + position + '\"' +
+                ", department='" + department + '\"' +
+                ", firstName='" + firstName + '\"' +
+                ", lastName='" + lastName + '\"' +
+                ", secondName='" + secondName + '\"' +
+                ", displayName='" + displayName + '\"' +
+                ", displayShortName='" + displayShortName + '\"' +
+                ", genderCode='" + genderCode + '\"' +
                 ", birthday=" + birthday +
-                ", ipAddress='" + ipAddress + '\'' +
-                ", passportInfo='" + passportInfo + '\'' +
-                ", info='" + info + '\'' +
+                ", ipAddress='" + ipAddress + '\"' +
+                ", passportInfo='" + passportInfo + '\"' +
+                ", info='" + info + '\"' +
                 ", isDeleted=" + isDeleted +
                 ", isFired=" + isFired +
                 ", contactInfo=" + contactInfo +
-                ", relations='" + relations + '\'' +
+                ", relations='" + relations + '\"' +
+                ", oldId=" + String.valueOf(oldId) +
                 '}';
     }
 }
