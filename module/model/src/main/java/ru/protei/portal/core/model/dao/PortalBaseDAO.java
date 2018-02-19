@@ -5,6 +5,7 @@ import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.winter.jdbc.JdbcDAO;
 import ru.protei.winter.jdbc.JdbcSort;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -133,4 +134,8 @@ public interface PortalBaseDAO<T> extends JdbcDAO<Long,T> {
      * @return
      */
     List<T> listByQuery (DataQuery query);
+
+
+
+    <K> List<T> listByColumnIn (String column, Collection<K> values);
 }

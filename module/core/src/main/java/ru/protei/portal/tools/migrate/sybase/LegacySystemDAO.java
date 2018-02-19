@@ -1,12 +1,12 @@
-package ru.protei.portal.tools.migrate;
+package ru.protei.portal.tools.migrate.sybase;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import protei.sql.Tm_SqlHelper;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.tools.migrate.Const;
 import ru.protei.portal.tools.migrate.struct.*;
-import ru.protei.portal.tools.migrate.sybase.SybConnProvider;
 
 import javax.annotation.PostConstruct;
 import java.net.Inet4Address;
@@ -173,6 +173,18 @@ public class LegacySystemDAO {
         }
     }
 
+    public <R> R runActionRTE (LegacyDAO_Action<R> action) {
+        try {
+            return runAction (action);
+        }
+        catch (SQLException e) {
+            logger.error("sql-error (action)", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+
+
     public interface LegacyEntityDAO<T extends LegacyEntity> {
         boolean exists (Long id) throws SQLException;
         boolean exists (String cond, Object...args) throws SQLException;
@@ -189,6 +201,7 @@ public class LegacySystemDAO {
         T get (Long id) throws SQLException;
         T get (String cond, Object...args) throws SQLException;
         List<T> list (String cond, Object...args) throws SQLException;
+        List<T> list () throws SQLException;
 
         T insert (T entity) throws SQLException;
         T update (T entity) throws SQLException;
@@ -283,6 +296,11 @@ public class LegacySystemDAO {
         @Override
         public List<T> list(String cond, Object... args) throws SQLException {
             return Tm_SqlHelper.getObjectsListEx(connection, entityType, cond, args);
+        }
+
+        @Override
+        public List<T> list() throws SQLException {
+            return Tm_SqlHelper.getObjectsListEx(connection, entityType);
         }
 
         @Override

@@ -2,6 +2,7 @@ package ru.protei.portal.tools.migrate;
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import ru.protei.portal.config.MainConfiguration;
+import ru.protei.portal.tools.migrate.imp.ImportDataService;
 import ru.protei.portal.tools.migrate.utils.MigrateAction;
 import ru.protei.portal.tools.migrate.sybase.SybConnProvider;
 import ru.protei.winter.core.CoreConfigurationContext;
@@ -18,24 +19,14 @@ public class MigrateMain {
     public static void main (String argv[]){
 
 //        Connection conn_src = null;
-
         AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(
-                CoreConfigurationContext.class, JdbcConfigurationContext.class, MainConfiguration.class,
-                MigrateConfiguration.class
+                CoreConfigurationContext.class, JdbcConfigurationContext.class, MainConfiguration.class
         );
 
-
-        MigrateSetup setup = ctx.getBean(MigrateSetup.class);
-        try (Connection conn_src = ctx.getBean(SybConnProvider.class).getConnection()) {
-//            DriverManager.registerDriver(new com.sybase.jdbc3.jdbc.SybDriver());
-//            conn_src = DriverManager.getConnection("jdbc:sybase:Tds:192.168.101.140:2638/RESV3", "dba", "sql");
-
-            for (MigrateAction a : setup.sortedList()) {
-                a.migrate(conn_src);
-            }
+        try {
+            ctx.getBean(ImportDataService.class).importInitialData();
         }
         catch (Throwable e) {
-            //System.out.println(e.);
             e.printStackTrace(System.err);
         }
 

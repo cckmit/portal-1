@@ -6,7 +6,7 @@ import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import ru.protei.portal.config.MainConfiguration;
-import ru.protei.portal.tools.migrate.LegacySystemDAO;
+import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
 import ru.protei.portal.tools.migrate.struct.ExternalCompany;
 import ru.protei.portal.tools.migrate.struct.ExternalPerson;
 import ru.protei.portal.tools.migrate.struct.ExternalProduct;

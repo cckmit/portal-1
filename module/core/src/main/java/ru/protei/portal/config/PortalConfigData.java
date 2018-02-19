@@ -137,6 +137,10 @@ public class PortalConfigData {
         private final String passwd;
         private final boolean exportEnabled;
 
+        // create a normal implementation of import-service
+        private final boolean importEnabled;
+        private final boolean importEmployeesEnabled;
+
         private final String instanceId;
 
         public LegacySystemConfig(PropertiesWrapper properties) throws ConfigException {
@@ -145,6 +149,11 @@ public class PortalConfigData {
             this.passwd = properties.getProperty("syb.jdbc.pwd", "sql");
 
             this.exportEnabled = properties.getProperty("syb.export.enabled", Boolean.class,false);
+            this.importEnabled = properties.getProperty("syb.import.enabled", Boolean.class,true);
+
+            this.importEmployeesEnabled = importEnabled &
+                    properties.getProperty("syb.import.employees", Boolean.class,false);
+
             try {
                 this.instanceId = properties.getProperty("syb.export.identity", Inet4Address.getLocalHost().getHostAddress());
             }
@@ -152,6 +161,14 @@ public class PortalConfigData {
                 logger.error("unable to get local ip address", e);
                 throw new ConfigException(e);
             }
+        }
+
+        public boolean isImportEnabled() {
+            return importEnabled;
+        }
+
+        public boolean isImportEmployeesEnabled() {
+            return importEmployeesEnabled;
         }
 
         public String getInstanceId() {

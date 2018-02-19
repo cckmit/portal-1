@@ -11,7 +11,7 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.tools.migrate.LegacySystemDAO;
+import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
 import ru.protei.portal.tools.migrate.struct.ExternalCompany;
 import ru.protei.portal.tools.migrate.struct.ExternalPerson;
 import ru.protei.portal.tools.migrate.struct.ExternalProduct;

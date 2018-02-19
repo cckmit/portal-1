@@ -6,6 +6,7 @@ import ru.protei.portal.core.model.query.DataQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.utils.TypeConverters;
 import ru.protei.winter.jdbc.JdbcBaseDAO;
+import ru.protei.winter.jdbc.JdbcHelper;
 import ru.protei.winter.jdbc.JdbcQueryParameters;
 import ru.protei.winter.jdbc.JdbcSort;
 import ru.protei.winter.jdbc.column.JdbcObjectColumn;
@@ -221,4 +222,11 @@ public abstract class PortalBaseJdbcDAO<T> extends JdbcBaseDAO<Long,T> implement
         return pojoColumns;
     }
 
+
+    @Override
+    public <K> List<T> listByColumnIn(String columnName, Collection<K> values) {
+        List<Object> args = new ArrayList<Object>();
+        String sqlCondition = getObjectMapper().getSelectTableName() + "." + columnName + " in " + JdbcHelper.makeSqlStringCollection(values, args, null);
+        return JdbcHelper.getObjects(getObjectMapper(), jdbcTemplate, sqlCondition, args, -1, -1, null);
+    }
 }
