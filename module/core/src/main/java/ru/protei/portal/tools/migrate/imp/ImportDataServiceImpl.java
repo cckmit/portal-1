@@ -6,12 +6,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.core.model.dao.CompanyDAO;
+import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanyCategory;
+import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.tools.migrate.parts.ContactInfoMigrationFacade;
 import ru.protei.portal.tools.migrate.struct.ExternalCompany;
+import ru.protei.portal.tools.migrate.struct.ExternalPerson;
 import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
 
 import java.sql.SQLException;
@@ -31,6 +34,8 @@ public class ImportDataServiceImpl implements ImportDataService {
     @Autowired
     CompanyDAO companyDAO;
 
+    @Autowired
+    PersonDAO personDAO;
 
     @Override
     public void importEmployes() {
@@ -40,19 +45,49 @@ public class ImportDataServiceImpl implements ImportDataService {
     @Override
     @Transactional
     public void importInitialData() {
-        int comp_count = legacySystemDAO.runActionRTE (transaction ->
-            new ImportCompanies ().doImport(transaction)
-        );
+        logger.debug("Full import mode run");
 
-        logger.debug("handled {} companies", comp_count);
+        FullImport fullImport = new FullImport();
+
+        int _count = legacySystemDAO.runActionRTE(transaction -> fullImport.importCompanies(transaction));
+        logger.debug("handled {} companies", _count);
+
+        _count = legacySystemDAO.runActionRTE(transaction -> fullImport.importEmployes(transaction));
+        logger.debug("handled {} persons", _count);
+
+
     }
 
+    class FullImport {
 
+        public int importEmployes (LegacySystemDAO.LegacyDAO_Transaction transaction) throws SQLException {
+            List<ExternalPerson> src = transaction.dao(ExternalPerson.class).list("nCompanyID=?", 1L);
 
-    class ImportCompanies {
+            handleAsBatch(src, 100, importList -> {
+                Map<Long, Person> localMap = map (
+                        personDAO.getListByKeys(keys(importList, imp -> imp.getId())),
+                        person -> person.getId()
+                );
 
-        public int doImport (LegacySystemDAO.LegacyDAO_Transaction transaction) {
-            try {
+                importList.forEach(imp -> {
+                    Person local = localMap.get(imp.getId());
+                    if (local != null) {
+                        //
+                        if (!equalsNotNull(local.getOldId(), imp.getId())) {
+                            local.setOldId(imp.getId());
+                            personDAO.partialMerge(local, "old_id");
+                        }
+                        else {
+                            //
+                        }
+                    }
+                });
+            });
+
+            return  0;
+        }
+
+        public int importCompanies(LegacySystemDAO.LegacyDAO_Transaction transaction) throws SQLException {
                 List<ExternalCompany> src = transaction.dao(ExternalCompany.class).list();
                 handleAsBatch (src, 100, importList -> {
 
@@ -62,13 +97,14 @@ public class ImportDataServiceImpl implements ImportDataService {
                     );
 
                     List<Company> toInsert = new ArrayList<>();
-//                    List<Company> toUpdate = new ArrayList<>();
 
                     importList.forEach(imp -> {
                         Company local = companyMap.get(imp.getId());
                         if (local != null) {
-                            local.setOldId(imp.getId());
-                            companyDAO.partialMerge(local, "old_id");
+                            if (!equalsNotNull(local.getOldId(), imp.getId())) {
+                                local.setOldId(imp.getId());
+                                companyDAO.partialMerge(local, "old_id");
+                            }
                         }
                         else {
                             toInsert.add(fromExternalCompany(imp));
@@ -79,11 +115,6 @@ public class ImportDataServiceImpl implements ImportDataService {
                 });
 
                 return src.size();
-            }
-            catch (SQLException e) {
-                logger.error("sql-error, import companies", e);
-                throw new RuntimeException(e);
-            }
         }
     }
 
@@ -102,6 +133,10 @@ public class ImportDataServiceImpl implements ImportDataService {
         infoFacade.addItem(En_ContactItemType.EMAIL, imp.getEmail());
         infoFacade.addItem(En_ContactItemType.WEB_SITE, imp.getWebsite());
         return x;
+    }
+
+    public static boolean equalsNotNull (Number a, Number b) {
+        return a != null && b != null && a.equals(b);
     }
 
     private static <K,T> List<K> keys (List<T> src, Function<T,K> keyExtractor) {
