@@ -1,8 +1,6 @@
 package ru.protei.portal.core.service;
 
-import ru.protei.portal.core.event.CaseAttachmentEvent;
-import ru.protei.portal.core.event.CaseCommentEvent;
-import ru.protei.portal.core.event.CaseObjectEvent;
+import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.model.struct.NotificationEntry;
 
 import java.util.Set;
@@ -12,8 +10,6 @@ import java.util.Set;
  */
 public interface CaseSubscriptionService {
 
-    Set<NotificationEntry> subscribers (CaseObjectEvent event);
-    Set<NotificationEntry> subscribers (CaseCommentEvent event);
-    Set<NotificationEntry> subscribers (CaseAttachmentEvent event);
+    Set<NotificationEntry> subscribers (AssembledCaseEvent event);
 
 }

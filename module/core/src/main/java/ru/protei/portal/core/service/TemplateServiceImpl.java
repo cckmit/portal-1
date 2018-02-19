@@ -3,12 +3,10 @@ package ru.protei.portal.core.service;
 
 import freemarker.template.Configuration;
 import freemarker.template.TemplateExceptionHandler;
-import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.protei.portal.core.event.CaseAttachmentEvent;
+import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.event.CaseCommentEvent;
-import ru.protei.portal.core.event.CaseObjectEvent;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.*;
@@ -44,68 +42,62 @@ public class TemplateServiceImpl implements TemplateService {
 
     @Override
     public PreparedTemplate getCrmEmailNotificationBody(
-            CaseObjectEvent caseEvent, List< CaseComment > caseComments, Person manager, Person oldManager,
-            CaseCommentEvent commentEvent, CaseAttachmentEvent attachmentEvent, String urlTemplate, List< String > recipients
+            AssembledCaseEvent event, List<CaseComment> caseComments, String urlTemplate, Collection< String > recipients
     ) {
-        CaseObject newState;
-        if(caseEvent != null){
-            newState = caseEvent.getNewState();
-        }else if(commentEvent != null){
-            newState = commentEvent.getCaseObject();
-        }else if (attachmentEvent != null){
-            newState = attachmentEvent.getCaseObject();
-        }else
-            return null;
-
-        CaseObject oldState = caseEvent == null ? null : caseEvent.getOldState();
+        CaseObject newState = event.getLastState();
+        CaseObject oldState = event.getInitState();
 
         Map<String, Object> templateModel = new HashMap<>();
 
         templateModel.put( "TextUtils", new TextUtils() );
         templateModel.put( "linkToIssue", String.format( urlTemplate, newState.getId() ) );
-        templateModel.put( "isCreated", caseEvent == null ? false : caseEvent.isCreateEvent() );
+        templateModel.put( "isCreated", event.isCreateEvent() );
         templateModel.put( "createdByMe", false );
         templateModel.put( "case", newState );
         templateModel.put( "oldCase", oldState );
         templateModel.put( "importanceLevel", En_ImportanceLevel.getById( newState.getImpLevel() ).getCode() );
-        templateModel.put( "manager", manager );
+        templateModel.put( "manager", newState.getManager() );
         templateModel.put( "caseState", En_CaseState.getById( newState.getStateId() ).getName() );
         templateModel.put( "recipients", recipients );
 
-        templateModel.put( "productChanged", caseEvent == null ? false : caseEvent.isProductChanged() );
-        templateModel.put( "importanceChanged", caseEvent == null ? false : caseEvent.isCaseImportanceChanged() );
+        templateModel.put( "productChanged", event.isProductChanged() );
+        templateModel.put( "importanceChanged", event.isCaseImportanceChanged() );
         templateModel.put( "oldImportanceLevel", oldState == null ? null : En_ImportanceLevel.getById( oldState.getImpLevel() ).getCode() );
-        templateModel.put( "caseChanged", caseEvent == null ? false : caseEvent.isCaseStateChanged() );
+
+        templateModel.put( "caseChanged", event.isCaseStateChanged() );
         templateModel.put( "oldCaseState", oldState == null ? null : En_CaseState.getById( oldState.getStateId() ).getName() );
-        templateModel.put( "customerChanged", caseEvent == null ? false : (caseEvent.isInitiatorChanged() || caseEvent.isInitiatorCompanyChanged() ) );
+
+        templateModel.put( "customerChanged", event.isInitiatorChanged() || event.isInitiatorCompanyChanged() );
         templateModel.put( "oldInitiator", oldState == null ? null : oldState.getInitiator() );
         templateModel.put( "oldInitiatorCompany", oldState == null ? null : oldState.getInitiatorCompany() );
-        templateModel.put( "managerChanged", caseEvent == null ? false : caseEvent.isManagerChanged() );
-        templateModel.put( "oldManager", oldManager );
-        templateModel.put( "infoChanged", caseEvent == null ? false : caseEvent.isInfoChanged() );
-        templateModel.put( "nameChanged", caseEvent == null ? false : caseEvent.isNameChanged() );
-        templateModel.put( "privacyChanged", caseEvent == null ? false : caseEvent.isPrivacyChanged() );
+
+        templateModel.put( "managerChanged", event.isManagerChanged() );
+        templateModel.put( "oldManager", oldState == null? null: oldState.getManager() );
+
+        templateModel.put( "infoChanged", event.isInfoChanged() );
+        templateModel.put( "nameChanged", event.isNameChanged() );
+        templateModel.put( "privacyChanged", event.isPrivacyChanged() );
 
 
-        if(oldState == null){
-            if(!(commentEvent == null && attachmentEvent == null)){
-                Collection<Attachment> added = commentEvent == null?attachmentEvent.getAddedAttachments():commentEvent.getAddedAttachments();
-                Collection<Attachment> removed = commentEvent == null?attachmentEvent.getRemovedAttachments():commentEvent.getRemovedAttachments();
-                newState.getAttachments().removeAll(added);
-                templateModel.putAll(
-                        buildAttachmentModelKeys(newState.getAttachments(), added, removed)
-                );
+//        if(oldState == null){
+//            if(!(commentEvent == null && attachmentEvent == null)){
+//                Collection<Attachment> added = commentEvent == null?attachmentEvent.getAddedAttachments():commentEvent.getAddedAttachments();
+//                Collection<Attachment> removed = commentEvent == null?attachmentEvent.getRemovedAttachments():commentEvent.getRemovedAttachments();
+//                newState.getAttachments().removeAll(added);
+//                templateModel.putAll(
+//                        buildAttachmentModelKeys(newState.getAttachments(), added, removed)
+//                );
+//
+//            }else if(CollectionUtils.isNotEmpty(newState.getAttachments())){
+//                templateModel.put( "attachments", newState.getAttachments() );
+//            }
+//        }else{
+        templateModel.putAll(
+                getAttachmentModelKeys(getAttachmentsFromCase(oldState), getAttachmentsFromCase(newState))
+        );
+//        }
 
-            }else if(CollectionUtils.isNotEmpty(newState.getAttachments())){
-                templateModel.put( "attachments", newState.getAttachments() );
-            }
-        }else{
-            templateModel.putAll(
-                    getAttachmentModelKeys(getAttachmentsFromCase(oldState), getAttachmentsFromCase(newState))
-            );
-        }
-
-        templateModel.put( "caseComments",  getCommentsModelKeys(caseComments, commentEvent));
+        templateModel.put( "caseComments",  getCommentsModelKeys(caseComments, event.getCaseComment()));
 
         PreparedTemplate template = new PreparedTemplate( "notification/email/crm.body.%s.ftl" );
         template.setModel( templateModel );

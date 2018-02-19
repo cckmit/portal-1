@@ -181,7 +181,7 @@ public class CaseServiceImpl implements CaseService {
         if(oldState.getState() != caseObject.getState()){
             Long messageId = createAndPersistStateMessage(initiator, caseObject.getId(), caseObject.getState());
             if(messageId == null)
-                log.error("State message for the issue %d not saved!", caseObject.getId());
+                log.error("State message for the issue %d isn't saved!", caseObject.getId());
         }
 
         // From GWT-side we get partially filled object, that's why we need to refresh state from db

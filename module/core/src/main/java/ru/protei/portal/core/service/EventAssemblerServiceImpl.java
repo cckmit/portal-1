@@ -11,7 +11,6 @@ import ru.protei.portal.core.event.CaseObjectEvent;
 import ru.protei.portal.core.model.ent.Person;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -32,8 +31,8 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
                 assembledEventsMap.put(eventRelatedPerson, new AssembledCaseEvent(event));
             } else {
                 caseEvent.attachCaseObject(event.getCaseObject());
-                assembledEventsMap.put(eventRelatedPerson, caseEvent);
-                publishAndClear(eventRelatedPerson);
+//                assembledEventsMap.put(eventRelatedPerson, caseEvent);
+//                publishAndClear(eventRelatedPerson);
             }
         } else {
             logger.debug("push new event on case {} for assembly", event.getCaseObject().defGUID());
