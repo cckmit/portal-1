@@ -15,6 +15,8 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.service.EventPublisherService;
+import ru.protei.portal.redmine.factories.MergeHandlerFactory;
+import ru.protei.portal.redmine.service.CommonService;
 import ru.protei.portal.redmine.utils.RedmineUtils;
 
 import java.util.*;
@@ -45,13 +47,22 @@ public final class RedmineUpdateIssueHandler implements RedmineEventHandler{
     @Autowired
     private EventPublisherService eventPublisherService;
 
+    @Autowired
+    private CommonService commonService;
+
+    @Autowired
+    MergeHandlerFactory mergeHandlerFactory;
+
+    private final Logger logger = LoggerFactory.getLogger(RedmineUpdateIssueHandler.class);
+
     @Override
     public void handle(User user, Issue issue, long companyId) {
         CaseObject object = caseObjectDAO.getByCondition("EXT_ID=?", issue.getId());
-        compareAndUpdate(object, issue);
+        compareAndUpdate(issue, object);
     }
 
-    private CaseObject compareAndUpdate(CaseObject object, Issue issue) {
+    private CaseObject compareAndUpdate(Issue issue, CaseObject object) {
+        logger.debug("Trying to get latest created comment");
         CaseComment comment = caseCommentDAO.getCaseComments(object.getId())
                 .stream()
                 .sorted(Comparator.comparing(CaseComment::getCreated))
@@ -60,75 +71,20 @@ public final class RedmineUpdateIssueHandler implements RedmineEventHandler{
 
         final Date latestCreated = (comment != null) ? comment.getCreated() : issue.getCreatedOn();
 
-        List<Journal> journals = issue.getJournals()
+        logger.debug("last comment was created on: {}, with id {}", latestCreated);
+        logger.debug("starting adding new comments");
+
+        List<CaseComment> comments = issue.getJournals()
                 .stream()
                 .filter(x -> x.getCreatedOn().compareTo(latestCreated) > 0)
                 .map(RedmineUtils::parseJournal)
-                .map()
+                .map(x -> commonService.processStoreComment(issue, x.getAuthor(), object, object.getId(), x))
                 .collect(Collectors.toList());
 
-        issue.getAttachments();
-        issue.getSubject();
-        issue.getStatusName();
-        issue.getAssigneeId();
-        issue.getCategory();
-        issue.getChangesets();
-        issue.getUpdatedOn();
-        issue.getPriorityId();
-        issue.getSpentHours();
-        issue.getDescription();
-        issue.getChangesets();
-        issue.getProjectName();
+        logger.debug("Added {} new case comments to issue with id: {}", comments.size(), object.getId());
+
+        logger.debug("");
+
+        return  mergeHandlerFactory.mergeWithCaseObject(issue, object);
     }
-
-    private final Logger logger = LoggerFactory.getLogger(RedmineUpdateIssueHandler.class);
-
-    private CaseComment processStoreComment(Issue issue, Person contactPerson, CaseObject obj, Long caseObjId, CaseComment comment) {
-        caseCommentDAO.persist(comment);
-        final Collection<Attachment> addedAttachments = new ArrayList<>(issue.getAttachments().size());
-        if (issue.getAttachments() != null && !issue.getAttachments().isEmpty()) {
-            logger.debug("process attachments for new case, id={}", caseObjId);
-
-            List<CaseAttachment> caseAttachments = new ArrayList<>(issue.getAttachments().size());
-
-            issue.getAttachments().forEach(x -> {
-                Attachment a = new Attachment();
-                a.setCreated(new Date());
-                a.setCreatorId(contactPerson.getId());
-                a.setDataSize(x.getFileSize());
-                a.setFileName(x.getFileName());
-                a.setMimeType(x.getContentType());
-                a.setLabelText(x.getDescription());
-                addedAttachments.add(a);
-                try {
-                    logger.debug("invoke file controller to store attachment {} (size={})", x.getFileName(), x.getFileSize());
-                    Long caId = fileController.saveAttachment(a, new UrlResource(x.getContentURL()), caseObjId);
-                    logger.debug("result from file controller = {} for {} (size={})", caId, x.getFileName(), x.getFileSize());
-
-                    if (caId != null) {
-                        caseAttachments.add(new CaseAttachment(caseObjId, a.getId(), comment.getId(), caId));
-                    }
-                } catch (Exception e) {
-                    logger.debug("unable to process attachment {}", x.getFileName());
-                    logger.debug("trace", e);
-                }
-            });
-
-            comment.setCaseAttachments(caseAttachments);
-        }
-
-        eventPublisherService.publishEvent(new CaseCommentEvent(
-                ServiceModule.REDMINE,
-                caseService,
-                obj,
-                null,
-                null,
-                comment,
-                addedAttachments,
-                contactPerson
-        ));
-
-        return comment;
-    }
-
 }

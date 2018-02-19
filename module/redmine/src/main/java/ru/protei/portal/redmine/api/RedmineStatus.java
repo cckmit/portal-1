@@ -2,6 +2,8 @@ package ru.protei.portal.redmine.api;
 
 import ru.protei.portal.core.model.dict.En_CaseState;
 
+import java.util.Arrays;
+
 import static ru.protei.portal.core.model.dict.En_CaseState.*;
 
 public enum RedmineStatus {
@@ -21,6 +23,10 @@ public enum RedmineStatus {
 
     private final String redmineCode;
     private final En_CaseState caseState;
+
+    public static RedmineStatus getByCaseState(En_CaseState state) {
+        return Arrays.stream(RedmineStatus.values()).filter(x -> x.caseState.equals(state)).findFirst().get();
+    }
 
     public String getRedmineCode() {
         return redmineCode;

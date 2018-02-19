@@ -3,20 +3,20 @@ package ru.protei.portal.core.model.dao.impl;
 import ru.protei.portal.core.model.dao.RedmineEndpointDAO;
 import ru.protei.portal.core.model.ent.RedmineEndpoint;
 
-import java.sql.Date;
+import java.util.Date;
 import java.util.List;
 
 public class RedmineEndpointDAO_Impl extends PortalBaseJdbcDAO<RedmineEndpoint> implements RedmineEndpointDAO {
     @Override
-    public void updateCreatedOn(Long companyId, String projectName, Date date) {
-        RedmineEndpoint endpoint = getByCondition("COMPANY_ID=? AND project_name=?", companyId, projectName);
+    public void updateCreatedOn(Long companyId, String projectId, Date date) {
+        RedmineEndpoint endpoint = getByCondition("COMPANY_ID=? AND project_id=?", companyId, projectId);
         endpoint.setLastCreatedOnDate(date);
         saveOrUpdate(endpoint);
     }
 
     @Override
-    public void updateUpdatedOn(Long companyId, String projectName, Date date) {
-        RedmineEndpoint endpoint = getByCondition("COMPANY_ID=? AND project_name=?", companyId, projectName);
+    public void updateUpdatedOn(Long companyId, String projectId, Date date) {
+        RedmineEndpoint endpoint = getByCondition("COMPANY_ID=? AND project_id=?", companyId, projectId);
         endpoint.setLastUpdatedOnDate(date);
         saveOrUpdate(endpoint);
     }
@@ -27,7 +27,7 @@ public class RedmineEndpointDAO_Impl extends PortalBaseJdbcDAO<RedmineEndpoint> 
     }
 
     @Override
-    public RedmineEndpoint getByCompanyIdAndProjectName(Long companyId, String projectName) {
-        return getByCondition("COMPANY_ID=? AND projectName=?");
+    public RedmineEndpoint getByCompanyIdAndProjectId(Long companyId, String projectId) {
+        return getByCondition("COMPANY_ID=? AND project_id=?", companyId, projectId);
     }
 }

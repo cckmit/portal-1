@@ -5,7 +5,7 @@ import ru.protei.winter.jdbc.annotations.JdbcColumn;
 import ru.protei.winter.jdbc.annotations.JdbcEntity;
 import ru.protei.winter.jdbc.annotations.JdbcId;
 
-import java.sql.Date;
+import java.util.Date;
 
 @JdbcEntity(table = "redmine_endpoint")
 public class RedmineEndpoint {
@@ -16,8 +16,8 @@ public class RedmineEndpoint {
     @JdbcColumn(name = "server_addr")
     private String serverAddress;
 
-    @JdbcColumn(name = "project_name")
-    private String projectName;
+    @JdbcColumn(name = "project_id")
+    private String projectId;
 
     @JdbcColumn(name = "api_key")
     private String apiKey;
@@ -47,12 +47,12 @@ public class RedmineEndpoint {
         this.serverAddress = serverAddress;
     }
 
-    public String getProjectName() {
-        return projectName;
+    public String getProjectId() {
+        return projectId;
     }
 
-    public void setProjectName(String projectName) {
-        this.projectName = projectName;
+    public void setProjectId(String projectId) {
+        this.projectId = projectId;
     }
 
     public String getApiKey() {
