@@ -21,6 +21,7 @@ import ru.protei.portal.core.event.CaseAttachmentEvent;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.service.AttachmentService;
 import ru.protei.portal.core.service.CaseService;
+import ru.protei.portal.core.service.EventAssemblerService;
 import ru.protei.portal.core.service.EventPublisherService;
 import ru.protei.portal.core.service.user.AuthService;
 
@@ -46,7 +47,7 @@ public class FileController {
     FileStorage fileStorage;
 
     @Autowired
-    EventPublisherService publisherService;
+    EventAssemblerService publisherService;
 
 
     private static final Logger logger = Logger.getLogger(FileStorage.class);

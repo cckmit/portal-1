@@ -11,7 +11,6 @@ import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Создает локализованные шаблоны через Freemarker.
@@ -73,7 +72,7 @@ public class LocalizedTemplateCreator {
             try(Writer writer = Files.newBufferedWriter(path, options)) {
                 template.process(langToModel.getValue(), writer);
             }
-            System.out.println("Template "+ path.getFileName() +" created!");
+            System.out.println("Template "+ path.getFileName() +" is created!");
         }
     }
 
