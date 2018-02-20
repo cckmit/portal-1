@@ -36,7 +36,7 @@ public class ExternalProduct implements LegacyEntity {
     }
 
     public ExternalProduct (DevUnit unit) {
-        this.id = unit.getId();
+        this.id = unit.getLegacyId();
         this.created = unit.getCreated();
         this.name = unit.getName();
         this.info = unit.getInfo();

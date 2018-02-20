@@ -162,6 +162,10 @@ public class Company extends AuditableObject implements EntityOptionSupport {
         return "Company";
     }
 
+    public Long getLegacyId () {
+        return this.oldId != null ? this.oldId : this.id;
+    }
+
     @Override
     public String toString() {
         return "Company{" +

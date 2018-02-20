@@ -143,6 +143,17 @@ public abstract class PortalBaseJdbcDAO<T> extends JdbcBaseDAO<Long,T> implement
         return jdbcTemplate.queryForObject(query, type, args == null ? EMPTY_ARG_SET : args);
     }
 
+    @Override
+    public List<Long> keys() {
+        String query = "select " + getIdColumnName() + " from " + getTableName();
+        return jdbcTemplate.queryForList(query, Long.class);
+    }
+
+    @Override
+    public <K> List<K> listColumnValue(String column, Class<K> type) {
+        String query = "select " + column + " from " + getTableName();
+        return jdbcTemplate.queryForList(query, type);
+    }
 
     public Long getIdValue (T obj) {
         return this.getObjectMapper().getIdValue(obj);

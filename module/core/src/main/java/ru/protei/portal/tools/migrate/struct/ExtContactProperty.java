@@ -4,7 +4,7 @@ import protei.sql.Column;
 import protei.sql.Table;
 
 @Table(name = "\"Resource\".view_person_contact_data")
-public class ExtContactProperty {
+public class ExtContactProperty implements LegacyEntity {
     @Column(name = "nID")
     public Long id;
 

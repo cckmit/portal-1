@@ -4,17 +4,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import protei.sql.Tm_SqlHelper;
+import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.tools.migrate.Const;
+import ru.protei.portal.tools.migrate.HelperService;
 import ru.protei.portal.tools.migrate.struct.*;
 
 import javax.annotation.PostConstruct;
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
 import java.sql.*;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by turik on 08.09.16.
@@ -27,6 +28,9 @@ public class LegacySystemDAO {
 
     @Autowired
     private SybConnProvider connProvider;
+
+    @Autowired
+    PersonDAO personDAO;
 
     private String ourHost;
 
@@ -60,13 +64,7 @@ public class LegacySystemDAO {
         try (Connection connection = connProvider.getConnection()) {
             ExternalPerson externalPerson = new ExternalPerson (person, "", "", ourHost);
             Tm_SqlHelper.updateObjectEx(connection, externalPerson);
-//            String tableName = Tm_SqlHelper.getTableName (ExternalPerson.class);
-//            String sql = Tm_SqlHelper.getUpdateString (externalPerson.getClass ());
-//            logger.debug ("prepare statement = update {} set {} where nID = {}", tableName, sql, person.getId ());
-//            PreparedStatement st = connection.prepareStatement("update " + tableName + " set " + sql + " where nID = " + person.getId ());
-//            Tm_SqlHelper.setParams(st, externalPerson, true);
-//            st.executeUpdate ();
-//            st.close();
+
             connection.commit ();
         }
     }
@@ -78,25 +76,14 @@ public class LegacySystemDAO {
         try (Connection connection = connProvider.getConnection()) {
             ExternalPerson externalPerson = new ExternalPerson(person, departmentName, positionName, ourHost);
             Tm_SqlHelper.saveObjectEx(connection, externalPerson);
-//            String tableName = Tm_SqlHelper.getTableName(externalPerson.getClass());
-//            String sql = Tm_SqlHelper.getInsertString(externalPerson.getClass(), false);
-//            logger.debug("prepare statement = insert into {} {}", tableName, sql);
-//            PreparedStatement st = connection.prepareStatement("insert into " + tableName + sql);
-//            Tm_SqlHelper.setParams(st, externalPerson, false);
-//            st.execute();
-//            st.close();
 
             ExternalPersonExtension externalPersonExtension = new ExternalPersonExtension(person);
             Tm_SqlHelper.saveObjectEx(connection, externalPersonExtension);
-//            tableName = Tm_SqlHelper.getTableName(externalPersonExtension.getClass());
-//            sql = Tm_SqlHelper.getInsertString(externalPersonExtension.getClass(), false);
-//            logger.debug("prepare statement = insert into {} {}", tableName, sql);
-//            st = connection.prepareStatement("insert into " + tableName + sql);
-//            Tm_SqlHelper.setParams(st, externalPersonExtension, false);
-//            st.execute();
-//            st.close();
 
             connection.commit();
+
+            person.setOldId(externalPerson.getId());
+            personDAO.partialMerge(person, "old_id");
         }
     }
 
@@ -108,23 +95,9 @@ public class LegacySystemDAO {
 
             ExternalPerson externalPerson = new ExternalPerson (person, departmentName, positionName, ourHost);
             Tm_SqlHelper.updateObjectEx(connection, externalPerson);
-//            String tableName = Tm_SqlHelper.getTableName (ExternalPerson.class);
-//            String sql = Tm_SqlHelper.getUpdateString (externalPerson.getClass ());
-//            logger.debug ("prepare statement = update {} set {} where nID = {}", tableName, sql, person.getId ());
-//            PreparedStatement st = connection.prepareStatement("update " + tableName + " set " + sql + " where nID = " + person.getId ());
-//            Tm_SqlHelper.setParams(st, externalPerson, true);
-//            st.executeUpdate ();
-//            st.close();
 
             ExternalPersonExtension externalPersonExtension = new ExternalPersonExtension (person);
             Tm_SqlHelper.updateObjectEx(connection, externalPersonExtension);
-//            tableName = Tm_SqlHelper.getTableName (ExternalPersonExtension.class);
-//            sql = Tm_SqlHelper.getUpdateString (externalPersonExtension.getClass ());
-//            logger.debug ("prepare statement = update {} set {} where nID = {}", tableName, sql, person.getId ());
-//            st = connection.prepareStatement("update " + tableName + " set " + sql + " where nID = " + person.getId ());
-//            Tm_SqlHelper.setParams(st, externalPersonExtension, true);
-//            st.executeUpdate ();
-//            st.close();
 
             connection.commit ();
         }
@@ -137,8 +110,10 @@ public class LegacySystemDAO {
     }
 
     public boolean isExistPerson(Person person) throws SQLException {
-        return isExistsPerson(person.getId());
+        return isExistsPerson(person.getOldId());
     }
+
+
 
     public ExternalProduct getExternalProduct (long id) throws SQLException {
         return runAction(transaction -> transaction.dao(ExternalProduct.class).get(id));
@@ -148,24 +123,73 @@ public class LegacySystemDAO {
         return runAction(transaction -> transaction.dao(ExternalCompany.class).get(id));
     }
 
-//    public ExternalCompany findExportCompany (long ourId) throws SQLException {
-//        return runAction(transaction -> {
-//            LegacyEntityDAO<ExternalCompany> dao = transaction.dao(ExternalCompany.class);
-//            return findExportCompany(ourId, dao);
-//        });
-//    }
-//
-//    public ExternalCompany findExportCompany(long ourId, LegacyEntityDAO<ExternalCompany> dao) throws SQLException {
-//        ExternalCompany company = dao.get(ourId);
-//        if (company == null)
-//            company = dao.get("ext_id=? and strCreator=?", ourId, Const.CREATOR_FIELD_VALUE);
-//
-//        return company;
-//    }
-
     public ExternalPerson getExternalPerson (long id) throws SQLException {
         return runAction(transaction -> transaction.dao(ExternalPerson.class).get(id));
     }
+
+    public ExternalPersonInfoCollector personCollector (List<ExternalPerson> personList) {
+        return new ExternalPersonInfoCollector().fromPersonSet(personList);
+    }
+
+    public ExternalPersonInfoCollector personCollectorExt (List<ExternalPersonExtension> extensionList) {
+        return new ExternalPersonInfoCollector().fromExtSet(extensionList);
+    }
+
+    public class ExternalPersonInfoCollector {
+
+        private List<Long> keys;
+        private Map<Long, ExternalPerson> personMap;
+        private Map<Long, ExternalPersonExtension> extensionMap;
+
+        public ExternalPersonInfoCollector() {
+        }
+
+        ExternalPersonInfoCollector fromKeys (List<Long> keys) {
+            this.keys = keys;
+            return this;
+        }
+
+        ExternalPersonInfoCollector fromPersonSet (List<ExternalPerson> personList) {
+            this.personMap = HelperService.map(personList, person -> person.getId());
+            this.keys = new ArrayList<>(personMap.keySet());
+            return this;
+        }
+
+        ExternalPersonInfoCollector fromExtSet (List<ExternalPersonExtension> extensionList) {
+            this.extensionMap = HelperService.map(extensionList, ext -> ext.getPersonId());
+            this.keys = new ArrayList<>(extensionMap.keySet());
+            return this;
+        }
+
+        public List<ExternalPersonInfo> asList (LegacyDAO_Transaction transaction) throws SQLException {
+            List<ExternalPersonInfo> result = new ArrayList<>(asMap(transaction).values());
+            Collections.sort(result, Comparator.comparing(ExternalPersonInfo::getPersonId));
+            return result;
+        }
+
+        public Map<Long, ExternalPersonInfo> asMap (LegacyDAO_Transaction transaction) throws SQLException {
+            if (personMap == null) {
+                personMap = HelperService.map(transaction.dao(ExternalPerson.class).list(keys), person -> person.getId());
+            }
+
+            if (extensionMap == null) {
+                extensionMap = HelperService.map(transaction.dao(ExternalPersonExtension.class).list(keys), ext -> ext.getPersonId());
+            }
+
+            final Map<Long, ExternalPersonInfo> tmp = new HashMap<>();
+            keys.forEach(id -> {
+                tmp.put(id, new ExternalPersonInfo(personMap.get(id), extensionMap.get(id)));
+            });
+
+            transaction.dao(ExtContactProperty.class)
+                    .list("nPersonID", keys)
+                    .forEach(cont -> tmp.get(cont.personId).addContactData(cont));
+
+            return tmp;
+        }
+    }
+
+
 
     public <R> R runAction (LegacyDAO_Action<R> action) throws SQLException {
         try (LegacyDAO_Transaction daoFactory = new LegacyDAO_Transaction_impl(connProvider)){
@@ -189,17 +213,11 @@ public class LegacySystemDAO {
         boolean exists (Long id) throws SQLException;
         boolean exists (String cond, Object...args) throws SQLException;
 
-//        /**
-//         * Пытаемся сначала получить объект по id, потом по совпадению пармы ext_id + creator
-//         * @param id
-//         * @param <T>
-//         * @return
-//         * @throws SQLException
-//         */
-//        T findExportEntry (long id) throws SQLException;
-
         T get (Long id) throws SQLException;
         T get (String cond, Object...args) throws SQLException;
+
+        <K> List<T> list (Collection<K> keys) throws SQLException;
+        <K> List<T> list (String column, Collection<K> values) throws SQLException;
         List<T> list (String cond, Object...args) throws SQLException;
         List<T> list () throws SQLException;
 
@@ -274,14 +292,15 @@ public class LegacySystemDAO {
             return Tm_SqlHelper.exists(connection, entityType, cond, args);
         }
 
-//        @Override
-//        public T findExportEntry(long id) throws SQLException {
-//            T val = get(id);
-//            if (val == null) {
-//                val = get ("ext_id=? and strCreator=?", id, Const.CREATOR_FIELD_VALUE);
-//            }
-//            return val;
-//        }
+        @Override
+        public <K> List<T> list(Collection<K> keys) throws SQLException {
+            return Tm_SqlHelper.getObjectListEx(connection, entityType, keys);
+        }
+
+        @Override
+        public <K> List<T> list(String column, Collection<K> values) throws SQLException {
+            return Tm_SqlHelper.getObjectListExSafe(connection, entityType, column, values);
+        }
 
         @Override
         public T get(Long id) throws SQLException {

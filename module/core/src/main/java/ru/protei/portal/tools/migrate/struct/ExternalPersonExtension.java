@@ -10,7 +10,7 @@ import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
  * Created by turik on 08.09.16.
  */
 @Table(name="\"Resource\".Tm_PersonPROTEI_Extension")
-public class ExternalPersonExtension {
+public class ExternalPersonExtension implements LegacyEntity {
 
     private Long id;
     private Long personId;
@@ -40,8 +40,9 @@ public class ExternalPersonExtension {
 
     public ExternalPersonExtension(Person person) {
 
-        setId (person.getId ());
-        setPersonId (person.getId ());
+        setId (person.getLegacyId());
+        setPersonId (person.getLegacyId());
+
         PlainContactInfoFacade contactInfoFacade = new PlainContactInfoFacade(person.getContactInfo());
         setEmail (contactInfoFacade.getEmail () == null ? "" : contactInfoFacade.getEmail ());
         setOtherEmail (contactInfoFacade.getEmail_own () == null ? "" : contactInfoFacade.getEmail_own ());

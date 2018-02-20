@@ -12,15 +12,15 @@ import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanyCategory;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.tools.migrate.HelperService;
 import ru.protei.portal.tools.migrate.parts.ContactInfoMigrationFacade;
 import ru.protei.portal.tools.migrate.struct.ExternalCompany;
 import ru.protei.portal.tools.migrate.struct.ExternalPerson;
+import ru.protei.portal.tools.migrate.struct.ExternalPersonInfo;
 import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
 
 import java.sql.SQLException;
 import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @EnableTransactionManagement
@@ -42,80 +42,19 @@ public class ImportDataServiceImpl implements ImportDataService {
 
     }
 
+
     @Override
     @Transactional
     public void importInitialData() {
         logger.debug("Full import mode run");
 
-        FullImport fullImport = new FullImport();
+        InitialImport initialImport = new InitialImport();
 
-        int _count = legacySystemDAO.runActionRTE(transaction -> fullImport.importCompanies(transaction));
+        int _count = legacySystemDAO.runActionRTE(transaction -> initialImport.importCompanies(transaction));
         logger.debug("handled {} companies", _count);
 
-        _count = legacySystemDAO.runActionRTE(transaction -> fullImport.importEmployes(transaction));
-        logger.debug("handled {} persons", _count);
-
-
-    }
-
-    class FullImport {
-
-        public int importEmployes (LegacySystemDAO.LegacyDAO_Transaction transaction) throws SQLException {
-            List<ExternalPerson> src = transaction.dao(ExternalPerson.class).list("nCompanyID=?", 1L);
-
-            handleAsBatch(src, 100, importList -> {
-                Map<Long, Person> localMap = map (
-                        personDAO.getListByKeys(keys(importList, imp -> imp.getId())),
-                        person -> person.getId()
-                );
-
-                importList.forEach(imp -> {
-                    Person local = localMap.get(imp.getId());
-                    if (local != null) {
-                        //
-                        if (!equalsNotNull(local.getOldId(), imp.getId())) {
-                            local.setOldId(imp.getId());
-                            personDAO.partialMerge(local, "old_id");
-                        }
-                        else {
-                            //
-                        }
-                    }
-                });
-            });
-
-            return  0;
-        }
-
-        public int importCompanies(LegacySystemDAO.LegacyDAO_Transaction transaction) throws SQLException {
-                List<ExternalCompany> src = transaction.dao(ExternalCompany.class).list();
-                handleAsBatch (src, 100, importList -> {
-
-                    Map<Long, Company> companyMap = map(
-                            companyDAO.getListByKeys (keys(importList, c -> c.getId())),
-                            company -> company.getId()
-                    );
-
-                    List<Company> toInsert = new ArrayList<>();
-
-                    importList.forEach(imp -> {
-                        Company local = companyMap.get(imp.getId());
-                        if (local != null) {
-                            if (!equalsNotNull(local.getOldId(), imp.getId())) {
-                                local.setOldId(imp.getId());
-                                companyDAO.partialMerge(local, "old_id");
-                            }
-                        }
-                        else {
-                            toInsert.add(fromExternalCompany(imp));
-                        }
-                    });
-
-                    companyDAO.persistBatch(toInsert);
-                });
-
-                return src.size();
-        }
+/*        _count = legacySystemDAO.runActionRTE(transaction -> fullImport.importEmployes(transaction));
+        logger.debug("handled {} persons", _count);*/
     }
 
     private Company fromExternalCompany(ExternalCompany imp) {
@@ -135,31 +74,40 @@ public class ImportDataServiceImpl implements ImportDataService {
         return x;
     }
 
-    public static boolean equalsNotNull (Number a, Number b) {
-        return a != null && b != null && a.equals(b);
-    }
+    class InitialImport {
 
-    private static <K,T> List<K> keys (List<T> src, Function<T,K> keyExtractor) {
-        return src.stream().map(item -> keyExtractor.apply(item)).collect(Collectors.toList());
-    }
+        public int importPersons (LegacySystemDAO.LegacyDAO_Transaction transaction) throws SQLException {
+            List<ExternalPerson> src = transaction.dao(ExternalPerson.class).list("nCompanyID=?", 1L);
+            Set<Long> existingIds = new HashSet<>(personDAO.keys());
+            src.removeIf(imp -> existingIds.contains(imp.getId()));
 
-    private static <K,T> Map<K,T> map (List<T> src, Function<T,K> keyExtractor) {
-        Map<K,T> result = new HashMap<>();
-        src.forEach(item -> result.put(keyExtractor.apply(item), item));
-        return result;
-    }
+            HelperService.splitBatch(src, 100, importList -> doImportPersonBatch(transaction, importList));
 
-    private <T> void handleAsBatch (List<T> full_list, int batchSize, Consumer<List<T>> consumer) {
-        int full_batches = full_list.size()/batchSize;
+            return src.size();
+        }
 
-        if (full_batches == 0)
-            consumer.accept(full_list);
-        else {
-            for (int i = 0; i < full_batches; i++) {
-                consumer.accept(full_list.subList(i * batchSize, (i + 1) * batchSize));
+        private void doImportPersonBatch (LegacySystemDAO.LegacyDAO_Transaction transaction, List<ExternalPerson> impListSrc) {
+            try {
+                Map<Long, ExternalPersonInfo> infoMap = legacySystemDAO.personCollector(impListSrc).asMap(transaction);
             }
-            // rest
-            consumer.accept(full_list.subList(full_batches*batchSize, full_list.size()));
+            catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+
+        public int importCompanies(LegacySystemDAO.LegacyDAO_Transaction transaction) throws SQLException {
+            List<ExternalCompany> src = transaction.dao(ExternalCompany.class).list();
+            Set<Long> compIdSet = new HashSet<>(companyDAO.keys());
+            // excludes already existing
+            src.removeIf(imp -> compIdSet.contains(imp.getId()));
+
+            HelperService.splitBatch(src, 100, importList ->
+                    companyDAO.persistBatch(importList.stream().map(imp -> fromExternalCompany(imp)).collect(Collectors.toList()))
+            );
+
+            return src.size();
         }
     }
+
 }
