@@ -15,6 +15,8 @@ public interface RedmineService {
 
     void checkForIssuesUpdates(RedmineEndpoint endpoint);
 
+    void updateIssue(Issue issue) throws RedmineException;
+
     @EventListener
     void onAssembledCaseEvent(AssembledCaseEvent event);
 }

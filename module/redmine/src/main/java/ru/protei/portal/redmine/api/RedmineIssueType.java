@@ -6,15 +6,15 @@ import static ru.protei.portal.core.model.dict.En_CaseType.*;
 
 public enum RedmineIssueType {
     ERROR ("Ошибка", En_CaseType.BUG),
-    CRITICAL_ERROR("Критическая ошибка", En_CaseType.CRITICAL_BUG),
+    CRITICAL_ERROR("Критическая ошибка", En_CaseType.BUG),
     CHANGE("Изменение", FREQ),
-    SUPPORT("Поддержка", En_CaseType.SUPPORT),
-    TESTING("Тестирование", En_CaseType.TEST),
-    DOCUMENTATION("Документация", En_CaseType.DOCUMENTATION),
-    CLIENT_REQUEST("Обращение клиента", En_CaseType.CLIENT_REQ),
-    PROJECT_DOCUMENTATION("Проектная документация", En_CaseType.PROJECT_DOC),
-    ANALYSIS("Анализ", En_CaseType.ANALYSIS),
-    INFRASTRUCTURE("Инфраструктура", En_CaseType.INFRASTRUCTURE);
+    SUPPORT("Поддержка", En_CaseType.TASK),
+    TESTING("Тестирование", En_CaseType.TASK),
+    DOCUMENTATION("Документация", En_CaseType.CRM_SUPPORT),
+    CLIENT_REQUEST("Обращение клиента", En_CaseType.FREQ),
+    PROJECT_DOCUMENTATION("Проектная документация", En_CaseType.CRM_SUPPORT),
+    ANALYSIS("Анализ", En_CaseType.TASK),
+    INFRASTRUCTURE("Инфраструктура", En_CaseType.PROJECT);
 
     RedmineIssueType (String type, En_CaseType caseType) {
         this.redmineIssueType = type;

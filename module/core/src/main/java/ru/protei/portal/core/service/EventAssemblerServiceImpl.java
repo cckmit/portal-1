@@ -1,6 +1,5 @@
 package ru.protei.portal.core.service;
 
-import com.sun.istack.internal.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -53,7 +52,6 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
     }
 
     @Override
-    @Nullable
     public AssembledCaseEvent getPersonsEvent(Person person) {
         return assembledEventsMap.getOrDefault(person, null);
     }

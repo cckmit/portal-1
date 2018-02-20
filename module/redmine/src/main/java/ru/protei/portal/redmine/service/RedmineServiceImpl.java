@@ -11,8 +11,7 @@ import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.model.dao.RedmineEndpointDAO;
 import ru.protei.portal.core.model.ent.RedmineEndpoint;
-import ru.protei.portal.redmine.handlers.BackchannelEventHandler;
-import ru.protei.portal.redmine.handlers.RedmineEventHandler;
+import ru.protei.portal.redmine.handlers.*;
 import ru.protei.portal.redmine.utils.RedmineUtils;
 
 import java.util.*;
@@ -65,7 +64,7 @@ public class RedmineServiceImpl implements RedmineService {
         try {
             List<Issue> issues = getIssuesAfterDate(created, projectId);
             if (!issues.isEmpty()) {
-                RedmineEventHandler handler = redmineHandlerFactory.createHandler();
+                RedmineEventHandler handler = new RedmineNewIssueHandler();
                 issues.stream().map(x -> new Tuple<>(getUser(x.getId()), x))
                 .forEach(x -> handler.handle(x.a, x.b, endpoint.getCompanyId()));
                 issues.get(issues.size()).getCreatedOn();
@@ -88,7 +87,7 @@ public class RedmineServiceImpl implements RedmineService {
         try {
             List<Issue> issues = getIssuesUpdatedAfterDate(updated, projectId);
             if (!issues.isEmpty()) {
-                RedmineEventHandler handler = redmineHandlerFactory.createHandler();
+                RedmineEventHandler handler = new RedmineUpdateIssueHandler();
                 issues.stream().map(x -> new Tuple<>(getUser(x.getId()), x))
                         .forEach(x -> handler.handle(x.a, x.b, companyId));
                 redmineEndpointDAO.updateUpdatedOn(endpoint.getCompanyId(), endpoint.getProjectId(),
@@ -101,6 +100,7 @@ public class RedmineServiceImpl implements RedmineService {
         }
     }
 
+    @Override
     public void updateIssue(Issue issue) throws RedmineException {
         manager.getIssueManager().update(issue);
     }
@@ -126,15 +126,11 @@ public class RedmineServiceImpl implements RedmineService {
             return;
         }*/
 
-        BackchannelEventHandler handler = backchannelHandlerFactory.createHandler(event);
-        if (handler == null) {
-            logger.debug("unable to create event handler, case {}", event.getCaseObject().getExtId());
-            return;
-        }
+        BackchannelEventHandler handler = new BackchannelUpdateIssueHandler();
 
         try {
             handler.handle(event);
-//            logger.debug("case-object event handled for case {}", object.getExtId());
+            logger.debug("case-object event handled for case {}", event.getCaseObject().getExtId());
         } catch (Exception e) {
             logger.debug("error while handling event for case {}", event.getCaseObject().getExtId(), e);
         }
@@ -150,13 +146,7 @@ public class RedmineServiceImpl implements RedmineService {
     }
 
     @Autowired
-    private RedmineHandlerFactory redmineHandlerFactory;
-
-    @Autowired
     private RedmineEndpointDAO redmineEndpointDAO;
-
-    @Autowired
-    private BackchannelHandlerFactory backchannelHandlerFactory;
 
     private RedmineManager manager;
 

@@ -63,8 +63,4 @@ public class CommonComparator {
                 }).collect(Collectors.toSet()))).forEach(x -> x.b.stream().map(y -> ((MergeHandler) y)));
         //                .collect(Collectors.toList());
     }
-
-    public void updateDiff() {
-        diff.
-    }
 }
