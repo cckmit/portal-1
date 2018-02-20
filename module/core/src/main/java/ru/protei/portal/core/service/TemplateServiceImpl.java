@@ -6,7 +6,6 @@ import freemarker.template.TemplateExceptionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.protei.portal.core.event.AssembledCaseEvent;
-import ru.protei.portal.core.event.CaseCommentEvent;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.*;
@@ -44,8 +43,9 @@ public class TemplateServiceImpl implements TemplateService {
     public PreparedTemplate getCrmEmailNotificationBody(
             AssembledCaseEvent event, List<CaseComment> caseComments, String urlTemplate, Collection< String > recipients
     ) {
-        CaseObject newState = event.getLastState();
-        CaseObject oldState = event.getInitState();
+        CaseObject newState = event.getCaseObject();
+        CaseObject oldState = event.getInitState() == null? null: newState.equals(event.getInitState())? null: event.getInitState();
+
 
         Map<String, Object> templateModel = new HashMap<>();
 
@@ -78,26 +78,17 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put( "nameChanged", event.isNameChanged() );
         templateModel.put( "privacyChanged", event.isPrivacyChanged() );
 
+        Collection<Attachment> existingAttachments = new ArrayList<>((oldState == null? newState.getAttachments(): oldState.getAttachments()));
+        existingAttachments.removeIf(a -> event.getRemovedAttachments().contains(a) || event.getAddedAttachments().contains(a));
 
-//        if(oldState == null){
-//            if(!(commentEvent == null && attachmentEvent == null)){
-//                Collection<Attachment> added = commentEvent == null?attachmentEvent.getAddedAttachments():commentEvent.getAddedAttachments();
-//                Collection<Attachment> removed = commentEvent == null?attachmentEvent.getRemovedAttachments():commentEvent.getRemovedAttachments();
-//                newState.getAttachments().removeAll(added);
-//                templateModel.putAll(
-//                        buildAttachmentModelKeys(newState.getAttachments(), added, removed)
-//                );
-//
-//            }else if(CollectionUtils.isNotEmpty(newState.getAttachments())){
-//                templateModel.put( "attachments", newState.getAttachments() );
-//            }
-//        }else{
         templateModel.putAll(
-                getAttachmentModelKeys(getAttachmentsFromCase(oldState), getAttachmentsFromCase(newState))
+                buildAttachmentModelKeys(
+                        existingAttachments,
+                        event.getAddedAttachments(),
+                        event.getRemovedAttachments())
         );
-//        }
 
-        templateModel.put( "caseComments",  getCommentsModelKeys(caseComments, event.getCaseComment()));
+        templateModel.put( "caseComments",  getCommentsModelKeys(caseComments, event.getCaseComment(), event.getOldComment()));
 
         PreparedTemplate template = new PreparedTemplate( "notification/email/crm.body.%s.ftl" );
         template.setModel( templateModel );
@@ -119,26 +110,7 @@ public class TemplateServiceImpl implements TemplateService {
         return template;
     }
 
-    private Map<String, Object> getAttachmentModelKeys(Collection<Attachment> oldAttachs, Collection<Attachment> newAttachs){
-        if(oldAttachs.isEmpty() && newAttachs.isEmpty())
-            return Collections.emptyMap();
-        else{
-            Collection<Attachment> removed = newAttachs.isEmpty()?oldAttachs:HelperFunc.subtract(oldAttachs, newAttachs);
-            Collection<Attachment> added = oldAttachs.isEmpty()?newAttachs:HelperFunc.subtract(newAttachs, oldAttachs);
-
-            Collection<Attachment> existing;
-            if(added.isEmpty() && removed.isEmpty())
-                existing = newAttachs;
-            else{
-                oldAttachs.retainAll(newAttachs);
-                existing = oldAttachs;
-            }
-
-            return buildAttachmentModelKeys(existing, added, removed);
-        }
-    }
-
-    private List<Map<String, Object>> getCommentsModelKeys(List<CaseComment> comments, CaseCommentEvent event){
+    private List<Map<String, Object>> getCommentsModelKeys(List<CaseComment> comments, CaseComment newCaseComment, CaseComment oldCaseComment){
         return comments
                 .stream()
                 .sorted(Comparator.comparing(CaseComment::getCreated, Date::compareTo))
@@ -149,10 +121,10 @@ public class TemplateServiceImpl implements TemplateService {
                     caseComment.put( "text", comment.getText() );
                     caseComment.put( "caseState", En_CaseState.getById( comment.getCaseStateId() ) );
 
-                    boolean isChanged = event == null ? false : HelperFunc.equals( event.getCaseComment().getId(), comment.getId() );
+                    boolean isChanged = newCaseComment != null && HelperFunc.equals( newCaseComment.getId(), comment.getId() );
                     caseComment.put( "changed",  isChanged);
-                    if(isChanged && event.getOldCaseComment() != null){
-                        caseComment.put( "oldText", event.getOldCaseComment().getText() );
+                    if(isChanged && oldCaseComment != null){
+                        caseComment.put( "oldText", oldCaseComment.getText() );
                     }
 
                     return caseComment;
@@ -167,15 +139,5 @@ public class TemplateServiceImpl implements TemplateService {
         model.put( "addedAttachments", added);
 
         return model;
-    }
-
-    private Collection<Attachment> getAttachmentsFromCase(CaseObject object){
-        return object == null?
-                Collections.emptyList()
-                :
-                (object.getAttachments() == null?
-                        Collections.emptyList()
-                        :
-                        object.getAttachments());
     }
 }

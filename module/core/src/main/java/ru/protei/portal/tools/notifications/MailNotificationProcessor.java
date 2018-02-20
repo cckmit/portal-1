@@ -56,36 +56,11 @@ public class MailNotificationProcessor {
     @Autowired
     PortalConfig config;
 
-
-//    @EventListener
-//    public void onCaseObjectChanged( CaseObjectEvent event ) {
-//        Set<NotificationEntry> notificationEntries = subscriptionService.subscribers( event );
-//
-//        Person oldManager = null;
-//        if ( event.isManagerChanged() ) {
-//            oldManager = getManager( event.getOldState().getManagerId() );
-//        }
-//
-//        performNotification( event.getCaseObject(), oldManager, event, null, null, notificationEntries, event.getPerson() );
-//    }
-
-//    @EventListener
-//    public void onCaseAttachmentsChanged( CaseAttachmentEvent event ) {
-//        Set<NotificationEntry> notificationEntries = subscriptionService.subscribers( event );
-//        performNotification( event.getCaseObject(), null, null, null, event, notificationEntries, event.getPerson() );
-//    }
-//
-//    @EventListener
-//    public void onCaseCommentChanged(CaseCommentEvent event ) {
-//        Set<NotificationEntry> notificationEntries = subscriptionService.subscribers( event );
-//        performNotification( event.getCaseObject(), null, null, event, null, notificationEntries, event.getPerson() );
-//    }
-
     @EventListener
     public void onCaseChanged(AssembledCaseEvent event){
         Set<NotificationEntry> defaultNotifiers = subscriptionService.subscribers( event );
         Collection<NotificationEntry> notifiers =
-                formNotifiers(defaultNotifiers, event.getInitiator(), event.getLastState().getManager(), event.getLastState().isPrivateCase());
+                formNotifiers(defaultNotifiers, event.getInitiator(), event.getCaseObject().getManager(), event.getCaseObject().isPrivateCase());
 
         if(!notifiers.isEmpty())
             performNotification( event, notifiers );
@@ -95,7 +70,7 @@ public class MailNotificationProcessor {
         AssembledCaseEvent event, Collection<NotificationEntry> notifiers
     ) {
 
-        CaseObject newState = event.getLastState();
+        CaseObject newState = event.getCaseObject();
         List<String> recipients = notifiers.stream().map( NotificationEntry::getAddress ).collect( toList() );
 
         CoreResponse<List<CaseComment> > comments = caseService.getCaseCommentList( null, newState.getId() );

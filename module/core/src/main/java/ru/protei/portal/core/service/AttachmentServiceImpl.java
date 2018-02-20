@@ -32,7 +32,7 @@ public class AttachmentServiceImpl implements AttachmentService {
     FileStorage fileStorage;
 
     @Autowired
-    EventPublisherService publisherService;
+    EventAssemblerService publisherService;
 
     @Autowired
     AuthService authService;
@@ -63,6 +63,7 @@ public class AttachmentServiceImpl implements AttachmentService {
 
             if(result.isOk() && issue.isOk() && ud != null ) {
                 publisherService.publishEvent(new CaseAttachmentEvent(
+                        caseService,
                         this,
                         issue.getData(),
                         null,

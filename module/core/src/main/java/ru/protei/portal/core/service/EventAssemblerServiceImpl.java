@@ -6,12 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
 import ru.protei.portal.core.event.AssembledCaseEvent;
+import ru.protei.portal.core.event.CaseAttachmentEvent;
 import ru.protei.portal.core.event.CaseCommentEvent;
 import ru.protei.portal.core.event.CaseObjectEvent;
 import ru.protei.portal.core.model.ent.Person;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -21,52 +23,82 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
 
     @Override
     @EventListener
-    public void onCaseObjectEvent(CaseObjectEvent event) {
+    public void publishEvent(CaseObjectEvent event) {
         Person eventRelatedPerson = event.getPerson();
-        if (assembledEventsMap.containsKey(eventRelatedPerson)) {
+        int hash = computeHash(eventRelatedPerson, event.getCaseObject().getId());
+        if (assembledEventsMap.containsKey(hash)) {
             logger.debug("assemble event on case {}", event.getCaseObject().defGUID());
-            AssembledCaseEvent caseEvent = assembledEventsMap.get(eventRelatedPerson);
+            AssembledCaseEvent caseEvent = assembledEventsMap.get(hash);
             if (caseEvent.isLastStateSet()) {
-                publishAndClear(eventRelatedPerson);
-                assembledEventsMap.put(eventRelatedPerson, new AssembledCaseEvent(event));
+                publishAndClear(hash);
+                assembledEventsMap.put(hash, new AssembledCaseEvent(event));
             } else {
-                caseEvent.attachCaseObject(event.getCaseObject());
-//                assembledEventsMap.put(eventRelatedPerson, caseEvent);
-//                publishAndClear(eventRelatedPerson);
+                //Cuz reference
+                assembledEventsMap.get(hash).attachCaseObject(event.getCaseObject());
             }
         } else {
             logger.debug("push new event on case {} for assembly", event.getCaseObject().defGUID());
-            assembledEventsMap.put(eventRelatedPerson, new AssembledCaseEvent(event));
+            assembledEventsMap.put(hash, new AssembledCaseEvent(event));
+
         }
     }
 
     @Override
     @EventListener
-    public void onCaseCommentEvent(CaseCommentEvent event) {
+    public void publishEvent(CaseCommentEvent event) {
         Person eventRelatedPerson = event.getPerson();
-        if (assembledEventsMap.containsKey(eventRelatedPerson)
-                && assembledEventsMap.get(eventRelatedPerson).isCaseCommentAttached()) {
+        int hash = computeHash(eventRelatedPerson, event.getCaseObject().getId());
+
+        AssembledCaseEvent existingEvent = assembledEventsMap.get(hash);
+        if (
+                existingEvent != null
+                && existingEvent.isCaseCommentAttached()
+                && !Objects.equals(existingEvent.getCaseComment().getId(), event.getCaseComment().getId()) //we don't take into account a last edited comment
+        ) {
             logger.debug("onCaseCommentEvent, publish prev event on case {}", event.getCaseObject().defGUID());
-            publishAndClear(eventRelatedPerson);
-            assembledEventsMap.put(eventRelatedPerson, new AssembledCaseEvent(event));
+            publishAndClear(hash);
+            assembledEventsMap.put(hash, new AssembledCaseEvent(event));
         } else {
             logger.debug("onCaseCommentEvent, push new event on case {}", event.getCaseObject().defGUID());
             //In order to update case events map in both cases:
             // person and event pair already exist or
             // person and event pair does not exist;
-            AssembledCaseEvent assembledCaseEvent = new AssembledCaseEvent(event);
-            if (assembledEventsMap.containsKey(eventRelatedPerson)) {
+
+            if (assembledEventsMap.containsKey(hash)) {
                 logger.debug("attach comment event to existing case {}", event.getCaseObject().defGUID());
-                assembledCaseEvent = assembledEventsMap.get(eventRelatedPerson);
+                AssembledCaseEvent assembledCaseEvent = assembledEventsMap.get(hash);
                 assembledCaseEvent.attachCaseComment(event.getCaseComment());
+                assembledCaseEvent.synchronizeAttachments(
+                    event.getAddedAttachments(),
+                    event.getRemovedAttachments()
+                );
+            }else{
+                assembledEventsMap.put(hash, new AssembledCaseEvent(event));
             }
-            assembledEventsMap.put(eventRelatedPerson, assembledCaseEvent);
         }
     }
 
     @Override
-    public AssembledCaseEvent getPersonsEvent(Person person) {
-        return assembledEventsMap.getOrDefault(person, null);
+    @EventListener
+    public void publishEvent(CaseAttachmentEvent event) {
+        Person eventRelatedPerson = event.getPerson();
+        int hash = computeHash(eventRelatedPerson, event.getCaseObject().getId());
+        logger.debug("onCaseAttachmentEvent, adding attachments on case {}", event.getCaseObject().defGUID());
+
+        if (assembledEventsMap.containsKey(hash)) {
+            logger.debug("attach attachment event to existing case {}", event.getCaseObject().defGUID());
+            assembledEventsMap.get(hash).synchronizeAttachments(
+                event.getAddedAttachments(),
+                event.getRemovedAttachments()
+            );
+        } else{
+            assembledEventsMap.put(hash, new AssembledCaseEvent(event));
+        }
+    }
+
+    @Override
+    public AssembledCaseEvent getEvent(Person person, long caseId) {
+        return assembledEventsMap.getOrDefault(computeHash(person, caseId), null);
     }
 
     @Override
@@ -78,8 +110,8 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
     public void checkEventsMap() {
         //Measured in ms
         logger.debug("event assembly, checkEventsMap, size={}", assembledEventsMap.size());
-        Collection<Person> events = assembledEventsMap.values().stream().filter(x -> eventExpirationControl.isExpired(x))
-                .map(AssembledCaseEvent::getInitiator)
+        Collection<Integer> events = assembledEventsMap.values().stream().filter(x -> eventExpirationControl.isExpired(x))
+                .map(x -> computeHash(x.getInitiator(), x.getCaseObject().getId()))
                 .distinct()
                 .collect(Collectors.toList());
 
@@ -89,18 +121,20 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
         }
     }
 
-    private void publishAndClear(Person person) {
-        AssembledCaseEvent personsEvent = assembledEventsMap.get(person);
-        logger.debug("publishAndClear event, case:{}, person:{}", personsEvent.getCaseObject().defGUID(), person.getDisplayName());
+    private void publishAndClear(int hash) {
+        AssembledCaseEvent personsEvent = assembledEventsMap.get(hash);
+        logger.debug("publishAndClear event, case:{}, person:{}", personsEvent.getCaseObject().defGUID(),
+                personsEvent.getInitiator().getDisplayName());
         publisherService.publishEvent(personsEvent);
-        clear(person);
+        assembledEventsMap.remove(hash);
     }
 
-    private void clear(Person person) {
-        assembledEventsMap.remove(person);
+    private int computeHash(Person person, long caseId) {
+        int result = 37;
+        return  31 * result + ((int) (person.getId() >>> 32) * (int) caseId);
     }
 
-    private final Map<Person, AssembledCaseEvent> assembledEventsMap = new ConcurrentHashMap<>();
+    private final Map<Integer, AssembledCaseEvent> assembledEventsMap = new ConcurrentHashMap<>();
     //Time interval for events checking, MS
     private final static long SCHEDULE_TIME = 5000;
 

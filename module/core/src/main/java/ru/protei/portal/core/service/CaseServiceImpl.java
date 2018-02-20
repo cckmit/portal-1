@@ -47,7 +47,7 @@ public class CaseServiceImpl implements CaseService {
     PersonDAO personDAO;
 
     @Autowired
-    EventPublisherService publisherService;
+    EventAssemblerService publisherService;
 
     @Autowired
     CaseAttachmentDAO caseAttachmentDAO;
