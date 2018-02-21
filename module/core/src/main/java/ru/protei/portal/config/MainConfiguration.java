@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.core.aspect.ServiceLayerInterceptor;
 import ru.protei.portal.core.controller.auth.AuthInterceptor;
@@ -32,8 +33,10 @@ import ru.protei.winter.core.utils.config.exception.ConfigException;
 
 import java.sql.SQLException;
 
-@EnableAspectJAutoProxy
+
 @Configuration
+@EnableAspectJAutoProxy
+@EnableTransactionManagement
 public class MainConfiguration {
 
     /**

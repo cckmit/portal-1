@@ -109,7 +109,13 @@ public class HelperFunc {
     }
 
     public static <K,T> List<K> keys (List<T> src, Function<T,K> keyExtractor) {
-        return src.stream().map(item -> keyExtractor.apply(item)).collect(Collectors.toList());
+        List<K> keys = new ArrayList<>(src.size());
+        for (T item : src) {
+            K key = keyExtractor.apply(item);
+            if (key != null)
+                keys.add(key);
+        }
+        return keys;
     }
 
     public static <K,T> Map<K,T> map (List<T> src, Function<T,K> keyExtractor) {

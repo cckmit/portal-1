@@ -5,6 +5,7 @@ import ru.protei.portal.config.MainConfiguration;
 import ru.protei.portal.tools.migrate.imp.ImportDataService;
 import ru.protei.portal.tools.migrate.utils.MigrateAction;
 import ru.protei.portal.tools.migrate.sybase.SybConnProvider;
+import ru.protei.portal.tools.migrate.utils.MigrateUtils;
 import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
@@ -19,6 +20,11 @@ public class MigrateMain {
     public static void main (String argv[]){
 
 //        Connection conn_src = null;
+        if (MigrateUtils.getMail2LoginRules().isEmpty()) {
+            System.out.println("no migrate accounts config! (" + MigrateUtils.MIGRATE_ACCOUNTS_FIX_JSON +")");
+        }
+
+
         AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(
                 CoreConfigurationContext.class, JdbcConfigurationContext.class, MainConfiguration.class
         );

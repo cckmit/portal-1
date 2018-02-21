@@ -8,6 +8,7 @@ import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.tools.migrate.utils.BatchProcess;
 import ru.protei.portal.tools.migrate.utils.MigrateAction;
+import ru.protei.portal.tools.migrate.utils.MigrateUtils;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.sql.Connection;
@@ -48,17 +49,6 @@ public class MigrateClientLoginAction implements MigrateAction {
     }
 
 
-    private final static String DEF_CLIENT_ROLE_CODE="CRM_CLIENT";
-
-    private final static En_Privilege [] DEF_COMPANY_CLIENT_PRIV = {
-            En_Privilege.ISSUE_CREATE,
-            En_Privilege.ISSUE_EDIT,
-            En_Privilege.ISSUE_VIEW,
-            En_Privilege.COMMON_PROFILE_EDIT,
-            En_Privilege.COMMON_PROFILE_VIEW
-    };
-
-    private final static En_Scope DEF_COMPANY_CLIENT_SCOPE = En_Scope.COMPANY;
 
     @Override
     public void migrate(Connection sourceConnection) throws SQLException {
@@ -66,11 +56,7 @@ public class MigrateClientLoginAction implements MigrateAction {
         final Map<String, UserLogin> rtUnique = new HashMap<>();
         userLoginDAO.getAll().forEach(u -> rtUnique.put(u.getUlogin().toLowerCase(), u));
 
-        UserRole crmClientRole = userRoleDAO.ensureExists(DEF_CLIENT_ROLE_CODE, DEF_COMPANY_CLIENT_SCOPE, DEF_COMPANY_CLIENT_PRIV);
-
-        Set<UserRole> roles = new HashSet<>();
-        roles.add(crmClientRole);
-
+        Set<UserRole> roles = MigrateUtils.defaultCustomerRoleSet(userRoleDAO);
 
         BatchProcess<UserLogin> processBatch = new BaseBatchProcess<UserLogin>() {
             @Override

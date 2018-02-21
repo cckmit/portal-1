@@ -40,13 +40,7 @@ public class MigrateCompaniesAction implements MigrateAction {
     @Override
     public void migrate(Connection sourceConnection) throws SQLException {
 
-        if (dao.get(-1L) == null) {
-            Company no_comp_rec = new Company();
-            no_comp_rec.setCreated(new Date());
-            no_comp_rec.setCname("no_company");
-            no_comp_rec.setId(-1L);
-            dao.persist(no_comp_rec);
-        }
+        MigrateUtils.checkNoCompanyRecord(dao);
 
         MigrateUtils.runDefaultMigration (sourceConnection, TM_COMPANY_ITEM_CODE, "\"resource\".tm_company",
                 migrateDAO, dao,
@@ -67,16 +61,7 @@ public class MigrateCompaniesAction implements MigrateAction {
                     return x;
                 });
 
-
-        /**
-         * hardcoded import, I have no idea how to do it better
-         */
-        if (!companyGroupHomeDAO.checkIfHome(1L)) {
-            CompanyHomeGroupItem protei_entry = new CompanyHomeGroupItem();
-            protei_entry.setCompanyId(1L);
-            protei_entry.setExternalCode("protei");
-            companyGroupHomeDAO.persist(protei_entry);
-        }
         //company_group_home
+        MigrateUtils.defaultProteiHomeSetup(companyGroupHomeDAO);
     }
 }

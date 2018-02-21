@@ -34,6 +34,6 @@ public class ExternalPersonInfo {
 
 
     public String contactField (String key) {
-        return contactData.get(key) != null ? contactData.get(key).value : null;
+        return contactData == null ? null : contactData.get(key) != null ? contactData.get(key).value : null;
     }
 }

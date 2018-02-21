@@ -2,11 +2,10 @@ package ru.protei.portal.tools.migrate.utils;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import protei.sql.Tm_SqlHelper;
-import ru.protei.portal.core.model.dao.MigrationEntryDAO;
-import ru.protei.portal.core.model.dao.PortalBaseDAO;
-import ru.protei.portal.core.model.dao.UserRoleDAO;
+import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.tools.migrate.HelperService;
@@ -15,8 +14,12 @@ import ru.protei.portal.tools.migrate.parts.BatchInsertTask;
 import ru.protei.portal.tools.migrate.parts.BatchUpdateTask;
 import ru.protei.portal.tools.migrate.parts.ContactInfoMigrationFacade;
 import ru.protei.portal.tools.migrate.struct.*;
+import ru.protei.winter.core.utils.config.ConfigUtils;
+
+import java.io.File;
 
 import java.net.URL;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -29,9 +32,10 @@ import static ru.protei.portal.core.model.helper.HelperFunc.nvlt;
  * Created by michael on 01.04.16.
  */
 public class MigrateUtils {
-    private static Logger logger = Logger.getLogger(MigrateUtils.class);
+    private static Logger logger = LoggerFactory.getLogger(MigrateUtils.class);
 
-    public static final String MIGRATE_ACCOUNTS_FIX_JSON = "/migrate_accounts_fix.json";
+    public static final String MIGRATE_ACCOUNTS_FIX_JSON = "migrate_accounts_fix.json";
+
     private static Map<String,String> _mail2loginRules;
 
     public static Long MICHAEL_Z_ID = 18L;
@@ -54,6 +58,18 @@ public class MigrateUtils {
 
     public final static En_Scope DEF_EMPL_SCOPE = En_Scope.ROLE;
 
+    private final static String DEF_CLIENT_ROLE_CODE="CRM_CLIENT";
+
+    private final static En_Privilege [] DEF_COMPANY_CLIENT_PRIV = {
+            En_Privilege.ISSUE_CREATE,
+            En_Privilege.ISSUE_EDIT,
+            En_Privilege.ISSUE_VIEW,
+            En_Privilege.COMMON_PROFILE_EDIT,
+            En_Privilege.COMMON_PROFILE_VIEW
+    };
+
+    private final static En_Scope DEF_COMPANY_CLIENT_SCOPE = En_Scope.COMPANY;
+
 
 
     private static ObjectMapper jsonMapper;
@@ -66,6 +82,28 @@ public class MigrateUtils {
                 .withCreatorVisibility(JsonAutoDetect.Visibility.NONE));
     }
 
+    public static void checkNoCompanyRecord (CompanyDAO companyDAO) {
+        if (companyDAO.get(-1L) == null) {
+            Company no_comp_rec = new Company();
+            no_comp_rec.setCreated(new Date());
+            no_comp_rec.setCname("no_company");
+            no_comp_rec.setId(-1L);
+            companyDAO.persist(no_comp_rec);
+        }
+    }
+
+    public static void defaultProteiHomeSetup (CompanyGroupHomeDAO homeDAO) {
+        /**
+         * hardcoded import, I have no idea how to do it better
+         */
+        if (!homeDAO.checkIfHome(1L)) {
+            CompanyHomeGroupItem protei_entry = new CompanyHomeGroupItem();
+            protei_entry.setCompanyId(1L);
+            protei_entry.setExternalCode("protei");
+            homeDAO.persist(protei_entry);
+        }
+    }
+
     public static Set<UserRole> defaultEmployeeRoleSet (UserRoleDAO userRoleDAO) {
         UserRole employeeRole  = userRoleDAO.ensureExists(EMPLOYEE_ROLE_CODE, DEF_EMPL_SCOPE, DEF_EMPL_PRIV);
         Set<UserRole> employeeRoleSet = new HashSet<>();
@@ -73,6 +111,44 @@ public class MigrateUtils {
         return employeeRoleSet;
     }
 
+    public static Set<UserRole> defaultCustomerRoleSet (UserRoleDAO userRoleDAO) {
+        UserRole crmClientRole = userRoleDAO.ensureExists(DEF_CLIENT_ROLE_CODE, DEF_COMPANY_CLIENT_SCOPE, DEF_COMPANY_CLIENT_PRIV);
+
+        Set<UserRole> roles = new HashSet<>();
+        roles.add(crmClientRole);
+        return roles;
+    }
+
+    public static Person createCompanyCommonPerson (Company company) {
+        //
+        Person p = new Person();
+        p.setCompanyId(company.getId());
+        p.setCreated(new Date());
+        p.setCreator("migration-task");
+        p.setDeleted(false);
+        p.setDisplayName(company.getCname());
+        p.setDisplayShortName("Общий контакт");
+        p.setFirstName("Общий контакт компании");
+        p.setLastName("-");
+        p.setSecondName("-");
+        p.setGender(En_Gender.UNDEFINED);
+        p.setInfo("Создан в процессе миграции данных");
+        p.setPosition("-");
+        return p;
+    }
+
+    public static UserLogin externalCustomerLogin (ExtContactLogin extLogin, Set<UserRole> roleSet) {
+        UserLogin ulogin = new UserLogin();
+        ulogin.setUlogin(extLogin.getLogin());
+        ulogin.setAdminStateId(En_AdminState.UNLOCKED.getId());
+        ulogin.setAuthTypeId(En_AuthType.LOCAL.getId());
+        ulogin.setCreated(new Date());
+        ulogin.setInfo(extLogin.getInfo());
+        ulogin.setPersonId(extLogin.getPersonId());
+        ulogin.setUpass(extLogin.getPassword());
+        ulogin.setRoles(roleSet);
+        return ulogin;
+    }
 
     public static UserLogin externalEmployeeLogin (ExternalPersonInfo info, Set<UserRole> roleSet) {
         UserLogin ulogin = new UserLogin();
@@ -85,6 +161,7 @@ public class MigrateUtils {
         ulogin.setRoles(roleSet);
         return ulogin;
     }
+
 
     public static Company fromExternalCompany(ExternalCompany imp) {
         Company x = new Company();
@@ -124,6 +201,10 @@ public class MigrateUtils {
         person.setPosition(impPerson.getPosition());
         person.setSecondName(person.getSecondName());
         person.setCompanyId(impPerson.getCompanyId());
+
+        if (person.getCompanyId() == null) {
+            person.setCompanyId(-1L);
+        }
 
         ContactInfoMigrationFacade contactInfoFacade = new ContactInfoMigrationFacade (person.getContactInfo());
 
@@ -191,9 +272,11 @@ public class MigrateUtils {
     }
 
 
-    private static String createLogin(ExternalPersonExtension ext) {
-        String email = ext.getEmail();
+    public static String createLogin(ExternalPersonExtension ext) {
+        return createLoginForEmail(ext.getEmail());
+    }
 
+    public static String createLoginForEmail(String email) {
         if (email == null || email.indexOf('@') <= 0)
             return null;
 
@@ -210,10 +293,20 @@ public class MigrateUtils {
             _mail2loginRules = new HashMap<>();
 
             try {
-                URL url = MigrateUtils.class.getResource(MIGRATE_ACCOUNTS_FIX_JSON);
-                logger.debug("use accounts map config: " + url);
-                for (Mail2Login entry : jsonMapper.readValue(url, Mail2Login[].class)) {
-                    _mail2loginRules.put(entry.mail, entry.uid);
+                URL url = ConfigUtils.locateFileOrDirectory(MIGRATE_ACCOUNTS_FIX_JSON);
+                if (url == null)
+                    return _mail2loginRules;
+
+                File file = url == null ? null : Paths.get(url.toURI()).toFile();
+
+                if (file.exists()) {
+                    logger.debug("use accounts map config: " + file.getAbsolutePath());
+                    for (Mail2Login entry : jsonMapper.readValue(file, Mail2Login[].class)) {
+                        _mail2loginRules.put(entry.mail, entry.uid);
+                    }
+                }
+                else {
+                    logger.error("file {} doesn't exists", file.getAbsolutePath());
                 }
             }
             catch (Throwable e) {

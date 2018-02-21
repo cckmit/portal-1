@@ -1,5 +1,6 @@
 package ru.protei.portal.tools.migrate;
 
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.tools.migrate.struct.ExternalPerson;
 
 import java.text.SimpleDateFormat;
@@ -22,7 +23,20 @@ public class HelperService {
     }
 
     public static String generateDisplayName(String firstName, String lastName, String secondName) {
-        return lastName + " " + firstName + (secondName != null ? (" " + secondName) : "");
+        StringBuilder x = new StringBuilder();
+        if (HelperFunc.isNotEmpty(lastName)) {
+            x.append(lastName).append(" ");
+        }
+
+        if (HelperFunc.isNotEmpty(firstName)) {
+            x.append(firstName).append(" ");
+        }
+
+        if (HelperFunc.isNotEmpty(secondName)) {
+            x.append(secondName);
+        }
+
+        return x.toString();
     }
 
     public static String generateDisplayShortName (ExternalPerson person) {
@@ -31,13 +45,19 @@ public class HelperService {
 
     public static String generateDisplayShortName(String firstName, String lastName, String secondName) {
         StringBuilder x = new StringBuilder();
-        if (lastName != null) {
+        if (HelperFunc.isNotEmpty(lastName)) {
             x.append(lastName).append(" ");
         }
 
-        if (firstName)
+        if (HelperFunc.isNotEmpty(firstName)) {
+            x.append(firstName.charAt(0)).append(".");
+        }
 
-        return (firstName.charAt (0) + ".") + (secondName != null ? secondName.charAt(0) + "." : "");
+        if (HelperFunc.isNotEmpty(secondName)) {
+            x.append(secondName.charAt(0)).append(".");
+        }
+
+        return x.toString();
     }
 
 }

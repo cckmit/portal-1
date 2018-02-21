@@ -27,7 +27,6 @@ import java.util.regex.Pattern;
  */
 public class MigratePersonAction implements MigrateAction {
 
-    public static final String EMPLOYEE_ROLE_CODE = "employee";
     private static Logger logger = LoggerFactory.getLogger(MigratePersonAction.class);
 
     public static final String TM_PERSON_ITEM_CODE = "Tm_Person";
@@ -53,11 +52,8 @@ public class MigratePersonAction implements MigrateAction {
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
 
-    Map<String, String> email2loginMap;
-
 
     public MigratePersonAction() {
-        this.email2loginMap = MigrateUtils.getMail2LoginRules();
     }
 
     @Override
@@ -110,31 +106,10 @@ public class MigratePersonAction implements MigrateAction {
 
     private String createLogin(Person p) {
         String email = p == null ? null : new PlainContactInfoFacade(p.getContactInfo()).getEmail();
-        if (email == null || email.indexOf('@') <= 0)
-            return null;
-
-        String special = email2loginMap.get(email);
-
-        if (special != null)
-            return special;
-
-        return email.substring(0, email.indexOf('@'));
+        return email != null ? MigrateUtils.createLoginForEmail(email) : null;
     }
 
 
-    private final static En_Privilege [] DEF_EMPL_PRIV = {
-            En_Privilege.ISSUE_CREATE,
-            En_Privilege.ISSUE_EDIT,
-            En_Privilege.ISSUE_EXPORT,
-            En_Privilege.ISSUE_VIEW,
-            En_Privilege.ISSUE_REPORT,
-            En_Privilege.DASHBOARD_VIEW,
-            En_Privilege.CONTACT_VIEW,
-            En_Privilege.COMMON_PROFILE_VIEW,
-            En_Privilege.COMPANY_VIEW
-    };
-
-    private final static En_Scope DEF_EMPL_SCOPE = En_Scope.ROLE;
 
     @Override
     public void migrate(Connection sourceConnection) throws SQLException {
@@ -145,10 +120,7 @@ public class MigratePersonAction implements MigrateAction {
             public void afterInsert(List<Person> insertedEntries) {
                 List<UserLogin> loginBatch = new ArrayList<>();
 
-                UserRole employeeRole = userRoleDAO.ensureExists(EMPLOYEE_ROLE_CODE, DEF_EMPL_SCOPE, DEF_EMPL_PRIV);
-
-                Set<UserRole> roles = new HashSet<>();
-                roles.add(employeeRole);
+                Set<UserRole> roles = MigrateUtils.defaultEmployeeRoleSet(userRoleDAO);
 
                 for (Person p : insertedEntries) {
                     if (groupHomeDAO.checkIfHome(p.getCompanyId()) && !p.isDeleted() && !p.isFired()) {
