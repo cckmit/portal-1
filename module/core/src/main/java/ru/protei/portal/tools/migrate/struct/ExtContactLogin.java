@@ -87,6 +87,6 @@ public class ExtContactLogin implements LegacyEntity {
     }
 
     public String translatedLogin () {
-        return this.login + "@crm.protei.ru";
+        return this.login.contains("@") ? this.login : (this.login+ "@crm.protei.ru");
     }
 }

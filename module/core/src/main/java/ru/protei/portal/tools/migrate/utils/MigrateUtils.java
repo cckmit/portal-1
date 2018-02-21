@@ -139,7 +139,7 @@ public class MigrateUtils {
 
     public static UserLogin externalCustomerLogin (ExtContactLogin extLogin, Set<UserRole> roleSet) {
         UserLogin ulogin = new UserLogin();
-        ulogin.setUlogin(extLogin.getLogin());
+        ulogin.setUlogin(extLogin.translatedLogin());
         ulogin.setAdminStateId(En_AdminState.UNLOCKED.getId());
         ulogin.setAuthTypeId(En_AuthType.LOCAL.getId());
         ulogin.setCreated(new Date());
@@ -162,6 +162,25 @@ public class MigrateUtils {
         return ulogin;
     }
 
+    public static DevUnit fromExternalProject (ExternalDevProject project) {
+        DevUnit u = new DevUnit(En_DevUnitType.COMPONENT.getId(), project.getName(), project.getInfo());
+        u.setCreated(project.getCreated());
+        u.setCreatorId(null);
+        u.setLastUpdate(project.getLastUpdate());
+        u.setStateId(En_DevUnitState.ACTIVE.getId());
+        u.setOldId(project.getId());
+        return u;
+    }
+
+    public static DevUnit fromExternalProduct (ExternalProduct product) {
+        DevUnit u = new DevUnit(En_DevUnitType.PRODUCT.getId(), product.getName(), product.getInfo());
+        u.setCreated(product.getCreated());
+        u.setCreatorId(null);
+        u.setLastUpdate(product.getLastUpdate());
+        u.setStateId(En_DevUnitState.ACTIVE.getId());
+        u.setOldId(product.getId());
+        return u;
+    }
 
     public static Company fromExternalCompany(ExternalCompany imp) {
         Company x = new Company();

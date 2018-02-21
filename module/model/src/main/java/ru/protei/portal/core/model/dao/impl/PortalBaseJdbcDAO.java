@@ -2,6 +2,7 @@ package ru.protei.portal.core.model.dao.impl;
 
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.PortalBaseDAO;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.DataQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.utils.TypeConverters;
@@ -153,6 +154,18 @@ public abstract class PortalBaseJdbcDAO<T> extends JdbcBaseDAO<Long,T> implement
     public <K> List<K> listColumnValue(String column, Class<K> type) {
         String query = "select " + column + " from " + getTableName();
         return jdbcTemplate.queryForList(query, type);
+    }
+
+    @Override
+    public <K> List<K> listColumnValue(String column, Class<K> type, String condition, Object... args) {
+
+        if (HelperFunc.isNotEmpty(condition)) {
+            String query = "select " + column + " from " + getTableName();
+            query += " where " + condition;
+            return jdbcTemplate.queryForList(query, args, type);
+        }
+        else
+            return listColumnValue (column, type);
     }
 
     public Long getIdValue (T obj) {

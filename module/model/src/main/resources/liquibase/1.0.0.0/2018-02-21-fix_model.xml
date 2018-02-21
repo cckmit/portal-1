@@ -4,8 +4,11 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
-    <changeSet author="michael" id="2018-02-21-fix-model-bugs">
-        <dropNotNullConstraint tableName="person" columnName="firstname" />
-        <dropNotNullConstraint tableName="person" columnName="lastname" />
+    <changeSet author="michael" id="2018-02-21-fix-model-bugs" failOnError="false">
+        <dropNotNullConstraint tableName="person" columnName="firstname" columnDataType="varchar(128)" />
+        <dropNotNullConstraint tableName="person" columnName="lastname" columnDataType="varchar(128)" />
+
+        <dropForeignKeyConstraint baseTableName="Dev_Unit" constraintName="FK_DEVUNIT_CREATOR" />
+        <dropNotNullConstraint tableName="Dev_Unit" columnName="CREATOR_ID" columnDataType="bigint"/>
     </changeSet>
 </databaseChangeLog>

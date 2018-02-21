@@ -3,15 +3,12 @@ package ru.protei.portal.tools.migrate.imp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.core.model.dao.*;
+import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
-import ru.protei.portal.tools.migrate.struct.ExtContactLogin;
-import ru.protei.portal.tools.migrate.struct.ExternalCompany;
-import ru.protei.portal.tools.migrate.struct.ExternalPerson;
-import ru.protei.portal.tools.migrate.struct.ExternalPersonInfo;
+import ru.protei.portal.tools.migrate.struct.*;
 import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
 import ru.protei.portal.tools.migrate.utils.MigrateUtils;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
@@ -43,6 +40,9 @@ public class ImportDataServiceImpl implements ImportDataService {
     UserLoginDAO userLoginDAO;
 
     @Autowired
+    DevUnitDAO devUnitDAO;
+
+    @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
 
@@ -59,7 +59,6 @@ public class ImportDataServiceImpl implements ImportDataService {
         logger.debug("Full import mode run");
 
         InitialImport initialImport = new InitialImport();
-
         MigrateUtils.checkNoCompanyRecord(companyDAO);
 
         int _count = legacySystemDAO.runActionRTE(transaction -> initialImport.importCompanies(transaction));
@@ -72,6 +71,12 @@ public class ImportDataServiceImpl implements ImportDataService {
 
         _count = legacySystemDAO.runActionRTE(transaction -> initialImport.importClientLogins(transaction));
         logger.debug("handled {} external logins", _count);
+
+        _count = legacySystemDAO.runActionRTE(transaction -> initialImport.importProjects(transaction));
+        logger.debug("handled {} projects", _count);
+
+        _count = legacySystemDAO.runActionRTE(transaction -> initialImport.importProduct(transaction));
+        logger.debug("handled {} products", _count);
     }
 
 
@@ -80,20 +85,52 @@ public class ImportDataServiceImpl implements ImportDataService {
         private Set<UserRole> employeeRoleSet;
         private Set<UserRole> customerRoleSet;
 
-        private Set<String> exlogins;
+        private Set<String> usedLogins;
 
         public InitialImport() {
             employeeRoleSet = MigrateUtils.defaultEmployeeRoleSet(userRoleDAO);
             customerRoleSet = MigrateUtils.defaultCustomerRoleSet(userRoleDAO);
 
-            exlogins = new HashSet<>(userLoginDAO.listColumnValue("ulogin", String.class));
+            usedLogins = new HashSet<>(userLoginDAO.listColumnValue("ulogin", String.class));
+        }
+
+        public int importProjects (LegacySystemDAO.LegacyDAO_Transaction transaction) throws SQLException {
+            List<ExternalDevProject> projects = transaction.dao(ExternalDevProject.class).list();
+            Set<Long> imported = new HashSet<>(
+                    devUnitDAO.listColumnValue("old_id", Long.class, "UTYPE_ID=?", En_DevUnitType.COMPONENT.getId())
+            );
+            projects.removeIf(p -> imported.contains(p.getId()));
+
+            HelperFunc.splitBatch(projects, 100,
+                    list -> devUnitDAO.persistBatch(
+                            list.stream().map(p -> MigrateUtils.fromExternalProject(p)).collect(Collectors.toList())
+                    )
+            );
+
+            return projects.size();
+        }
+
+        public int importProduct (LegacySystemDAO.LegacyDAO_Transaction transaction) throws SQLException {
+            List<ExternalProduct> products = transaction.dao(ExternalProduct.class).list();
+            Set<Long> imported = new HashSet<>(
+                    devUnitDAO.listColumnValue("old_id", Long.class, "UTYPE_ID=?", En_DevUnitType.PRODUCT.getId())
+            );
+            products.removeIf(p -> imported.contains(p.getId()));
+
+            HelperFunc.splitBatch(products, 100,
+                    list -> devUnitDAO.persistBatch(
+                            list.stream().map(p -> MigrateUtils.fromExternalProduct(p)).collect(Collectors.toList())
+                    )
+            );
+
+            return products.size();
         }
 
 
         public int importClientLogins (LegacySystemDAO.LegacyDAO_Transaction transaction) throws SQLException {
             // import client and companies logins
             List<ExtContactLogin> src = transaction.dao(ExtContactLogin.class).list();
-            src.removeIf(x -> exlogins.contains(x.translatedLogin()));
+            src.removeIf(x -> usedLogins.contains(x.translatedLogin()));
             HelperFunc.splitBatch(src, 100, importList -> doImportClientLogins(importList));
 
             return src.size();
@@ -116,24 +153,30 @@ public class ImportDataServiceImpl implements ImportDataService {
             List<UserLogin> customerLogins = new ArrayList<>();
 
             extLogins.forEach(extLogin -> {
-                UserLogin ulogin = MigrateUtils.externalCustomerLogin(extLogin, customerRoleSet);
-
-                if (extLogin.getPersonId() == null) {
-                    // common company account
-                    Person common = companyCommonAccounts.computeIfAbsent(extLogin.getCompanyId(), id-> {
-                        Company company = companyMap.get(id);
-                        Person commonPerson = personDAO.findContactByName(id, company.getCname());
-                        if (commonPerson == null) {
-                            commonPerson = MigrateUtils.createCompanyCommonPerson(company);
-                            personDAO.persist(commonPerson);
-                        }
-                        return commonPerson;
-                    });
-
-                    extLogin.setPersonId(common.getId());
+                if (usedLogins.contains(extLogin.translatedLogin())) {
+                    logger.error("duplicated customer login {}", extLogin.translatedLogin());
                 }
+                else {
+                    UserLogin ulogin = MigrateUtils.externalCustomerLogin(extLogin, customerRoleSet);
 
-                customerLogins.add(ulogin);
+                    if (ulogin.getPersonId() == null) {
+                        // common company account
+                        Person common = companyCommonAccounts.computeIfAbsent(extLogin.getCompanyId(), id -> {
+                            Company company = companyMap.get(id);
+                            Person commonPerson = personDAO.findContactByName(id, company.getCname());
+                            if (commonPerson == null) {
+                                commonPerson = MigrateUtils.createCompanyCommonPerson(company);
+                                personDAO.persist(commonPerson);
+                            }
+                            return commonPerson;
+                        });
+
+                        ulogin.setPersonId(common.getId());
+                    }
+
+                    usedLogins.add(ulogin.getUlogin());
+                    customerLogins.add(ulogin);
+                }
             });
 
 
@@ -170,7 +213,7 @@ public class ImportDataServiceImpl implements ImportDataService {
                     if (info.proteiExtension != null && !info.proteiExtension.isFired()) {
                         UserLogin ulogin = MigrateUtils.externalEmployeeLogin(info, employeeRoleSet);
 
-                        if (exlogins.contains(ulogin.getUlogin())) {
+                        if (usedLogins.contains(ulogin.getUlogin())) {
                             logger.error("login {} is used! duplicated data for {}", ulogin.getUlogin(), impPerson);
                             continue;
                         }
@@ -178,7 +221,7 @@ public class ImportDataServiceImpl implements ImportDataService {
                         if (ulogin.getUlogin() == null) {
                             logger.error("unable to create user login for person {}", info.getDisplayName());
                         } else {
-                            exlogins.add(ulogin.getUlogin());
+                            usedLogins.add(ulogin.getUlogin());
                             loginBatch.add(ulogin);
                         }
                     }
