@@ -31,4 +31,9 @@ public class ExternalPersonInfo {
     public String getDisplayName () {
         return HelperService.generateDisplayName(personData);
     }
+
+
+    public String contactField (String key) {
+        return contactData.get(key) != null ? contactData.get(key).value : null;
+    }
 }

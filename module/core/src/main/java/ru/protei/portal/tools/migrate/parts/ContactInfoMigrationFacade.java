@@ -2,6 +2,7 @@ package ru.protei.portal.tools.migrate.parts;
 
 import ru.protei.portal.core.model.dict.En_ContactDataAccess;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.ContactInfo;
 
 /**
@@ -73,7 +74,7 @@ public class ContactInfoMigrationFacade {
     }
 
     public void addItem (En_ContactItemType type, En_ContactDataAccess access, String v, String comment) {
-        if (v != null) {
+        if (HelperFunc.isNotEmpty(v)) {
             info.addItem(type,access).modify(v, comment);
         }
     }

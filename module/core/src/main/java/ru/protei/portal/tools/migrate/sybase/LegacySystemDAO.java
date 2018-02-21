@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import protei.sql.Tm_SqlHelper;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.tools.migrate.Const;
-import ru.protei.portal.tools.migrate.HelperService;
 import ru.protei.portal.tools.migrate.struct.*;
 
 import javax.annotation.PostConstruct;
@@ -15,7 +15,6 @@ import java.net.Inet4Address;
 import java.net.UnknownHostException;
 import java.sql.*;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Created by turik on 08.09.16.
@@ -150,13 +149,13 @@ public class LegacySystemDAO {
         }
 
         ExternalPersonInfoCollector fromPersonSet (List<ExternalPerson> personList) {
-            this.personMap = HelperService.map(personList, person -> person.getId());
+            this.personMap = HelperFunc.map(personList, person -> person.getId());
             this.keys = new ArrayList<>(personMap.keySet());
             return this;
         }
 
         ExternalPersonInfoCollector fromExtSet (List<ExternalPersonExtension> extensionList) {
-            this.extensionMap = HelperService.map(extensionList, ext -> ext.getPersonId());
+            this.extensionMap = HelperFunc.map(extensionList, ext -> ext.getPersonId());
             this.keys = new ArrayList<>(extensionMap.keySet());
             return this;
         }
@@ -169,11 +168,11 @@ public class LegacySystemDAO {
 
         public Map<Long, ExternalPersonInfo> asMap (LegacyDAO_Transaction transaction) throws SQLException {
             if (personMap == null) {
-                personMap = HelperService.map(transaction.dao(ExternalPerson.class).list(keys), person -> person.getId());
+                personMap = HelperFunc.map(transaction.dao(ExternalPerson.class).list(keys), person -> person.getId());
             }
 
             if (extensionMap == null) {
-                extensionMap = HelperService.map(transaction.dao(ExternalPersonExtension.class).list(keys), ext -> ext.getPersonId());
+                extensionMap = HelperFunc.map(transaction.dao(ExternalPersonExtension.class).list(keys), ext -> ext.getPersonId());
             }
 
             final Map<Long, ExternalPersonInfo> tmp = new HashMap<>();

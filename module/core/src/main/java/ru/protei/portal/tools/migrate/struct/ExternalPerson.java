@@ -55,7 +55,7 @@ public class ExternalPerson implements LegacyEntity {
         setPassportInfo (person.getPassportInfo () == null ? "" : person.getPassportInfo ());
         setInfo (person.getInfo () == null ? "" : person.getInfo ());
         setBirthday (person.getBirthday ());
-        setSex (person.getGender() != null ? person.getGender().equals (En_Gender.MALE) ? new Integer (1) : person.getGender().equals (En_Gender.FEMALE) ? new Integer (2) : null : null);
+        setSex (person.getGender() != null ? person.getGender().getLegacyId() : null);
         setDeleted (person.isDeleted ());
         setDepartment(departmentName);
         setPosition(positionName);
@@ -67,7 +67,7 @@ public class ExternalPerson implements LegacyEntity {
         setSecondName (person.getSecondName () == null ? "" : person.getSecondName ());
         setInfo (person.getInfo () == null ? "" : person.getInfo ());
         setBirthday (person.getBirthday ());
-        setSex (person.getGender() != null ? person.getGender().equals (En_Gender.MALE) ? new Integer (1) : person.getGender().equals (En_Gender.FEMALE) ? new Integer (2) : null : null);
+        setSex (person.getGender() != null ? person.getGender().getLegacyId() : null);
         setDeleted (person.isDeleted ());
         setDepartment(person.getDepartment());
         setPosition(person.getPosition());
@@ -238,6 +238,11 @@ public class ExternalPerson implements LegacyEntity {
     @Column(name="strPosition")
     public void setPosition(String position) {
         this.position = position;
+    }
+
+
+    public En_Gender getGender () {
+        return En_Gender.fromLegacyId (sex);
     }
 
     @Override

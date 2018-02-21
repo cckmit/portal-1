@@ -267,4 +267,10 @@ public class ExternalPersonExtension implements LegacyEntity {
     public void setEducationDocument(String educationDocument) {
         this.educationDocument = educationDocument;
     }
+
+
+
+    public boolean isFired () {
+        return this.isRetired != null && this.isRetired.booleanValue();
+    }
 }

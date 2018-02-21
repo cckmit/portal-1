@@ -27,6 +27,7 @@ import ru.protei.portal.tools.migrate.imp.ImportDataService;
 import ru.protei.portal.tools.migrate.imp.ImportDataServiceImpl;
 import ru.protei.portal.tools.migrate.sybase.SybConnProvider;
 import ru.protei.portal.tools.migrate.sybase.SybConnWrapperImpl;
+import ru.protei.portal.tools.migrate.utils.MigrateUtils;
 import ru.protei.winter.core.utils.config.exception.ConfigException;
 
 import java.sql.SQLException;
@@ -64,6 +65,7 @@ public class MainConfiguration {
                 config.data().legacySysConfig().getLogin(),
                 config.data().legacySysConfig().getPasswd());
     }
+
 
     @Bean
     public LegacySystemDAO getLegacySystemDAO () { return new LegacySystemDAO(); }
