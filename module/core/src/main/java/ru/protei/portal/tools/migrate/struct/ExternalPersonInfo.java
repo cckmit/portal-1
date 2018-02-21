@@ -1,5 +1,7 @@
 package ru.protei.portal.tools.migrate.struct;
 
+import ru.protei.portal.tools.migrate.HelperService;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,5 +26,9 @@ public class ExternalPersonInfo {
 
     public Long getPersonId () {
         return this.personData.getId();
+    }
+
+    public String getDisplayName () {
+        return HelperService.generateDisplayName(personData);
     }
 }

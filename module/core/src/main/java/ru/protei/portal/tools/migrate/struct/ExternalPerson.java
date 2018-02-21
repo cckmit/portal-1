@@ -19,6 +19,7 @@ import java.util.Date;
 public class ExternalPerson implements LegacyEntity {
 
     private Long id;
+    private Date created;
     private String creator = Const.CREATOR_FIELD_VALUE;
     private String client = Const.CLIENT_FIELD_VALUE;
     private String clientIP = Const.CREATOR_HOST_VALUE;
@@ -71,6 +72,20 @@ public class ExternalPerson implements LegacyEntity {
         setDepartment(person.getDepartment());
         setPosition(person.getPosition());
         return this;
+    }
+
+    public String getDisplayName () {
+        return HelperService.generateDisplayName(this);
+    }
+
+    @Column(name = "dtCreation")
+    public Date getCreated() {
+        return created;
+    }
+
+    @Column(name = "dtCreation")
+    public void setCreated(Date created) {
+        this.created = created;
     }
 
     @PrimaryKey

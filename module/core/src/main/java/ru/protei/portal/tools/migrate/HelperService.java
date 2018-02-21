@@ -25,6 +25,10 @@ public class HelperService {
         return lastName + " " + firstName + (secondName != null ? (" " + secondName) : "");
     }
 
+    public static String generateDisplayShortName (ExternalPerson person) {
+        return generateDisplayShortName(person.getFirstName(), person.getLastName(), person.getSecondName());
+    }
+
     public static String generateDisplayShortName(String firstName, String lastName, String secondName) {
         return lastName + " " + (firstName.charAt (0) + ".") + (secondName != null ? secondName.charAt(0) + "." : "");
     }
