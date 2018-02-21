@@ -1,7 +1,7 @@
 path:
 .idea
 target
-
+depl.sh
 
 syntax: glob
 

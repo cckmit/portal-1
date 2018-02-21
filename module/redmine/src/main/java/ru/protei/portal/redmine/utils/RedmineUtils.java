@@ -11,7 +11,7 @@ import java.util.Date;
 
 public class RedmineUtils {
     public static String parseDateToAfter(Date date) {
-        return AFTER + dateTimeFormatter.format(date);
+        return AFTER + dateTimeFormatter.format(date) + "Z";
     }
 
     public static String parseDateToBefore(Date date) {
@@ -50,6 +50,6 @@ public class RedmineUtils {
     private static final String RANGE_SEPARATOR = "|";
 
 
-    private static final Format dateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+    private static final Format dateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
     private static final Format dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
 }

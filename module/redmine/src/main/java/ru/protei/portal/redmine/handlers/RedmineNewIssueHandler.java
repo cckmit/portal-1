@@ -5,16 +5,18 @@ import com.taskadapter.redmineapi.bean.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.redmine.api.RedmineIssueType;
 import ru.protei.portal.redmine.service.CommonService;
 import ru.protei.portal.redmine.utils.RedmineUtils;
 
-public final class RedmineNewIssueHandler implements RedmineEventHandler {
+public class RedmineNewIssueHandler implements RedmineEventHandler {
     @Autowired
     private CaseObjectDAO caseObjectDAO;
 
@@ -29,7 +31,6 @@ public final class RedmineNewIssueHandler implements RedmineEventHandler {
     @Override
     public void handle(User user, Issue issue, long companyId) {
         CaseObject object = createCaseObject(user, issue, companyId);
-        handleComments(issue, RedmineUtils.parseUser(user), object);
     }
 
     private CaseObject createCaseObject(User user, Issue issue, long companyId) {
@@ -50,15 +51,16 @@ public final class RedmineNewIssueHandler implements RedmineEventHandler {
         obj.setLocal(0);
         obj.setInitiatorCompanyId(companyId);
         obj.setStateId(En_CaseState.CREATED.getId());
-        caseObjectDAO.saveOrUpdate(obj);
+        long caseObjId = caseObjectDAO.insertCase(obj);
+        handleComments(issue, contactPerson, obj, caseObjId);
         return obj;
     }
 
-    private void handleComments(Issue issue, Person person, CaseObject obj) {
+    private void handleComments(Issue issue, Person person, CaseObject obj, long caseObjId) {
         issue.getJournals()
                 .stream()
                 .map(RedmineUtils::parseJournal)
-                .map(x -> commonService.processStoreComment(issue, person, obj, obj.getId(), x))
+                .map(x -> commonService.processStoreComment(issue, person, obj, caseObjId, x))
                 .forEach(caseCommentDAO::saveOrUpdate);
     }
 }

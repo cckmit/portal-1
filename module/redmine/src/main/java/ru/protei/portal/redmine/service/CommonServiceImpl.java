@@ -106,7 +106,6 @@ public class CommonServiceImpl implements CommonService {
 
         if (HelperFunc.isEmpty(user.getMail())) {
             logger.debug("no contact data provided for request {}", issue.getId());
-            return null;
         }
 
         if (HelperFunc.isNotEmpty(user.getMail())) {
@@ -115,9 +114,9 @@ public class CommonServiceImpl implements CommonService {
         }
 
 
-        if (person == null && HelperFunc.isNotEmpty(issue.getAssigneeName())) {
+        if (person == null && HelperFunc.isNotEmpty(user.getFullName())) {
             // try find by name
-            person = personDAO.findContactByName(companyId, issue.getAssigneeName());
+            person = personDAO.findContactByName(companyId, user.getFullName());
         }
 
 
