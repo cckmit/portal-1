@@ -63,8 +63,8 @@ public class ImportDataServiceImpl implements ImportDataService {
         int _count = legacySystemDAO.runActionRTE(transaction -> initialImport.importCompanies(transaction));
         logger.debug("handled {} companies", _count);
 
-/*        _count = legacySystemDAO.runActionRTE(transaction -> fullImport.importEmployes(transaction));
-        logger.debug("handled {} persons", _count);*/
+        _count = legacySystemDAO.runActionRTE(transaction -> initialImport.importPersons(transaction));
+        logger.debug("handled {} persons", _count);
     }
 
 
@@ -97,7 +97,7 @@ public class ImportDataServiceImpl implements ImportDataService {
 
                 for (ExternalPerson impPerson : impListSrc) {
                     ExternalPersonInfo info = infoMap.get(impPerson.getId());
-                    Person person = MigrateUtils.fromExternalPerson(info);
+                    personBatch.add (MigrateUtils.fromExternalPerson(info));
 
                     if (info.proteiExtension != null) {
                         UserLogin ulogin = MigrateUtils.externalEmployeeLogin(info, employeeRoleSet);

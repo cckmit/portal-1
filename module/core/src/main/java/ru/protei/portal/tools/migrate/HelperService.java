@@ -30,7 +30,14 @@ public class HelperService {
     }
 
     public static String generateDisplayShortName(String firstName, String lastName, String secondName) {
-        return lastName + " " + (firstName.charAt (0) + ".") + (secondName != null ? secondName.charAt(0) + "." : "");
+        StringBuilder x = new StringBuilder();
+        if (lastName != null) {
+            x.append(lastName).append(" ");
+        }
+
+        if (firstName)
+
+        return (firstName.charAt (0) + ".") + (secondName != null ? secondName.charAt(0) + "." : "");
     }
 
 }
