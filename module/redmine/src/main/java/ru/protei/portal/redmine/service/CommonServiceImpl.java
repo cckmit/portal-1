@@ -50,8 +50,13 @@ public class CommonServiceImpl implements CommonService {
 
     private final static Logger logger = LoggerFactory.getLogger(RedmineNewIssueHandler.class);
 
+    public void processAttachment() {
+
+    }
+
     @Override
     public CaseComment processStoreComment(Issue issue, Person contactPerson, CaseObject obj, Long caseObjId, CaseComment comment) {
+        comment.setCaseId(caseObjId);
         caseCommentDAO.persist(comment);
         final Collection<Attachment> addedAttachments = new ArrayList<>(issue.getAttachments().size());
         if (issue.getAttachments() != null && !issue.getAttachments().isEmpty()) {

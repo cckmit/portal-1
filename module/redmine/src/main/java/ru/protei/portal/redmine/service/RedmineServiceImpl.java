@@ -24,10 +24,10 @@ public class RedmineServiceImpl implements RedmineService {
         return requestIssues(ids);
     }
 
-    /*private List<Issue> getIssuesUpdatedAfterDate(Date date, String projectName) throws RedmineException {
+    private List<Issue> getIssuesUpdatedAfterDate(String date, String projectName) throws RedmineException {
         List<Integer> ids = prepareIssuesIds("updated_on", date, projectName);
         return requestIssues(ids);
-    }*/
+    }
 
     private Issue getIssueById(int id) {
         try {
@@ -80,9 +80,10 @@ public class RedmineServiceImpl implements RedmineService {
 
     @Override
     public void checkForIssuesUpdates(RedmineEndpoint endpoint) {
-        /*Date updated = endpoint.getLastUpdatedOnDate();
+        String updated = RedmineUtils.parseDateToAfter(endpoint.getLastUpdatedOnDate());
         String projectId = endpoint.getProjectId();
         Long companyId = endpoint.getCompanyId();
+        manager = RedmineManagerFactory.createWithApiKey(endpoint.getServerAddress(), endpoint.getApiKey());
         try {
             List<Issue> issues = getIssuesUpdatedAfterDate(updated, projectId);
             if (!issues.isEmpty()) {
@@ -96,7 +97,7 @@ public class RedmineServiceImpl implements RedmineService {
             //something
             logger.debug("Failed when getting issues updated after date {} from project {}", updated, projectId);
             re.printStackTrace();
-        }*/
+        }
     }
 
     @Override

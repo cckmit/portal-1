@@ -29,6 +29,10 @@ public enum RedmineIssueType {
         return redmineIssueType;
     }
 
+    public En_CaseType getCaseIssueType() {
+        return caseIssueType;
+    }
+
     public static RedmineIssueType find (En_CaseType type) {
         for (RedmineIssueType it : RedmineIssueType.values())
             if (it.caseIssueType == type)
@@ -37,11 +41,11 @@ public enum RedmineIssueType {
         return RedmineIssueType.ERROR;
     }
 
-    public static RedmineIssueType find (String redmineIssueType) {
+    public static En_CaseType find (String redmineIssueType) {
         for (RedmineIssueType it : RedmineIssueType.values())
             if (it.redmineIssueType.equals(redmineIssueType))
-                return it;
+                return it.caseIssueType;
 
-        return RedmineIssueType.ERROR;
+        return RedmineIssueType.ERROR.caseIssueType;
     }
 }
