@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.core.model.dao.*;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dict.En_MigrationEntry;
 import ru.protei.portal.core.model.ent.*;
@@ -50,6 +51,9 @@ public class ImportDataServiceImpl implements ImportDataService {
     @Autowired
     MigrationEntryDAO migrationEntryDAO;
 
+    @Autowired
+    CaseObjectDAO caseObjectDAO;
+
 
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
@@ -94,6 +98,30 @@ public class ImportDataServiceImpl implements ImportDataService {
 
             return true;
         });
+    }
+
+
+    class CaseImport {
+
+        public CaseImport() {
+        }
+
+        public int importCrmSupportSessions (LegacyDAO_Transaction transaction) throws SQLException {
+            Long startId = migrationEntryDAO.getOrCreateEntry(En_MigrationEntry.CRM_SUPPORT_SESSION).getLastId();
+            if (startId == null)
+                startId = 0L;
+
+            List<ExtCrmSession> src = transaction.dao(ExtCrmSession.class).list("nCategoryId=? and nID > ?");
+            MigrationEntry migrationEntry = migrationEntryDAO.updateEntry(En_MigrationEntry.CRM_SUPPORT_SESSION, HelperFunc.last(src));
+
+            Set<Long> exKeys = new HashSet<>(caseObjectDAO.listColumnValue("CASENO", Long.class, "case_type=? and CASENO > ? and CASENO <= ?",
+                    En_CaseType.CRM_SUPPORT.getId(), startId, migrationEntry.getLastId()));
+
+            src.removeIf(e -> exKeys.contains(e.getId()));
+
+
+
+        }
     }
 
 

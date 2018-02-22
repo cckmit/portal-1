@@ -253,10 +253,17 @@ public class MigrateUtils {
                 .max(Comparator.comparing(ExternalPerson::getId)).orElse(null);
     }
 
-    public static ExternalPerson lastCustomer(List<ExternalPerson> src) {
+    public static ExternalPerson lastCustomer (List<ExternalPerson> src) {
         return src.stream().filter(e -> e.getCompanyId() != MigrateUtils.DEFAULT_PROTEI_ID)
                 .max(Comparator.comparing(ExternalPerson::getId)).orElse(null);
     }
+
+
+    public static CaseObject fromSupportSession (ExtCrmSession ext, Map<Long,Long> stateMap, Map<Long,DevUnit> prodMap) {
+        CaseObject object = new CaseObject();
+
+    }
+
 
     public static Object nvl (Object...arr) {
         for (Object v : arr) {

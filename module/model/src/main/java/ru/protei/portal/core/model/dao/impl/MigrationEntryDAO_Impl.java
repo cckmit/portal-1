@@ -35,15 +35,16 @@ public class MigrationEntryDAO_Impl extends PortalBaseJdbcDAO<MigrationEntry> im
 
 
     @Override
-    public void updateEntry(En_MigrationEntry entryType, LegacyEntity entity) {
+    public MigrationEntry updateEntry(En_MigrationEntry entryType, LegacyEntity entity) {
+        MigrationEntry migrationEntry = getOrCreateEntry(entryType);
         if (entity != null) {
-            MigrationEntry migrationEntry = getOrCreateEntry(entryType);
-
             if (migrationEntry.getLastId() == null || migrationEntry.getLastId() < entity.getId())
                 migrationEntry.setLastId(entity.getId());
 
             migrationEntry.setLastUpdate(new Date());
             saveOrUpdate(migrationEntry);
         }
+
+        return migrationEntry;
     }
 }
