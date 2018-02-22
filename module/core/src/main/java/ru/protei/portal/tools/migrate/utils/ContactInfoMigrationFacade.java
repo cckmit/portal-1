@@ -1,4 +1,4 @@
-package ru.protei.portal.tools.migrate.parts;
+package ru.protei.portal.tools.migrate.utils;
 
 import ru.protei.portal.core.model.dict.En_ContactDataAccess;
 import ru.protei.portal.core.model.dict.En_ContactItemType;

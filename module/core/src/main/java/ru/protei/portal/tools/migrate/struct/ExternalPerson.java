@@ -4,12 +4,11 @@ import protei.sql.Column;
 import protei.sql.PrimaryKey;
 import protei.sql.Table;
 import ru.protei.portal.core.model.dict.En_Gender;
+import ru.protei.portal.core.model.ent.LegacyEntity;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.tools.migrate.Const;
 import ru.protei.portal.tools.migrate.HelperService;
 
-import java.net.Inet4Address;
-import java.net.UnknownHostException;
 import java.util.Date;
 
 /**

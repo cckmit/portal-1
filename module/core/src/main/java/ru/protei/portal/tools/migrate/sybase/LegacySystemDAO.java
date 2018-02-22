@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import protei.sql.Tm_SqlHelper;
 import ru.protei.portal.core.model.dao.PersonDAO;
+import ru.protei.portal.core.model.ent.LegacyEntity;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.tools.migrate.Const;
@@ -17,7 +18,7 @@ import java.sql.*;
 import java.util.*;
 
 /**
- * Created by turik on 08.09.16.
+ *
  */
 public class LegacySystemDAO {
 
@@ -206,40 +207,6 @@ public class LegacySystemDAO {
         }
     }
 
-
-
-    public interface LegacyEntityDAO<T extends LegacyEntity> {
-        boolean exists (Long id) throws SQLException;
-        boolean exists (String cond, Object...args) throws SQLException;
-
-        T get (Long id) throws SQLException;
-        T get (String cond, Object...args) throws SQLException;
-
-        <K> List<T> list (Collection<K> keys) throws SQLException;
-        <K> List<T> list (String column, Collection<K> values) throws SQLException;
-        List<T> list (String cond, Object...args) throws SQLException;
-        List<T> list () throws SQLException;
-
-        T insert (T entity) throws SQLException;
-        T update (T entity) throws SQLException;
-
-        default T store (T entity) throws SQLException {
-            return (exists(entity.getId())) ? update(entity) : insert(entity);
-        }
-
-        T delete (T entity) throws SQLException;
-        void delete (Long id) throws SQLException;
-    }
-
-    public interface LegacyDAO_Transaction extends AutoCloseable {
-        <T extends LegacyEntity> LegacyEntityDAO<T> dao(Class<T> type) throws SQLException;
-        void commit () throws SQLException;
-        void close();
-    }
-
-    public interface LegacyDAO_Action<R> {
-        R doAction (LegacyDAO_Transaction transaction) throws SQLException;
-    }
 
     static class LegacyDAO_Transaction_impl implements LegacyDAO_Transaction {
         private Connection connection;

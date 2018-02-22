@@ -5,6 +5,7 @@ import protei.sql.Tm_SqlHelper;
 import protei.sql.query.Tm_BaseQueryCmd;
 import protei.sql.utils.Tm_QueryExecutor;
 import ru.protei.portal.core.model.dao.MigrationEntryDAO;
+import ru.protei.portal.core.model.dict.En_MigrationEntry;
 import ru.protei.portal.core.model.ent.MigrationEntry;
 import ru.protei.portal.tools.migrate.utils.BatchProcess;
 import ru.protei.portal.tools.migrate.utils.MigrateAdapter;
@@ -83,7 +84,7 @@ public class BatchUpdateTask {
 
         records_handled = 0;
 
-        MigrationEntry migrationEntry = migrationDAO.getOrCreateEntry(this.stateEntryId);
+        MigrationEntry migrationEntry = migrationDAO.getOrCreateEntry(En_MigrationEntry.find(this.stateEntryId));
 
         queryCmd.addParam(migrationEntry.getLastId());
         queryCmd.addParam(migrationEntry.getLastUpdate());

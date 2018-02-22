@@ -6,9 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
+import ru.protei.portal.core.model.dict.En_MigrationEntry;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.tools.migrate.struct.*;
+import ru.protei.portal.tools.migrate.sybase.LegacyDAO_Transaction;
 import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
 import ru.protei.portal.tools.migrate.utils.MigrateUtils;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
@@ -43,6 +45,13 @@ public class ImportDataServiceImpl implements ImportDataService {
     DevUnitDAO devUnitDAO;
 
     @Autowired
+    CompanySubscriptionDAO companySubscriptionDAO;
+
+    @Autowired
+    MigrationEntryDAO migrationEntryDAO;
+
+
+    @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
 
@@ -61,22 +70,30 @@ public class ImportDataServiceImpl implements ImportDataService {
         InitialImport initialImport = new InitialImport();
         MigrateUtils.checkNoCompanyRecord(companyDAO);
 
-        int _count = legacySystemDAO.runActionRTE(transaction -> initialImport.importCompanies(transaction));
-        logger.debug("handled {} companies", _count);
+        legacySystemDAO.runActionRTE(transaction -> {
 
-        MigrateUtils.defaultProteiHomeSetup(companyGroupHomeDAO);
+            int _count = initialImport.importCompanies(transaction);
+            logger.debug("handled {} companies", _count);
 
-        _count = legacySystemDAO.runActionRTE(transaction -> initialImport.importPersons(transaction));
-        logger.debug("handled {} persons", _count);
+            MigrateUtils.defaultProteiHomeSetup(companyGroupHomeDAO);
 
-        _count = legacySystemDAO.runActionRTE(transaction -> initialImport.importClientLogins(transaction));
-        logger.debug("handled {} external logins", _count);
+            _count = initialImport.importPersons(transaction);
+            logger.debug("handled {} persons", _count);
 
-        _count = legacySystemDAO.runActionRTE(transaction -> initialImport.importProjects(transaction));
-        logger.debug("handled {} projects", _count);
+            _count = initialImport.importClientLogins(transaction);
+            logger.debug("handled {} external logins", _count);
 
-        _count = legacySystemDAO.runActionRTE(transaction -> initialImport.importProduct(transaction));
-        logger.debug("handled {} products", _count);
+            _count = initialImport.importProjects(transaction);
+            logger.debug("handled {} projects", _count);
+
+            _count = initialImport.importProduct(transaction);
+            logger.debug("handled {} products", _count);
+
+            _count = initialImport.importCompanySubscriptions(transaction);
+            logger.debug("handled {} emails-subscriptions", _count);
+
+            return true;
+        });
     }
 
 
@@ -88,14 +105,38 @@ public class ImportDataServiceImpl implements ImportDataService {
         private Set<String> usedLogins;
 
         public InitialImport() {
-            employeeRoleSet = MigrateUtils.defaultEmployeeRoleSet(userRoleDAO);
-            customerRoleSet = MigrateUtils.defaultCustomerRoleSet(userRoleDAO);
+            employeeRoleSet = userRoleDAO.getDefaultEmployeeRoles();
+            customerRoleSet = userRoleDAO.getDefaultCustomerRoles();
 
             usedLogins = new HashSet<>(userLoginDAO.listColumnValue("ulogin", String.class));
         }
 
-        public int importProjects (LegacySystemDAO.LegacyDAO_Transaction transaction) throws SQLException {
+
+        public int importCompanySubscriptions (LegacyDAO_Transaction transaction) throws SQLException {
+            List<ExtCompanyEmailSubs> src = transaction.dao(ExtCompanyEmailSubs.class)
+                    .list("strSystem=?", "CRM");
+
+            migrationEntryDAO.updateEntry(En_MigrationEntry.COMPANY_EMAIL_SUBS, HelperFunc.last(src));
+
+            Map<String, CompanySubscription> exMap = HelperFunc.map(companySubscriptionDAO.getAll(),
+                    e -> e.uniqueKey());
+
+            Set<Long> companyKeys = new HashSet<>(companyDAO.keys());
+
+            src.removeIf(e -> exMap.containsKey(e.uniqueKey()) || !companyKeys.contains(e.getCompanyId()));
+
+            List<CompanySubscription> target = src.stream().map(e -> MigrateUtils.fromExternalSubscription(e)).collect(Collectors.toList());
+
+            HelperFunc.splitBatch(target, 100, list-> companySubscriptionDAO.persistBatch(list));
+
+            return src.size();
+        }
+
+        public int importProjects (LegacyDAO_Transaction transaction) throws SQLException {
             List<ExternalDevProject> projects = transaction.dao(ExternalDevProject.class).list();
+
+            migrationEntryDAO.updateEntry(En_MigrationEntry.PROJECT, HelperFunc.last(projects));
+
             Set<Long> imported = new HashSet<>(
                     devUnitDAO.listColumnValue("old_id", Long.class, "UTYPE_ID=?", En_DevUnitType.COMPONENT.getId())
             );
@@ -110,8 +151,11 @@ public class ImportDataServiceImpl implements ImportDataService {
             return projects.size();
         }
 
-        public int importProduct (LegacySystemDAO.LegacyDAO_Transaction transaction) throws SQLException {
+        public int importProduct (LegacyDAO_Transaction transaction) throws SQLException {
             List<ExternalProduct> products = transaction.dao(ExternalProduct.class).list();
+
+            migrationEntryDAO.updateEntry(En_MigrationEntry.PRODUCT, HelperFunc.last(products));
+
             Set<Long> imported = new HashSet<>(
                     devUnitDAO.listColumnValue("old_id", Long.class, "UTYPE_ID=?", En_DevUnitType.PRODUCT.getId())
             );
@@ -127,9 +171,12 @@ public class ImportDataServiceImpl implements ImportDataService {
         }
 
 
-        public int importClientLogins (LegacySystemDAO.LegacyDAO_Transaction transaction) throws SQLException {
+        public int importClientLogins (LegacyDAO_Transaction transaction) throws SQLException {
             // import client and companies logins
             List<ExtContactLogin> src = transaction.dao(ExtContactLogin.class).list();
+
+            migrationEntryDAO.updateEntry(En_MigrationEntry.CLIENT_LOGIN, HelperFunc.last(src));
+
             src.removeIf(x -> usedLogins.contains(x.translatedLogin()));
             HelperFunc.splitBatch(src, 100, importList -> doImportClientLogins(importList));
 
@@ -187,8 +234,12 @@ public class ImportDataServiceImpl implements ImportDataService {
         }
 
 
-        public int importPersons (LegacySystemDAO.LegacyDAO_Transaction transaction) throws SQLException {
+        public int importPersons (LegacyDAO_Transaction transaction) throws SQLException {
             List<ExternalPerson> src = transaction.dao(ExternalPerson.class).list();
+
+            migrationEntryDAO.updateEntry(En_MigrationEntry.PERSON_EMPLOYEE, MigrateUtils.lastEmployee(src));
+            migrationEntryDAO.updateEntry(En_MigrationEntry.PERSON_CUSTOMER, MigrateUtils.lastCustomer(src));
+
             Set<Long> existingIds = new HashSet<>(personDAO.keys());
             src.removeIf(imp -> existingIds.contains(imp.getId()));
 
@@ -197,7 +248,7 @@ public class ImportDataServiceImpl implements ImportDataService {
             return src.size();
         }
 
-        private void doImportPersonBatch (LegacySystemDAO.LegacyDAO_Transaction transaction, List<ExternalPerson> impListSrc) {
+        private void doImportPersonBatch (LegacyDAO_Transaction transaction, List<ExternalPerson> impListSrc) {
             try {
                 Map<Long, ExternalPersonInfo> infoMap = legacySystemDAO.personCollector(impListSrc).asMap(transaction);
 
@@ -242,9 +293,12 @@ public class ImportDataServiceImpl implements ImportDataService {
         }
 
 
-        public int importCompanies(LegacySystemDAO.LegacyDAO_Transaction transaction) throws SQLException {
+        public int importCompanies(LegacyDAO_Transaction transaction) throws SQLException {
 
             List<ExternalCompany> src = transaction.dao(ExternalCompany.class).list();
+
+            migrationEntryDAO.updateEntry(En_MigrationEntry.COMPANY, HelperFunc.last(src));
+
             Set<Long> compIdSet = new HashSet<>(companyDAO.keys());
             // excludes already existing
             src.removeIf(imp -> compIdSet.contains(imp.getId()));

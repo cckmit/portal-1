@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.tools.migrate.sybase.LegacyDAO_Transaction;
 import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
 import ru.protei.portal.tools.migrate.struct.ExternalCompany;
 import ru.protei.portal.tools.migrate.struct.ExternalPerson;
@@ -49,7 +50,7 @@ public class ActiveExportDataService implements ExportDataService {
         }
     }
 
-    private ExternalCompany _doExportCompany(Company company, LegacySystemDAO.LegacyDAO_Transaction transaction) throws SQLException {
+    private ExternalCompany _doExportCompany(Company company, LegacyDAO_Transaction transaction) throws SQLException {
         ExternalCompany externalCompany = transaction.dao(ExternalCompany.class).get(company.getOldId());
 
         if (externalCompany != null) {
@@ -64,7 +65,7 @@ public class ActiveExportDataService implements ExportDataService {
         return externalCompany;
     }
 
-    private ExternalCompany createNewExternalCompany(Company company, LegacySystemDAO.LegacyDAO_Transaction transaction) throws SQLException {
+    private ExternalCompany createNewExternalCompany(Company company, LegacyDAO_Transaction transaction) throws SQLException {
         ExternalCompany externalCompany;
         logger.debug("export company, new record for {}", company);
 

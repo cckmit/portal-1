@@ -1,8 +1,11 @@
 package ru.protei.portal.core.model.helper;
 
+import ru.protei.winter.core.utils.enums.HasId;
+
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -107,6 +110,19 @@ public class HelperFunc {
     public static boolean equalsNotNull (Number a, Number b) {
         return a != null && b != null && a.equals(b);
     }
+
+    public static <E> E last (List<E> list) {
+        return list.isEmpty() ? null : list.get(list.size()-1);
+    }
+
+    public static <E extends Enum<E>> E find(Class<E> enumClass, E def, Predicate<E> predicate) {
+        for (E e : enumClass.getEnumConstants())
+            if (predicate.test(e))
+                return e;
+
+        return def;
+    }
+
 
     public static <K,T> List<K> keys (List<T> src, Function<T,K> keyExtractor) {
         List<K> keys = new ArrayList<>(src.size());

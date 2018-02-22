@@ -3,6 +3,7 @@ package ru.protei.portal.tools.migrate.struct;
 import protei.sql.Column;
 import protei.sql.PrimaryKey;
 import protei.sql.Table;
+import ru.protei.portal.core.model.ent.LegacyEntity;
 
 @Table(name = "\"resource\".Tm_CompanyLogin")
 public class ExtContactLogin implements LegacyEntity {

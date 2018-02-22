@@ -12,7 +12,6 @@ import ru.protei.portal.tools.migrate.HelperService;
 import ru.protei.portal.tools.migrate.parts.BaseBatchProcess;
 import ru.protei.portal.tools.migrate.parts.BatchInsertTask;
 import ru.protei.portal.tools.migrate.parts.BatchUpdateTask;
-import ru.protei.portal.tools.migrate.parts.ContactInfoMigrationFacade;
 import ru.protei.portal.tools.migrate.struct.*;
 import ru.protei.winter.core.utils.config.ConfigUtils;
 
@@ -36,40 +35,12 @@ public class MigrateUtils {
 
     public static final String MIGRATE_ACCOUNTS_FIX_JSON = "migrate_accounts_fix.json";
 
+    public static final Long DEFAULT_PROTEI_ID = 1L;
+
     private static Map<String,String> _mail2loginRules;
 
     public static Long MICHAEL_Z_ID = 18L;
     public static Long DEFAULT_CREATOR_ID = MICHAEL_Z_ID;
-
-
-    public static final String EMPLOYEE_ROLE_CODE = "employee";
-
-    public final static En_Privilege[] DEF_EMPL_PRIV = {
-            En_Privilege.ISSUE_CREATE,
-            En_Privilege.ISSUE_EDIT,
-            En_Privilege.ISSUE_EXPORT,
-            En_Privilege.ISSUE_VIEW,
-            En_Privilege.ISSUE_REPORT,
-            En_Privilege.DASHBOARD_VIEW,
-            En_Privilege.CONTACT_VIEW,
-            En_Privilege.COMMON_PROFILE_VIEW,
-            En_Privilege.COMPANY_VIEW
-    };
-
-    public final static En_Scope DEF_EMPL_SCOPE = En_Scope.ROLE;
-
-    private final static String DEF_CLIENT_ROLE_CODE="CRM_CLIENT";
-
-    private final static En_Privilege [] DEF_COMPANY_CLIENT_PRIV = {
-            En_Privilege.ISSUE_CREATE,
-            En_Privilege.ISSUE_EDIT,
-            En_Privilege.ISSUE_VIEW,
-            En_Privilege.COMMON_PROFILE_EDIT,
-            En_Privilege.COMMON_PROFILE_VIEW
-    };
-
-    private final static En_Scope DEF_COMPANY_CLIENT_SCOPE = En_Scope.COMPANY;
-
 
 
     private static ObjectMapper jsonMapper;
@@ -104,19 +75,16 @@ public class MigrateUtils {
         }
     }
 
-    public static Set<UserRole> defaultEmployeeRoleSet (UserRoleDAO userRoleDAO) {
-        UserRole employeeRole  = userRoleDAO.ensureExists(EMPLOYEE_ROLE_CODE, DEF_EMPL_SCOPE, DEF_EMPL_PRIV);
-        Set<UserRole> employeeRoleSet = new HashSet<>();
-        employeeRoleSet.add(employeeRole);
-        return employeeRoleSet;
-    }
+    public static CompanySubscription fromExternalSubscription (ExtCompanyEmailSubs ext) {
+        CompanySubscription x = new CompanySubscription();
+        if (ext.getCompanyId() == null && ext.getEmail().contains("@protei.ru")) {
+            x.setCompanyId(DEFAULT_PROTEI_ID);
+        }
+        x.setCompanyId(ext.getCompanyId());
+        x.setEmail(ext.getEmail());
+        x.setLangCode(ext.getLangInfo());
 
-    public static Set<UserRole> defaultCustomerRoleSet (UserRoleDAO userRoleDAO) {
-        UserRole crmClientRole = userRoleDAO.ensureExists(DEF_CLIENT_ROLE_CODE, DEF_COMPANY_CLIENT_SCOPE, DEF_COMPANY_CLIENT_PRIV);
-
-        Set<UserRole> roles = new HashSet<>();
-        roles.add(crmClientRole);
-        return roles;
+        return x;
     }
 
     public static Person createCompanyCommonPerson (Company company) {
@@ -280,6 +248,15 @@ public class MigrateUtils {
     }
 
 
+    public static ExternalPerson lastEmployee (List<ExternalPerson> src) {
+        return src.stream().filter(e -> e.getCompanyId() == MigrateUtils.DEFAULT_PROTEI_ID)
+                .max(Comparator.comparing(ExternalPerson::getId)).orElse(null);
+    }
+
+    public static ExternalPerson lastCustomer(List<ExternalPerson> src) {
+        return src.stream().filter(e -> e.getCompanyId() != MigrateUtils.DEFAULT_PROTEI_ID)
+                .max(Comparator.comparing(ExternalPerson::getId)).orElse(null);
+    }
 
     public static Object nvl (Object...arr) {
         for (Object v : arr) {

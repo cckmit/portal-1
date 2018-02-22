@@ -2,6 +2,7 @@ package ru.protei.portal.tools.migrate.struct;
 
 import protei.sql.Column;
 import protei.sql.Table;
+import ru.protei.portal.core.model.ent.LegacyEntity;
 
 @Table(name = "\"Resource\".view_person_contact_data")
 public class ExtContactProperty implements LegacyEntity {

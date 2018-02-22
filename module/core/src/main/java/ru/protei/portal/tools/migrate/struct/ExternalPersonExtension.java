@@ -3,6 +3,7 @@ package ru.protei.portal.tools.migrate.struct;
 import protei.sql.Column;
 import protei.sql.PrimaryKey;
 import protei.sql.Table;
+import ru.protei.portal.core.model.ent.LegacyEntity;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 

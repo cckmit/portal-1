@@ -4,6 +4,7 @@ import protei.sql.Column;
 import protei.sql.PrimaryKey;
 import protei.sql.Table;
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.ent.LegacyEntity;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.tools.migrate.Const;

@@ -12,7 +12,6 @@ import ru.protei.winter.core.utils.collections.CollectionUtils;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -62,6 +61,11 @@ public class UserRoleDAO_impl extends PortalBaseJdbcDAO<UserRole> implements Use
                 }
             }
 
+            if (role.getScope() != scope) {
+                role.setScope(scope);
+                changes = true;
+            }
+
             if (changes)
                 merge(role);
         }
@@ -73,4 +77,53 @@ public class UserRoleDAO_impl extends PortalBaseJdbcDAO<UserRole> implements Use
     public void trimScopeToSingleValue() {
         jdbcTemplate.batchUpdate( "UPDATE user_role ur SET ur.scopes = LEFT(scopes, (LOCATE(',', scopes) - 1)) WHERE scopes LIKE '%,%'" );
     }
+
+
+    @Override
+    public Set<UserRole> getDefaultEmployeeRoles() {
+        UserRole employeeRole  = ensureExists(EMPLOYEE_ROLE_CODE, DEF_EMPLOYEE_SCOPE, DEF_EMPLOYEE_PRIV_SET);
+        Set<UserRole> employeeRoleSet = new HashSet<>();
+        employeeRoleSet.add(employeeRole);
+        return employeeRoleSet;
+    }
+
+    @Override
+    public Set<UserRole> getDefaultCustomerRoles() {
+        UserRole crmClientRole = ensureExists(DEF_CLIENT_ROLE_CODE, DEF_COMPANY_CLIENT_SCOPE, DEF_COMPANY_CLIENT_PRIV);
+
+        Set<UserRole> roles = new HashSet<>();
+        roles.add(crmClientRole);
+        return roles;
+    }
+
+
+
+    public static final String EMPLOYEE_ROLE_CODE = "employee";
+
+    public final static En_Privilege[] DEF_EMPLOYEE_PRIV_SET = {
+            En_Privilege.ISSUE_CREATE,
+            En_Privilege.ISSUE_EDIT,
+            En_Privilege.ISSUE_EXPORT,
+            En_Privilege.ISSUE_VIEW,
+            En_Privilege.ISSUE_REPORT,
+            En_Privilege.DASHBOARD_VIEW,
+            En_Privilege.CONTACT_VIEW,
+            En_Privilege.COMMON_PROFILE_VIEW,
+            En_Privilege.COMPANY_VIEW
+    };
+
+    public final static En_Scope DEF_EMPLOYEE_SCOPE = En_Scope.SYSTEM;
+
+
+    private final static String DEF_CLIENT_ROLE_CODE="CRM_CLIENT";
+
+    private final static En_Privilege [] DEF_COMPANY_CLIENT_PRIV = {
+            En_Privilege.ISSUE_CREATE,
+            En_Privilege.ISSUE_EDIT,
+            En_Privilege.ISSUE_VIEW,
+            En_Privilege.COMMON_PROFILE_EDIT,
+            En_Privilege.COMMON_PROFILE_VIEW
+    };
+
+    private final static En_Scope DEF_COMPANY_CLIENT_SCOPE = En_Scope.COMPANY;
 }

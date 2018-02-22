@@ -1,5 +1,7 @@
 package ru.protei.portal.core.model.dao;
 
+import ru.protei.portal.core.model.dict.En_MigrationEntry;
+import ru.protei.portal.core.model.ent.LegacyEntity;
 import ru.protei.portal.core.model.ent.MigrationEntry;
 
 /**
@@ -7,6 +9,8 @@ import ru.protei.portal.core.model.ent.MigrationEntry;
  */
 public interface MigrationEntryDAO extends PortalBaseDAO<MigrationEntry> {
 
-    public MigrationEntry getOrCreateEntry(String code);
+    MigrationEntry getOrCreateEntry(En_MigrationEntry entryType);
+
+    void updateEntry (En_MigrationEntry entryType, LegacyEntity entity);
 
 }
