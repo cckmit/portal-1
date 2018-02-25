@@ -299,7 +299,14 @@ public class MigrateUtils {
 
         obj.setExtId(En_CaseType.CRM_SUPPORT.makeGUID(obj.getCaseNumber()));
         obj.setTypeId(En_CaseType.CRM_SUPPORT.getId());
-        obj.setStateId(stateMap.get(ext.getStatusId()));
+
+        Long stateId = stateMap.get(ext.getStatusId());
+        if (stateId == null) {
+            logger.error("unable to map legacy state {} for crm-session {}", ext.getStatusId(), ext.getId());
+            throw new RuntimeException("unable to map legacy state " + ext.getStatusId());
+        }
+
+        obj.setStateId(stateId);
 
 //        }
 //        else {

@@ -48,7 +48,7 @@ public class ExtCrmSession implements LegacyEntity {
     private Integer deletedFlag;
 
     @Column(name = "nStatusId")
-    private int statusId;
+    private long statusId;
 
     @Column(name = "strRecipients")
     private String recipients;
@@ -166,11 +166,11 @@ public class ExtCrmSession implements LegacyEntity {
         this.deletedFlag = deletedFlag;
     }
 
-    public int getStatusId() {
+    public long getStatusId() {
         return statusId;
     }
 
-    public void setStatusId(int statusId) {
+    public void setStatusId(long statusId) {
         this.statusId = statusId;
     }
 

@@ -141,6 +141,9 @@ public class HelperFunc {
     }
 
     public static  <T> void splitBatch(List<T> full_list, int batchSize, Consumer<List<T>> consumer) {
+        if (full_list.isEmpty())
+            return;
+
         int full_batches = full_list.size()/batchSize;
 
         if (full_batches == 0)
