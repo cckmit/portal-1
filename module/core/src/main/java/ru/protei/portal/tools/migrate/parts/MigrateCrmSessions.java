@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.query.ProductQuery;
+import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
 import ru.protei.portal.tools.migrate.utils.MigrateAction;
 import ru.protei.portal.tools.migrate.utils.MigrateUtils;
 import ru.protei.winter.jdbc.JdbcDAO;
@@ -50,6 +51,8 @@ public class MigrateCrmSessions implements MigrateAction {
     @Autowired
     private MigrationEntryDAO migrateDAO;
 
+    @Autowired
+    private LegacySystemDAO legacySystemDAO;
 
     @Override
     public int orderOfExec() {
@@ -57,31 +60,6 @@ public class MigrateCrmSessions implements MigrateAction {
     }
 
 
-    private Map<Long, Long> getSession2ContactMap (Connection conn, Long minId, Long maxId) {
-
-        try (PreparedStatement p = conn.prepareStatement(
-                "select nSessionID, nContactID from CRM.Tm_ContactToSession where nSessionID between ? and ?"
-        )) {
-            p.setLong(1, minId);
-            p.setLong(2, maxId);
-
-            ResultSet rs = p.executeQuery();
-
-            Map<Long,Long> result = new HashMap<>();
-
-            while (rs.next()) {
-                result.putIfAbsent(rs.getLong("nSessionID"), rs.getLong("nContactID"));
-            }
-
-            rs.close();
-
-            return result;
-        }
-        catch (SQLException e) {
-            logger.debug("",e);
-            throw new RuntimeException(e);
-        }
-    }
 
     @Override
     public void migrate(Connection sourceConnection) throws SQLException {
@@ -89,13 +67,7 @@ public class MigrateCrmSessions implements MigrateAction {
         final Map<Long, Long> supportStatusMap = stateMatrixDAO.getOldToNewStateMap(En_CaseType.CRM_SUPPORT);
         final Map<Long, Long> marketStatusMap = stateMatrixDAO.getOldToNewStateMap(En_CaseType.CRM_MARKET);
 
-        final Map<Long, Long> productIdMap = new HashMap<>();
-
-
-
-        devUnitDAO.listByQuery (new ProductQuery("", En_SortField.id, En_SortDir.ASC))
-                .forEach(record -> productIdMap.put(record.getOldId(),record.getId()));
-
+        final Map<Long, Long> productIdMap = devUnitDAO.getProductOldToNewMap();
 
         BaseBatchProcess<CaseObject> sessionsBatchProcess = new BaseBatchProcess<CaseObject>() {
             @Override
@@ -105,7 +77,7 @@ public class MigrateCrmSessions implements MigrateAction {
 
                 logger.debug("handle crm-session contacts, min-id : {}, max-id : {}", minId, maxId);
 
-                Map<Long,Long> session2contact = getSession2ContactMap(sourceConnection, minId, maxId);
+                Map<Long,Long> session2contact = legacySystemDAO.getSession2ContactMap(minId, maxId);
 
                 logger.debug("got session2contact map, size : {}", session2contact.size());
 

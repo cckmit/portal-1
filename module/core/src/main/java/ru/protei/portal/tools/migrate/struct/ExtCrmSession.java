@@ -213,4 +213,13 @@ public class ExtCrmSession implements LegacyEntity {
     public void setLastUpdate(Date lastUpdate) {
         this.lastUpdate = lastUpdate;
     }
+
+
+    public boolean isDeleted () {
+        return this.deletedFlag != null && this.deletedFlag != 0;
+    }
+
+    public boolean isPrivate () {
+        return this.privateFlag != 0;
+    }
 }

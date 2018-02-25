@@ -48,6 +48,50 @@ public class LegacySystemDAO {
         return ourHost;
     }
 
+
+    public Map<Long, Long> getSession2ContactMap (Long minId, Long maxId) {
+        Connection connection = null;
+        try {
+            connection = connProvider.getConnection();
+            return getSession2ContactMap(connection, minId, maxId);
+        }
+        catch (SQLException e) {
+            logger.error("", e);
+            throw new RuntimeException(e);
+        }
+        finally {
+            Tm_SqlHelper.safeCloseConnection(connection, false);
+        }
+    }
+
+    private Map<Long, Long> getSession2ContactMap (Connection conn, Long minId, Long maxId) {
+
+        try (PreparedStatement p = conn.prepareStatement(
+                "select nSessionID, nContactID from CRM.Tm_ContactToSession where nSessionID between ? and ? order by nID"
+        )) {
+            p.setLong(1, minId);
+            p.setLong(2, maxId);
+
+            ResultSet rs = p.executeQuery();
+
+            Map<Long,Long> result = new HashMap<>();
+
+            while (rs.next()) {
+                result.putIfAbsent(rs.getLong("nSessionID"), rs.getLong("nContactID"));
+            }
+
+            rs.close();
+
+            return result;
+        }
+        catch (SQLException e) {
+            logger.debug("",e);
+            throw new RuntimeException(e);
+        }
+    }
+
+
+
     public void saveExternalEmployee(Person person, String departmentName, String positionName) throws SQLException, UnknownHostException {
         if (person == null || person.getId () == null) return;
         if (isExistPerson(person)) {

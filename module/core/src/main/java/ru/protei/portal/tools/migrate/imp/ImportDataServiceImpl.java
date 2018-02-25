@@ -54,6 +54,8 @@ public class ImportDataServiceImpl implements ImportDataService {
     @Autowired
     CaseObjectDAO caseObjectDAO;
 
+    @Autowired
+    CaseStateMatrixDAO caseStateMatrixDAO;
 
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
@@ -101,6 +103,21 @@ public class ImportDataServiceImpl implements ImportDataService {
     }
 
 
+    @Override
+    @Transactional
+    public void importSupportSessions() {
+        logger.debug("import CRM support sessions");
+
+        CaseImport caseImport = new CaseImport();
+
+        legacySystemDAO.runActionRTE(transaction -> {
+            int _count = caseImport.importCrmSupportSessions(transaction);
+            logger.debug("handled {} crm sessions", _count);
+
+            return true;
+        });
+    }
+
     class CaseImport {
 
         public CaseImport() {
@@ -111,16 +128,34 @@ public class ImportDataServiceImpl implements ImportDataService {
             if (startId == null)
                 startId = 0L;
 
-            List<ExtCrmSession> src = transaction.dao(ExtCrmSession.class).list("nCategoryId=? and nID > ?");
+            List<ExtCrmSession> src = transaction.dao(ExtCrmSession.class).list("nCategoryId=? and nID > ?", 8, startId);
             MigrationEntry migrationEntry = migrationEntryDAO.updateEntry(En_MigrationEntry.CRM_SUPPORT_SESSION, HelperFunc.last(src));
 
-            Set<Long> exKeys = new HashSet<>(caseObjectDAO.listColumnValue("CASENO", Long.class, "case_type=? and CASENO > ? and CASENO <= ?",
-                    En_CaseType.CRM_SUPPORT.getId(), startId, migrationEntry.getLastId()));
+            final Map<Long, Long> supportStatusMap = caseStateMatrixDAO.getOldToNewStateMap(En_CaseType.CRM_SUPPORT);
+            final Map<Long, Long> productIdMap = devUnitDAO.getProductOldToNewMap();
 
-            src.removeIf(e -> exKeys.contains(e.getId()));
+            HelperFunc.splitBatch(src, 100, procList -> {
+                List<CaseObject> caseObjects = procList.stream().map(e -> MigrateUtils.fromSupportSession(e,supportStatusMap,productIdMap)).collect(Collectors.toList());
 
+                Long minOldId = procList.get(0).getId();
+                Long maxOldId = HelperFunc.last(procList).getId();
+                Map<Long,Long> session2contact = legacySystemDAO.getSession2ContactMap(minOldId, maxOldId);
 
+                caseObjects.forEach(obj -> {
+                    Long contactId = session2contact.get(obj.getCaseNumber());
+                    if (obj.getCreatorId() == null) {
+                        obj.setCreatorId(HelperFunc.nvlt(contactId, obj.getManagerId()));
+                    }
 
+                    if (obj.getInitiatorId() == null) {
+                        obj.setInitiatorId(HelperFunc.nvlt(contactId, obj.getManagerId()));
+                    }
+                });
+
+                caseObjectDAO.persistBatch(caseObjects);
+            });
+
+            return src.size();
         }
     }
 

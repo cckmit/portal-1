@@ -31,6 +31,7 @@ public class MigrateMain {
 
         try {
             ctx.getBean(ImportDataService.class).importInitialData();
+            ctx.getBean(ImportDataService.class).importSupportSessions();
         }
         catch (Throwable e) {
             e.printStackTrace(System.err);

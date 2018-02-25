@@ -7,6 +7,8 @@ import ru.protei.portal.core.model.query.ProductDirectionQuery;
 import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 
+import java.util.Map;
+
 /**
  * Created by michael on 23.05.16.
  */
@@ -19,4 +21,7 @@ public interface DevUnitDAO extends PortalBaseDAO<DevUnit> {
 
     @SqlConditionBuilder
     SqlCondition createProductDirectionSqlCondition( ProductDirectionQuery query );
+
+
+    Map<Long, Long> getProductOldToNewMap ();
 }

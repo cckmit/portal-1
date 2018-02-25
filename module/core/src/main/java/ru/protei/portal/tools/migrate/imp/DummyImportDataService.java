@@ -7,6 +7,11 @@ public class DummyImportDataService implements ImportDataService {
     }
 
     @Override
+    public void importSupportSessions() {
+
+    }
+
+    @Override
     public void importInitialData() {
 
     }

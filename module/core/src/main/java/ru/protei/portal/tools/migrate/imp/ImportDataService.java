@@ -4,4 +4,5 @@ public interface ImportDataService {
     void importEmployes();
 
     void importInitialData();
+    void importSupportSessions ();
 }

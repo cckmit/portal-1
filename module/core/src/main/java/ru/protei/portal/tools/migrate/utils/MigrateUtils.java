@@ -5,9 +5,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import protei.sql.Tm_SqlHelper;
-import ru.protei.portal.core.model.dao.*;
+import ru.protei.portal.core.model.dao.CompanyDAO;
+import ru.protei.portal.core.model.dao.CompanyGroupHomeDAO;
+import ru.protei.portal.core.model.dao.MigrationEntryDAO;
+import ru.protei.portal.core.model.dao.PortalBaseDAO;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.tools.migrate.HelperService;
 import ru.protei.portal.tools.migrate.parts.BaseBatchProcess;
 import ru.protei.portal.tools.migrate.parts.BatchInsertTask;
@@ -16,7 +20,6 @@ import ru.protei.portal.tools.migrate.struct.*;
 import ru.protei.winter.core.utils.config.ConfigUtils;
 
 import java.io.File;
-
 import java.net.URL;
 import java.nio.file.Paths;
 import java.sql.Connection;
@@ -259,9 +262,53 @@ public class MigrateUtils {
     }
 
 
-    public static CaseObject fromSupportSession (ExtCrmSession ext, Map<Long,Long> stateMap, Map<Long,DevUnit> prodMap) {
-        CaseObject object = new CaseObject();
+    public static CaseObject fromSupportSession (ExtCrmSession ext,
+                                                 Map<Long,Long> stateMap,
+                                                 Map<Long,Long> prodMap) {
+        CaseObject obj = new CaseObject();
 
+        obj.setId(null);
+        obj.setCreated(ext.getCreated());
+        obj.setCaseNumber(ext.getId());
+        obj.setInitiatorCompanyId(ext.getCompanyId());
+        obj.setCreatorInfo(ext.getCreator());
+        obj.setCreatorIp(ext.getClientIp());
+//                    obj.setCreatorId((Long) row.get("nCreatorID"));
+
+        obj.setProductId(ext.getProductId() == null ? null : prodMap.get(ext.getProductId()));
+
+        logger.debug("import crm-session, id = {}, product = {}", obj.getCaseNumber(), obj.getProductId());
+
+        obj.setEmails(ext.getRecipients());
+
+        obj.setDeleted(ext.isDeleted());
+        obj.setPrivateCase(ext.isPrivate());
+
+        obj.setImpLevel(HelperFunc.nvlt(ext.getImportance(),3).intValue());
+        obj.setInfo(ext.getDescription());
+//                    obj.setInitiatorId((Long) row.get("nDeclarantId"));
+//                    obj.setKeywords((String)row.get("strKeyWord"));
+//                    obj.setLocal(row.get("lIsLocal") == null ? 1 : ((Number) row.get("lIsLocal")).intValue());
+        obj.setName("CRM-" + obj.getCaseNumber());
+        obj.setManagerId(ext.getManagerId());
+        obj.setModified(ext.getLastUpdate());
+
+        // (String)row.get("strExtID")
+
+//        if (((Number)MigrateUtils.nvl(row.get("nCategoryID"), 8)).intValue() == 8) {
+
+        obj.setExtId(En_CaseType.CRM_SUPPORT.makeGUID(obj.getCaseNumber()));
+        obj.setTypeId(En_CaseType.CRM_SUPPORT.getId());
+        obj.setStateId(stateMap.get(ext.getStatusId()));
+
+//        }
+//        else {
+//            obj.setExtId(En_CaseType.CRM_MARKET.makeGUID(obj.getCaseNumber()));
+//            obj.setTypeId(En_CaseType.CRM_MARKET.getId());
+//            obj.setStateId(marketStatusMap.get(row.get("nStatusID")));
+//        }
+
+        return obj;
     }
 
 

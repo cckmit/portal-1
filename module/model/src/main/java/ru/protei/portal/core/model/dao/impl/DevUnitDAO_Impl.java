@@ -9,6 +9,9 @@ import ru.protei.portal.core.model.query.ProductDirectionQuery;
 import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by michael on 23.05.16.
  */
@@ -19,6 +22,13 @@ public class DevUnitDAO_Impl extends PortalBaseJdbcDAO<DevUnit> implements DevUn
         return getByCondition("UTYPE_ID=? and UNIT_NAME=?", type.getId(), name);
     }
 
+    @Override
+    public Map<Long, Long> getProductOldToNewMap() {
+        Map<Long,Long> result = new HashMap<>();
+        getListByCondition("UTYPE_ID=? and old_id is not null", En_DevUnitType.PRODUCT.getId())
+                .forEach(unit -> result.put(unit.getOldId(), unit.getId()));
+        return result;
+    }
 
     @SqlConditionBuilder
     public SqlCondition createProductSqlCondition(ProductQuery query) {
