@@ -132,6 +132,7 @@ public class PortalConfigData {
 
 
     public static class LegacySystemConfig {
+        private final String jdbcDriver;
         private final String jdbcURL;
         private final String login;
         private final String passwd;
@@ -144,6 +145,7 @@ public class PortalConfigData {
         private final String instanceId;
 
         public LegacySystemConfig(PropertiesWrapper properties) throws ConfigException {
+            this.jdbcDriver = properties.getProperty("syb.jdbc.driver", "com.sybase.jdbc3.jdbc.SybDriver");
             this.jdbcURL = properties.getProperty("syb.jdbc.url", "jdbc:sybase:Tds:192.168.1.55:2638/PORTAL2017");
             this.login = properties.getProperty("syb.jdbc.login", "dba");
             this.passwd = properties.getProperty("syb.jdbc.pwd", "sql");
@@ -161,6 +163,12 @@ public class PortalConfigData {
                 logger.error("unable to get local ip address", e);
                 throw new ConfigException(e);
             }
+
+            logger.debug("legacy config, driver={}, url={}, export={}, import={}", jdbcDriver, jdbcURL, exportEnabled, importEnabled);
+        }
+
+        public String getJdbcDriver() {
+            return jdbcDriver;
         }
 
         public boolean isImportEnabled() {

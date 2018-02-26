@@ -63,10 +63,13 @@ public class MainConfiguration {
     }
 
     @Bean
-    public SybConnProvider getSybConnProvider (@Autowired PortalConfig config) throws SQLException {
-        return new SybConnWrapperImpl(config.data().legacySysConfig().getJdbcURL(),
+    public SybConnProvider getSybConnProvider (@Autowired PortalConfig config) throws Throwable {
+        return new SybConnWrapperImpl(
+                config.data().legacySysConfig().getJdbcDriver(),
+                config.data().legacySysConfig().getJdbcURL(),
                 config.data().legacySysConfig().getLogin(),
-                config.data().legacySysConfig().getPasswd());
+                config.data().legacySysConfig().getPasswd()
+        );
     }
 
 

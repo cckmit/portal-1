@@ -4,27 +4,30 @@ import oracle.ucp.jdbc.PoolDataSource;
 import oracle.ucp.jdbc.PoolDataSourceFactory;
 
 import java.sql.Connection;
+import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
 public class SybConnWrapperImpl implements SybConnProvider {
-
 //    private String jdbcURL;
 //    private String user;
 //    private String pwd;
     PoolDataSource pds;
 
-    public SybConnWrapperImpl(String jdbcURL, String user, String pwd) throws SQLException {
+    public SybConnWrapperImpl(String driverClass, String jdbcURL, String user, String pwd) throws Throwable {
 //        this.jdbcURL = jdbcURL;
 //        this.user = user;
 //        this.pwd = pwd;
 //
 //        DriverManager.registerDriver(new com.sybase.jdbc3.jdbc.SybDriver());
 
+        DriverManager.registerDriver((Driver) Class.forName(driverClass).newInstance());
+
         pds = PoolDataSourceFactory.getPoolDataSource();
         pds.setConnectionPoolName("legacy-db");
-        pds.setConnectionFactoryClassName("com.sybase.jdbc3.jdbc.SybDriver");
+//        pds.setConnectionFactoryClassName("com.sybase.jdbc3.jdbc.SybDriver");
+        pds.setConnectionFactoryClassName(driverClass);
         pds.setURL(jdbcURL);
         pds.setUser(user);
         pds.setPassword(pwd);
