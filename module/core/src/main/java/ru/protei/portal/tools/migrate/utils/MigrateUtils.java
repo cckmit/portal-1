@@ -277,7 +277,7 @@ public class MigrateUtils {
 
         obj.setProductId(ext.getProductId() == null ? null : prodMap.get(ext.getProductId()));
 
-        logger.debug("import crm-session, id = {}, product = {}", obj.getCaseNumber(), obj.getProductId());
+//        logger.debug("import crm-session, id = {}, product = {}", obj.getCaseNumber(), obj.getProductId());
 
         obj.setEmails(ext.getRecipients());
 
@@ -318,6 +318,27 @@ public class MigrateUtils {
         return obj;
     }
 
+    public static CaseComment fromCrmSupportComment (ExtCrmComment ext, Map<Long,Long> statusMap, Map<Long,Long> caseNumber2IdMap) {
+        CaseComment comment = new CaseComment();
+
+//        if (((Number)MigrateUtils.nvl(from.get("nCategoryID"), 8)).intValue() == 8) {
+            comment.setCaseId(caseNumber2IdMap.get(ext.getSessionId()));
+            comment.setCaseStateId(statusMap.get(ext.getStatusId()));
+//        }
+//        else {
+//            comment.setCaseId(crmMarketIdMap.get(from.get("nSessionID")));
+//            comment.setCaseStateId(marketStatusMap.get(from.get("nStatusID")));
+//        }
+
+
+        comment.setCreated(ext.getCreated());
+        comment.setClientIp(ext.getClientIp());
+        comment.setAuthorId(ext.getCreatorId());
+        comment.setText(ext.getComment());
+        comment.setOldId(ext.getId());
+
+        return comment;
+    }
 
     public static Object nvl (Object...arr) {
         for (Object v : arr) {

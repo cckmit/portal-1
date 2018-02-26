@@ -4,6 +4,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import protei.sql.Tm_SqlHelper;
+import protei.sql.query.IQuery;
+import protei.sql.query.IQueryCmd;
+import protei.sql.query.Tm_BaseQueryCmd;
+import protei.sql.utils.Tm_QueryExecutor;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.ent.LegacyEntity;
 import ru.protei.portal.core.model.ent.Person;
@@ -233,6 +237,31 @@ public class LegacySystemDAO {
         }
     }
 
+    public List<ExtCrmComment> getCrmComments (Long sessionLowId, Long sessionHighId) {
+        Connection connection = null;
+
+        ResultSet resultSet = null;
+
+        try {
+            connection = connProvider.getConnection();
+            IQuery commentQuery = new LegacyQuery("select c.* from CRM.Tm_SessionComment c" +
+                    " join CRM.Tm_Session s on (s.nID=c.nSessionID)" +
+                    " where s.nID between ? and ? and s.nCategoryID=? order by c.nID", sessionLowId, sessionHighId, 8);
+
+            resultSet = Tm_QueryExecutor.execQueryFWD(commentQuery, -1, connection);
+
+            return Tm_SqlHelper.getObjectsList(ExtCrmComment.class, resultSet);
+        }
+        catch (SQLException e) {
+            logger.error("", e);
+            throw new RuntimeException(e);
+        }
+        finally {
+            //Tm_SqlHelper.safeCloseResultSet(resultSet, false);
+            try { resultSet.getStatement().close(); resultSet.close(); } catch (Throwable e) {}
+            Tm_SqlHelper.safeCloseConnection(connection, false);
+        }
+    }
 
 
     public <R> R runAction (LegacyDAO_Action<R> action) throws SQLException {
@@ -354,6 +383,59 @@ public class LegacySystemDAO {
         public void delete(Long id) throws SQLException {
             if (id != null)
                 Tm_SqlHelper.deleteObject(connection, entityType, id);
+        }
+    }
+
+
+    public static class LegacyQuery implements IQuery {
+
+        private IQueryCmd command;
+
+        public LegacyQuery(String query, Object...args) {
+            Tm_BaseQueryCmd cmd = new Tm_BaseQueryCmd();
+            cmd.setCommad(query);
+            cmd.addParamAll(Arrays.asList(args));
+            this.command = cmd;
+        }
+
+        @Override
+        public String getName() {
+            return "legacy-query";
+        }
+
+        @Override
+        public void setName(String name) {
+
+        }
+
+        @Override
+        public int getMaxRows() {
+            return -1;
+        }
+
+        @Override
+        public void setMaxRows(int nMaxRows) {
+
+        }
+
+        @Override
+        public int getFetchSize() {
+            return 500;
+        }
+
+        @Override
+        public void setFetchSize(int nSize) {
+
+        }
+
+        @Override
+        public IQueryCmd getQueryCmd() throws SQLException {
+            return command;
+        }
+
+        @Override
+        public void reset() {
+
         }
     }
 }

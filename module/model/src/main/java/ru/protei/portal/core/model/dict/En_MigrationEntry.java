@@ -13,7 +13,8 @@ public enum En_MigrationEntry {
     COMPANY_EMAIL_SUBS ("Tm_CompanyEmailSubscription"),
     BUG ("BugTracking.Tm_Bug"),
     CRM_SUPPORT_SESSION("CRM.SUPPORT_SESSION"),
-    CRM_MARKETING_SESSION("CRM.MARKETING_SESSION");
+    CRM_MARKETING_SESSION("CRM.MARKETING_SESSION"),
+    CRM_SUPPORT_SESSION_COMMENT("CRM.SUPPORT_COMMENT");
 
 
     En_MigrationEntry (String code) {

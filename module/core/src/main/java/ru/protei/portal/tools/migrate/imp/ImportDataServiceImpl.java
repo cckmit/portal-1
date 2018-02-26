@@ -55,6 +55,9 @@ public class ImportDataServiceImpl implements ImportDataService {
     CaseObjectDAO caseObjectDAO;
 
     @Autowired
+    CaseCommentDAO caseCommentDAO;
+
+    @Autowired
     CaseStateMatrixDAO caseStateMatrixDAO;
 
     @Autowired
@@ -111,7 +114,7 @@ public class ImportDataServiceImpl implements ImportDataService {
         CaseImport caseImport = new CaseImport();
 
         legacySystemDAO.runActionRTE(transaction -> {
-            int _count = caseImport.importCrmSupportSessions(transaction);
+            int _count = caseImport.initialCrmSupportSessionsImport(transaction);
             logger.debug("handled {} crm sessions", _count);
 
             return true;
@@ -123,22 +126,26 @@ public class ImportDataServiceImpl implements ImportDataService {
         public CaseImport() {
         }
 
-        public int importCrmSupportSessions (LegacyDAO_Transaction transaction) throws SQLException {
+        public int initialCrmSupportSessionsImport(LegacyDAO_Transaction transaction) throws SQLException {
             Long startId = migrationEntryDAO.getOrCreateEntry(En_MigrationEntry.CRM_SUPPORT_SESSION).getLastId();
             if (startId == null)
                 startId = 0L;
 
             List<ExtCrmSession> src = transaction.dao(ExtCrmSession.class).list("nCategoryId=? and nID > ?", 8, startId);
-            MigrationEntry migrationEntry = migrationEntryDAO.updateEntry(En_MigrationEntry.CRM_SUPPORT_SESSION, HelperFunc.last(src));
+            migrationEntryDAO.updateEntry(En_MigrationEntry.CRM_SUPPORT_SESSION, HelperFunc.last(src));
+
 
             final Map<Long, Long> supportStatusMap = caseStateMatrixDAO.getOldToNewStateMap(En_CaseType.CRM_SUPPORT);
             final Map<Long, Long> productIdMap = devUnitDAO.getProductOldToNewMap();
 
-            HelperFunc.splitBatch(src, 100, procList -> {
+            HelperFunc.splitBatch(src, 1000, procList -> {
                 List<CaseObject> caseObjects = procList.stream().map(e -> MigrateUtils.fromSupportSession(e,supportStatusMap,productIdMap)).collect(Collectors.toList());
 
                 Long minOldId = procList.get(0).getId();
                 Long maxOldId = HelperFunc.last(procList).getId();
+
+                logger.debug("process crm-sessions, from={}, to={}", minOldId, maxOldId);
+
                 Map<Long,Long> session2contact = legacySystemDAO.getSession2ContactMap(minOldId, maxOldId);
 
                 caseObjects.forEach(obj -> {
@@ -153,6 +160,26 @@ public class ImportDataServiceImpl implements ImportDataService {
                 });
 
                 caseObjectDAO.persistBatch(caseObjects);
+
+                Map<Long, Long> caseNumber2IdMap = new HashMap<>();
+                caseObjects.forEach(c -> caseNumber2IdMap.put(c.getCaseNumber(), c.getId()));
+
+                List<ExtCrmComment> srcComments = legacySystemDAO.getCrmComments(minOldId, maxOldId);
+
+                List<CaseComment> sessionComments = srcComments.stream()
+                        .map(c->MigrateUtils.fromCrmSupportComment(c,supportStatusMap,caseNumber2IdMap))
+                        .collect(Collectors.toList());
+
+                int fullCommentsCount = sessionComments.size();
+                sessionComments.removeIf(c -> c.getCaseId() == null);
+
+                int filtered = sessionComments.size();
+
+                logger.debug("session comments, full = {}, filtered = {}", fullCommentsCount, filtered);
+
+                caseCommentDAO.persistBatch(sessionComments);
+
+                migrationEntryDAO.updateEntry(En_MigrationEntry.CRM_SUPPORT_SESSION_COMMENT, HelperFunc.last(srcComments));
             });
 
             return src.size();
