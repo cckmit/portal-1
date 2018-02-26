@@ -64,14 +64,14 @@ public class CommonServiceImpl implements CommonService {
     @Override
     public void processAttachments(Issue issue, CaseObject obj, Person contactPerson) {
         long caseObjId = obj.getId();
-        Set<String> mrEXISTOR = getExistingAttachmentsNames(obj.getId());
+        Set<String> existingAttachmentsNames = getExistingAttachmentsNames(obj.getId());
         final Collection<Attachment> addedAttachments = new ArrayList<>(issue.getAttachments().size());
         if (issue.getAttachments() != null && !issue.getAttachments().isEmpty()) {
             logger.debug("process attachments for case, id={}", caseObjId);
             List<CaseAttachment> caseAttachments = new ArrayList<>(issue.getAttachments().size());
             issue.getAttachments()
                     .stream()
-                    .filter(x -> !mrEXISTOR.contains(x.getFileName()))
+                    .filter(x -> !existingAttachmentsNames.contains(x.getFileName()))
                     .forEach(x -> {
                         Attachment a = new Attachment();
                         a.setCreated(new Date());
@@ -98,7 +98,8 @@ public class CommonServiceImpl implements CommonService {
         }
 
         eventPublisherService.publishEvent(new CaseAttachmentEvent(
-                this,
+                caseService
+                ,this,
                 obj,
                 addedAttachments,
                 null,
@@ -139,12 +140,10 @@ public class CommonServiceImpl implements CommonService {
             person = personDAO.findContactByEmail(companyId, user.getMail());
         }
 
-
         if (person == null && HelperFunc.isNotEmpty(user.getFullName())) {
             // try find by name
             person = personDAO.findContactByName(companyId, user.getFullName());
         }
-
 
         if (person != null) {
             logger.debug("contact found: {} (id={}), request {}", person.getDisplayName(), person.getId(), issue.getId());

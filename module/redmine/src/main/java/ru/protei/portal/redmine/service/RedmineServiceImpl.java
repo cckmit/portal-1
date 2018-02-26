@@ -29,7 +29,8 @@ public class RedmineServiceImpl implements RedmineService {
         return requestIssues(ids);
     }
 
-    private Issue getIssueById(int id) {
+    @Override
+    public Issue getIssueById(int id) {
         try {
             return manager.getIssueManager().getIssueById(id, Include.journals, Include.attachments, Include.watchers);
         } catch (RedmineException e) {
@@ -125,11 +126,8 @@ public class RedmineServiceImpl implements RedmineService {
             logger.debug("skip handle self-published event for {}", event.getCaseObject().getExtId());
             return;
         }
-
-        BackchannelEventHandler handler = new BackchannelUpdateIssueHandler();
-
         try {
-            handler.handle(event);
+            backchannelUpdateIssueHandler.handle(event);
             logger.debug("case-object event handled for case {}", event.getCaseObject().getExtId());
         } catch (Exception e) {
             logger.debug("error while handling event for case {}", event.getCaseObject().getExtId(), e);
@@ -153,6 +151,9 @@ public class RedmineServiceImpl implements RedmineService {
 
     @Autowired
     private RedmineUpdateIssueHandler updateHandler;
+
+    @Autowired
+    private BackchannelUpdateIssueHandler backchannelUpdateIssueHandler;
 
     private RedmineManager manager;
 

@@ -7,6 +7,8 @@ import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.model.ent.RedmineEndpoint;
 
 public interface RedmineService {
+    Issue getIssueById(int id);
+
     void checkForNewIssues(RedmineEndpoint endpoint);
 
     void checkForIssuesUpdates(RedmineEndpoint endpoint);
