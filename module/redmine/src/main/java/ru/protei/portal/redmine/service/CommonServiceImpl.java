@@ -1,5 +1,6 @@
 package ru.protei.portal.redmine.service;
 
+import com.taskadapter.redmineapi.IssueManager;
 import com.taskadapter.redmineapi.bean.Issue;
 import com.taskadapter.redmineapi.bean.User;
 import org.slf4j.Logger;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.UrlResource;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.controller.cloud.FileController;
+import ru.protei.portal.core.event.CaseAttachmentEvent;
 import ru.protei.portal.core.event.CaseCommentEvent;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_Gender;
@@ -18,10 +20,8 @@ import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.service.EventPublisherService;
 import ru.protei.portal.redmine.handlers.RedmineNewIssueHandler;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class CommonServiceImpl implements CommonService {
     @Autowired
@@ -46,49 +46,70 @@ public class CommonServiceImpl implements CommonService {
     private CaseService caseService;
 
     @Autowired
+    private AttachmentDAO attachmentDAO;
+
+    @Autowired
     private EventPublisherService eventPublisherService;
 
     private final static Logger logger = LoggerFactory.getLogger(RedmineNewIssueHandler.class);
 
-    public void processAttachment() {
+    private Set<String> getExistingAttachmentsNames(long caseObjId) {
+        return caseAttachmentDAO.getListByCaseId(caseObjId).stream()
+                .map(CaseAttachment::getAttachmentId)
+                .map(attachmentDAO::get)
+                .map(Attachment::getFileName)
+                .collect(Collectors.toSet());
+    }
 
+    @Override
+    public void processAttachments(Issue issue, CaseObject obj, Person contactPerson) {
+        long caseObjId = obj.getId();
+        Set<String> mrEXISTOR = getExistingAttachmentsNames(obj.getId());
+        final Collection<Attachment> addedAttachments = new ArrayList<>(issue.getAttachments().size());
+        if (issue.getAttachments() != null && !issue.getAttachments().isEmpty()) {
+            logger.debug("process attachments for case, id={}", caseObjId);
+            List<CaseAttachment> caseAttachments = new ArrayList<>(issue.getAttachments().size());
+            issue.getAttachments()
+                    .stream()
+                    .filter(x -> !mrEXISTOR.contains(x.getFileName()))
+                    .forEach(x -> {
+                        Attachment a = new Attachment();
+                        a.setCreated(new Date());
+                        a.setCreatorId(contactPerson.getId());
+                        a.setDataSize(x.getFileSize());
+                        a.setFileName(x.getFileName());
+                        a.setMimeType(x.getContentType());
+                        a.setLabelText(x.getDescription());
+                        addedAttachments.add(a);
+                        try {
+                            logger.debug("invoke file controller to store attachment {} (size={})", x.getFileName(), x.getFileSize());
+                            Long caId = fileController.saveAttachment(a, new UrlResource(x.getContentURL()), caseObjId);
+                            logger.debug("result from file controller = {} for {} (size={})", caId, x.getFileName(), x.getFileSize());
+
+                            if (caId != null) {
+                                caseAttachments.add(new CaseAttachment(caseObjId, a.getId()));
+                            }
+                        } catch (Exception e) {
+                            logger.debug("unable to process attachment {}", x.getFileName());
+                            logger.debug("trace", e);
+                        }
+                    });
+            caseAttachments.forEach(caseAttachmentDAO::saveOrUpdate);
+        }
+
+        eventPublisherService.publishEvent(new CaseAttachmentEvent(
+                this,
+                obj,
+                addedAttachments,
+                null,
+                contactPerson
+        ));
     }
 
     @Override
     public CaseComment processStoreComment(Issue issue, Person contactPerson, CaseObject obj, Long caseObjId, CaseComment comment) {
         comment.setCaseId(caseObjId);
         caseCommentDAO.persist(comment);
-        final Collection<Attachment> addedAttachments = new ArrayList<>(issue.getAttachments().size());
-        if (issue.getAttachments() != null && !issue.getAttachments().isEmpty()) {
-            logger.debug("process attachments for new case, id={}", caseObjId);
-
-            List<CaseAttachment> caseAttachments = new ArrayList<>(issue.getAttachments().size());
-
-            issue.getAttachments().forEach(x -> {
-                Attachment a = new Attachment();
-                a.setCreated(new Date());
-                a.setCreatorId(contactPerson.getId());
-                a.setDataSize(x.getFileSize());
-                a.setFileName(x.getFileName());
-                a.setMimeType(x.getContentType());
-                a.setLabelText(x.getDescription());
-                addedAttachments.add(a);
-                try {
-                    logger.debug("invoke file controller to store attachment {} (size={})", x.getFileName(), x.getFileSize());
-                    Long caId = fileController.saveAttachment(a, new UrlResource(x.getContentURL()), caseObjId);
-                    logger.debug("result from file controller = {} for {} (size={})", caId, x.getFileName(), x.getFileSize());
-
-                    if (caId != null) {
-                        caseAttachments.add(new CaseAttachment(caseObjId, a.getId(), comment.getId(), caId));
-                    }
-                } catch (Exception e) {
-                    logger.debug("unable to process attachment {}", x.getFileName());
-                    logger.debug("trace", e);
-                }
-            });
-
-            comment.setCaseAttachments(caseAttachments);
-        }
 
         eventPublisherService.publishEvent(new CaseCommentEvent(
                 ServiceModule.REDMINE,
@@ -97,7 +118,7 @@ public class CommonServiceImpl implements CommonService {
                 null,
                 null,
                 comment,
-                addedAttachments,
+                null,
                 contactPerson
         ));
 

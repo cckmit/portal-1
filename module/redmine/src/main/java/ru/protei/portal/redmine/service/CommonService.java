@@ -7,6 +7,8 @@ import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Person;
 
 public interface CommonService {
+    void processAttachments(Issue issue, CaseObject obj, Person contactPerson);
+
     CaseComment processStoreComment(Issue issue, Person contactPerson, CaseObject obj, Long caseObjId, CaseComment comment);
 
     Person getAssignedPerson(Long companyId, User user, Issue issue);

@@ -57,8 +57,9 @@ public final class RedmineUpdateIssueHandler implements RedmineEventHandler{
 
     @Override
     public void handle(User user, Issue issue, long companyId) {
-        CaseObject object = caseObjectDAO.getByCondition("EXT_ID=?", issue.getId());
-        compareAndUpdate(issue, object);
+        CaseObject object = caseObjectDAO.getByCondition("EXT_APP_ID=?", issue.getId());
+        object = compareAndUpdate(issue, object);
+        caseObjectDAO.saveOrUpdate(object);
     }
 
     private CaseObject compareAndUpdate(Issue issue, CaseObject object) {
@@ -74,9 +75,12 @@ public final class RedmineUpdateIssueHandler implements RedmineEventHandler{
         logger.debug("last comment was created on: {}, with id {}", latestCreated);
         logger.debug("starting adding new comments");
 
+        commonService.processAttachments(issue, object, object.getInitiator());
+
         List<CaseComment> comments = issue.getJournals()
                 .stream()
                 .filter(x -> x.getCreatedOn().compareTo(latestCreated) > 0)
+                .filter(x -> !x.getNotes().isEmpty())
                 .map(RedmineUtils::parseJournal)
                 .map(x -> commonService.processStoreComment(issue, x.getAuthor(), object, object.getId(), x))
                 .collect(Collectors.toList());

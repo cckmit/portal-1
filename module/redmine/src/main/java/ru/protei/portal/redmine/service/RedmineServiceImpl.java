@@ -56,6 +56,18 @@ public class RedmineServiceImpl implements RedmineService {
                 .collect(Collectors.toList());
     }
 
+    // If date is not updated, we increment it manually by 1 min
+    // in order to avoid querying same issues multiple times
+    private Date checkDate(Date date, Date lastDate) {
+        if (date.equals(lastDate)) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(lastDate);
+            calendar.add(Calendar.MINUTE, 1);
+            lastDate = calendar.getTime();
+        }
+        return lastDate;
+    }
+
     @Override
     public void checkForNewIssues(RedmineEndpoint endpoint) {
         String created = RedmineUtils.parseDateToAfter(endpoint.getLastCreatedOnDate());
@@ -65,11 +77,12 @@ public class RedmineServiceImpl implements RedmineService {
             List<Issue> issues = getIssuesAfterDate(created, projectId);
             if (!issues.isEmpty()) {
                 issues.stream().map(x -> new Tuple<>(getUser(x.getAuthorId()), x))
-                .forEach(x -> handler.handle(x.a, x.b, endpoint.getCompanyId()));
+                        .forEach(x -> handler.handle(x.a, x.b, endpoint.getCompanyId()));
                 issues.get(issues.size()).getCreatedOn();
             }
             issues.sort((Comparator.comparing(Issue::getCreatedOn)));
-            Date lastCreatedOn = issues.get(issues.size()).getCreatedOn();
+            Date lastCreatedOn = checkDate(endpoint.getLastCreatedOnDate(),
+                    issues.get(issues.size() - 1).getCreatedOn());
             redmineEndpointDAO.updateCreatedOn(endpoint.getCompanyId(), projectId, lastCreatedOn);
         } catch (RedmineException re) {
             //do some stuff
@@ -87,11 +100,11 @@ public class RedmineServiceImpl implements RedmineService {
         try {
             List<Issue> issues = getIssuesUpdatedAfterDate(updated, projectId);
             if (!issues.isEmpty()) {
-                RedmineEventHandler handler = new RedmineUpdateIssueHandler();
                 issues.stream().map(x -> new Tuple<>(getUser(x.getId()), x))
-                        .forEach(x -> handler.handle(x.a, x.b, companyId));
-                redmineEndpointDAO.updateUpdatedOn(endpoint.getCompanyId(), endpoint.getProjectId(),
-                        issues.get(issues.size()).getUpdatedOn());
+                        .forEach(x -> updateHandler.handle(x.a, x.b, companyId));
+                Date lastUpdatedOn = checkDate(endpoint.getLastUpdatedOnDate(),
+                        issues.get(issues.size() - 1).getUpdatedOn());
+                redmineEndpointDAO.updateUpdatedOn(endpoint.getCompanyId(), endpoint.getProjectId(), lastUpdatedOn);
             }
         } catch (RedmineException re) {
             //something
@@ -112,19 +125,6 @@ public class RedmineServiceImpl implements RedmineService {
             logger.debug("skip handle self-published event for {}", event.getCaseObject().getExtId());
             return;
         }
-/*
-
-        CaseObject object = event.getCaseObject();
-        ExternalCaseAppData appData = externalCaseAppDAO.get(object.getId());
-*/
-
-//        logger.debug("redmine, case-comment event, case {}, comment #{}", object.getExtId(), event.getCaseComment().getId());
-//        ServiceInstance instance = serviceInstanceRegistry.find(event.getCaseObject());
-/*
-        if (instance == null) {
-            logger.debug("no handler instance found for case {}", object.getExtId());
-            return;
-        }*/
 
         BackchannelEventHandler handler = new BackchannelUpdateIssueHandler();
 
@@ -150,6 +150,9 @@ public class RedmineServiceImpl implements RedmineService {
 
     @Autowired
     private RedmineNewIssueHandler handler;
+
+    @Autowired
+    private RedmineUpdateIssueHandler updateHandler;
 
     private RedmineManager manager;
 

@@ -23,13 +23,9 @@ public final class MergeHandlerFactoryImpl implements MergeHandlerFactory {
     public class TrivialMergeHandler implements MergeHandler {
         @Override
         public void merge(Issue issue, CaseObject object) {
-            issue.getPriorityId();
-            issue.getStatusName();
-            issue.getSubject();
             object.setImpLevel(issue.getPriorityId());
             object.setName(issue.getSubject());
-            object.setState(RedmineStatus.valueOf(issue.getStatusName()).getCaseState());
-            object.setStateId(issue.getStatusId());
+            object.setState(RedmineStatus.parse(issue.getStatusName()).getCaseState());
         }
     }
 

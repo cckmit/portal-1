@@ -17,9 +17,6 @@ public class BackchannelUpdateIssueHandler implements BackchannelEventHandler{
         CaseObject obj = event.getCaseObject();
         RedmineStatus status = RedmineStatus.getByCaseState(obj.getState());
         issue.setStatusName(status.getRedmineCode());
-        obj.getAttachments();
-        obj.getImpLevel();
-        obj.getName();
         try {
             service.updateIssue(issue);
         } catch (RedmineException e) {

@@ -7,10 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.protei.portal.core.model.dao.CaseCommentDAO;
-import ru.protei.portal.core.model.dao.CaseObjectDAO;
-import ru.protei.portal.core.model.dao.DevUnitDAO;
-import ru.protei.portal.core.model.dao.ExternalCaseAppDAO;
+import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
@@ -25,7 +22,7 @@ import ru.protei.portal.redmine.utils.RedmineUtils;
 
 import java.util.stream.Collectors;
 
-public class RedmineNewIssueHandler implements RedmineEventHandler {
+public final class RedmineNewIssueHandler implements RedmineEventHandler {
     @Autowired
     private DevUnitDAO devUnitDAO;
 
@@ -37,6 +34,9 @@ public class RedmineNewIssueHandler implements RedmineEventHandler {
 
     @Autowired
     private CaseCommentDAO caseCommentDAO;
+
+    @Autowired
+    private CaseAttachmentDAO caseAttachmentDAO;
 
     @Autowired
     private CommonService commonService;
@@ -65,8 +65,10 @@ public class RedmineNewIssueHandler implements RedmineEventHandler {
         obj.setCaseType(En_CaseType.CRM_SUPPORT);
 //        obj.setCaseType(RedmineIssueType.find(issue.getTracker().getName()));
         DevUnit product = devUnitDAO.checkExistsByName(En_DevUnitType.PRODUCT, issue.getProjectName());
-        if (product == null)
+        if (product == null) {
             product = new DevUnit(En_DevUnitType.PRODUCT.getId(), issue.getProjectName(), "");
+            devUnitDAO.saveOrUpdate(product);
+        }
         obj.setProduct(product);
         obj.setInitiator(contactPerson);
         obj.setImpLevel(issue.getPriorityId());
@@ -83,6 +85,7 @@ public class RedmineNewIssueHandler implements RedmineEventHandler {
         logger.debug("create hpsm-case id={}, ext={}, data={}", appData.getId(), appData.getExtAppCaseId(), appData.getExtAppData());
 
         externalCaseAppDAO.merge(appData);
+        commonService.processAttachments(issue, obj, contactPerson);
         handleComments(issue, contactPerson, obj, caseObjId);
         return obj;
     }
@@ -90,8 +93,8 @@ public class RedmineNewIssueHandler implements RedmineEventHandler {
     private void handleComments(Issue issue, Person person, CaseObject obj, long caseObjId) {
         issue.getJournals()
                 .stream()
+                .filter(x -> !x.getNotes().isEmpty())
                 .map(RedmineUtils::parseJournal)
-                .map(x -> commonService.processStoreComment(issue, person, obj, caseObjId, x))
-        .collect(Collectors.toList());
+                .forEach(x -> commonService.processStoreComment(issue, person, obj, caseObjId, x));
     }
 }

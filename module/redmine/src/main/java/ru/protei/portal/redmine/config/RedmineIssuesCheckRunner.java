@@ -9,7 +9,7 @@ import ru.protei.portal.core.model.dao.RedmineEndpointDAO;
 import ru.protei.portal.redmine.service.RedmineService;
 
 @Component
-public class RedmineIssuesCheckRunner {
+public final class RedmineIssuesCheckRunner {
     private static final Logger logger = LoggerFactory.getLogger(RedmineIssuesCheckRunner.class);
 
     @Autowired
@@ -23,7 +23,7 @@ public class RedmineIssuesCheckRunner {
     }
 
     //Every 5 mins
-    @Scheduled(fixedRate = 31 * 1000)
+    @Scheduled(fixedRate = 10 * 61 * 1000)
     public void queryNewIssues() {
         logger.debug("Check for new issues stared");
         redmineEndpointDAO.getAll().forEach(redmineService::checkForNewIssues);
@@ -31,9 +31,10 @@ public class RedmineIssuesCheckRunner {
     }
 
     //Every 5 mins
-    @Scheduled(fixedRate = 29 * 1000)
+    @Scheduled(fixedRate = 10 * 59 * 1000)
     public void queryIssuesUpdates() {
         logger.debug("Check for issues updates started");
+        redmineEndpointDAO.getAll().forEach(redmineService::checkForIssuesUpdates);
         logger.debug("Check for issues updates ended");
     }
 }
