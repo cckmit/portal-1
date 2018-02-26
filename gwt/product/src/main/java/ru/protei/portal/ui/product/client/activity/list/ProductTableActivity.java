@@ -119,7 +119,7 @@ public abstract class ProductTableActivity implements
 
             @Override
             public void onSuccess( Long count ) {
-                view.setIssuesCount( count );
+                view.setProductsCount( count );
                 pagerView.setTotalPages( view.getPageCount() );
             }
         });
