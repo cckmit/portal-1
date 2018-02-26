@@ -2,23 +2,27 @@ package ru.protei.portal.core.event;
 
 import org.springframework.context.ApplicationEvent;
 import ru.protei.portal.core.ServiceModule;
-import ru.protei.portal.core.model.ent.CaseComment;
-import ru.protei.portal.core.model.ent.CaseObject;
-import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.service.CaseService;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 
 import static java.lang.System.currentTimeMillis;
-import static java.lang.System.nanoTime;
-import static java.util.concurrent.TimeUnit.NANOSECONDS;
 
 public class AssembledCaseEvent extends ApplicationEvent {
 
-    private CaseObject lastState = null;
+    private CaseObject lastState;
     private CaseObject initState;
     private CaseComment comment;
+    private CaseComment oldComment;
+    private Collection<Attachment> addedAttachments;
+    private Collection<Attachment> removedAttachments;
+
+
     private Person initiator;
     private ServiceModule serviceModule;
     // Measured in ms
@@ -26,7 +30,7 @@ public class AssembledCaseEvent extends ApplicationEvent {
     private long lastUpdated;
 
     public AssembledCaseEvent(CaseService caseService, CaseObject lastState, Person initiator) {
-        this(ServiceModule.GENERAL, caseService, null, lastState, initiator);
+        this(ServiceModule.GENERAL, caseService, lastState, lastState, initiator);
     }
 
     public AssembledCaseEvent(CaseService caseService, CaseObject initState, CaseObject lastState,
@@ -40,8 +44,18 @@ public class AssembledCaseEvent extends ApplicationEvent {
     }
 
     public AssembledCaseEvent(CaseCommentEvent commentEvent) {
-        this(commentEvent.getServiceModule(), commentEvent.getCaseService(), commentEvent.getCaseObject(), null,
+        this(commentEvent.getServiceModule(), commentEvent.getCaseService(), commentEvent.getCaseObject(), commentEvent.getCaseObject(),
                 commentEvent.getPerson());
+        oldComment = commentEvent.getOldCaseComment();
+        comment = commentEvent.getCaseComment();
+        addedAttachments.addAll(commentEvent.getAddedAttachments());
+        removedAttachments.addAll(commentEvent.getRemovedAttachments());
+    }
+
+    public AssembledCaseEvent(CaseAttachmentEvent attachmentEvent) {
+        this(attachmentEvent.getCaseService(), attachmentEvent.getCaseObject(), attachmentEvent.getPerson());
+        addedAttachments.addAll(attachmentEvent.getAddedAttachments());
+        removedAttachments.addAll(attachmentEvent.getRemovedAttachments());
     }
 
     public AssembledCaseEvent(ServiceModule module, CaseService caseService,
@@ -53,6 +67,9 @@ public class AssembledCaseEvent extends ApplicationEvent {
         this.serviceModule = module;
         this.timeCreated = currentTimeMillis();
         this.lastUpdated = timeCreated;
+        this.addedAttachments = new ArrayList<>();
+        this.removedAttachments = new ArrayList<>();
+
     }
 
     public CaseComment getCaseComment() {
@@ -122,6 +139,36 @@ public class AssembledCaseEvent extends ApplicationEvent {
 
     public void attachCaseComment(CaseComment caseComment) {
         comment = caseComment;
+        lastUpdated = currentTimeMillis();
+    }
+
+    public CaseComment getOldComment() {
+        return oldComment;
+    }
+
+    public Collection<Attachment> getAddedAttachments() {
+        return addedAttachments;
+    }
+
+    public Collection<Attachment> getRemovedAttachments() {
+        return removedAttachments;
+    }
+
+    public void synchronizeAttachments(Collection<Attachment> added, Collection<Attachment> removed){
+        if(added == null)
+            added = Collections.emptyList();
+        if(removed == null)
+            removed = Collections.emptyList();
+
+        addedAttachments.addAll(added);
+        removedAttachments.addAll(removed);
+
+        for(Attachment attachment: removedAttachments){
+            if(addedAttachments.contains(attachment)){ //if you add and remove an attachment in a row
+                addedAttachments.remove(attachment);
+                removedAttachments.remove(attachment);
+            }
+        }
         lastUpdated = currentTimeMillis();
     }
 

@@ -1,5 +1,7 @@
 package ru.protei.portal.config;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.protei.winter.core.utils.config.exception.ConfigException;
 import ru.protei.winter.core.utils.config.utils.PropertiesWrapper;
 
@@ -7,6 +9,8 @@ import ru.protei.winter.core.utils.config.utils.PropertiesWrapper;
  * Created by michael on 31.05.17.
  */
 public class PortalConfigData {
+
+    private static Logger logger = LoggerFactory.getLogger(PortalConfigData.class);
 
     private SmtpConfig smtpConfig;
     private CloudConfig cloudConfig;
@@ -93,16 +97,29 @@ public class PortalConfigData {
     }
 
     public static class EventAssemblyConfig {
-        private final Long waitingPeriod;
+        private final long waitingPeriod;
 
         public EventAssemblyConfig(PropertiesWrapper properties) throws ConfigException {
-            waitingPeriod = Long.valueOf(properties.getProperty("core.waiting_period", "30000"));
+            long v = Long.valueOf(properties.getProperty("core.waiting_period", "30"));
+
+            if (v > java.util.concurrent.TimeUnit.MINUTES.toSeconds(2)) {
+                v = java.util.concurrent.TimeUnit.MINUTES.toSeconds(2);
+            }
+            else if (v < 10 ){
+                v = 10;
+            }
+
+            logger.debug("Use event assembly period = {}", v);
+            waitingPeriod = v;
         }
 
-        public Long getWaitingPeriod() {
+        public long getWaitingPeriod() {
             return waitingPeriod;
         }
 
+        public long getWaitingPeriodMillis() {
+            return getWaitingPeriod() * 1000;
+        }
     }
 
 }
