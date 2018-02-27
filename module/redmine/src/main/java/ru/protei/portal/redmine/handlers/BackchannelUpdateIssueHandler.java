@@ -7,7 +7,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.model.dao.ExternalCaseAppDAO;
+import ru.protei.portal.core.model.dao.PersonDAO;
+import ru.protei.portal.core.model.dao.RedmineEndpointDAO;
+import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
+import ru.protei.portal.core.model.ent.RedmineEndpoint;
 import ru.protei.portal.redmine.api.RedmineStatus;
 import ru.protei.portal.redmine.service.RedmineService;
 
@@ -15,26 +19,90 @@ public class BackchannelUpdateIssueHandler implements BackchannelEventHandler {
 
     @Override
     public void handle(AssembledCaseEvent event) {
-        String issueId = externalCaseAppDAO.get(event.getCaseObject().getId()).getExtAppCaseId();
-        Issue issue = service.getIssueById(Integer.parseInt(issueId));
+        final long caseId = event.getCaseObject().getId();
+        final int issueId = Integer.parseInt(externalCaseAppDAO.get(caseId).getExtAppCaseId());
+        final String projectId = externalCaseAppDAO.get(caseId).getExtAppData();
+
+        RedmineEndpoint endpoint = endpointDAO.getByCompanyIdAndProjectId(event.getCaseObject().getInitiatorCompanyId(),
+                projectId);
+        assert (endpoint != null);
+        final Issue issue = service.getIssueById(issueId, endpoint);
         assert issue != null;
-        CaseObject obj = event.getCaseObject();
-        RedmineStatus status = RedmineStatus.getByCaseState(obj.getState());
-        issue.setStatusName(status.getRedmineCode());
-        issue.setStatusId(status.getCaseState().getId());
+
+        // Attachment adding through rest-api requires uploading file to redmine server,
+        // therefore, now it is impossible.
+        // http://www.redmine.org/projects/redmine/wiki/Rest_api#Attaching-files
+        //updateAttachments(issue, event.getAddedAttachments(), endpoint);
+        updateComments(issue, event.getCaseComment(), endpoint);
+        updateIssueProps(issue, event.getCaseObject());
+
         try {
-            service.updateIssue(issue);
+            service.updateIssue(issue, endpoint);
         } catch (RedmineException e) {
             logger.debug("Failed to update issue with id {}", issue.getId());
             e.printStackTrace();
         }
     }
 
+    private void updateIssueProps(Issue issue, CaseObject object) {
+        final RedmineStatus status = RedmineStatus.getByCaseState(object.getState());
+        issue.setStatusId(status.getRedmineCode());
+        issue.setPriorityId(object.getImpLevel());
+        issue.setProjectId(Integer.valueOf(externalCaseAppDAO.get(object.getId()).getExtAppData()));
+        issue.setDescription(object.getInfo());
+        issue.setSubject(object.getName());
+    }
+
+    /*private void updateAttachments(Issue issue, Collection<Attachment> attachments, RedmineEndpoint endpoint) {
+        attachments.forEach(x -> toRedmineAttachment(issue.getId(), x, endpoint));
+    }*/
+
+    /*private void toRedmineAttachment(int issueId, Attachment attachment, RedmineEndpoint endpoint) {
+        try {
+            File myDude = new File(new URI(attachment.getExtLink()));
+            service.uploadMyDude(issueId, myDude, attachment.getMimeType(), endpoint);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        } catch (RedmineException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }*/
+
+    private void updateComments(Issue issue, CaseComment comment, RedmineEndpoint endpoint) {
+        if (comment != null && !comment.getText().isEmpty()) {
+            issue.setNotes("PROTEI: " + comment.getAuthor().getDisplayName() + ": " + comment.getText());
+        }
+    }
+
+    /*private User personToUser(Person person, RedmineEndpoint endpoint) {
+        String email = person.getContactInfo().getItems(En_ContactItemType.EMAIL).toString();
+        try {
+            return service.findUser(person, endpoint);
+        } catch (RedmineException e) {
+            logger.debug("Unable to find user; going to create a new one");
+        }
+        User user = UserFactory.create();
+        user.setLogin("guest");
+        user.setFirstName(person.getFirstName());
+        user.setLastName(person.getLastName());
+        user.setFullName(person.getDisplayName());
+        user.setMail(email);
+        return user;
+    }*/
+
+    @Autowired
+    RedmineEndpointDAO endpointDAO;
+
     @Autowired
     RedmineService service;
 
     @Autowired
     ExternalCaseAppDAO externalCaseAppDAO;
+
+    @Autowired
+    PersonDAO personDAO;
 
     private static final Logger logger = LoggerFactory.getLogger(BackchannelUpdateIssueHandler.class);
 }

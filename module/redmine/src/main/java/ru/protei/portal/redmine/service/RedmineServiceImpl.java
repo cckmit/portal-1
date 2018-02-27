@@ -10,28 +10,35 @@ import protei.utils.common.Tuple;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.model.dao.RedmineEndpointDAO;
+import ru.protei.portal.core.model.dict.En_ContactItemType;
+import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.RedmineEndpoint;
 import ru.protei.portal.redmine.handlers.*;
 import ru.protei.portal.redmine.utils.RedmineUtils;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class RedmineServiceImpl implements RedmineService {
 
-    private List<Issue> getIssuesAfterDate(String date, String projectName) throws RedmineException {
-        List<Integer> ids = prepareIssuesIds("created_on", date, projectName);
-        return requestIssues(ids);
+    private List<Issue> getIssuesAfterDate(String date, String projectName, RedmineEndpoint endpoint) throws RedmineException {
+        RedmineManager manager = RedmineManagerFactory.createWithApiKey(endpoint.getServerAddress(), endpoint.getApiKey());
+        List<Integer> ids = prepareIssuesIds("created_on", date, projectName, manager);
+        return requestIssues(ids, endpoint);
     }
 
-    private List<Issue> getIssuesUpdatedAfterDate(String date, String projectName) throws RedmineException {
-        List<Integer> ids = prepareIssuesIds("updated_on", date, projectName);
-        return requestIssues(ids);
+    private List<Issue> getIssuesUpdatedAfterDate(String date, String projectName, RedmineEndpoint endpoint) throws RedmineException {
+        RedmineManager manager = RedmineManagerFactory.createWithApiKey(endpoint.getServerAddress(), endpoint.getApiKey());
+        List<Integer> ids = prepareIssuesIds("updated_on", date, projectName, manager);
+        return requestIssues(ids, endpoint);
     }
 
     @Override
-    public Issue getIssueById(int id) {
+    public Issue getIssueById(int id, RedmineEndpoint endpoint) {
         try {
+            RedmineManager manager = RedmineManagerFactory.createWithApiKey(endpoint.getServerAddress(), endpoint.getApiKey());
             return manager.getIssueManager().getIssueById(id, Include.journals, Include.attachments, Include.watchers);
         } catch (RedmineException e) {
             logger.debug("Get exception while trying to get issue with id {}", id);
@@ -39,14 +46,14 @@ public class RedmineServiceImpl implements RedmineService {
         }
     }
 
-    private List<Issue> requestIssues(List<Integer> ids) {
+    private List<Issue> requestIssues(List<Integer> ids, RedmineEndpoint endpoint) {
         return ids.stream()
-                .map(this::getIssueById)
+                .map(x -> getIssueById(x, endpoint))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
 
-    private List<Integer> prepareIssuesIds(String param, String date, String projectName) throws RedmineException {
+    private List<Integer> prepareIssuesIds(String param, String date, String projectName, RedmineManager manager) throws RedmineException {
         Params params = new Params()
                 .add(param, date)
                 .add("project_id", projectName);
@@ -57,13 +64,13 @@ public class RedmineServiceImpl implements RedmineService {
                 .collect(Collectors.toList());
     }
 
-    // If date is not updated, we increment it manually by 1 min
+    // If date is not updated, we increment it manually by 1 sec
     // in order to avoid querying same issues multiple times
     private Date checkDate(Date date, Date lastDate) {
-        if (date.equals(lastDate)) {
+        if (date.toInstant().toEpochMilli() == lastDate.toInstant().toEpochMilli()) {
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(lastDate);
-            calendar.add(Calendar.MINUTE, 1);
+            calendar.add(Calendar.SECOND, 1);
             lastDate = calendar.getTime();
         }
         return lastDate;
@@ -73,13 +80,11 @@ public class RedmineServiceImpl implements RedmineService {
     public void checkForNewIssues(RedmineEndpoint endpoint) {
         String created = RedmineUtils.parseDateToAfter(endpoint.getLastCreatedOnDate());
         String projectId = endpoint.getProjectId();
-        manager = RedmineManagerFactory.createWithApiKey(endpoint.getServerAddress(), endpoint.getApiKey());
         try {
-            List<Issue> issues = getIssuesAfterDate(created, projectId);
+            List<Issue> issues = getIssuesAfterDate(created, projectId, endpoint);
             if (!issues.isEmpty()) {
-                issues.stream().map(x -> new Tuple<>(getUser(x.getAuthorId()), x))
+                issues.stream().map(x -> new Tuple<>(getUser(x.getAuthorId(), endpoint), x))
                         .forEach(x -> handler.handle(x.a, x.b, endpoint.getCompanyId()));
-                issues.get(issues.size()).getCreatedOn();
             }
             issues.sort((Comparator.comparing(Issue::getCreatedOn)));
             Date lastCreatedOn = checkDate(endpoint.getLastCreatedOnDate(),
@@ -97,12 +102,12 @@ public class RedmineServiceImpl implements RedmineService {
         String updated = RedmineUtils.parseDateToAfter(endpoint.getLastUpdatedOnDate());
         String projectId = endpoint.getProjectId();
         Long companyId = endpoint.getCompanyId();
-        manager = RedmineManagerFactory.createWithApiKey(endpoint.getServerAddress(), endpoint.getApiKey());
         try {
-            List<Issue> issues = getIssuesUpdatedAfterDate(updated, projectId);
+            List<Issue> issues = getIssuesUpdatedAfterDate(updated, projectId, endpoint);
             if (!issues.isEmpty()) {
-                issues.stream().map(x -> new Tuple<>(getUser(x.getId()), x))
+                issues.stream().map(x -> new Tuple<>(getUser(x.getId(), endpoint), x))
                         .forEach(x -> updateHandler.handle(x.a, x.b, companyId));
+
                 Date lastUpdatedOn = checkDate(endpoint.getLastUpdatedOnDate(),
                         issues.get(issues.size() - 1).getUpdatedOn());
                 redmineEndpointDAO.updateUpdatedOn(endpoint.getCompanyId(), endpoint.getProjectId(), lastUpdatedOn);
@@ -115,7 +120,8 @@ public class RedmineServiceImpl implements RedmineService {
     }
 
     @Override
-    public void updateIssue(Issue issue) throws RedmineException {
+    public void updateIssue(Issue issue, RedmineEndpoint endpoint) throws RedmineException {
+        RedmineManager manager = RedmineManagerFactory.createWithApiKey(endpoint.getServerAddress(), endpoint.getApiKey());
         manager.getIssueManager().update(issue);
     }
 
@@ -134,13 +140,34 @@ public class RedmineServiceImpl implements RedmineService {
         }
     }
 
-    private User getUser(int id) {
+    /*@Override
+    public void uploadMyDude(int issueId, File myDude, String mimeType, RedmineEndpoint endpoint) throws IOException, RedmineException {
+        RedmineManager manager = initManager(endpoint);
+        manager.getAttachmentManager().addAttachmentToIssue(issueId, myDude, mimeType);
+    }*/
+
+    @Override
+    public User findUser(Person person, RedmineEndpoint endpoint) throws RedmineException {
+        String email = person.getContactInfo().getItems(En_ContactItemType.EMAIL).get(0).value();
+        UserManager userManager = initManager(endpoint).getUserManager();
+        return userManager.getUsers().stream()
+                .filter(x -> x.getFirstName().equals(person.getFirstName()))
+                .filter(x -> x.getLastName().equals(person.getLastName()))
+                .filter(x -> x.getMail().equals(email))
+                .findFirst().get();
+    }
+
+    private User getUser(int id, RedmineEndpoint endpoint) {
         try {
-            return manager.getUserManager().getUserById(id);
+            return initManager(endpoint).getUserManager().getUserById(id);
         } catch (RedmineException e) {
             logger.debug("User with id {} not found", id);
             return null;
         }
+    }
+
+    private RedmineManager initManager(RedmineEndpoint endpoint) {
+        return RedmineManagerFactory.createWithApiKey(endpoint.getServerAddress(), endpoint.getApiKey());
     }
 
     @Autowired
@@ -154,8 +181,6 @@ public class RedmineServiceImpl implements RedmineService {
 
     @Autowired
     private BackchannelUpdateIssueHandler backchannelUpdateIssueHandler;
-
-    private RedmineManager manager;
 
     private final static org.slf4j.Logger logger = LoggerFactory.getLogger(RedmineServiceImpl.class);
 }

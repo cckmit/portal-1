@@ -7,11 +7,15 @@ import ru.protei.portal.core.model.ent.Person;
 
 import java.text.Format;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 public class RedmineUtils {
     public static String parseDateToAfter(Date date) {
-        return AFTER + dateTimeFormatter.format(date) + "Z";
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.HOUR, -3);
+        return AFTER + dateTimeFormatter.format(calendar.getTime()) + "Z";
     }
 
     public static String parseDateToBefore(Date date) {
@@ -21,28 +25,6 @@ public class RedmineUtils {
     public static String parseDateToRange(Date start, Date end) {
         return RANGE + dateTimeFormatter.format(start) + RANGE_SEPARATOR + dateTimeFormatter.format(end);
     }
-
-    public static CaseComment parseJournal(Journal journal) {
-        CaseComment comment = new CaseComment();
-        comment.setCreated(journal.getCreatedOn());
-        Person author = parseUser(journal.getUser());
-        comment.setAuthor(author);
-        comment.setId(Long.valueOf(journal.getId()));
-        comment.setText(journal.getNotes());
-        return comment;
-    }
-
-    public static Person parseUser(User user) {
-        Person person = new Person();
-        person.setFirstName(user.getFirstName());
-        person.setId(Long.valueOf(user.getId()));
-        person.setLastName(user.getLastName());
-        person.setCreated(user.getCreatedOn());
-        person.setDisplayName(user.getFirstName());
-        user.getStatus();
-        return person;
-    }
-
 
     private static final String AFTER = ">=";
     private static final String BEFORE = "<=";

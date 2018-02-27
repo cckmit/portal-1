@@ -1,7 +1,7 @@
 package ru.protei.portal.redmine.service;
 
-import com.taskadapter.redmineapi.IssueManager;
 import com.taskadapter.redmineapi.bean.Issue;
+import com.taskadapter.redmineapi.bean.Journal;
 import com.taskadapter.redmineapi.bean.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +11,10 @@ import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.controller.cloud.FileController;
 import ru.protei.portal.core.event.CaseAttachmentEvent;
 import ru.protei.portal.core.event.CaseCommentEvent;
-import ru.protei.portal.core.model.dao.*;
+import ru.protei.portal.core.model.dao.AttachmentDAO;
+import ru.protei.portal.core.model.dao.CaseAttachmentDAO;
+import ru.protei.portal.core.model.dao.CaseCommentDAO;
+import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
@@ -24,17 +27,12 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class CommonServiceImpl implements CommonService {
-    @Autowired
-    private CaseObjectDAO caseObjectDAO;
 
     @Autowired
     private CaseCommentDAO caseCommentDAO;
 
     @Autowired
     private CaseAttachmentDAO caseAttachmentDAO;
-
-    @Autowired
-    private ExternalCaseAppDAO externalCaseAppDAO;
 
     @Autowired
     private FileController fileController;
@@ -59,6 +57,18 @@ public class CommonServiceImpl implements CommonService {
                 .map(attachmentDAO::get)
                 .map(Attachment::getFileName)
                 .collect(Collectors.toSet());
+    }
+
+    @Override
+    public CaseComment parseJournal(Journal journal, long companyId) {
+        Person author = getAssignedPerson(companyId, journal.getUser());
+        if (journal.getNotes().contains("PROTEI"))
+            return null;
+        CaseComment comment = new CaseComment();
+        comment.setCreated(journal.getCreatedOn());
+        comment.setAuthor(author);
+        comment.setText(journal.getNotes());
+        return comment;
     }
 
     @Override
@@ -99,7 +109,7 @@ public class CommonServiceImpl implements CommonService {
 
         eventPublisherService.publishEvent(new CaseAttachmentEvent(
                 caseService
-                ,this,
+                , this,
                 obj,
                 addedAttachments,
                 null,
@@ -127,13 +137,9 @@ public class CommonServiceImpl implements CommonService {
     }
 
     @Override
-    public Person getAssignedPerson(Long companyId, User user, Issue issue) {
+    public Person getAssignedPerson(Long companyId, User user) {
 
         Person person = null;
-
-        if (HelperFunc.isEmpty(user.getMail())) {
-            logger.debug("no contact data provided for request {}", issue.getId());
-        }
 
         if (HelperFunc.isNotEmpty(user.getMail())) {
             // try find by e-mail
@@ -146,7 +152,7 @@ public class CommonServiceImpl implements CommonService {
         }
 
         if (person != null) {
-            logger.debug("contact found: {} (id={}), request {}", person.getDisplayName(), person.getId(), issue.getId());
+            logger.debug("contact found: {} (id={})", person.getDisplayName(), person.getId());
         } else {
             logger.debug("unable to find contact person : email={}, company={}, create new one", user.getMail(), companyId);
 

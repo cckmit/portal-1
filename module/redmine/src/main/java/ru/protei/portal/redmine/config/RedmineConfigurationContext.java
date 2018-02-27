@@ -3,10 +3,7 @@ package ru.protei.portal.redmine.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import ru.protei.portal.redmine.factories.MergeHandlerFactory;
-import ru.protei.portal.redmine.factories.MergeHandlerFactoryImpl;
 import ru.protei.portal.redmine.handlers.BackchannelUpdateIssueHandler;
-import ru.protei.portal.redmine.handlers.RedmineEventHandler;
 import ru.protei.portal.redmine.handlers.RedmineNewIssueHandler;
 import ru.protei.portal.redmine.handlers.RedmineUpdateIssueHandler;
 import ru.protei.portal.redmine.service.CommonService;
@@ -17,10 +14,6 @@ import ru.protei.portal.redmine.service.RedmineServiceImpl;
 @Configuration
 @EnableScheduling
 public class RedmineConfigurationContext {
-    @Bean
-    public MergeHandlerFactory getMergeHandlerFactory() {
-        return new MergeHandlerFactoryImpl();
-    }
 
     @Bean
     public BackchannelUpdateIssueHandler getBackchannelUpdateIssueHandler() {

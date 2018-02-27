@@ -5,28 +5,28 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import static ru.protei.portal.core.model.dict.En_CaseType.*;
 
 public enum RedmineIssueType {
-    ERROR ("Ошибка", En_CaseType.BUG),
-    CRITICAL_ERROR("Критическая ошибка", En_CaseType.BUG),
-    CHANGE("Изменение", FREQ),
-    SUPPORT("Поддержка", En_CaseType.TASK),
-    TESTING("Тестирование", En_CaseType.TASK),
-    DOCUMENTATION("Документация", En_CaseType.CRM_SUPPORT),
-    CLIENT_REQUEST("Обращение клиента", En_CaseType.FREQ),
-    PROJECT_DOCUMENTATION("Проектная документация", En_CaseType.CRM_SUPPORT),
-    ANALYSIS("Анализ", En_CaseType.TASK),
-    INFRASTRUCTURE("Инфраструктура", En_CaseType.PROJECT);
+    ERROR (1, En_CaseType.BUG),
+    CRITICAL_ERROR(10, En_CaseType.BUG),
+    CHANGE(2, FREQ),
+    SUPPORT(3, En_CaseType.TASK),
+    TESTING(4, En_CaseType.TASK),
+    DOCUMENTATION(5, En_CaseType.CRM_SUPPORT),
+    CLIENT_REQUEST(7, En_CaseType.FREQ),
+    PROJECT_DOCUMENTATION(8, En_CaseType.CRM_SUPPORT),
+    ANALYSIS(9, En_CaseType.TASK),
+    INFRASTRUCTURE(11, En_CaseType.PROJECT);
 
-    RedmineIssueType (String type, En_CaseType caseType) {
-        this.redmineIssueType = type;
+    RedmineIssueType (int typeId, En_CaseType caseType) {
+        this.redmineIssueTypeId = typeId;
         this.caseIssueType = caseType;
     }
 
-    private String redmineIssueType;
+    private int redmineIssueTypeId;
     private En_CaseType caseIssueType;
 
 
-    public String getRedmineIssueType() {
-        return redmineIssueType;
+    public int getRedmineIssueTypeId() {
+        return redmineIssueTypeId;
     }
 
     public En_CaseType getCaseIssueType() {
@@ -37,13 +37,12 @@ public enum RedmineIssueType {
         for (RedmineIssueType it : RedmineIssueType.values())
             if (it.caseIssueType == type)
                 return it;
-
         return RedmineIssueType.ERROR;
     }
 
-    public static En_CaseType find (String redmineIssueType) {
+    public static En_CaseType find (int redmineIssueTypeId) {
         for (RedmineIssueType it : RedmineIssueType.values())
-            if (it.redmineIssueType.equals(redmineIssueType))
+            if (it.redmineIssueTypeId == redmineIssueTypeId)
                 return it.caseIssueType;
 
         return RedmineIssueType.ERROR.caseIssueType;

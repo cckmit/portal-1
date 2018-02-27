@@ -3,21 +3,21 @@ package ru.protei.portal.redmine.api;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 
 public enum RedmineIssuePriority {
-    LOW ("Низкий", En_ImportanceLevel.LOW),
-    BASIC ("Стандартный", En_ImportanceLevel.BASIC),
-    HIGH ("Высокий", En_ImportanceLevel.IMPORTANT),
-    IMPORTANT ("Срочный", En_ImportanceLevel.CRITICAL),
-    CRITICAL("Немедленный", En_ImportanceLevel.IMMEDIATE);
+    LOW (3, En_ImportanceLevel.LOW),
+    BASIC (4, En_ImportanceLevel.BASIC),
+    HIGH (5, En_ImportanceLevel.IMPORTANT),
+    IMPORTANT (6, En_ImportanceLevel.CRITICAL),
+    CRITICAL(7, En_ImportanceLevel.IMMEDIATE);
 
-    RedmineIssuePriority (String level, En_ImportanceLevel importanceLevel) {
+    RedmineIssuePriority (int level, En_ImportanceLevel importanceLevel) {
         this.redminePriorityLevel = level;
         this.caseImpLevel = importanceLevel;
     }
 
-    private String redminePriorityLevel;
+    private int redminePriorityLevel;
     private En_ImportanceLevel caseImpLevel;
 
-    public String getRedminePriorityLevel() {
+    public int getRedminePriorityLevel() {
         return redminePriorityLevel;
     }
 
@@ -33,11 +33,10 @@ public enum RedmineIssuePriority {
         return BASIC;
     }
 
-    public static RedmineIssuePriority find (String hpsmLevel) {
+    public static RedmineIssuePriority find (int hpsmLevel) {
         for (RedmineIssuePriority it : RedmineIssuePriority.values())
-            if (it.redminePriorityLevel.equals(hpsmLevel))
+            if (it.redminePriorityLevel == hpsmLevel)
                 return it;
-
         return BASIC;
     }
 }

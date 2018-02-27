@@ -7,28 +7,28 @@ import java.util.Arrays;
 import static ru.protei.portal.core.model.dict.En_CaseState.*;
 
 public enum RedmineStatus {
-    NEW ("Новая", CREATED),
-    IN_PROGRESS ("В работе", ACTIVE),
-    STOPPED("Остановлена", PAUSED),
-    SOLVED ("Решена", DONE),
-    FEEDBACK ("Обратная связь", DISCUSS),
-    REJECTED ("Отказ", REOPENED),
-    CLOSED ("Закрыта", VERIFIED),
-    BACKLOG("Запланирована", PLANNED);
+    NEW (1, CREATED),
+    IN_PROGRESS (2, ACTIVE),
+    STOPPED(9, PAUSED),
+    SOLVED (3, DONE),
+    FEEDBACK (4, DISCUSS),
+    REJECTED (6, REOPENED),
+    CLOSED (5, VERIFIED),
+    BACKLOG(8, PLANNED);
 
-    RedmineStatus (String code, En_CaseState caseState) {
+    RedmineStatus (int code, En_CaseState caseState) {
         this.redmineCode = code;
         this.caseState = caseState;
     }
 
-    private final String redmineCode;
+    private final int redmineCode;
     private final En_CaseState caseState;
 
     public static RedmineStatus getByCaseState(En_CaseState state) {
         return Arrays.stream(RedmineStatus.values()).filter(x -> x.caseState.equals(state)).findFirst().get();
     }
 
-    public String getRedmineCode() {
+    public int getRedmineCode() {
         return redmineCode;
     }
 
@@ -36,12 +36,12 @@ public enum RedmineStatus {
         return caseState;
     }
 
-    public static RedmineStatus parse (String code) {
-        if (code == null || code.isEmpty())
+    public static RedmineStatus find(int code) {
+        if (code <= 0)
             return null;
 
         for (RedmineStatus it : RedmineStatus.values())
-            if (it.redmineCode.equalsIgnoreCase(code))
+            if (it.redmineCode == code)
                 return it;
 
         return null;
