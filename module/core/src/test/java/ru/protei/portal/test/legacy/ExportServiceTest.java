@@ -70,6 +70,8 @@ public class ExportServiceTest {
     @Test
     public void testExportNewCompany () throws Exception {
 
+        companyDAO.removeByCondition("cname=?","junit-test");
+
         Company newCompany = new Company();
         newCompany.setCname("junit-test");
         newCompany.setCreated(new Date());
