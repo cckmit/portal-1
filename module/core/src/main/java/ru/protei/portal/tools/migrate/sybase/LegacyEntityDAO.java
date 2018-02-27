@@ -27,4 +27,5 @@ public interface LegacyEntityDAO<T extends LegacyEntity> {
 
     T delete(T entity) throws SQLException;
     void delete(Long id) throws SQLException;
+    void delete(String condition, Object...args) throws SQLException;
 }

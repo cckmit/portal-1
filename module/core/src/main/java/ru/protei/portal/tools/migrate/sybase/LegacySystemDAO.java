@@ -384,6 +384,11 @@ public class LegacySystemDAO {
             if (id != null)
                 Tm_SqlHelper.deleteObject(connection, entityType, id);
         }
+
+        @Override
+        public void delete(String condition, Object... args) throws SQLException {
+            Tm_SqlHelper.deleteObjectEx(connection, entityType, condition, args);
+        }
     }
 
 

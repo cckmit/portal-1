@@ -71,6 +71,11 @@ public class ExportServiceTest {
     public void testExportNewCompany () throws Exception {
 
         companyDAO.removeByCondition("cname=?","junit-test");
+        legacySystemDAO.runAction(transaction -> {
+            transaction.dao(ExternalCompany.class).delete("strName=?", "junit-test");
+            transaction.commit();
+            return true;
+        });
 
         Company newCompany = new Company();
         newCompany.setCname("junit-test");
