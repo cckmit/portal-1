@@ -26,45 +26,14 @@ import ru.protei.portal.redmine.handlers.RedmineNewIssueHandler;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class CommonServiceImpl implements CommonService {
-
-    @Autowired
-    private CaseCommentDAO caseCommentDAO;
-
-    @Autowired
-    private CaseAttachmentDAO caseAttachmentDAO;
-
-    @Autowired
-    private FileController fileController;
-
-    @Autowired
-    private PersonDAO personDAO;
-
-    @Autowired
-    private CaseService caseService;
-
-    @Autowired
-    private AttachmentDAO attachmentDAO;
-
-    @Autowired
-    private EventPublisherService eventPublisherService;
-
-    private final static Logger logger = LoggerFactory.getLogger(RedmineNewIssueHandler.class);
-
-    private Set<String> getExistingAttachmentsNames(long caseObjId) {
-        return caseAttachmentDAO.getListByCaseId(caseObjId).stream()
-                .map(CaseAttachment::getAttachmentId)
-                .map(attachmentDAO::get)
-                .map(Attachment::getFileName)
-                .collect(Collectors.toSet());
-    }
+public final class CommonServiceImpl implements CommonService {
 
     @Override
     public CaseComment parseJournal(Journal journal, long companyId) {
-        Person author = getAssignedPerson(companyId, journal.getUser());
+        final Person author = getAssignedPerson(companyId, journal.getUser());
         if (journal.getNotes().contains("PROTEI"))
             return null;
-        CaseComment comment = new CaseComment();
+        final CaseComment comment = new CaseComment();
         comment.setCreated(journal.getCreatedOn());
         comment.setAuthor(author);
         comment.setText(journal.getNotes());
@@ -73,8 +42,8 @@ public class CommonServiceImpl implements CommonService {
 
     @Override
     public void processAttachments(Issue issue, CaseObject obj, Person contactPerson) {
-        long caseObjId = obj.getId();
-        Set<String> existingAttachmentsNames = getExistingAttachmentsNames(obj.getId());
+        final long caseObjId = obj.getId();
+        final Set<String> existingAttachmentsNames = getExistingAttachmentsNames(obj.getId());
         final Collection<Attachment> addedAttachments = new ArrayList<>(issue.getAttachments().size());
         if (issue.getAttachments() != null && !issue.getAttachments().isEmpty()) {
             logger.debug("process attachments for case, id={}", caseObjId);
@@ -121,7 +90,7 @@ public class CommonServiceImpl implements CommonService {
     @Override
     public CaseComment processStoreComment(Issue issue, Person contactPerson, CaseObject obj, Long caseObjId, CaseComment comment) {
         comment.setCaseId(caseObjId);
-        caseCommentDAO.persist(comment);
+        caseCommentDAO.saveOrUpdate(comment);
 
         eventPublisherService.publishEvent(new CaseCommentEvent(
                 ServiceModule.REDMINE,
@@ -189,4 +158,35 @@ public class CommonServiceImpl implements CommonService {
 
         return person;
     }
+
+    private Set<String> getExistingAttachmentsNames(long caseObjId) {
+        return caseAttachmentDAO.getListByCaseId(caseObjId).stream()
+                .map(CaseAttachment::getAttachmentId)
+                .map(attachmentDAO::get)
+                .map(Attachment::getFileName)
+                .collect(Collectors.toSet());
+    }
+
+    @Autowired
+    private CaseCommentDAO caseCommentDAO;
+
+    @Autowired
+    private CaseAttachmentDAO caseAttachmentDAO;
+
+    @Autowired
+    private FileController fileController;
+
+    @Autowired
+    private PersonDAO personDAO;
+
+    @Autowired
+    private CaseService caseService;
+
+    @Autowired
+    private AttachmentDAO attachmentDAO;
+
+    @Autowired
+    private EventPublisherService eventPublisherService;
+
+    private final static Logger logger = LoggerFactory.getLogger(RedmineNewIssueHandler.class);
 }

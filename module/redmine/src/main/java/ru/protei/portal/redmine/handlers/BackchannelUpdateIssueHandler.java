@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.model.dao.ExternalCaseAppDAO;
-import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dao.RedmineEndpointDAO;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.CaseComment;
@@ -17,19 +16,27 @@ import ru.protei.portal.redmine.api.RedmineIssuePriority;
 import ru.protei.portal.redmine.api.RedmineStatus;
 import ru.protei.portal.redmine.service.RedmineService;
 
-public class BackchannelUpdateIssueHandler implements BackchannelEventHandler {
+public final class BackchannelUpdateIssueHandler implements BackchannelEventHandler {
 
     @Override
     public void handle(AssembledCaseEvent event) {
         final long caseId = event.getCaseObject().getId();
         final int issueId = Integer.parseInt(externalCaseAppDAO.get(caseId).getExtAppCaseId());
         final String projectId = externalCaseAppDAO.get(caseId).getExtAppData();
+        final long companyId = event.getCaseObject().getInitiatorCompanyId();
 
-        RedmineEndpoint endpoint = endpointDAO.getByCompanyIdAndProjectId(event.getCaseObject().getInitiatorCompanyId(),
+        final RedmineEndpoint endpoint = endpointDAO.getByCompanyIdAndProjectId(companyId,
                 projectId);
-        assert (endpoint != null);
+        if (endpoint == null) {
+            logger.debug("Endpoint was not found for companyId {} and projectId {}", companyId, projectId);
+            return;
+        }
+
         final Issue issue = service.getIssueById(issueId, endpoint);
-        assert issue != null;
+        if (issue == null) {
+            logger.debug("Issue with id {} was not found", issueId);
+            return;
+        }
 
         // Attachment adding through rest-api requires uploading file to redmine server,
         // therefore, now it is impossible.
@@ -48,8 +55,11 @@ public class BackchannelUpdateIssueHandler implements BackchannelEventHandler {
 
     private void updateIssueProps(Issue issue, CaseObject object) {
         final RedmineStatus status = RedmineStatus.getByCaseState(object.getState());
-        issue.setStatusId(status.getRedmineCode());
-        issue.setPriorityId(RedmineIssuePriority.find(En_ImportanceLevel.find(object.getImpLevel())).getRedminePriorityLevel());
+        if (status != null)
+            issue.setStatusId(status.getRedmineCode());
+        final RedmineIssuePriority priority = RedmineIssuePriority.find(En_ImportanceLevel.find(object.getImpLevel()));
+        if (priority != null)
+            issue.setPriorityId(priority.getRedminePriorityLevel());
         issue.setProjectId(Integer.valueOf(externalCaseAppDAO.get(object.getId()).getExtAppData()));
         issue.setDescription(object.getInfo());
         issue.setSubject(object.getName());
@@ -95,16 +105,13 @@ public class BackchannelUpdateIssueHandler implements BackchannelEventHandler {
     }*/
 
     @Autowired
-    RedmineEndpointDAO endpointDAO;
+    private RedmineEndpointDAO endpointDAO;
 
     @Autowired
-    RedmineService service;
+    private RedmineService service;
 
     @Autowired
-    ExternalCaseAppDAO externalCaseAppDAO;
-
-    @Autowired
-    PersonDAO personDAO;
+    private ExternalCaseAppDAO externalCaseAppDAO;
 
     private static final Logger logger = LoggerFactory.getLogger(BackchannelUpdateIssueHandler.class);
 }

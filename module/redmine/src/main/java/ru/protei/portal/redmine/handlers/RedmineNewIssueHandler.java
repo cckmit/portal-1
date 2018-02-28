@@ -19,24 +19,13 @@ import java.util.Objects;
 
 public final class RedmineNewIssueHandler implements RedmineEventHandler {
 
-    @Autowired
-    private ExternalCaseAppDAO externalCaseAppDAO;
-
-    @Autowired
-    private CaseObjectDAO caseObjectDAO;
-
-    @Autowired
-    private CommonService commonService;
-
-    private final static Logger logger = LoggerFactory.getLogger(RedmineNewIssueHandler.class);
-
     @Override
     public void handle(User user, Issue issue, long companyId) {
         createCaseObject(user, issue, companyId);
     }
 
     private CaseObject buildCaseObject(Issue issue, Person contactPerson, long companyId) {
-        CaseObject obj = new CaseObject();
+        final CaseObject obj = new CaseObject();
         obj.setCreated(issue.getCreatedOn());
         obj.setModified(issue.getUpdatedOn());
 //        obj.setCaseType(RedmineIssueType.find(issue.getTracker().getName()));
@@ -71,9 +60,9 @@ public final class RedmineNewIssueHandler implements RedmineEventHandler {
             return null;
         }
 
-        CaseObject obj = buildCaseObject(issue, contactPerson, companyId);
-        long caseObjId = caseObjectDAO.insertCase(obj);
-        ExternalCaseAppData appData = new ExternalCaseAppData(obj);
+        final CaseObject obj = buildCaseObject(issue, contactPerson, companyId);
+        final long caseObjId = caseObjectDAO.insertCase(obj);
+        final ExternalCaseAppData appData = new ExternalCaseAppData(obj);
         appData.setExtAppCaseId(String.valueOf(issue.getId()));
         appData.setExtAppData(String.valueOf(issue.getProjectId()));
         logger.debug("create hpsm-case id={}, ext={}, data={}", appData.getId(), appData.getExtAppCaseId(), appData.getExtAppData());
@@ -95,4 +84,15 @@ public final class RedmineNewIssueHandler implements RedmineEventHandler {
                 .filter(Objects::nonNull)
                 .forEach(x -> commonService.processStoreComment(issue, person, obj, caseObjId, x));
     }
+
+    @Autowired
+    private ExternalCaseAppDAO externalCaseAppDAO;
+
+    @Autowired
+    private CaseObjectDAO caseObjectDAO;
+
+    @Autowired
+    private CommonService commonService;
+
+    private final static Logger logger = LoggerFactory.getLogger(RedmineNewIssueHandler.class);
 }

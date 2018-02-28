@@ -9,6 +9,7 @@ import static ru.protei.portal.core.model.dict.En_CaseState.*;
 public enum RedmineStatus {
     NEW (1, CREATED),
     IN_PROGRESS (2, ACTIVE),
+    OPENED_RM(2, OPENED),
     STOPPED(9, PAUSED),
     SOLVED (3, DONE),
     FEEDBACK (4, DISCUSS),
@@ -25,7 +26,7 @@ public enum RedmineStatus {
     private final En_CaseState caseState;
 
     public static RedmineStatus getByCaseState(En_CaseState state) {
-        return Arrays.stream(RedmineStatus.values()).filter(x -> x.caseState.equals(state)).findFirst().get();
+        return Arrays.stream(RedmineStatus.values()).filter(x -> x.caseState.equals(state)).findFirst().orElse(null);
     }
 
     public int getRedmineCode() {

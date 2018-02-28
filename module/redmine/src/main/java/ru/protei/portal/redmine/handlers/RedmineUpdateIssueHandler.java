@@ -9,6 +9,7 @@ import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
+import ru.protei.portal.core.service.EventAssemblerService;
 import ru.protei.portal.redmine.api.RedmineIssuePriority;
 import ru.protei.portal.redmine.api.RedmineIssueType;
 import ru.protei.portal.redmine.api.RedmineStatus;
@@ -21,38 +22,32 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public final class RedmineUpdateIssueHandler implements RedmineEventHandler {
-    @Autowired
-    private CaseObjectDAO caseObjectDAO;
-
-    @Autowired
-    private CaseCommentDAO caseCommentDAO;
-
-    @Autowired
-    private CommonService commonService;
-
-    private final Logger logger = LoggerFactory.getLogger(RedmineUpdateIssueHandler.class);
 
     @Override
     public void handle(User user, Issue issue, long companyId) {
-        CaseObject object = caseObjectDAO.getByCondition("EXT_APP_ID=?", issue.getId());
+        final CaseObject object = caseObjectDAO.getByCondition("EXT_APP_ID=?", issue.getId());
+        //In order to avoid collisions
+        assemblerService.forcePublishCaseRelatedEvents(object.getId());
         compareAndUpdate(issue, object, companyId);
         caseObjectDAO.saveOrUpdate(object);
     }
 
     private void compareAndUpdate(Issue issue, CaseObject object, long companyId) {
-        logger.debug("Trying to get latest created comment");
-        CaseComment comment = caseCommentDAO.getCaseComments(object.getId())
+        //Finding latest synchronized comment in our system
+        logger.debug("Trying to get latest synchronized comment");
+        final CaseComment comment = caseCommentDAO.getCaseComments(object.getId())
                 .stream()
+                .filter(x -> x.getAuthor().getCreator().equals("redmine"))
                 .sorted(Comparator.comparing(CaseComment::getCreated))
                 .reduce((o1, o2) -> o2)
                 .orElse(null);
 
         final Date latestCreated = (comment != null) ? comment.getCreated() : issue.getCreatedOn();
 
-        logger.debug("last comment was created on: {}, with id {}", latestCreated);
+        logger.debug("last comment was synced on: {}, with id {}", latestCreated);
         logger.debug("starting adding new comments");
 
-        List<CaseComment> comments = issue.getJournals()
+        final List<CaseComment> comments = issue.getJournals()
                 .stream()
                 .filter(x -> x.getCreatedOn().compareTo(latestCreated) > 0)
                 .filter(x -> !x.getNotes().isEmpty())
@@ -67,6 +62,7 @@ public final class RedmineUpdateIssueHandler implements RedmineEventHandler {
         commonService.processAttachments(issue, object, object.getInitiator());
     }
 
+    //Well, just simpliest way to update object: ignoring everything and just setting fields...
     private void updateObject(Issue issue, CaseObject object) {
         object.setInfo(issue.getDescription());
 //        object.setCaseType(RedmineIssueType.find(issue.getTracker().getId()));
@@ -74,4 +70,18 @@ public final class RedmineUpdateIssueHandler implements RedmineEventHandler {
         object.setState(RedmineStatus.find(issue.getStatusId()).getCaseState());
         object.setName(issue.getSubject());
     }
+
+    @Autowired
+    private CaseObjectDAO caseObjectDAO;
+
+    @Autowired
+    private CaseCommentDAO caseCommentDAO;
+
+    @Autowired
+    private CommonService commonService;
+
+    @Autowired
+    EventAssemblerService assemblerService;
+
+    private final Logger logger = LoggerFactory.getLogger(RedmineUpdateIssueHandler.class);
 }
