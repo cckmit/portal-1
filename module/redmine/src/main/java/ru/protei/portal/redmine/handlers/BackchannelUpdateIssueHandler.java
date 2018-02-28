@@ -9,6 +9,7 @@ import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.model.dao.ExternalCaseAppDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dao.RedmineEndpointDAO;
+import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.RedmineEndpoint;
@@ -48,7 +49,7 @@ public class BackchannelUpdateIssueHandler implements BackchannelEventHandler {
     private void updateIssueProps(Issue issue, CaseObject object) {
         final RedmineStatus status = RedmineStatus.getByCaseState(object.getState());
         issue.setStatusId(status.getRedmineCode());
-        issue.setPriorityId(RedmineIssuePriority.find(object.getImpLevel()).getRedminePriorityLevel());
+        issue.setPriorityId(RedmineIssuePriority.find(En_ImportanceLevel.find(object.getImpLevel())).getRedminePriorityLevel());
         issue.setProjectId(Integer.valueOf(externalCaseAppDAO.get(object.getId()).getExtAppData()));
         issue.setDescription(object.getInfo());
         issue.setSubject(object.getName());
