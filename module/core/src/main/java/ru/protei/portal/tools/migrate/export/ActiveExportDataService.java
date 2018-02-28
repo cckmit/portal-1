@@ -83,8 +83,8 @@ public class ActiveExportDataService implements ExportDataService {
 
     @Override
     public En_ResultStatus exportPerson(Person person) {
-        if (personDAO.isEmployee(person))
-            return En_ResultStatus.INCORRECT_PARAMS;
+//        if (personDAO.isEmployee(person))
+//            return En_ResultStatus.INCORRECT_PARAMS;
 
         try {
             Company personCompany = person.getCompany();

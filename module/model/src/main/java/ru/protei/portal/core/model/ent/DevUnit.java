@@ -74,10 +74,16 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
         this.id = id;
     }
 
+    public DevUnit (En_DevUnitType type, String name, String info) {
+        this (type.getId(), name, info);
+    }
+
     public DevUnit(int typeId, String name, String info) {
         this.typeId = typeId;
         this.name = name;
         this.info = info;
+        this.created = new Date();
+        this.stateId = En_DevUnitState.ACTIVE.getId();
     }
 
     public Long getId() {

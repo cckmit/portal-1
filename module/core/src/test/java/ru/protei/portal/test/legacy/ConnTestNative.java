@@ -19,6 +19,7 @@ public class ConnTestNative {
 
             System.out.println(conn);
             System.out.println(conn.getMetaData().getDatabaseProductName());
+            System.out.println(conn.getMetaData().supportsGetGeneratedKeys());
 
             ResultSet rs = conn.createStatement().executeQuery("select * from \"Resource\".Tm_Person where nID=18");
             rs.next();

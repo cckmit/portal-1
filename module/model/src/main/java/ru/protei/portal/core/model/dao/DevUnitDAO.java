@@ -15,6 +15,7 @@ import java.util.Map;
 public interface DevUnitDAO extends PortalBaseDAO<DevUnit> {
 
     DevUnit checkExistsByName(En_DevUnitType type, String name);
+    DevUnit getByLegacyId (En_DevUnitType type, Long legacyId);
 
     @SqlConditionBuilder
     SqlCondition createProductSqlCondition(ProductQuery query);

@@ -23,6 +23,11 @@ public class DevUnitDAO_Impl extends PortalBaseJdbcDAO<DevUnit> implements DevUn
     }
 
     @Override
+    public DevUnit getByLegacyId(En_DevUnitType type, Long legacyId) {
+        return getByCondition("UTYPE_ID=? and OLD_ID=?", type.getId(), legacyId);
+    }
+
+    @Override
     public Map<Long, Long> getProductOldToNewMap() {
         Map<Long,Long> result = new HashMap<>();
         getListByCondition("UTYPE_ID=? and old_id is not null", En_DevUnitType.PRODUCT.getId())
