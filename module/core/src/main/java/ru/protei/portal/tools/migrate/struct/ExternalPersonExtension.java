@@ -10,7 +10,7 @@ import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 /**
  * Created by turik on 08.09.16.
  */
-@Table(name="\"Resource\".Tm_PersonPROTEI_Extension")
+@Table(name="\"Resource\".Tm_PersonPROTEI_Extension",starQuery = false)
 public class ExternalPersonExtension implements LegacyEntity {
 
     private Long id;
