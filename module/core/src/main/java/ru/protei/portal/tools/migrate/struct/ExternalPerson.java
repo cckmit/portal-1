@@ -43,7 +43,7 @@ public class ExternalPerson implements LegacyEntity {
 
     public ExternalPerson(Person person, String departmentName, String positionName, String host) {
 
-        setId (person.getLegacyId());
+        setId (person.getOldId());
         setCreated(person.getCreated());
         setCreator (Const.CREATOR_FIELD_VALUE);
         setClient (Const.CLIENT_FIELD_VALUE);

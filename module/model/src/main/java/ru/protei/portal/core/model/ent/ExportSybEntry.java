@@ -1,9 +1,7 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.winter.jdbc.annotations.IdInsertMode;
-import ru.protei.winter.jdbc.annotations.JdbcColumn;
-import ru.protei.winter.jdbc.annotations.JdbcEntity;
-import ru.protei.winter.jdbc.annotations.JdbcId;
+import ru.protei.portal.core.model.struct.AuditableObject;
+import ru.protei.winter.jdbc.annotations.*;
 
 import java.util.Date;
 
@@ -25,12 +23,17 @@ public class ExportSybEntry {
     @JdbcColumn(name = "obj_type")
     private String entityType;
 
-    @JdbcColumn(name = "obj_dump")
-    private String entityDump;
+    @JdbcColumn( name = "obj_dump", converterType = ConverterType.JSON )
+    private AuditableObject entry;
 
     public ExportSybEntry() {
     }
 
+    public ExportSybEntry(AuditableObject entry, String instanceId) {
+        this.created = new Date();
+        this.instanceId = instanceId;
+        setEntry(entry);
+    }
 
     public Long getId() {
         return id;
@@ -60,23 +63,27 @@ public class ExportSybEntry {
         return localId;
     }
 
-    public void setLocalId(Long localId) {
-        this.localId = localId;
-    }
-
     public String getEntityType() {
         return entityType;
     }
 
-    public void setEntityType(String entityType) {
-        this.entityType = entityType;
+    public AuditableObject getEntry() {
+        return entry;
     }
 
-    public String getEntityDump() {
-        return entityDump;
+    public void setEntry(AuditableObject entry) {
+        this.entry = entry;
+        this.entityType = entry.getAuditType();
+        this.localId = entry.getId();
     }
 
-    public void setEntityDump(String entityDump) {
-        this.entityDump = entityDump;
+
+    @Override
+    public String toString() {
+        return new StringBuilder("exportEntry{id=").append(getId())
+                .append(", type=").append(getEntityType())
+                .append(", local-id=").append(getLocalId())
+                .append("}")
+                .toString();
     }
 }

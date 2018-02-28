@@ -98,7 +98,7 @@ public class UserRoleDAO_impl extends PortalBaseJdbcDAO<UserRole> implements Use
 
 
 
-    public static final String EMPLOYEE_ROLE_CODE = "employee";
+    public static final String EMPLOYEE_ROLE_CODE = "Сотрудник";
 
     public final static En_Privilege[] DEF_EMPLOYEE_PRIV_SET = {
             En_Privilege.ISSUE_CREATE,
@@ -115,12 +115,14 @@ public class UserRoleDAO_impl extends PortalBaseJdbcDAO<UserRole> implements Use
     public final static En_Scope DEF_EMPLOYEE_SCOPE = En_Scope.SYSTEM;
 
 
-    private final static String DEF_CLIENT_ROLE_CODE="CRM_CLIENT";
+    private final static String DEF_CLIENT_ROLE_CODE="ТПиМ : Заказчик";
 
     private final static En_Privilege [] DEF_COMPANY_CLIENT_PRIV = {
             En_Privilege.ISSUE_CREATE,
             En_Privilege.ISSUE_EDIT,
             En_Privilege.ISSUE_VIEW,
+            En_Privilege.ISSUE_EXPORT,
+            En_Privilege.ISSUE_REPORT,
             En_Privilege.COMMON_PROFILE_EDIT,
             En_Privilege.COMMON_PROFILE_VIEW
     };

@@ -31,4 +31,6 @@ public abstract class AuditableObject implements Serializable {
 
     @JsonIgnore
     public abstract String getAuditType();
+
+    public abstract Long getId ();
 }

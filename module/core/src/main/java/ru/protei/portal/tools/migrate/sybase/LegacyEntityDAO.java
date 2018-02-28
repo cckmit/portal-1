@@ -25,7 +25,15 @@ public interface LegacyEntityDAO<T extends LegacyEntity> {
         return (exists(entity.getId())) ? update(entity) : insert(entity);
     }
 
+    default T saveOrUpdate (T entity) throws SQLException {
+        if (entity.getId() != null && entity.getId() > 0L)
+            return update(entity);
+        else
+            return insert(entity);
+    }
+
     T delete(T entity) throws SQLException;
+    void delete (List<T> entities) throws SQLException;
     void delete(Long id) throws SQLException;
     void delete(String condition, Object...args) throws SQLException;
 }

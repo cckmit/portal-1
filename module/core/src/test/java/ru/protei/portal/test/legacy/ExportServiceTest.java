@@ -21,6 +21,7 @@ import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.tools.migrate.export.ExportDataService;
 import ru.protei.portal.tools.migrate.struct.ExternalCompany;
 import ru.protei.portal.tools.migrate.struct.ExternalPerson;
+import ru.protei.portal.tools.migrate.struct.ExternalPersonExtension;
 import ru.protei.portal.tools.migrate.struct.ExternalProduct;
 import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
 import ru.protei.winter.core.CoreConfigurationContext;
@@ -28,6 +29,7 @@ import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import java.sql.SQLException;
 import java.util.Date;
+import java.util.List;
 
 public class ExportServiceTest {
     public static final String JUNIT_TEST_NAME = "junit-test";
@@ -65,7 +67,14 @@ public class ExportServiceTest {
         legacySystemDAO.runAction(transaction -> {
             transaction.dao(ExternalCompany.class).delete("strName=?", JUNIT_TEST_NAME);
             transaction.dao(ExternalProduct.class).delete("strValue=?", JUNIT_TEST_NAME);
-            transaction.dao(ExternalPerson.class).delete("nCompanyID=? and strFirstName=?", EXISTING_COMPANY_ID, JUNIT_TEST_NAME);
+
+            List<ExternalPerson> extPersons = transaction.dao(ExternalPerson.class).list("nCompanyID=? and strFirstName=?", EXISTING_COMPANY_ID, JUNIT_TEST_NAME);
+
+            for (ExternalPerson e : extPersons)
+                transaction.dao(ExternalPersonExtension.class).delete(e.getId());
+
+            transaction.dao(ExternalPerson.class).delete(extPersons);
+
             transaction.commit();
             return true;
         });

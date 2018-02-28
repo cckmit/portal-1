@@ -56,7 +56,7 @@ public class ExternalCompany implements LegacyEntity {
     }
 
     public ExternalCompany (Company company) {
-        this.id = company.getLegacyId();
+        this.id = company.getOldId();
         this.created = company.getCreated();
         this.contactDataFrom(company);
     }

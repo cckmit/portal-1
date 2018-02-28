@@ -40,10 +40,12 @@ public class ExternalPersonExtension implements LegacyEntity {
     public ExternalPersonExtension() {}
 
     public ExternalPersonExtension(Person person) {
+        setId (person.getOldId());
+        setPersonId (person.getOldId());
+        updateFromPerson(person);
+    }
 
-        setId (person.getLegacyId());
-        setPersonId (person.getLegacyId());
-
+    public void updateFromPerson(Person person) {
         PlainContactInfoFacade contactInfoFacade = new PlainContactInfoFacade(person.getContactInfo());
         setEmail (contactInfoFacade.getEmail () == null ? "" : contactInfoFacade.getEmail ());
         setOtherEmail (contactInfoFacade.getEmail_own () == null ? "" : contactInfoFacade.getEmail_own ());
@@ -58,23 +60,23 @@ public class ExternalPersonExtension implements LegacyEntity {
     }
 
     @PrimaryKey
-    @Column(key=true, name="nID")
+    @Column(name="nID")
     public Long getId() {
         return id;
     }
 
     @PrimaryKey
-    @Column(key=true, name="nID")
+    @Column(name="nID")
     public void setId(Long id) {
         this.id = id;
     }
 
-    @Column(key=true, name="nPersonID")
+    @Column(name="nPersonID")
     public Long getPersonId() {
         return personId;
     }
 
-    @Column(key=true, name="nPersonID")
+    @Column(name="nPersonID")
     public void setPersonId(Long personId) {
         this.personId = personId;
     }

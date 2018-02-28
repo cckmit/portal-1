@@ -345,11 +345,6 @@ public class Person extends AuditableObject implements PersonShortViewSupport {
         this.oldId = oldId;
     }
 
-
-    public Long getLegacyId () {
-        return this.oldId != null ? this.oldId : this.id;
-    }
-
     @Override
     public String toString() {
         return "Person{" +

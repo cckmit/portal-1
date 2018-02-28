@@ -184,10 +184,6 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
         return new ProductDirectionInfo( this.id, this.name );
     }
 
-    public Long getLegacyId () {
-        return this.oldId != null ? this.oldId : this.id;
-    }
-
     @Override
     public String toString() {
         return "DevUnit{" +

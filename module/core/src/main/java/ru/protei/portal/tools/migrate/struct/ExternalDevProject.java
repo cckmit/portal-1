@@ -37,7 +37,7 @@ public class ExternalDevProject implements LegacyEntity {
     }
 
     public ExternalDevProject(DevUnit unit) {
-        this.id = unit.getLegacyId();
+        this.id = unit.getOldId();
         this.created = unit.getCreated();
         this.name = unit.getName();
         this.info = unit.getInfo();

@@ -33,8 +33,8 @@ public class SybConnWrapperImpl implements SybConnProvider {
         pds.setPassword(pwd);
 
 //        if (config.getTestQuery() != null) {
-//            pds.setValidateConnectionOnBorrow(true);
-//            pds.setSQLForValidateConnection(config.getTestQuery());
+        pds.setValidateConnectionOnBorrow(true);
+        //pds.setSQLForValidateConnection("");
 //        }
 
         pds.setMinPoolSize(1);

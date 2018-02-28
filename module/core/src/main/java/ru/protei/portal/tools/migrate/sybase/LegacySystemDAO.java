@@ -8,7 +8,10 @@ import protei.sql.query.IQuery;
 import protei.sql.query.IQueryCmd;
 import protei.sql.query.Tm_BaseQueryCmd;
 import protei.sql.utils.Tm_QueryExecutor;
+import ru.protei.portal.core.model.dao.CompanyDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
+import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.LegacyEntity;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.HelperFunc;
@@ -32,6 +35,9 @@ public class LegacySystemDAO {
 
     @Autowired
     private SybConnProvider connProvider;
+
+    @Autowired
+    CompanyDAO companyDAO;
 
     @Autowired
     PersonDAO personDAO;
@@ -94,17 +100,6 @@ public class LegacySystemDAO {
         }
     }
 
-
-
-    public void saveExternalEmployee(Person person, String departmentName, String positionName) throws SQLException, UnknownHostException {
-        if (person == null || person.getId () == null) return;
-        if (isExistPerson(person)) {
-            mergeEmployee(person, departmentName, positionName);
-        } else {
-            persistEmployee(person, departmentName, positionName);
-        }
-    }
-
     public void deleteExternalEmployee(Person person) throws SQLException, UnknownHostException {
 
         logger.debug ("deleteExternalEmployee(): person={}", person);
@@ -117,39 +112,61 @@ public class LegacySystemDAO {
         }
     }
 
-    private void persistEmployee(Person person, String departmentName, String positionName) throws SQLException, UnknownHostException {
+    public En_ResultStatus saveExternalEmployee(Person person, String departmentName, String positionName) {
+        if (person == null || person.getId () == null) return En_ResultStatus.INCORRECT_PARAMS;
 
-        logger.debug ("persistEmployee(): person={}", person);
+        return runActionRTE(transaction -> {
+            ExternalPerson externalPerson = transaction.dao(ExternalPerson.class).get(person.getOldId());
+//
+//            Company localCompany = person.getCompany() != null ? person.getCompany() : companyDAO.get(person.getCompanyId());
+//
+//            ExternalCompany company = transaction.dao(ExternalCompany.class).get(localCompany.getOldId());
 
-        try (Connection connection = connProvider.getConnection()) {
-            ExternalPerson externalPerson = new ExternalPerson(person, departmentName, positionName, ourHost);
-            Tm_SqlHelper.saveObjectEx(connection, externalPerson);
+            if (externalPerson != null) {
+                logger.debug ("mergeEmployee(): person={}", person);
 
-            ExternalPersonExtension externalPersonExtension = new ExternalPersonExtension(person);
-            Tm_SqlHelper.saveObjectEx(connection, externalPersonExtension);
+                externalPerson.updateContactFrom(person);
+                externalPerson.setDepartment(departmentName);
+                externalPerson.setPosition(positionName);
+                externalPerson.setCompanyId(1L);
 
-            connection.commit();
+                ExternalPersonExtension externalPersonExtension = transaction.dao(ExternalPersonExtension.class).get(externalPerson.getId());
+                if (externalPersonExtension == null) {
+                    externalPersonExtension = new ExternalPersonExtension(person);
+                    externalPersonExtension.setId(externalPerson.getId());
+                }
+                else
+                    externalPersonExtension.updateFromPerson(person);
 
-            person.setOldId(externalPerson.getId());
-            personDAO.partialMerge(person, "old_id");
-        }
+                externalPersonExtension.setPersonId(externalPerson.getId());
+
+                transaction.dao(ExternalPerson.class).update(externalPerson);
+                transaction.dao(ExternalPersonExtension.class).saveOrUpdate(externalPersonExtension);
+
+                transaction.commit();
+            }
+            else {
+                logger.debug ("persistEmployee(): person={}", person);
+
+                externalPerson = new ExternalPerson(person, departmentName, positionName, ourHost);
+                externalPerson.setCompanyId(1L);
+                transaction.dao(ExternalPerson.class).insert(externalPerson);
+
+                ExternalPersonExtension externalPersonExtension = new ExternalPersonExtension(person);
+                externalPersonExtension.setId(externalPerson.getId());
+                externalPersonExtension.setPersonId(externalPerson.getId());
+                transaction.dao(ExternalPersonExtension.class).insert(externalPersonExtension);
+
+                transaction.commit();
+
+                person.setOldId(externalPerson.getId());
+                personDAO.partialMerge(person, "old_id");
+            }
+
+            return En_ResultStatus.OK;
+        });
     }
 
-    private void mergeEmployee(Person person, String departmentName, String positionName) throws SQLException, UnknownHostException {
-
-        logger.debug ("mergeEmployee(): person={}", person);
-
-        try (Connection connection = connProvider.getConnection()) {
-
-            ExternalPerson externalPerson = new ExternalPerson (person, departmentName, positionName, ourHost);
-            Tm_SqlHelper.updateObjectEx(connection, externalPerson);
-
-            ExternalPersonExtension externalPersonExtension = new ExternalPersonExtension (person);
-            Tm_SqlHelper.updateObjectEx(connection, externalPersonExtension);
-
-            connection.commit ();
-        }
-    }
 
     public boolean isExistsPerson (long id) throws SQLException {
         try (Connection connection = connProvider.getConnection()){
@@ -388,6 +405,11 @@ public class LegacySystemDAO {
         @Override
         public void delete(String condition, Object... args) throws SQLException {
             Tm_SqlHelper.deleteObjectEx(connection, entityType, condition, args);
+        }
+
+        @Override
+        public void delete(List<T> entities) throws SQLException {
+            Tm_SqlHelper.deleteObjectListEx(connection,entityType,entities);
         }
     }
 
