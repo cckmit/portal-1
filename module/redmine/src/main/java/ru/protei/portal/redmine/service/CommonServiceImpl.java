@@ -104,6 +104,7 @@ public class CommonServiceImpl implements CommonService {
                             logger.debug("trace", e);
                         }
                     });
+            addedAttachments.forEach(attachmentDAO::saveOrUpdate);
             caseAttachments.forEach(caseAttachmentDAO::saveOrUpdate);
         }
 

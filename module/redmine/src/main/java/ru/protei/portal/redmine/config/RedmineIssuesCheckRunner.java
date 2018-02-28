@@ -23,7 +23,7 @@ public final class RedmineIssuesCheckRunner {
     }
 
     //Every 5 mins
-    @Scheduled(fixedRate = 60 * 1000)
+    @Scheduled(fixedRate = 90 * 1000)
     public void queryNewIssues() {
         logger.debug("Check for new issues stared");
         redmineEndpointDAO.getAll().forEach(redmineService::checkForNewIssues);
@@ -31,7 +31,7 @@ public final class RedmineIssuesCheckRunner {
     }
 
     //Every 5 mins
-    @Scheduled(fixedRate = 60 * 1000)
+    @Scheduled(fixedRate = 90 * 1000)
     public void queryIssuesUpdates() {
         logger.debug("Check for issues updates started");
         redmineEndpointDAO.getAll().forEach(redmineService::checkForIssuesUpdates);

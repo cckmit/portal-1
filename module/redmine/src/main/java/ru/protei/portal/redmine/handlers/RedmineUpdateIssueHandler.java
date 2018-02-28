@@ -63,14 +63,14 @@ public final class RedmineUpdateIssueHandler implements RedmineEventHandler {
 
         logger.debug("Added {} new case comments to issue with id: {}", comments.size(), object.getId());
 
-        commonService.processAttachments(issue, object, object.getInitiator());
         updateObject(issue, object);
+        commonService.processAttachments(issue, object, object.getInitiator());
     }
 
     private void updateObject(Issue issue, CaseObject object) {
         object.setInfo(issue.getDescription());
 //        object.setCaseType(RedmineIssueType.find(issue.getTracker().getId()));
-//        object.setImpLevel(RedmineIssuePriority.find(issue.getPriorityId()).getCaseImpLevel().getId());
+        object.setImpLevel(RedmineIssuePriority.find(issue.getPriorityId()).getCaseImpLevel().getId());
         object.setState(RedmineStatus.find(issue.getStatusId()).getCaseState());
         object.setName(issue.getSubject());
     }

@@ -50,7 +50,7 @@ public final class RedmineNewIssueHandler implements RedmineEventHandler {
 
 //        obj.setCaseType(RedmineIssueType.find(issue.getTracker().getId()));
         obj.setCaseType(En_CaseType.CRM_SUPPORT);
-//        obj.setImpLevel(RedmineIssuePriority.find(issue.getPriorityId()).getCaseImpLevel().getId());
+        obj.setImpLevel(RedmineIssuePriority.find(issue.getPriorityId()).getCaseImpLevel().getId());
         obj.setState(RedmineStatus.find(issue.getStatusId()).getCaseState());
 
         obj.setName(issue.getSubject());

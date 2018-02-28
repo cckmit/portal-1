@@ -3,11 +3,11 @@ package ru.protei.portal.redmine.api;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 
 public enum RedmineIssuePriority {
-    LOW (3, En_ImportanceLevel.LOW),
+    LOW (3, En_ImportanceLevel.COSMETIC),
     BASIC (4, En_ImportanceLevel.BASIC),
     HIGH (5, En_ImportanceLevel.IMPORTANT),
     IMPORTANT (6, En_ImportanceLevel.CRITICAL),
-    CRITICAL(7, En_ImportanceLevel.IMMEDIATE);
+    CRITICAL(7, En_ImportanceLevel.CRITICAL);
 
     RedmineIssuePriority (int level, En_ImportanceLevel importanceLevel) {
         this.redminePriorityLevel = level;
@@ -33,9 +33,9 @@ public enum RedmineIssuePriority {
         return BASIC;
     }
 
-    public static RedmineIssuePriority find (int hpsmLevel) {
+    public static RedmineIssuePriority find (int issueLvl) {
         for (RedmineIssuePriority it : RedmineIssuePriority.values())
-            if (it.redminePriorityLevel == hpsmLevel)
+            if (it.redminePriorityLevel == issueLvl)
                 return it;
         return BASIC;
     }
