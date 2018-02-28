@@ -14,7 +14,4 @@ public interface HpsmService {
 
     @EventListener
     void onAssembledCaseEvent(AssembledCaseEvent event);
-
-    /*void onCaseCommentEvent (CaseCommentEvent event);
-    void onCaseObjectEvent (CaseObjectEvent event);*/
 }
