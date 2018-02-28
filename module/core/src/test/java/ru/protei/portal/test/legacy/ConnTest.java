@@ -2,6 +2,7 @@ package ru.protei.portal.test.legacy;
 
 import protei.sql.Tm_SqlHelper;
 import ru.protei.portal.tools.migrate.struct.ExternalPerson;
+import ru.protei.portal.tools.migrate.struct.ExternalPersonExtension;
 
 import java.sql.Connection;
 import java.sql.Driver;
@@ -27,6 +28,12 @@ public class ConnTest {
 
             conn.setAutoCommit(false);
             conn.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
+
+            ExternalPerson externalPerson = Tm_SqlHelper.getObjectEx(conn, ExternalPerson.class, 1L);
+            ExternalPersonExtension extension = Tm_SqlHelper.getObjectEx(conn, ExternalPersonExtension.class, 3L);
+
+            System.out.println(externalPerson);
+            System.out.println(extension);
 
             ResultSet rs = null;
 

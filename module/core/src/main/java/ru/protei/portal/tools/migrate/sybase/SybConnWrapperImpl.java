@@ -54,6 +54,9 @@ public class SybConnWrapperImpl implements SybConnProvider {
 
     @Override
     public Connection getConnection() throws SQLException {
-        return pds.getConnection(); //DriverManager.getConnection(jdbcURL, user, pwd);
+        Connection connection = pds.getConnection();
+        connection.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
+        connection.setAutoCommit(false);
+        return connection;
     }
 }
