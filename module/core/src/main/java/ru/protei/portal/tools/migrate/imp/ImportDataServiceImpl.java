@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
+import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
@@ -65,12 +66,20 @@ public class ImportDataServiceImpl implements ImportDataService {
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
+    @Autowired
+    PortalConfig portalConfig;
+
 
     @Scheduled(fixedRate = 60000, fixedDelay = 60000)
     public void incrementalImport () {
         logger.debug("incremental import run");
 
-        importEmployes();
+        if (portalConfig.data().legacySysConfig().isImportEmployeesEnabled()) {
+            importEmployes();
+        }
+        else {
+            logger.debug("import of employees from legacy db is disabled, skip");
+        }
 
         logger.debug("incremental import done");
     }
