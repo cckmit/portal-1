@@ -52,8 +52,11 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Override
     public CoreResponse<Long> countCompanies(AuthToken token, CompanyQuery query) {
-        Long count = companyDAO.count(query);
+        Set< UserRole > roles = authService.findSession(token).getLogin().getRoles();
+        if(!policyService.hasGrantAccessFor( roles, En_Privilege.COMPANY_VIEW )) //if customer then only one company
+            return new CoreResponse<Long>().success(1L);
 
+        Long count = companyDAO.count(query);
         if (count == null)
             return new CoreResponse<Long>().error(En_ResultStatus.GET_DATA_ERROR, 0L);
 

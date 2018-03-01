@@ -16,7 +16,7 @@ public interface AbstractCompanyTableView extends IsWidget {
     HasWidgets getPreviewContainer ();
     HasWidgets getFilterContainer ();
 
-    void setIssuesCount( Long issuesCount );
+    void setCompaniesCount(Long issuesCount );
 
     int getPageSize();
 

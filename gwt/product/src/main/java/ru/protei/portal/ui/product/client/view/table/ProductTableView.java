@@ -63,7 +63,7 @@ public class ProductTableView extends Composite implements AbstractProductTableV
     }
 
     @Override
-    public void setIssuesCount(Long issuesCount) {
+    public void setProductsCount(Long issuesCount) {
         table.setTotalRecords( issuesCount.intValue() );
     }
 

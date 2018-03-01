@@ -36,11 +36,16 @@ public class BackChannelHandlerFactoryImpl implements BackChannelHandlerFactory 
     public BackChannelHandlerFactoryImpl() {
         stateHandlerMap = new HashMap<>();
         stateHandlerMap.put(new Tuple<>(CREATED, ACTIVE), new OpenStateHandler());
+        stateHandlerMap.put(new Tuple<>(CREATED, OPENED), new OpenStateHandler());
         stateHandlerMap.put(new Tuple<>(ACTIVE, INFO_REQUEST), new InfoRequestStateHandler());
+        stateHandlerMap.put(new Tuple<>(OPENED, INFO_REQUEST), new InfoRequestStateHandler());
         stateHandlerMap.put(new Tuple<>(ACTIVE, WORKAROUND), new WorkAroundStateHandler());
+        stateHandlerMap.put(new Tuple<>(OPENED, WORKAROUND), new WorkAroundStateHandler());
         stateHandlerMap.put(new Tuple<>(ACTIVE, DONE), new DoneStateHandler());
+        stateHandlerMap.put(new Tuple<>(OPENED, DONE), new DoneStateHandler());
         stateHandlerMap.put(new Tuple<>(DONE, VERIFIED), new VerifiedStateHandler());
         stateHandlerMap.put(new Tuple<>(ACTIVE, TEST_LOCAL), new LocalTestStateHandler());
+        stateHandlerMap.put(new Tuple<>(OPENED, TEST_LOCAL), new LocalTestStateHandler());
         stateHandlerMap.put(new Tuple<>(TEST_LOCAL, TEST_CUST), new CustomerTestStateHandler());
     }
 
@@ -66,7 +71,7 @@ public class BackChannelHandlerFactoryImpl implements BackChannelHandlerFactory 
                 message.setOurOpenTime(event.getEventDate());
             }
 
-            updateAppDataAndSend(message, instance, event.getLastState());
+            updateAppDataAndSend(message, instance, event.getCaseObject());
         }
     }
 

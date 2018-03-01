@@ -72,7 +72,7 @@ public class CompanyTableView extends Composite implements AbstractCompanyTableV
     }
 
     @Override
-    public void setIssuesCount(Long issuesCount) {
+    public void setCompaniesCount(Long issuesCount) {
         table.setTotalRecords( issuesCount.intValue() );
     }
 

@@ -128,7 +128,7 @@ public abstract class CompanyTableActivity implements
 
             @Override
             public void onSuccess( Long count ) {
-                view.setIssuesCount( count );
+                view.setCompaniesCount( count );
                 pagerView.setTotalPages( view.getPageCount() );
             }
         });
