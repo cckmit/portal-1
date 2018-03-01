@@ -175,7 +175,7 @@ public class ActiveExportDataService implements ExportDataService {
         }
 
         try {
-            Company personCompany = person.getCompany();
+            final Company personCompany = person.getCompany() != null ? person.getCompany() : companyDAO.get(person.getCompanyId());
 
             return legacyDAO.runAction(transaction -> {
                 ExternalCompany externalCompany = transaction.dao(ExternalCompany.class).get(personCompany.getOldId());

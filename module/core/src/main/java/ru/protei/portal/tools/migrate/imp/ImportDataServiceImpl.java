@@ -70,7 +70,7 @@ public class ImportDataServiceImpl implements ImportDataService {
     PortalConfig portalConfig;
 
 
-    @Scheduled(fixedRate = 60000, fixedDelay = 60000)
+    @Scheduled(fixedRate = 60000L, initialDelay = 60000L)
     public void incrementalImport () {
         logger.debug("incremental import run");
 

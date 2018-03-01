@@ -153,7 +153,9 @@ public class Person extends AuditableObject implements PersonShortViewSupport {
 
     public void setCompany(Company company) {
         this.company = company;
-        this.companyId = company.getId();
+        /** on deserialization (called by jackson parser) it will be null **/
+        if (company != null)
+            this.companyId = company.getId();
     }
 
     public String getPosition() {

@@ -9,15 +9,14 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import ru.protei.portal.config.MainConfiguration;
 import ru.protei.portal.core.model.dao.CompanyDAO;
 import ru.protei.portal.core.model.dao.DevUnitDAO;
+import ru.protei.portal.core.model.dao.ExportSybEntryDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.core.model.ent.CompanyCategory;
-import ru.protei.portal.core.model.ent.DevUnit;
-import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.tools.migrate.export.ExportDataService;
 import ru.protei.portal.tools.migrate.struct.ExternalCompany;
 import ru.protei.portal.tools.migrate.struct.ExternalPerson;
@@ -33,11 +32,13 @@ import java.util.List;
 
 public class ExportServiceTest {
     public static final String JUNIT_TEST_NAME = "junit-test";
+    public static final String EXPORT_INSTANCE_ID = "junit";
     static ApplicationContext ctx;
 
     static CompanyDAO companyDAO;
     static ExportDataService exportService;
     static LegacySystemDAO legacySystemDAO;
+    static ExportSybEntryDAO exportSybEntryDAO;
 
     static DevUnitDAO devUnitDAO;
     static PersonDAO personDAO;
@@ -55,6 +56,7 @@ public class ExportServiceTest {
         companyDAO = ctx.getBean(CompanyDAO.class);
         personDAO = ctx.getBean(PersonDAO.class);
         devUnitDAO = ctx.getBean(DevUnitDAO.class);
+        exportSybEntryDAO = ctx.getBean(ExportSybEntryDAO.class);
         cleanUp();
     }
 
@@ -63,6 +65,7 @@ public class ExportServiceTest {
         devUnitDAO.removeByCondition("UTYPE_ID=? and UNIT_NAME=?", En_DevUnitType.PRODUCT.getId(), JUNIT_TEST_NAME);
         companyDAO.removeByCondition("cname=?", JUNIT_TEST_NAME);
         personDAO.removeByCondition("company_id=? and displayname=?", EXISTING_COMPANY_ID, JUNIT_TEST_NAME);
+        exportSybEntryDAO.removeByCondition("instance_id=?", EXPORT_INSTANCE_ID);
 
         legacySystemDAO.runAction(transaction -> {
             transaction.dao(ExternalCompany.class).delete("strName=?", JUNIT_TEST_NAME);
@@ -78,6 +81,20 @@ public class ExportServiceTest {
             transaction.commit();
             return true;
         });
+    }
+
+
+    @Test
+    public void testExportEntrySerialization () {
+        Person person = personDAO.get(EXISTING_PERSON_ID);
+        ExportSybEntry entry = new ExportSybEntry(person, EXPORT_INSTANCE_ID);
+
+        Assert.assertTrue(exportSybEntryDAO.persist(entry) > 0L);
+
+        entry = exportSybEntryDAO.get(entry.getId());
+        Assert.assertNotNull(entry);
+        Assert.assertNotNull(entry.getEntry());
+        Assert.assertTrue(entry.getEntry() instanceof Person);
     }
 
     @Test
