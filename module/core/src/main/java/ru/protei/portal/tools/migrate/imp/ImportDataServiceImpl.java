@@ -95,7 +95,7 @@ public class ImportDataServiceImpl implements ImportDataService {
         legacySystemDAO.runActionRTE(transaction -> {
             MigrationEntry migrationEntry = migrationEntryDAO.getOrCreateEntry(En_MigrationEntry.PERSON_EMPLOYEE);
 
-            List<ExternalPerson> processList = transaction.dao(ExternalPerson.class).list("nID > ?", migrationEntry.getLastId());
+            List<ExternalPerson> processList = transaction.dao(ExternalPerson.class).list("nID > ? and nCompanyID=?", migrationEntry.getLastId(), 1L);
 
             if (processList.isEmpty()) {
                 logger.debug("No new employees in legacy db, exit now");

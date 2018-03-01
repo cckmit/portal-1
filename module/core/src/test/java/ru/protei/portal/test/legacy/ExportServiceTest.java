@@ -43,9 +43,9 @@ public class ExportServiceTest {
     static PersonDAO personDAO;
 
 
-    static long EXISTING_COMPANY_ID = 1L;
+    static long EXISTING_COMPANY_ID = 2L;
     static long EXISTING_PRODUCT_ID = 1L;
-    static long EXISTING_PERSON_ID = 1L;
+    static long EXISTING_PERSON_ID = 1001L;
 
     @BeforeClass
     public static void init () throws Exception {
