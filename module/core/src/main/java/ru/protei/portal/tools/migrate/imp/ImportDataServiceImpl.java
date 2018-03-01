@@ -476,17 +476,18 @@ public class ImportDataServiceImpl implements ImportDataService {
                     if (info.proteiExtension != null && !info.proteiExtension.isFired()) {
                         UserLogin ulogin = MigrateUtils.externalEmployeeLogin(info, employeeRoleSet);
 
+                        if (ulogin.getUlogin() == null) {
+                            logger.error("unable to create user login for person {}", info.getDisplayName());
+                            continue;
+                        }
+
                         if (!loginUniqueController.isUnique(ulogin.getUlogin())) {
                             logger.error("login {} is used! duplicated data for {}", ulogin.getUlogin(), impPerson);
                             continue;
                         }
 
-                        if (ulogin.getUlogin() == null) {
-                            logger.error("unable to create user login for person {}", info.getDisplayName());
-                        } else {
-                            loginUniqueController.register(ulogin.getUlogin());
-                            loginBatch.add(ulogin);
-                        }
+                        loginUniqueController.register(ulogin.getUlogin());
+                        loginBatch.add(ulogin);
                     }
                 }
 
