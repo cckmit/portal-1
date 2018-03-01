@@ -5,6 +5,20 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import static ru.protei.portal.core.model.dict.En_CaseType.*;
 
 public enum RedmineIssueType {
+    /* @review
+     *
+     * Такой подход категорически неверен, нужно было спросить по поводу CaseType.
+     * Мы всегда должны создавать только Case с типом CRM_SUPPORT, нам тип задачи
+     * в Redmine абсолютно не важен, пусть он хоть какой будет, всегда отображается
+     * в CRM_SUPPORT и только в него.
+     * Типы BUG,FREQ, TASK - были введены для миграции старых данных текущего портала, где
+     * есть такие сущности. Суть проблемы в том, что сейчас сделана поддержка работы
+     * ТОЛЬКО с CRM_SUPPORT, никакие другие типы Case в новом портале не используются,
+     * соответственно данные с такими типами просто не будут отображаться.
+     * Этот enum нужно убрать и сделать обработку без него (нет смысла, ты всегда создаешь
+     * только CRM_SUPPORT)
+     *
+     */
     ERROR (1, En_CaseType.BUG),
     CRITICAL_ERROR(10, En_CaseType.BUG),
     CHANGE(2, FREQ),

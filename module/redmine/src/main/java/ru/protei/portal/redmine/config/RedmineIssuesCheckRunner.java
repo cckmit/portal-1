@@ -22,6 +22,13 @@ public final class RedmineIssuesCheckRunner {
         logger.debug("Redmine new issues checker created");
     }
 
+    /*
+        @review А зачем нужно разделять процесс получения новых issue и update по имеющимся?
+        Мне видится, что это нужно сделать в один заход, ни к чему это разделять.
+        Проще же будет видеть процесс по логам.
+        И зачем такие странные числа в качестве периода запуска?
+     */
+
     //Every 5 mins (well, actually, it is not exactly 5 mins, but who really cares?)
     @Scheduled(fixedRate = 5 * 59 * 1000)
     public void queryNewIssues() {

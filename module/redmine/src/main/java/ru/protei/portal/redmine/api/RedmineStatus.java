@@ -12,6 +12,13 @@ public enum RedmineStatus {
     OPENED_RM(2, OPENED),
     STOPPED(9, PAUSED),
     SOLVED (3, DONE),
+
+    /*
+     @review
+     FEEDBACK скорее должен переходить в TEST, хотя я знаю, что они под этим подразумевают.
+     Наверное стоит сформировать письмо с вопросами и отправить заказчику на раздумье.
+     */
+
     FEEDBACK (4, DISCUSS),
     REJECTED (6, REOPENED),
     CLOSED (5, VERIFIED),
