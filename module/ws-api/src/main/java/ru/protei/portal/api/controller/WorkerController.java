@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.*;
 import protei.sql.query.Tm_SqlQueryHelper;
 import ru.protei.portal.api.config.WSConfig;
 import ru.protei.portal.api.model.*;
-import ru.protei.portal.api.tools.migrate.WSMigrationManager;
-import ru.protei.portal.api.utils.HelperService;
+import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
+import ru.protei.portal.tools.migrate.HelperService;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_Gender;
@@ -58,7 +58,7 @@ public class WorkerController {
     TransactionTemplate transactionTemplate;
 
     @Autowired
-    WSMigrationManager migrationManager;
+    LegacySystemDAO migrationManager;
 
     @Autowired
     AuditObjectDAO auditObjectDAO;
@@ -204,7 +204,7 @@ public class WorkerController {
                     persistWorker(worker);
 
                     if (WSConfig.getInstance().isEnableMigration()) {
-                        migrationManager.savePerson(person, operationData.department().getName(), position.getName());
+                        migrationManager.saveExternalEmployee(person, operationData.department().getName(), position.getName());
                     }
 
 
@@ -267,7 +267,7 @@ public class WorkerController {
                         mergePerson(person);
 
                         if (WSConfig.getInstance().isEnableMigration()) {
-                            migrationManager.savePerson(person, "", "");
+                            migrationManager.saveExternalEmployee(person, "", "");
                         }
 
                         logger.debug("success result, workerRowId={}", worker.getId());
@@ -287,7 +287,7 @@ public class WorkerController {
                     mergeWorker(worker);
 
                     if (WSConfig.getInstance().isEnableMigration()) {
-                        migrationManager.savePerson(person, worker.getDepartment().getName(), position.getName());
+                        migrationManager.saveExternalEmployee(person, worker.getDepartment().getName(), position.getName());
                     }
 
                     logger.debug("success result, workerRowId={}", worker.getId());
@@ -354,7 +354,7 @@ public class WorkerController {
                         mergePerson(person);
 
                         if (WSConfig.getInstance().isEnableMigration()) {
-                            migrationManager.deletePerson(person);
+                            migrationManager.deleteExternalEmployee(person);
                         }
                     }
                     logger.debug("success result, workerRowId={}", worker.getId());

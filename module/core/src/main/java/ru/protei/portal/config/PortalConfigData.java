@@ -5,6 +5,8 @@ import org.slf4j.LoggerFactory;
 import ru.protei.winter.core.utils.config.exception.ConfigException;
 import ru.protei.winter.core.utils.config.utils.PropertiesWrapper;
 
+import java.net.Inet4Address;
+
 /**
  * Created by michael on 31.05.17.
  */
@@ -15,6 +17,7 @@ public class PortalConfigData {
     private SmtpConfig smtpConfig;
     private CloudConfig cloudConfig;
     private final EventAssemblyConfig eventAssemblyConfig;
+    private final LegacySystemConfig legacySystemConfig;
 
     private final String crmCaseUrl;
 
@@ -22,8 +25,13 @@ public class PortalConfigData {
         smtpConfig = new SmtpConfig(wrapper);
         cloudConfig = new CloudConfig(wrapper);
         eventAssemblyConfig = new EventAssemblyConfig(wrapper);
+        legacySystemConfig = new LegacySystemConfig(wrapper);
 
         crmCaseUrl = wrapper.getProperty( "crm.case.url", "http://127.0.0.1:8888/crm.html#issues/issue:id=%d;" );
+    }
+
+    public LegacySystemConfig legacySysConfig() {
+        return legacySystemConfig;
     }
 
     public SmtpConfig smtp () {
@@ -100,7 +108,7 @@ public class PortalConfigData {
         private final long waitingPeriod;
 
         public EventAssemblyConfig(PropertiesWrapper properties) throws ConfigException {
-            long v = Long.valueOf(properties.getProperty("core.waiting_period", "30"));
+            long v = properties.getProperty("core.waiting_period", Long.class, 30L);
 
             if (v > java.util.concurrent.TimeUnit.MINUTES.toSeconds(2)) {
                 v = java.util.concurrent.TimeUnit.MINUTES.toSeconds(2);
@@ -122,4 +130,73 @@ public class PortalConfigData {
         }
     }
 
+
+    public static class LegacySystemConfig {
+        private final String jdbcDriver;
+        private final String jdbcURL;
+        private final String login;
+        private final String passwd;
+        private final boolean exportEnabled;
+
+        // create a normal implementation of import-service
+        private final boolean importEnabled;
+        private final boolean importEmployeesEnabled;
+
+        private final String instanceId;
+
+        public LegacySystemConfig(PropertiesWrapper properties) throws ConfigException {
+            this.jdbcDriver = properties.getProperty("syb.jdbc.driver", "net.sourceforge.jtds.jdbc.Driver");
+            this.jdbcURL = properties.getProperty("syb.jdbc.url", "jdbc:sybase:Tds:192.168.1.55:2638/PORTAL2017");
+            this.login = properties.getProperty("syb.jdbc.login", "dba");
+            this.passwd = properties.getProperty("syb.jdbc.pwd", "sql");
+
+            this.exportEnabled = properties.getProperty("syb.export.enabled", Boolean.class,false);
+            this.importEnabled = properties.getProperty("syb.import.enabled", Boolean.class,true);
+
+            this.importEmployeesEnabled = importEnabled &
+                    properties.getProperty("syb.import.employees", Boolean.class,false);
+
+            try {
+                this.instanceId = properties.getProperty("syb.export.identity", Inet4Address.getLocalHost().getHostAddress());
+            }
+            catch (Exception e) {
+                logger.error("unable to get local ip address", e);
+                throw new ConfigException(e);
+            }
+
+            logger.debug("legacy config, driver={}, url={}, export={}, import={}", jdbcDriver, jdbcURL, exportEnabled, importEnabled);
+        }
+
+        public String getJdbcDriver() {
+            return jdbcDriver;
+        }
+
+        public boolean isImportEnabled() {
+            return importEnabled;
+        }
+
+        public boolean isImportEmployeesEnabled() {
+            return importEmployeesEnabled;
+        }
+
+        public String getInstanceId() {
+            return instanceId;
+        }
+
+        public String getJdbcURL() {
+            return jdbcURL;
+        }
+
+        public String getLogin() {
+            return login;
+        }
+
+        public String getPasswd() {
+            return passwd;
+        }
+
+        public boolean isExportEnabled() {
+            return exportEnabled;
+        }
+    }
 }

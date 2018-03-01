@@ -4,18 +4,24 @@ package ru.protei.portal.core.model.dict;
  * Created by Mike on 04.11.2016.
  */
 public enum En_Gender {
-    MALE("M"),
-    FEMALE("F"),
-    UNDEFINED("-");
+    MALE("M", 1),
+    FEMALE("F", 2),
+    UNDEFINED("-", null);
 
     private String code;
+    private Integer legacyId;
 
-    En_Gender (String code) {
+    En_Gender (String code, Integer legacyId) {
         this.code = code;
+        this.legacyId = legacyId;
     }
 
     public String getCode() {
         return code;
+    }
+
+    public Integer getLegacyId() {
+        return legacyId;
     }
 
     public static En_Gender parse (String value) {
@@ -27,5 +33,11 @@ public enum En_Gender {
                 return gender;
 
         return UNDEFINED;
+    }
+
+
+    public static En_Gender fromLegacyId (Integer id) {
+        return id == null ? En_Gender.UNDEFINED :
+                id.intValue() == 1 ? En_Gender.MALE : id.intValue() == 2 ? En_Gender.FEMALE : En_Gender.UNDEFINED;
     }
 }

@@ -22,6 +22,8 @@ public interface UserLoginDAO extends PortalBaseDAO<UserLogin> {
 
     Long count( AccountQuery query );
 
+    boolean isUnique (String login);
+
     @SqlConditionBuilder
     SqlCondition createSqlCondition ( AccountQuery query );
 }

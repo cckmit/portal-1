@@ -59,4 +59,8 @@ public class CompanySubscription implements Serializable {
     public void setLangCode(String langCode) {
         this.langCode = langCode;
     }
+
+    public String uniqueKey () {
+        return (this.email + "_" + String.valueOf(this.companyId));
+    }
 }

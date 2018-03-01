@@ -2,10 +2,12 @@ package ru.protei.portal.core.model.dao.impl;
 
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.PortalBaseDAO;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.DataQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.utils.TypeConverters;
 import ru.protei.winter.jdbc.JdbcBaseDAO;
+import ru.protei.winter.jdbc.JdbcHelper;
 import ru.protei.winter.jdbc.JdbcQueryParameters;
 import ru.protei.winter.jdbc.JdbcSort;
 import ru.protei.winter.jdbc.column.JdbcObjectColumn;
@@ -96,6 +98,16 @@ public abstract class PortalBaseJdbcDAO<T> extends JdbcBaseDAO<Long,T> implement
         return jdbcTemplate.queryForObject(sql.toString(), Long.class, whereCondition.args.toArray());
     }
 
+    @Override
+    public Long countByExpression(String expression, Object...args) {
+        StringBuilder sql = new StringBuilder("select count(*) from ").append(getTableName());
+
+        if (expression != null) {
+            sql.append(" where ").append(expression);
+        }
+
+        return jdbcTemplate.queryForObject(sql.toString(), Long.class, args);
+    }
 
     @Override
     public List<T> listByQuery(DataQuery query) {
@@ -142,6 +154,29 @@ public abstract class PortalBaseJdbcDAO<T> extends JdbcBaseDAO<Long,T> implement
         return jdbcTemplate.queryForObject(query, type, args == null ? EMPTY_ARG_SET : args);
     }
 
+    @Override
+    public List<Long> keys() {
+        String query = "select " + getIdColumnName() + " from " + getTableName();
+        return jdbcTemplate.queryForList(query, Long.class);
+    }
+
+    @Override
+    public <K> List<K> listColumnValue(String column, Class<K> type) {
+        String query = "select " + column + " from " + getTableName();
+        return jdbcTemplate.queryForList(query, type);
+    }
+
+    @Override
+    public <K> List<K> listColumnValue(String column, Class<K> type, String condition, Object... args) {
+
+        if (HelperFunc.isNotEmpty(condition)) {
+            String query = "select " + column + " from " + getTableName();
+            query += " where " + condition;
+            return jdbcTemplate.queryForList(query, args, type);
+        }
+        else
+            return listColumnValue (column, type);
+    }
 
     public Long getIdValue (T obj) {
         return this.getObjectMapper().getIdValue(obj);
@@ -221,4 +256,11 @@ public abstract class PortalBaseJdbcDAO<T> extends JdbcBaseDAO<Long,T> implement
         return pojoColumns;
     }
 
+
+    @Override
+    public <K> List<T> listByColumnIn(String columnName, Collection<K> values) {
+        List<Object> args = new ArrayList<Object>();
+        String sqlCondition = getObjectMapper().getSelectTableName() + "." + columnName + " in " + JdbcHelper.makeSqlStringCollection(values, args, null);
+        return JdbcHelper.getObjects(getObjectMapper(), jdbcTemplate, sqlCondition, args, -1, -1, null);
+    }
 }

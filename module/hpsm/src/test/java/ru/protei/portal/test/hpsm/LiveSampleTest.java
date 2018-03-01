@@ -3,7 +3,6 @@ package ru.protei.portal.test.hpsm;
 import org.junit.*;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.ExternalCaseAppDAO;
@@ -32,9 +31,9 @@ import java.util.List;
  * Created by Mike on 01.05.2017.
  */
 public class LiveSampleTest {
-    public static final long LOCAL_PERSON_ID = 18L;
-    public static final String HPSM_TEST_CASE_ID1 = "hpsm-live-test1642";
-    static ApplicationContext ctx;
+    private static final long LOCAL_PERSON_ID = 18L;
+    private static final String HPSM_TEST_CASE_ID1 = "hpsm-live-test1642";
+    private static ApplicationContext ctx;
 
     @BeforeClass
     public static void init () {
@@ -43,9 +42,9 @@ public class LiveSampleTest {
 
     @Test
     public void test001 () throws Exception {
-/**
- * prepare test env
- * */
+/*
+  prepare test env
+  */
         TestServiceInstance testServiceInstance = ctx.getBean(TestServiceInstance.class);
         InboundMainMessageHandler handler = ctx.getBean(InboundMainMessageHandler.class);
         CaseObjectDAO caseObjectDAO = ctx.getBean(CaseObjectDAO.class);
@@ -56,8 +55,8 @@ public class LiveSampleTest {
         CaseCommentDAO commentDAO = ctx.getBean(CaseCommentDAO.class);
 
 
-/**
- * prepare new request
+/*
+  prepare new request
  */
         String newReqXml = testUtils.loadTestRequest("1642_new.xml");
         Assert.assertNotNull(newReqXml);
@@ -67,7 +66,7 @@ public class LiveSampleTest {
 
         HpsmMessageHeader subject = new HpsmMessageHeader(HPSM_TEST_CASE_ID1, null, HpsmStatus.NEW);
 
-/** execute create request and validate results */
+        /* execute create request and validate results */
         boolean result = handler.handle(testUtils.createRequest(subject, newReqXml), testServiceInstance);
 
         Assert.assertTrue(result);
@@ -100,15 +99,15 @@ public class LiveSampleTest {
         Assert.assertEquals(En_ImportanceLevel.IMPORTANT, resultCase.importanceLevel());
 
 
-/** do local update test */
+        /* do local update test */
         Person testPerson = personDAO.getEmployee(LOCAL_PERSON_ID);
 
         resultCase.setState(En_CaseState.OPENED);
         resultCase.setManager(testPerson);
-        caseService.updateCaseObject(null, resultCase);
+        caseService.updateCaseObject(resultCase, testPerson);
 
         // wait event handling
-        Thread.sleep(500);
+        Thread.sleep(45000);
 
         responseMail = testServiceInstance.getSentMessage();
 
@@ -123,7 +122,7 @@ public class LiveSampleTest {
         Assert.assertNotNull(event.getHpsmMessage().getOurManagerEmail());
         Assert.assertEquals(En_ImportanceLevel.IMPORTANT, resultCase.importanceLevel());
 
-/** do next inbound request */
+        /* do next inbound request */
 
         String updateXmlReq = testUtils.loadTestRequest("1642_up01.xml");
         Assert.assertNotNull(updateXmlReq);
@@ -145,7 +144,7 @@ public class LiveSampleTest {
         Assert.assertEquals(En_ImportanceLevel.IMPORTANT, resultCase.importanceLevel());
 
 
-/** do next inbound request */
+        /* do next inbound request */
 
         updateXmlReq = testUtils.loadTestRequest("1642_up02.xml");
         Assert.assertNotNull(updateXmlReq);
@@ -172,7 +171,7 @@ public class LiveSampleTest {
 
         commentList.forEach(c -> System.out.println(c.toString()));
 
-        Assert.assertEquals(3, commentList.size());
+        Assert.assertEquals(4, commentList.size());
 
     }
 

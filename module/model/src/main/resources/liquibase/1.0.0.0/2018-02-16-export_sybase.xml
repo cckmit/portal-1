@@ -1,0 +1,38 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet author="michael" id="create-export-syb-table">
+        <createTable  tableName="export_syb_entry">
+            <column name="id" autoIncrement="true" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+
+            <column name="CREATED" type="datetime" defaultValueDate="CURRENT_TIMESTAMP">
+                <constraints nullable="false" />
+            </column>
+
+            <column name="instance_id" type="varchar2(32)">
+                <constraints nullable="false" unique="true" uniqueConstraintName="uq_export_syb_entry"/>
+            </column>
+
+            <column name="local_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="obj_type" type="varchar(32)">
+                <constraints nullable="false" />
+            </column>
+
+            <column name="obj_dump" type="mediumtext">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createIndex indexName="ix_export_syb_entry" tableName="export_syb_entry">
+            <column name="instance_id"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>

@@ -1,0 +1,33 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet author="michael" id="2018-02-19-create-export-attributes">
+        <addColumn tableName="Company">
+            <column name="old_id" type="BIGINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+
+        <addColumn tableName="Person">
+            <column name="old_id" type="BIGINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+
+        <createIndex tableName="Company" indexName="ix_company_old_id">
+            <column name="old_id" />
+        </createIndex>
+
+        <createIndex tableName="Person" indexName="ix_person_old_id">
+            <column name="old_id" />
+        </createIndex>
+
+        <createIndex tableName="Dev_Unit" indexName="ix_devunit_old_id">
+            <column name="OLD_ID" />
+            <column name="UTYPE_ID" />
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>

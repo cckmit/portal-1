@@ -8,6 +8,7 @@ import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.query.UserRoleQuery;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by michael on 16.06.16.
@@ -18,6 +19,9 @@ public interface UserRoleDAO extends PortalBaseDAO<UserRole> {
     SqlCondition createSqlCondition( UserRoleQuery query);
 
     UserRole ensureExists ( String code, En_Scope scope, En_Privilege...privileges);
+
+    Set<UserRole> getDefaultEmployeeRoles ();
+    Set<UserRole> getDefaultCustomerRoles ();
 
     void trimScopeToSingleValue();
 }

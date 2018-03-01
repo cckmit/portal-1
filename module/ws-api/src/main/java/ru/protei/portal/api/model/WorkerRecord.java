@@ -2,7 +2,7 @@ package ru.protei.portal.api.model;
 
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.api.utils.HelperService;
+import ru.protei.portal.tools.migrate.HelperService;
 import ru.protei.portal.core.model.ent.WorkerEntry;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 

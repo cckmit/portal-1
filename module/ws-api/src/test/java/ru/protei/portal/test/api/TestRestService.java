@@ -1,7 +1,7 @@
 package ru.protei.portal.test.api;
 
-import junit.framework.Assert;
 import org.apache.commons.codec.binary.Base64OutputStream;
+import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.junit.BeforeClass;

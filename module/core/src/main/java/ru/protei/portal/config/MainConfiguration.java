@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.core.aspect.ServiceLayerInterceptor;
 import ru.protei.portal.core.controller.auth.AuthInterceptor;
@@ -12,16 +13,30 @@ import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
 import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.bootstrap.BootstrapService;
+import ru.protei.portal.tools.migrate.export.ActiveExportDataService;
+import ru.protei.portal.tools.migrate.export.DummyExportDataService;
+import ru.protei.portal.tools.migrate.export.ExportDataService;
 import ru.protei.portal.core.service.user.AuthService;
 import ru.protei.portal.core.service.user.AuthServiceImpl;
 import ru.protei.portal.core.service.user.LDAPAuthProvider;
 import ru.protei.portal.core.utils.SessionIdGen;
 import ru.protei.portal.core.utils.SimpleSidGenerator;
 import ru.protei.portal.core.Lang;
+import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
+import ru.protei.portal.tools.migrate.imp.DummyImportDataService;
+import ru.protei.portal.tools.migrate.imp.ImportDataService;
+import ru.protei.portal.tools.migrate.imp.ImportDataServiceImpl;
+import ru.protei.portal.tools.migrate.sybase.SybConnProvider;
+import ru.protei.portal.tools.migrate.sybase.SybConnWrapperImpl;
+import ru.protei.portal.tools.migrate.utils.MigrateUtils;
 import ru.protei.winter.core.utils.config.exception.ConfigException;
 
-@EnableAspectJAutoProxy
+import java.sql.SQLException;
+
+
 @Configuration
+@EnableAspectJAutoProxy
+@EnableTransactionManagement
 public class MainConfiguration {
 
     /**
@@ -46,6 +61,20 @@ public class MainConfiguration {
         messageSource.setDefaultEncoding("UTF-8");
         return new Lang(messageSource);
     }
+
+    @Bean
+    public SybConnProvider getSybConnProvider (@Autowired PortalConfig config) throws Throwable {
+        return new SybConnWrapperImpl(
+                config.data().legacySysConfig().getJdbcDriver(),
+                config.data().legacySysConfig().getJdbcURL(),
+                config.data().legacySysConfig().getLogin(),
+                config.data().legacySysConfig().getPasswd()
+        );
+    }
+
+
+    @Bean
+    public LegacySystemDAO getLegacySystemDAO () { return new LegacySystemDAO(); }
 
     @Bean
     public LDAPAuthProvider getLDAPAuthProvider() {
@@ -232,6 +261,11 @@ public class MainConfiguration {
     public ExternalCaseAppDAO getExternalCaseAppDAO () {
         return new ExternalCaseAppDAO_Impl();
     }
+
+    @Bean
+    public ExportSybEntryDAO getExportSybEntryDAO () {
+        return new ExportSybEntryDAO_Impl();
+    }
 /**
  *
  *
@@ -346,6 +380,16 @@ public class MainConfiguration {
     @Bean
     public EventExpirationControl getEventExpirationControl() {
         return new EventExpirationControl();
+    }
+
+    @Bean
+    public ExportDataService getExportDataService (@Autowired PortalConfig config) {
+        return config.data().legacySysConfig().isExportEnabled() ? new ActiveExportDataService() : new DummyExportDataService();
+    }
+
+    @Bean
+    public ImportDataService getImportDataService (@Autowired PortalConfig config) {
+        return config.data().legacySysConfig().isImportEnabled() ? new ImportDataServiceImpl() : new DummyImportDataService ();
     }
 
     /** ASPECT/INTERCEPTORS **/

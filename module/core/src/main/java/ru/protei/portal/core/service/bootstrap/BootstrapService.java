@@ -36,6 +36,12 @@ public class BootstrapService {
     public void init() {
         migrateUserRoleScopeToSingleValue();
         removeObsoletePrivileges();
+        autoPatchDefaultRoles();
+    }
+
+    private void autoPatchDefaultRoles () {
+        userRoleDAO.getDefaultCustomerRoles();
+        userRoleDAO.getDefaultEmployeeRoles();
     }
 
     private void migrateUserRoleScopeToSingleValue() {

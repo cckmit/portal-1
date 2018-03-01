@@ -8,7 +8,7 @@ import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.api.config.WSConfig;
 import ru.protei.portal.api.model.*;
-import ru.protei.portal.api.utils.HelperService;
+import ru.protei.portal.tools.migrate.HelperService;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.Photo;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;

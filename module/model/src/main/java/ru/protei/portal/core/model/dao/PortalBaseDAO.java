@@ -5,6 +5,7 @@ import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.winter.jdbc.JdbcDAO;
 import ru.protei.winter.jdbc.JdbcSort;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -123,6 +124,13 @@ public interface PortalBaseDAO<T> extends JdbcDAO<Long,T> {
      */
     Long count (DataQuery query);
 
+    /**
+     * Возвращает количество записей для условия expression и аргументов args
+     * @param expression
+     * @param args
+     * @return
+     */
+    Long countByExpression(String expression, Object...args);
 
     /**
      * Возвращает список для запроса query.
@@ -133,4 +141,13 @@ public interface PortalBaseDAO<T> extends JdbcDAO<Long,T> {
      * @return
      */
     List<T> listByQuery (DataQuery query);
+
+
+
+    <K> List<T> listByColumnIn (String column, Collection<K> values);
+
+    List<Long> keys ();
+
+    <K> List<K> listColumnValue (String column, Class<K> type);
+    <K> List<K> listColumnValue (String column, Class<K> type, String condition, Object...args);
 }

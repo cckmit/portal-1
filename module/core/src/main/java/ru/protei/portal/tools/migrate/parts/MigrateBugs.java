@@ -3,10 +3,10 @@ package ru.protei.portal.tools.migrate.parts;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_MigrationEntry;
 import ru.protei.portal.core.model.ent.CaseObject;
-import ru.protei.portal.tools.migrate.tools.MigrateAction;
-import ru.protei.portal.tools.migrate.tools.MigrateAdapter;
-import ru.protei.portal.tools.migrate.tools.MigrateUtils;
+import ru.protei.portal.tools.migrate.utils.MigrateAction;
+import ru.protei.portal.tools.migrate.utils.MigrateUtils;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -43,7 +43,7 @@ public class MigrateBugs implements MigrateAction {
 
         final Map<Long, Long> oldToNewStateMap = stateMatrixDAO.getOldToNewStateMap(En_CaseType.BUG);
 
-        MigrateUtils.runDefaultMigration(sourceConnection,"BugTracking.Bug","\"BugTracking\".Tm_Bug",
+        MigrateUtils.runDefaultMigration(sourceConnection, En_MigrationEntry.BUG.getCode(),"\"BugTracking\".Tm_Bug",
                 migrationEntryDAO,caseDAO, row -> {
                     CaseObject obj = new CaseObject();
                     obj.setId(null);

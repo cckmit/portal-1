@@ -1,6 +1,6 @@
 package ru.protei.portal.tools.migrate.parts;
 
-import ru.protei.portal.tools.migrate.tools.BatchProcess;
+import ru.protei.portal.tools.migrate.utils.BatchProcess;
 import ru.protei.winter.jdbc.JdbcDAO;
 
 import java.util.List;

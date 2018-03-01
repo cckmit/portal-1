@@ -1,5 +1,7 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.dict.En_MigrationEntry;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.winter.jdbc.annotations.IdInsertMode;
 import ru.protei.winter.jdbc.annotations.JdbcColumn;
 import ru.protei.winter.jdbc.annotations.JdbcEntity;
@@ -55,4 +57,9 @@ public class MigrationEntry {
     public Date getLastUpdate() { return lastUpdate;   }
 
     public void setLastUpdate(Date lastUpdate) {  this.lastUpdate = lastUpdate;   }
+
+
+    public En_MigrationEntry getEntryType () {
+        return En_MigrationEntry.find(this.code);
+    }
 }
