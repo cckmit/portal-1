@@ -15,4 +15,9 @@ public class DummyImportDataService implements ImportDataService {
     public void importInitialCommonData() {
 
     }
+
+    @Override
+    public void incrementalImport() {
+
+    }
 }
