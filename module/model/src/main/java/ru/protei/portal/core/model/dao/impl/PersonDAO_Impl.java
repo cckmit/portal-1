@@ -21,6 +21,7 @@ import ru.protei.winter.jdbc.JdbcSort;
 import javax.annotation.PostConstruct;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -37,6 +38,11 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
     @PostConstruct
     protected void postConstruct () {
         homeGroupCache = new EntityCache<CompanyHomeGroupItem>(groupHomeDAO, TimeUnit.MINUTES.toMillis(10));
+    }
+
+    @Override
+    public boolean existsByLegacyId(Long legacyId) {
+        return countByExpression("old_id=?", legacyId) > 0L;
     }
 
     @Override
@@ -156,6 +162,7 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
 
         return listByQuery( query );
     }
+
 
     /**
      * Query Condition builders

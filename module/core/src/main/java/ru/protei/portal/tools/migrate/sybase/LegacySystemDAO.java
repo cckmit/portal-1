@@ -118,10 +118,6 @@ public class LegacySystemDAO {
 
         return runActionNE(transaction -> {
             ExternalPerson externalPerson = transaction.dao(ExternalPerson.class).get(person.getOldId());
-//
-//            Company localCompany = person.getCompany() != null ? person.getCompany() : companyDAO.get(person.getCompanyId());
-//
-//            ExternalCompany company = transaction.dao(ExternalCompany.class).get(localCompany.getOldId());
 
             if (externalPerson != null) {
                 logger.debug ("mergeEmployee(): person={}", person);
@@ -243,9 +239,7 @@ public class LegacySystemDAO {
             }
 
             final Map<Long, ExternalPersonInfo> tmp = new HashMap<>();
-            keys.forEach(id -> {
-                tmp.put(id, new ExternalPersonInfo(personMap.get(id), extensionMap.get(id)));
-            });
+            keys.forEach(id -> tmp.put(id, new ExternalPersonInfo(personMap.get(id), extensionMap.get(id))));
 
             transaction.dao(ExtContactProperty.class)
                     .list("nPersonID", keys)

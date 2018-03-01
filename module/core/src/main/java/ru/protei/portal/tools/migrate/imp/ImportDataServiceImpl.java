@@ -3,6 +3,7 @@ package ru.protei.portal.tools.migrate.imp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_CaseType;
@@ -18,6 +19,7 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.sql.SQLException;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class ImportDataServiceImpl implements ImportDataService {
@@ -64,16 +66,58 @@ public class ImportDataServiceImpl implements ImportDataService {
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
 
+    @Scheduled(fixedRate = 60000, fixedDelay = 60000)
+    public void incrementalImport () {
+        logger.debug("incremental import run");
 
-    @Override
-    public void importEmployes() {
+        importEmployes();
 
+        logger.debug("incremental import done");
     }
 
 
     @Override
     @Transactional
-    public void importInitialData() {
+    public void importEmployes() {
+        logger.debug("incremental import, employees");
+
+        ImportPersonBatch importPersonBatch = new ImportPersonBatch(userRoleDAO.getDefaultEmployeeRoles(), new StrictLoginUniqueController());
+
+        legacySystemDAO.runActionRTE(transaction -> {
+            MigrationEntry migrationEntry = migrationEntryDAO.getOrCreateEntry(En_MigrationEntry.PERSON_EMPLOYEE);
+
+            List<ExternalPerson> processList = transaction.dao(ExternalPerson.class).list("nID > ?", migrationEntry.getLastId());
+
+            if (processList.isEmpty()) {
+                logger.debug("No new employees in legacy db, exit now");
+                return true;
+            }
+
+            logger.debug("got new external person list, size = {}", processList.size());
+
+            migrationEntry = migrationEntryDAO.updateEntry(En_MigrationEntry.PERSON_EMPLOYEE, HelperFunc.last(processList));
+
+            processList.removeIf(e -> personDAO.existsByLegacyId(e.getId()));
+
+            logger.debug("external person list after filtering, size = {}", processList.size());
+
+            HelperFunc.splitBatch(
+                    processList,
+                    100, list -> importPersonBatch.doImport(transaction, list)
+            );
+
+            logger.debug("processed new employees records: {}, last-id: {}", processList.size(), migrationEntry.getLastId());
+
+            return true;
+        });
+
+        logger.debug("incremental import, employees, done");
+    }
+
+
+    @Override
+    @Transactional
+    public void importInitialCommonData() {
         logger.debug("Full import mode run");
 
         InitialImport initialImport = new InitialImport();
@@ -108,7 +152,7 @@ public class ImportDataServiceImpl implements ImportDataService {
 
     @Override
     @Transactional
-    public void importSupportSessions() {
+    public void importInitialSupportSessions() {
         logger.debug("import CRM support sessions");
 
         CaseImport caseImport = new CaseImport();
@@ -191,14 +235,15 @@ public class ImportDataServiceImpl implements ImportDataService {
 
         private Set<UserRole> employeeRoleSet;
         private Set<UserRole> customerRoleSet;
+        private UniqueController<String> loginController;
+        private ImportPersonBatch importPersonBatch;
 
-        private Set<String> usedLogins;
 
         public InitialImport() {
             employeeRoleSet = userRoleDAO.getDefaultEmployeeRoles();
             customerRoleSet = userRoleDAO.getDefaultCustomerRoles();
-
-            usedLogins = new HashSet<>(userLoginDAO.listColumnValue("ulogin", String.class));
+            loginController = new CachedLoginUniqueControl();
+            importPersonBatch = new ImportPersonBatch(employeeRoleSet, loginController);
         }
 
 
@@ -267,7 +312,7 @@ public class ImportDataServiceImpl implements ImportDataService {
 
             migrationEntryDAO.updateEntry(En_MigrationEntry.CLIENT_LOGIN, HelperFunc.last(src));
 
-            src.removeIf(x -> usedLogins.contains(x.translatedLogin()));
+            src.removeIf(x -> !loginController.isUnique(x.translatedLogin()));
             HelperFunc.splitBatch(src, 100, importList -> doImportClientLogins(importList));
 
             return src.size();
@@ -290,7 +335,7 @@ public class ImportDataServiceImpl implements ImportDataService {
             List<UserLogin> customerLogins = new ArrayList<>();
 
             extLogins.forEach(extLogin -> {
-                if (usedLogins.contains(extLogin.translatedLogin())) {
+                if (!loginController.isUnique(extLogin.translatedLogin())) {
                     logger.error("duplicated customer login {}", extLogin.translatedLogin());
                 }
                 else {
@@ -311,7 +356,7 @@ public class ImportDataServiceImpl implements ImportDataService {
                         ulogin.setPersonId(common.getId());
                     }
 
-                    usedLogins.add(ulogin.getUlogin());
+                    loginController.register(ulogin.getUlogin());
                     customerLogins.add(ulogin);
                 }
             });
@@ -333,54 +378,11 @@ public class ImportDataServiceImpl implements ImportDataService {
             Set<Long> existingIds = new HashSet<>(personDAO.keys());
             src.removeIf(imp -> existingIds.contains(imp.getId()));
 
-            HelperFunc.splitBatch(src, 100, importList -> doImportPersonBatch(transaction, importList));
+            HelperFunc.splitBatch(src, 100, importList -> importPersonBatch.doImport(transaction, importList));
 
             return src.size();
         }
 
-        private void doImportPersonBatch (LegacyDAO_Transaction transaction, List<ExternalPerson> impListSrc) {
-            try {
-                Map<Long, ExternalPersonInfo> infoMap = legacySystemDAO.personCollector(impListSrc).asMap(transaction);
-
-                //Person person = new Person();
-                List<UserLogin> loginBatch = new ArrayList<>();
-                List<Person> personBatch = new ArrayList<>();
-
-
-                for (ExternalPerson impPerson : impListSrc) {
-                    ExternalPersonInfo info = infoMap.get(impPerson.getId());
-                    personBatch.add (MigrateUtils.fromExternalPerson(info));
-
-                    if (info.proteiExtension != null && !info.proteiExtension.isFired()) {
-                        UserLogin ulogin = MigrateUtils.externalEmployeeLogin(info, employeeRoleSet);
-
-                        if (usedLogins.contains(ulogin.getUlogin())) {
-                            logger.error("login {} is used! duplicated data for {}", ulogin.getUlogin(), impPerson);
-                            continue;
-                        }
-
-                        if (ulogin.getUlogin() == null) {
-                            logger.error("unable to create user login for person {}", info.getDisplayName());
-                        } else {
-                            usedLogins.add(ulogin.getUlogin());
-                            loginBatch.add(ulogin);
-                        }
-                    }
-                }
-
-                if (!personBatch.isEmpty()) {
-                    personDAO.persistBatch(personBatch);
-                }
-
-                if (!loginBatch.isEmpty()) {
-                    userLoginDAO.persistBatch(loginBatch);
-                    jdbcManyRelationsHelper.persist( loginBatch, "roles" );
-                }
-            }
-            catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-        }
 
 
         public int importCompanies(LegacyDAO_Transaction transaction) throws SQLException {
@@ -398,6 +400,99 @@ public class ImportDataServiceImpl implements ImportDataService {
             );
 
             return src.size();
+        }
+    }
+
+
+    interface UniqueController<T> {
+        boolean isUnique (T data);
+        void register (T data);
+    }
+
+    class CachedLoginUniqueControl implements UniqueController<String> {
+
+        private Set<String> usedLogins;
+
+        public CachedLoginUniqueControl() {
+            usedLogins = new HashSet<>(userLoginDAO.listColumnValue("ulogin", String.class));
+        }
+
+        @Override
+        public boolean isUnique(String data) {
+            return !usedLogins.contains(data);
+        }
+
+        @Override
+        public void register(String data) {
+            usedLogins.add(data);
+        }
+    }
+
+    class StrictLoginUniqueController implements UniqueController<String> {
+        @Override
+        public boolean isUnique(String data) {
+            return userLoginDAO.isUnique(data);
+        }
+
+        @Override
+        public void register(String data) {
+            // nothing to do
+        }
+    }
+
+
+    class ImportPersonBatch {
+
+        Set<UserRole> employeeRoleSet;
+        UniqueController<String> loginUniqueController;
+
+        public ImportPersonBatch(Set<UserRole> employeeRoleSet, UniqueController<String> loginUniqueController) {
+            this.employeeRoleSet = employeeRoleSet;
+            this.loginUniqueController = loginUniqueController;
+        }
+
+        private void doImport (LegacyDAO_Transaction transaction, List<ExternalPerson> impListSrc) {
+            try {
+                Map<Long, ExternalPersonInfo> infoMap = legacySystemDAO.personCollector(impListSrc).asMap(transaction);
+
+                //Person person = new Person();
+                List<UserLogin> loginBatch = new ArrayList<>();
+                List<Person> personBatch = new ArrayList<>();
+
+
+                for (ExternalPerson impPerson : impListSrc) {
+                    ExternalPersonInfo info = infoMap.get(impPerson.getId());
+                    personBatch.add (MigrateUtils.fromExternalPerson(info));
+
+                    if (info.proteiExtension != null && !info.proteiExtension.isFired()) {
+                        UserLogin ulogin = MigrateUtils.externalEmployeeLogin(info, employeeRoleSet);
+
+                        if (!loginUniqueController.isUnique(ulogin.getUlogin())) {
+                            logger.error("login {} is used! duplicated data for {}", ulogin.getUlogin(), impPerson);
+                            continue;
+                        }
+
+                        if (ulogin.getUlogin() == null) {
+                            logger.error("unable to create user login for person {}", info.getDisplayName());
+                        } else {
+                            loginUniqueController.register(ulogin.getUlogin());
+                            loginBatch.add(ulogin);
+                        }
+                    }
+                }
+
+                if (!personBatch.isEmpty()) {
+                    personDAO.persistBatch(personBatch);
+                }
+
+                if (!loginBatch.isEmpty()) {
+                    userLoginDAO.persistBatch(loginBatch);
+                    jdbcManyRelationsHelper.persist( loginBatch, "roles" );
+                }
+            }
+            catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 }

@@ -3,13 +3,9 @@ package ru.protei.portal.tools.migrate;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import ru.protei.portal.config.MainConfiguration;
 import ru.protei.portal.tools.migrate.imp.ImportDataService;
-import ru.protei.portal.tools.migrate.utils.MigrateAction;
-import ru.protei.portal.tools.migrate.sybase.SybConnProvider;
 import ru.protei.portal.tools.migrate.utils.MigrateUtils;
 import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
-
-import java.sql.Connection;
 
 /**
  * Created by michael on 01.04.16.
@@ -30,8 +26,8 @@ public class MigrateMain {
         );
 
         try {
-            ctx.getBean(ImportDataService.class).importInitialData();
-            ctx.getBean(ImportDataService.class).importSupportSessions();
+            ctx.getBean(ImportDataService.class).importInitialCommonData();
+            ctx.getBean(ImportDataService.class).importInitialSupportSessions();
         }
         catch (Throwable e) {
             e.printStackTrace(System.err);

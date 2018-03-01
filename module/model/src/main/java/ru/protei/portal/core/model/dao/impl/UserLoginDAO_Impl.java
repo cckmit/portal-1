@@ -26,6 +26,11 @@ public class UserLoginDAO_Impl extends PortalBaseJdbcDAO<UserLogin> implements U
     }
 
     @Override
+    public boolean isUnique(String login) {
+        return countByExpression("ulogin=?", login) == 0L;
+    }
+
+    @Override
     public UserLogin findByPersonId(Long id) {
         return getByCondition("personId=?", id);
     }

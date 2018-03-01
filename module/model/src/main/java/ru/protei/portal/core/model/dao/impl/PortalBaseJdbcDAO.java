@@ -98,6 +98,16 @@ public abstract class PortalBaseJdbcDAO<T> extends JdbcBaseDAO<Long,T> implement
         return jdbcTemplate.queryForObject(sql.toString(), Long.class, whereCondition.args.toArray());
     }
 
+    @Override
+    public Long countByExpression(String expression, Object...args) {
+        StringBuilder sql = new StringBuilder("select count(*) from ").append(getTableName());
+
+        if (expression != null) {
+            sql.append(" where ").append(expression);
+        }
+
+        return jdbcTemplate.queryForObject(sql.toString(), Long.class, args);
+    }
 
     @Override
     public List<T> listByQuery(DataQuery query) {

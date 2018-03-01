@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.query.SqlCondition;
 import java.net.Inet4Address;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by michael on 04.04.16.
@@ -18,21 +19,21 @@ public interface PersonDAO extends PortalBaseDAO<Person> {
 
     List<Person> getEmployeesAll();
 
-    Person getEmployee( long id );
+    Person getEmployee(long id);
 
-    List<Person> getEmployees (EmployeeQuery query);
+    List<Person> getEmployees(EmployeeQuery query);
 
-    boolean isEmployee (Person p);
+    boolean isEmployee(Person p);
 
-    List<Person> getContacts (ContactQuery query);
+    List<Person> getContacts(ContactQuery query);
 
-    Person getContact (long id);
+    Person getContact(long id);
 
     Person findContactByEmail(long companyId, String email);
 
-    Person findContactByName (long companyId, String displayName);
+    Person findContactByName(long companyId, String displayName);
 
-    List<Person> getPersons (PersonQuery query);
+    List<Person> getPersons(PersonQuery query);
 
     @SqlConditionBuilder
     SqlCondition createContactSqlCondition(ContactQuery query);
@@ -44,12 +45,13 @@ public interface PersonDAO extends PortalBaseDAO<Person> {
     SqlCondition createPersonSqlCondition(PersonQuery query);
 
 
-    default Person createNewPerson (Long companyId) throws Exception {
-        Person person = new Person ();
-        person.setCreated (new Date());
-        person.setCreator ("portal-api@" + Inet4Address.getLocalHost ().getHostAddress());
-        person.setCompanyId (companyId);
+    default Person createNewPerson(Long companyId) throws Exception {
+        Person person = new Person();
+        person.setCreated(new Date());
+        person.setCreator("portal-api@" + Inet4Address.getLocalHost().getHostAddress());
+        person.setCompanyId(companyId);
         return person;
     }
 
+    boolean existsByLegacyId (Long legacyId);
 }

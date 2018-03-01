@@ -124,6 +124,13 @@ public interface PortalBaseDAO<T> extends JdbcDAO<Long,T> {
      */
     Long count (DataQuery query);
 
+    /**
+     * Возвращает количество записей для условия expression и аргументов args
+     * @param expression
+     * @param args
+     * @return
+     */
+    Long countByExpression(String expression, Object...args);
 
     /**
      * Возвращает список для запроса query.
