@@ -17,6 +17,7 @@ public interface LegacyEntityDAO<T extends LegacyEntity> {
     <K> List<T> list(String column, Collection<K> values) throws SQLException;
     List<T> list(String cond, Object... args) throws SQLException;
     List<T> list() throws SQLException;
+    List<T> list(int top) throws SQLException;
 
     T insert(T entity) throws SQLException;
     T update(T entity) throws SQLException;

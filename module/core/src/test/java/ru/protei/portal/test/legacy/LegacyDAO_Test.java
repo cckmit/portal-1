@@ -6,14 +6,16 @@ import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import ru.protei.portal.config.MainConfiguration;
+import ru.protei.portal.core.model.ent.LegacyEntity;
+import ru.protei.portal.tools.migrate.struct.*;
 import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
-import ru.protei.portal.tools.migrate.struct.ExternalCompany;
-import ru.protei.portal.tools.migrate.struct.ExternalPerson;
-import ru.protei.portal.tools.migrate.struct.ExternalProduct;
 import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 public class LegacyDAO_Test {
     static ApplicationContext ctx;
@@ -47,4 +49,28 @@ public class LegacyDAO_Test {
         System.out.println(product);
     }
 
+    @Test
+    public void testGetAllEnt () throws SQLException {
+        LegacySystemDAO dao = ctx.getBean(LegacySystemDAO.class);
+
+        List<Class<? extends LegacyEntity>> typesOnTest = Arrays.asList(
+                        ExternalPerson.class, ExternalPersonExtension.class, ExternalProduct.class,
+                ExternalCompany.class,
+                ExtCrmComment.class,
+                ExtCrmSession.class,
+                ExtCompanyEmailSubs.class,
+                ExtContactLogin.class
+        );
+
+        dao.runAction(transaction -> {
+            for (Class<? extends LegacyEntity> t : typesOnTest) {
+                List<?> res = transaction.dao(t).list(100);
+                Assert.assertNotNull(res);
+                Assert.assertFalse(res.isEmpty());
+                System.out.println(t.getName() + ", got list of " + res.size() );
+            }
+
+            return true;
+        });
+    }
 }

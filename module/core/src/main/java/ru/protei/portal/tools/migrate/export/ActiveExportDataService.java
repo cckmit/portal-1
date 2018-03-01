@@ -58,7 +58,7 @@ public class ActiveExportDataService implements ExportDataService {
     private ExecutorService executorService;
 
     private interface ExportHandler {
-        boolean export (AuditableObject object);
+        En_ResultStatus export (AuditableObject object);
     }
 
     public ActiveExportDataService() {
@@ -68,49 +68,21 @@ public class ActiveExportDataService implements ExportDataService {
 
     @PostConstruct
     private void __init () {
-        // load after start
         logger.debug("init export data service");
 
-        handlerMap.put(DevUnit.class, object -> {
-            DevUnit devUnit = (DevUnit)object;
-            return  (devUnit.getType() == En_DevUnitType.PRODUCT && exportProduct(devUnit) == En_ResultStatus.OK);
-        });
+        /* init supported types handlers */
+        handlerMap.put(DevUnit.class, object -> exportProduct((DevUnit) object));
+        handlerMap.put(Company.class, object -> exportCompany((Company)object));
+        handlerMap.put(Person.class, object -> exportPerson((Person) object));
 
-        handlerMap.put(Company.class, object -> exportCompany((Company)object) == En_ResultStatus.OK);
-        handlerMap.put(Person.class, object -> exportPerson((Person) object) == En_ResultStatus.OK);
-
+        // load queue after start
         queue.addAll(exportSybEntryDAO.getListByCondition("instance_id=?", config.data().legacySysConfig().getInstanceId()));
 
         logger.debug("preload queue size: {}", queue.size());
 
+        // run export task
         executorService = Executors.newSingleThreadExecutor();
-
-        executorService.submit(() -> {
-            try {
-                while (!Thread.currentThread().isInterrupted()) {
-                    logger.debug("await data in queue");
-                    ExportSybEntry entry = queue.poll(30L, TimeUnit.SECONDS);
-                    if (entry == null)
-                        continue;
-
-                    logger.debug("got entry from queue : {}", entry);
-                    ExportHandler handler = handlerMap.get(entry.getEntry().getClass());
-                    if (handler != null) {
-                        boolean res = handler.export(entry.getEntry());
-                        logger.debug("handler invocation resutl = {}", res);
-                    } else {
-                        logger.debug("no handler for entry: {}", entry);
-                    }
-
-                    exportSybEntryDAO.remove(entry);
-                }
-
-                logger.debug("Export-handler task is requested to exit");
-            }
-            catch (Exception e) {
-                logger.error("Error in export-handler task, exit now", e);
-            }
-        });
+        executorService.submit(new ExportTask ());
     }
 
     @PreDestroy
@@ -127,26 +99,28 @@ public class ActiveExportDataService implements ExportDataService {
     public boolean handleEvent (CreateAuditObjectEvent event) {
         logger.debug("ExportService, audit event handle, object : {}", event.getAuditObject());
 
-        if (supportedObject(event.getAuditObject().getEntryInfo())) {
-            ExportSybEntry exportEntry = new ExportSybEntry(event.getAuditObject().getEntryInfo(),
-                    config.data().legacySysConfig().getInstanceId());
+        if (!supportedObject(event.getAuditObject().getEntryInfo())) {
+            logger.debug("Export is not enabled for type {}, skip event", event.getAuditObject().getEntryInfo().getAuditType());
+            return false;
+        }
 
-            if (exportSybEntryDAO.persist(exportEntry) != null) {
-                logger.debug("registered exported entry for type {}, obj-id={}, reg-id={}", exportEntry.getEntityType(), exportEntry.getLocalId(), exportEntry.getId());
-                queue.offer(exportEntry);
-                return true;
-            }
-            else {
-                logger.error("unable to register export-entry, type={}, obj-id={}", exportEntry.getEntityType(), exportEntry.getLocalId());
-            }
+        ExportSybEntry exportEntry = new ExportSybEntry(event.getAuditObject().getEntryInfo(),
+                config.data().legacySysConfig().getInstanceId());
+
+        if (exportSybEntryDAO.persist(exportEntry) != null) {
+            logger.debug("registered exported entry for type {}, obj-id={}, reg-id={}", exportEntry.getEntityType(), exportEntry.getLocalId(), exportEntry.getId());
+            queue.offer(exportEntry);
+            return true;
         }
         else {
-            logger.debug("Export is not enabled for type {}, skip event", event.getAuditObject().getEntryInfo().getAuditType());
+            logger.error("unable to register export-entry, type={}, obj-id={}", exportEntry.getEntityType(), exportEntry.getLocalId());
         }
 
         return false;
     }
 
+
+    /* Export method implementation */
 
     @Override
     public En_ResultStatus exportCompany(Company company) {
@@ -267,6 +241,63 @@ public class ActiveExportDataService implements ExportDataService {
         catch (SQLException e) {
             logger.error("unable to export product", e);
             return En_ResultStatus.DB_COMMON_ERROR;
+        }
+    }
+
+
+
+    public class ExportTask implements Runnable {
+        @Override
+        public void run() {
+            try {
+                while (!Thread.currentThread().isInterrupted()) {
+                    logger.debug("await data in queue");
+                    ExportSybEntry entry = queue.poll(30L, TimeUnit.SECONDS);
+                    if (entry == null)
+                        continue;
+                    logger.debug("got entry from queue : {}", entry);
+
+                    tryExport(entry);
+
+                    exportSybEntryDAO.remove(entry);
+                }
+
+                logger.debug("Export-handler task is requested to exit");
+            }
+            catch (Exception e) {
+                logger.error("Error in export-handler task, exit now", e);
+            }
+        }
+
+        private void tryExport(ExportSybEntry entry) throws Exception {
+            ExportHandler handler = handlerMap.get(entry.getEntry().getClass());
+            if (handler == null) {
+                logger.debug("no handler for entry: {}", entry);
+                return;
+            }
+
+            long enterTime = System.currentTimeMillis();
+
+            while (true) {
+                logger.debug("invoke export handler for {}", entry);
+                En_ResultStatus status = handler.export(entry.getEntry());
+                logger.debug("handler invocation resutl = {}", status);
+
+                if (status == En_ResultStatus.DB_COMMON_ERROR || status == En_ResultStatus.DB_TEMP_ERROR) {
+                    logger.warn ("legacy db is not accessible, sleep for a while");
+                    Thread.sleep (60000);
+                    logger.warn ("wake up and try again, total wait time : {} s", TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()-enterTime));
+
+                    if (queue.size() > 10000) {
+                        logger.error ("Queue overflow, exit to prevent memory issues");
+                        throw new RuntimeException("Queue overflow trap");
+                    }
+
+                    continue;
+                }
+                else
+                    break;
+            }
         }
     }
 }

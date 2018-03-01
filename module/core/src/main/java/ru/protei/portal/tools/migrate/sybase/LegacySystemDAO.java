@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import protei.sql.Tm_SqlHelper;
+import protei.sql.metadata.MetaData;
 import protei.sql.query.IQuery;
 import protei.sql.query.IQueryCmd;
 import protei.sql.query.Tm_BaseQueryCmd;
@@ -115,7 +116,7 @@ public class LegacySystemDAO {
     public En_ResultStatus saveExternalEmployee(Person person, String departmentName, String positionName) {
         if (person == null || person.getId () == null) return En_ResultStatus.INCORRECT_PARAMS;
 
-        return runActionRTE(transaction -> {
+        return runActionNE(transaction -> {
             ExternalPerson externalPerson = transaction.dao(ExternalPerson.class).get(person.getOldId());
 //
 //            Company localCompany = person.getCompany() != null ? person.getCompany() : companyDAO.get(person.getCompanyId());
@@ -164,7 +165,7 @@ public class LegacySystemDAO {
             }
 
             return En_ResultStatus.OK;
-        });
+        }, En_ResultStatus.DB_COMMON_ERROR);
     }
 
 
@@ -282,8 +283,8 @@ public class LegacySystemDAO {
 
 
     public <R> R runAction (LegacyDAO_Action<R> action) throws SQLException {
-        try (LegacyDAO_Transaction daoFactory = new LegacyDAO_Transaction_impl(connProvider)){
-            return action.doAction(daoFactory);
+        try (LegacyDAO_Transaction transaction = new LegacyDAO_Transaction_impl(connProvider)){
+            return action.doAction(transaction);
         }
     }
 
@@ -294,6 +295,16 @@ public class LegacySystemDAO {
         catch (SQLException e) {
             logger.error("sql-error (action)", e);
             throw new RuntimeException(e);
+        }
+    }
+
+    public <R> R runActionNE (LegacyDAO_Action<R> action, R ERR_RESULT) {
+        try {
+            return runAction (action);
+        }
+        catch (SQLException e) {
+            logger.error("sql-error (action)", e);
+            return ERR_RESULT;
         }
     }
 
@@ -351,6 +362,14 @@ public class LegacySystemDAO {
         @Override
         public <K> List<T> list(Collection<K> keys) throws SQLException {
             return Tm_SqlHelper.getObjectListEx(connection, entityType, keys);
+        }
+
+        @Override
+        public List<T> list(int top) throws SQLException {
+            MetaData<T> metaData = Tm_SqlHelper.getMetaData(entityType);
+            String sql = "select top " + top + " " + metaData.selectColumns + " from " + metaData.table.getName();
+            LegacyQuery query = new LegacyQuery(sql, null);
+            return Tm_SqlHelper.getObjectsListEx(connection, entityType, query);
         }
 
         @Override
@@ -421,7 +440,8 @@ public class LegacySystemDAO {
         public LegacyQuery(String query, Object...args) {
             Tm_BaseQueryCmd cmd = new Tm_BaseQueryCmd();
             cmd.setCommad(query);
-            cmd.addParamAll(Arrays.asList(args));
+            if (args != null && args.length > 0)
+                cmd.addParamAll(Arrays.asList(args));
             this.command = cmd;
         }
 
