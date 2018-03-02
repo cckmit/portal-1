@@ -1,4 +1,4 @@
-package ru.protei.portal.tools.migrate;
+package ru.protei.portal.cli;
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import ru.protei.portal.config.MainConfiguration;
