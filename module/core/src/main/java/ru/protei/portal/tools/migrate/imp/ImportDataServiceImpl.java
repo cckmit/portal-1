@@ -77,7 +77,7 @@ public class ImportDataServiceImpl implements ImportDataService {
             return;
         }
 
-
+        runIncrementalImport();
 
         logger.debug("incremental import done");
     }
