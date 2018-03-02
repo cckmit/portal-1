@@ -6,7 +6,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Scheduled;
 import ru.protei.portal.api.struct.FileStorage;
+import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.mail.MailSendChannel;
@@ -44,6 +46,9 @@ import java.util.List;
 public class HpsmServiceImpl implements HpsmService {
 
     private static Logger logger = LoggerFactory.getLogger(HpsmService.class);
+
+    @Autowired
+    PortalConfig portalConfig;
 
     @Autowired
     MailSendChannel outboundChannel;
@@ -93,6 +98,7 @@ public class HpsmServiceImpl implements HpsmService {
         }
     }
 
+
     @Override
     public void handleInboundRequest() {
         logger.debug("check for incoming requests");
@@ -125,6 +131,10 @@ public class HpsmServiceImpl implements HpsmService {
     @Override
     @EventListener
     public void onAssembledCaseEvent(AssembledCaseEvent event) {
+        if (!portalConfig.data().integrationConfig().isHpsmEnabled()) {
+            return;
+        }
+
         if (event.getServiceModule() == ServiceModule.HPSM) {
             logger.debug("skip handle self-published event for {}", event.getCaseObject().getExtId());
             return;

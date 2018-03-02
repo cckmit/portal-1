@@ -33,7 +33,6 @@ import java.io.IOException;
  */
 @Configuration
 @EnableScheduling
-@Import(MainConfiguration.class)
 public class HpsmConfigurationContext {
 
     public static final String HPSM_CONFIG_XML_FILE = "hpsm-config.xml";

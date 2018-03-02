@@ -131,17 +131,42 @@ public class ImportDataServiceImpl implements ImportDataService {
     }
 
 
+    private boolean isRequireToReImport (UserLogin userLogin) {
+        if (userLogin.getPerson().getCompanyId() != 1L) {
+            return true;
+        }
+
+        jdbcManyRelationsHelper.fill(userLogin, "roles");
+
+        for (UserRole role : userLogin.getRoles()) {
+            if (role.getCode().contains("ДН :"))
+                return false;
+
+            if (role.getCode().contains("Администратор"))
+                return false;
+        }
+
+        return true;
+    }
+
+
+    private void removeLoginsForReimport () {
+        List<UserLogin> logins =  userLoginDAO.getAll();
+        List<UserLogin> toRemove = logins.stream().filter(this::isRequireToReImport).collect(Collectors.toList());
+        userLoginDAO.removeByKeys(HelperFunc.keys(toRemove, e->e.getId()));
+    }
+
     @Override
     @Transactional
     public void importInitialCommonData() {
         logger.debug("Full import mode run");
 
+        removeLoginsForReimport();
+
         InitialImport initialImport = new InitialImport();
         MigrateUtils.checkNoCompanyRecord(companyDAO);
 
         legacySystemDAO.runActionRTE(transaction -> {
-
-            userLoginDAO.removeAll();
 
             int _count = initialImport.importCompanies(transaction);
             logger.debug("handled {} companies", _count);

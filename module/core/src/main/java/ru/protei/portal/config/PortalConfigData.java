@@ -18,6 +18,7 @@ public class PortalConfigData {
     private CloudConfig cloudConfig;
     private final EventAssemblyConfig eventAssemblyConfig;
     private final LegacySystemConfig legacySystemConfig;
+    private final IntegrationConfig integrationConfig;
 
     private final String crmCaseUrl;
 
@@ -26,8 +27,13 @@ public class PortalConfigData {
         cloudConfig = new CloudConfig(wrapper);
         eventAssemblyConfig = new EventAssemblyConfig(wrapper);
         legacySystemConfig = new LegacySystemConfig(wrapper);
+        integrationConfig = new IntegrationConfig(wrapper);
 
         crmCaseUrl = wrapper.getProperty( "crm.case.url", "http://127.0.0.1:8888/crm.html#issues/issue:id=%d;" );
+    }
+
+    public IntegrationConfig integrationConfig() {
+        return integrationConfig;
     }
 
     public LegacySystemConfig legacySysConfig() {
@@ -197,6 +203,26 @@ public class PortalConfigData {
 
         public boolean isExportEnabled() {
             return exportEnabled;
+        }
+    }
+
+
+    public static class IntegrationConfig {
+        private final boolean hpsmEnabled;
+        private final boolean redmineEnabled;
+
+        public IntegrationConfig(PropertiesWrapper properties) throws ConfigException {
+            hpsmEnabled = properties.getProperty("integration.hpsm", Boolean.class, false);
+            redmineEnabled = properties.getProperty("integration.redmine", Boolean.class, false);
+        }
+
+
+        public boolean isHpsmEnabled() {
+            return hpsmEnabled;
+        }
+
+        public boolean isRedmineEnabled() {
+            return redmineEnabled;
         }
     }
 }
