@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import protei.sql.Tm_SqlHelper;
+import ru.protei.portal.config.LocalizedTemplateCreator;
 import ru.protei.portal.core.model.dao.CompanyDAO;
 import ru.protei.portal.core.model.dao.CompanyGroupHomeDAO;
 import ru.protei.portal.core.model.dao.MigrationEntryDAO;
@@ -17,10 +18,8 @@ import ru.protei.portal.tools.migrate.parts.BaseBatchProcess;
 import ru.protei.portal.tools.migrate.parts.BatchInsertTask;
 import ru.protei.portal.tools.migrate.parts.BatchUpdateTask;
 import ru.protei.portal.tools.migrate.struct.*;
-import ru.protei.winter.core.utils.config.ConfigUtils;
 
 import java.io.File;
-import java.net.URL;
 import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -371,11 +370,12 @@ public class MigrateUtils {
             _mail2loginRules = new HashMap<>();
 
             try {
-                URL url = ConfigUtils.locateFileOrDirectory(MIGRATE_ACCOUNTS_FIX_JSON);
-                if (url == null)
-                    return _mail2loginRules;
+                File basePath = Paths.get(LocalizedTemplateCreator.class.getResource("/").toURI()).toFile();
+//                URL url = ConfigUtils.locateFileOrDirectory(MIGRATE_ACCOUNTS_FIX_JSON);
+//                if (url == null)
+//                    return _mail2loginRules;
 
-                File file = url == null ? null : Paths.get(url.toURI()).toFile();
+                File file = new File(basePath, MIGRATE_ACCOUNTS_FIX_JSON); //url == null ? null : Paths.get(url.toURI()).toFile();
 
                 if (file.exists()) {
                     logger.debug("use accounts map config: " + file.getAbsolutePath());

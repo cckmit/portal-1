@@ -18,6 +18,7 @@ public class MigrateMain {
 //        Connection conn_src = null;
         if (MigrateUtils.getMail2LoginRules().isEmpty()) {
             System.out.println("no migrate accounts config! (" + MigrateUtils.MIGRATE_ACCOUNTS_FIX_JSON +")");
+            System.exit(1);
         }
 
 

@@ -76,6 +76,7 @@
                 <directory>src/main/resources</directory>
                 <includes>
                     <include>*.properties</include>
+                    <include>*.json</include>
                 </includes>
             </resource>
         </resources>
@@ -86,6 +87,13 @@
                 <includes>
                     <include>*.ftl</include>
                     <include>**/*.ftl</include>
+                </includes>
+            </testResource>
+            <testResource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>*.properties</include>
+                    <include>*.json</include>
                 </includes>
             </testResource>
         </testResources>

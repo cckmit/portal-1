@@ -72,6 +72,11 @@ public class ImportDataServiceImpl implements ImportDataService {
 
     @Scheduled(fixedRate = 60000L, initialDelay = 60000L)
     public void incrementalImport () {
+        if (!portalConfig.data().legacySysConfig().isImportEnabled()) {
+            logger.debug("import is disabled, exit now");
+            return;
+        }
+
         logger.debug("incremental import run");
 
         if (portalConfig.data().legacySysConfig().isImportEmployeesEnabled()) {
@@ -388,6 +393,32 @@ public class ImportDataServiceImpl implements ImportDataService {
             src.removeIf(imp -> existingIds.contains(imp.getId()));
 
             HelperFunc.splitBatch(src, 100, importList -> importPersonBatch.doImport(transaction, importList));
+
+            //
+            // fix logins for existing persons (failed on prev attempts)
+            //
+            // list all employees from legacy-db
+            List<ExternalPersonExtension> emplList = transaction.dao(ExternalPersonExtension.class).list("lRetired is null or lRetired=?", 0);
+
+            // map person-id to user-login
+            Map<Long,UserLogin> loginMap =  HelperFunc.map(
+                    userLoginDAO.listByColumnIn("personId", HelperFunc.keys(emplList, e->e.getId())),
+                    userLogin -> userLogin.getPersonId()
+            );
+
+            List<UserLogin> fixLoginsBatch = new ArrayList<>();
+            emplList.forEach(ext -> {
+                String login = MigrateUtils.createLogin(ext);
+                UserLogin userLogin = loginMap.get(ext.getId());
+
+                if (login != null && userLogin != null && !userLogin.equals(login)) {
+                    userLogin.setUlogin(login);
+                    fixLoginsBatch.add(userLogin);
+                }
+            });
+
+            if (!fixLoginsBatch.isEmpty())
+                userLoginDAO.mergeBatch(fixLoginsBatch);
 
             return src.size();
         }
