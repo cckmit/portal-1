@@ -77,36 +77,92 @@ public class ImportDataServiceImpl implements ImportDataService {
             return;
         }
 
-        logger.debug("incremental import run");
 
-        if (portalConfig.data().legacySysConfig().isImportEmployeesEnabled()) {
-            importEmployes();
-        }
-        else {
-            logger.debug("import of employees from legacy db is disabled, skip");
-        }
 
         logger.debug("incremental import done");
     }
 
-
-    @Override
     @Transactional
-    public void importEmployes() {
+    public void runIncrementalImport () {
+        logger.debug("incremental import run");
+
+        legacySystemDAO.runActionRTE(transaction -> {
+            importCompanies(transaction);
+            importProducts(transaction);
+
+            if (portalConfig.data().legacySysConfig().isImportEmployeesEnabled()) {
+                importEmployes(transaction);
+            }
+            else {
+                logger.debug("import of employees from legacy db is disabled, skip");
+            }
+
+            return true;
+        });
+    }
+
+
+    private void importProducts (LegacyDAO_Transaction transaction) throws SQLException {
+        MigrationEntry migrationEntry = migrationEntryDAO.getOrCreateEntry(En_MigrationEntry.PRODUCT);
+
+        List<ExternalProduct> products = transaction.dao(ExternalProduct.class).list("nID > ?", migrationEntry.getLastId());
+
+        if (products.isEmpty())
+            return;
+
+        migrationEntry = migrationEntryDAO.updateEntry(En_MigrationEntry.PRODUCT, HelperFunc.last(products));
+
+        logger.debug("migrate productst, count = {}, last-id={}", products.size(), migrationEntry.getLastId());
+
+        products.removeIf(p -> devUnitDAO.checkExistsByCondition("UTYPE_ID=? and old_id=?", En_DevUnitType.PRODUCT.getId(), p.getId()));
+
+        if (products.isEmpty())
+            return;
+
+        HelperFunc.splitBatch(products, 100,
+                list -> devUnitDAO.persistBatch(
+                        list.stream().map(p -> MigrateUtils.fromExternalProduct(p)).collect(Collectors.toList())
+                )
+        );
+    }
+
+    private void importCompanies (LegacyDAO_Transaction transaction) throws SQLException {
+        MigrationEntry migrationEntry = migrationEntryDAO.getOrCreateEntry(En_MigrationEntry.COMPANY);
+
+        logger.debug("incremental company import, get from id = {}", migrationEntry.getLastId());
+
+        List<ExternalCompany> src = transaction.dao(ExternalCompany.class).list("nID > ?", migrationEntry.getLastId());
+
+        if (src.isEmpty())
+            return;
+
+        migrationEntryDAO.updateEntry(En_MigrationEntry.COMPANY, HelperFunc.last(src));
+        src.removeIf(c -> companyDAO.checkExistsByCondition("old_id=?", c.getId()));
+
+        if (src.isEmpty())
+            return;
+
+        logger.debug("handled {} companies", src.size());
+
+        HelperFunc.splitBatch(src, 100, importList ->
+                companyDAO.persistBatch(importList.stream().map(imp -> MigrateUtils.fromExternalCompany(imp)).collect(Collectors.toList()))
+        );
+    }
+
+    private void importEmployes(LegacyDAO_Transaction transaction) throws SQLException {
         logger.debug("incremental import, employees");
 
         ImportPersonBatch importPersonBatch = new ImportPersonBatch(userRoleDAO.getDefaultEmployeeRoles(),
                 userRoleDAO.getDefaultManagerRoles(),
                 new StrictLoginUniqueController());
 
-        legacySystemDAO.runActionRTE(transaction -> {
             MigrationEntry migrationEntry = migrationEntryDAO.getOrCreateEntry(En_MigrationEntry.PERSON_EMPLOYEE);
 
             List<ExternalPerson> processList = transaction.dao(ExternalPerson.class).list("nID > ? and nCompanyID=?", migrationEntry.getLastId(), 1L);
 
             if (processList.isEmpty()) {
                 logger.debug("No new employees in legacy db, exit now");
-                return true;
+                return;
             }
 
             logger.debug("got new external person list, size = {}", processList.size());
@@ -124,11 +180,21 @@ public class ImportDataServiceImpl implements ImportDataService {
 
             logger.debug("processed new employees records: {}, last-id: {}", processList.size(), migrationEntry.getLastId());
 
-            return true;
-        });
-
         logger.debug("incremental import, employees, done");
     }
+
+
+    /*
+    *
+    * Full import mode below
+    *
+    *
+    *
+    *
+    *
+     */
+
+
 
 
     private boolean isRequireToReImport (UserLogin userLogin) {

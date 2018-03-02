@@ -37,14 +37,14 @@ public class MigrationRunner {
 
     }
 
-    @Scheduled(fixedRate = 60 * 1000, initialDelay = 10000)
+    @Scheduled(fixedRate = 60 * 1000, initialDelay = 30000)
     public void runMigrate() {
         if (!config.data().legacySysConfig().isImportEmployeesEnabled())
             return;
 
         if (runLock.tryLock()) {
             logger.info("Start migration process in scheduled mode");
-            importDataService.importEmployes();
+            importDataService.incrementalImport();
             logger.info("Import completed, wait till next time");
             runLock.unlock();
         } else {

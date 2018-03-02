@@ -9,14 +9,14 @@ public interface ImportDataService {
      */
     void incrementalImport();
 
-    /**
-     * incremental import of employees
-     */
-    void importEmployes();
 
-
-
-    /* Only at manual import stage (init) */
+    /* Only at manual import stage (init)
+     *
+     *
+     * DON'T CALL IT
+     *
+     *
+     * /
 
     /**
      * import all companies, persons, products, projects, company-logins
