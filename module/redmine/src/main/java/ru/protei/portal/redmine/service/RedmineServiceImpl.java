@@ -55,12 +55,13 @@ public final class RedmineServiceImpl implements RedmineService {
     public void checkForNewIssues(RedmineEndpoint endpoint) {
         final String created = RedmineUtils.parseDateToAfter(endpoint.getLastCreatedOnDate());
         final String projectId = endpoint.getProjectId();
+
         try {
             Date lastCreatedOn;
             final List<Issue> issues = getIssuesCreatedAfterDate(created, projectId, endpoint);
             if (!issues.isEmpty()) {
                 issues.stream().map(x -> new Tuple<>(getUser(x.getAuthorId(), endpoint), x))
-                        .forEach(x -> handler.handle(x.a, x.b, endpoint.getCompanyId()));
+                        .forEach(x -> handler.handle(x.a, x.b, endpoint));
                 issues.sort(Comparator.comparing(Issue::getCreatedOn));
                 lastCreatedOn = issues.get(issues.size() - 1).getCreatedOn();
             } else
@@ -78,14 +79,13 @@ public final class RedmineServiceImpl implements RedmineService {
     public void checkForIssuesUpdates(RedmineEndpoint endpoint) {
         final String updated = RedmineUtils.parseDateToAfter(endpoint.getLastUpdatedOnDate());
         final String projectId = endpoint.getProjectId();
-        final Long companyId = endpoint.getCompanyId();
 
         try {
             Date lastUpdatedOn;
             final List<Issue> issues = getIssuesUpdatedAfterDate(updated, projectId, endpoint);
             if (!issues.isEmpty()) {
                 issues.stream().map(x -> new Tuple<>(getUser(x.getId(), endpoint), x))
-                        .forEach(x -> updateHandler.handle(x.a, x.b, companyId));
+                        .forEach(x -> updateHandler.handle(x.a, x.b, endpoint));
                 issues.sort(Comparator.comparing(Issue::getUpdatedOn));
                 lastUpdatedOn = issues.get(issues.size() - 1).getUpdatedOn();
             } else
@@ -104,12 +104,6 @@ public final class RedmineServiceImpl implements RedmineService {
         final RedmineManager manager = RedmineManagerFactory.createWithApiKey(endpoint.getServerAddress(), endpoint.getApiKey());
         manager.getIssueManager().update(issue);
     }
-
-    /*@Override
-    public void uploadMyDude(int issueId, File myDude, String mimeType, RedmineEndpoint endpoint) throws IOException, RedmineException {
-        RedmineManager manager = initManager(endpoint);
-        manager.getAttachmentManager().addAttachmentToIssue(issueId, myDude, mimeType);
-    }*/
 
     @Override
     public User findUser(Person person, RedmineEndpoint endpoint) throws RedmineException {

@@ -51,9 +51,9 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
         AssembledCaseEvent existingEvent = assembledEventsMap.get(key);
         if (
                 existingEvent != null
-                && existingEvent.isCaseCommentAttached()
-                && !Objects.equals(existingEvent.getCaseComment().getId(), event.getCaseComment().getId()) //we don't take into account a last edited comment
-        ) {
+                        && existingEvent.isCaseCommentAttached()
+                        && !Objects.equals(existingEvent.getCaseComment().getId(), event.getCaseComment().getId()) //we don't take into account a last edited comment
+                ) {
             logger.debug("onCaseCommentEvent, publish prev event on case {}", event.getCaseObject().defGUID());
             publishAndClear(key);
             assembledEventsMap.put(key, new AssembledCaseEvent(event));
@@ -68,10 +68,10 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
                 AssembledCaseEvent assembledCaseEvent = assembledEventsMap.get(key);
                 assembledCaseEvent.attachCaseComment(event.getCaseComment());
                 assembledCaseEvent.synchronizeAttachments(
-                    event.getAddedAttachments(),
-                    event.getRemovedAttachments()
+                        event.getAddedAttachments(),
+                        event.getRemovedAttachments()
                 );
-            }else{
+            } else {
                 assembledEventsMap.put(key, new AssembledCaseEvent(event));
             }
         }
@@ -87,10 +87,10 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
         if (assembledEventsMap.containsKey(key)) {
             logger.debug("attach attachment event to existing case {}", event.getCaseObject().defGUID());
             assembledEventsMap.get(key).synchronizeAttachments(
-                event.getAddedAttachments(),
-                event.getRemovedAttachments()
+                    event.getAddedAttachments(),
+                    event.getRemovedAttachments()
             );
-        } else{
+        } else {
             assembledEventsMap.put(key, new AssembledCaseEvent(event));
         }
     }

@@ -8,7 +8,7 @@ import ru.protei.winter.jdbc.annotations.JdbcId;
 import java.util.Date;
 
 @JdbcEntity(table = "redmine_endpoint")
-public class RedmineEndpoint {
+public final class RedmineEndpoint {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -30,6 +30,12 @@ public class RedmineEndpoint {
 
     @JdbcColumn(name = "last_updated")
     private Date lastUpdatedOnDate;
+
+    @JdbcColumn(name = "STATUS_MAP_ID")
+    private long statusMapId;
+
+    @JdbcColumn(name = "PRIORITY_MAP_ID")
+    private long priorityMapId;
 
     public Long getId() {
         return id;
@@ -85,5 +91,21 @@ public class RedmineEndpoint {
 
     public void setLastUpdatedOnDate(Date lastUpdatedOnDate) {
         this.lastUpdatedOnDate = lastUpdatedOnDate;
+    }
+
+    public long getStatusMapId() {
+        return statusMapId;
+    }
+
+    public void setStatusMapId(long statusMapId) {
+        this.statusMapId = statusMapId;
+    }
+
+    public long getPriorityMapId() {
+        return priorityMapId;
+    }
+
+    public void setPriorityMapId(long priorityMapId) {
+        this.priorityMapId = priorityMapId;
     }
 }
