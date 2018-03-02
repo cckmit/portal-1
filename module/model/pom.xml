@@ -23,12 +23,18 @@
 
         <resources>
             <resource>
-                <directory>src/main/java</directory>
+                <directory>src/main/resources</directory>
                 <includes>
-                    <include>*.java</include>
-                    <include>**/*.java</include>
+                    <include>*.properties</include>
                 </includes>
             </resource>
+            <!--<resource>-->
+                <!--<directory>src/main/java</directory>-->
+                <!--<includes>-->
+                    <!--<include>*.java</include>-->
+                    <!--<include>**/*.java</include>-->
+                <!--</includes>-->
+            <!--</resource>-->
             <resource>
                 <directory>src/main/resources</directory>
                 <includes>
@@ -40,6 +46,25 @@
                 </includes>
             </resource>
         </resources>
+
+        <testResources>
+            <testResource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>*.properties</include>
+                </includes>
+            </testResource>
+            <testResource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>*.gwt.xml</include>
+                    <include>**/*.gwt.xml</include>
+
+                    <include>*.xml</include>
+                    <include>**/*.xml</include>
+                </includes>
+            </testResource>
+        </testResources>
 
         <plugins>
             <plugin>

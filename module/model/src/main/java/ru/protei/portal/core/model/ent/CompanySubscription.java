@@ -63,4 +63,14 @@ public class CompanySubscription implements Serializable {
     public String uniqueKey () {
         return (this.email + "_" + String.valueOf(this.companyId));
     }
+
+    @Override
+    public int hashCode() {
+        return uniqueKey().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof CompanySubscription && ((CompanySubscription) obj).uniqueKey().equals(uniqueKey());
+    }
 }

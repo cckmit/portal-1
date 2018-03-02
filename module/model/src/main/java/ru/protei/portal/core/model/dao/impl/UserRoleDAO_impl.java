@@ -79,45 +79,60 @@ public class UserRoleDAO_impl extends PortalBaseJdbcDAO<UserRole> implements Use
     }
 
 
+    private Set<UserRole> _getUserRoleSet (DefRoleSetup setup) {
+        Set<UserRole> result = new HashSet<>();
+        result.add(ensureExists(setup.codeName, setup.scope, setup.privSet));
+        return result;
+
+    }
+
     @Override
     public Set<UserRole> getDefaultEmployeeRoles() {
-        UserRole employeeRole  = ensureExists(EMPLOYEE_ROLE_CODE, DEF_EMPLOYEE_SCOPE, DEF_EMPLOYEE_PRIV_SET);
-        Set<UserRole> employeeRoleSet = new HashSet<>();
-        employeeRoleSet.add(employeeRole);
-        return employeeRoleSet;
+        return _getUserRoleSet(ROLE_SETUP_EMPLOYEE);
     }
 
     @Override
     public Set<UserRole> getDefaultCustomerRoles() {
-        UserRole crmClientRole = ensureExists(DEF_CLIENT_ROLE_CODE, DEF_COMPANY_CLIENT_SCOPE, DEF_COMPANY_CLIENT_PRIV);
+        return _getUserRoleSet(ROLE_SETUP_CUSTOMER);
+    }
 
-        Set<UserRole> roles = new HashSet<>();
-        roles.add(crmClientRole);
-        return roles;
+    @Override
+    public Set<UserRole> getDefaultManagerRoles() {
+        return _getUserRoleSet(ROLE_SETUP_EMPL_MANAGER);
     }
 
 
-
-    public static final String EMPLOYEE_ROLE_CODE = "Сотрудник";
-
-    public final static En_Privilege[] DEF_EMPLOYEE_PRIV_SET = {
+    static final DefRoleSetup ROLE_SETUP_EMPLOYEE = new DefRoleSetup("Сотрудник", En_Scope.SYSTEM,
             En_Privilege.ISSUE_CREATE,
             En_Privilege.ISSUE_EDIT,
             En_Privilege.ISSUE_EXPORT,
             En_Privilege.ISSUE_VIEW,
             En_Privilege.ISSUE_REPORT,
-            En_Privilege.DASHBOARD_VIEW,
             En_Privilege.CONTACT_VIEW,
             En_Privilege.COMMON_PROFILE_VIEW,
-            En_Privilege.COMPANY_VIEW
-    };
+            En_Privilege.COMPANY_VIEW,
+            En_Privilege.DASHBOARD_VIEW
+    );
 
-    public final static En_Scope DEF_EMPLOYEE_SCOPE = En_Scope.SYSTEM;
+    static final DefRoleSetup ROLE_SETUP_EMPL_MANAGER = new DefRoleSetup("ТПиМ : Менеджер", En_Scope.SYSTEM,
+            En_Privilege.ISSUE_VIEW,
+            En_Privilege.ISSUE_CREATE,
+            En_Privilege.ISSUE_EDIT,
+            En_Privilege.ISSUE_EXPORT,
+            En_Privilege.ISSUE_REPORT,
+            En_Privilege.COMPANY_VIEW,
+            En_Privilege.COMPANY_CREATE,
+            En_Privilege.COMPANY_EDIT,
+            En_Privilege.CONTACT_VIEW,
+            En_Privilege.CONTACT_CREATE,
+            En_Privilege.CONTACT_EDIT,
+            En_Privilege.PRODUCT_VIEW,
+            En_Privilege.PRODUCT_CREATE,
+            En_Privilege.PRODUCT_EDIT,
+            En_Privilege.DASHBOARD_VIEW
+            );
 
-
-    private final static String DEF_CLIENT_ROLE_CODE="ТПиМ : Заказчик";
-
-    private final static En_Privilege [] DEF_COMPANY_CLIENT_PRIV = {
+    static final DefRoleSetup ROLE_SETUP_CUSTOMER = new DefRoleSetup("ТПиМ : Заказчик", En_Scope.COMPANY,
             En_Privilege.ISSUE_CREATE,
             En_Privilege.ISSUE_EDIT,
             En_Privilege.ISSUE_VIEW,
@@ -125,7 +140,17 @@ public class UserRoleDAO_impl extends PortalBaseJdbcDAO<UserRole> implements Use
             En_Privilege.ISSUE_REPORT,
             En_Privilege.COMMON_PROFILE_EDIT,
             En_Privilege.COMMON_PROFILE_VIEW
-    };
+    );
 
-    private final static En_Scope DEF_COMPANY_CLIENT_SCOPE = En_Scope.COMPANY;
+    static class DefRoleSetup {
+        final String codeName;
+        final En_Scope scope;
+        final En_Privilege[] privSet;
+
+        public DefRoleSetup(String codeName, En_Scope scope, En_Privilege... privSet) {
+            this.codeName = codeName;
+            this.privSet = privSet;
+            this.scope = scope;
+        }
+    }
 }

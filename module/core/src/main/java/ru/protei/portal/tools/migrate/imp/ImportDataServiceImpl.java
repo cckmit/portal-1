@@ -95,7 +95,9 @@ public class ImportDataServiceImpl implements ImportDataService {
     public void importEmployes() {
         logger.debug("incremental import, employees");
 
-        ImportPersonBatch importPersonBatch = new ImportPersonBatch(userRoleDAO.getDefaultEmployeeRoles(), new StrictLoginUniqueController());
+        ImportPersonBatch importPersonBatch = new ImportPersonBatch(userRoleDAO.getDefaultEmployeeRoles(),
+                userRoleDAO.getDefaultManagerRoles(),
+                new StrictLoginUniqueController());
 
         legacySystemDAO.runActionRTE(transaction -> {
             MigrationEntry migrationEntry = migrationEntryDAO.getOrCreateEntry(En_MigrationEntry.PERSON_EMPLOYEE);
@@ -138,6 +140,8 @@ public class ImportDataServiceImpl implements ImportDataService {
         MigrateUtils.checkNoCompanyRecord(companyDAO);
 
         legacySystemDAO.runActionRTE(transaction -> {
+
+            userLoginDAO.removeAll();
 
             int _count = initialImport.importCompanies(transaction);
             logger.debug("handled {} companies", _count);
@@ -257,7 +261,7 @@ public class ImportDataServiceImpl implements ImportDataService {
             employeeRoleSet = userRoleDAO.getDefaultEmployeeRoles();
             customerRoleSet = userRoleDAO.getDefaultCustomerRoles();
             loginController = new CachedLoginUniqueControl();
-            importPersonBatch = new ImportPersonBatch(employeeRoleSet, loginController);
+            importPersonBatch = new ImportPersonBatch(employeeRoleSet, userRoleDAO.getDefaultManagerRoles(), loginController);
         }
 
 
@@ -267,14 +271,13 @@ public class ImportDataServiceImpl implements ImportDataService {
 
             migrationEntryDAO.updateEntry(En_MigrationEntry.COMPANY_EMAIL_SUBS, HelperFunc.last(src));
 
-            Map<String, CompanySubscription> exMap = HelperFunc.map(companySubscriptionDAO.getAll(),
-                    e -> e.uniqueKey());
+            companySubscriptionDAO.removeAll();
 
             Set<Long> companyKeys = new HashSet<>(companyDAO.keys());
 
-            src.removeIf(e -> exMap.containsKey(e.uniqueKey()) || !companyKeys.contains(e.getCompanyId()));
+            src.removeIf(e -> !companyKeys.contains(e.getCompanyId()));
 
-            List<CompanySubscription> target = src.stream().map(e -> MigrateUtils.fromExternalSubscription(e)).collect(Collectors.toList());
+            List<CompanySubscription> target = src.stream().map(e -> MigrateUtils.fromExternalSubscription(e)).distinct().collect(Collectors.toList());
 
             HelperFunc.splitBatch(target, 100, list-> companySubscriptionDAO.persistBatch(list));
 
@@ -389,36 +392,7 @@ public class ImportDataServiceImpl implements ImportDataService {
             migrationEntryDAO.updateEntry(En_MigrationEntry.PERSON_EMPLOYEE, MigrateUtils.lastEmployee(src));
             migrationEntryDAO.updateEntry(En_MigrationEntry.PERSON_CUSTOMER, MigrateUtils.lastCustomer(src));
 
-            Set<Long> existingIds = new HashSet<>(personDAO.keys());
-            src.removeIf(imp -> existingIds.contains(imp.getId()));
-
             HelperFunc.splitBatch(src, 100, importList -> importPersonBatch.doImport(transaction, importList));
-
-            //
-            // fix logins for existing persons (failed on prev attempts)
-            //
-            // list all employees from legacy-db
-            List<ExternalPersonExtension> emplList = transaction.dao(ExternalPersonExtension.class).list("lRetired is null or lRetired=?", 0);
-
-            // map person-id to user-login
-            Map<Long,UserLogin> loginMap =  HelperFunc.map(
-                    userLoginDAO.listByColumnIn("personId", HelperFunc.keys(emplList, e->e.getId())),
-                    userLogin -> userLogin.getPersonId()
-            );
-
-            List<UserLogin> fixLoginsBatch = new ArrayList<>();
-            emplList.forEach(ext -> {
-                String login = MigrateUtils.createLogin(ext);
-                UserLogin userLogin = loginMap.get(ext.getId());
-
-                if (login != null && userLogin != null && !userLogin.equals(login)) {
-                    userLogin.setUlogin(login);
-                    fixLoginsBatch.add(userLogin);
-                }
-            });
-
-            if (!fixLoginsBatch.isEmpty())
-                userLoginDAO.mergeBatch(fixLoginsBatch);
 
             return src.size();
         }
@@ -484,16 +458,19 @@ public class ImportDataServiceImpl implements ImportDataService {
     class ImportPersonBatch {
 
         Set<UserRole> employeeRoleSet;
+        Set<UserRole> managerRoleSet;
         UniqueController<String> loginUniqueController;
 
-        public ImportPersonBatch(Set<UserRole> employeeRoleSet, UniqueController<String> loginUniqueController) {
+        public ImportPersonBatch(Set<UserRole> employeeRoleSet, Set<UserRole> managerRoleSet, UniqueController<String> loginUniqueController) {
             this.employeeRoleSet = employeeRoleSet;
+            this.managerRoleSet = managerRoleSet;
             this.loginUniqueController = loginUniqueController;
         }
 
         private void doImport (LegacyDAO_Transaction transaction, List<ExternalPerson> impListSrc) {
             try {
                 Map<Long, ExternalPersonInfo> infoMap = legacySystemDAO.personCollector(impListSrc).asMap(transaction);
+                Set<Long> existingIds = new HashSet<>(personDAO.existingKeys(infoMap.keySet()));
 
                 //Person person = new Person();
                 List<UserLogin> loginBatch = new ArrayList<>();
@@ -502,12 +479,15 @@ public class ImportDataServiceImpl implements ImportDataService {
 
                 for (ExternalPerson impPerson : impListSrc) {
                     ExternalPersonInfo info = infoMap.get(impPerson.getId());
-                    personBatch.add (MigrateUtils.fromExternalPerson(info));
+
+                    if (!existingIds.contains(impPerson.getId())) {
+                        personBatch.add(MigrateUtils.fromExternalPerson(info));
+                    }
 
                     if (info.proteiExtension != null && !info.proteiExtension.isFired()) {
-                        UserLogin ulogin = MigrateUtils.externalEmployeeLogin(info, employeeRoleSet);
+                        UserLogin ulogin = MigrateUtils.externalEmployeeLogin(info);
 
-                        if (ulogin.getUlogin() == null) {
+                        if (ulogin == null || ulogin.getUlogin() == null) {
                             logger.error("unable to create user login for person {}", info.getDisplayName());
                             continue;
                         }
@@ -516,6 +496,12 @@ public class ImportDataServiceImpl implements ImportDataService {
                             logger.error("login {} is used! duplicated data for {}", ulogin.getUlogin(), impPerson);
                             continue;
                         }
+
+                        if (MigrateUtils.checkPersonIsManager(info.personData))
+                            ulogin.setRoles(managerRoleSet);
+                        else
+                            ulogin.setRoles(employeeRoleSet);
+
 
                         loginUniqueController.register(ulogin.getUlogin());
                         loginBatch.add(ulogin);

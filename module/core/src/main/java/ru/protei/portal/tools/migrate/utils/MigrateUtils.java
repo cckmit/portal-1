@@ -120,7 +120,7 @@ public class MigrateUtils {
         return ulogin;
     }
 
-    public static UserLogin externalEmployeeLogin (ExternalPersonInfo info, Set<UserRole> roleSet) {
+    public static UserLogin externalEmployeeLogin (ExternalPersonInfo info) {
         UserLogin ulogin = new UserLogin();
         ulogin.setAdminStateId(En_AdminState.UNLOCKED.getId());
         ulogin.setAuthTypeId(En_AuthType.LDAP.getId());
@@ -128,7 +128,6 @@ public class MigrateUtils {
         ulogin.setInfo(info.getDisplayName());
         ulogin.setPersonId(info.personData.getId());
         ulogin.setUlogin(createLogin(info.proteiExtension));
-        ulogin.setRoles(roleSet);
         return ulogin;
     }
 
@@ -348,6 +347,21 @@ public class MigrateUtils {
         return null;
     }
 
+    private static final Set<String> MANAGER_KEYWORDS = new HashSet<>(Arrays.asList(
+       "менеджер", "руководитель", "директор", "директора"
+    ));
+
+    public static boolean checkPersonIsManager (ExternalPerson person) {
+        String position = person.getPosition();
+        if (position == null)
+            return false;
+
+        for(String s : position.toLowerCase().split("\\s+"))
+            if (MANAGER_KEYWORDS.contains(s.trim()))
+                return true;
+
+        return false;
+    }
 
     public static String createLogin(ExternalPersonExtension ext) {
         return createLoginForEmail(ext.getEmail());

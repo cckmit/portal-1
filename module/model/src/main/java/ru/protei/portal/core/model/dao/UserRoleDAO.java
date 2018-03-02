@@ -21,6 +21,7 @@ public interface UserRoleDAO extends PortalBaseDAO<UserRole> {
     UserRole ensureExists ( String code, En_Scope scope, En_Privilege...privileges);
 
     Set<UserRole> getDefaultEmployeeRoles ();
+    Set<UserRole> getDefaultManagerRoles ();
     Set<UserRole> getDefaultCustomerRoles ();
 
     void trimScopeToSingleValue();

@@ -72,4 +72,14 @@ public class ExtCompanyEmailSubs implements LegacyEntity {
     public String uniqueKey () {
         return (this.email + "_" + String.valueOf(this.companyId));
     }
+
+    @Override
+    public int hashCode() {
+        return uniqueKey().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof ExtCompanyEmailSubs && ((ExtCompanyEmailSubs) obj).uniqueKey().equals(uniqueKey());
+    }
 }

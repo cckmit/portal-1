@@ -263,4 +263,18 @@ public abstract class PortalBaseJdbcDAO<T> extends JdbcBaseDAO<Long,T> implement
         String sqlCondition = getObjectMapper().getSelectTableName() + "." + columnName + " in " + JdbcHelper.makeSqlStringCollection(values, args, null);
         return JdbcHelper.getObjects(getObjectMapper(), jdbcTemplate, sqlCondition, args, -1, -1, null);
     }
+
+
+    @Override
+    public List<Long> existingKeys(Collection<Long> testKeys) {
+        List<Object> args = new ArrayList<Object>();
+        StringBuilder query = new StringBuilder("select ")
+                .append(getIdColumnName())
+                .append(" from ").append(getTableName())
+                .append(" where ")
+                .append(getIdColumnName()).append(" in ")
+                .append(JdbcHelper.makeSqlStringCollection(testKeys, args, null));
+
+        return jdbcTemplate.queryForList(query.toString(), Long.class, args.toArray());
+    }
 }
