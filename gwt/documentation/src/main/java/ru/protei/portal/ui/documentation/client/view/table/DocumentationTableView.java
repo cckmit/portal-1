@@ -1,7 +1,6 @@
 package ru.protei.portal.ui.documentation.client.view.table;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.DOM;
@@ -11,9 +10,7 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.protei.portal.core.model.ent.Documentation;
-import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.helper.HTMLHelper;
-import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
@@ -33,15 +30,6 @@ public class DocumentationTableView extends Composite implements AbstractDocumen
         initTable();
     }
 
-    private Documentation getTestDocumentation() {
-        Documentation doc = new Documentation();
-        doc.setAnnotation("big annotation text");
-        doc.setName("Test doc");
-        doc.setProject("Test Project");
-        doc.setManagerShortName("Иванов И.И.");
-        return doc;
-    }
-
     @Override
     public void setActivity(AbstractDocumentationTableActivity activity) {
         this.activity = activity;
@@ -57,14 +45,13 @@ public class DocumentationTableView extends Composite implements AbstractDocumen
     }
 
     @Override
-    public void setAnimation(TableAnimation animation) {
-        //animation.setContainers(tableContainer, null, null);
-        GWT.log(getClass().getName() + "#setAnimation");
+    public int getPageSize() {
+        return table.getPageSize();
     }
 
     @Override
-    public int getPageSize() {
-        return table.getPageSize();
+    public int getPageCount() {
+        return table.getPageCount();
     }
 
     @Override
@@ -75,6 +62,11 @@ public class DocumentationTableView extends Composite implements AbstractDocumen
     @Override
     public void addRow(Documentation documentation) {
         table.addRow(documentation);
+    }
+
+    @Override
+    public void scrollTo(int page) {
+        table.scrollToPage(page);
     }
 
     @Override
@@ -163,8 +155,6 @@ public class DocumentationTableView extends Composite implements AbstractDocumen
 
         columns.forEach(col -> table.addColumn(col.header, col.values));
         table.addColumn(editClickColumn.header, editClickColumn.values);
-
-        //addRow(getTestDocumentation());
     }
 
     @UiField

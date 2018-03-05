@@ -4,13 +4,13 @@ import ru.brainworm.factory.context.client.annotation.Url;
 
 public class DocumentationEvents {
 
-    @Url(value = "documentations", primary = true)
+    @Url(value = "docs", primary = true)
     public static class Show {
         public Show() {
         }
     }
 
-    @Url("documentation")
+    @Url("doc")
     public static class Edit {
 
         public Long id;

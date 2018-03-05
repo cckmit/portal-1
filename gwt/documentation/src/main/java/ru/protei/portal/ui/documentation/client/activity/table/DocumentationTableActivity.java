@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.documentation.client.activity.table;
 
-import com.google.gwt.core.client.GWT;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -22,7 +21,6 @@ public abstract class DocumentationTableActivity
     @PostConstruct
     public void onInit() {
         view.setActivity(this);
-        view.setAnimation(animation);
 
         CREATE_ACTION = lang.buttonCreate();
 
@@ -44,12 +42,12 @@ public abstract class DocumentationTableActivity
 
     @Override
     public void onFirstClicked() {
-        GWT.log("first clicked");
+        view.scrollTo(0);
     }
 
     @Override
     public void onLastClicked() {
-        GWT.log("last clicked");
+        view.scrollTo(view.getPageCount() - 1);
     }
 
     @Event
@@ -57,14 +55,14 @@ public abstract class DocumentationTableActivity
         this.init = initDetails;
     }
 
-    @Override
-    public void onItemClicked(Documentation value) {
-        GWT.log(this.getClass().getName()  + ": item clicked");
-    }
 
     @Override
     public void onEditClicked(Documentation value) {
         fireEvent(new DocumentationEvents.Edit(value.getId()));
+    }
+
+    @Override
+    public void onItemClicked(Documentation value) {
     }
 
     @Inject

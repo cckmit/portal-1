@@ -7,13 +7,13 @@
     <inherits name="ru.protei.portal.ui.product.Product"/>
     <inherits name="ru.protei.portal.ui.contact.Contact"/>
     <inherits name="ru.protei.portal.ui.issue.Issue"/>
-    <inherits name="ru.protei.portal.ui.documentation.Documentation"/>
     <inherits name="ru.protei.portal.ui.equipment.Equipment"/>
     <inherits name="ru.protei.portal.ui.region.Region" />
     <inherits name="ru.protei.portal.ui.project.Project" />
     <inherits name="ru.protei.portal.ui.account.Account" />
     <inherits name="ru.protei.portal.ui.role.Role" />
     <inherits name="ru.protei.portal.ui.official.Official"/>
+    <inherits name="ru.protei.portal.ui.documentation.Documentation"/>
 
     <entry-point class='ru.protei.portal.ui.crm.client.Main'/>
 
