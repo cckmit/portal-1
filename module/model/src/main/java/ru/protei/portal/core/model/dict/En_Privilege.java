@@ -57,6 +57,11 @@ public enum En_Privilege {
 
     DASHBOARD_VIEW(DASHBOARD, VIEW),
 
+    DOCUMENTATION_VIEW(DOCUMENTATION, VIEW),
+    DOCUMENTATION_EDIT(DOCUMENTATION, EDIT),
+    DOCUMENTATION_CREATE(DOCUMENTATION, CREATE),
+    DOCUMENTATION_REMOVE(DOCUMENTATION, REMOVE),
+
     // Набор дополнительных привилегий, которые вычисляются по scope и не пишутся в базу. Устанавливаются без action
     ISSUE_COMPANY_EDIT(ISSUE, null),
     ISSUE_PRODUCT_EDIT(ISSUE, null),

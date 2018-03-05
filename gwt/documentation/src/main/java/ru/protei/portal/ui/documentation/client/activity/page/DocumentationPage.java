@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.documentation.client.activity.page;
 
-import com.google.gwt.core.client.GWT;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -25,8 +24,10 @@ public abstract class DocumentationPage implements Activity {
 
     @Event
     public void onAuthSuccess(AuthEvents.Success event) {
-        fireEvent(new MenuEvents.Add(TAB, UiConstants.TabIcons.DOCUMENTATION));
-        fireEvent(new AppEvents.InitPage(show));
+        if (event.profile.hasPrivilegeFor(En_Privilege.DOCUMENTATION_VIEW)) {
+            fireEvent(new MenuEvents.Add(TAB, UiConstants.TabIcons.DOCUMENTATION));
+            fireEvent(new AppEvents.InitPage(show));
+        }
     }
 
     @Event

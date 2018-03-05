@@ -698,4 +698,6 @@ public interface Lang extends Messages, ContactItemLang {
     String annotation();
 
     String designation();
+
+    String privilegeDocumentation();
 }
