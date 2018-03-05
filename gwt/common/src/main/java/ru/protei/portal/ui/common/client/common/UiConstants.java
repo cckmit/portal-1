@@ -15,6 +15,7 @@ public class UiConstants {
         String DASHBOARD = "fa fa-dashboard";
         String REGION = "fa fa-globe";
         String PROJECT = "fa fa-archive";
+        String DOCUMENTATION = "fa fa-server";
         String EQUIPMENT = "fa fa-server";
         String ACCOUNT = "fa fa-group";
         String ROLE = "fa fa-user";
@@ -35,6 +36,7 @@ public class UiConstants {
         String COMPANY_TYPE_VIEW = "companyTypeView";
         String PRODUCT = "product";
         String PRODUCT_TYPE_VIEW = "productTypeView";
+        String DOCUMENTATION = "documentation";
         String DASHBOARD = "dashboard";
         String EQUIPMENT = "equipment";
         String PROJECT = "project";
