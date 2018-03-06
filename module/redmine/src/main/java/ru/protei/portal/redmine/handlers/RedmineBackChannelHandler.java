@@ -12,7 +12,7 @@ import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.RedmineEndpoint;
 import ru.protei.portal.redmine.service.RedmineService;
 
-public final class BackchannelUpdateIssueHandler implements BackchannelEventHandler {
+public final class RedmineBackChannelHandler implements BackchannelEventHandler {
 
     @Override
     public void handle(AssembledCaseEvent event) {
@@ -50,13 +50,15 @@ public final class BackchannelUpdateIssueHandler implements BackchannelEventHand
         logger.debug("Trying to get redmine priority level id matching with portal: {}", object.getImpLevel());
         final int redminePriorityId = priorityMapEntryDAO.getByPortalPriorityId(object.getImpLevel(), priorityId).getRedminePriorityId();
         logger.debug("Found redmine priority level id: {}", redminePriorityId);
-        issue.setPriorityId(redminePriorityId);
+        if (redminePriorityId != 0)
+            issue.setPriorityId(redminePriorityId);
 
         final long statusId = endpoint.getStatusMapId();
         logger.debug("Trying to get redmine status id matching with portal: {}", object.getStateId());
         final int redmineStatusId = statusMapEntryDAO.getByRedmineStatusId(object.getStateId(), statusId).getRedmineStatusId();
         logger.debug("Found redmine status id: {}", redmineStatusId);
-        issue.setStatusId(redmineStatusId);
+        if (redmineStatusId != 0)
+            issue.setStatusId(redmineStatusId);
 
         issue.setProjectId(Integer.valueOf(externalCaseAppDAO.get(object.getId()).getExtAppData()));
         issue.setDescription(object.getInfo());
@@ -87,5 +89,5 @@ public final class BackchannelUpdateIssueHandler implements BackchannelEventHand
     @Autowired
     private ExternalCaseAppDAO externalCaseAppDAO;
 
-    private static final Logger logger = LoggerFactory.getLogger(BackchannelUpdateIssueHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(RedmineBackChannelHandler.class);
 }

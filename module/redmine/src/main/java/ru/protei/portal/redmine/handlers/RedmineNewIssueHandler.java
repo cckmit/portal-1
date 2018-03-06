@@ -73,12 +73,14 @@ public final class RedmineNewIssueHandler implements RedmineEventHandler {
         logger.debug("Trying to get portal priority level id matching with redmine: {}", issue.getPriorityId());
         final int priorityLevelId = priorityMapEntryDAO.getByRedminePriorityId(issue.getPriorityId(), priorityMapId).getLocalPriorityId();
         logger.debug("Found priority level id: {}", priorityLevelId);
-        obj.setImpLevel(priorityLevelId);
+        if (priorityLevelId != 0)
+            obj.setImpLevel(priorityLevelId);
 
         logger.debug("Trying to get portal status id matching with redmine: {}", issue.getStatusId());
         final long stateId = statusMapEntryDAO.getByRedmineStatusId(issue.getStatusId(), statusMapId).getLocalStatusId();
         logger.debug("Found status id: {}", stateId);
-        obj.setStateId(stateId);
+        if (stateId != 0)
+            obj.setStateId(stateId);
 
         obj.setName(issue.getSubject());
         obj.setInfo(issue.getDescription());

@@ -13,7 +13,7 @@ import ru.protei.portal.core.model.dao.RedmineEndpointDAO;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.RedmineEndpoint;
-import ru.protei.portal.redmine.handlers.BackchannelUpdateIssueHandler;
+import ru.protei.portal.redmine.handlers.RedmineBackChannelHandler;
 import ru.protei.portal.redmine.handlers.RedmineNewIssueHandler;
 import ru.protei.portal.redmine.handlers.RedmineUpdateIssueHandler;
 import ru.protei.portal.redmine.utils.RedmineUtils;
@@ -32,7 +32,7 @@ public final class RedmineServiceImpl implements RedmineService {
             return;
         }
         try {
-            backchannelUpdateIssueHandler.handle(event);
+            redmineBackChannelHandler.handle(event);
             logger.debug("case-object event handled for case {}", event.getCaseObject().getExtId());
         } catch (Exception e) {
             logger.debug("error while handling event for case {}", event.getCaseObject().getExtId(), e);
@@ -178,7 +178,7 @@ public final class RedmineServiceImpl implements RedmineService {
     private RedmineUpdateIssueHandler updateHandler;
 
     @Autowired
-    private BackchannelUpdateIssueHandler backchannelUpdateIssueHandler;
+    private RedmineBackChannelHandler redmineBackChannelHandler;
 
     private final static org.slf4j.Logger logger = LoggerFactory.getLogger(RedmineServiceImpl.class);
 }

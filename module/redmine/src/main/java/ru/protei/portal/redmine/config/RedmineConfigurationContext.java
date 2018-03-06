@@ -3,7 +3,7 @@ package ru.protei.portal.redmine.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import ru.protei.portal.redmine.handlers.BackchannelUpdateIssueHandler;
+import ru.protei.portal.redmine.handlers.RedmineBackChannelHandler;
 import ru.protei.portal.redmine.handlers.RedmineNewIssueHandler;
 import ru.protei.portal.redmine.handlers.RedmineUpdateIssueHandler;
 import ru.protei.portal.redmine.service.CommonService;
@@ -16,8 +16,8 @@ import ru.protei.portal.redmine.service.RedmineServiceImpl;
 public class RedmineConfigurationContext {
 
     @Bean
-    public BackchannelUpdateIssueHandler getBackchannelUpdateIssueHandler() {
-        return new BackchannelUpdateIssueHandler();
+    public RedmineBackChannelHandler getBackchannelUpdateIssueHandler() {
+        return new RedmineBackChannelHandler();
     }
 
     @Bean
