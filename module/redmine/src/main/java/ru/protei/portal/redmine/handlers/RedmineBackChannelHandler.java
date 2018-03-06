@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.model.dao.*;
+import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.RedmineEndpoint;
@@ -57,7 +58,7 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
         logger.debug("Trying to get redmine status id matching with portal: {}", object.getStateId());
         final int redmineStatusId = statusMapEntryDAO.getByRedmineStatusId(object.getStateId(), statusId).getRedmineStatusId();
         logger.debug("Found redmine status id: {}", redmineStatusId);
-        if (redmineStatusId != 0)
+        if (redmineStatusId != 0 && object.getState() != En_CaseState.VERIFIED)
             issue.setStatusId(redmineStatusId);
 
         issue.setProjectId(Integer.valueOf(externalCaseAppDAO.get(object.getId()).getExtAppData()));
