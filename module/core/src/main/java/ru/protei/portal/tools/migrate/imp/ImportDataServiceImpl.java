@@ -68,19 +68,6 @@ public class ImportDataServiceImpl implements ImportDataService {
     @Autowired
     PortalConfig portalConfig;
 
-
-    @Scheduled(fixedRate = 60000L, initialDelay = 60000L)
-    public void incrementalImport () {
-        if (!portalConfig.data().legacySysConfig().isImportEnabled()) {
-            logger.debug("import is disabled, exit now");
-            return;
-        }
-
-        runIncrementalImport();
-
-        logger.debug("incremental import done");
-    }
-
     @Transactional
     public void runIncrementalImport () {
         logger.debug("incremental import run");
@@ -88,6 +75,7 @@ public class ImportDataServiceImpl implements ImportDataService {
         legacySystemDAO.runActionRTE(transaction -> {
             importCompanies(transaction);
             importProducts(transaction);
+            importContacts(transaction);
 
             if (portalConfig.data().legacySysConfig().isImportEmployeesEnabled()) {
                 importEmployes(transaction);
@@ -95,6 +83,8 @@ public class ImportDataServiceImpl implements ImportDataService {
             else {
                 logger.debug("import of employees from legacy db is disabled, skip");
             }
+
+            new CaseImport().loadIncremental(transaction);
 
             return true;
         });
@@ -147,6 +137,35 @@ public class ImportDataServiceImpl implements ImportDataService {
                 companyDAO.persistBatch(importList.stream().map(imp -> MigrateUtils.fromExternalCompany(imp)).collect(Collectors.toList()))
         );
     }
+
+    private void importContacts (LegacyDAO_Transaction transaction) throws SQLException {
+        logger.debug("incremental import, persons (contacts)");
+        ImportPersonBatch importPersonBatch = new ImportPersonBatch(userRoleDAO.getDefaultEmployeeRoles(),
+                userRoleDAO.getDefaultManagerRoles(),
+                new StrictLoginUniqueController());
+
+        MigrationEntry migrationEntry = migrationEntryDAO.getOrCreateEntry(En_MigrationEntry.PERSON_CUSTOMER);
+
+        List<ExternalPerson> processList = transaction.dao(ExternalPerson.class).list("nID > ? and nCompanyID<>?", migrationEntry.getLastId(), 1L);
+
+        if (processList.isEmpty()) {
+            logger.debug("No new contacts in legacy db, exit now");
+            return;
+        }
+
+        logger.debug("got new external person list, size = {}", processList.size());
+
+        migrationEntry = migrationEntryDAO.updateEntry(En_MigrationEntry.PERSON_CUSTOMER, HelperFunc.last(processList));
+
+        HelperFunc.splitBatch(
+                processList,
+                100, list -> importPersonBatch.doImport(transaction, list)
+        );
+
+        logger.debug("processed new contacts records: {}, last-id: {}", processList.size(), migrationEntry.getLastId());
+        logger.debug("incremental import, contacts, done");
+    }
+
 
     private void importEmployes(LegacyDAO_Transaction transaction) throws SQLException {
         logger.debug("incremental import, employees");
@@ -337,14 +356,20 @@ public class ImportDataServiceImpl implements ImportDataService {
         public int loadIncremental (LegacyDAO_Transaction transaction) throws SQLException {
             MigrationEntry migrationEntry = migrationEntryDAO.getOrCreateEntry(En_MigrationEntry.CRM_SUPPORT_SESSION);
 
+            logger.debug("run import crm-support sessions from id={} and time={}", migrationEntry.getLastId(), migrationEntry.getLastUpdate());
+
             List<ExtCrmSession> src = transaction.dao(ExtCrmSession.class)
                     .list("nCategoryId=? and (nID > ? or dtLastUpdate > ?)", 8, migrationEntry.getLastId(), migrationEntry.getLastUpdate());
 
-            if (src == null || src.isEmpty())
+            if (src == null || src.isEmpty()) {
+                logger.debug("no changes founds for crm-sessions");
                 return 0;
+            }
 
             long lastId = HelperFunc.max(src, e -> e.getId());
             Date lastUpdate = HelperFunc.max(src, e -> e.getLastUpdate());
+
+            logger.debug("process new crm-sessions and updates, id={}, time={}", lastId, lastUpdate);
 
             migrationEntryDAO.updateEntry(En_MigrationEntry.CRM_SUPPORT_SESSION, lastId, lastUpdate);
 
@@ -356,6 +381,9 @@ public class ImportDataServiceImpl implements ImportDataService {
                 if (ourObj == null) {
                     // new case
                     ourObj = fromSupportSession(ext);
+
+                    logger.debug("new crm-session: {}", ext.getId());
+
                     toInsert.add(ourObj);
 
                     List<Long> contacts = legacySystemDAO.getSessionContactList(transaction.connection(), ext.getId());
@@ -372,6 +400,7 @@ public class ImportDataServiceImpl implements ImportDataService {
                 else {
                     // update case
                     if (ourObj.getModified().before(ext.getLastUpdate())) {
+                        logger.debug("update session {}", ext.getId());
                         // require to update
                         Long newState = supportStatusMap.get(ext.getStatusId());
                         if (newState != null)
@@ -388,6 +417,7 @@ public class ImportDataServiceImpl implements ImportDataService {
                 }
             }
 
+            logger.debug("process batches...");
             if (!toInsert.isEmpty()) {
                 caseObjectDAO.persistBatch(toInsert);
             }
@@ -396,7 +426,9 @@ public class ImportDataServiceImpl implements ImportDataService {
                 caseObjectDAO.mergeBatch(toUpdate);
             }
 
-            return 0;
+            logger.debug("incremental import of crm-sessions completed, total handled {} records", src.size());
+
+            return src.size();
         }
 
         public int initialCrmSupportSessionsImport(LegacyDAO_Transaction transaction) throws SQLException {
@@ -667,17 +699,21 @@ public class ImportDataServiceImpl implements ImportDataService {
         Set<UserRole> employeeRoleSet;
         Set<UserRole> managerRoleSet;
         UniqueController<String> loginUniqueController;
+        Map<Long,Long> companyIdMap;
+        Map<Long,Long> legacyIdMap;
 
         public ImportPersonBatch(Set<UserRole> employeeRoleSet, Set<UserRole> managerRoleSet, UniqueController<String> loginUniqueController) {
             this.employeeRoleSet = employeeRoleSet;
             this.managerRoleSet = managerRoleSet;
             this.loginUniqueController = loginUniqueController;
+            this.legacyIdMap = personDAO.mapLegacyId();
+            this.companyIdMap = companyDAO.mapLegacyId();
         }
 
         private void doImport (LegacyDAO_Transaction transaction, List<ExternalPerson> impListSrc) {
             try {
                 Map<Long, ExternalPersonInfo> infoMap = legacySystemDAO.personCollector(impListSrc).asMap(transaction);
-                Set<Long> existingIds = new HashSet<>(personDAO.existingKeys(infoMap.keySet()));
+//                Set<Long> existingIds = new HashSet<>(personDAO.existingKeys(infoMap.keySet()));
 
                 //Person person = new Person();
                 List<UserLogin> loginBatch = new ArrayList<>();
@@ -687,8 +723,8 @@ public class ImportDataServiceImpl implements ImportDataService {
                 for (ExternalPerson impPerson : impListSrc) {
                     ExternalPersonInfo info = infoMap.get(impPerson.getId());
 
-                    if (!existingIds.contains(impPerson.getId())) {
-                        personBatch.add(MigrateUtils.fromExternalPerson(info));
+                    if (!legacyIdMap.containsKey(impPerson.getId())) {
+                        personBatch.add(MigrateUtils.fromExternalPerson(info,companyIdMap));
                     }
 
                     if (info.proteiExtension != null && !info.proteiExtension.isFired()) {

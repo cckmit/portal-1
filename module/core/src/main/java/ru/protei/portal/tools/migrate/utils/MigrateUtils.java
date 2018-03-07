@@ -168,13 +168,13 @@ public class MigrateUtils {
         return x;
     }
 
-    public static Person fromExternalPerson (ExternalPersonInfo info) {
+    public static Person fromExternalPerson (ExternalPersonInfo info, Map<Long,Long> companyIdMap) {
         ExternalPerson impPerson = info.personData;
         Person person = new Person();
         person.setId(impPerson.getId());
         person.setOldId(impPerson.getId());
         person.setBirthday(impPerson.getBirthday());
-        person.setCompanyId(impPerson.getCompanyId());
+        person.setCompanyId(companyIdMap.get(impPerson.getCompanyId()));
         person.setCreated(impPerson.getCreated());
         person.setCreator(impPerson.getCreator());
         person.setDeleted(impPerson.isDeleted());

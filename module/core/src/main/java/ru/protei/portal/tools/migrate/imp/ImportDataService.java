@@ -4,10 +4,9 @@ public interface ImportDataService {
     /* Regular import methods */
 
     /**
-     * common entry-point to import all supported type of data
-     * scheduled to execute for every minute
+     * Метод непосредственно осуществляет инкрементальный импорт данных
      */
-    void incrementalImport();
+    void runIncrementalImport ();
 
 
     /* Only at manual import stage (init)
