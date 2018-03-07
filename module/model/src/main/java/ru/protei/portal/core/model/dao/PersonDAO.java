@@ -54,4 +54,11 @@ public interface PersonDAO extends PortalBaseDAO<Person> {
     }
 
     boolean existsByLegacyId (Long legacyId);
+
+    /**
+     * Возвращает соответствие между ID в старом портале и текущим ID записи в новой БД
+     * В качестве ключа используется ID в старой базе
+     * @return
+     */
+    Map<Long,Long> mapLegacyId ();
 }

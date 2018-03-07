@@ -75,6 +75,27 @@ public class LegacySystemDAO {
         }
     }
 
+
+    public List<Long> getSessionContactList (Connection connection, Long sessionId) {
+        try (PreparedStatement p = connection.prepareStatement(
+                "select nContactID from CRM.Tm_ContactToSession where nSessionID=? order by nID"
+        )) {
+            p.setLong(1, sessionId);
+            ResultSet rs = p.executeQuery();
+            List<Long> result = new ArrayList<>();
+
+            while (rs.next()) {
+                result.add(rs.getLong("nContactID"));
+            }
+            rs.close();
+            return result;
+        }
+        catch (SQLException e) {
+            logger.debug("",e);
+            throw new RuntimeException(e);
+        }
+    }
+
     private Map<Long, Long> getSession2ContactMap (Connection conn, Long minId, Long maxId) {
 
         try (PreparedStatement p = conn.prepareStatement(
@@ -311,6 +332,11 @@ public class LegacySystemDAO {
             this.connection = provider.getConnection();
             this.connection.setAutoCommit(false);
             this.daoMap = new HashMap<>();
+        }
+
+        @Override
+        public Connection connection() {
+            return connection;
         }
 
         @Override

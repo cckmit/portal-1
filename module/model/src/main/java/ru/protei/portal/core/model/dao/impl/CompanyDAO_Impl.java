@@ -9,7 +9,9 @@ import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.utils.TypeConverters;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -27,6 +29,18 @@ public class CompanyDAO_Impl extends PortalBaseJdbcDAO<Company> implements Compa
         return getByCondition(" cname=? ", name);
     }
 
+    @Override
+    public Map<Long, Long> mapLegacyId() {
+
+        Map<Long, Long> result = new HashMap<>();
+
+        partialGetAll("id, old_id").forEach(company -> {
+            if (company.getOldId() != null)
+                result.put(company.getOldId(), company.getId());
+        });
+
+        return result;
+    }
 
     @SqlConditionBuilder
     public SqlCondition createSqlCondition(CompanyQuery query) {

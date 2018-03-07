@@ -34,6 +34,11 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
     }
 
     @Override
+    public CaseObject getCase(En_CaseType caseType, long number) {
+        return getByCondition("case_type=? and caseno=?", caseType.getId(), number);
+    }
+
+    @Override
     public Long insertCase(CaseObject object) {
 
         En_CaseType type = object.getCaseType();
