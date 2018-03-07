@@ -9,8 +9,10 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Documentation;
 import ru.protei.portal.core.model.helper.HTMLHelper;
+import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
@@ -42,6 +44,25 @@ public class DocumentationTableView extends Composite implements AbstractDocumen
             col.setHandler(activity);
             col.setColumnProvider(columnProvider);
         });
+
+        table.setLoadHandler(activity);
+        table.setPagerListener(activity);
+    }
+
+    @Override
+    public void setAnimation(TableAnimation animation) {
+        //animation.setContainers(tableContainer, null, null);
+    }
+
+    @Override
+    public void clearRecords() {
+        table.clearCache();
+        table.clearRows();
+    }
+
+    @Override
+    public void setRecordCount(Long count) {
+        table.setTotalRecords(count.intValue());
     }
 
     @Override
@@ -55,26 +76,14 @@ public class DocumentationTableView extends Composite implements AbstractDocumen
     }
 
     @Override
-    public void clearRecords() {
-        table.clearRows();
-    }
-
-    @Override
-    public void addRow(Documentation documentation) {
-        table.addRow(documentation);
-    }
-
-    @Override
     public void scrollTo(int page) {
         table.scrollToPage(page);
     }
 
-    @Override
-    public void updateRow(Documentation documentation) {
-        table.updateRow(documentation);
-    }
 
     private void initTable() {
+        editClickColumn.setPrivilege(En_Privilege.DOCUMENTATION_EDIT);
+
         ClickColumn<Documentation> name = new ClickColumn<Documentation>() {
             @Override
             protected void fillColumnHeader(Element element) {

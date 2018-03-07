@@ -4,7 +4,7 @@ import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.Set;
+import java.util.List;
 
 /**
  * Документ
@@ -26,6 +26,9 @@ public class Documentation implements Serializable {
      * Децимальный номер
      */
     @JdbcColumn(name = "decimal_number_id")
+    private Long decimalNumberId;
+
+    @JdbcJoinedObject(localColumn = "decimal_number_id")
     private DecimalNumber decimalNumber;
 
 
@@ -68,9 +71,8 @@ public class Documentation implements Serializable {
     /**
      * Ключевые слова для поиска
      */
-    @JdbcColumn
     @JdbcColumnCollection(separator = ",")
-    private Set<String> tags;
+    private List<String> tags;
 
     public Documentation() {
     }
@@ -115,11 +117,11 @@ public class Documentation implements Serializable {
         this.project = project;
     }
 
-    public Set<String> getTags() {
+    public List<String> getTags() {
         return tags;
     }
 
-    public void setTags(Set<String> tags) {
+    public void setTags(List<String> tags) {
         this.tags = tags;
     }
 
@@ -169,5 +171,13 @@ public class Documentation implements Serializable {
 
     public void setDecimalNumber(DecimalNumber decimalNumber) {
         this.decimalNumber = decimalNumber;
+    }
+
+    public Long getDecimalNumberId() {
+        return decimalNumberId;
+    }
+
+    public void setDecimalNumberId(Long decimalNumberId) {
+        this.decimalNumberId = decimalNumberId;
     }
 }

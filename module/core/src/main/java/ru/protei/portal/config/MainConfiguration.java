@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import ru.protei.portal.api.struct.FileStorage;
+import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.aspect.ServiceLayerInterceptor;
 import ru.protei.portal.core.controller.auth.AuthInterceptor;
 import ru.protei.portal.core.model.dao.*;
@@ -17,7 +18,6 @@ import ru.protei.portal.core.service.user.AuthServiceImpl;
 import ru.protei.portal.core.service.user.LDAPAuthProvider;
 import ru.protei.portal.core.utils.SessionIdGen;
 import ru.protei.portal.core.utils.SimpleSidGenerator;
-import ru.protei.portal.core.Lang;
 import ru.protei.winter.core.utils.config.exception.ConfigException;
 
 @EnableAspectJAutoProxy
@@ -232,6 +232,11 @@ public class MainConfiguration {
     public ExternalCaseAppDAO getExternalCaseAppDAO () {
         return new ExternalCaseAppDAO_Impl();
     }
+
+    @Bean
+    public DocumentationDAO getDocumentationDAO() {
+        return new DocumentationDAO_Impl();
+    }
 /**
  *
  *
@@ -346,6 +351,11 @@ public class MainConfiguration {
     @Bean
     public EventExpirationControl getEventExpirationControl() {
         return new EventExpirationControl();
+    }
+
+    @Bean
+    public DocumentationService getDocumentationService() {
+        return new DocumentationServiceImpl();
     }
 
     /** ASPECT/INTERCEPTORS **/
