@@ -78,6 +78,7 @@ public final class CommonServiceImpl implements CommonService {
         }
 
         eventPublisherService.publishEvent(new CaseAttachmentEvent(
+                ServiceModule.REDMINE,
                 caseService
                 , this,
                 obj,

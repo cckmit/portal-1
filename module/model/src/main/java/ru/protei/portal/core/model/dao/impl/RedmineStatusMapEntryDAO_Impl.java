@@ -7,22 +7,22 @@ import java.util.List;
 
 public class RedmineStatusMapEntryDAO_Impl extends PortalBaseJdbcDAO<RedmineStatusMapEntry> implements RedmineStatusMapEntryDAO {
     @Override
-    public RedmineStatusMapEntry getByPortalStatusId(long id, long endpointId) {
-        return getByCondition("MAP_ID = ? AND LOCAL_status_id = ?", endpointId, id);
+    public RedmineStatusMapEntry getByPortalStatusId(long id, long mapId) {
+        return getByCondition("MAP_ID = ? AND LOCAL_status_id = ?", mapId, id);
     }
 
     @Override
-    public RedmineStatusMapEntry getByRedmineStatusId(long id, long endpointId) {
-        return getByCondition("MAP_ID = ? AND RM_status_id = ?", endpointId, id);
+    public RedmineStatusMapEntry getByRedmineStatusId(long id, long mapId) {
+        return getByCondition("MAP_ID = ? AND RM_status_id = ?", mapId, id);
     }
 
     @Override
-    public RedmineStatusMapEntry getByPortalStatusName(String name, long endpointId) {
-        return getByCondition("LOCAL_status_name = ? AND ENDPOINT_ID = ?", name, endpointId);
+    public RedmineStatusMapEntry getByPortalStatusName(String name, long mapId) {
+        return getByCondition("MAP_ID = ? AND LOCAL_status_name = ?", name, mapId);
     }
 
     @Override
-    public List<RedmineStatusMapEntry> getListByEndpointId(long endpointId) {
-        return getListByCondition("ENDPOINT_ID = ?", endpointId);
+    public List<RedmineStatusMapEntry> getListByEndpointId(long mapId) {
+        return getListByCondition("MAP_ID = ?", mapId);
     }
 }

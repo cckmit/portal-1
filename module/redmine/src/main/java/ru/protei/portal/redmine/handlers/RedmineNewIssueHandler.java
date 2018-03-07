@@ -10,10 +10,7 @@ import ru.protei.portal.core.model.dao.ExternalCaseAppDAO;
 import ru.protei.portal.core.model.dao.RedminePriorityMapEntryDAO;
 import ru.protei.portal.core.model.dao.RedmineStatusMapEntryDAO;
 import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.ent.CaseObject;
-import ru.protei.portal.core.model.ent.ExternalCaseAppData;
-import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.model.ent.RedmineEndpoint;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.redmine.service.CommonService;
 
 import java.util.Objects;
@@ -71,16 +68,25 @@ public final class RedmineNewIssueHandler implements RedmineEventHandler {
         obj.setCaseType(En_CaseType.CRM_SUPPORT);
 
         logger.debug("Trying to get portal priority level id matching with redmine: {}", issue.getPriorityId());
-        final int priorityLevelId = priorityMapEntryDAO.getByRedminePriorityId(issue.getPriorityId(), priorityMapId).getLocalPriorityId();
-        logger.debug("Found priority level id: {}", priorityLevelId);
-        if (priorityLevelId != 0)
-            obj.setImpLevel(priorityLevelId);
+        final RedminePriorityMapEntry priorityLevel = priorityMapEntryDAO.getByRedminePriorityId(issue.getPriorityId(), priorityMapId);
+        if (priorityLevel != null) {
+            logger.debug("Found priority level id: {}", priorityLevel.getLocalPriorityId());
+            obj.setImpLevel(priorityLevel.getLocalPriorityId());
+        } else {
+            logger.debug("Priority level not found, setting default");
+            obj.setImpLevel(2);
+        }
+
 
         logger.debug("Trying to get portal status id matching with redmine: {}", issue.getStatusId());
-        final long stateId = statusMapEntryDAO.getByRedmineStatusId(issue.getStatusId(), statusMapId).getLocalStatusId();
-        logger.debug("Found status id: {}", stateId);
-        if (stateId != 0)
-            obj.setStateId(stateId);
+        final RedmineStatusMapEntry state = statusMapEntryDAO.getByRedmineStatusId(issue.getStatusId(), statusMapId);
+        if (state != null) {
+            logger.debug("Found status id: {}", state.getLocalStatusId());
+            obj.setStateId(state.getLocalStatusId());
+        } else {
+            logger.debug("Object status was not found");
+            obj.setStateId(1);
+        }
 
         obj.setName(issue.getSubject());
         obj.setInfo(issue.getDescription());
@@ -92,6 +98,8 @@ public final class RedmineNewIssueHandler implements RedmineEventHandler {
     private void handleComments(Issue issue, Person person, CaseObject obj, long caseObjId, long companyId) {
         issue.getJournals()
                 .stream()
+                .filter(Objects::nonNull)
+                .filter(x -> x.getNotes() != null)
                 .filter(x -> !x.getNotes().isEmpty())
                 .map(x -> commonService.parseJournal(x, companyId))
                 .filter(Objects::nonNull)

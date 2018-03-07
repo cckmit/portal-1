@@ -9,14 +9,14 @@ import java.util.List;
 public class RedmineEndpointDAO_Impl extends PortalBaseJdbcDAO<RedmineEndpoint> implements RedmineEndpointDAO {
     @Override
     public void updateCreatedOn(Long companyId, String projectId, Date date) {
-        RedmineEndpoint endpoint = getByCondition("COMPANY_ID=? AND project_id=?", companyId, projectId);
+        RedmineEndpoint endpoint = getByCondition("COMPANY_ID = ? AND project_id = ?", companyId, projectId);
         endpoint.setLastCreatedOnDate(date);
         saveOrUpdate(endpoint);
     }
 
     @Override
     public void updateUpdatedOn(Long companyId, String projectId, Date date) {
-        RedmineEndpoint endpoint = getByCondition("COMPANY_ID=? AND project_id=?", companyId, projectId);
+        RedmineEndpoint endpoint = getByCondition("COMPANY_ID = ? AND project_id = ?", companyId, projectId);
         endpoint.setLastUpdatedOnDate(date);
         saveOrUpdate(endpoint);
     }

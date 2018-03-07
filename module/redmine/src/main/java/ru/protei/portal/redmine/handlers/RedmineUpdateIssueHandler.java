@@ -1,6 +1,7 @@
 package ru.protei.portal.redmine.handlers;
 
 import com.taskadapter.redmineapi.bean.Issue;
+import com.taskadapter.redmineapi.bean.Journal;
 import com.taskadapter.redmineapi.bean.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,16 +10,11 @@ import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.RedminePriorityMapEntryDAO;
 import ru.protei.portal.core.model.dao.RedmineStatusMapEntryDAO;
-import ru.protei.portal.core.model.ent.CaseComment;
-import ru.protei.portal.core.model.ent.CaseObject;
-import ru.protei.portal.core.model.ent.RedmineEndpoint;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.service.EventAssemblerService;
 import ru.protei.portal.redmine.service.CommonService;
 
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public final class RedmineUpdateIssueHandler implements RedmineEventHandler {
@@ -51,10 +47,16 @@ public final class RedmineUpdateIssueHandler implements RedmineEventHandler {
         logger.debug("last comment was synced on: {}, with id {}", latestCreated);
         logger.debug("starting adding new comments");
 
-        final List<CaseComment> comments = issue.getJournals()
+        final List<Journal> nonEmptyJournals = issue.getJournals()
                 .stream()
+                .filter(Objects::nonNull)
+                .filter(x -> x.getNotes() != null && x.getCreatedOn() != null)
                 .filter(x -> x.getCreatedOn().compareTo(latestCreated) > 0)
                 .filter(x -> !x.getNotes().isEmpty())
+                .collect(Collectors.toList());
+
+        final List<CaseComment> comments = nonEmptyJournals
+                .stream()
                 .map(x -> commonService.parseJournal(x, companyId))
                 .filter(Objects::nonNull)
                 .map(x -> commonService.processStoreComment(issue, x.getAuthor(), object, object.getId(), x))
@@ -68,19 +70,23 @@ public final class RedmineUpdateIssueHandler implements RedmineEventHandler {
 
     //Well, just simpliest way to update object: ignoring everything and just setting fields...
     private void updateObject(Issue issue, CaseObject object, RedmineEndpoint endpoint) {
-        final long prioritiesId = endpoint.getPriorityMapId();
-        final long statusesId = endpoint.getStatusMapId();
+        final long priorityMapId = endpoint.getPriorityMapId();
+        final long statusMapId = endpoint.getStatusMapId();
         logger.debug("Trying to get portal priority level id matching with redmine: {}", issue.getPriorityId());
-        final int priorityLvl = priorityMapEntryDAO.getByRedminePriorityId(issue.getPriorityId(), prioritiesId).getLocalPriorityId();
-        logger.debug("Found priority level id: {}", priorityLvl);
-        if (priorityLvl != 0)
-            object.setImpLevel(priorityLvl);
+        final RedminePriorityMapEntry priorityLvl = priorityMapEntryDAO.getByRedminePriorityId(issue.getPriorityId(), priorityMapId);
+        if (priorityLvl != null) {
+            logger.debug("Found priority level id: {}", priorityLvl.getLocalPriorityId());
+            object.setImpLevel(priorityLvl.getLocalPriorityId());
+        } else
+            logger.debug("Status was not found");
 
         logger.debug("Trying to get portal status id matching with redmine: {}", issue.getStatusId());
-        final long stateId = statusMapEntryDAO.getByRedmineStatusId(issue.getStatusId(), statusesId).getLocalStatusId();
-        logger.debug("Found status id: {}", stateId);
-        if (stateId != 0)
-            object.setStateId(stateId);
+        final RedmineStatusMapEntry state = statusMapEntryDAO.getByRedmineStatusId(issue.getStatusId(), statusMapId);
+        if (state != null) {
+            logger.debug("Found status id: {}", state.getLocalStatusId());
+            object.setStateId(state.getLocalStatusId());
+        } else
+            logger.debug("Status was not found");
 
         object.setInfo(issue.getDescription());
         object.setName(issue.getSubject());

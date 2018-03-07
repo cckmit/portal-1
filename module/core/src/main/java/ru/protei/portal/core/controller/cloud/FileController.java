@@ -17,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.api.struct.FileStorage;
+import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.CaseAttachmentEvent;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.service.AttachmentService;
@@ -144,6 +145,7 @@ public class FileController {
         }
 
         publisherService.publishEvent(new CaseAttachmentEvent(
+                ServiceModule.GENERAL,
                 caseService,
                 this,
                 issue.getData(),

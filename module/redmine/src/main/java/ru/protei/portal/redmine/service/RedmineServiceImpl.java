@@ -76,7 +76,7 @@ public final class RedmineServiceImpl implements RedmineService {
     }
 
     @Override
-    public void checkForIssuesUpdates(RedmineEndpoint endpoint) {
+    public void checkForUpdatedIssues(RedmineEndpoint endpoint) {
         final String updated = RedmineUtils.parseDateToAfter(endpoint.getLastUpdatedOnDate());
         final String projectId = endpoint.getProjectId();
 
@@ -91,7 +91,7 @@ public final class RedmineServiceImpl implements RedmineService {
             } else
                 lastUpdatedOn = updateDate(endpoint.getLastUpdatedOnDate());
 
-            redmineEndpointDAO.updateUpdatedOn(endpoint.getCompanyId(), endpoint.getProjectId(), lastUpdatedOn);
+            redmineEndpointDAO.updateUpdatedOn(endpoint.getCompanyId(), projectId, lastUpdatedOn);
         } catch (RedmineException re) {
             //something
             logger.debug("Failed when getting issues updated after date {} from project {}", updated, projectId);

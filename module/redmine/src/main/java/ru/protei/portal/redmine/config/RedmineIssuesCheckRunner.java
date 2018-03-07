@@ -12,7 +12,7 @@ import ru.protei.portal.redmine.service.RedmineService;
 public final class RedmineIssuesCheckRunner {
 
     public RedmineIssuesCheckRunner() {
-        logger.debug("Redmine new issues checker created");
+        logger.debug("Redmine issues checker created");
     }
 
     @Scheduled(fixedRate = SCHEDULE_TIME)
@@ -20,8 +20,9 @@ public final class RedmineIssuesCheckRunner {
         logger.debug("Check for new issues stared");
         redmineEndpointDAO.getAll().forEach(redmineService::checkForNewIssues);
         logger.debug("Check for new issues ended");
+
         logger.debug("Check for issues updates started");
-        redmineEndpointDAO.getAll().forEach(redmineService::checkForIssuesUpdates);
+        redmineEndpointDAO.getAll().forEach(redmineService::checkForUpdatedIssues);
         logger.debug("Check for issues updates ended");
     }
 

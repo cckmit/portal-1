@@ -16,7 +16,7 @@ public interface RedmineService {
 
     void checkForNewIssues(RedmineEndpoint endpoint);
 
-    void checkForIssuesUpdates(RedmineEndpoint endpoint);
+    void checkForUpdatedIssues(RedmineEndpoint endpoint);
 
     void updateIssue(Issue issue, RedmineEndpoint endpoint) throws RedmineException;
 
