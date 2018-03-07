@@ -151,6 +151,7 @@ public final class RedmineServiceImpl implements RedmineService {
     private List<Integer> prepareIssuesIds(String param, String date, String projectName, RedmineManager manager) throws RedmineException {
         final Params params = new Params()
                 .add(param, date)
+                .add("limit", "100")
                 .add("project_id", projectName);
         return manager.getIssueManager().getIssues(params)
                 .getResults()
