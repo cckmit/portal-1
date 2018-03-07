@@ -29,7 +29,6 @@ public class MigrateMain {
         try {
 //            ctx.getBean(ImportDataService.class).importInitialCommonData();
 //            ctx.getBean(ImportDataService.class).importInitialSupportSessions();
-//            ctx.getBean(ImportDataService.class).forceCompanyUpdate();
             ctx.getBean(ImportDataService.class).runIncrementalImport();
         }
         catch (Throwable e) {

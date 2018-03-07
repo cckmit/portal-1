@@ -381,6 +381,8 @@ public class ImportDataServiceImpl implements ImportDataService {
                 return 0;
             }
 
+            migrationEntryDAO.updateEntry(En_MigrationEntry.CRM_SUPPORT_SESSION_COMMENT, HelperFunc.last(src));
+
             logger.debug("handle {} new comments", src.size());
 
             List<CaseComment> toInsert = new ArrayList<>();
@@ -565,6 +567,7 @@ public class ImportDataServiceImpl implements ImportDataService {
             customerRoleSet = userRoleDAO.getDefaultCustomerRoles();
             loginController = new CachedLoginUniqueControl();
             importPersonBatch = new ImportPersonBatch(employeeRoleSet, userRoleDAO.getDefaultManagerRoles(), loginController);
+            importPersonBatch.setForceUpdate(true);
         }
 
 
@@ -776,6 +779,7 @@ public class ImportDataServiceImpl implements ImportDataService {
         UniqueController<String> loginUniqueController;
         Map<Long,Long> companyIdMap;
         Map<Long,Long> legacyIdMap;
+        boolean forceUpdate = false;
 
         public ImportPersonBatch(Set<UserRole> employeeRoleSet, Set<UserRole> managerRoleSet, UniqueController<String> loginUniqueController) {
             this.employeeRoleSet = employeeRoleSet;
@@ -783,6 +787,14 @@ public class ImportDataServiceImpl implements ImportDataService {
             this.loginUniqueController = loginUniqueController;
             this.legacyIdMap = personDAO.mapLegacyId();
             this.companyIdMap = companyDAO.mapLegacyId();
+        }
+
+        public void setForceUpdate(boolean forceUpdate) {
+            this.forceUpdate = forceUpdate;
+        }
+
+        public boolean isForceUpdate() {
+            return forceUpdate;
         }
 
         private void doImport (LegacyDAO_Transaction transaction, List<ExternalPerson> impListSrc) {
@@ -793,12 +805,17 @@ public class ImportDataServiceImpl implements ImportDataService {
                 //Person person = new Person();
                 List<UserLogin> loginBatch = new ArrayList<>();
                 List<Person> personBatch = new ArrayList<>();
-
+                List<Person> updateBatch = new ArrayList<>();
 
                 for (ExternalPerson impPerson : impListSrc) {
                     ExternalPersonInfo info = infoMap.get(impPerson.getId());
 
-                    if (!legacyIdMap.containsKey(impPerson.getId())) {
+                    if (legacyIdMap.containsKey(impPerson.getId())) {
+                        if (forceUpdate) {
+                            updateBatch.add(MigrateUtils.fromExternalPerson(info, companyIdMap));
+                        }
+                    }
+                    else {
                         personBatch.add(MigrateUtils.fromExternalPerson(info,companyIdMap));
                     }
 
@@ -824,6 +841,10 @@ public class ImportDataServiceImpl implements ImportDataService {
                         loginUniqueController.register(ulogin.getUlogin());
                         loginBatch.add(ulogin);
                     }
+                }
+
+                if (!updateBatch.isEmpty()) {
+                    personDAO.mergeBatch(updateBatch);
                 }
 
                 if (!personBatch.isEmpty()) {
