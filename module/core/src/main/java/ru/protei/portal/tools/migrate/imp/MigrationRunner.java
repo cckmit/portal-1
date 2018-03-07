@@ -12,7 +12,6 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * Created by michael on 26.07.16.
  */
-@Component
 public class MigrationRunner {
 
     private static Logger logger = Logger.getLogger(MigrationRunner.class);
