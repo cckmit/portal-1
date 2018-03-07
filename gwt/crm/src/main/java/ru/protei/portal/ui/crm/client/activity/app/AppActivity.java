@@ -117,7 +117,7 @@ public abstract class AppActivity
 
     private void startPingServerTimer() {
         pingTimer.cancel();
-        pingTimer.scheduleRepeating( 6000 );
+        pingTimer.scheduleRepeating( 60000 );
     }
 
     @Inject
