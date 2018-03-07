@@ -381,6 +381,8 @@ public class ImportDataServiceImpl implements ImportDataService {
                 return 0;
             }
 
+            migrationEntryDAO.updateEntry(En_MigrationEntry.CRM_SUPPORT_SESSION_COMMENT, HelperFunc.last(src));
+
             logger.debug("handle {} new comments", src.size());
 
             List<CaseComment> toInsert = new ArrayList<>();
@@ -565,6 +567,7 @@ public class ImportDataServiceImpl implements ImportDataService {
             customerRoleSet = userRoleDAO.getDefaultCustomerRoles();
             loginController = new CachedLoginUniqueControl();
             importPersonBatch = new ImportPersonBatch(employeeRoleSet, userRoleDAO.getDefaultManagerRoles(), loginController);
+            importPersonBatch.setForceUpdate(true);
         }
 
 
