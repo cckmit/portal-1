@@ -85,7 +85,9 @@ public class ImportDataServiceImpl implements ImportDataService {
                 logger.debug("import of employees from legacy db is disabled, skip");
             }
 
-            new CaseImport().loadIncremental(transaction);
+            CaseImport caseImport = new CaseImport();
+            caseImport.loadIncremental(transaction);
+            caseImport.loadCommentsIncremental(transaction);
 
             return true;
         });
@@ -311,6 +313,7 @@ public class ImportDataServiceImpl implements ImportDataService {
         final Map<Long, Long> productIdMap;
         final Map<Long, Long> companyMap;
         final Map<Long, Long> personMap;
+        final Map<Long, Long> caseIdMap = new HashMap<>();
 
         public CaseImport() {
             supportStatusMap = caseStateMatrixDAO.getOldToNewStateMap(En_CaseType.CRM_SUPPORT);
@@ -367,6 +370,52 @@ public class ImportDataServiceImpl implements ImportDataService {
         }
 
 
+        public int loadCommentsIncremental (LegacyDAO_Transaction transaction) throws SQLException {
+
+            MigrationEntry migrationEntry = migrationEntryDAO.getOrCreateEntry(En_MigrationEntry.CRM_SUPPORT_SESSION_COMMENT);
+            logger.debug("run import for crm-session comments from id={}", migrationEntry.getLastId());
+
+            List<ExtCrmComment> src = transaction.dao(ExtCrmComment.class).list("nID > ?", migrationEntry.getLastId());
+            if (src.isEmpty()) {
+                logger.debug("no new comments for crm-sessions found");
+                return 0;
+            }
+
+            logger.debug("handle {} new comments", src.size());
+
+            List<CaseComment> toInsert = new ArrayList<>();
+
+            src.forEach(ext -> {
+                Long ourCaseId = caseIdMap.computeIfAbsent(ext.getSessionId(), extId -> caseObjectDAO.getCaseId(En_CaseType.CRM_SUPPORT,extId));
+                if (ourCaseId == null) {
+                    logger.debug("unable to map external comment {}, case not found for {}", ext.getId(), ext.getSessionId());
+                    return;
+                }
+
+                CaseComment comment = new CaseComment();
+                comment.setCaseId(ourCaseId);
+                comment.setCaseStateId(ext.getStatusId() != null ? supportStatusMap.get(ext.getStatusId()) : null);
+                comment.setCreated(ext.getCreated());
+                comment.setClientIp(ext.getClientIp());
+                comment.setAuthorId(personMap.get(ext.getCreatorId()));
+                if (comment.getAuthorId() == null) {
+                    logger.debug("unable to map legacy person {}, skip comment", ext.getCreatorId());
+//                    return;
+                }
+
+                comment.setText(ext.getComment());
+                comment.setOldId(ext.getId());
+                toInsert.add(comment);
+            });
+
+            logger.debug("insert batch of comments {}", toInsert.size());
+            caseCommentDAO.persistBatch(toInsert);
+
+            logger.debug("import of crm-comments completed");
+
+            return src.size();
+        }
+
         public int loadIncremental (LegacyDAO_Transaction transaction) throws SQLException {
             MigrationEntry migrationEntry = migrationEntryDAO.getOrCreateEntry(En_MigrationEntry.CRM_SUPPORT_SESSION);
 
@@ -412,6 +461,7 @@ public class ImportDataServiceImpl implements ImportDataService {
                     }
                 }
                 else {
+                    caseIdMap.put(ext.getId(), ourObj.getId());
                     // update case
                     if (ourObj.getModified().before(ext.getLastUpdate())) {
                         logger.debug("update session {}", ext.getId());

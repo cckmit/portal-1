@@ -10,10 +10,7 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -31,6 +28,12 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
                 .forEach(o -> numberToIdMap.put(o.getCaseNumber(), o.getId()));
 
         return numberToIdMap;
+    }
+
+    @Override
+    public Long getCaseId(En_CaseType caseType, long number) {
+        CaseObject obj = partialGetByCondition("case_type=? and caseno=?", Arrays.asList(caseType.getId(), number), getIdColumnName());
+        return obj != null ? obj.getId() : null;
     }
 
     @Override
