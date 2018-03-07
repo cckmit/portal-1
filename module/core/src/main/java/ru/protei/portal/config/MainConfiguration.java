@@ -22,8 +22,8 @@ import ru.protei.portal.core.service.user.LDAPAuthProvider;
 import ru.protei.portal.core.utils.SessionIdGen;
 import ru.protei.portal.core.utils.SimpleSidGenerator;
 import ru.protei.portal.core.Lang;
+import ru.protei.portal.tools.migrate.imp.MigrationRunner;
 import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
-import ru.protei.portal.tools.migrate.imp.DummyImportDataService;
 import ru.protei.portal.tools.migrate.imp.ImportDataService;
 import ru.protei.portal.tools.migrate.imp.ImportDataServiceImpl;
 import ru.protei.portal.tools.migrate.sybase.SybConnProvider;
@@ -385,8 +385,13 @@ public class MainConfiguration {
     }
 
     @Bean
+    public MigrationRunner getImportDataRunner (@Autowired PortalConfig config) {
+        return config.data().legacySysConfig().isImportEnabled() ? new MigrationRunner() : null;
+    }
+
+    @Bean
     public ImportDataService getImportDataService (@Autowired PortalConfig config) {
-        return config.data().legacySysConfig().isImportEnabled() ? new ImportDataServiceImpl() : new DummyImportDataService ();
+        return new ImportDataServiceImpl();
     }
 
     /** ASPECT/INTERCEPTORS **/

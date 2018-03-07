@@ -1,7 +1,5 @@
 package ru.protei.portal.core.model.helper;
 
-import ru.protei.winter.core.utils.enums.HasId;
-
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -123,6 +121,10 @@ public class HelperFunc {
         return def;
     }
 
+    public static <K extends Comparable,T> K max (List<T> src, Function<T,K> valueFunc) {
+        T data = (T)src.stream().max(Comparator.comparing(valueFunc::apply)).get();
+        return valueFunc.apply(data);
+    }
 
     public static <K,T> List<K> keys (List<T> src, Function<T,K> keyExtractor) {
         List<K> keys = new ArrayList<>(src.size());

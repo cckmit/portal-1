@@ -20,6 +20,7 @@ import ru.protei.winter.jdbc.JdbcSort;
 
 import javax.annotation.PostConstruct;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -43,6 +44,16 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
     @Override
     public boolean existsByLegacyId(Long legacyId) {
         return countByExpression("old_id=?", legacyId) > 0L;
+    }
+
+    @Override
+    public Map<Long, Long> mapLegacyId() {
+        Map<Long, Long> result = new HashMap<>();
+
+        partialGetListByCondition("old_id is not null",Collections.emptyList(),"id", "old_id")
+                .forEach(person -> result.put(person.getOldId(), person.getId()));
+
+        return result;
     }
 
     @Override

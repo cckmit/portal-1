@@ -1,5 +1,6 @@
 package ru.protei.portal.tools.migrate.imp;
 
+import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,6 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.sql.SQLException;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class ImportDataServiceImpl implements ImportDataService {
@@ -69,19 +69,6 @@ public class ImportDataServiceImpl implements ImportDataService {
     @Autowired
     PortalConfig portalConfig;
 
-
-    @Scheduled(fixedRate = 60000L, initialDelay = 60000L)
-    public void incrementalImport () {
-        if (!portalConfig.data().legacySysConfig().isImportEnabled()) {
-            logger.debug("import is disabled, exit now");
-            return;
-        }
-
-        runIncrementalImport();
-
-        logger.debug("incremental import done");
-    }
-
     @Transactional
     public void runIncrementalImport () {
         logger.debug("incremental import run");
@@ -89,6 +76,7 @@ public class ImportDataServiceImpl implements ImportDataService {
         legacySystemDAO.runActionRTE(transaction -> {
             importCompanies(transaction);
             importProducts(transaction);
+            importContacts(transaction);
 
             if (portalConfig.data().legacySysConfig().isImportEmployeesEnabled()) {
                 importEmployes(transaction);
@@ -96,6 +84,10 @@ public class ImportDataServiceImpl implements ImportDataService {
             else {
                 logger.debug("import of employees from legacy db is disabled, skip");
             }
+
+            CaseImport caseImport = new CaseImport();
+            caseImport.loadIncremental(transaction);
+            caseImport.loadCommentsIncremental(transaction);
 
             return true;
         });
@@ -148,6 +140,35 @@ public class ImportDataServiceImpl implements ImportDataService {
                 companyDAO.persistBatch(importList.stream().map(imp -> MigrateUtils.fromExternalCompany(imp)).collect(Collectors.toList()))
         );
     }
+
+    private void importContacts (LegacyDAO_Transaction transaction) throws SQLException {
+        logger.debug("incremental import, persons (contacts)");
+        ImportPersonBatch importPersonBatch = new ImportPersonBatch(userRoleDAO.getDefaultEmployeeRoles(),
+                userRoleDAO.getDefaultManagerRoles(),
+                new StrictLoginUniqueController());
+
+        MigrationEntry migrationEntry = migrationEntryDAO.getOrCreateEntry(En_MigrationEntry.PERSON_CUSTOMER);
+
+        List<ExternalPerson> processList = transaction.dao(ExternalPerson.class).list("nID > ? and nCompanyID<>?", migrationEntry.getLastId(), 1L);
+
+        if (processList.isEmpty()) {
+            logger.debug("No new contacts in legacy db, exit now");
+            return;
+        }
+
+        logger.debug("got new external person list, size = {}", processList.size());
+
+        migrationEntry = migrationEntryDAO.updateEntry(En_MigrationEntry.PERSON_CUSTOMER, HelperFunc.last(processList));
+
+        HelperFunc.splitBatch(
+                processList,
+                100, list -> importPersonBatch.doImport(transaction, list)
+        );
+
+        logger.debug("processed new contacts records: {}, last-id: {}", processList.size(), migrationEntry.getLastId());
+        logger.debug("incremental import, contacts, done");
+    }
+
 
     private void importEmployes(LegacyDAO_Transaction transaction) throws SQLException {
         logger.debug("incremental import, employees");
@@ -224,6 +245,19 @@ public class ImportDataServiceImpl implements ImportDataService {
 
     @Override
     @Transactional
+    public void forceCompanyUpdate() {
+        InitialImport initialImport = new InitialImport();
+        MigrateUtils.checkNoCompanyRecord(companyDAO);
+
+        legacySystemDAO.runActionRTE(transaction -> {
+            int _count = initialImport.importCompanies(transaction);
+            logger.debug("handled {} companies", _count);
+            return true;
+        });
+    }
+
+    @Override
+    @Transactional
     public void importInitialCommonData() {
         logger.debug("Full import mode run");
 
@@ -275,8 +309,190 @@ public class ImportDataServiceImpl implements ImportDataService {
     }
 
     class CaseImport {
+        final Map<Long, Long> supportStatusMap;
+        final Map<Long, Long> productIdMap;
+        final Map<Long, Long> companyMap;
+        final Map<Long, Long> personMap;
+        final Map<Long, Long> caseIdMap = new HashMap<>();
 
         public CaseImport() {
+            supportStatusMap = caseStateMatrixDAO.getOldToNewStateMap(En_CaseType.CRM_SUPPORT);
+            productIdMap = devUnitDAO.getProductOldToNewMap();
+            companyMap = companyDAO.mapLegacyId();
+            personMap = personDAO.mapLegacyId();
+        }
+
+        public CaseObject fromSupportSession (ExtCrmSession ext) {
+            CaseObject obj = new CaseObject();
+
+            obj.setId(null);
+            obj.setCreated(ext.getCreated());
+            obj.setCaseNumber(ext.getId());
+            obj.setInitiatorCompanyId(companyMap.get(ext.getCompanyId()));
+            obj.setCreatorInfo(ext.getCreator());
+            obj.setCreatorIp(ext.getClientIp());
+            obj.setProductId(ext.getProductId() == null ? null : productIdMap.get(ext.getProductId()));
+            obj.setEmails(ext.getRecipients());
+            obj.setDeleted(ext.isDeleted());
+            obj.setPrivateCase(ext.isPrivate());
+
+            obj.setImpLevel(HelperFunc.nvlt(ext.getImportance(),3).intValue());
+            obj.setInfo(ext.getDescription());
+//                    obj.setInitiatorId((Long) row.get("nDeclarantId"));
+//                    obj.setKeywords((String)row.get("strKeyWord"));
+//                    obj.setLocal(row.get("lIsLocal") == null ? 1 : ((Number) row.get("lIsLocal")).intValue());
+            obj.setName("CRM-" + obj.getCaseNumber());
+            obj.setManagerId(ext.getManagerId() != null ? personMap.get(ext.getManagerId()) : null);
+            obj.setModified(ext.getLastUpdate());
+
+            // (String)row.get("strExtID")
+//        if (((Number)MigrateUtils.nvl(row.get("nCategoryID"), 8)).intValue() == 8) {
+
+            obj.setExtId(En_CaseType.CRM_SUPPORT.makeGUID(obj.getCaseNumber()));
+            obj.setTypeId(En_CaseType.CRM_SUPPORT.getId());
+
+            Long stateId = supportStatusMap.get(ext.getStatusId());
+            if (stateId == null) {
+                logger.error("unable to map legacy state {} for crm-session {}", ext.getStatusId(), ext.getId());
+                throw new RuntimeException("unable to map legacy state " + ext.getStatusId());
+            }
+
+            obj.setStateId(stateId);
+
+//        }
+//        else {
+//            obj.setExtId(En_CaseType.CRM_MARKET.makeGUID(obj.getCaseNumber()));
+//            obj.setTypeId(En_CaseType.CRM_MARKET.getId());
+//            obj.setStateId(marketStatusMap.get(row.get("nStatusID")));
+//        }
+
+            return obj;
+        }
+
+
+        public int loadCommentsIncremental (LegacyDAO_Transaction transaction) throws SQLException {
+
+            MigrationEntry migrationEntry = migrationEntryDAO.getOrCreateEntry(En_MigrationEntry.CRM_SUPPORT_SESSION_COMMENT);
+            logger.debug("run import for crm-session comments from id={}", migrationEntry.getLastId());
+
+            List<ExtCrmComment> src = transaction.dao(ExtCrmComment.class).list("nID > ?", migrationEntry.getLastId());
+            if (src.isEmpty()) {
+                logger.debug("no new comments for crm-sessions found");
+                return 0;
+            }
+
+            logger.debug("handle {} new comments", src.size());
+
+            List<CaseComment> toInsert = new ArrayList<>();
+
+            src.forEach(ext -> {
+                Long ourCaseId = caseIdMap.computeIfAbsent(ext.getSessionId(), extId -> caseObjectDAO.getCaseId(En_CaseType.CRM_SUPPORT,extId));
+                if (ourCaseId == null) {
+                    logger.debug("unable to map external comment {}, case not found for {}", ext.getId(), ext.getSessionId());
+                    return;
+                }
+
+                CaseComment comment = new CaseComment();
+                comment.setCaseId(ourCaseId);
+                comment.setCaseStateId(ext.getStatusId() != null ? supportStatusMap.get(ext.getStatusId()) : null);
+                comment.setCreated(ext.getCreated());
+                comment.setClientIp(ext.getClientIp());
+                comment.setAuthorId(personMap.get(ext.getCreatorId()));
+                if (comment.getAuthorId() == null) {
+                    logger.debug("unable to map legacy person {}, skip comment", ext.getCreatorId());
+//                    return;
+                }
+
+                comment.setText(ext.getComment());
+                comment.setOldId(ext.getId());
+                toInsert.add(comment);
+            });
+
+            logger.debug("insert batch of comments {}", toInsert.size());
+            caseCommentDAO.persistBatch(toInsert);
+
+            logger.debug("import of crm-comments completed");
+
+            return src.size();
+        }
+
+        public int loadIncremental (LegacyDAO_Transaction transaction) throws SQLException {
+            MigrationEntry migrationEntry = migrationEntryDAO.getOrCreateEntry(En_MigrationEntry.CRM_SUPPORT_SESSION);
+
+            logger.debug("run import crm-support sessions from id={} and time={}", migrationEntry.getLastId(), migrationEntry.getLastUpdate());
+
+            List<ExtCrmSession> src = transaction.dao(ExtCrmSession.class)
+                    .list("nCategoryId=? and (nID > ? or dtLastUpdate > ?)", 8, migrationEntry.getLastId(), migrationEntry.getLastUpdate());
+
+            if (src == null || src.isEmpty()) {
+                logger.debug("no changes founds for crm-sessions");
+                return 0;
+            }
+
+            long lastId = HelperFunc.max(src, e -> e.getId());
+            Date lastUpdate = DateUtils.addSeconds(HelperFunc.max(src, e -> e.getLastUpdate()), 1);
+
+            logger.debug("process new crm-sessions and updates, id={}, time={}", lastId, lastUpdate);
+
+            migrationEntryDAO.updateEntry(En_MigrationEntry.CRM_SUPPORT_SESSION, lastId, lastUpdate);
+
+            List<CaseObject> toInsert = new ArrayList<>();
+            List<CaseObject> toUpdate = new ArrayList<>();
+
+            for (ExtCrmSession ext : src) {
+                CaseObject ourObj = caseObjectDAO.getCase(En_CaseType.CRM_SUPPORT, ext.getId());
+                if (ourObj == null) {
+                    // new case
+                    ourObj = fromSupportSession(ext);
+
+                    logger.debug("new crm-session: {}", ext.getId());
+
+                    toInsert.add(ourObj);
+
+                    List<Long> contacts = legacySystemDAO.getSessionContactList(transaction.connection(), ext.getId());
+                    Long baseContactId = contacts != null && !contacts.isEmpty() ? personMap.get(contacts.get(0)) : null;
+
+                    if (ourObj.getCreatorId() == null) {
+                        ourObj.setCreatorId(HelperFunc.nvlt(baseContactId, ourObj.getManagerId()));
+                    }
+
+                    if (ourObj.getInitiatorId() == null) {
+                        ourObj.setInitiatorId(HelperFunc.nvlt(baseContactId, ourObj.getManagerId()));
+                    }
+                }
+                else {
+                    caseIdMap.put(ext.getId(), ourObj.getId());
+                    // update case
+                    if (ourObj.getModified().before(ext.getLastUpdate())) {
+                        logger.debug("update session {}", ext.getId());
+                        // require to update
+                        Long newState = supportStatusMap.get(ext.getStatusId());
+                        if (newState != null)
+                            ourObj.setStateId(newState);
+
+                        if (ext.getManagerId() != null && personMap.containsKey(ext.getManagerId()))
+                            ourObj.setManagerId(personMap.get(ext.getManagerId()));
+
+                        if (ext.getProductId() != null && productIdMap.containsKey(ext.getProductId()))
+                            ourObj.setProductId(productIdMap.get(ext.getProductId()));
+
+                        toUpdate.add(ourObj);
+                    }
+                }
+            }
+
+            logger.debug("process batches...");
+            if (!toInsert.isEmpty()) {
+                caseObjectDAO.persistBatch(toInsert);
+            }
+
+            if (!toUpdate.isEmpty()) {
+                caseObjectDAO.mergeBatch(toUpdate);
+            }
+
+            logger.debug("incremental import of crm-sessions completed, total handled {} records", src.size());
+
+            return src.size();
         }
 
         public int initialCrmSupportSessionsImport(LegacyDAO_Transaction transaction) throws SQLException {
@@ -287,12 +503,8 @@ public class ImportDataServiceImpl implements ImportDataService {
             List<ExtCrmSession> src = transaction.dao(ExtCrmSession.class).list("nCategoryId=? and nID > ?", 8, startId);
             migrationEntryDAO.updateEntry(En_MigrationEntry.CRM_SUPPORT_SESSION, HelperFunc.last(src));
 
-
-            final Map<Long, Long> supportStatusMap = caseStateMatrixDAO.getOldToNewStateMap(En_CaseType.CRM_SUPPORT);
-            final Map<Long, Long> productIdMap = devUnitDAO.getProductOldToNewMap();
-
             HelperFunc.splitBatch(src, 1000, procList -> {
-                List<CaseObject> caseObjects = procList.stream().map(e -> MigrateUtils.fromSupportSession(e,supportStatusMap,productIdMap)).collect(Collectors.toList());
+                List<CaseObject> caseObjects = procList.stream().map(e -> fromSupportSession(e)).collect(Collectors.toList());
 
                 Long minOldId = procList.get(0).getId();
                 Long maxOldId = HelperFunc.last(procList).getId();
@@ -497,6 +709,17 @@ public class ImportDataServiceImpl implements ImportDataService {
             migrationEntryDAO.updateEntry(En_MigrationEntry.COMPANY, HelperFunc.last(src));
 
             Set<Long> compIdSet = new HashSet<>(companyDAO.keys());
+
+            List<Company> forUpate = new ArrayList<>();
+
+            src.forEach(ext -> {
+                if (compIdSet.contains(ext.getId())) {
+                    forUpate.add(MigrateUtils.fromExternalCompany(ext));
+                }
+            });
+
+            companyDAO.mergeBatch(forUpate);
+
             // excludes already existing
             src.removeIf(imp -> compIdSet.contains(imp.getId()));
 
@@ -551,17 +774,21 @@ public class ImportDataServiceImpl implements ImportDataService {
         Set<UserRole> employeeRoleSet;
         Set<UserRole> managerRoleSet;
         UniqueController<String> loginUniqueController;
+        Map<Long,Long> companyIdMap;
+        Map<Long,Long> legacyIdMap;
 
         public ImportPersonBatch(Set<UserRole> employeeRoleSet, Set<UserRole> managerRoleSet, UniqueController<String> loginUniqueController) {
             this.employeeRoleSet = employeeRoleSet;
             this.managerRoleSet = managerRoleSet;
             this.loginUniqueController = loginUniqueController;
+            this.legacyIdMap = personDAO.mapLegacyId();
+            this.companyIdMap = companyDAO.mapLegacyId();
         }
 
         private void doImport (LegacyDAO_Transaction transaction, List<ExternalPerson> impListSrc) {
             try {
                 Map<Long, ExternalPersonInfo> infoMap = legacySystemDAO.personCollector(impListSrc).asMap(transaction);
-                Set<Long> existingIds = new HashSet<>(personDAO.existingKeys(infoMap.keySet()));
+//                Set<Long> existingIds = new HashSet<>(personDAO.existingKeys(infoMap.keySet()));
 
                 //Person person = new Person();
                 List<UserLogin> loginBatch = new ArrayList<>();
@@ -571,8 +798,8 @@ public class ImportDataServiceImpl implements ImportDataService {
                 for (ExternalPerson impPerson : impListSrc) {
                     ExternalPersonInfo info = infoMap.get(impPerson.getId());
 
-                    if (!existingIds.contains(impPerson.getId())) {
-                        personBatch.add(MigrateUtils.fromExternalPerson(info));
+                    if (!legacyIdMap.containsKey(impPerson.getId())) {
+                        personBatch.add(MigrateUtils.fromExternalPerson(info,companyIdMap));
                     }
 
                     if (info.proteiExtension != null && !info.proteiExtension.isFired()) {

@@ -7,6 +7,7 @@ import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -21,4 +22,11 @@ public interface CompanyDAO extends PortalBaseDAO<Company> {
 
     @SqlConditionBuilder
     SqlCondition createSqlCondition(CompanyQuery query);
+
+    /**
+     * Возвращает соответствие между ID в старом портале и текущим ID записи в новой БД
+     * В качестве ключа используется ID в старой базе
+     * @return
+     */
+    Map<Long,Long> mapLegacyId ();
 }

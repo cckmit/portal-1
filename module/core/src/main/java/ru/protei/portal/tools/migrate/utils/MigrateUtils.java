@@ -168,13 +168,13 @@ public class MigrateUtils {
         return x;
     }
 
-    public static Person fromExternalPerson (ExternalPersonInfo info) {
+    public static Person fromExternalPerson (ExternalPersonInfo info, Map<Long,Long> companyIdMap) {
         ExternalPerson impPerson = info.personData;
         Person person = new Person();
         person.setId(impPerson.getId());
         person.setOldId(impPerson.getId());
         person.setBirthday(impPerson.getBirthday());
-        person.setCompanyId(impPerson.getCompanyId());
+        person.setCompanyId(companyIdMap.get(impPerson.getCompanyId()));
         person.setCreated(impPerson.getCreated());
         person.setCreator(impPerson.getCreator());
         person.setDeleted(impPerson.isDeleted());
@@ -259,62 +259,6 @@ public class MigrateUtils {
                 .max(Comparator.comparing(ExternalPerson::getId)).orElse(null);
     }
 
-
-    public static CaseObject fromSupportSession (ExtCrmSession ext,
-                                                 Map<Long,Long> stateMap,
-                                                 Map<Long,Long> prodMap) {
-        CaseObject obj = new CaseObject();
-
-        obj.setId(null);
-        obj.setCreated(ext.getCreated());
-        obj.setCaseNumber(ext.getId());
-        obj.setInitiatorCompanyId(ext.getCompanyId());
-        obj.setCreatorInfo(ext.getCreator());
-        obj.setCreatorIp(ext.getClientIp());
-//                    obj.setCreatorId((Long) row.get("nCreatorID"));
-
-        obj.setProductId(ext.getProductId() == null ? null : prodMap.get(ext.getProductId()));
-
-//        logger.debug("import crm-session, id = {}, product = {}", obj.getCaseNumber(), obj.getProductId());
-
-        obj.setEmails(ext.getRecipients());
-
-        obj.setDeleted(ext.isDeleted());
-        obj.setPrivateCase(ext.isPrivate());
-
-        obj.setImpLevel(HelperFunc.nvlt(ext.getImportance(),3).intValue());
-        obj.setInfo(ext.getDescription());
-//                    obj.setInitiatorId((Long) row.get("nDeclarantId"));
-//                    obj.setKeywords((String)row.get("strKeyWord"));
-//                    obj.setLocal(row.get("lIsLocal") == null ? 1 : ((Number) row.get("lIsLocal")).intValue());
-        obj.setName("CRM-" + obj.getCaseNumber());
-        obj.setManagerId(ext.getManagerId());
-        obj.setModified(ext.getLastUpdate());
-
-        // (String)row.get("strExtID")
-
-//        if (((Number)MigrateUtils.nvl(row.get("nCategoryID"), 8)).intValue() == 8) {
-
-        obj.setExtId(En_CaseType.CRM_SUPPORT.makeGUID(obj.getCaseNumber()));
-        obj.setTypeId(En_CaseType.CRM_SUPPORT.getId());
-
-        Long stateId = stateMap.get(ext.getStatusId());
-        if (stateId == null) {
-            logger.error("unable to map legacy state {} for crm-session {}", ext.getStatusId(), ext.getId());
-            throw new RuntimeException("unable to map legacy state " + ext.getStatusId());
-        }
-
-        obj.setStateId(stateId);
-
-//        }
-//        else {
-//            obj.setExtId(En_CaseType.CRM_MARKET.makeGUID(obj.getCaseNumber()));
-//            obj.setTypeId(En_CaseType.CRM_MARKET.getId());
-//            obj.setStateId(marketStatusMap.get(row.get("nStatusID")));
-//        }
-
-        return obj;
-    }
 
     public static CaseComment fromCrmSupportComment (ExtCrmComment ext, Map<Long,Long> statusMap, Map<Long,Long> caseNumber2IdMap) {
         CaseComment comment = new CaseComment();
