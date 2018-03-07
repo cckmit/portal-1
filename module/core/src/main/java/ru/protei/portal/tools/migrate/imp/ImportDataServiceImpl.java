@@ -1,5 +1,6 @@
 package ru.protei.portal.tools.migrate.imp;
 
+import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -242,6 +243,19 @@ public class ImportDataServiceImpl implements ImportDataService {
 
     @Override
     @Transactional
+    public void forceCompanyUpdate() {
+        InitialImport initialImport = new InitialImport();
+        MigrateUtils.checkNoCompanyRecord(companyDAO);
+
+        legacySystemDAO.runActionRTE(transaction -> {
+            int _count = initialImport.importCompanies(transaction);
+            logger.debug("handled {} companies", _count);
+            return true;
+        });
+    }
+
+    @Override
+    @Transactional
     public void importInitialCommonData() {
         logger.debug("Full import mode run");
 
@@ -367,7 +381,7 @@ public class ImportDataServiceImpl implements ImportDataService {
             }
 
             long lastId = HelperFunc.max(src, e -> e.getId());
-            Date lastUpdate = HelperFunc.max(src, e -> e.getLastUpdate());
+            Date lastUpdate = DateUtils.addSeconds(HelperFunc.max(src, e -> e.getLastUpdate()), 1);
 
             logger.debug("process new crm-sessions and updates, id={}, time={}", lastId, lastUpdate);
 
@@ -645,6 +659,17 @@ public class ImportDataServiceImpl implements ImportDataService {
             migrationEntryDAO.updateEntry(En_MigrationEntry.COMPANY, HelperFunc.last(src));
 
             Set<Long> compIdSet = new HashSet<>(companyDAO.keys());
+
+            List<Company> forUpate = new ArrayList<>();
+
+            src.forEach(ext -> {
+                if (compIdSet.contains(ext.getId())) {
+                    forUpate.add(MigrateUtils.fromExternalCompany(ext));
+                }
+            });
+
+            companyDAO.mergeBatch(forUpate);
+
             // excludes already existing
             src.removeIf(imp -> compIdSet.contains(imp.getId()));
 

@@ -34,7 +34,7 @@ public class CompanyDAO_Impl extends PortalBaseJdbcDAO<Company> implements Compa
 
         Map<Long, Long> result = new HashMap<>();
 
-        partialGetAll("id, old_id").forEach(company -> {
+        partialGetAll("id", "old_id").forEach(company -> {
             if (company.getOldId() != null)
                 result.put(company.getOldId(), company.getId());
         });

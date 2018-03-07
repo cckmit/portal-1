@@ -22,6 +22,9 @@ public interface ImportDataService {
      */
     void importInitialCommonData();
 
+
+    void forceCompanyUpdate();
+
     /**
      * import all crm-sessions and comments
      */

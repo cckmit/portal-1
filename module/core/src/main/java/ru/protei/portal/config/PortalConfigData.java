@@ -159,8 +159,7 @@ public class PortalConfigData {
             this.exportEnabled = properties.getProperty("syb.export.enabled", Boolean.class,false);
             this.importEnabled = properties.getProperty("syb.import.enabled", Boolean.class,true);
 
-            this.importEmployeesEnabled = importEnabled &
-                    properties.getProperty("syb.import.employees", Boolean.class,false);
+            this.importEmployeesEnabled = properties.getProperty("syb.import.employees", Boolean.class,false);
 
             try {
                 this.instanceId = properties.getProperty("syb.export.identity", Inet4Address.getLocalHost().getHostAddress());

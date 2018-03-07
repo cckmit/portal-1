@@ -50,7 +50,7 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
     public Map<Long, Long> mapLegacyId() {
         Map<Long, Long> result = new HashMap<>();
 
-        partialGetListByCondition("old_id is not null",Collections.emptyList(),"id, old_id")
+        partialGetListByCondition("old_id is not null",Collections.emptyList(),"id", "old_id")
                 .forEach(person -> result.put(person.getOldId(), person.getId()));
 
         return result;
