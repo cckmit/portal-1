@@ -9,14 +9,19 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
+import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.Documentation;
 import ru.protei.portal.core.model.helper.HTMLHelper;
+import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
+import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.documentation.client.activity.table.AbstractDocumentationTableActivity;
 import ru.protei.portal.ui.documentation.client.activity.table.AbstractDocumentationTableView;
+import ru.protei.portal.ui.equipment.client.common.EquipmentUtils;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -42,6 +47,25 @@ public class DocumentationTableView extends Composite implements AbstractDocumen
             col.setHandler(activity);
             col.setColumnProvider(columnProvider);
         });
+
+        table.setLoadHandler(activity);
+        table.setPagerListener(activity);
+    }
+
+    @Override
+    public void setAnimation(TableAnimation animation) {
+        //animation.setContainers(tableContainer, null, null);
+    }
+
+    @Override
+    public void clearRecords() {
+        table.clearCache();
+        table.clearRows();
+    }
+
+    @Override
+    public void setRecordCount(Long count) {
+        table.setTotalRecords(count.intValue());
     }
 
     @Override
@@ -55,26 +79,14 @@ public class DocumentationTableView extends Composite implements AbstractDocumen
     }
 
     @Override
-    public void clearRecords() {
-        table.clearRows();
-    }
-
-    @Override
-    public void addRow(Documentation documentation) {
-        table.addRow(documentation);
-    }
-
-    @Override
     public void scrollTo(int page) {
         table.scrollToPage(page);
     }
 
-    @Override
-    public void updateRow(Documentation documentation) {
-        table.updateRow(documentation);
-    }
 
     private void initTable() {
+        editClickColumn.setPrivilege(En_Privilege.DOCUMENTATION_EDIT);
+
         ClickColumn<Documentation> name = new ClickColumn<Documentation>() {
             @Override
             protected void fillColumnHeader(Element element) {
@@ -85,8 +97,8 @@ public class DocumentationTableView extends Composite implements AbstractDocumen
             public void fillColumnValue(Element cell, Documentation value) {
                 cell.setInnerHTML(HTMLHelper.wrapDiv(
                         value.getName() +
-                                "<div><i><small><i class='fa fa-file-o m-r-5'></i>" +
-                                value.getName() +
+                                "<div><i><small><i class='fa fa-clock-o m-r-5'></i>" +
+                                DateFormatter.formatDateTime(value.getCreated()) +
                                 "</small></i></div>"
                 ));
             }
@@ -102,13 +114,15 @@ public class DocumentationTableView extends Composite implements AbstractDocumen
 
             @Override
             public void fillColumnValue(Element cell, Documentation value) {
-                if (value.getDecimalNumber() == null) {
+                DecimalNumber dNumber = value.getDecimalNumber();
+                if (dNumber == null) {
                     return;
                 }
 
                 Element numElem = DOM.createDiv();
-                numElem.setInnerHTML(value.getDecimalNumber().toString());
-                if (value.getDecimalNumber().isReserve()) {
+                numElem.setClassName("equipment-number");
+                numElem.setInnerHTML(EquipmentUtils.formatNumber(dNumber));
+                if (dNumber.isReserve()) {
                     Element isReserveEl = DOM.createElement("i");
                     isReserveEl.addClassName("fa fa-flag text-danger m-l-10");
                     numElem.appendChild(isReserveEl);

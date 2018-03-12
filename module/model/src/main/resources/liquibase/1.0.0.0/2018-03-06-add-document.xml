@@ -1,0 +1,66 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet author="efremov" id="create-document_type_table">
+        <createTable tableName="document_type">
+            <column name="id" autoIncrement="true" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="VARCHAR(128)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="create-documentation_table" author="efremov">
+        <createTable tableName="documentation">
+            <column name="id" autoIncrement="true" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="VARCHAR(128)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="decimal_number_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="inventory_number" type="BIGINT">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="type_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="annotation" type="TEXT"/>
+            <column name="manager_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="project" type="VARCHAR(256)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created" type="DATETIME" defaultValueDate="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="tags" type="TEXT"/>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="documentation"
+                                 baseColumnNames="decimal_number_id"
+                                 constraintName="documentation_decimal_number_id_fk"
+                                 referencedTableName="decimal_number"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="documentation"
+                                 baseColumnNames="type_id"
+                                 constraintName="documentation_type_id_fk"
+                                 referencedTableName="document_type"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="documentation"
+                                 baseColumnNames="manager_id"
+                                 constraintName="documentation_manager_id_fk"
+                                 referencedTableName="person"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+</databaseChangeLog>

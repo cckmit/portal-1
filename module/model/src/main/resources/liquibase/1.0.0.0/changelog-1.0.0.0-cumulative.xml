@@ -37,4 +37,5 @@
   <include file="2018-02-19-export_sybase_2.xml" relativeToChangelogFile="true"/>
   <include file="2018-02-19-cleanup_contact_data.xml" relativeToChangelogFile="true"/>
   <include file="2018-02-21-fix_model.xml" relativeToChangelogFile="true"/>
+  <include file="2018-03-06-add-document.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

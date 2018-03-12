@@ -7,25 +7,25 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import ru.protei.portal.api.struct.FileStorage;
+import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.aspect.ServiceLayerInterceptor;
 import ru.protei.portal.core.controller.auth.AuthInterceptor;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
 import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.bootstrap.BootstrapService;
-import ru.protei.portal.tools.migrate.export.ActiveExportDataService;
-import ru.protei.portal.tools.migrate.export.DummyExportDataService;
-import ru.protei.portal.tools.migrate.export.ExportDataService;
 import ru.protei.portal.core.service.user.AuthService;
 import ru.protei.portal.core.service.user.AuthServiceImpl;
 import ru.protei.portal.core.service.user.LDAPAuthProvider;
 import ru.protei.portal.core.utils.SessionIdGen;
 import ru.protei.portal.core.utils.SimpleSidGenerator;
-import ru.protei.portal.core.Lang;
-import ru.protei.portal.tools.migrate.imp.MigrationRunner;
-import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
+import ru.protei.portal.tools.migrate.export.ActiveExportDataService;
+import ru.protei.portal.tools.migrate.export.DummyExportDataService;
+import ru.protei.portal.tools.migrate.export.ExportDataService;
 import ru.protei.portal.tools.migrate.imp.ImportDataService;
 import ru.protei.portal.tools.migrate.imp.ImportDataServiceImpl;
+import ru.protei.portal.tools.migrate.imp.MigrationRunner;
+import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
 import ru.protei.portal.tools.migrate.sybase.SybConnProvider;
 import ru.protei.portal.tools.migrate.sybase.SybConnWrapperImpl;
 import ru.protei.winter.core.utils.config.exception.ConfigException;
@@ -263,6 +263,11 @@ public class MainConfiguration {
     public ExportSybEntryDAO getExportSybEntryDAO () {
         return new ExportSybEntryDAO_Impl();
     }
+
+    @Bean
+    public DocumentationDAO getDocumentationDAO() {
+        return new DocumentationDAO_Impl();
+    }
 /**
  *
  *
@@ -377,6 +382,11 @@ public class MainConfiguration {
     @Bean
     public EventExpirationControl getEventExpirationControl() {
         return new EventExpirationControl();
+    }
+
+    @Bean
+    public DocumentationService getDocumentationService() {
+        return new DocumentationServiceImpl();
     }
 
     @Bean

@@ -1,12 +1,81 @@
 package ru.protei.portal.core.model.ent;
 
-public class Documentation {
+import ru.protei.winter.jdbc.annotations.*;
+
+import java.io.Serializable;
+import java.util.Date;
+import java.util.List;
+
+/**
+ * Документ
+ * элемент раздела "Банк документов"
+ */
+@JdbcEntity(table = "documentation")
+public class Documentation implements Serializable {
+
+    @JdbcId(idInsertMode = IdInsertMode.AUTO)
     private Long id;
+
+    /**
+     * Наименование документа
+     */
+    @JdbcColumn
     private String name;
-    private String annotation;
-    private String managerShortName;
-    private String project;
+
+    /**
+     * Децимальный номер
+     */
+    @JdbcColumn(name = "decimal_number_id")
+    private Long decimalNumberId;
+
+    @JdbcJoinedObject(localColumn = "decimal_number_id")
     private DecimalNumber decimalNumber;
+
+
+    /**
+     * Инвентарный номер
+     */
+    @JdbcColumn(name = "inventory_number")
+    private Long inventoryNumber;
+
+    /**
+     * Вид документа
+     */
+    @JdbcColumn(name = "type_id")
+    private Long typeId;
+    @JdbcJoinedColumn(localColumn = "type_id", table = "document_type", remoteColumn = "id", mappedColumn = "name")
+    private String type;
+
+    /**
+     * Аннотация
+     */
+    @JdbcColumn
+    private String annotation;
+
+    /**
+     * Менеджер
+     */
+    @JdbcColumn(name = "manager_id")
+    private Long managerId;
+    @JdbcJoinedColumn(localColumn = "manager_id", table = "Person", remoteColumn = "id", mappedColumn = "displayShortName")
+    private String managerShortName;
+    @JdbcColumn
+    private String project;
+
+    /**
+     * Дата создания
+     */
+    @JdbcColumn
+    private Date created;
+
+    /**
+     * Ключевые слова для поиска
+     */
+    @JdbcColumnCollection(separator = ",")
+    private List<String> tags;
+
+    public Documentation() {
+    }
 
     public Long getId() {
         return id;
@@ -48,11 +117,67 @@ public class Documentation {
         this.project = project;
     }
 
+    public List<String> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<String> tags) {
+        this.tags = tags;
+    }
+
+    public Date getCreated() {
+        return created;
+    }
+
+    public void setCreated(Date created) {
+        this.created = created;
+    }
+
+    public Long getInventoryNumber() {
+        return inventoryNumber;
+    }
+
+    public void setInventoryNumber(Long inventoryNumber) {
+        this.inventoryNumber = inventoryNumber;
+    }
+
+    public Long getManagerId() {
+        return managerId;
+    }
+
+    public void setManagerId(Long managerId) {
+        this.managerId = managerId;
+    }
+
+    public Long getTypeId() {
+        return typeId;
+    }
+
+    public void setTypeId(Long typeId) {
+        this.typeId = typeId;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
     public DecimalNumber getDecimalNumber() {
         return decimalNumber;
     }
 
     public void setDecimalNumber(DecimalNumber decimalNumber) {
         this.decimalNumber = decimalNumber;
+    }
+
+    public Long getDecimalNumberId() {
+        return decimalNumberId;
+    }
+
+    public void setDecimalNumberId(Long decimalNumberId) {
+        this.decimalNumberId = decimalNumberId;
     }
 }
