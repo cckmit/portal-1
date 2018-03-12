@@ -692,4 +692,12 @@ public interface Lang extends Messages, ContactItemLang {
     String caseSubscription();
 
     String errCreatedStateSelected();
+
+    String documentation();
+
+    String annotation();
+
+    String designation();
+
+    String privilegeDocumentation();
 }

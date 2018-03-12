@@ -13,6 +13,7 @@
     <inherits name="ru.protei.portal.ui.account.Account" />
     <inherits name="ru.protei.portal.ui.role.Role" />
     <inherits name="ru.protei.portal.ui.official.Official"/>
+    <inherits name="ru.protei.portal.ui.documentation.Documentation"/>
 
     <entry-point class='ru.protei.portal.ui.crm.client.Main'/>
 
