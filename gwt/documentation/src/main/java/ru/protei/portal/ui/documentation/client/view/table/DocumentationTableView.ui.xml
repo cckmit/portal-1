@@ -9,6 +9,7 @@
             <g:HTMLPanel ui:field="tableContainer" styleName="global-table-container col-xs-9">
                 <table:InfiniteTableWidget ui:field="table" styleName="table-hover documentations"/>
             </g:HTMLPanel>
+            <g:HTMLPanel ui:field="filterContainer" styleName="filter-container col-xs-3"/>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>

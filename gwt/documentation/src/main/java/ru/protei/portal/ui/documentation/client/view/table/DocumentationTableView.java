@@ -58,6 +58,11 @@ public class DocumentationTableView extends Composite implements AbstractDocumen
     }
 
     @Override
+    public HTMLPanel getFilterContainer() {
+        return filterContainer;
+    }
+
+    @Override
     public void clearRecords() {
         table.clearCache();
         table.clearRows();
@@ -176,6 +181,8 @@ public class DocumentationTableView extends Composite implements AbstractDocumen
 
     @UiField
     HTMLPanel tableContainer;
+    @UiField
+    HTMLPanel filterContainer;
 
     @Inject
     @UiField

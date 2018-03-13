@@ -706,4 +706,6 @@ public interface Lang extends Messages, ContactItemLang {
     String documentationName();
 
     String documentationType();
+
+    String documentationSearchNameOrProject();
 }

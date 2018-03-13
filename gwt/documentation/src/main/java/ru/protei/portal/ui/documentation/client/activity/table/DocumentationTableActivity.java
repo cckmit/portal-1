@@ -13,19 +13,18 @@ import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.common.UiConstants;
-import ru.protei.portal.ui.common.client.events.ActionBarEvents;
-import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.DocumentationEvents;
-import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.DocumentationServiceAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
+import ru.protei.portal.ui.documentation.client.activity.filter.AbstractDocumentationFilterActivity;
+import ru.protei.portal.ui.documentation.client.activity.filter.AbstractDocumentationFilterView;
 
 import java.util.List;
 
 
 public abstract class DocumentationTableActivity
-        implements Activity, AbstractDocumentationTableActivity,
+        implements Activity, AbstractDocumentationTableActivity, AbstractDocumentationFilterActivity,
         AbstractPagerActivity {
 
     @PostConstruct
@@ -34,6 +33,8 @@ public abstract class DocumentationTableActivity
         view.setAnimation(animation);
 
         CREATE_ACTION = lang.buttonCreate();
+        filterView.setActivity(this);
+        view.getFilterContainer().add(filterView.asWidget());
 
         pagerView.setPageSize(view.getPageSize());
         pagerView.setActivity(this);
@@ -76,6 +77,11 @@ public abstract class DocumentationTableActivity
     }
 
     @Event
+    public void onAuthSuccess (AuthEvents.Success event) {
+        filterView.resetFilter();
+    }
+
+    @Event
     public void onCreateClicked(ActionBarEvents.Clicked event) {
         if (!UiConstants.ActionBarIdentity.DOCUMENTATION.equals(event.identity)) {
             return;
@@ -86,6 +92,12 @@ public abstract class DocumentationTableActivity
     @Override
     public void onEditClicked(Documentation value) {
         fireEvent(DocumentationEvents.Edit.byId(value.getId()));
+    }
+
+    @Override
+    public void onFilterChanged() {
+        query = makeQuery();
+        requestTotalCount();
     }
 
     @Override
@@ -139,6 +151,8 @@ public abstract class DocumentationTableActivity
     AbstractDocumentationTableView view;
     @Inject
     AbstractPagerView pagerView;
+    @Inject
+    AbstractDocumentationFilterView filterView;
     @Inject
     TableAnimation animation;
     @Inject

@@ -25,7 +25,23 @@ public abstract class DocumentationEditActivity
 
     @Event
     public void onShow(DocumentationEvents.Edit event) {
+        view.setVisibilitySettingsForCreated(! (event.id == null));
 
+        if (event.id == null) {
+            fillView(new Documentation());
+            return;
+        }
+
+        fillView(new Documentation());
+    }
+
+    private void fillView(Documentation documentation) {
+        this.documentation = documentation;
+
+        initDetails.parent.clear();
+        initDetails.parent.add(view.asWidget());
+
+        boolean isCreate = documentation.getId() == null;
     }
 
     @Override

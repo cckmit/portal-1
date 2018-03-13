@@ -1,12 +1,15 @@
 package ru.protei.portal.ui.documentation.client.factory;
 
 import com.google.gwt.inject.client.AbstractGinModule;
+import com.google.inject.Singleton;
 import ru.protei.portal.ui.documentation.client.activity.edit.AbstractDocumentationEditView;
 import ru.protei.portal.ui.documentation.client.activity.edit.DocumentationEditActivity;
+import ru.protei.portal.ui.documentation.client.activity.filter.AbstractDocumentationFilterView;
 import ru.protei.portal.ui.documentation.client.activity.page.DocumentationPage;
 import ru.protei.portal.ui.documentation.client.activity.table.AbstractDocumentationTableView;
 import ru.protei.portal.ui.documentation.client.activity.table.DocumentationTableActivity;
 import ru.protei.portal.ui.documentation.client.view.edit.DocumentationEditView;
+import ru.protei.portal.ui.documentation.client.view.filter.DocumentationFilterView;
 import ru.protei.portal.ui.documentation.client.view.table.DocumentationTableView;
 
 public class DocumentationClientModule extends AbstractGinModule {
@@ -15,9 +18,11 @@ public class DocumentationClientModule extends AbstractGinModule {
         bind(DocumentationPage.class).asEagerSingleton();
 
         bind(DocumentationTableActivity.class).asEagerSingleton();
-        bind(AbstractDocumentationTableView.class).to(DocumentationTableView.class);
+        bind(AbstractDocumentationTableView.class).to(DocumentationTableView.class).in(Singleton.class);
 
         bind(DocumentationEditActivity.class).asEagerSingleton();
-        bind(AbstractDocumentationEditView.class).to(DocumentationEditView.class);
+        bind(AbstractDocumentationEditView.class).to(DocumentationEditView.class).in(Singleton.class);
+
+        bind(AbstractDocumentationFilterView.class).to(DocumentationFilterView.class).in(Singleton.class);
     }
 }

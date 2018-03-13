@@ -26,14 +26,22 @@ public class DocumentationEditView extends Composite implements AbstractDocument
 
     @UiHandler("saveButton")
     public void onSaveClicked(ClickEvent event) {
-        activity.onSaveClicked();
+        if (activity != null) {
+            activity.onSaveClicked();
+        }
     }
 
     @UiHandler("cancelButton")
     public void onCancelClicked(ClickEvent event) {
-        activity.onCancelClicked();
+        if (activity != null) {
+            activity.onCancelClicked();
+        }
     }
 
+    @Override
+    public void setVisibilitySettingsForCreated(boolean isVisible) {
+
+    }
 
     @UiField
     Button saveButton;
