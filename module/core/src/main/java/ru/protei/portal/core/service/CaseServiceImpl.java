@@ -78,7 +78,7 @@ public class CaseServiceImpl implements CaseService {
     @Override
     public CoreResponse<CaseObject> getCaseObject( AuthToken token, long id ) {
 
-        CaseObject caseObject = caseObjectDAO.get( id );
+        CaseObject caseObject = caseObjectDAO.getCase( En_CaseType.CRM_SUPPORT, id );
 
         if(caseObject == null)
             return new CoreResponse().error(En_ResultStatus.NOT_FOUND);
