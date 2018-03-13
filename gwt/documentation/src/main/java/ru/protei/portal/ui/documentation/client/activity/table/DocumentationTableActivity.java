@@ -75,6 +75,14 @@ public abstract class DocumentationTableActivity
         this.init = initDetails;
     }
 
+    @Event
+    public void onCreateClicked(ActionBarEvents.Clicked event) {
+        if (!UiConstants.ActionBarIdentity.DOCUMENTATION.equals(event.identity)) {
+            return;
+        }
+        fireEvent(new DocumentationEvents.Edit());
+    }
+
     @Override
     public void onEditClicked(Documentation value) {
         fireEvent(DocumentationEvents.Edit.byId(value.getId()));

@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.documentation.client.activity.edit;
 
 import com.google.inject.Inject;
+import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
@@ -34,7 +35,7 @@ public abstract class DocumentationEditActivity
 
     @Override
     public void onCancelClicked() {
-
+        fireEvent(new Back());
     }
 
     @Inject
