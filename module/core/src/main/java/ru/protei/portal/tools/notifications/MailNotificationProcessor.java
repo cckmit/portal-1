@@ -94,8 +94,8 @@ public class MailNotificationProcessor {
         }
 
         notifiers.forEach( (entry)->{
-            String body = bodyTemplate.getText( entry.getAddress(), entry.getLangCode() );
-            String subject = subjectTemplate.getText( entry.getAddress(), entry.getLangCode() );
+            String body = bodyTemplate.getText( entry.getAddress(), entry.getLangCode(), isProteiNotifier(entry) );
+            String subject = subjectTemplate.getText( entry.getAddress(), entry.getLangCode(), isProteiNotifier(entry) );
 
             try {
                 MimeMessageHelper msg = prepareMessage( subject, body );
@@ -117,21 +117,8 @@ public class MailNotificationProcessor {
         return helper;
     }
 
-//    private Person getManager( Long managerId ) {
-//        if ( managerId == null ) {
-//            return null;
-//        }
-//        CoreResponse<Person> managerResponse = employeeService.getEmployee( managerId );
-//        if ( managerResponse.isError() ) {
-//            log.error( "Failed to retrieve manager {}", managerId );
-//            return null;
-//        }
-//
-//        return managerResponse.getData();
-//    }
-
-    private List<NotificationEntry> filterProteiNotifiers(Collection<NotificationEntry> notifiers){
-        return notifiers.stream().filter(entry -> entry.getAddress().endsWith("@protei.ru")).collect(Collectors.toList());
+    private boolean isProteiNotifier(NotificationEntry entry){
+        return entry.getAddress().endsWith("@protei.ru");
     }
 
     /**
@@ -153,6 +140,8 @@ public class MailNotificationProcessor {
             );
         }
 
-        return isPrivateCase? filterProteiNotifiers(allNotifiers): allNotifiers;
+        return isPrivateCase?
+                allNotifiers.stream().filter(this::isProteiNotifier).collect(Collectors.toList()):
+                allNotifiers;
     }
 }

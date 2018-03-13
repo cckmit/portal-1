@@ -4,6 +4,7 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
 
 <@set name="_issue_id" value="${issue_id}"/>
 <@set name="_issue_name" value="${issue_name}"/>
+<@set name="_issue_private" value="${issue_private}"/>
 <@set name="_yes" value="${yes}"/>
 <@set name="_no" value="${no}"/>
 <@set name="_createdBy" value="${created_by}"/>
@@ -33,20 +34,20 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
 </head>
 <body bgcolor="#FFFFFF" text="#000000">
 <div>
-    <div style="padding: 5px;font-size: 13px;<#if isCreated>background:#dff7e2;color:#11731d;<#else>background:#f0f0f0;color:gray;</#if>">
+    <div style="padding: 5px;font-size: 13px;<#if isCreated>background:#dff7e2;color:#11731d;<#else>background:#f0f0f0;color:#666666;</#if>">
         ${_createdBy} <#if createdByMe == true>${_yourself}<#else>${(case.creator.displayName)!'?'}</#if> ${(case.created)!''}
     </div>
     <div style="margin-top: 12px">
         <table>
             <tbody>
                 <tr>
-                    <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 13px;color: #888888;">
+                    <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 13px;color: #666666;">
                         ${_issue_id}
                     </td>
-                    <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 13px;"><b>${case.caseNumber}</b></td>
+                    <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 13px;"><b><a href="${linkToIssue}">${case.caseNumber?c}</a></b></td>
                 </tr>
                 <tr>
-                    <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 13px;color: #888888;">
+                    <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 13px;color: #666666;">
                         ${_issue_name}
                     </td>
                     <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 13px;">
@@ -57,20 +58,44 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                         </#if>
                     </td>
                 </tr>
+                <#if showPrivacy>
+                    <tr>
+                        <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 13px;color: #666666;">
+                            ${_issue_private}
+                        </td>
+                        <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 13px;">
+                            <#if privacyChanged>
+                                <@changeTo old="${oldCase.privateCase?string(_yes,_no)}" new="${case.privateCase?string(_yes,_no)}"/>
+                            <#else>
+                                ${case.privateCase?string(_yes,_no)}
+                            </#if>
+                        </td>
+                    </tr>
+                </#if>
                 <tr>
-                    <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 13px;color: #888888;">
+                    <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 13px;color: #666666;">
                         ${_customer}
                     </td>
                     <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 13px;">
+                        <#assign newCustomer = (case.initiator.displayName)???then(
+                                    case.initiator.displayName +' ('+ (case.initiatorCompany.cname!'?') +')',
+                                    (case.initiatorCompany.cname)!'?'
+                                )>
                         <#if customerChanged>
-                            <@changeTo old="${(oldInitiator.displayName)!''} (${(oldInitiatorCompany.cname)!''})" new="${(case.initiator.displayName)!''} (${(case.initiatorCompany.cname)!''})"/>
+                            <@changeTo
+                                old="${(oldInitiator.displayName)???then(
+                                        oldInitiator.displayName +' ('+ (oldInitiatorCompany.cname!'?') +')',
+                                        (oldInitiatorCompany.cname)!'?'
+                                    )}"
+                                new="${newCustomer}"
+                            />
                             <#else>
-                                ${(case.initiator.displayName)!''} (${(case.initiatorCompany.cname)!''})
+                                ${newCustomer}
                         </#if>
                     </td>
                 </tr>
                 <tr>
-                    <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 13px;color: #888888;">
+                    <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 13px;color: #666666;">
                         ${_product}
                     </td>
                     <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 13px;">
@@ -82,7 +107,7 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                     </td>
                 </tr>
                 <tr>
-                    <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 13px;color: #888888;">
+                    <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 13px;color: #666666;">
                         ${_manager}
                     </td>
                     <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 13px;">
@@ -97,7 +122,7 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                     </td>
                 </tr>
                 <tr>
-                    <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 13px;color: #888888;">
+                    <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 13px;color: #666666;">
                         ${_state}
                     </td>
                     <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 13px;">
@@ -109,7 +134,7 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                     </td>
                 </tr>
                 <tr>
-                    <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 13px;color: #888888;">
+                    <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 13px;color: #666666;">
                         ${_criticality}
                     </td>
                     <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 13px;">
@@ -137,7 +162,7 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                     </td>
                 </tr>
                 <tr>
-                    <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 13px;color: #888888;">
+                    <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 13px;color: #666666;">
                         ${_description}
                     </td>
                     <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 13px;white-space:pre-wrap;">
@@ -150,7 +175,7 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                 </tr>
                 <#if attachments??>
                     <tr>
-                        <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 13px;color: #888888;">
+                        <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 13px;color: #666666;">
                             ${_attachments}
                         </td>
                         <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 13px;">
@@ -181,7 +206,7 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
         <div style="font-size:13px;margin-top:15px">
             <#list caseComments?reverse as caseComment>
                 <div style="border-radius:5px;padding:12px;margin-bottom:5px;background:<#if caseComment.changed>#dff7e2<#else>#f0f0f0</#if>;">
-                    <span style="color:gray;line-height: 17px;margin-right:10px">${caseComment.created}</span>
+                    <span style="color:#666666;line-height: 17px;margin-right:10px">${caseComment.created}</span>
                     <span style="color:blue;font-size:14px;margin-bottom:5px;color:#0062ff;line-height: 17px;">
                         <#if caseComment.author??>${(caseComment.author.displayName)!''}</#if>
                     </span>
@@ -204,7 +229,7 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
             ${_you} (<b>${userName!'?'}</b>) ${_notification_footer}
             <#list recipients as recipient>
                 <#if recipient??>
-                    ${recipient},
+                    ${recipient}<#sep>, </#sep>
                 </#if>
             </#list>
         </div>
