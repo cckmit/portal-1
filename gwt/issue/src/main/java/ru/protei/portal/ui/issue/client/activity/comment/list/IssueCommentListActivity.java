@@ -1,5 +1,7 @@
 package ru.protei.portal.ui.issue.client.activity.comment.list;
 
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.brainworm.factory.context.client.events.Back;
@@ -362,7 +364,7 @@ public abstract class IssueCommentListActivity
             return;
         }
 
-        comment.setText( IssueCommentUtils.prewrapMessage( message ) );
+        comment.setText( message );
         comment.setCaseAttachments(
                 tempAttachments.stream()
                         .map(a -> new CaseAttachment(show.caseId, a.getId(), isEdit? comment.getId(): null))

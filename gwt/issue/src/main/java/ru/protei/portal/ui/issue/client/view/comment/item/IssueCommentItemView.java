@@ -19,6 +19,7 @@ import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
 import ru.protei.portal.ui.issue.client.activity.comment.item.AbstractIssueCommentItemActivity;
 import ru.protei.portal.ui.issue.client.activity.comment.item.AbstractIssueCommentItemView;
+import ru.protei.portal.ui.issue.client.util.IssueCommentUtils;
 
 /**
  * Один комментарий
@@ -61,7 +62,8 @@ public class IssueCommentItemView
             this.hideOptions();
             return;
         }
-        this.message.getElement().setInnerSafeHtml( SafeHtmlUtils.fromString( value ) );
+
+        this.message.getElement().setInnerHTML( IssueCommentUtils.prewrapMessage( SafeHtmlUtils.htmlEscape( value ) ) );
         this.messageBlock.removeClassName( "hide" );
     }
 
