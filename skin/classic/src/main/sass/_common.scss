@@ -1106,7 +1106,7 @@ label.bordered:after{
 .filter-container .panel{
   overflow-y: auto;
   box-sizing: border-box;
-  max-height: calc(100% - 30px); // 30px = top offset (15px) + bottom offset (15px)
+  max-height: calc(100vh - 30px); // 30px = top offset (15px) + bottom offset (15px)
   position: relative;
   z-index: 0;
 }
@@ -1117,7 +1117,7 @@ label.bordered:after{
 // временное решение
 .preview-wrapper.with-table-pager,
 .filter-container .panel.with-table-pager{
-  max-height: calc(100% - 60px);
+  max-height: calc(100vh - 60px);
 }
 
 /************************/
