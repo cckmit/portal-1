@@ -5,17 +5,18 @@ import com.google.gwt.user.client.ui.IsWidget;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.protei.portal.core.model.dict.En_OrganizationCode;
 import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.ent.DocumentType;
 import ru.protei.portal.core.model.view.PersonShortView;
 
 import java.util.Set;
 
 public interface AbstractDocumentationFilterView extends IsWidget {
 
-    void setActivity( AbstractDocumentationFilterActivity activity );
-
-    HasValue<String> name();
+    void setActivity(AbstractDocumentationFilterActivity activity);
 
     void resetFilter();
+
+    HasValue<String> name();
 
     HasValue<String> content();
 
@@ -27,17 +28,7 @@ public interface AbstractDocumentationFilterView extends IsWidget {
 
     HasValue<DateInterval> dateRange();
 
-/*
-    HasValue<Set<En_EquipmentStage>> stages();
+    HasValue<DocumentType> documentType();
 
-    HasValue<Set<En_EquipmentType>> types();
-
-
-    HasValue<String> classifierCode();
-
-    HasValue<String> registerNumber();
-
-    HasValue<Boolean> sortDir();
-
-    HasValue<EquipmentShortView> equipment();*/
+    HasValue<Set<String>> keywords();
 }

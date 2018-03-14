@@ -3,7 +3,10 @@
              xmlns:organization="urn:import:ru.protei.portal.ui.equipment.client.widget.organization"
              xmlns:person="urn:import:ru.protei.portal.ui.common.client.widget.selector.person"
              xmlns:sortfield="urn:import:ru.protei.portal.ui.common.client.widget.selector.sortfield"
-             xmlns:range='urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.range'>
+             xmlns:range='urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.range'
+             xmlns:doctype='urn:import:ru.protei.portal.ui.documentation.client.widget.selector'
+             xmlns:keyword='urn:import:ru.protei.portal.ui.documentation.client.widget.keyword'
+>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
@@ -39,16 +42,26 @@
                 <organization:OrganizationBtnGroupMulti ui:field="organizationCode" styleName="form-group btn-group btn-group-justified"/>
             </div>
 
-            <!--
-            - Вид документ
-            - Ключевые слова
-            -->
-
             <div class="form-group col-xs-12">
-                <label><ui:text from="{lang.documentation}"/></label>
-                <g:TextArea ui:field="content" styleName="input-field"/>
+                <label>
+                    <ui:text from="{lang.documentationType}"/>
+                </label>
+                <doctype:DocumentTypeSelector ui:field="documentType"/>
             </div>
 
+            <div class="form-group col-xs-12">
+                <label>
+                    <ui:text from="{lang.documentationContent}"/>
+                </label>
+                <g:TextArea ui:field="content" styleName="input-field textarea"/>
+            </div>
+
+            <div class="form-group col-xs-12">
+                <label>
+                    <ui:text from="{lang.documentationKeywords}"/>
+                </label>
+                <keyword:KeywordMultiSelector ui:field="keywords"/>
+            </div>
         </div>
         <div class="footer">
             <g:Button ui:field="resetBtn" styleName="btn btn-white" text="{lang.buttonReset}"/>

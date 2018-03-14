@@ -708,4 +708,10 @@ public interface Lang extends Messages, ContactItemLang {
     String documentationType();
 
     String documentationSearchNameOrProject();
+
+    String documentationKeywords();
+
+    String documentationContent();
+
+    String addKeyword();
 }

@@ -27,4 +27,7 @@ public class DocumentationEvents {
             return new Edit(id);
         }
     }
+
+    public static class ChangeDocumentTypeModel {
+    }
 }

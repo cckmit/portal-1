@@ -268,6 +268,11 @@ public class MainConfiguration {
     public DocumentationDAO getDocumentationDAO() {
         return new DocumentationDAO_Impl();
     }
+
+    @Bean
+    public DocumentTypeDAO getDocumentTypeDAO() {
+        return new DocumentTypeDAO_Impl();
+    }
 /**
  *
  *

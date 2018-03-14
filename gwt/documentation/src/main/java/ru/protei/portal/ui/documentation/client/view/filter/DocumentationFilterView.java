@@ -14,6 +14,7 @@ import ru.brainworm.factory.core.datetimepicker.client.view.input.range.RangePic
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.protei.portal.core.model.dict.En_OrganizationCode;
 import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.ent.DocumentType;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -22,8 +23,11 @@ import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.documentation.client.activity.filter.AbstractDocumentationFilterActivity;
 import ru.protei.portal.ui.documentation.client.activity.filter.AbstractDocumentationFilterView;
+import ru.protei.portal.ui.documentation.client.widget.keyword.KeywordMultiSelector;
+import ru.protei.portal.ui.documentation.client.widget.selector.DocumentTypeSelector;
 import ru.protei.portal.ui.equipment.client.widget.organization.OrganizationBtnGroupMulti;
 
+import java.util.Collections;
 import java.util.Set;
 
 public class DocumentationFilterView extends Composite implements AbstractDocumentationFilterView {
@@ -48,6 +52,8 @@ public class DocumentationFilterView extends Composite implements AbstractDocume
         sortField.setValue(En_SortField.name);
         organizationCode.setValue(null);
         dateRange.setValue(null);
+        documentType.setValue(null);
+        keywords.setValue(Collections.emptySet());
     }
 
     @Override
@@ -80,6 +86,16 @@ public class DocumentationFilterView extends Composite implements AbstractDocume
         return dateRange;
     }
 
+    @Override
+    public HasValue<DocumentType> documentType() {
+        return documentType;
+    }
+
+    @Override
+    public HasValue<Set<String>> keywords() {
+        return keywords;
+    }
+
     @UiHandler("resetBtn")
     public void onResetClicked(ClickEvent event) {
         if (activity != null) {
@@ -92,37 +108,38 @@ public class DocumentationFilterView extends Composite implements AbstractDocume
 
     @UiHandler("name")
     public void onKeyUpSearch(KeyUpEvent event) {
-        timer.cancel();
-        timer.schedule(300);
+        fireChangeTimer();
     }
 
     @UiHandler("organizationCode")
     public void onSelectOrganizationCode(ValueChangeEvent<Set<En_OrganizationCode>> event) {
-        if (activity != null) {
-            activity.onFilterChanged();
-        }
+        fireChangeTimer();
     }
 
     @UiHandler("manager")
     public void onManagerSelected(ValueChangeEvent<PersonShortView> event) {
-        if (activity != null) {
-            activity.onFilterChanged();
-        }
+        fireChangeTimer();
+    }
+
+    @UiHandler("documentType")
+    public void onDocumentTypeSelected(ValueChangeEvent<DocumentType> event) {
+        fireChangeTimer();
+    }
+
+    @UiHandler("keywords")
+    public void onKeywordschanged(ValueChangeEvent<Set<String>> event) {
+        fireChangeTimer();
     }
 
 
     @UiHandler("sortField")
     public void onSortFieldChanged(ValueChangeEvent<En_SortField> event) {
-        if (activity != null) {
-            activity.onFilterChanged();
-        }
+        fireChangeTimer();
     }
 
     @UiHandler("dateRange")
     public void onDateRangeChanged(ValueChangeEvent<DateInterval> event) {
-        if (activity != null) {
-            activity.onFilterChanged();
-        }
+        fireChangeTimer();
     }
 
     @Override
@@ -137,10 +154,15 @@ public class DocumentationFilterView extends Composite implements AbstractDocume
         positioner.ignore(this);
     }
 
+    private void fireChangeTimer() {
+        timer.cancel();
+        timer.schedule(300);
+    }
+
     private final Timer timer = new Timer() {
         @Override
         public void run() {
-            if ( activity != null ) {
+            if (activity != null) {
                 activity.onFilterChanged();
             }
         }
@@ -174,6 +196,14 @@ public class DocumentationFilterView extends Composite implements AbstractDocume
     @Inject
     @UiField(provided = true)
     SortFieldSelector sortField;
+
+    @Inject
+    @UiField(provided = true)
+    DocumentTypeSelector documentType;
+
+    @Inject
+    @UiField(provided = true)
+    KeywordMultiSelector keywords;
 
     @Inject
     FixedPositioner positioner;

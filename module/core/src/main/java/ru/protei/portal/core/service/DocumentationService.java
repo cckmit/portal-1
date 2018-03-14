@@ -4,6 +4,7 @@ import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.annotations.Privileged;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.AuthToken;
+import ru.protei.portal.core.model.ent.DocumentType;
 import ru.protei.portal.core.model.ent.Documentation;
 import ru.protei.portal.core.model.query.DocumentationQuery;
 
@@ -16,4 +17,6 @@ public interface DocumentationService {
 
     @Privileged(En_Privilege.DOCUMENTATION_VIEW)
     CoreResponse<List<Documentation>> documentationList(AuthToken token, DocumentationQuery query);
+
+    CoreResponse<List<DocumentType>> documentTypeList(AuthToken token);
 }

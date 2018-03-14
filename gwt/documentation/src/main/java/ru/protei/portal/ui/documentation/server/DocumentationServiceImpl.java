@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.ent.DocumentType;
 import ru.protei.portal.core.model.ent.Documentation;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.query.DocumentationQuery;
@@ -41,6 +42,19 @@ public class DocumentationServiceImpl implements DocumentationService {
         return documentationService.count(descriptor.makeAuthToken(), query).getData();
     }
 
+    @Override
+    public List<DocumentType> getDocumentTypeList() throws RequestFailedException {
+        log.debug("get document type list");
+
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+        CoreResponse<List<DocumentType>> response = documentationService.documentTypeList(descriptor.makeAuthToken());
+
+        if (response.isError()) {
+            throw new RequestFailedException(response.getStatus());
+        }
+        return response.getData();
+    }
+
     private UserSessionDescriptor getDescriptorAndCheckSession() throws RequestFailedException {
         UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor(httpRequest);
         log.info("userSessionDescriptor={}", descriptor);
@@ -50,6 +64,7 @@ public class DocumentationServiceImpl implements DocumentationService {
 
         return descriptor;
     }
+
 
     @Autowired
     ru.protei.portal.core.service.DocumentationService documentationService;
