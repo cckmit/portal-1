@@ -4,8 +4,8 @@
              xmlns:person="urn:import:ru.protei.portal.ui.common.client.widget.selector.person"
              xmlns:sortfield="urn:import:ru.protei.portal.ui.common.client.widget.selector.sortfield"
              xmlns:range='urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.range'
-             xmlns:doctype='urn:import:ru.protei.portal.ui.documentation.client.widget.selector'
-             xmlns:keyword='urn:import:ru.protei.portal.ui.documentation.client.widget.keyword'
+             xmlns:doctype='urn:import:ru.protei.portal.ui.documentation.client.widget.doctype'
+             xmlns:keyword='urn:import:ru.protei.portal.ui.documentation.client.widget.select.input'
 >
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
@@ -60,7 +60,7 @@
                 <label>
                     <ui:text from="{lang.documentationKeywords}"/>
                 </label>
-                <keyword:KeywordMultiSelector ui:field="keywords"/>
+                <keyword:SelectInputView ui:field="keywords"/>
             </div>
         </div>
         <div class="footer">

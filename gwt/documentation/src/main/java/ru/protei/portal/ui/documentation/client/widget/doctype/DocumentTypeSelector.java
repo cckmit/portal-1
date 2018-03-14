@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.documentation.client.widget.selector;
+package ru.protei.portal.ui.documentation.client.widget.doctype;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.DocumentType;

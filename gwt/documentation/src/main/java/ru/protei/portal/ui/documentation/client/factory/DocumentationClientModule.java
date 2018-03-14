@@ -11,7 +11,9 @@ import ru.protei.portal.ui.documentation.client.activity.table.DocumentationTabl
 import ru.protei.portal.ui.documentation.client.view.edit.DocumentationEditView;
 import ru.protei.portal.ui.documentation.client.view.filter.DocumentationFilterView;
 import ru.protei.portal.ui.documentation.client.view.table.DocumentationTableView;
-import ru.protei.portal.ui.documentation.client.widget.selector.DocumentTypeModel;
+import ru.protei.portal.ui.documentation.client.widget.doctype.DocumentTypeModel;
+import ru.protei.portal.ui.documentation.client.widget.select.item.AbstractSelectItemView;
+import ru.protei.portal.ui.documentation.client.widget.select.item.SelectItemView;
 
 public class DocumentationClientModule extends AbstractGinModule {
     @Override
@@ -27,5 +29,7 @@ public class DocumentationClientModule extends AbstractGinModule {
         bind(AbstractDocumentationFilterView.class).to(DocumentationFilterView.class).in(Singleton.class);
 
         bind(DocumentTypeModel.class).asEagerSingleton();
+
+        bind(AbstractSelectItemView.class).to(SelectItemView.class);
     }
 }

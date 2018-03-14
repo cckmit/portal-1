@@ -2,10 +2,12 @@ package ru.protei.portal.ui.documentation.client.activity.table;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
+import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.Documentation;
 import ru.protei.portal.core.model.query.DocumentationQuery;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
@@ -77,7 +79,7 @@ public abstract class DocumentationTableActivity
     }
 
     @Event
-    public void onAuthSuccess (AuthEvents.Success event) {
+    public void onAuthSuccess(AuthEvents.Success event) {
         filterView.resetFilter();
     }
 
@@ -142,7 +144,21 @@ public abstract class DocumentationTableActivity
     }
 
     private DocumentationQuery makeQuery() {
-        return new DocumentationQuery();
+        Long managerId = filterView.manager().getValue() == null ? null : filterView.manager().getValue().getId();
+        DateInterval interval = filterView.dateRange().getValue();
+
+        return new DocumentationQuery(
+                filterView.name().getValue(),
+                filterView.sortField().getValue(),
+                filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC,
+                filterView.organizationCodes().getValue(),
+                filterView.documentType().getValue(),
+                (interval == null ? null : interval.from),
+                (interval == null ? null : interval.to),
+                filterView.keywords().getValue(),
+                managerId,
+                filterView.content().getValue()
+        );
     }
 
     @Inject

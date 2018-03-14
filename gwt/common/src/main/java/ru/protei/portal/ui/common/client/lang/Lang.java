@@ -714,4 +714,6 @@ public interface Lang extends Messages, ContactItemLang {
     String documentationContent();
 
     String addKeyword();
+
+    String keywordInputPlaceholder();
 }

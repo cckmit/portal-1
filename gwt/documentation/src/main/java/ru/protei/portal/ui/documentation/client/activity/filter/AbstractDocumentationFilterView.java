@@ -8,6 +8,7 @@ import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.DocumentType;
 import ru.protei.portal.core.model.view.PersonShortView;
 
+import java.util.List;
 import java.util.Set;
 
 public interface AbstractDocumentationFilterView extends IsWidget {
@@ -30,5 +31,7 @@ public interface AbstractDocumentationFilterView extends IsWidget {
 
     HasValue<DocumentType> documentType();
 
-    HasValue<Set<String>> keywords();
+    HasValue<List<String>> keywords();
+
+    HasValue<Boolean> sortDir();
 }
