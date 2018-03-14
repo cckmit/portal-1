@@ -247,6 +247,8 @@ public abstract class IssueTableActivity
             query.setTo( interval.to );
         }
 
+        query
+
         return query;
     }
 

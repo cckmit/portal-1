@@ -50,7 +50,7 @@ public class TemplateServiceImpl implements TemplateService {
         Map<String, Object> templateModel = new HashMap<>();
 
         templateModel.put( "TextUtils", new TextUtils() );
-        templateModel.put( "linkToIssue", String.format( urlTemplate, newState.getId() ) );
+        templateModel.put( "linkToIssue", String.format( urlTemplate, newState.getCaseNumber() ) );
         templateModel.put( "isCreated", event.isCreateEvent() );
         templateModel.put( "createdByMe", false );
         templateModel.put( "case", newState );

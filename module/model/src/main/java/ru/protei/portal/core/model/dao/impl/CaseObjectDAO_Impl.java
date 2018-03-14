@@ -69,7 +69,7 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
     @SqlConditionBuilder
     public SqlCondition caseQueryCondition ( CaseQuery query) {
         return new SqlCondition().build((condition, args) -> {
-            condition.append("1=1");
+            condition.append("1=1 and deleted = 0");
 
             if ( query.getId() != null ) {
                 condition.append( " and case_object.id=?" );
