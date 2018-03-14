@@ -111,7 +111,7 @@ public abstract class IssueTableActivity
 
     @Override
     public void onEditClicked( CaseShortView value ) {
-        fireEvent(new IssueEvents.Edit(value.getId(), null));
+        fireEvent(new IssueEvents.Edit(value.getCaseNumber(), null));
     }
 
     @Override
@@ -196,7 +196,7 @@ public abstract class IssueTableActivity
             animation.closeDetails();
         } else {
             animation.showDetails();
-            fireEvent( new IssueEvents.ShowPreview( view.getPreviewContainer(), value.getId() ) );
+            fireEvent( new IssueEvents.ShowPreview( view.getPreviewContainer(), value.getCaseNumber() ) );
         }
     }
 
