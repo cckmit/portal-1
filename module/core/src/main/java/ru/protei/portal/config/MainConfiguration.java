@@ -78,6 +78,15 @@ public class MainConfiguration {
         return new LDAPAuthProvider();
     }
 
+
+    @Bean
+    public SqlDefaultBuilder sqlDefaultBuilder () {
+        return new SqlDefaultBuilder();
+    }
+
+
+    /* DAO */
+
     @Bean
     public MigrationEntryDAO getMigrationEntryDAO() {
         return new MigrationEntryDAO_Impl();
