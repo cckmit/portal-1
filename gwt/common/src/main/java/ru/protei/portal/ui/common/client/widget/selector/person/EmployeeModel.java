@@ -25,7 +25,9 @@ public abstract class EmployeeModel implements Activity {
 
     @Event
     public void onInit( AuthEvents.Success event ) {
-        refreshOptions();
+        myId = event.profile.getId();
+
+        refreshOptions( );
     }
 
     @Event
@@ -55,6 +57,11 @@ public abstract class EmployeeModel implements Activity {
 
             @Override
             public void onSuccess( List< PersonShortView > options ) {
+                int value = options.indexOf( new PersonShortView("", myId, false ) );
+                if ( value > 0 ) {
+                    options.add(0, options.remove(value));
+                }
+
                 list.clear();
                 list.addAll( options );
                 notifySubscribers();
@@ -71,4 +78,6 @@ public abstract class EmployeeModel implements Activity {
     private List< PersonShortView > list = new ArrayList<>();
 
     List< ModelSelector< PersonShortView > > subscribers = new ArrayList<>();
+
+    Long myId;
 }
