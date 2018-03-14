@@ -458,7 +458,7 @@ public class CaseServiceImpl implements CaseService {
         Set< UserRole > roles = descriptor.getLogin().getRoles();
         if ( !policyService.hasGrantAccessFor( roles, En_Privilege.ISSUE_VIEW ) ) {
             query.setCompanyId( descriptor.getCompany() == null ? null : descriptor.getCompany().getId() );
-            query.setPrivateAccess( false );
+            query.setAllowViewPrivate( false );
         }
     }
 
