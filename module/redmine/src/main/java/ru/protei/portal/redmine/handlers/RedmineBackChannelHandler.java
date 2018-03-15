@@ -5,6 +5,7 @@ import com.taskadapter.redmineapi.bean.Issue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_CaseState;
@@ -15,6 +16,8 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
 
     @Override
     public void handle(AssembledCaseEvent event) {
+        if (!portalConfig.data().integrationConfig().isRedmineEnabled())
+            return;
         final long caseId = event.getCaseObject().getId();
         final CaseObject actualCaseObject = caseObjectDAO.get(caseId);
         final int issueId = Integer.parseInt(externalCaseAppDAO.get(caseId).getExtAppCaseId());
@@ -92,6 +95,9 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
 
     @Autowired
     private ExternalCaseAppDAO externalCaseAppDAO;
+
+    @Autowired
+    private PortalConfig portalConfig;
 
     private static final Logger logger = LoggerFactory.getLogger(RedmineBackChannelHandler.class);
 }

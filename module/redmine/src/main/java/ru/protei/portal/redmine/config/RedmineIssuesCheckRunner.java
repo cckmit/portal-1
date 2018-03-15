@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.dao.RedmineEndpointDAO;
 import ru.protei.portal.redmine.service.RedmineService;
 
@@ -17,6 +18,9 @@ public final class RedmineIssuesCheckRunner {
 
     @Scheduled(fixedRate = SCHEDULE_TIME)
     public void queryIssues() {
+        if (!portalConfig.data().integrationConfig().isRedmineEnabled())
+            return;
+        
         logger.debug("Check for new issues stared");
         redmineEndpointDAO.getAll().forEach(redmineService::checkForNewIssues);
         logger.debug("Check for new issues ended");
@@ -36,4 +40,7 @@ public final class RedmineIssuesCheckRunner {
 
     @Autowired
     private RedmineEndpointDAO redmineEndpointDAO;
+
+    @Autowired
+    private PortalConfig portalConfig;
 }
