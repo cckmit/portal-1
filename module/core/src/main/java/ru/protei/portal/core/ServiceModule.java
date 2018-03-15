@@ -2,5 +2,6 @@ package ru.protei.portal.core;
 
 public enum ServiceModule {
     GENERAL,
-    HPSM
+    HPSM,
+    REDMINE
 }

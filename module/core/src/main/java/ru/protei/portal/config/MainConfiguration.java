@@ -277,6 +277,22 @@ public class MainConfiguration {
     public DocumentationDAO getDocumentationDAO() {
         return new DocumentationDAO_Impl();
     }
+
+    @Bean
+    public RedmineEndpointDAO getRedmineEndpointDAO() {
+        return new RedmineEndpointDAO_Impl();
+    }
+
+    @Bean
+    public RedmineStatusMapEntryDAO getRedmineStatusesDAO() {
+        return new RedmineStatusMapEntryDAO_Impl();
+    }
+
+    @Bean
+    public RedminePriorityMapEntryDAO getRedminePrioritiesDAO() {
+        return new RedminePriorityMapEntryDAO_Impl();
+    }
+
 /**
  *
  *

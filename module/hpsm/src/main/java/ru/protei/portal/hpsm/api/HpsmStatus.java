@@ -52,8 +52,4 @@ public enum HpsmStatus {
 
         return null;
     }
-
-    public static HpsmStatus getByCaseState(En_CaseState caseState){
-        return Arrays.stream(HpsmStatus.values()).filter(x -> x.caseState.equals(caseState)).findFirst().orElseGet(null);
-    }
 }
