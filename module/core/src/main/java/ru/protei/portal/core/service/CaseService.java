@@ -26,7 +26,7 @@ public interface CaseService {
     CoreResponse<List<CaseShortView>> caseObjectList( AuthToken token, CaseQuery query );
 
     @Privileged({ En_Privilege.ISSUE_VIEW })
-    CoreResponse<CaseObject> getCaseObject( AuthToken token, long id );
+    CoreResponse<CaseObject> getCaseObject( AuthToken token, long number );
 
     @Privileged({ En_Privilege.ISSUE_CREATE })
     @Auditable( En_AuditType.ISSUE_CREATE )
@@ -60,9 +60,9 @@ public interface CaseService {
     CoreResponse<Boolean> updateCaseModified( AuthToken token, Long caseId, Date modified);
 
     @Privileged( En_Privilege.ISSUE_EDIT )
-    CoreResponse<Long> bindAttachmentToCase( AuthToken token, Attachment attachment, long caseId);
+    CoreResponse<Long> bindAttachmentToCaseNumber(AuthToken token, Attachment attachment, long caseNumber);
 
-    CoreResponse<Long> attachToCase(Attachment attachment, long caseId);
+    CoreResponse<Long> attachToCaseId(Attachment attachment, long caseId);
 
     boolean isExistsAttachments(Long caseId);
     CoreResponse<Boolean> updateExistsAttachmentsFlag(Long caseId, boolean flag);

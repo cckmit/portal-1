@@ -45,7 +45,7 @@ public interface AbstractIssueEditView extends IsWidget {
     HasWidgets getCommentsContainer();
     HasAttachments attachmentsContainer();
     void setFileUploadHandler(AttachmentUploader.FileUploadHandler handler);
-    void setCaseId(Long caseId);
+    void setCaseNumber(Long caseNumber);
 
     void showComments(boolean isShow);
     boolean isAttached();

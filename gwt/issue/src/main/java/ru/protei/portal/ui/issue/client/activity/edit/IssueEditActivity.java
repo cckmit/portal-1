@@ -163,8 +163,8 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         fillView(this.issue);
     }
 
-    private void requestIssue(Long id, Consumer<CaseObject> successAction){
-        issueService.getIssue(id, new RequestCallback<CaseObject>() {
+    private void requestIssue(Long number, Consumer<CaseObject> successAction){
+        issueService.getIssue(number, new RequestCallback<CaseObject>() {
             @Override
             public void onError(Throwable throwable) {}
 
@@ -182,7 +182,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         view.privacyVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRIVACY_VIEW ) );
 
         view.attachmentsContainer().clear();
-        view.setCaseId(issue.getId());
+        view.setCaseNumber(issue.getCaseNumber());
 
         if ( issue.getId() != null ) {
             view.showComments(true);

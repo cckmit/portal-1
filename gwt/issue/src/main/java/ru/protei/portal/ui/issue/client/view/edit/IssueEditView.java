@@ -168,8 +168,8 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
-    public void setCaseId(Long caseId) {
-        fileUploader.autoBindingToCase(caseId);
+    public void setCaseNumber(Long caseNumber) {
+        fileUploader.autoBindingToCase(caseNumber);
     }
 
     @Override

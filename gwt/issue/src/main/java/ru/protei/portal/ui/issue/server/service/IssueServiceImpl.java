@@ -44,13 +44,13 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    public CaseObject getIssue( long id ) throws RequestFailedException {
-        log.debug("getIssue(): id: {}", id);
+    public CaseObject getIssue( long number ) throws RequestFailedException {
+        log.debug("getIssue(): number: {}", number);
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse<CaseObject> response = caseService.getCaseObject( descriptor.makeAuthToken(), id );
-        log.debug("getIssue(), id: {} -> {} ", id, response.isError() ? "error" : response.getData().getCaseNumber());
+        CoreResponse<CaseObject> response = caseService.getCaseObject( descriptor.makeAuthToken(), number );
+        log.debug("getIssue(), number: {} -> {} ", number, response.isError() ? "error" : response.getData().getCaseNumber());
 
         if (response.isError()) {
             throw new RequestFailedException( response.getStatus() );

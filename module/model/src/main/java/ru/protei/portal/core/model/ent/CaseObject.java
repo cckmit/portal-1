@@ -6,6 +6,7 @@ import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.winter.jdbc.annotations.*;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -355,7 +356,7 @@ public class CaseObject extends AuditableObject {
     }
 
     public List<Attachment> getAttachments() {
-        return attachments;
+        return attachments == null? Collections.EMPTY_LIST: attachments;
     }
 
     public void setAttachments(List<Attachment> attachments) {
