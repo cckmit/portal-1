@@ -20,7 +20,7 @@ public final class RedmineIssuesCheckRunner {
     public void queryIssues() {
         if (!portalConfig.data().integrationConfig().isRedmineEnabled())
             return;
-        
+
         logger.debug("Check for new issues stared");
         redmineEndpointDAO.getAll().forEach(redmineService::checkForNewIssues);
         logger.debug("Check for new issues ended");

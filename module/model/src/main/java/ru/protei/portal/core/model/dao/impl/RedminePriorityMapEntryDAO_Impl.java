@@ -1,6 +1,7 @@
 package ru.protei.portal.core.model.dao.impl;
 
 import ru.protei.portal.core.model.dao.RedminePriorityMapEntryDAO;
+import ru.protei.portal.core.model.ent.RedminePriorityMap;
 import ru.protei.portal.core.model.ent.RedminePriorityMapEntry;
 
 import java.util.List;
@@ -19,6 +20,11 @@ public class RedminePriorityMapEntryDAO_Impl extends PortalBaseJdbcDAO<RedminePr
     @Override
     public RedminePriorityMapEntry getByPortalPriorityName(String name, long mapId) {
         return getByCondition("MAP_ID = ? AND LOCAL_priority_name = ?", mapId, name);
+    }
+
+    @Override
+    public RedminePriorityMapEntry getByRedminePriorityName(String rmName, long mapId) {
+        return getByCondition("MAP_ID = ? AND RM_priority_name = ?", mapId, rmName);
     }
 
     @Override

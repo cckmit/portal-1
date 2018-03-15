@@ -12,6 +12,7 @@ import ru.protei.portal.core.model.dao.RedmineStatusMapEntryDAO;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.redmine.service.CommonService;
+import ru.protei.portal.redmine.utils.RedmineUtils;
 
 import java.util.Objects;
 
@@ -68,21 +69,24 @@ public final class RedmineNewIssueHandler implements RedmineEventHandler {
         obj.setCaseType(En_CaseType.CRM_SUPPORT);
 
         logger.debug("Trying to get portal priority level id matching with redmine: {}", issue.getPriorityId());
-        final RedminePriorityMapEntry priorityLevel = priorityMapEntryDAO.getByRedminePriorityId(issue.getPriorityId(), priorityMapId);
-        if (priorityLevel != null) {
-            logger.debug("Found priority level id: {}", priorityLevel.getLocalPriorityId());
-            obj.setImpLevel(priorityLevel.getLocalPriorityId());
-        } else {
+        String redminePriorityName = issue.getCustomFieldById(RedmineUtils.REDMINE_CUSTOM_FIELD_ID).getValue();
+        if (redminePriorityName == null || redminePriorityName.isEmpty())
+            redminePriorityName = RedmineUtils.REDMINE_BASIC_PRIORITY;
+        final RedminePriorityMapEntry redminePriorityMapEntry =
+                priorityMapEntryDAO.getByRedminePriorityName(redminePriorityName, priorityMapId);
+        if (redminePriorityMapEntry != null) {
+            logger.debug("Found priority level id: {}", redminePriorityMapEntry.getLocalPriorityId());
+            obj.setImpLevel(redminePriorityMapEntry.getLocalPriorityId());
+        } else
             logger.debug("Priority level not found, setting default");
-            obj.setImpLevel(2);
-        }
 
 
         logger.debug("Trying to get portal status id matching with redmine: {}", issue.getStatusId());
-        final RedmineStatusMapEntry state = statusMapEntryDAO.getByRedmineStatusId(issue.getStatusId(), statusMapId);
-        if (state != null) {
-            logger.debug("Found status id: {}", state.getLocalStatusId());
-            obj.setStateId(state.getLocalStatusId());
+        final RedmineStatusMapEntry redmineStatusMapEntry =
+                statusMapEntryDAO.getByRedmineStatusId(issue.getStatusId(), statusMapId);
+        if (redmineStatusMapEntry != null) {
+            logger.debug("Found status id: {}", redmineStatusMapEntry.getLocalStatusId());
+            obj.setStateId(redmineStatusMapEntry.getLocalStatusId());
         } else {
             logger.debug("Object status was not found");
             obj.setStateId(1);

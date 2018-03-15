@@ -16,4 +16,7 @@ public final class RedmineUtils {
 
     private static final String AFTER = ">=";
     private static final Format dateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+
+    public static final String REDMINE_BASIC_PRIORITY = "Степень приоритета 3 (Стандартная проблема)";
+    public static final int REDMINE_CUSTOM_FIELD_ID = 89;
 }

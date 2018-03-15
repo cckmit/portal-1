@@ -11,5 +11,7 @@ public interface RedminePriorityMapEntryDAO extends PortalBaseDAO<RedminePriorit
 
     RedminePriorityMapEntry getByPortalPriorityName(String name, long endpointId);
 
+    RedminePriorityMapEntry getByRedminePriorityName(String rmName, long mapId);
+
     List<RedminePriorityMapEntry> getListByMapId(long endpointId);
 }

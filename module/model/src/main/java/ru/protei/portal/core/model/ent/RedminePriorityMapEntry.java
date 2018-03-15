@@ -21,6 +21,17 @@ public final class RedminePriorityMapEntry {
     @JdbcColumn(name = "LOCAL_priority_name")
     private String localPriorityName;
 
+    @JdbcColumn(name = "RM_priority_name")
+    private String redminePriorityName;
+
+    public String getRedminePriorityName() {
+        return redminePriorityName;
+    }
+
+    public void setRedminePriorityName(String redminePriorityName) {
+        this.redminePriorityName = redminePriorityName;
+    }
+
     public long getId() {
         return id;
     }
