@@ -14,7 +14,6 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.documentation.client.widget.select.item.AbstractSelectItemView;
 import ru.protei.portal.ui.documentation.client.widget.select.item.SelectItemView;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -32,13 +31,14 @@ public class SelectInputView
     public SelectInputView(Lang lang) {
         initWidget(ourUiBinder.createAndBindUi(this));
         input.getElement().setPropertyString("placeholder", lang.keywordInputPlaceholder());
+        setUnfilledInputWidth();
     }
 
 
     @Override
     public void setValue(List<String> values, boolean fireEvents) {
         if (values == null) {
-            values = new ArrayList<String>();
+            values = new LinkedList<>();
         }
         this.values = values;
 
@@ -162,11 +162,7 @@ public class SelectInputView
         ValueChangeEvent.fire(this, values);
     }
 
-    private void scheduleAddInput(boolean focused) {
-        if (!isAttached()) {
-            return;
-        }
-
+    private void setUnfilledInputWidth() {
         int unfilledWidth = itemContainer.getOffsetWidth();
         if (values != null && !values.isEmpty()) {
             Widget lastItemWidget = itemContainer.getWidget(values.size() - 1);
@@ -180,6 +176,12 @@ public class SelectInputView
         }
 
         input.setWidth(unfilledWidth + "px");
+    }
+
+    private void scheduleAddInput(boolean focused) {
+        if (!isAttached()) {
+            return;
+        }
         widgetContainer.add(inputContainer);
         input.setFocus(focused);
     }
@@ -205,7 +207,7 @@ public class SelectInputView
     @UiField
     Anchor add;
 
-    List<SelectItemView> itemViews = new ArrayList<SelectItemView>();
+    List<SelectItemView> itemViews = new LinkedList<>();
 
     interface SelectViewUiBinder extends UiBinder<HTMLPanel, SelectInputView> {
     }
