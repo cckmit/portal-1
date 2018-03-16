@@ -14,7 +14,7 @@ public interface AbstractIssuePreviewView extends IsWidget {
 
     void watchForScroll(boolean isWatch);
     void setPrivateIssue( boolean privateIssue );
-    void setCaseId(Long caseId);
+    void setCaseNumber(Long caseNumber);
     void setHeader( String value );
     void setCreationDate( String value );
     void setState( long value );

@@ -9,9 +9,11 @@ import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.CaseAttachmentEvent;
 import ru.protei.portal.core.model.dao.AttachmentDAO;
 import ru.protei.portal.core.model.dao.CaseAttachmentDAO;
+import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.service.user.AuthService;
+import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -28,6 +30,9 @@ public class AttachmentServiceImpl implements AttachmentService {
     CaseAttachmentDAO caseAttachmentDAO;
 
     @Autowired
+    CaseObjectDAO caseObjectDAO;
+
+    @Autowired
     CaseService caseService;
 
     @Autowired
@@ -38,6 +43,9 @@ public class AttachmentServiceImpl implements AttachmentService {
 
     @Autowired
     AuthService authService;
+
+    @Autowired
+    JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
     /**
      * remove attachment from fileStorage, DataBase (item and relations)
@@ -57,18 +65,19 @@ public class AttachmentServiceImpl implements AttachmentService {
                 caseService.updateExistsAttachmentsFlag(ca.getCaseId(), false);
             }
 
-            CoreResponse<CaseObject> issue = caseService.getCaseObject(token, ca.getCaseId());
+            CaseObject issue = caseObjectDAO.get(ca.getCaseId());
             Attachment attachment = attachmentDAO.get(id);
             UserSessionDescriptor ud = authService.findSession( token );
 
             CoreResponse<Boolean> result = removeAttachment( token, id);
 
-            if(result.isOk() && issue.isOk() && ud != null ) {
+            if(result.isOk() && issue != null && ud != null ) {
+                jdbcManyRelationsHelper.fill(issue, "attachments");
                 publisherService.publishEvent(new CaseAttachmentEvent(
                         ServiceModule.GENERAL,
                         caseService,
                         this,
-                        issue.getData(),
+                        issue,
                         null,
                         Collections.singletonList(attachment),
                         ud.getPerson()

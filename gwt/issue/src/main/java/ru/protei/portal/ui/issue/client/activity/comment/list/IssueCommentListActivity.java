@@ -351,7 +351,6 @@ public abstract class IssueCommentListActivity
         if ( comment == null ) {
             comment = new CaseComment();
             comment.setAuthorId( profile.getId() );
-            comment.setCaseId( id != null ? id : show.caseId );
         }
 
         boolean isEdit = comment.getId() != null;
@@ -364,6 +363,7 @@ public abstract class IssueCommentListActivity
             return;
         }
 
+        comment.setCaseId( id != null ? id : show.caseId );
         comment.setText( message );
         comment.setCaseAttachments(
                 tempAttachments.stream()

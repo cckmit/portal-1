@@ -37,8 +37,8 @@ public class AttachmentUploader extends FileUploader{
         String filename = fileUpload.getFilename();
         if (filename.length() != 0 && !form.getElement().hasClassName("attachment-uploading")) {
             form.addStyleName("attachment-uploading");
-            if(caseId != null){
-                form.setAction(UPLOAD_WITH_AUTOBINDING_URL + caseId);
+            if(caseNumber != null){
+                form.setAction(UPLOAD_WITH_AUTOBINDING_URL + caseNumber);
             }else
                 form.setAction(UPLOAD_WITHOUT_AUTOBINDING_URL);
             form.submit();
@@ -48,10 +48,10 @@ public class AttachmentUploader extends FileUploader{
 
     /**
      * При успешной загрузке файла автоматически делает связку с кейсом
-     * @param caseId id кейса
+     * @param caseNumber номер кейса
      */
-    public void autoBindingToCase(Long caseId){
-        this.caseId = caseId;
+    public void autoBindingToCase(Long caseNumber){
+        this.caseNumber = caseNumber;
     }
 
     public void setUploadHandler(FileUploadHandler fileUploadHandler){
@@ -78,5 +78,5 @@ public class AttachmentUploader extends FileUploader{
     private static final String UPLOAD_WITHOUT_AUTOBINDING_URL = "Crm/springApi/uploadFile";
     private static final String UPLOAD_WITH_AUTOBINDING_URL = "Crm/springApi/uploadFileToCase";
     private FileUploadHandler uploadHandler;
-    private Long caseId;
+    private Long caseNumber;
 }
