@@ -14,7 +14,9 @@ public interface EventAssemblerService {
 
     void publishEvent(CaseAttachmentEvent event);
 
-    AssembledCaseEvent getEvent(Person person, long caseId);
+    AssembledCaseEvent getEvent(Person person, Long caseId);
+
+    void forcePublishCaseRelatedEvents(Long caseId);
 
     int getEventsCount();
 }

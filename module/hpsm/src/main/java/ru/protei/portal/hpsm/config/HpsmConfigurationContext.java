@@ -7,14 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Scope;
 import org.springframework.integration.mail.ImapMailReceiver;
 import org.springframework.integration.mail.MailReceivingMessageSource;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import ru.protei.portal.config.MainConfiguration;
-import ru.protei.portal.hpsm.api.HpsmMessageFactory;
 import ru.protei.portal.core.mail.MailSendChannel;
+import ru.protei.portal.hpsm.api.HpsmMessageFactory;
 import ru.protei.portal.hpsm.factories.BackChannelHandlerFactory;
 import ru.protei.portal.hpsm.factories.BackChannelHandlerFactoryImpl;
 import ru.protei.portal.hpsm.factories.HpsmEventHandlerFactory;
@@ -24,7 +22,8 @@ import ru.protei.portal.hpsm.service.HpsmMessageFactoryImpl;
 import ru.protei.portal.hpsm.service.HpsmService;
 import ru.protei.portal.hpsm.service.HpsmServiceImpl;
 import ru.protei.portal.hpsm.struct.HpsmMessage;
-import ru.protei.portal.hpsm.utils.*;
+import ru.protei.portal.hpsm.utils.CompanyBranchMap;
+import ru.protei.portal.hpsm.utils.EventMsgInputStreamSource;
 
 import java.io.IOException;
 

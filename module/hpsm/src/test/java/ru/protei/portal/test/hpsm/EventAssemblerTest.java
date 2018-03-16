@@ -3,6 +3,7 @@ package ru.protei.portal.test.hpsm;
 import org.junit.*;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.event.CaseAttachmentEvent;
 import ru.protei.portal.core.event.CaseCommentEvent;
@@ -51,7 +52,7 @@ public class EventAssemblerTest {
         //First portion
         CaseObjectEvent objectEvent = new CaseObjectEvent(caseService, object, person);
         CaseCommentEvent commentEvent = new CaseCommentEvent(caseService, object, comment,null, person);
-        CaseAttachmentEvent attachmentEvent = new CaseAttachmentEvent(caseService, this, object,
+        CaseAttachmentEvent attachmentEvent = new CaseAttachmentEvent(ServiceModule.GENERAL, caseService, this, object,
                 attachment, removedAttachment, person);
 
         //Second portion

@@ -1,0 +1,43 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet author="svitkov" id="redmine-001">
+        <createTable  tableName="redmine_endpoint">
+            <column name="id" autoIncrement="true" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+
+            <column name="server_addr" type="varchar(64)">
+                <constraints nullable="false" />
+            </column>
+
+            <column name="project_id" type="varchar(128)">
+                <constraints nullable="false" />
+            </column>
+
+            <column name="api_key" type="varchar(128)">
+                <constraints nullable="false" />
+            </column>
+
+            <column name="COMPANY_ID" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="last_created" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+
+            <column name="last_updated" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint constraintName="FK_RDMINE_EP_COMPANY" onDelete="CASCADE"
+                                 baseColumnNames="COMPANY_ID" baseTableName="redmine_endpoint"
+                                 referencedColumnNames="ID" referencedTableName="COMPANY"/>
+    </changeSet>
+
+</databaseChangeLog>

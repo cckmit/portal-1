@@ -7,7 +7,7 @@ public enum En_ImportanceLevel  {
     CRITICAL(1, "critical"),
     IMPORTANT (2, "important"),
     BASIC (3, "basic"),
-    COSMETIC (4, "cosmetic");
+    COSMETIC (4, "cometic");
 
 
     En_ImportanceLevel (int id, String code) {
