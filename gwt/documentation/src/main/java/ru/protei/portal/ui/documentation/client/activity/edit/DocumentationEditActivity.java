@@ -25,8 +25,6 @@ public abstract class DocumentationEditActivity
 
     @Event
     public void onShow(DocumentationEvents.Edit event) {
-        view.setVisibilitySettingsForCreated(! (event.id == null));
-
         if (event.id == null) {
             fillView(new Documentation());
             return;
