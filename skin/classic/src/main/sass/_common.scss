@@ -6,7 +6,9 @@ body {
 .inline-block{
   display: inline-block;
 }
-
+.vertical-middle{
+  vertical-align: middle;
+}
 
 .p-0 {
   padding: 0 !important
@@ -1530,6 +1532,7 @@ a {
 
 .dashboard .table{
   margin-bottom: 0;
+  table-layout: fixed;
 }
 
 .dashboard .info > div{
@@ -1581,8 +1584,7 @@ a {
 }
 
 .dashboard .issues table .number {
-  min-width: 60px;
-  width: auto;
+  width: 65px;
 }
 
 .dashboard .issues table .info {
