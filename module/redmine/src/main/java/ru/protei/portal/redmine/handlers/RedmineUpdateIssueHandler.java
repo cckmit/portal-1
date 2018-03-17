@@ -22,7 +22,7 @@ public final class RedmineUpdateIssueHandler implements RedmineEventHandler {
 
     @Override
     public void handle(User user, Issue issue, RedmineEndpoint endpoint) {
-        final CaseObject object = caseObjectDAO.getByCondition("EXT_APP_ID=?", issue.getId());
+        final CaseObject object = caseObjectDAO.getByExternalAppCaseId(issue.getId().toString());
         if (object != null) {
             logger.debug("Found case object with id {}", object.getId());
             compareAndUpdate(issue, object, endpoint);
