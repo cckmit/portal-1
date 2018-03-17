@@ -40,7 +40,7 @@
         <dependency>
             <groupId>ru.protei</groupId>
             <artifactId>portal4.redmine</artifactId>
-            <version>1.0.5.2</version>
+            <version>1.0.5.3</version>
         </dependency>
         <dependency>
             <groupId>ru.protei</groupId>
