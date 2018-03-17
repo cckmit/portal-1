@@ -94,8 +94,13 @@ public class MailNotificationProcessor {
         }
 
         notifiers.forEach( (entry)->{
-            String body = bodyTemplate.getText( entry.getAddress(), entry.getLangCode(), isProteiNotifier(entry) );
-            String subject = subjectTemplate.getText( entry.getAddress(), entry.getLangCode(), isProteiNotifier(entry) );
+            if (!isProteiRecipient(entry) && config.data().smtp().isBlockExternalRecipients()) {
+                log.debug("block send mail to {} (external recipient)", entry.getAddress());
+                return;
+            }
+
+            String body = bodyTemplate.getText( entry.getAddress(), entry.getLangCode(), isProteiRecipient(entry) );
+            String subject = subjectTemplate.getText( entry.getAddress(), entry.getLangCode(), isProteiRecipient(entry) );
 
             try {
                 MimeMessageHelper msg = prepareMessage( subject, body );
@@ -117,7 +122,7 @@ public class MailNotificationProcessor {
         return helper;
     }
 
-    private boolean isProteiNotifier(NotificationEntry entry){
+    private boolean isProteiRecipient(NotificationEntry entry){
         return entry.getAddress().endsWith("@protei.ru");
     }
 
@@ -141,7 +146,7 @@ public class MailNotificationProcessor {
         }
 
         return isPrivateCase?
-                allNotifiers.stream().filter(this::isProteiNotifier).collect(Collectors.toList()):
+                allNotifiers.stream().filter(this::isProteiRecipient).collect(Collectors.toList()):
                 allNotifiers;
     }
 }
