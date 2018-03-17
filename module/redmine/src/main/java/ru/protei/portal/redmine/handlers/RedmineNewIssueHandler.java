@@ -27,13 +27,15 @@ public final class RedmineNewIssueHandler implements RedmineEventHandler {
         if (object == null)
             logger.debug("Object was not created");
         else
-            logger.debug("Object with id {} was created", object.getId());
+            logger.debug("Object with id {} was created, guid={}", object.getId(), object.defGUID());
     }
 
     private CaseObject createCaseObject(User user, Issue issue, RedmineEndpoint endpoint) {
         final long companyId = endpoint.getCompanyId();
-        if (caseObjectDAO.getByCondition("EXT_APP_ID=?", issue.getId()) != null) {
-            return caseObjectDAO.getByCondition("EXT_APP_ID=?", issue.getId());
+        CaseObject testExists = caseObjectDAO.getByExternalAppCaseId(issue.getId().toString());
+        if (testExists != null) {
+            logger.debug("issue {} is already created as case-object {}", issue.getId(), testExists.defGUID());
+            return testExists;
         }
 
         Person contactPerson = commonService.getAssignedPerson(companyId, user);

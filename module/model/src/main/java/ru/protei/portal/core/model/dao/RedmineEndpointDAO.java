@@ -6,9 +6,9 @@ import java.util.Date;
 import java.util.List;
 
 public interface RedmineEndpointDAO extends PortalBaseDAO<RedmineEndpoint> {
-    void updateCreatedOn(Long companyId, String projectId, Date date);
+    void updateCreatedOn(RedmineEndpoint endpoint);
 
-    void updateUpdatedOn(Long companyId, String projectId, Date date);
+    void updateUpdatedOn(RedmineEndpoint endpoint);
 
     List<RedmineEndpoint> getByCompanyId(Long companyId);
 

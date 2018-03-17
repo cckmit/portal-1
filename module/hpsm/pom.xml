@@ -36,11 +36,11 @@
     </build>
 
     <dependencies>
-        <dependency>
-            <groupId>ru.protei</groupId>
-            <artifactId>jmc</artifactId>
-            <version>3.6-SNAPSHOT</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>ru.protei</groupId>-->
+            <!--<artifactId>jmc</artifactId>-->
+            <!--<version>3.6-SNAPSHOT</version>-->
+        <!--</dependency>-->
 
         <dependency>
             <groupId>org.springframework</groupId>

@@ -6,6 +6,7 @@ import com.taskadapter.redmineapi.bean.User;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
+import protei.utils.common.DateUtils;
 import protei.utils.common.Tuple;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.AssembledCaseEvent;
@@ -20,6 +21,8 @@ import ru.protei.portal.redmine.utils.RedmineUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static ru.protei.portal.redmine.utils.RedmineUtils.userInfo;
 
 //Stateless
 public final class RedmineServiceImpl implements RedmineService {
@@ -56,22 +59,43 @@ public final class RedmineServiceImpl implements RedmineService {
         final String created = RedmineUtils.parseDateToAfter(endpoint.getLastCreatedOnDate());
         final String projectId = endpoint.getProjectId();
 
+        logger.debug("new issues poll from redmine endpoint {}, company {}, project {}, check created from {}",
+                endpoint.getServerAddress(), endpoint.getCompanyId(), projectId, created);
+
         try {
-            Date lastCreatedOn;
+            Date lastCreatedOn = endpoint.getLastCreatedOnDate();
             final List<Issue> issues = getIssuesCreatedAfterDate(created, projectId, endpoint);
             if (!issues.isEmpty()) {
-                issues.stream().map(x -> new Tuple<>(getUser(x.getAuthorId(), endpoint), x))
-                        .forEach(x -> handler.handle(x.a, x.b, endpoint));
-                issues.sort(Comparator.comparing(Issue::getCreatedOn));
-                lastCreatedOn = issues.get(issues.size() - 1).getCreatedOn();
-            } else
-                lastCreatedOn = updateDate(endpoint.getLastCreatedOnDate());
 
-            redmineEndpointDAO.updateCreatedOn(endpoint.getCompanyId(), projectId, lastCreatedOn);
+                logger.debug("got {} issues from {}", issues.size(), endpoint.getServerAddress());
+
+                for (Issue issue : issues) {
+                    User user = getUser(issue.getAuthorId(), endpoint);
+
+                    logger.debug("try handle new issue from {}, issue-id: {}", userInfo(user), issue.getId());
+
+                    handler.handle(user, issue, endpoint);
+                    lastCreatedOn = RedmineUtils.maxDate(issue.getCreatedOn(), lastCreatedOn);
+                }
+
+                logger.debug("max created on, taken from issues: {}", lastCreatedOn);
+
+                // добавляем 2 секунды, иначе redmine будет возвращать опять нам последнюю запись
+                // не очень это хорошо, нужно наверное все таки переделать получение новых issue
+                // не только по дате, но еще и по ID
+                lastCreatedOn = new Date(lastCreatedOn.getTime() + 2000);
+
+                logger.debug("max created on, store in our db: {}", lastCreatedOn);
+
+                endpoint.setLastCreatedOnDate(lastCreatedOn);
+                redmineEndpointDAO.updateCreatedOn(endpoint);
+            } else {
+                logger.debug("no new issues from {}", endpoint.getServerAddress());
+            }
+
         } catch (RedmineException re) {
             //do some stuff
-            logger.debug("Failed when getting issues created after date: {} from project with id: {}", created, projectId);
-            re.printStackTrace();
+            logger.debug("Failed when getting issues created after date: {} from project with id: {}", created, projectId, re);
         }
     }
 
@@ -80,18 +104,34 @@ public final class RedmineServiceImpl implements RedmineService {
         final String updated = RedmineUtils.parseDateToAfter(endpoint.getLastUpdatedOnDate());
         final String projectId = endpoint.getProjectId();
 
+        logger.debug("updated issues poll from redmine endpoint {}, company {}, project {}, check updated from {}",
+                endpoint.getServerAddress(), endpoint.getCompanyId(), projectId, updated);
+
         try {
-            Date lastUpdatedOn;
+            Date lastUpdatedOn = endpoint.getLastUpdatedOnDate();
             final List<Issue> issues = getIssuesUpdatedAfterDate(updated, projectId, endpoint);
             if (!issues.isEmpty()) {
-                issues.stream().map(x -> new Tuple<>(getUser(x.getId(), endpoint), x))
-                        .forEach(x -> updateHandler.handle(x.a, x.b, endpoint));
-                issues.sort(Comparator.comparing(Issue::getUpdatedOn));
-                lastUpdatedOn = issues.get(issues.size() - 1).getUpdatedOn();
-            } else
-                lastUpdatedOn = updateDate(endpoint.getLastUpdatedOnDate());
+                logger.debug("got {} updated issues from {}", issues.size(), endpoint.getServerAddress());
 
-            redmineEndpointDAO.updateUpdatedOn(endpoint.getCompanyId(), projectId, lastUpdatedOn);
+                for (Issue issue : issues) {
+                    User user = getUser(issue.getId(), endpoint);
+                    logger.debug("try update issue from {}, issue-id: {}", userInfo(user), issue.getId());
+                    updateHandler.handle(user, issue, endpoint);
+                    lastUpdatedOn = RedmineUtils.maxDate(issue.getUpdatedOn(), lastUpdatedOn);
+                }
+                logger.debug("max update-date, taken from issues: {}", lastUpdatedOn);
+
+                // use same trick as above (see check-new-issues)
+                lastUpdatedOn = new Date(lastUpdatedOn.getTime() + 2000);
+
+                logger.debug("max update-date, store in our db: {}", lastUpdatedOn);
+
+                endpoint.setLastUpdatedOnDate(lastUpdatedOn);
+                redmineEndpointDAO.updateUpdatedOn(endpoint);
+            }
+            else {
+                logger.debug("no changed issues from {}", endpoint.getServerAddress());
+            }
         } catch (RedmineException re) {
             //something
             logger.debug("Failed when getting issues updated after date {} from project {}", updated, projectId);
@@ -160,14 +200,6 @@ public final class RedmineServiceImpl implements RedmineService {
                 .collect(Collectors.toList());
     }
 
-    // If date is not updated, we increment it manually by 1 sec
-    // in order to avoid querying same issues multiple times
-    private Date updateDate(Date date) {
-        final Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        calendar.add(Calendar.SECOND, 1);
-        return calendar.getTime();
-    }
 
     @Autowired
     private RedmineEndpointDAO redmineEndpointDAO;

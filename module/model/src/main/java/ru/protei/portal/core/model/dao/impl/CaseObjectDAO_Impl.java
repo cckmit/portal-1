@@ -35,6 +35,11 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
     }
 
     @Override
+    public CaseObject getByExternalAppCaseId(String externalApplicationCaseId) {
+        return getByCondition("EXT_APP_ID=?", externalApplicationCaseId);
+    }
+
+    @Override
     public Long getCaseId(En_CaseType caseType, long number) {
         CaseObject obj = partialGetByCondition("case_type=? and caseno=?", Arrays.asList(caseType.getId(), number), getIdColumnName());
         return obj != null ? obj.getId() : null;
