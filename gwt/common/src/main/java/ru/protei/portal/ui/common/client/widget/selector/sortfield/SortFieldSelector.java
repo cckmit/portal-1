@@ -57,7 +57,7 @@ public class SortFieldSelector extends ButtonSelector< En_SortField > {
                 addOption( En_SortField.region_name );
                 addOption( En_SortField.prod_name );
                 break;
-            case DOCUMENTATION:
+            case DOCUMENT:
                 addOption( En_SortField.name );
                 addOption( En_SortField.project );
                 addOption( En_SortField.creation_date );

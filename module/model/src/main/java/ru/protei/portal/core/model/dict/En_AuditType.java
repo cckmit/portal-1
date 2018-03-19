@@ -66,8 +66,8 @@ public enum En_AuditType {
 
     PHOTO_UPLOAD( 43 ),
 
-    DOCUMENTATION_MODIFY(44),
-    DOCUMENTATION_REMOVE(45);
+    DOCUMENT_MODIFY(44),
+    DOCUMENT_REMOVE(45);
 
     En_AuditType( int id ) {
         this.id = id;

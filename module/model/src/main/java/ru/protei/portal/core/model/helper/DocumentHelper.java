@@ -1,9 +1,9 @@
 package ru.protei.portal.core.model.helper;
 
-import ru.protei.portal.core.model.ent.Documentation;
+import ru.protei.portal.core.model.ent.Document;
 
 public class DocumentHelper {
-    public static boolean isDocumentValid(Documentation doc) {
+    public static boolean isDocumentValid(Document doc) {
         return doc.getDecimalNumber() != null &&
                 doc.getType() != null &&
                 doc.getManagerId() != null &&

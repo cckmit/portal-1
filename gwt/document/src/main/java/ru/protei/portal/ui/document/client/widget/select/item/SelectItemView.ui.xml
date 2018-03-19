@@ -1,0 +1,7 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+    <g:HTMLPanel tag="li" styleName="select2-search-choice">
+        <div ui:field="text"/>
+        <g:Anchor ui:field="close" href="#" styleName="select2-search-choice-close"/>
+    </g:HTMLPanel>
+</ui:UiBinder>

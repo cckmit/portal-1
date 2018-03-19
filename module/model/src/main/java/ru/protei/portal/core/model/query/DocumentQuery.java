@@ -9,7 +9,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-public class DocumentationQuery extends BaseQuery {
+public class DocumentQuery extends BaseQuery {
     private Set<En_OrganizationCode> organizationCodes;
     private Long managerId;
     private DocumentType documentType;
@@ -17,10 +17,10 @@ public class DocumentationQuery extends BaseQuery {
     private List<String> keywords;
     private String content;
 
-    public DocumentationQuery() {
+    public DocumentQuery() {
     }
 
-    public DocumentationQuery(String searchString, En_SortField sortField, En_SortDir sortDir, Set<En_OrganizationCode> organizationCodes, DocumentType documentType, Date from, Date to, List<String> keywords, Long managerId, String content) {
+    public DocumentQuery(String searchString, En_SortField sortField, En_SortDir sortDir, Set<En_OrganizationCode> organizationCodes, DocumentType documentType, Date from, Date to, List<String> keywords, Long managerId, String content) {
         super(searchString, sortField, sortDir);
         this.organizationCodes = organizationCodes;
         this.from = from;

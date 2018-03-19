@@ -2,7 +2,7 @@ package ru.protei.portal.ui.common.client.events;
 
 import ru.brainworm.factory.context.client.annotation.Url;
 
-public class DocumentationEvents {
+public class DocumentEvents {
 
     @Url(value = "docs", primary = true)
     public static class Show {
@@ -28,6 +28,6 @@ public class DocumentationEvents {
         }
     }
 
-    public static class ChangeDocumentTypeModel {
+    public static class ChangeModel {
     }
 }

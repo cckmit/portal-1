@@ -1,21 +1,21 @@
 package ru.protei.portal.core.model.dao.impl;
 
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
-import ru.protei.portal.core.model.dao.DocumentationDAO;
-import ru.protei.portal.core.model.ent.Documentation;
+import ru.protei.portal.core.model.dao.DocumentDAO;
+import ru.protei.portal.core.model.ent.Document;
 import ru.protei.portal.core.model.query.DataQuery;
-import ru.protei.portal.core.model.query.DocumentationQuery;
+import ru.protei.portal.core.model.query.DocumentQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.utils.TypeConverters;
 import ru.protei.winter.jdbc.JdbcQueryParameters;
 
 import java.util.List;
 
-public class DocumentationDAO_Impl extends PortalBaseJdbcDAO<Documentation> implements DocumentationDAO {
+public class DocumentDAO_Impl extends PortalBaseJdbcDAO<Document> implements DocumentDAO {
     private static final String JOINS = "LEFT JOIN document_type DT ON DT.id = documentation.type_id";
 
     @Override
-    public List<Documentation> getListByQuery(DocumentationQuery query) {
+    public List<Document> getListByQuery(DocumentQuery query) {
         SqlCondition where = createSqlCondition(query);
         return getList(new JdbcQueryParameters()
                 .withJoins(JOINS)
@@ -28,7 +28,7 @@ public class DocumentationDAO_Impl extends PortalBaseJdbcDAO<Documentation> impl
     }
 
     @Override
-    public Long countByQuery(DocumentationQuery query) {
+    public Long countByQuery(DocumentQuery query) {
         SqlCondition where = createSqlCondition(query);
         return (long) getObjectsCount(where.condition, where.args, JOINS, true);
     }

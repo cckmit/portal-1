@@ -693,25 +693,25 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errCreatedStateSelected();
 
-    String documentation();
+    String document();
 
     String annotation();
 
     String designation();
 
-    String privilegeDocumentation();
+    String privilegeDocument();
 
-    String documentationCommonHeader();
+    String documentCommonHeader();
 
-    String documentationName();
+    String documentName();
 
-    String documentationType();
+    String documentType();
 
-    String documentationSearchNameOrProject();
+    String documentSearchNameOrProject();
 
-    String documentationKeywords();
+    String documentKeywords();
 
-    String documentationContent();
+    String documentContent();
 
     String addKeyword();
 

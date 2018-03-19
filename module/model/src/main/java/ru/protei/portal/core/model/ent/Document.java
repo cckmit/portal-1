@@ -11,7 +11,7 @@ import java.util.List;
  * элемент раздела "Банк документов"
  */
 @JdbcEntity(table = "documentation")
-public class Documentation implements Serializable {
+public class Document implements Serializable {
 
     @JdbcId(idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -74,7 +74,7 @@ public class Documentation implements Serializable {
     @JdbcColumnCollection(name = "tags", separator = ",")
     private List<String> keywords;
 
-    public Documentation() {
+    public Document() {
     }
 
     public Long getId() {

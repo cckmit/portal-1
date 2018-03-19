@@ -265,8 +265,8 @@ public class MainConfiguration {
     }
 
     @Bean
-    public DocumentationDAO getDocumentationDAO() {
-        return new DocumentationDAO_Impl();
+    public DocumentDAO getDocumentDAO() {
+        return new DocumentDAO_Impl();
     }
 
     @Bean
@@ -390,8 +390,8 @@ public class MainConfiguration {
     }
 
     @Bean
-    public DocumentationService getDocumentationService() {
-        return new DocumentationServiceImpl();
+    public DocumentService getDocumentService() {
+        return new DocumentServiceImpl();
     }
 
     @Bean
