@@ -12,7 +12,7 @@ import ru.protei.winter.jdbc.JdbcQueryParameters;
 import java.util.List;
 
 public class DocumentDAO_Impl extends PortalBaseJdbcDAO<Document> implements DocumentDAO {
-    private static final String JOINS = "LEFT JOIN document_type DT ON DT.id = documentation.type_id";
+    private static final String JOINS = "LEFT JOIN document_type DT ON DT.id = document.type_id";
 
     @Override
     public List<Document> getListByQuery(DocumentQuery query) {

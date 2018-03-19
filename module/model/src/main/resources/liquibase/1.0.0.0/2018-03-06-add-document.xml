@@ -63,4 +63,8 @@
                                  referencedColumnNames="id"/>
     </changeSet>
 
+    <changeSet id="rename-document-table" author="efremov">
+        <renameTable oldTableName="documentation" newTableName="document"/>
+    </changeSet>
+
 </databaseChangeLog>

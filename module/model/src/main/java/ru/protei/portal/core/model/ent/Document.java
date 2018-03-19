@@ -10,7 +10,7 @@ import java.util.List;
  * Документ
  * элемент раздела "Банк документов"
  */
-@JdbcEntity(table = "documentation")
+@JdbcEntity(table = "document")
 public class Document implements Serializable {
 
     @JdbcId(idInsertMode = IdInsertMode.AUTO)
