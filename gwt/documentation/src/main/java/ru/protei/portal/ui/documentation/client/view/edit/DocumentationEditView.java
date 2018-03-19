@@ -7,6 +7,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.DocumentType;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
@@ -14,6 +15,10 @@ import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.documentation.client.activity.edit.AbstractDocumentationEditActivity;
 import ru.protei.portal.ui.documentation.client.activity.edit.AbstractDocumentationEditView;
 import ru.protei.portal.ui.documentation.client.widget.doctype.DocumentTypeSelector;
+import ru.protei.portal.ui.documentation.client.widget.number.DecimalNumberInput;
+import ru.protei.portal.ui.documentation.client.widget.select.input.SelectInputView;
+
+import java.util.List;
 
 public class DocumentationEditView extends Composite implements AbstractDocumentationEditView {
 
@@ -58,6 +63,21 @@ public class DocumentationEditView extends Composite implements AbstractDocument
         return created;
     }
 
+    @Override
+    public HasValue<Integer> inventoryNumber() {
+        return inventoryNumber;
+    }
+
+    @Override
+    public HasValue<List<String>> keywords() {
+        return keywords;
+    }
+
+    @Override
+    public HasValue<DecimalNumber> decimalNumber() {
+        return decimalNumber.singleHasValue();
+    }
+
 
     @UiHandler("saveButton")
     public void onSaveClicked(ClickEvent event) {
@@ -90,13 +110,25 @@ public class DocumentationEditView extends Composite implements AbstractDocument
     Button cancelButton;
 
     @UiField
+    IntegerBox inventoryNumber;
+
+    @UiField
     TextBox project;
+
     @Inject
     @UiField(provided = true)
     EmployeeButtonSelector manager;
 
     @UiField
     TextBox created;
+
+    @Inject
+    @UiField(provided = true)
+    SelectInputView keywords;
+
+    @Inject
+    @UiField(provided = true)
+    DecimalNumberInput decimalNumber;
 
     AbstractDocumentationEditActivity activity;
 

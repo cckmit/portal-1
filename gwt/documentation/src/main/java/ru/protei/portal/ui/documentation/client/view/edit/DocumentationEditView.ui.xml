@@ -2,7 +2,9 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:validatefield="urn:import:ru.protei.portal.ui.common.client.widget.validatefield"
              xmlns:doctype="urn:import:ru.protei.portal.ui.documentation.client.widget.doctype"
-             xmlns:person="urn:import:ru.protei.portal.ui.common.client.widget.selector.person">
+             xmlns:person="urn:import:ru.protei.portal.ui.common.client.widget.selector.person"
+             xmlns:keyword='urn:import:ru.protei.portal.ui.documentation.client.widget.select.input'
+             xmlns:decnum='urn:import:ru.protei.portal.ui.documentation.client.widget.number'>
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
     <g:HTMLPanel styleName="main-content">
@@ -26,6 +28,13 @@
                         <doctype:DocumentTypeSelector ui:field="documentType"/>
                     </div>
 
+                    <div class="form-group col-xs-2">
+                        <label>
+                            <ui:text from="{lang.inventoryNumber}"/>
+                        </label>
+                        <g:IntegerBox ui:field="inventoryNumber" styleName="input-field"/>
+                    </div>
+
                     <div class="form-group col-xs-4">
                         <label>
                             <ui:text from="{lang.equipmentProject}"/>
@@ -35,7 +44,7 @@
 
                     <div class="form-group col-xs-4">
                         <label>
-                            <ui:text from="{lang.equipmentManager}"/>
+                            <ui:text from="{lang.customer}"/>
                         </label>
                         <person:EmployeeButtonSelector ui:field="manager"
                                                        defaultValue="{lang.equipmentManagerNotDefined}"
@@ -49,12 +58,31 @@
                         <g:TextBox ui:field="created" styleName="input-field"/>
                     </div>
                 </div>
+
+                <legend class="header">
+                    <ui:text from="{lang.equipmentDecimalNumber}"/>
+                </legend>
+                <div class="grid grid-indent">
+                    <div class="form-group col-xs-12">
+                        <decnum:DecimalNumberInput ui:field="decimalNumber"/>
+                    </div>
+                </div>
+
                 <legend class="header">
                     <ui:text from="{lang.annotation}"/>
                 </legend>
                 <div class="grid grid-indent">
                     <div class="form-group col-xs-12">
                         <g:TextArea ui:field="annotation" styleName="input-field comment"/>
+                    </div>
+                </div>
+
+                <legend class="header">
+                    <ui:text from="{lang.documentationKeywords}"/>
+                </legend>
+                <div class="grid grid-indent">
+                    <div class="form-group col-xs-12">
+                        <keyword:SelectInputView ui:field="keywords"/>
                     </div>
                 </div>
             </div>

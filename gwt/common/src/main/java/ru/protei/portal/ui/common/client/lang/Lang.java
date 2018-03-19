@@ -716,4 +716,8 @@ public interface Lang extends Messages, ContactItemLang {
     String addKeyword();
 
     String keywordInputPlaceholder();
+
+    String inventoryNumber();
+
+    String customer();
 }
