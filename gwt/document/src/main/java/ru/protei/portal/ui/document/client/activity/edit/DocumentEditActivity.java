@@ -137,7 +137,7 @@ public abstract class DocumentEditActivity
         view.name().setValue(document.getName());
         view.annotation().setValue(document.getAnnotation());
         view.created().setValue(DateFormatter.formatDateTime(document.getCreated()));
-        view.decimalNumber().setValue(document.getDecimalNumberId() == null ? null : document.getDecimalNumber());
+        view.decimalNumber().setValue(document.getDecimalNumber());
         view.documentType().setValue(document.getType());
         view.inventoryNumber().setValue(document.getInventoryNumber());
         view.keywords().setValue(document.getKeywords());

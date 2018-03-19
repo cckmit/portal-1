@@ -25,9 +25,6 @@ public class Document implements Serializable {
     /**
      * Децимальный номер
      */
-    @JdbcColumn(name = "decimal_number_id")
-    private Long decimalNumberId;
-
     @JdbcJoinedObject(localColumn = "decimal_number_id")
     private DecimalNumber decimalNumber;
 
@@ -41,8 +38,6 @@ public class Document implements Serializable {
     /**
      * Вид документа
      */
-    @JdbcColumn(name = "type_id")
-    private Long typeId;
     @JdbcJoinedObject(localColumn = "type_id")
     private DocumentType type;
 
@@ -149,14 +144,6 @@ public class Document implements Serializable {
         this.managerId = managerId;
     }
 
-    public Long getTypeId() {
-        return typeId;
-    }
-
-    public void setTypeId(Long typeId) {
-        this.typeId = typeId;
-    }
-
     public DocumentType getType() {
         return type;
     }
@@ -171,13 +158,5 @@ public class Document implements Serializable {
 
     public void setDecimalNumber(DecimalNumber decimalNumber) {
         this.decimalNumber = decimalNumber;
-    }
-
-    public Long getDecimalNumberId() {
-        return decimalNumberId;
-    }
-
-    public void setDecimalNumberId(Long decimalNumberId) {
-        this.decimalNumberId = decimalNumberId;
     }
 }

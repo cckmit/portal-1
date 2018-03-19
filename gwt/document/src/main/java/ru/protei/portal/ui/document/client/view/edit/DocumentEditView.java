@@ -35,7 +35,7 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
 
     @Override
     public boolean isDecimalNumbersCorrect() {
-        return decimalNumber.checkIfCorrect();
+        return decimalNumber.isCorrect();
     }
 
     @Override
@@ -80,7 +80,7 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
 
     @Override
     public HasValue<DecimalNumber> decimalNumber() {
-        return decimalNumber.singleHasValue();
+        return decimalNumber;
     }
 
 
@@ -118,7 +118,7 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     LongBox inventoryNumber;
 
     @UiField
-    TextBox project;
+    ValidableTextBox project;
 
     @Inject
     @UiField(provided = true)
