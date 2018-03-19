@@ -5,7 +5,6 @@ import ru.protei.portal.core.model.ent.Document;
 public class DocumentHelper {
     public static boolean isDocumentValid(Document doc) {
         return doc.getDecimalNumber() != null &&
-                doc.getDecimalNumber().getId() != null &&
                 doc.getType() != null &&
                 doc.getManagerId() != null &&
                 doc.getInventoryNumber() != null &&
