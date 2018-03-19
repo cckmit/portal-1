@@ -12,6 +12,8 @@ import ru.protei.portal.core.model.query.DocumentationQuery;
 
 import java.util.List;
 
+import static ru.protei.portal.core.model.helper.DocumentHelper.isDocumentValid;
+
 public class DocumentationServiceImpl implements DocumentationService {
     @Autowired
     DocumentationDAO documentationDAO;
@@ -32,6 +34,27 @@ public class DocumentationServiceImpl implements DocumentationService {
             return new CoreResponse<List<Documentation>>().error(En_ResultStatus.GET_DATA_ERROR);
         }
         return new CoreResponse<List<Documentation>>().success(list);
+    }
+
+    @Override
+    public CoreResponse<Documentation> getDocumentation(AuthToken token, Long id) {
+        Documentation documentation = documentationDAO.get(id);
+
+        if (documentation == null) {
+            return new CoreResponse<Documentation>().error(En_ResultStatus.NOT_FOUND);
+        }
+        return new CoreResponse<Documentation>().success(documentation);
+    }
+
+    @Override
+    public CoreResponse<Documentation> saveDocumentation(AuthToken token, Documentation documentation) {
+        if(!isDocumentValid(documentation)) {
+            return new CoreResponse<Documentation>().error(En_ResultStatus.VALIDATION_ERROR);
+        }
+        if (documentationDAO.saveOrUpdate(documentation)) {
+            return new CoreResponse<Documentation>().success(documentation);
+        }
+        return new CoreResponse<Documentation>().error(En_ResultStatus.INTERNAL_ERROR);
     }
 
     @Override

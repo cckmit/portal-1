@@ -720,4 +720,18 @@ public interface Lang extends Messages, ContactItemLang {
     String inventoryNumber();
 
     String customer();
+
+    String documentTypeIsEmpty();
+
+    String documentProjectIsEmpty();
+
+    String inventoryNumberIsEmpty();
+
+    String negativeInventoryNumber();
+
+    String customerNotSet();
+
+    String decimalNumberNotSet();
+
+    String documentNameIsNotSet();
 }

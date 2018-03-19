@@ -9,6 +9,7 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.DocumentType;
 import ru.protei.portal.core.model.ent.Documentation;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.DocumentationQuery;
 import ru.protei.portal.ui.common.client.service.DocumentationService;
 import ru.protei.portal.ui.common.server.service.SessionService;
@@ -32,6 +33,43 @@ public class DocumentationServiceImpl implements DocumentationService {
             throw new RequestFailedException(response.getStatus());
         }
         return response.getData();
+    }
+
+    @Override
+    public Documentation getDocumentation(Long id) throws RequestFailedException {
+        log.debug("get documentation, id: {}", id);
+
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
+        CoreResponse<Documentation> response = documentationService.getDocumentation(descriptor.makeAuthToken(), id);
+        log.debug("get documentation, id: {} -> {} ", id, response.isError() ? "error" : response.getData());
+
+        if (response.isError()) {
+            throw new RequestFailedException(response.getStatus());
+        }
+        return response.getData();
+    }
+
+    @Override
+    public Documentation saveDocumentation(Documentation documentation) throws RequestFailedException {
+        if (documentation == null) {
+            log.warn("null documentation in request");
+            throw new RequestFailedException(En_ResultStatus.INTERNAL_ERROR);
+        }
+
+        log.debug("save documentation, id: {}", HelperFunc.nvlt(documentation.getId(), "new"));
+
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+        CoreResponse<Documentation> response = documentationService.saveDocumentation(descriptor.makeAuthToken(), documentation);
+
+        log.debug("save documentation, result: {}", response.isOk() ? "ok" : response.getStatus());
+
+        if (response.isOk()) {
+            log.debug("save role, applied id: {}", response.getData().getId());
+            return response.getData();
+        }
+
+        throw new RequestFailedException(response.getStatus());
     }
 
     @Override

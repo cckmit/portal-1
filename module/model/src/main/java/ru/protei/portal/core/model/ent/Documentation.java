@@ -43,8 +43,8 @@ public class Documentation implements Serializable {
      */
     @JdbcColumn(name = "type_id")
     private Long typeId;
-    @JdbcJoinedColumn(localColumn = "type_id", table = "document_type", remoteColumn = "id", mappedColumn = "name")
-    private String type;
+    @JdbcJoinedObject(localColumn = "type_id")
+    private DocumentType type;
 
     /**
      * Аннотация
@@ -66,13 +66,13 @@ public class Documentation implements Serializable {
      * Дата создания
      */
     @JdbcColumn
-    private Date created;
+    private Date created = new Date();
 
     /**
      * Ключевые слова для поиска
      */
-    @JdbcColumnCollection(separator = ",")
-    private List<String> tags;
+    @JdbcColumnCollection(name = "tags", separator = ",")
+    private List<String> keywords;
 
     public Documentation() {
     }
@@ -117,12 +117,12 @@ public class Documentation implements Serializable {
         this.project = project;
     }
 
-    public List<String> getTags() {
-        return tags;
+    public List<String> getKeywords() {
+        return keywords;
     }
 
-    public void setTags(List<String> tags) {
-        this.tags = tags;
+    public void setKeywords(List<String> keywords) {
+        this.keywords = keywords;
     }
 
     public Date getCreated() {
@@ -157,11 +157,11 @@ public class Documentation implements Serializable {
         this.typeId = typeId;
     }
 
-    public String getType() {
+    public DocumentType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(DocumentType type) {
         this.type = type;
     }
 

@@ -24,9 +24,11 @@ public interface AbstractDocumentationEditView extends IsWidget {
 
     HasValue<String> created();
 
-    HasValue<Integer> inventoryNumber();
+    HasValue<Long> inventoryNumber();
 
     HasValue<List<String>> keywords();
 
     HasValue<DecimalNumber> decimalNumber();
+
+    boolean isDecimalNumbersCorrect();
 }

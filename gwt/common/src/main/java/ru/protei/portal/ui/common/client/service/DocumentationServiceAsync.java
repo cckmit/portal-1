@@ -14,4 +14,8 @@ public interface DocumentationServiceAsync {
     void getDocumentationCount(DocumentationQuery query, AsyncCallback<Long> callback);
 
     void getDocumentTypeList(AsyncCallback<List<DocumentType>> callback);
+
+    void getDocumentation(Long id, AsyncCallback<Documentation> callback);
+
+    void saveDocumentation(Documentation documentation, AsyncCallback<Documentation> callback);
 }

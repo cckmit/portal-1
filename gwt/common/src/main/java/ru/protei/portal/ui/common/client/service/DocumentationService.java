@@ -17,4 +17,8 @@ public interface DocumentationService extends RemoteService {
     Long getDocumentationCount(DocumentationQuery query) throws RequestFailedException;
 
     List<DocumentType> getDocumentTypeList() throws RequestFailedException;
+
+    Documentation getDocumentation(Long id) throws RequestFailedException;
+
+    Documentation saveDocumentation(Documentation documentation) throws RequestFailedException;
 }

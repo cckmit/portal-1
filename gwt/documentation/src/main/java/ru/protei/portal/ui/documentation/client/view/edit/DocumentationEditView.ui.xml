@@ -32,7 +32,7 @@
                         <label>
                             <ui:text from="{lang.inventoryNumber}"/>
                         </label>
-                        <g:IntegerBox ui:field="inventoryNumber" styleName="input-field"/>
+                        <g:LongBox ui:field="inventoryNumber" styleName="input-field"/>
                     </div>
 
                     <div class="form-group col-xs-4">

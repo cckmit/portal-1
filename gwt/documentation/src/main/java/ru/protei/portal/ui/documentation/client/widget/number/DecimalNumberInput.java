@@ -36,7 +36,7 @@ public class DecimalNumberInput extends DecimalNumberList {
 
             @Override
             public void setValue(DecimalNumber value) {
-                DecimalNumberInput.this.setValue(listOf(value));
+                DecimalNumberInput.this.setValue(value == null ? null : listOf(value));
             }
 
             private <T> List<T> listOf(T val) {

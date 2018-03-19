@@ -34,6 +34,11 @@ public class DocumentationEditView extends Composite implements AbstractDocument
     }
 
     @Override
+    public boolean isDecimalNumbersCorrect() {
+        return decimalNumber.checkIfCorrect();
+    }
+
+    @Override
     public HasValue<String> name() {
         return name;
     }
@@ -64,7 +69,7 @@ public class DocumentationEditView extends Composite implements AbstractDocument
     }
 
     @Override
-    public HasValue<Integer> inventoryNumber() {
+    public HasValue<Long> inventoryNumber() {
         return inventoryNumber;
     }
 
@@ -110,7 +115,7 @@ public class DocumentationEditView extends Composite implements AbstractDocument
     Button cancelButton;
 
     @UiField
-    IntegerBox inventoryNumber;
+    LongBox inventoryNumber;
 
     @UiField
     TextBox project;
