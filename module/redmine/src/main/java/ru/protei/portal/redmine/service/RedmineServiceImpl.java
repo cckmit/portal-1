@@ -114,6 +114,10 @@ public final class RedmineServiceImpl implements RedmineService {
                 logger.debug("got {} updated issues from {}", issues.size(), endpoint.getServerAddress());
 
                 for (Issue issue : issues) {
+                    if (issue.getCreatedOn().after(endpoint.getLastUpdatedOnDate())) {
+                        logger.debug("Skipping recently created issue with id {}", issue.getId());
+                        continue;
+                    }
                     User user = getUser(issue.getId(), endpoint);
                     logger.debug("try update issue from {}, issue-id: {}", userInfo(user), issue.getId());
                     updateHandler.handle(user, issue, endpoint);
