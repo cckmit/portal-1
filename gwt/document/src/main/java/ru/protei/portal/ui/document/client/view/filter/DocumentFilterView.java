@@ -113,7 +113,7 @@ public class DocumentFilterView extends Composite implements AbstractDocumentFil
         }
     }
 
-    @UiHandler("name")
+    @UiHandler({"name", "content"})
     public void onKeyUpSearch(KeyUpEvent event) {
         fireChangeTimer();
     }
@@ -138,6 +138,10 @@ public class DocumentFilterView extends Composite implements AbstractDocumentFil
         fireChangeTimer();
     }
 
+    @UiHandler("sortDir")
+    public void onSortDirChanged(ValueChangeEvent<Boolean> event) {
+        fireChangeTimer();
+    }
 
     @UiHandler("sortField")
     public void onSortFieldChanged(ValueChangeEvent<En_SortField> event) {

@@ -158,4 +158,12 @@ public class HelperFunc {
             consumer.accept(full_list.subList(full_batches*batchSize, full_list.size()));
         }
     }
+
+    public static String makeInArg(Collection<String> col) {
+        return "(" +
+                col.stream()
+                        .map(s -> "'" + s + "'")
+                        .collect(Collectors.joining(","))
+                + ")";
+    }
 }
