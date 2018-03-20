@@ -52,6 +52,9 @@ public class DecimalNumberBox
     @Override
     public DecimalNumber getValue() {
         // todo: need parse value
+        if (value.getOrganizationCode() == null) {
+            value.setOrganizationCode(organizationCodeSwitcher.getSingleValue());
+        }
         return value;
     }
 
@@ -81,6 +84,7 @@ public class DecimalNumberBox
         }
 
         organizationCode.setText(organizationCodeLang.getName(value.getOrganizationCode()));
+        organizationCodeSwitcher.setSingleValue(value.getOrganizationCode());
         classifierCode.setText(value.getClassifierCode() == null ? null : NumberFormat.getFormat("000000").format(value.getClassifierCode()));
         regNum.setText(value.getRegisterNumber() == null ? null : NumberFormat.getFormat("000").format(value.getRegisterNumber()));
         regNumModification.setText(value.getModification() == null ? null : NumberFormat.getFormat("00").format(value.getModification()));

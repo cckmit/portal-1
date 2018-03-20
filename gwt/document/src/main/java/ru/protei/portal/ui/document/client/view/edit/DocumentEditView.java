@@ -7,6 +7,8 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.dict.En_DecimalNumberEntityType;
+import ru.protei.portal.core.model.dict.En_OrganizationCode;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.DocumentType;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -26,6 +28,10 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         created.setEnabled(false);
+        DecimalNumber dn = new DecimalNumber();
+        dn.setEntityType(En_DecimalNumberEntityType.DOCUMENT);
+        dn.setOrganizationCode(En_OrganizationCode.PAMR);
+        decimalNumber.setValue(dn);
     }
 
     @Override
