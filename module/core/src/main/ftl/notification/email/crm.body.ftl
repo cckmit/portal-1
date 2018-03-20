@@ -35,7 +35,7 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
 <body bgcolor="#FFFFFF" text="#000000">
 <div>
     <div style="padding: 5px;font-size: 14px;<#if isCreated>background:#dff7e2;color:#11731d;<#else>background:#f0f0f0;color:#666666;</#if>">
-        ${_createdBy} <#if createdByMe == true>${_yourself}<#else>${(case.creator.displayName)!'?'}</#if> <span style="padding-left: 4px">${(case.created)!''}</span>
+        ${_createdBy} <#if createdByMe == true>${_yourself}<#else>${(case.creator.displayShortName)!'?'}</#if> <span style="padding-left: 4px">${(case.created)!''}</span>
     </div>
     <div style="margin-top: 12px">
         <table>
@@ -44,7 +44,8 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                     <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
                         ${_issue_id}
                     </td>
-                    <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;"><b><a href="${linkToIssue}">${case.caseNumber?c}</a></b></td>
+                    <#--<td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;"><b><a href="${linkToIssue}">${case.caseNumber?c}</a></b></td>-->
+                    <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">${case.caseNumber?c}</td>
                 </tr>
                 <tr>
                     <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
