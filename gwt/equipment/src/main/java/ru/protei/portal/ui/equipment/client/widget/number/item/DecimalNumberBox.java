@@ -21,23 +21,19 @@ import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.ui.common.client.events.AddEvent;
 import ru.protei.portal.ui.common.client.events.AddHandler;
 import ru.protei.portal.ui.common.client.events.HasAddHandlers;
-import ru.protei.portal.ui.common.client.lang.En_OrganizationCodeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.mask.MaskedTextBox;
 import ru.protei.portal.ui.common.client.widget.selector.event.HasRemoveHandlers;
 import ru.protei.portal.ui.common.client.widget.selector.event.RemoveEvent;
 import ru.protei.portal.ui.common.client.widget.selector.event.RemoveHandler;
-import ru.protei.portal.ui.equipment.client.widget.number.list.DecimalNumberList;
-import ru.protei.portal.ui.equipment.client.widget.organization.OrganizationSwitcher;
+import ru.protei.portal.ui.equipment.client.widget.organization.OrganizationButtonSelector;
 import ru.protei.winter.web.common.client.common.DisplayStyle;
-
-import java.util.Set;
 
 /**
  * Вид виджета децимального номера
  */
-public class DecimalNumberBox
-        extends Composite implements HasValue<DecimalNumber>, HasEnabled, HasRemoveHandlers, HasAddHandlers {
+public class DecimalNumberBox extends Composite
+        implements HasValue<DecimalNumber>, HasEnabled, HasRemoveHandlers, HasAddHandlers {
 
     @Inject
     public void onInit() {
@@ -45,17 +41,20 @@ public class DecimalNumberBox
         classifierCode.getElement().setAttribute("placeholder", lang.equipmentClassifierCode().toLowerCase());
         regNum.getElement().setAttribute("placeholder", lang.equipmentRegisterNumber().toLowerCase());
         regNumModification.getElement().setAttribute("placeholder", lang.equipmentRegisterNumberModification().toLowerCase());
-        organizationCode.setEnabled(false);
-        organizationCodeSwitcher.setUseCompanyName(false);
     }
 
     @Override
     public DecimalNumber getValue() {
         // todo: need parse value
         if (value.getOrganizationCode() == null) {
-            value.setOrganizationCode(organizationCodeSwitcher.getSingleValue());
+            value.setOrganizationCode(organizationCode.getValue());
         }
         return value;
+    }
+
+    @Override
+    public void setValue(DecimalNumber decimalNumber) {
+        setValue(decimalNumber, false);
     }
 
     public boolean isCorrect() {
@@ -67,15 +66,6 @@ public class DecimalNumberBox
         return true;
     }
 
-    public void setRemoveVisible(boolean isVisisble) {
-        remove.setVisible(isVisisble);
-    }
-
-    @Override
-    public void setValue(DecimalNumber decimalNumber) {
-        setValue(decimalNumber, false);
-    }
-
     @Override
     public void setValue(DecimalNumber decimalNumber, boolean fireEvents) {
         this.value = decimalNumber;
@@ -83,8 +73,7 @@ public class DecimalNumberBox
             value = new DecimalNumber();
         }
 
-        organizationCode.setText(organizationCodeLang.getName(value.getOrganizationCode()));
-        organizationCodeSwitcher.setSingleValue(value.getOrganizationCode());
+        organizationCode.setValue(value.getOrganizationCode());
         classifierCode.setText(value.getClassifierCode() == null ? null : NumberFormat.getFormat("000000").format(value.getClassifierCode()));
         regNum.setText(value.getRegisterNumber() == null ? null : NumberFormat.getFormat("000").format(value.getRegisterNumber()));
         regNumModification.setText(value.getModification() == null ? null : NumberFormat.getFormat("00").format(value.getModification()));
@@ -125,14 +114,13 @@ public class DecimalNumberBox
         regNum.setEnabled(enabled);
     }
 
-    public void setHandler(DecimalNumberList boxHandler) {
+    public void setHandler(DecimalNumberBoxHandler boxHandler) {
         this.handler = boxHandler;
     }
 
     public void showGetNextNumberMessage() {
         msg.addClassName("hide");
         getNumberMsg.removeClassName("hide");
-
         markBoxAsError(true);
     }
 
@@ -141,7 +129,6 @@ public class DecimalNumberBox
         getNumberMsg.addClassName("hide");
         msg.setClassName("text text-" + style.name().toLowerCase());
         msg.setInnerText(text);
-
         markBoxAsError(style == DisplayStyle.DANGER);
     }
 
@@ -150,10 +137,60 @@ public class DecimalNumberBox
         markBoxAsError(false);
     }
 
-    @UiHandler({"classifierCode", "regNum", "regNumModification"})
-    public void onNumberChanged(KeyUpEvent event) {
+    public void setFocusToRegisterNumberField(boolean isFocused) {
+        regNum.setFocus(isFocused);
+    }
+
+    private void setFocusToNextButton(boolean isFocused) {
+        next.setFocus(isFocused);
+    }
+
+    private void checkNextButtonState() {
+        next.setEnabled(!value.isEmpty());
+    }
+
+    private void markBoxAsError(boolean isError) {
+        if (isError) {
+            container.addClassName("has-error");
+            return;
+        }
+        container.removeClassName("has-error");
+    }
+
+    private void clearMessage() {
+        getNumberMsg.addClassName("hide");
+        msg.addClassName("hide");
+        msg.setInnerText("");
+    }
+
+    private Integer parseValue(String value) {
+        try {
+            return Integer.parseInt(value);
+        } catch (Throwable t) {
+            return null;
+        }
+    }
+
+    public void setOrganizationCodeEnabled(boolean isEnabled) {
+        organizationCode.setEnabled(isEnabled);
+    }
+
+    public void setReserveVisible(boolean isVisible) {
+        isReserve.setVisible(isVisible);
+    }
+
+    public void setRemoveVisible(boolean isVisible) {
+        remove.setVisible(isVisible);
+    }
+
+    protected void resetTimer() {
         changeNumberTimer.cancel();
         changeNumberTimer.schedule(300);
+    }
+
+    @UiHandler({"classifierCode", "regNum", "regNumModification"})
+    public void onNumberChanged(KeyUpEvent event) {
+        resetTimer();
     }
 
     @UiHandler("getNextNumber")
@@ -187,63 +224,15 @@ public class DecimalNumberBox
         AddEvent.fire(this);
     }
 
-    public void setFocusToRegisterNumberField(boolean isFocused) {
-        regNum.setFocus(isFocused);
+    @UiHandler("organizationCode")
+    public void onSelectOrganizationCode(ValueChangeEvent<En_OrganizationCode> event) {
+        value.setOrganizationCode(event.getValue());
+        resetTimer();
     }
 
-    private void setFocusToNextButton(boolean isFocused) {
-        next.setFocus(isFocused);
-    }
-
-    private void checkNextButtonState() {
-        next.setEnabled(!value.isEmpty());
-    }
-
-    private void markBoxAsError(boolean isError) {
-        if (isError) {
-            container.addClassName("has-error");
-            return;
-        }
-
-        container.removeClassName("has-error");
-    }
-
-    private void clearMessage() {
-        getNumberMsg.addClassName("hide");
-        msg.addClassName("hide");
-        msg.setInnerText("");
-    }
-
-    private Integer parseValue(String value) {
-        return value == null || value.isEmpty() ? null : Integer.parseInt(value);
-    }
-
-    public void setShowSwitcher(boolean isShow) {
-        organizationCodeSwitcher.setVisible(isShow);
-        organizationCode.setVisible(!isShow);
-    }
-
-    public void setReserveVisible(boolean isVisible) {
-        isReserve.setVisible(isVisible);
-    }
-
-    @UiHandler("organizationCodeSwitcher")
-    public void onSelectOrganizationCode(ValueChangeEvent<Set<En_OrganizationCode>> event) {
-        Set<En_OrganizationCode> s = event.getValue();
-        if (s == null) {
-            return;
-        }
-        s.stream().findFirst().ifPresent(code -> {
-            value.setOrganizationCode(code);
-            organizationCode.setText(organizationCodeLang.getName(code));
-        });
-    }
-
-    @UiField
-    TextBox organizationCode;
     @Inject
     @UiField(provided = true)
-    OrganizationSwitcher organizationCodeSwitcher;
+    OrganizationButtonSelector organizationCode;
     @UiField
     MaskedTextBox regNumModification;
     @UiField
@@ -266,10 +255,9 @@ public class DecimalNumberBox
     @UiField
     Button remove;
 
-    @Inject
-    private En_OrganizationCodeLang organizationCodeLang;
 
     private DecimalNumberBoxHandler handler;
+
     private DecimalNumber value = new DecimalNumber();
 
     private Timer changeNumberTimer = new Timer() {
@@ -297,9 +285,8 @@ public class DecimalNumberBox
         }
     };
 
-    interface DecimalNumberWidgetUiBinder extends UiBinder<HTMLPanel, DecimalNumberBox> {
-    }
-
     private static DecimalNumberWidgetUiBinder ourUiBinder = GWT.create(DecimalNumberWidgetUiBinder.class);
 
+    interface DecimalNumberWidgetUiBinder extends UiBinder<HTMLPanel, DecimalNumberBox> {
+    }
 }

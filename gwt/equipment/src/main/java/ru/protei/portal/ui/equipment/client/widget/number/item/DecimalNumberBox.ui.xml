@@ -10,8 +10,7 @@
         <div class="dn-container" ui:field="container">
             <g:ToggleButton ui:field="isReserve" styleName="btn dn-reserve" title="{lang.equipmentReserve}"/>
             <label class="dn-separator"></label>
-            <g:TextBox styleName="input-field dn-org-code" ui:field="organizationCode"></g:TextBox>
-            <org:OrganizationSwitcher ui:field="organizationCodeSwitcher" visible="false"/>
+            <org:OrganizationButtonSelector ui:field="organizationCode" styleName="input-field" enabled="false"/>
             <label class="dn-separator">.</label>
             <mask:MaskedTextBox ui:field="classifierCode" styleName="input-field dn-classifier-code" mask="999999"/>
             <label class="dn-separator">.</label>
