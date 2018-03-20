@@ -146,6 +146,15 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         return initiator;
     }
 
+    @Override
+    public HasVisibility numberVisibility(){
+        return number;
+    }
+
+    @Override
+    public HasValue<Integer> number(){
+        return number;
+    }
 
     @Override
     public void setSubscriptionEmails( String value ) {
@@ -207,12 +216,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
 
             @Override
             public void setVisible( boolean b ) {
-                if ( b ) {
-                    nameInputGroupContainer.add( name );
-                }
-                else {
-                    nameContainer.add( name );
-                }
                 local.setVisible( b );
             }
         };
@@ -268,6 +271,9 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
 
     @UiField
     ToggleButton local;
+
+    @UiField
+    IntegerBox number;
 
     @Inject
     @UiField(provided = true)
