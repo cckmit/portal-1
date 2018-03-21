@@ -7,6 +7,7 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.protei.portal.core.model.dict.En_Privilege;
@@ -53,8 +54,13 @@ public class DocumentationTableView extends Composite implements AbstractDocumen
     }
 
     @Override
+    public HasWidgets getPreviewContainer() {
+        return previewContainer;
+    }
+
+    @Override
     public void setAnimation(TableAnimation animation) {
-        //animation.setContainers(tableContainer, null, null);
+        animation.setContainers(tableContainer, previewContainer, filterContainer);
     }
 
     @Override
@@ -176,6 +182,10 @@ public class DocumentationTableView extends Composite implements AbstractDocumen
 
     @UiField
     HTMLPanel tableContainer;
+    @UiField
+    HTMLPanel previewContainer;
+    @UiField
+    HTMLPanel filterContainer;
 
     @Inject
     @UiField

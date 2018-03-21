@@ -700,4 +700,24 @@ public interface Lang extends Messages, ContactItemLang {
     String designation();
 
     String privilegeDocumentation();
+
+    String documentationNameBySpecification();
+
+    String documentationType();
+
+    String documentationAnnotation();
+
+    String documentationProject();
+
+    String documentationManager();
+
+    String documentationIdentification();
+
+    String documentationDecimalNumber();
+
+    String documentationInventoryNumber();
+
+    String documentationKeyWords();
+
+    String documentationDescription();
 }
