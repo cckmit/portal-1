@@ -5,6 +5,8 @@ import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.DocumentType;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
+import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 
 import java.util.List;
 
@@ -31,4 +33,12 @@ public interface AbstractDocumentEditView extends IsWidget {
     HasValue<DecimalNumber> decimalNumber();
 
     boolean isDecimalNumbersCorrect();
+
+    void setFileUploadHandler(AttachmentUploader.FileUploadHandler handler);
+
+    HasAttachments attachmentsContainer();
+
+    void setCaseId(Long id);
+
+    boolean isAttached();
 }

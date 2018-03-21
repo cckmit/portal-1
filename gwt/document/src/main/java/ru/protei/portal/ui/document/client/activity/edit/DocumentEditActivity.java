@@ -5,16 +5,24 @@ import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.Document;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.AppEvents;
+import ru.protei.portal.ui.common.client.events.AttachmentEvents;
 import ru.protei.portal.ui.common.client.events.DocumentEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.DocumentServiceAsync;
+import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 import static ru.protei.portal.core.model.helper.DocumentHelper.isDocumentValid;
 
@@ -24,6 +32,17 @@ public abstract class DocumentEditActivity
     @PostConstruct
     public void onInit() {
         view.setActivity(this);
+        view.setFileUploadHandler(new AttachmentUploader.FileUploadHandler() {
+            @Override
+            public void onSuccess(Attachment attachment) {
+                addAttachmentsToCase(Collections.singleton(attachment));
+            }
+
+            @Override
+            public void onError() {
+                fireEvent(new NotifyEvents.Show(lang.uploadFileError(), NotifyEvents.NotifyType.ERROR));
+            }
+        });
     }
 
     @Event
@@ -77,6 +96,21 @@ public abstract class DocumentEditActivity
                 fireEvent(new Back());
             }
         });
+    }
+
+    @Event
+    public void onAddAttachments(AttachmentEvents.Add event) {
+        if (view.isAttached() && document.getId().equals(event.caseId)) {
+            addAttachmentsToCase(event.attachments);
+        }
+    }
+
+    @Event
+    public void onRemoveAttachments(AttachmentEvents.Remove event) {
+        if (view.isAttached() && document.getId().equals(event.caseId)) {
+            event.attachments.forEach(view.attachmentsContainer()::remove);
+            attachments.removeAll(event.attachments);
+        }
     }
 
     private String getValidationErrorMessage(Document doc) {
@@ -143,6 +177,20 @@ public abstract class DocumentEditActivity
         view.keywords().setValue(document.getKeywords());
         view.manager().setValue(manager);
         view.project().setValue(document.getProject());
+
+        view.attachmentsContainer().clear();
+        view.setCaseId(document.getId());
+        if (document.getId() != null) {
+            view.attachmentsContainer().add(attachments);
+        }
+    }
+
+    private void addAttachmentsToCase(Collection<Attachment> attachments) {
+        view.attachmentsContainer().add(attachments);
+        if (attachments == null) {
+            attachments = new LinkedList<>();
+        }
+        attachments.addAll(attachments);
     }
 
     @Inject
@@ -152,6 +200,8 @@ public abstract class DocumentEditActivity
     Lang lang;
 
     Document document;
+
+    List<Attachment> attachments = new LinkedList<>();
 
     @Inject
     DocumentServiceAsync documentService;

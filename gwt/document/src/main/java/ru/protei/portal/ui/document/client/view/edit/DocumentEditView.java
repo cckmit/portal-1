@@ -12,6 +12,9 @@ import ru.protei.portal.core.model.dict.En_OrganizationCode;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.DocumentType;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
+import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
+import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
@@ -94,6 +97,20 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
         return decimalNumber;
     }
 
+    @Override
+    public void setFileUploadHandler(AttachmentUploader.FileUploadHandler handler) {
+        fileUploader.setUploadHandler(handler);
+    }
+
+    @Override
+    public HasAttachments attachmentsContainer() {
+        return attachmentContainer;
+    }
+
+    @Override
+    public void setCaseId(Long id) {
+        fileUploader.autoBindingToCase(id);
+    }
 
     @UiHandler("saveButton")
     public void onSaveClicked(ClickEvent event) {
@@ -109,11 +126,16 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
         }
     }
 
+    @UiHandler("attachmentContainer")
+    public void attachmentContainerRemove(RemoveEvent event) {
+    }
+
 
     @UiField
     ValidableTextBox name;
 
-    @UiField
+    @Inject
+    @UiField(provided = true)
     AttachmentUploader fileUploader;
 
     @Inject
@@ -148,6 +170,10 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     @Inject
     @UiField(provided = true)
     DecimalNumberInput decimalNumber;
+
+    @Inject
+    @UiField(provided = true)
+    AttachmentList attachmentContainer;
 
     AbstractDocumentEditActivity activity;
 

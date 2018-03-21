@@ -5,7 +5,8 @@
              xmlns:person="urn:import:ru.protei.portal.ui.common.client.widget.selector.person"
              xmlns:keyword='urn:import:ru.protei.portal.ui.document.client.widget.select.input'
              xmlns:decnum='urn:import:ru.protei.portal.ui.document.client.widget.number'
-             xmlns:fileuploader='urn:import:ru.protei.portal.ui.common.client.widget.uploader'>
+             xmlns:fileuploader='urn:import:ru.protei.portal.ui.common.client.widget.uploader'
+             xmlns:attachment='urn:import:ru.protei.portal.ui.common.client.widget.attachment.list'>
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
     <g:HTMLPanel styleName="main-content">
@@ -92,6 +93,13 @@
                     <div class="form-group col-xs-12">
                         <keyword:SelectInputView ui:field="keywords"/>
                     </div>
+                </div>
+
+                <legend class="header">
+                    <ui:text from="{lang.issueAttachments}"/>
+                </legend>
+                <div class="grid grid-indent">
+                    <attachment:AttachmentList ui:field="attachmentContainer"/>
                 </div>
             </div>
             <div class="footer">
