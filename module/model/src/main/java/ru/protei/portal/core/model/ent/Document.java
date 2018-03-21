@@ -25,7 +25,10 @@ public class Document implements Serializable {
     /**
      * Децимальный номер
      */
-    @JdbcJoinedObject(localColumn = "decimal_number_id")
+    @JdbcJoinedObject(joinData = {
+            @JdbcJoinData(localColumn = "decimal_number_id", remoteColumn = "id"),
+            @JdbcJoinData(remoteColumn = "entity_type", value = "'DOCUMENT'")
+    })
     private DecimalNumber decimalNumber;
 
 
