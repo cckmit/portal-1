@@ -8,7 +8,6 @@ import ru.protei.portal.core.model.struct.DecimalNumberQuery;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -34,7 +33,7 @@ public class DecimalNumberDAO_Impl extends PortalBaseJdbcDAO<DecimalNumber > imp
 
     @Override
     public List< Long > getDecimalNumbersByEquipmentId( Long id ) {
-        StringBuilder sql = new StringBuilder("SELECT id FROM ").append(getTableName()).append( " WHERE equipment_id=?" );
+        StringBuilder sql = new StringBuilder("SELECT id FROM ").append(getTableName()).append( " WHERE entity_id=? AND entity_type='EQUIPMENT'" );
         return jdbcTemplate.queryForList(sql.toString(), Long.class, id);
     }
 
