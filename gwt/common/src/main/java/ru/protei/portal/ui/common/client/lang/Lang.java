@@ -736,4 +736,6 @@ public interface Lang extends Messages, ContactItemLang {
     String documentNameIsNotSet();
 
     String documentTypeNotDefined();
+
+    String uploadDocuments();
 }

@@ -13,6 +13,7 @@ import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.DocumentType;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
+import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.document.client.activity.edit.AbstractDocumentEditActivity;
 import ru.protei.portal.ui.document.client.activity.edit.AbstractDocumentEditView;
@@ -111,6 +112,9 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
 
     @UiField
     ValidableTextBox name;
+
+    @UiField
+    AttachmentUploader fileUploader;
 
     @Inject
     @UiField(provided = true)
