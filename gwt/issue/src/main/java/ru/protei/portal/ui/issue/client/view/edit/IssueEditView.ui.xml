@@ -15,13 +15,12 @@
         <div class="body">
             <div class="grid grid-indent">
 
-                <g:HTMLPanel ui:field="nameContainer" styleName="form-group  col-xs-12">
+                <g:HTMLPanel ui:field="nameContainer" styleName="form-group col-xs-12">
                     <label><ui:text from="{lang.issueName}"/></label>
-                    <g:HTMLPanel ui:field="nameInputGroupContainer" styleName="input-group">
-                        <div class="input-group-btn">
+                    <g:HTMLPanel ui:field="nameInputGroupContainer" styleName="issue-main-info">
                             <g:ToggleButton ui:field="local" styleName="btn btn-danger private-btn"/>
-                        </div>
-                        <validablefield:ValidableTextBox ui:field="name" styleName="input-field" notNull="true"/>
+                            <g:IntegerBox ui:field="number" styleName="input-field issue-number" enabled="false"/>
+                            <validablefield:ValidableTextBox ui:field="name" styleName="input-field" notNull="true"/>
                     </g:HTMLPanel>
                 </g:HTMLPanel>
             </div>

@@ -40,6 +40,10 @@ public interface AbstractIssueEditView extends IsWidget {
 
     HasEnabled initiatorState();
 
+    HasVisibility numberVisibility();
+
+    HasValue<Integer> number();
+
     void setSubscriptionEmails( String value );
 
     HasWidgets getCommentsContainer();

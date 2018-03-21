@@ -968,6 +968,14 @@ label.bordered:after{
   }
 }
 
+.issue-main-info {
+  display: flex;
+
+  .issue-number {
+    max-width: 15%;
+    border-right: none;
+  }
+}
 
 
 .companies {

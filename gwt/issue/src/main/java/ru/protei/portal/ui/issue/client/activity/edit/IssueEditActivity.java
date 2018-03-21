@@ -60,7 +60,9 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
         if(event.id == null) {
             fireEvent(new AppEvents.InitPanelName(lang.newIssue()));
-            initialView(new CaseObject());
+            CaseObject caseObject = new CaseObject();
+            caseObject.setPrivateCase( true );
+            initialView(caseObject);
         }else {
             fireEvent(new AppEvents.InitPanelName(lang.issueEdit()));
             requestIssue(event.id, this::initialView);
@@ -202,6 +204,10 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         }
 
         view.name().setValue(issue.getName());
+
+        view.numberVisibility().setVisible( issue.getId() != null );
+        view.number().setValue( issue.getId() == null ? null : issue.getCaseNumber().intValue() );
+
         view.isLocal().setValue(issue.isPrivateCase());
         view.description().setText(issue.getInfo());
 

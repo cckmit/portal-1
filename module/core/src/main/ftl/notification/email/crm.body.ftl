@@ -35,7 +35,7 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
 <body bgcolor="#FFFFFF" text="#000000">
 <div>
     <div style="padding: 5px;font-size: 14px;<#if isCreated>background:#dff7e2;color:#11731d;<#else>background:#f0f0f0;color:#666666;</#if>">
-        ${_createdBy} <#if createdByMe == true>${_yourself}<#else>${(case.creator.displayName)!'?'}</#if> <span style="padding-left: 4px">${(case.created)!''}</span>
+        ${_createdBy} <#if createdByMe == true>${_yourself}<#else>${(case.creator.displayShortName)!'?'}</#if> <span style="padding-left: 4px">${(case.created)!''}</span>
     </div>
     <div style="margin-top: 12px">
         <table>
