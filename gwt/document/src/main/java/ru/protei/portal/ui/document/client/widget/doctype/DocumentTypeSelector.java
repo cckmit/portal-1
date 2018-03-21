@@ -16,7 +16,6 @@ public class DocumentTypeSelector
     void init(DocumentTypeModel documentTypeModel) {
         documentTypeModel.subscribe(this);
         setSearchEnabled(false);
-        setHasNullValue(false);
 
         setDisplayOptionCreator(val -> {
             if (val == null) {

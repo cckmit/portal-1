@@ -734,4 +734,6 @@ public interface Lang extends Messages, ContactItemLang {
     String decimalNumberNotSet();
 
     String documentNameIsNotSet();
+
+    String documentTypeNotDefined();
 }

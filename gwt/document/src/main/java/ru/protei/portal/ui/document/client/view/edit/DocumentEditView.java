@@ -33,6 +33,9 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
         dn.setOrganizationCode(En_OrganizationCode.PAMR);
         decimalNumber.setValue(dn);
         decimalNumber.setSingleNumberView();
+        manager.setHasNullValue(false);
+        manager.setDefaultValue(null);
+        manager.refreshValue();
     }
 
     @Override
