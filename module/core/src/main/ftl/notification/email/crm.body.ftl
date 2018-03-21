@@ -44,7 +44,8 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                     <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
                         ${_issue_id}
                     </td>
-                    <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;"><b><a href="${linkToIssue}">${case.caseNumber?c}</a></b></td>
+                    <#--<td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;"><b><a href="${linkToIssue}">${case.caseNumber?c}</a></b></td>-->
+                    <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">${case.caseNumber?c}</td>
                 </tr>
                 <tr>
                     <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
