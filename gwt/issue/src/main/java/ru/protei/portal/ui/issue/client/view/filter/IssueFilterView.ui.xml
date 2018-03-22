@@ -30,7 +30,7 @@
                 </div>
             </div>
 
-            <companyselector:CompanySelector ui:field="company"
+            <companyselector:CompanyMultiSelector ui:field="companies"
                                              header="{lang.issueCompany}"
                                              addStyleNames="form-group col-xs-12"/>
 

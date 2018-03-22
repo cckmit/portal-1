@@ -20,6 +20,7 @@ import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.selector.company.CompanyMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
@@ -42,7 +43,6 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         search.getElement().setPropertyString( "placeholder", lang.search() );
         sortField.setType( ModuleType.ISSUE );
         sortDir.setValue( false );
-        company.setDefaultValue( lang.selectIssueCompany() );
         manager.setDefaultValue( lang.selectIssueManager() );
         dateRange.setPlaceholder( lang.selectDate() );
    }
@@ -66,8 +66,8 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     }
 
     @Override
-    public HasValue<EntityOption> company() {
-        return company;
+    public HasValue<Set<EntityOption>> companies() {
+        return companies;
     }
 
     @Override
@@ -102,7 +102,7 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
 
     @Override
     public void resetFilter() {
-        company.setValue( null );
+        companies.setValue( null );
         products.setValue( null );
         manager.setValue( null );
         importance.setValue(null);
@@ -119,12 +119,12 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     }
 
     @Override
-    public HasVisibility companyVisibility() {
-        return company;
+    public HasVisibility companiesVisibility() {
+        return companies;
     }
 
     @Override
-    public HasVisibility productVisibility() {
+    public HasVisibility productsVisibility() {
         return products;
     }
 
@@ -136,8 +136,8 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         }
     }
 
-    @UiHandler( "company" )
-    public void onCompanySelected( ValueChangeEvent<EntityOption> event ) {
+    @UiHandler( "companies" )
+    public void onCompaniesSelected( ValueChangeEvent<Set<EntityOption>> event ) {
         if ( activity != null ) {
             activity.onFilterChanged();
         }
@@ -210,7 +210,7 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
 
     @Inject
     @UiField( provided = true )
-    CompanySelector company;
+    CompanyMultiSelector companies;
 
     @Inject
     @UiField ( provided = true )

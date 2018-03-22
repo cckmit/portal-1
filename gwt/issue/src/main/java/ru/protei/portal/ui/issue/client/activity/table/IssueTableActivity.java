@@ -13,6 +13,7 @@ import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseShortView;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
@@ -222,7 +223,20 @@ public abstract class IssueTableActivity
             }
         }
 
-        query.setCompanyId( filterView.company().getValue() == null ? null : filterView.company().getValue().getId() );
+        if (filterView.companies().getValue() != null)
+        //TODO CRM-93 use stream
+        //            query.setCompanyIds(
+//                    filterView.products().getValue()
+//                            .stream()
+//                            .map( ProductShortView::getId )
+//                            .collect( Collectors.toList() ) );
+        {
+            List< Long > companies = new ArrayList< Long >();
+            for ( EntityOption option : filterView.companies().getValue() ) {
+                companies.add( option.getId() );
+            }
+            query.setCompanyIds( companies );
+        }
 
         if ( filterView.products().getValue() != null )
             //TODO CRM-93 use stream
@@ -266,8 +280,8 @@ public abstract class IssueTableActivity
     }
 
     private void applyFilterViewPrivileges() {
-        filterView.companyVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_COMPANY_VIEW ) );
-        filterView.productVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_PRODUCT_VIEW ) );
+        filterView.companiesVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_COMPANY_VIEW ) );
+        filterView.productsVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_PRODUCT_VIEW ) );
         filterView.managerVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_MANAGER_VIEW ) );
     }
 

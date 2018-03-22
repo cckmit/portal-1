@@ -43,7 +43,7 @@ public class CaseSubscriptionServiceImpl implements CaseSubscriptionService {
             }
         }
         //HomeCompany persons don't need to get notifications
-//        companyGroupHomeDAO.getAll().forEach( hc -> appendCompanySubscriptions(hc.getCompanyId(), result));
+//        companyGroupHomeDAO.getAll().forEach( hc -> appendCompanySubscriptions(hc.getCompanyIds(), result));
         return result;
     }
 

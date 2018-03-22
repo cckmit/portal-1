@@ -19,7 +19,7 @@ public interface AbstractIssueFilterView extends IsWidget {
 
     void setActivity( AbstractIssueFilterActivity activity );
 
-    HasValue<EntityOption> company();
+    HasValue<Set<EntityOption>> companies();
     HasValue<Set<ProductShortView>> products();
     HasValue<PersonShortView> manager();
     HasValue<Set<En_CaseState>> states();
@@ -30,7 +30,7 @@ public interface AbstractIssueFilterView extends IsWidget {
     HasValue< String > searchPattern();
     void resetFilter();
 
-    HasVisibility companyVisibility();
-    HasVisibility productVisibility();
+    HasVisibility companiesVisibility();
+    HasVisibility productsVisibility();
     HasVisibility managerVisibility();
 }

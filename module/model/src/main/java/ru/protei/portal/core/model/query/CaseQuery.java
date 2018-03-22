@@ -16,7 +16,7 @@ public class CaseQuery extends BaseQuery {
 
     private Long id;
     private Long caseNo;
-    private Long companyId;
+    private List<Long> companyIds;
     private List<Long> productIds;
     private Long managerId;
     private En_CaseType type;
@@ -55,12 +55,12 @@ public class CaseQuery extends BaseQuery {
 
     public void setCaseNo ( Long caseNo ) { this.caseNo = caseNo; }
 
-    public Long getCompanyId() {
-        return companyId;
+    public List<Long> getCompanyIds() {
+        return companyIds;
     }
 
-    public void setCompanyId(Long companyId) {
-        this.companyId = companyId;
+    public void setCompanyIds( List<Long> companyId) {
+        this.companyIds = companyId;
     }
 
     public List<Long> getProductIds() {
@@ -116,7 +116,7 @@ public class CaseQuery extends BaseQuery {
     @Override
     public String toString () {
         return "CaseQuery{" +
-                "companyId=" + companyId +
+                "companyIds=" + companyIds +
                 ", productIds=" + productIds +
                 ", managerId=" + managerId +
                 ", type=" + type +

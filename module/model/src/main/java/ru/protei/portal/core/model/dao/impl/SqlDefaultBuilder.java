@@ -32,11 +32,9 @@ public class SqlDefaultBuilder {
                 args.add( query.getCaseNo() );
             }
 
-            if ( query.getCompanyId() != null ) {
-                condition.append( " and initiator_company=?" );
-                args.add( query.getCompanyId() );
+            if ( query.getCompanyIds() != null && !query.getCompanyIds().isEmpty() ) {
+                condition.append(" and initiator_company in (" + query.getCompanyIds().stream().map(Object::toString).collect( Collectors.joining(",")) + ")");
             }
-
 
             if ( query.getProductIds() != null && !query.getProductIds().isEmpty() ) {
                 condition.append(" and product_id in (" + query.getProductIds().stream().map(Object::toString).collect( Collectors.joining(",")) + ")");
