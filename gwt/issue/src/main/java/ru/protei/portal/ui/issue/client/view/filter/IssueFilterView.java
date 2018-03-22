@@ -22,12 +22,12 @@ import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
-import ru.protei.portal.ui.common.client.widget.selector.product.ProductButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterActivity;
 import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterView;
 import ru.protei.portal.ui.issue.client.widget.importance.btngroup.ImportanceBtnGroupMulti;
+import ru.protei.portal.ui.common.client.widget.selector.product.ProductMultiSelector;
 import ru.protei.portal.ui.issue.client.widget.state.option.IssueStatesOptionList;
 
 import java.util.Set;
@@ -43,7 +43,6 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         sortField.setType( ModuleType.ISSUE );
         sortDir.setValue( false );
         company.setDefaultValue( lang.selectIssueCompany() );
-        product.setDefaultValue( lang.selectIssueProduct() );
         manager.setDefaultValue( lang.selectIssueManager() );
         dateRange.setPlaceholder( lang.selectDate() );
    }
@@ -72,8 +71,8 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     }
 
     @Override
-    public HasValue<ProductShortView> product() {
-        return product;
+    public HasValue<Set<ProductShortView>> products() {
+        return products;
     }
 
     @Override
@@ -104,7 +103,7 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     @Override
     public void resetFilter() {
         company.setValue( null );
-        product.setValue( null );
+        products.setValue( null );
         manager.setValue( null );
         importance.setValue(null);
         state.setValue( null );
@@ -126,7 +125,7 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
 
     @Override
     public HasVisibility productVisibility() {
-        return product;
+        return products;
     }
 
     @UiHandler( "resetBtn" )
@@ -144,8 +143,8 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         }
     }
 
-    @UiHandler( "product" )
-    public void onProductSelected( ValueChangeEvent<ProductShortView> event ) {
+    @UiHandler( "products" )
+    public void onProductsSelected( ValueChangeEvent<Set<ProductShortView>> event ) {
         if ( activity != null ) {
             activity.onFilterChanged();
         }
@@ -215,7 +214,7 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
 
     @Inject
     @UiField ( provided = true )
-    ProductButtonSelector product;
+    ProductMultiSelector products;
 
     @Inject
     @UiField ( provided = true )

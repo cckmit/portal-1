@@ -37,9 +37,9 @@ public class SqlDefaultBuilder {
                 args.add( query.getCompanyId() );
             }
 
-            if ( query.getProductId() != null ) {
-                condition.append( " and product_id=?" );
-                args.add( query.getProductId() );
+
+            if ( query.getProductIds() != null && !query.getProductIds().isEmpty() ) {
+                condition.append(" and product_id in (" + query.getProductIds().stream().map(Object::toString).collect( Collectors.joining(",")) + ")");
             }
 
             if ( query.getManagerId() != null) {

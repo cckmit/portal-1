@@ -34,9 +34,9 @@
                                              header="{lang.issueCompany}"
                                              addStyleNames="form-group col-xs-12"/>
 
-            <productselector:ProductButtonSelector ui:field="product"
-                                                   header="{lang.issueProduct}"
-                                                   addStyleNames="form-group col-xs-12"/>
+            <productselector:ProductMultiSelector ui:field="products"
+                                                  header="{lang.issueProduct}"
+                                                  addStyleNames="form-group col-xs-12"/>
 
             <person:EmployeeButtonSelector ui:field="manager"
                                            header="{lang.issueManager}"

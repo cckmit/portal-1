@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.issue.client.activity.filter;
 
-import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -11,8 +10,6 @@ import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
-
-import javax.accessibility.AccessibleComponent;
 import java.util.Set;
 
 /**
@@ -23,7 +20,7 @@ public interface AbstractIssueFilterView extends IsWidget {
     void setActivity( AbstractIssueFilterActivity activity );
 
     HasValue<EntityOption> company();
-    HasValue<ProductShortView> product();
+    HasValue<Set<ProductShortView>> products();
     HasValue<PersonShortView> manager();
     HasValue<Set<En_CaseState>> states();
     HasValue<Set<En_ImportanceLevel>> importances();

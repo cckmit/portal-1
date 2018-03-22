@@ -11,9 +11,9 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.Attachment;
-import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseShortView;
+import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -27,8 +27,8 @@ import ru.protei.portal.ui.common.client.widget.attachment.popup.AttachPopup;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterActivity;
 import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterView;
-import ru.protei.winter.web.common.client.events.SectionEvents;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -223,7 +223,22 @@ public abstract class IssueTableActivity
         }
 
         query.setCompanyId( filterView.company().getValue() == null ? null : filterView.company().getValue().getId() );
-        query.setProductId( filterView.product().getValue() == null ? null : filterView.product().getValue().getId() );
+
+        if ( filterView.products().getValue() != null )
+            //TODO CRM-93 use stream
+        //            query.setProductIds(
+//                    filterView.products().getValue()
+//                            .stream()
+//                            .map( ProductShortView::getId )
+//                            .collect( Collectors.toList() ) );
+        {
+            List< Long > products = new ArrayList< Long >();
+            for ( ProductShortView prd : filterView.products().getValue() ) {
+                products.add( prd.getId() );
+            }
+            query.setProductIds( products );
+        }
+
         query.setManagerId( filterView.manager().getValue() == null ? null : filterView.manager().getValue().getId() );
 
         if(filterView.states().getValue() != null)

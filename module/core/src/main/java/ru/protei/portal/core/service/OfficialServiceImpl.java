@@ -28,7 +28,14 @@ public class OfficialServiceImpl implements OfficialService {
         caseQuery.setFrom(query.getFrom());
         caseQuery.setTo(query.getTo());
         caseQuery.setType( En_CaseType.OFFICIAL );
-        caseQuery.setProductId( query.getProductId() );
+        //TODO CRM-93
+        List<Long> productIds = null;
+        if (query.getProductId() != null){
+            productIds = new ArrayList<Long>();
+            productIds.add( query.getProductId() );
+        }
+        caseQuery.setProductIds( productIds );
+
         List< CaseObject > caseObjects = caseObjectDAO.listByQuery( caseQuery );
         caseObjects.forEach( ( caseObject ) -> {
             iterateAllLocations( caseObject, ( location ) -> {
