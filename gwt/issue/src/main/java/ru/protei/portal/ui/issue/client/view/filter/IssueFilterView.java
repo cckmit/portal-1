@@ -21,8 +21,7 @@ import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyMultiSelector;
-import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
-import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterActivity;
@@ -43,7 +42,6 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         search.getElement().setPropertyString( "placeholder", lang.search() );
         sortField.setType( ModuleType.ISSUE );
         sortDir.setValue( false );
-        manager.setDefaultValue( lang.selectIssueManager() );
         dateRange.setPlaceholder( lang.selectDate() );
    }
 
@@ -76,7 +74,7 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     }
 
     @Override
-    public HasValue<PersonShortView> manager () { return manager; }
+    public HasValue<Set<PersonShortView>> managers() { return managers; }
 
     @Override
     public HasValue< Set <En_CaseState > > states() { return state; }
@@ -104,7 +102,7 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     public void resetFilter() {
         companies.setValue( null );
         products.setValue( null );
-        manager.setValue( null );
+        managers.setValue( null );
         importance.setValue(null);
         state.setValue( null );
         dateRange.setValue( null );
@@ -114,8 +112,8 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     }
 
     @Override
-    public HasVisibility managerVisibility() {
-        return manager;
+    public HasVisibility managersVisibility() {
+        return managers;
     }
 
     @Override
@@ -150,8 +148,8 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         }
     }
 
-    @UiHandler( "manager" )
-    public void onManagerSelected( ValueChangeEvent<PersonShortView> event ) {
+    @UiHandler( "managers" )
+    public void onManagersSelected( ValueChangeEvent<Set<PersonShortView>> event ) {
         if ( activity != null ) {
             activity.onFilterChanged();
         }
@@ -218,7 +216,7 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
 
     @Inject
     @UiField ( provided = true )
-    EmployeeButtonSelector manager;
+    EmployeeMultiSelector managers;
 
     @Inject
     @UiField ( provided = true )

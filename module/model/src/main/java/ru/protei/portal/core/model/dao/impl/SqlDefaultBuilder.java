@@ -40,13 +40,8 @@ public class SqlDefaultBuilder {
                 condition.append(" and product_id in (" + query.getProductIds().stream().map(Object::toString).collect( Collectors.joining(",")) + ")");
             }
 
-            if ( query.getManagerId() != null) {
-                if(query.getManagerId() > 0) {
-                    condition.append(" and manager=?");
-                    args.add(query.getManagerId());
-                }else{
-                    condition.append( " and manager is null" );
-                }
+            if ( query.getManagerIds() != null && !query.getManagerIds().isEmpty() ) {
+                condition.append(" and manager in (" + query.getManagerIds().stream().map(Object::toString).collect( Collectors.joining(",")) + ")");
             }
 
             if ( query.getStateIds() != null && !query.getStateIds().isEmpty() ) {

@@ -129,7 +129,7 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
         table.addColumn( issueNumber.header, issueNumber.values );
         table.addColumn( info.header, info.values );
 //        table.addColumn( contact.header, contact.values );
-//        table.addColumn( manager.header, manager.values );
+//        table.addColumn( managers.header, managers.values );
         hideContact = table.addColumn( contact.header, contact.values );
         hideManager = table.addColumn( manager.header, manager.values );
         table.addColumn( attachClickColumn.header, attachClickColumn.values );

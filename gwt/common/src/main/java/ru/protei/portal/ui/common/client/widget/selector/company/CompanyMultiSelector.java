@@ -18,7 +18,7 @@ public class CompanyMultiSelector extends MultipleInputSelector< EntityOption > 
     @Inject
     public void init( CompanyModel model, Lang lang ) {
         model.subscribe( this, categories );
-        setAddName( lang.companyAdd() );
+        setAddName( lang.buttonAdd() );
     }
 
     public void fillOptions( List< EntityOption > options ) {

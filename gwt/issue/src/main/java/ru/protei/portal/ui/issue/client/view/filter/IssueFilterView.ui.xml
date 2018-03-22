@@ -38,7 +38,7 @@
                                                   header="{lang.issueProduct}"
                                                   addStyleNames="form-group col-xs-12"/>
 
-            <person:EmployeeButtonSelector ui:field="manager"
+            <person:EmployeeMultiSelector ui:field="managers"
                                            header="{lang.issueManager}"
                                            addStyleNames="form-group col-xs-12"/>
 

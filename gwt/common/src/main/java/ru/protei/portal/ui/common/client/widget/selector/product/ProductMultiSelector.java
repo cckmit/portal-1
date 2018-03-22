@@ -16,7 +16,7 @@ public class ProductMultiSelector extends MultipleInputSelector< ProductShortVie
     @Inject
     public void init( ProductModel model, Lang lang ) {
         model.subscribe( this );
-        setAddName( lang.productAdd() );
+        setAddName( lang.buttonAdd() );
     }
 
     public void fillOptions( List< ProductShortView > options ) {

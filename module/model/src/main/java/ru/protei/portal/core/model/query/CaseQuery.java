@@ -18,7 +18,7 @@ public class CaseQuery extends BaseQuery {
     private Long caseNo;
     private List<Long> companyIds;
     private List<Long> productIds;
-    private Long managerId;
+    private List<Long> managerIds;
     private En_CaseType type;
     private List<Integer> stateIds;
     private List<Integer> importanceIds;
@@ -59,8 +59,8 @@ public class CaseQuery extends BaseQuery {
         return companyIds;
     }
 
-    public void setCompanyIds( List<Long> companyId) {
-        this.companyIds = companyId;
+    public void setCompanyIds( List<Long> companyIds) {
+        this.companyIds = companyIds;
     }
 
     public List<Long> getProductIds() {
@@ -100,10 +100,9 @@ public class CaseQuery extends BaseQuery {
 
     public void setTo( Date to ) { this.to = to; }
 
-    public Long getManagerId () { return managerId; }
+    public List<Long> getManagerIds() { return managerIds; }
 
-    public void setManagerId ( Long managerId ) { this.managerId = managerId; }
-
+    public void setManagerIds( List<Long> managerIds ) { this.managerIds = managerIds; }
 
     public boolean isAllowViewPrivate() {
         return allowViewPrivate;
@@ -118,7 +117,7 @@ public class CaseQuery extends BaseQuery {
         return "CaseQuery{" +
                 "companyIds=" + companyIds +
                 ", productIds=" + productIds +
-                ", managerId=" + managerId +
+                ", managerIds=" + managerIds +
                 ", type=" + type +
                 ", stateIds=" + stateIds +
                 ", importanceIds=" + importanceIds +

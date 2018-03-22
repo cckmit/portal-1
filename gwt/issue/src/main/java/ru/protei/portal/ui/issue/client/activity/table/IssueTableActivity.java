@@ -14,6 +14,7 @@ import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
@@ -253,7 +254,20 @@ public abstract class IssueTableActivity
             query.setProductIds( products );
         }
 
-        query.setManagerId( filterView.manager().getValue() == null ? null : filterView.manager().getValue().getId() );
+        if ( filterView.managers().getValue() != null )
+        //TODO CRM-93 use stream
+        //            query.setManagerIds(
+//                    filterView.managers().getValue()
+//                            .stream()
+//                            .map( PersonShortView::getId )
+//                            .collect( Collectors.toList() ) );
+        {
+            List< Long > managers = new ArrayList< Long >();
+            for ( PersonShortView manager : filterView.managers().getValue() ) {
+                managers.add( manager.getId() );
+            }
+            query.setManagerIds( managers );
+        }
 
         if(filterView.states().getValue() != null)
             query.setStateIds(
@@ -282,7 +296,7 @@ public abstract class IssueTableActivity
     private void applyFilterViewPrivileges() {
         filterView.companiesVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_COMPANY_VIEW ) );
         filterView.productsVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_PRODUCT_VIEW ) );
-        filterView.managerVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_MANAGER_VIEW ) );
+        filterView.managersVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_MANAGER_VIEW ) );
     }
 
     @Inject
