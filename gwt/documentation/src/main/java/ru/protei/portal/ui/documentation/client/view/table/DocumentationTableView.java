@@ -7,6 +7,7 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.protei.portal.core.model.dict.En_Privilege;
@@ -18,10 +19,10 @@ import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
+import ru.protei.portal.ui.common.client.common.DecimalNumberFormatter;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.documentation.client.activity.table.AbstractDocumentationTableActivity;
 import ru.protei.portal.ui.documentation.client.activity.table.AbstractDocumentationTableView;
-import ru.protei.portal.ui.equipment.client.common.EquipmentUtils;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -53,8 +54,13 @@ public class DocumentationTableView extends Composite implements AbstractDocumen
     }
 
     @Override
+    public HasWidgets getPreviewContainer() {
+        return previewContainer;
+    }
+
+    @Override
     public void setAnimation(TableAnimation animation) {
-        //animation.setContainers(tableContainer, null, null);
+        animation.setContainers(tableContainer, previewContainer, filterContainer);
     }
 
     @Override
@@ -121,7 +127,7 @@ public class DocumentationTableView extends Composite implements AbstractDocumen
 
                 Element numElem = DOM.createDiv();
                 numElem.setClassName("equipment-number");
-                numElem.setInnerHTML(EquipmentUtils.formatNumber(dNumber));
+                numElem.setInnerHTML(DecimalNumberFormatter.formatNumber(dNumber));
                 if (dNumber.isReserve()) {
                     Element isReserveEl = DOM.createElement("i");
                     isReserveEl.addClassName("fa fa-flag text-danger m-l-10");
@@ -176,6 +182,10 @@ public class DocumentationTableView extends Composite implements AbstractDocumen
 
     @UiField
     HTMLPanel tableContainer;
+    @UiField
+    HTMLPanel previewContainer;
+    @UiField
+    HTMLPanel filterContainer;
 
     @Inject
     @UiField

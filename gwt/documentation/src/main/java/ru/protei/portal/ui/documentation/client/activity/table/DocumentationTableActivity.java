@@ -82,6 +82,7 @@ public abstract class DocumentationTableActivity
 
     @Override
     public void onItemClicked(Documentation value) {
+        showPreview(value);
     }
 
     @Override
@@ -119,6 +120,15 @@ public abstract class DocumentationTableActivity
                 pagerView.setTotalPages(view.getPageCount());
             }
         });
+    }
+
+    private void showPreview(Documentation documentation) {
+        if (documentation == null) {
+            animation.closeDetails();
+        } else {
+            animation.showDetails();
+            fireEvent(new DocumentationEvents.ShowPreview(view.getPreviewContainer(), documentation));
+        }
     }
 
     private DocumentationQuery makeQuery() {
