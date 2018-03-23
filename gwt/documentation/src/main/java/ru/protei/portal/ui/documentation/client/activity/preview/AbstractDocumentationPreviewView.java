@@ -25,8 +25,4 @@ public interface AbstractDocumentationPreviewView extends IsWidget {
     void setNumberInventory(String numberInventory);
 
     void setKeyWords(String keyWords);
-
-    void setCopyBtnEnabledStyle(boolean isEnabled);
-
-    void setRemoveBtnEnabledStyle(boolean isEnabled);
 }

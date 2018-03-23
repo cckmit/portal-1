@@ -15,9 +15,9 @@ public class DocumentationUtils {
         StringBuilder sb = new StringBuilder();
         sb.append(lang.getName(number.getOrganizationCode()))
                 .append(".")
-                .append(NumberFormat.getFormat("000000").format( number.getClassifierCode()))
+                .append(NumberFormat.getFormat("000000").format(number.getClassifierCode()))
                 .append(".")
-                .append(NumberFormat.getFormat("000").format( number.getRegisterNumber()));
+                .append(NumberFormat.getFormat("000").format(number.getRegisterNumber()));
 
         if (number.getModification() != null) {
             sb.append("–").append(NumberFormat.getFormat("00").format(number.getModification()));

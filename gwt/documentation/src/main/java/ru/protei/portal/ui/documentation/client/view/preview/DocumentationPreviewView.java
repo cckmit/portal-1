@@ -89,38 +89,6 @@ public class DocumentationPreviewView extends Composite implements AbstractDocum
         this.keyWords.setInnerText(keyWords);
     }
 
-    @Override
-    public void setCopyBtnEnabledStyle(boolean isEnabled) {
-        if (isEnabled) {
-            copy.removeStyleName("link-disabled");
-        } else {
-            copy.addStyleName("link-disabled");
-        }
-    }
-
-    @Override
-    public void setRemoveBtnEnabledStyle(boolean isEnabled) {
-        if (isEnabled) {
-            remove.removeStyleName("link-disabled");
-        } else {
-            remove.addStyleName("link-disabled");
-        }
-    }
-
-    @UiHandler("copy")
-    public void onCopyClicked(ClickEvent event) {
-        if (activity != null) {
-            activity.onCopyClicked();
-        }
-    }
-
-    @UiHandler("remove")
-    public void onRemoveClicked(ClickEvent event) {
-        if (activity != null) {
-            activity.onRemoveClicked();
-        }
-    }
-
     @UiField LegendElement header;
     @UiField SpanElement name;
     @UiField SpanElement created;
@@ -131,8 +99,6 @@ public class DocumentationPreviewView extends Composite implements AbstractDocum
     @UiField SpanElement numberDecimal;
     @UiField SpanElement numberInventory;
     @UiField SpanElement keyWords;
-    @UiField Button copy;
-    @UiField Button remove;
 
     @Inject
     @UiField
