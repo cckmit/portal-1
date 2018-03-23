@@ -19,10 +19,10 @@ import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
+import ru.protei.portal.ui.common.client.common.DecimalNumberFormatter;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.documentation.client.activity.table.AbstractDocumentationTableActivity;
 import ru.protei.portal.ui.documentation.client.activity.table.AbstractDocumentationTableView;
-import ru.protei.portal.ui.equipment.client.common.EquipmentUtils;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -127,7 +127,7 @@ public class DocumentationTableView extends Composite implements AbstractDocumen
 
                 Element numElem = DOM.createDiv();
                 numElem.setClassName("equipment-number");
-                numElem.setInnerHTML(EquipmentUtils.formatNumber(dNumber));
+                numElem.setInnerHTML(DecimalNumberFormatter.formatNumber(dNumber));
                 if (dNumber.isReserve()) {
                     Element isReserveEl = DOM.createElement("i");
                     isReserveEl.addClassName("fa fa-flag text-danger m-l-10");

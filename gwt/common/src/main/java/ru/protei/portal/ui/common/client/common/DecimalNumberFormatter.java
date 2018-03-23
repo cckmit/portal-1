@@ -1,11 +1,11 @@
-package ru.protei.portal.ui.documentation.client.common;
+package ru.protei.portal.ui.common.client.common;
 
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.ui.common.client.lang.En_OrganizationCodeLang;
 
-public class DocumentationUtils {
+public class DecimalNumberFormatter {
 
     public static String formatNumber(DecimalNumber number) {
         if (number == null) {

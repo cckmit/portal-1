@@ -8,6 +8,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
+import ru.protei.portal.ui.common.client.common.DecimalNumberFormatter;
 import ru.protei.portal.ui.common.client.events.ConfirmDialogEvents;
 import ru.protei.portal.ui.common.client.events.EquipmentEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
@@ -16,7 +17,6 @@ import ru.protei.portal.ui.common.client.lang.En_EquipmentTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.EquipmentServiceAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
-import ru.protei.portal.ui.equipment.client.common.EquipmentUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.stream.Collectors;
@@ -88,11 +88,11 @@ public abstract class EquipmentPreviewActivity implements Activity, AbstractEqui
         view.setRemoveBtnEnabledStyle( policyService.hasPrivilegeFor( En_Privilege.EQUIPMENT_REMOVE ) );
 
         if( value.getDecimalNumbers() != null ) {
-            view.setDecimalNumbers( value.getDecimalNumbers().stream().map( EquipmentUtils::formatNumber ).collect( Collectors.joining(", ")) );
+            view.setDecimalNumbers( value.getDecimalNumbers().stream().map( DecimalNumberFormatter::formatNumber ).collect( Collectors.joining(", ")) );
         }
 
         if ( value.getLinkedEquipmentDecimalNumbers() != null && !value.getLinkedEquipmentDecimalNumbers().isEmpty() ) {
-            view.setLinkedEquipment( value.getLinkedEquipmentDecimalNumbers().stream().map( EquipmentUtils::formatNumber ).collect( Collectors.joining(", ")) );
+            view.setLinkedEquipment( value.getLinkedEquipmentDecimalNumbers().stream().map( DecimalNumberFormatter::formatNumber ).collect( Collectors.joining(", ")) );
         } else {
             view.setLinkedEquipment( lang.equipmentPrimaryUseNotDefinied() );
         }

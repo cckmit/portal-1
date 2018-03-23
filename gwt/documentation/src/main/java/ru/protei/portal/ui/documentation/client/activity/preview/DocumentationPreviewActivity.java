@@ -6,10 +6,10 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.Documentation;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
+import ru.protei.portal.ui.common.client.common.DecimalNumberFormatter;
 import ru.protei.portal.ui.common.client.events.DocumentationEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.documentation.client.common.DocumentationUtils;
 
 import java.util.stream.Collectors;
 
@@ -40,7 +40,7 @@ public abstract class DocumentationPreviewActivity implements Activity, Abstract
         view.setAnnotation(documentation.getAnnotation());
         view.setProject(documentation.getProject() == null ? "" : documentation.getProject());
         view.setManager(documentation.getManagerShortName() == null ? "" : documentation.getManagerShortName());
-        view.setNumberDecimal(DocumentationUtils.formatNumber(documentation.getDecimalNumber()));
+        view.setNumberDecimal(DecimalNumberFormatter.formatNumber(documentation.getDecimalNumber()));
         view.setNumberInventory(documentation.getInventoryNumber() == null ? "" : documentation.getInventoryNumber().toString());
         view.setKeyWords(documentation.getTags() == null ? "" : documentation.getTags().stream().collect(Collectors.joining(", ")));
     }
