@@ -24,12 +24,20 @@ public abstract class DocumentationPreviewActivity implements Activity, Abstract
     public void onShow(DocumentationEvents.ShowPreview event) {
         event.parent.clear();
         event.parent.add(view.asWidget());
+        if (event.documentation == null) {
+            invalidDocument();
+            return;
+        }
         Long documentationId = event.documentation.getId();
         if (documentationId == null) {
-            fireEvent(new NotifyEvents.Show(lang.errIncorrectParams(), NotifyEvents.NotifyType.ERROR));
-        } else {
-            fillView(event.documentation);
+            invalidDocument();
+            return;
         }
+        fillView(event.documentation);
+    }
+
+    private void invalidDocument() {
+        fireEvent(new NotifyEvents.Show(lang.errIncorrectParams(), NotifyEvents.NotifyType.ERROR));
     }
 
     private void fillView(Documentation documentation) {
