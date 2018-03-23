@@ -16,6 +16,7 @@ import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.HasAttachmentListHandlers;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveHandler;
+import ru.protei.portal.ui.common.client.widget.autoresizetextarea.AutoResizeTextArea;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.issue.client.activity.comment.list.AbstractIssueCommentListActivity;
 import ru.protei.portal.ui.issue.client.activity.comment.list.AbstractIssueCommentListView;
@@ -31,14 +32,11 @@ public class IssueCommentListView
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         comment.getElement().setAttribute("placeholder", lang.commentAddMessagePlaceholder());
-        comment.getElement().getStyle().setProperty("height", "auto");
-        comment.getElement().getStyle().setProperty("maxHeight", "none");
     }
 
     @Override
     public void setActivity(AbstractIssueCommentListActivity activity) {
         this.activity = activity;
-        comment.setVisibleLines(activity.getLinesCount(null));
     }
 
     @Override
@@ -95,11 +93,6 @@ public class IssueCommentListView
         activity.removeTempAttachment(event.getAttachment());
     }
 
-    @UiHandler("comment")
-    public void onKeyPress(KeyUpEvent event) {
-        comment.setVisibleLines(activity.getLinesCount(comment.getText()));
-    }
-
     @Override
     public HandlerRegistration addRemoveHandler(RemoveHandler handler) {
         return addHandler( handler, RemoveEvent.getType() );
@@ -108,7 +101,7 @@ public class IssueCommentListView
     @UiField
     HTMLPanel root;
     @UiField
-    TextArea comment;
+    AutoResizeTextArea comment;
     @UiField
     HTMLPanel commentsContainer;
     @UiField

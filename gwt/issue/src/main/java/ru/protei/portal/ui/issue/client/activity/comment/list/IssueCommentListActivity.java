@@ -218,24 +218,6 @@ public abstract class IssueCommentListActivity
         });
     }
 
-    @Override
-    public int getLinesCount(String comment) {
-        int lines = 0;
-        if (comment != null) {
-            for (int i = 0; i != -1; i = comment.indexOf("\n", i + 1)) {
-                lines++;
-            }
-            lines += 1;
-        }
-        if (lines < 5) {
-            lines = 5;
-        }
-        if (lines > 20) {
-            lines = 20;
-        }
-        return lines;
-    }
-
     private void removeAttachment(Long id, Runnable successAction){
         attachmentService.removeAttachmentEverywhere(id, new RequestCallback<Boolean>() {
             @Override

@@ -12,6 +12,4 @@ public interface AbstractIssueCommentListActivity {
     void onEditLastMessage();
 
     void removeTempAttachment(Attachment attachment);
-
-    int getLinesCount(String comment);
 }
