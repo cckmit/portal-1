@@ -1,7 +1,5 @@
 package ru.protei.portal.ui.issue.client.activity.comment.list;
 
-import com.google.gwt.safehtml.shared.SafeHtmlUtils;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.brainworm.factory.context.client.events.Back;
@@ -12,9 +10,9 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.CaseAttachment;
 import ru.protei.portal.core.model.ent.CaseComment;
-import ru.protei.portal.ui.common.client.common.DateFormatter;
-import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.UserIconUtils;
 import ru.protei.portal.ui.common.client.events.AttachmentEvents;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
@@ -218,6 +216,24 @@ public abstract class IssueCommentListActivity
                 itemView.showAttachments(false);
             }
         });
+    }
+
+    @Override
+    public int getLinesCount(String comment) {
+        int lines = 0;
+        if (comment != null) {
+            for (int i = 0; i != -1; i = comment.indexOf("\n", i + 1)) {
+                lines++;
+            }
+            lines += 1;
+        }
+        if (lines < 5) {
+            lines = 5;
+        }
+        if (lines > 20) {
+            lines = 20;
+        }
+        return lines;
     }
 
     private void removeAttachment(Long id, Runnable successAction){

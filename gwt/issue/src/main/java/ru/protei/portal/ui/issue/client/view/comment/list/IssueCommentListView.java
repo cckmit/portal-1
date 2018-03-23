@@ -28,14 +28,17 @@ public class IssueCommentListView
         implements AbstractIssueCommentListView, HasAttachmentListHandlers {
 
     @Inject
-    public void onInit( ) {
-        initWidget( ourUiBinder.createAndBindUi( this ) );
-        comment.getElement().setAttribute( "placeholder", lang.commentAddMessagePlaceholder() );
+    public void onInit() {
+        initWidget(ourUiBinder.createAndBindUi(this));
+        comment.getElement().setAttribute("placeholder", lang.commentAddMessagePlaceholder());
+        comment.getElement().getStyle().setProperty("height", "auto");
+        comment.getElement().getStyle().setProperty("maxHeight", "none");
     }
 
     @Override
-    public void setActivity( AbstractIssueCommentListActivity activity ) {
+    public void setActivity(AbstractIssueCommentListActivity activity) {
         this.activity = activity;
+        comment.setVisibleLines(activity.getLinesCount(null));
     }
 
     @Override
@@ -90,6 +93,11 @@ public class IssueCommentListView
     @UiHandler("attachmentList")
     public void onRemoveAttachment(RemoveEvent event){
         activity.removeTempAttachment(event.getAttachment());
+    }
+
+    @UiHandler("comment")
+    public void onKeyPress(KeyUpEvent event) {
+        comment.setVisibleLines(activity.getLinesCount(comment.getText()));
     }
 
     @Override
