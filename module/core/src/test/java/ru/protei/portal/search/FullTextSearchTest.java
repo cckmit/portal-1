@@ -25,10 +25,10 @@ import java.io.IOException;
 
 public class FullTextSearchTest {
     public static final String[] TEST_PDF_FILE_PATHS = {
-            "/Users/merfemor/Documents/inteldoc.pdf"
+            "scoring.pdf"
     };
 
-    public static final String QUERY = "mov";
+    public static final String QUERY = "query";
     public static final String BAD_QUERY = "gshingvisoiwutinorvwgurhgniwu";
 
     @Test
@@ -87,7 +87,7 @@ public class FullTextSearchTest {
         }
     }
 
-    public static void index(IndexWriter writer, String... paths) throws IOException {
+    public void index(IndexWriter writer, String... paths) throws IOException {
         for (String path : paths) {
             String content = getPdfContent(path);
             index(writer, path, content);
@@ -110,8 +110,9 @@ public class FullTextSearchTest {
 
     }
 
-    public static String getPdfContent(String path) throws IOException {
-        File pdfFile = new File(path);
+    public String getPdfContent(String path) throws IOException {
+        File pdfFile = new File(getClass().getClassLoader().getResource(path).getFile());
+        System.out.println(new File(".").getAbsolutePath());
         PDDocument doc = PDDocument.load(pdfFile);
         String content = new PDFTextStripper().getText(doc);
         doc.close();
