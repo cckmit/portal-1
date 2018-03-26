@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.document.client.widget.select.input;
+package ru.protei.portal.ui.common.client.widget.stringselect.input;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.*;
@@ -11,8 +11,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.document.client.widget.select.item.AbstractSelectItemView;
-import ru.protei.portal.ui.document.client.widget.select.item.SelectItemView;
+import ru.protei.portal.ui.common.client.widget.stringselect.item.StringBox;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -23,12 +22,12 @@ import static com.google.gwt.event.dom.client.KeyCodes.KEY_ENTER;
 /**
  * Виджет мультиселектора поля ввода
  */
-public class SelectInputView
+public class StringSelectInput
         extends Composite
         implements HasKeyUpHandlers, HasValue<List<String>> {
 
     @Inject
-    public SelectInputView(Lang lang) {
+    public StringSelectInput(Lang lang) {
         initWidget(ourUiBinder.createAndBindUi(this));
         input.getElement().setPropertyString("placeholder", lang.keywordInputPlaceholder());
         setUnfilledInputWidth();
@@ -140,12 +139,12 @@ public class SelectInputView
             return;
         }
 
-        SelectItemView itemView = new SelectItemView();
+        StringBox itemView = new StringBox();
         itemView.setValue(val);
 
         itemViews.add(itemView);
 
-        itemView.setActivity(itemView1 -> {
+        itemView.setHandler(itemView1 -> {
             widgetContainer.remove(inputContainer);
             scheduleAddInput(true);
 
@@ -154,7 +153,7 @@ public class SelectInputView
         itemContainer.add(itemView);
     }
 
-    private void removeItem(AbstractSelectItemView itemView) {
+    private void removeItem(StringBox itemView) {
         values.remove(itemView.getValue());
         itemContainer.remove(itemView);
         itemViews.remove(itemView);
@@ -186,7 +185,7 @@ public class SelectInputView
         input.setFocus(focused);
     }
 
-    private SelectItemView getLastView() {
+    private StringBox getLastView() {
         return itemViews.get(itemViews.size() - 1);
     }
 
@@ -207,9 +206,9 @@ public class SelectInputView
     @UiField
     Anchor add;
 
-    List<SelectItemView> itemViews = new LinkedList<>();
+    List<StringBox> itemViews = new LinkedList<>();
 
-    interface SelectViewUiBinder extends UiBinder<HTMLPanel, SelectInputView> {
+    interface SelectViewUiBinder extends UiBinder<HTMLPanel, StringSelectInput> {
     }
 
     private static SelectViewUiBinder ourUiBinder = GWT.create(SelectViewUiBinder.class);

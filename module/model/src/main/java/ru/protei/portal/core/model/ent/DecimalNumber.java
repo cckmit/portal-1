@@ -132,8 +132,7 @@ public class DecimalNumber implements Serializable {
 
     public boolean isValid() {
         return getClassifierCode() != null &&
-                getRegisterNumber() != null &&
-                getEntityType() != null;
+                getRegisterNumber() != null;
     }
 
     public DecimalNumber() {}

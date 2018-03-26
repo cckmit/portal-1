@@ -1,31 +1,39 @@
-package ru.protei.portal.ui.document.client.widget.select.item;
+package ru.protei.portal.ui.common.client.widget.stringselect.item;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.Anchor;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.HasEnabled;
+import com.google.gwt.user.client.ui.*;
 
 /**
  * Один элемент инпут-селектора
  */
-public class SelectItemView extends Composite implements AbstractSelectItemView, HasEnabled {
-    public SelectItemView() {
+public class StringBox extends Composite implements HasValue<String>, HasEnabled {
+
+    public interface CloseHandler {
+        void onClose(StringBox box);
+    }
+
+    public StringBox() {
         initWidget(ourUiBinder.createAndBindUi(this));
     }
 
-    @Override
-    public void setActivity(AbstractSelectItemActivity activity) {
-        this.activity = activity;
+    public void setHandler(CloseHandler handler) {
+        this.handler = handler;
     }
 
     @Override
     public void setValue(String value) {
+        setValue(value, false);
+    }
+
+    @Override
+    public void setValue(String value, boolean fireEvents) {
         curValue = value;
         text.setInnerText(value);
     }
@@ -38,8 +46,8 @@ public class SelectItemView extends Composite implements AbstractSelectItemView,
     @UiHandler("close")
     public void onCloseClicked(ClickEvent event) {
         event.preventDefault();
-        if (activity != null) {
-            activity.onCloseClicked(this);
+        if (handler != null) {
+            handler.onClose(this);
         }
     }
 
@@ -65,9 +73,14 @@ public class SelectItemView extends Composite implements AbstractSelectItemView,
     Anchor close;
     String curValue = null;
 
-    AbstractSelectItemActivity activity;
+     CloseHandler handler;
 
-    interface SelectItemViewUiBinder extends UiBinder<HTMLPanel, SelectItemView> {
+    @Override
+    public HandlerRegistration addValueChangeHandler(ValueChangeHandler<String> handler) {
+        return null;
+    }
+
+    interface SelectItemViewUiBinder extends UiBinder<HTMLPanel, StringBox> {
     }
 
     private static SelectItemViewUiBinder ourUiBinder = GWT.create(SelectItemViewUiBinder.class);

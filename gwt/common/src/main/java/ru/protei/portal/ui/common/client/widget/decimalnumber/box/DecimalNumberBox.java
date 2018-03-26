@@ -47,7 +47,6 @@ public class DecimalNumberBox extends Composite
 
     @Override
     public DecimalNumber getValue() {
-        // todo: need parse value
         if (value.getOrganizationCode() == null) {
             value.setOrganizationCode(organizationCode.getValue());
         }
@@ -168,6 +167,8 @@ public class DecimalNumberBox extends Composite
     public void setValid(boolean isValid) {
         if (!isValid) {
             showMessage(lang.errFieldsRequired(), DisplayStyle.DANGER);
+        } else {
+            clearBoxState();
         }
     }
 

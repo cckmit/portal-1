@@ -5,6 +5,8 @@ import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_DecimalNumberEntityType;
+import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.Document;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -15,8 +17,6 @@ import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.DocumentServiceAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
-
-import static ru.protei.portal.core.model.helper.DocumentHelper.isDocumentValid;
 
 public abstract class DocumentEditActivity
         implements Activity, AbstractDocumentEditActivity {
@@ -58,7 +58,7 @@ public abstract class DocumentEditActivity
     @Override
     public void onSaveClicked() {
         Document document = applyChanges();
-        if (!isDocumentValid(document)) {
+        if (!document.isValid()) {
             fireEvent(new NotifyEvents.Show(getValidationErrorMessage(document), NotifyEvents.NotifyType.ERROR));
             return;
         } else if (!view.isDecimalNumbersCorrect()) {
@@ -80,7 +80,7 @@ public abstract class DocumentEditActivity
     }
 
     private String getValidationErrorMessage(Document doc) {
-        if (isDocumentValid(doc)) {
+        if (doc.isValid()) {
             return null;
         }
         if (doc.getDecimalNumber() == null) {
@@ -111,7 +111,11 @@ public abstract class DocumentEditActivity
     private Document applyChanges() {
         document.setName(view.name().getValue());
         document.setAnnotation(view.annotation().getValue());
-        document.setDecimalNumber(view.decimalNumber().getValue());
+        DecimalNumber decimalNumber = view.decimalNumber().getValue();
+        if (decimalNumber != null) {
+            decimalNumber.setEntityType(En_DecimalNumberEntityType.DOCUMENT);
+        }
+        document.setDecimalNumber(decimalNumber);
         document.setType(view.documentType().getValue());
         document.setInventoryNumber(view.inventoryNumber().getValue());
         document.setKeywords(view.keywords().getValue());

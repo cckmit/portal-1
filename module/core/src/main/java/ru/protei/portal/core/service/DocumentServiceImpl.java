@@ -15,8 +15,6 @@ import ru.protei.portal.core.model.query.DocumentQuery;
 
 import java.util.List;
 
-import static ru.protei.portal.core.model.helper.DocumentHelper.isDocumentValid;
-
 public class DocumentServiceImpl implements DocumentService {
     @Autowired
     DocumentDAO documentDAO;
@@ -53,21 +51,16 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    @Transactional
+    @Transactional // FIXME: transaction
     public CoreResponse<Document> saveDocument(AuthToken token, Document document) {
-        if(!isDocumentValid(document)) {
+        if(!document.isValid()) {
             return new CoreResponse<Document>().error(En_ResultStatus.INCORRECT_PARAMS);
-        }
-        if (document.getDecimalNumber().getId() == null) {
-            document.getDecimalNumber().setEntityType(En_DecimalNumberEntityType.DOCUMENT);
-            if (!decimalNumberDAO.saveOrUpdate(document.getDecimalNumber())) {
-                return new CoreResponse<Document>().error(En_ResultStatus.INTERNAL_ERROR);
-            }
         }
         if (!documentDAO.saveOrUpdate(document)) {
             return new CoreResponse<Document>().error(En_ResultStatus.INTERNAL_ERROR);
         }
         document.getDecimalNumber().setEntityId(document.getId());
+        document.getDecimalNumber().setEntityType(En_DecimalNumberEntityType.DOCUMENT);
         if (!decimalNumberDAO.saveOrUpdate(document.getDecimalNumber())) {
             return new CoreResponse<Document>().error(En_ResultStatus.INTERNAL_ERROR);
         }

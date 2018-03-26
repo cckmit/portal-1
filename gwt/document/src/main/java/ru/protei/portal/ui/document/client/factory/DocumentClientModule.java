@@ -12,8 +12,6 @@ import ru.protei.portal.ui.document.client.view.edit.DocumentEditView;
 import ru.protei.portal.ui.document.client.view.filter.DocumentFilterView;
 import ru.protei.portal.ui.document.client.view.table.DocumentTableView;
 import ru.protei.portal.ui.document.client.widget.doctype.DocumentTypeModel;
-import ru.protei.portal.ui.document.client.widget.select.item.AbstractSelectItemView;
-import ru.protei.portal.ui.document.client.widget.select.item.SelectItemView;
 
 public class DocumentClientModule extends AbstractGinModule {
     @Override
@@ -29,7 +27,5 @@ public class DocumentClientModule extends AbstractGinModule {
         bind(AbstractDocumentFilterView.class).to(DocumentFilterView.class).in(Singleton.class);
 
         bind(DocumentTypeModel.class).asEagerSingleton();
-
-        bind(AbstractSelectItemView.class).to(SelectItemView.class);
     }
 }
