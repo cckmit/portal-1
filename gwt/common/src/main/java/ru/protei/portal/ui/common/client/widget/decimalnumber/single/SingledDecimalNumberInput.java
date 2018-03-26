@@ -1,26 +1,20 @@
-package ru.protei.portal.ui.document.client.widget.number;
+package ru.protei.portal.ui.common.client.widget.decimalnumber.single;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.struct.DecimalNumberQuery;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.decimalnumber.box.DecimalNumberBox;
+import ru.protei.portal.ui.common.client.widget.decimalnumber.box.DecimalNumberBoxHandler;
+import ru.protei.portal.ui.common.client.widget.decimalnumber.provider.DecimalNumberDataProvider;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
-import ru.protei.portal.ui.equipment.client.provider.AbstractDecimalNumberDataProvider;
-import ru.protei.portal.ui.equipment.client.widget.number.item.DecimalNumberBox;
-import ru.protei.portal.ui.equipment.client.widget.number.item.DecimalNumberBoxHandler;
 import ru.protei.winter.web.common.client.common.DisplayStyle;
 
 import java.util.Collections;
 
-public class DecimalNumberInput extends DecimalNumberBox implements DecimalNumberBoxHandler {
-    public DecimalNumberInput() {
+public class SingledDecimalNumberInput extends DecimalNumberBox implements DecimalNumberBoxHandler {
+    public SingledDecimalNumberInput() {
         setHandler(this);
-    }
-
-    public void setSingleNumberView() {
-        setRemoveVisible(false);
-        setOrganizationCodeEnabled(true);
-        setReserveVisible(false);
     }
 
     @Override
@@ -66,7 +60,7 @@ public class DecimalNumberInput extends DecimalNumberBox implements DecimalNumbe
     }
 
     @Inject
-    AbstractDecimalNumberDataProvider dataProvider;
+    DecimalNumberDataProvider dataProvider;
 
     @Inject
     Lang lang;

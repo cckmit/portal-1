@@ -4,7 +4,7 @@
              xmlns:doctype="urn:import:ru.protei.portal.ui.document.client.widget.doctype"
              xmlns:person="urn:import:ru.protei.portal.ui.common.client.widget.selector.person"
              xmlns:keyword='urn:import:ru.protei.portal.ui.document.client.widget.select.input'
-             xmlns:decnum='urn:import:ru.protei.portal.ui.document.client.widget.number'>
+             xmlns:decnum='urn:import:ru.protei.portal.ui.common.client.widget.decimalnumber.single'>
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
     <g:HTMLPanel styleName="main-content">
@@ -47,7 +47,8 @@
                             <ui:text from="{lang.customer}"/>
                         </label>
                         <person:EmployeeButtonSelector ui:field="manager"
-                                                       defaultValue="{lang.equipmentManagerNotDefined}"
+                                                       defaultValue="null"
+                                                       hasNullValue="false"
                         />
                     </div>
 
@@ -55,7 +56,7 @@
                         <label>
                             <ui:text from="{lang.created}"/>
                         </label>
-                        <g:TextBox ui:field="created" styleName="input-field"/>
+                        <g:TextBox ui:field="created" styleName="input-field" enabled="false"/>
                     </div>
                 </div>
 
@@ -64,7 +65,10 @@
                 </legend>
                 <div class="grid grid-indent">
                     <div class="form-group col-xs-12">
-                        <decnum:DecimalNumberInput ui:field="decimalNumber"/>
+                        <decnum:SingledDecimalNumberInput ui:field="decimalNumber"
+                                                          removeVisible="false"
+                                                          organizationCodeEnabled="true"
+                                                          reserveVisible="false"/>
                     </div>
                 </div>
 

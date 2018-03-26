@@ -4,7 +4,7 @@
              xmlns:stage="urn:import:ru.protei.portal.ui.equipment.client.widget.stage"
              xmlns:selector="urn:import:ru.protei.portal.ui.equipment.client.widget.selector"
              xmlns:type="urn:import:ru.protei.portal.ui.equipment.client.widget.type"
-             xmlns:list="urn:import:ru.protei.portal.ui.equipment.client.widget.number.list"
+             xmlns:list="urn:import:ru.protei.portal.ui.common.client.widget.decimalnumber.multiple"
              xmlns:person="urn:import:ru.protei.portal.ui.common.client.widget.selector.person">
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
@@ -71,7 +71,7 @@
                 <legend class="header"><ui:text from="{lang.equipmentDecimalNumber}"/></legend>
                 <div class="grid grid-indent">
                     <div class="form-group col-xs-12">
-                        <list:DecimalNumberList ui:field="numbers"/>
+                        <list:MultipleDecimalNumberInput ui:field="numbers"/>
                     </div>
                 </div>
 

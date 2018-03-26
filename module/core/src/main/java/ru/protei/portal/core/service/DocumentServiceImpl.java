@@ -1,6 +1,7 @@
 package ru.protei.portal.core.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.DecimalNumberDAO;
 import ru.protei.portal.core.model.dao.DocumentDAO;
@@ -52,9 +53,10 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
+    @Transactional
     public CoreResponse<Document> saveDocument(AuthToken token, Document document) {
         if(!isDocumentValid(document)) {
-            return new CoreResponse<Document>().error(En_ResultStatus.VALIDATION_ERROR);
+            return new CoreResponse<Document>().error(En_ResultStatus.INCORRECT_PARAMS);
         }
         if (document.getDecimalNumber().getId() == null) {
             document.getDecimalNumber().setEntityType(En_DecimalNumberEntityType.DOCUMENT);

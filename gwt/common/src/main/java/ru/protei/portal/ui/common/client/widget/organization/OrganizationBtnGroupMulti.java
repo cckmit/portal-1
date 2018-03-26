@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.equipment.client.widget.organization;
+package ru.protei.portal.ui.common.client.widget.organization;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_OrganizationCode;

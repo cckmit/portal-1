@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.equipment.client.widget.number.item;
+package ru.protei.portal.ui.common.client.widget.decimalnumber.box;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
@@ -23,17 +23,18 @@ import ru.protei.portal.ui.common.client.events.AddHandler;
 import ru.protei.portal.ui.common.client.events.HasAddHandlers;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.mask.MaskedTextBox;
+import ru.protei.portal.ui.common.client.widget.organization.OrganizationButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.event.HasRemoveHandlers;
 import ru.protei.portal.ui.common.client.widget.selector.event.RemoveEvent;
 import ru.protei.portal.ui.common.client.widget.selector.event.RemoveHandler;
-import ru.protei.portal.ui.equipment.client.widget.organization.OrganizationButtonSelector;
+import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.winter.web.common.client.common.DisplayStyle;
 
 /**
  * Вид виджета децимального номера
  */
 public class DecimalNumberBox extends Composite
-        implements HasValue<DecimalNumber>, HasEnabled, HasRemoveHandlers, HasAddHandlers {
+        implements HasValue<DecimalNumber>, HasEnabled, HasRemoveHandlers, HasAddHandlers, HasValidable {
 
     @Inject
     public void onInit() {
@@ -41,6 +42,7 @@ public class DecimalNumberBox extends Composite
         classifierCode.getElement().setAttribute("placeholder", lang.equipmentClassifierCode().toLowerCase());
         regNum.getElement().setAttribute("placeholder", lang.equipmentRegisterNumber().toLowerCase());
         regNumModification.getElement().setAttribute("placeholder", lang.equipmentRegisterNumberModification().toLowerCase());
+        organizationCode.setValue(En_OrganizationCode.PAMR);
     }
 
     @Override
@@ -55,15 +57,6 @@ public class DecimalNumberBox extends Composite
     @Override
     public void setValue(DecimalNumber decimalNumber) {
         setValue(decimalNumber, false);
-    }
-
-    public boolean isCorrect() {
-        DecimalNumber number = getValue();
-        if (number.getClassifierCode() == null || number.getRegisterNumber() == null) {
-            showMessage(lang.errFieldsRequired(), DisplayStyle.DANGER);
-            return false;
-        }
-        return true;
     }
 
     @Override
@@ -169,6 +162,18 @@ public class DecimalNumberBox extends Composite
         } catch (Throwable t) {
             return null;
         }
+    }
+
+    @Override
+    public void setValid(boolean isValid) {
+        if (!isValid) {
+            showMessage(lang.errFieldsRequired(), DisplayStyle.DANGER);
+        }
+    }
+
+    @Override
+    public boolean isValid() {
+        return getValue().isValid();
     }
 
     public void setOrganizationCodeEnabled(boolean isEnabled) {

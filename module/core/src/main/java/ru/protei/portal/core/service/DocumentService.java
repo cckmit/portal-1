@@ -20,7 +20,6 @@ public interface DocumentService {
     @Privileged(En_Privilege.DOCUMENT_VIEW)
     CoreResponse<List<Document>> documentList(AuthToken token, DocumentQuery query);
 
-    @Privileged(En_Privilege.DOCUMENT_VIEW)
     CoreResponse<List<DocumentType>> documentTypeList(AuthToken token);
 
     @Privileged(En_Privilege.DOCUMENT_VIEW)

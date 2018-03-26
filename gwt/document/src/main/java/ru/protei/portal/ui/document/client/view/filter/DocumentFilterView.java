@@ -18,6 +18,7 @@ import ru.protei.portal.core.model.ent.DocumentType;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.organization.OrganizationBtnGroupMulti;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
@@ -25,7 +26,6 @@ import ru.protei.portal.ui.document.client.activity.filter.AbstractDocumentFilte
 import ru.protei.portal.ui.document.client.activity.filter.AbstractDocumentFilterView;
 import ru.protei.portal.ui.document.client.widget.doctype.DocumentTypeSelector;
 import ru.protei.portal.ui.document.client.widget.select.input.SelectInputView;
-import ru.protei.portal.ui.equipment.client.widget.organization.OrganizationBtnGroupMulti;
 
 import java.util.LinkedList;
 import java.util.List;

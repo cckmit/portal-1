@@ -1,9 +1,6 @@
 package ru.protei.portal.ui.equipment.client.view.edit;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.DivElement;
-import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.InputElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -12,15 +9,14 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_EquipmentStage;
 import ru.protei.portal.core.model.dict.En_EquipmentType;
-import ru.protei.portal.core.model.ent.Equipment;
+import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.ui.common.client.widget.decimalnumber.multiple.MultipleDecimalNumberInput;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
-import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.ui.equipment.client.activity.edit.AbstractEquipmentEditActivity;
 import ru.protei.portal.ui.equipment.client.activity.edit.AbstractEquipmentEditView;
-import ru.protei.portal.ui.equipment.client.widget.number.list.DecimalNumberList;
 import ru.protei.portal.ui.equipment.client.widget.selector.EquipmentSelector;
 import ru.protei.portal.ui.equipment.client.widget.stage.EquipmentStageSelector;
 import ru.protei.portal.ui.equipment.client.widget.type.EquipmentTypeBtnGroup;
@@ -162,7 +158,7 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
     EquipmentSelector linkedEquipment;
     @Inject
     @UiField(provided = true)
-    DecimalNumberList numbers;
+    MultipleDecimalNumberInput numbers;
     @Inject
     @UiField(provided = true)
     EmployeeButtonSelector manager;

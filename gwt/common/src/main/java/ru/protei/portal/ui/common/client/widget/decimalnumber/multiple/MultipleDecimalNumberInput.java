@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.equipment.client.widget.number.list;
+package ru.protei.portal.ui.common.client.widget.decimalnumber.multiple;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -8,17 +8,20 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.HasValue;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.protei.portal.core.model.dict.En_OrganizationCode;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.struct.DecimalNumberQuery;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.decimalnumber.box.DecimalNumberBox;
+import ru.protei.portal.ui.common.client.widget.decimalnumber.box.DecimalNumberBoxHandler;
+import ru.protei.portal.ui.common.client.widget.decimalnumber.provider.DecimalNumberDataProvider;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
-import ru.protei.portal.ui.equipment.client.provider.AbstractDecimalNumberDataProvider;
-import ru.protei.portal.ui.equipment.client.widget.number.item.DecimalNumberBoxHandler;
-import ru.protei.portal.ui.equipment.client.widget.number.item.DecimalNumberBox;
 import ru.protei.winter.web.common.client.common.DisplayStyle;
 
 import java.util.*;
@@ -26,7 +29,7 @@ import java.util.*;
 /**
  * Список децимальных номеров
  */
-public class DecimalNumberList
+public class MultipleDecimalNumberInput
         extends Composite
         implements HasValue<List<DecimalNumber>>, DecimalNumberBoxHandler {
     @Inject
@@ -260,7 +263,7 @@ public class DecimalNumberList
     @Inject
     Lang lang;
     @Inject
-    AbstractDecimalNumberDataProvider dataProvider;
+    DecimalNumberDataProvider dataProvider;
     @Inject
     Provider<DecimalNumberBox> boxProvider;
 
@@ -268,7 +271,7 @@ public class DecimalNumberList
 
     private List<DecimalNumberBox> numberBoxes = new ArrayList<>();
 
-    interface DecimalNumberListUiBinder extends UiBinder< HTMLPanel, DecimalNumberList > {}
+    interface DecimalNumberListUiBinder extends UiBinder< HTMLPanel, MultipleDecimalNumberInput> {}
     private static DecimalNumberListUiBinder ourUiBinder = GWT.create( DecimalNumberListUiBinder.class );
 
 }

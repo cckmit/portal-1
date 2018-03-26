@@ -41,7 +41,7 @@ public abstract class DocumentEditActivity
         documentService.getDocument(event.id, new RequestCallback<Document>() {
             @Override
             public void onError(Throwable throwable) {
-                fireErrorMessage(lang.errGetList());
+                fireErrorMessage(lang.errGetObject());
             }
 
             @Override

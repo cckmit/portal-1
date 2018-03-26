@@ -1,6 +1,6 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:org='urn:import:ru.protei.portal.ui.equipment.client.widget.organization'
+             xmlns:org='urn:import:ru.protei.portal.ui.common.client.widget.organization'
              xmlns:mask="urn:import:ru.protei.portal.ui.common.client.widget.mask"
 >
 

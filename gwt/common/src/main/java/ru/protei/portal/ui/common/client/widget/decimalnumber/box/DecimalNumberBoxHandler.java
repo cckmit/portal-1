@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.equipment.client.widget.number.item;
+package ru.protei.portal.ui.common.client.widget.decimalnumber.box;
 
 
 /**
