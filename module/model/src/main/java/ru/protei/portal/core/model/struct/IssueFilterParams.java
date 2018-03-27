@@ -39,7 +39,7 @@ public class IssueFilterParams implements Serializable {
     private List<Integer> importances;
 
     @JsonProperty("states")
-    private List<Integer> states;
+    private List<Long> states;
 
     public String getDescription() {
         return description;
@@ -105,11 +105,11 @@ public class IssueFilterParams implements Serializable {
         this.importances = importances;
     }
 
-    public List< Integer > getStates() {
+    public List< Long > getStates() {
         return states;
     }
 
-    public void setStates( List< Integer > states ) {
+    public void setStates( List< Long > states ) {
         this.states = states;
     }
 }

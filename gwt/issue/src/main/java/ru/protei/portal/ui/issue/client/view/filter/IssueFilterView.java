@@ -16,6 +16,7 @@ import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.IssueFilterShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
@@ -26,6 +27,7 @@ import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterActivity;
 import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterView;
+import ru.protei.portal.ui.issue.client.widget.filter.IssueFilterSelector;
 import ru.protei.portal.ui.issue.client.widget.importance.btngroup.ImportanceBtnGroupMulti;
 import ru.protei.portal.ui.common.client.widget.selector.product.ProductMultiSelector;
 import ru.protei.portal.ui.issue.client.widget.state.option.IssueStatesOptionList;
@@ -109,7 +111,8 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         sortField.setValue( En_SortField.creation_date );
         sortDir.setValue( false );
         search.setText( "" );
-        //TODO crm-93 clear user filters selector
+        userFilter.setValue( null );
+        //TODO crm-93 скрыть поле имя фильтра и кнопку Удалить
     }
 
     @Override
@@ -125,6 +128,11 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     @Override
     public HasVisibility productsVisibility() {
         return products;
+    }
+
+    @Override
+    public HasValue<IssueFilterShortView> userFilter() {
+        return userFilter;
     }
 
     @UiHandler( "resetBtn" )
@@ -215,6 +223,14 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         timer.schedule( 300 );
     }
 
+    @UiHandler( "userFilter" )
+    public void onKeyUpSearch( ValueChangeEvent< IssueFilterShortView > event ) {
+        if ( activity == null ) {
+            return;
+        }
+        activity.onUserFilterChanged();
+    }
+
     Timer timer = new Timer() {
         @Override
         public void run() {
@@ -251,6 +267,10 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     @Inject
     @UiField( provided = true )
     SortFieldSelector sortField;
+
+    @Inject
+    @UiField( provided = true )
+    IssueFilterSelector userFilter;
 
     @UiField
     ToggleButton sortDir;

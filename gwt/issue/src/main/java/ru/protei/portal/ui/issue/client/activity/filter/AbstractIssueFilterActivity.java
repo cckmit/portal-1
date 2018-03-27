@@ -9,4 +9,6 @@ public interface AbstractIssueFilterActivity {
     void onSaveFilterClicked();
 
     void onFilterRemoveClicked( Long id );
+
+    void onUserFilterChanged();
 }

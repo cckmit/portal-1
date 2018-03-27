@@ -8,6 +8,7 @@ import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.IssueFilterShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
 import java.util.Set;
@@ -33,4 +34,6 @@ public interface AbstractIssueFilterView extends IsWidget {
     HasVisibility companiesVisibility();
     HasVisibility productsVisibility();
     HasVisibility managersVisibility();
+
+    HasValue<IssueFilterShortView > userFilter();
 }

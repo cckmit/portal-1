@@ -6,12 +6,17 @@
              xmlns:sortfieldselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.sortfield'
              xmlns:importance='urn:import:ru.protei.portal.ui.issue.client.widget.importance.btngroup'
              xmlns:state='urn:import:ru.protei.portal.ui.issue.client.widget.state.option'
+             xmlns:filter='urn:import:ru.protei.portal.ui.issue.client.widget.filter'
              xmlns:range='urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.range'>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel styleName="panel with-table-pager">
         <div class="body">
+
+            <filter:IssueFilterSelector ui:field="userFilter" header="{lang.issueFilter}"
+                                        addStyleNames="form-group col-xs-12" defaultValue="{lang.selectorAny}"/>
+
             <div class="form-group local-search col-xs-12">
                 <span class="icon local-search-icon"></span>
                 <g:TextBox ui:field="search" styleName="input-field"/>

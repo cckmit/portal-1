@@ -702,4 +702,6 @@ public interface Lang extends Messages, ContactItemLang {
     String privilegeDocumentation();
 
     String errSaveIssueFilter();
+
+    String issueFilter();
 }

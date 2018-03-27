@@ -11,6 +11,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.Attachment;
+import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.IssueFilter;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.struct.IssueFilterParams;
@@ -25,16 +26,16 @@ import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
-import ru.protei.portal.ui.common.client.service.IssueFilterServiceAsync;
-import ru.protei.portal.ui.common.client.service.IssueServiceAsync;
+import ru.protei.portal.ui.common.client.service.*;
 import ru.protei.portal.ui.common.client.widget.attachment.popup.AttachPopup;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterActivity;
 import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterView;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -135,7 +136,7 @@ public abstract class IssueTableActivity
 
             @Override
             public void onSuccess( IssueFilter filter ) {
-                fireEvent( new NotifyEvents.Show( "SAVED", NotifyEvents.NotifyType.SUCCESS ) );
+                fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
             }
         } );
     }
@@ -151,8 +152,29 @@ public abstract class IssueTableActivity
 
             @Override
             public void onSuccess( Boolean aBoolean ) {
+
+                fireEvent( new IssueEvents.ChangeUserFilterModel() );
                 filterView.resetFilter();
-                //TODO crm-93 filtersSelector.setValue(null)
+                filterView.userFilter().setValue( null );
+            }
+        } );
+    }
+
+    @Override
+    public void onUserFilterChanged() {
+
+        // сформировать объект IssueFilter
+
+        Long filterId = filterView.userFilter().getValue().getId();
+        filterService.getIssueFilter( filterId, new RequestCallback< IssueFilter >() {
+            @Override
+            public void onError( Throwable throwable ) {
+                fireEvent( new NotifyEvents.Show( lang.errNotFound(), NotifyEvents.NotifyType.ERROR ) );
+            }
+
+            @Override
+            public void onSuccess( IssueFilter filter ) {
+                fillFilterFields( filter );
             }
         } );
     }
@@ -208,6 +230,69 @@ public abstract class IssueTableActivity
                 }
             }
         });
+    }
+
+
+    private void fillFilterFields( IssueFilter filter ) {
+        // заполнить поля фильтра
+        // показать поле имя и заполнить его
+        // сделать видимой кнопку удалить фильтр
+
+        IssueFilterParams params = filter.getParams();
+        filterView.searchPattern().setValue( params.getDescription() );
+        filterView.sortDir().setValue( params.getSort().equals( En_SortDir.ASC ) );
+        filterView.dateRange().getValue().from = params.getCreatedFrom();
+        filterView.dateRange().getValue().to = params.getCreatedTo();
+        filterView.importances().setValue( getImportances( params.getImportances() ) );
+        filterView.states().setValue( getStates( params.getStates() ) );
+        filterView.companies().setValue( getCompanies( params.getCompanies()) );
+        filterView.managers().setValue( getManagers( params.getManagers()) );
+        filterView.products().setValue( getProducts( params.getProducts()) );
+    }
+
+    private Set< EntityOption > getCompanies( List< Long > companiesIdList ) {
+
+        if ( companiesIdList == null || companiesIdList.isEmpty() ) {
+            return null;
+        }
+
+        return null;
+    }
+
+    private Set< En_ImportanceLevel > getImportances( List< Integer > importancesIdList ) {
+        if ( importancesIdList == null || importancesIdList.isEmpty() ) {
+            return null;
+        }
+
+        //TODO CRM-93 use stream
+//        return importancesIdList
+//                .stream()
+//                .map( En_ImportanceLevel::getById )
+//                .collect( Collectors.toSet() );
+
+        Set< En_ImportanceLevel > importances = new HashSet<>();
+        for ( Integer id : importancesIdList ) {
+            importances.add( En_ImportanceLevel.getById( id ) );
+        }
+        return importances;
+    }
+
+    private Set< En_CaseState > getStates( List< Long > statesIdList ) {
+        if ( statesIdList == null || statesIdList.isEmpty() ) {
+            return null;
+        }
+
+        //TODO CRM-93 use stream
+//        return importancesIdList
+//                .stream()
+//                .map( En_ImportanceLevel::getById )
+//                .collect( Collectors.toSet() );
+
+        Set< En_CaseState > states = new HashSet<>();
+        for ( Long id : statesIdList ) {
+            states.add( En_CaseState.getById( id ) );
+        }
+        return states;
     }
 
     private void requestIssuesCount() {
@@ -322,7 +407,7 @@ public abstract class IssueTableActivity
         return importances;
     }
 
-    private List<Integer> getStatesIdList(){
+    private List<Long> getStatesIdList(){
 
         if(filterView.states().getValue() == null){
             return null;
@@ -333,9 +418,9 @@ public abstract class IssueTableActivity
 //                .map( En_CaseState::getId )
 //                .collect( Collectors.toList() );
 
-        List< Integer > states = new ArrayList< Integer >();
+        List< Long > states = new ArrayList<>();
         for ( En_CaseState option : filterView.states().getValue() ) {
-            states.add( option.getId() );
+            states.add( Long.valueOf( option.getId() ) );
         }
         return states;
     }
@@ -425,6 +510,15 @@ public abstract class IssueTableActivity
 
     @Inject
     IssueFilterServiceAsync filterService;
+
+    @Inject
+    CompanyServiceAsync companyService;
+
+    @Inject
+    PersonServiceAsync personService;
+
+    @Inject
+    ProductServiceAsync productService;
 
     @Inject
     PolicyService policyService;
