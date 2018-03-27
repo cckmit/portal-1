@@ -9,16 +9,52 @@ import java.util.List;
 public class AutoResizeTextArea extends TextArea {
 
     private final String newLineSymbol = "\n";
-    private final int numberOfExtraLines = 2;
     private int minRows = 5;
     private int maxRows = 20;
+    private int extraRows = 2;
+
+    /**
+     * Устанавливает минимальное количество строк, которое будет отображаться
+     * @param rows Количество строк
+     */
+    public void setMinRows(String rows) {
+        try {
+            minRows = Integer.parseInt(rows);
+        } catch (NumberFormatException ignore) {
+            /* ignore */
+        }
+    }
+
+    /**
+     * Устанавливает максимальное количество строк, которое будет отображаться
+     * @param rows Количество строк
+     */
+    public void setMaxRows(String rows) {
+        try {
+            maxRows = Integer.parseInt(rows);
+        } catch (NumberFormatException ignore) {
+            /* ignore */
+        }
+    }
+
+    /**
+     * Устанавливает количество пустых строк, которое будет отображаться в конце
+     * @param rows Количество строк
+     */
+    public void setExtraRows(String rows) {
+        try {
+            extraRows = Integer.parseInt(rows);
+        } catch (NumberFormatException ignore) {
+            /* ignore */
+        }
+    }
 
     @Override
     protected void onAttach() {
         super.onAttach();
 
-        this.getElement().getStyle().setProperty("height", "auto");
-        this.getElement().getStyle().setProperty("maxHeight", "none");
+        getElement().getStyle().setProperty("height", "auto");
+        getElement().getStyle().setProperty("maxHeight", "none");
 
         reg.add(addKeyUpHandler(event -> requestResize()));
         reg.add(addChangeHandler(event -> requestResize()));
@@ -37,23 +73,25 @@ public class AutoResizeTextArea extends TextArea {
         }
     }
 
-    public void setMinRows(String rows) {
-        try {
-            minRows = Integer.parseInt(rows);
-        } catch (NumberFormatException ignore) {
-            /* ignore */
-        }
+    @Override
+    public void setValue(String value) {
+        super.setValue(value);
+        requestResize();
     }
 
-    public void setMaxRows(String rows) {
-        try {
-            maxRows = Integer.parseInt(rows);
-        } catch (NumberFormatException ignore) {
-            /* ignore */
-        }
+    @Override
+    public void setValue(String value, boolean fireEvents) {
+        super.setValue(value, fireEvents);
+        requestResize();
     }
 
-    public void requestResize() {
+    @Override
+    public void setText(String text) {
+        super.setText(text);
+        requestResize();
+    }
+
+    private void requestResize() {
         String value = getValue();
         int lines = 0;
         if (value != null) {
@@ -62,7 +100,7 @@ public class AutoResizeTextArea extends TextArea {
                 lines++;
                 i = value.indexOf(newLineSymbol, i + 1);
             }
-            lines += numberOfExtraLines;
+            lines += extraRows;
         }
         if (lines < minRows) {
             lines = minRows;
