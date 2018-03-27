@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.dict.En_DecimalNumberEntityType;
 import ru.protei.portal.core.model.dict.En_OrganizationCode;
 import ru.protei.winter.jdbc.annotations.*;
 
@@ -23,6 +24,13 @@ public class DecimalNumber implements Serializable {
     private En_OrganizationCode organizationCode;
 
     /**
+     * Тип сущности, которой принадлежит децимальный номер
+     */
+    @JdbcColumn(name = "entity_type")
+    @JdbcEnumerated(EnumType.STRING)
+    private En_DecimalNumberEntityType entityType;
+
+    /**
      * Код по классификатору ЕСКД
      */
     @JdbcColumn( name = "classifier_code" )
@@ -40,8 +48,8 @@ public class DecimalNumber implements Serializable {
     @JdbcColumn( name = "modification_number" )
     private Integer modification;
 
-    @JdbcColumn( name = "equipment_id")
-    private Long equipmentId;
+    @JdbcColumn(name = "entity_id")
+    private Long entityId;
 
     @JdbcColumn( name = "is_reserve")
     private boolean isReserve;
@@ -94,16 +102,12 @@ public class DecimalNumber implements Serializable {
         isReserve = reserve;
     }
 
-    public Long getEquipmentId() {
-        return equipmentId;
+    public Long getEntityId() {
+        return entityId;
     }
 
-    public void setEquipmentId( Long equipmentId ) {
-        this.equipmentId = equipmentId;
-    }
-
-    public boolean isValid() {
-        return true;
+    public void setEntityId(Long entityId) {
+        this.entityId = entityId;
     }
 
     public boolean isEmpty() {
@@ -126,5 +130,18 @@ public class DecimalNumber implements Serializable {
         this.modification = modification;
     }
 
+    public boolean isValid() {
+        return getClassifierCode() != null &&
+                getRegisterNumber() != null;
+    }
+
     public DecimalNumber() {}
+
+    public En_DecimalNumberEntityType getEntityType() {
+        return entityType;
+    }
+
+    public void setEntityType(En_DecimalNumberEntityType entityType) {
+        this.entityType = entityType;
+    }
 }

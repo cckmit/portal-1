@@ -11,7 +11,6 @@ import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.utils.TypeConverters;
 import ru.protei.winter.core.utils.collections.CollectionUtils;
 import ru.protei.winter.jdbc.JdbcQueryParameters;
-import ru.protei.winter.jdbc.JdbcSort;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,15 +20,14 @@ import java.util.stream.Collectors;
  */
 public class EquipmentDAO_Impl extends PortalBaseJdbcDAO<Equipment> implements EquipmentDAO {
 
+    private final static String DECIMAL_NUMBER_JOIN = "LEFT JOIN decimal_number DN ON DN.entity_id = equipment.id AND DN.entity_type = 'EQUIPMENT'";
+
     @Override
     public List<Equipment> getListByQuery(EquipmentQuery query) {
         SqlCondition where = createSqlCondition(query);
-
-        String join = "LEFT JOIN decimal_number DN ON DN.equipment_id = equipment.id";
-
         return getList(
                 new JdbcQueryParameters().
-                        withJoins(join).
+                        withJoins(DECIMAL_NUMBER_JOIN).
                         withCondition(where.condition, where.args).
                         withDistinct(true).
                         withOffset(query.getOffset()).
@@ -41,9 +39,7 @@ public class EquipmentDAO_Impl extends PortalBaseJdbcDAO<Equipment> implements E
     @Override
     public Long countByQuery( EquipmentQuery query ) {
         SqlCondition where = createSqlCondition(query);
-        String join = "LEFT JOIN decimal_number DN ON DN.equipment_id = equipment.id";
-
-        return (long) getObjectsCount( where.condition, where.args, join, true );
+        return (long) getObjectsCount( where.condition, where.args, DECIMAL_NUMBER_JOIN, true );
     }
 
     @Override

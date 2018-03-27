@@ -9,6 +9,7 @@
     <stylesheet src="css/advance-fonts.css"/>
     <stylesheet src="css/ionicons.min.css"/>
     <stylesheet src="css/switcher.css"/>
+    <stylesheet src="css/select2.css"/>
 
     <source path='client'/>
     <source path='shared'/>

@@ -32,8 +32,8 @@ public class En_PrivilegeEntityLang {
                 return lang.privilegeCategoryOfficial();
             case DASHBOARD:
                 return lang.privilegeDashboard();
-            case DOCUMENTATION:
-                return lang.privilegeDocumentation();
+            case DOCUMENT:
+                return lang.privilegeDocument();
             default:
                 return lang.unknownField();
         }

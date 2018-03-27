@@ -693,31 +693,59 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errCreatedStateSelected();
 
-    String documentation();
+    String document();
 
     String annotation();
 
     String designation();
 
-    String privilegeDocumentation();
+    String privilegeDocument();
 
-    String documentationNameBySpecification();
+    String documentCommonHeader();
 
-    String documentationType();
+    String documentName();
 
-    String documentationAnnotation();
+    String documentType();
 
-    String documentationProject();
+    String documentSearchNameOrProject();
 
-    String documentationManager();
+    String documentKeywords();
 
-    String documentationIdentification();
+    String documentContent();
 
-    String documentationDecimalNumber();
+    String addKeyword();
 
-    String documentationInventoryNumber();
+    String keywordInputPlaceholder();
 
-    String documentationKeyWords();
+    String inventoryNumber();
 
-    String documentationDescription();
+    String customer();
+
+    String documentTypeIsEmpty();
+
+    String documentProjectIsEmpty();
+
+    String inventoryNumberIsEmpty();
+
+    String negativeInventoryNumber();
+
+    String customerNotSet();
+
+    String decimalNumberNotSet();
+
+    String documentNameIsNotSet();
+
+    String documentTypeNotDefined();
+
+    String errGetObject();
+
+    String documentDescription();
+
+    String documentProject();
+
+    String documentManager();
+
+    String documentDecimalNumber();
+
+    String documentIdentification();
 }

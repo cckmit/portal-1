@@ -67,5 +67,5 @@ public class ToggleBtnGroupMulti<T>
         ValueChangeEvent.fire( this, selected );
     }
 
-    private Set< T > selected;
+    protected Set<T> selected;
 }

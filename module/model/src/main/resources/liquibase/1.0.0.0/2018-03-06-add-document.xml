@@ -63,4 +63,27 @@
                                  referencedColumnNames="id"/>
     </changeSet>
 
+    <changeSet id="rename-document-table" author="efremov">
+        <renameTable oldTableName="documentation" newTableName="document"/>
+    </changeSet>
+
+    <changeSet id="alter-decimal_number-table" author="efremov">
+        <renameColumn tableName="decimal_number" oldColumnName="equipment_id" newColumnName="entity_id"
+                      columnDataType="BIGINT"/>
+        <addColumn tableName="decimal_number">
+            <column name="entity_type" type="VARCHAR(32)">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="remove-equipment_id-fk" author="efremov">
+        <dropForeignKeyConstraint baseTableName="decimal_number" constraintName="decimal_number_equipment_id_fk"/>
+    </changeSet>
+
+    <changeSet id="remove-decimal_number_id-field" author="efremov">
+        <dropForeignKeyConstraint baseTableName="document" constraintName="documentation_decimal_number_id_fk" />
+        <dropColumn tableName="document" columnName="decimal_number_id"/>
+    </changeSet>
+
 </databaseChangeLog>

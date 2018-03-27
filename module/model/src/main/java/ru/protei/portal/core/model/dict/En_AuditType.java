@@ -64,7 +64,10 @@ public enum En_AuditType {
     POSITION_CREATE( 41 ),
     POSITION_REMOVE( 42 ),
 
-    PHOTO_UPLOAD( 43 );
+    PHOTO_UPLOAD( 43 ),
+
+    DOCUMENT_MODIFY(44),
+    DOCUMENT_REMOVE(45);
 
     En_AuditType( int id ) {
         this.id = id;

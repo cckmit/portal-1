@@ -17,5 +17,5 @@ public enum En_PrivilegeEntity {
     ROLE,
     OFFICIAL,
     DASHBOARD,
-    DOCUMENTATION
+    DOCUMENT
 }

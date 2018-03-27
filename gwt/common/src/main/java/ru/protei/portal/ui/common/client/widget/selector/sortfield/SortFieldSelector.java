@@ -3,7 +3,6 @@ package ru.protei.portal.ui.common.client.widget.selector.sortfield;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.ui.common.client.lang.En_SortFieldLang;
-import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 
@@ -57,6 +56,11 @@ public class SortFieldSelector extends ButtonSelector< En_SortField > {
                 addOption( En_SortField.creation_date );
                 addOption( En_SortField.region_name );
                 addOption( En_SortField.prod_name );
+                break;
+            case DOCUMENT:
+                addOption( En_SortField.name );
+                addOption( En_SortField.project );
+                addOption( En_SortField.creation_date );
                 break;
         }
     }

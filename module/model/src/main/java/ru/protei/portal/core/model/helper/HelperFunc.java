@@ -46,6 +46,10 @@ public class HelperFunc {
         return Arrays.stream(arr).filter(s -> isNotEmpty(s)).collect(Collectors.joining(delim));
     }
 
+    public static String join(String delim, Collection<String> collection) {
+        return collection.stream().collect(Collectors.joining(delim));
+    }
+
     public static boolean testAllNotEmpty (String...arr) {
         for (String s : arr)
             if (isEmpty(s))
@@ -157,5 +161,13 @@ public class HelperFunc {
             // rest
             consumer.accept(full_list.subList(full_batches*batchSize, full_list.size()));
         }
+    }
+
+    public static String makeInArg(Collection<String> col) {
+        return "(" +
+                col.stream()
+                        .map(s -> "'" + s + "'")
+                        .collect(Collectors.joining(","))
+                + ")";
     }
 }
