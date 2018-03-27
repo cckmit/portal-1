@@ -1,14 +1,14 @@
 package ru.protei.portal.ui.common.client.widget.autoresizetextarea;
 
-import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.TextArea;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class AutoResizeTextArea extends TextArea {
 
-    private final String newLineSymbol = "\n";
+    private final static String NEW_LINE_SYMBOL = "\n";
+    private final static int INDEX_NOT_FOUND = -1;
+    private final static int TEXTAREA_VALUE_CHANGE_EVENTS = Event.ONKEYUP | Event.ONCHANGE | Event.ONPASTE;
     private int minRows = 5;
     private int maxRows = 20;
     private int extraRows = 2;
@@ -17,36 +17,24 @@ public class AutoResizeTextArea extends TextArea {
      * Устанавливает минимальное количество строк, которое будет отображаться
      * @param rows Количество строк
      */
-    public void setMinRows(String rows) {
-        try {
-            minRows = Integer.parseInt(rows);
-        } catch (NumberFormatException ignore) {
-            /* ignore */
-        }
+    public void setMinRows(int rows) {
+        minRows = rows;
     }
 
     /**
      * Устанавливает максимальное количество строк, которое будет отображаться
      * @param rows Количество строк
      */
-    public void setMaxRows(String rows) {
-        try {
-            maxRows = Integer.parseInt(rows);
-        } catch (NumberFormatException ignore) {
-            /* ignore */
-        }
+    public void setMaxRows(int rows) {
+        maxRows = rows;
     }
 
     /**
      * Устанавливает количество пустых строк, которое будет отображаться в конце
      * @param rows Количество строк
      */
-    public void setExtraRows(String rows) {
-        try {
-            extraRows = Integer.parseInt(rows);
-        } catch (NumberFormatException ignore) {
-            /* ignore */
-        }
+    public void setExtraRows(int rows) {
+        extraRows = rows;
     }
 
     @Override
@@ -56,20 +44,14 @@ public class AutoResizeTextArea extends TextArea {
         getElement().getStyle().setProperty("height", "auto");
         getElement().getStyle().setProperty("maxHeight", "none");
 
-        reg.add(addKeyUpHandler(event -> requestResize()));
-        reg.add(addChangeHandler(event -> requestResize()));
+        sinkEvents(TEXTAREA_VALUE_CHANGE_EVENTS);
     }
 
     @Override
-    protected void onDetach() {
-        super.onDetach();
-        if (reg != null) {
-            for (HandlerRegistration r : reg) {
-                if (r != null) {
-                    r.removeHandler();
-                }
-            }
-            reg.clear();
+    public void onBrowserEvent(Event event){
+        super.onBrowserEvent(event);
+        if ((DOM.eventGetType(event) & TEXTAREA_VALUE_CHANGE_EVENTS) != 0) {
+            requestResize();
         }
     }
 
@@ -92,24 +74,31 @@ public class AutoResizeTextArea extends TextArea {
     }
 
     private void requestResize() {
+        setVisibleLines(countLines());
+    }
+
+    private int countLines() {
         String value = getValue();
         int lines = 0;
         if (value != null) {
-            int i = value.indexOf(newLineSymbol);
-            while (i != -1) {
+            int i = value.indexOf(NEW_LINE_SYMBOL);
+            while (i != INDEX_NOT_FOUND) {
                 lines++;
-                i = value.indexOf(newLineSymbol, i + 1);
+                i = value.indexOf(NEW_LINE_SYMBOL, i + 1);
             }
             lines += extraRows;
         }
+        return lines;
+    }
+
+    @Override
+    public void setVisibleLines(int lines) {
         if (lines < minRows) {
             lines = minRows;
         }
         if (lines > maxRows) {
             lines = maxRows;
         }
-        setVisibleLines(lines);
+        super.setVisibleLines(lines);
     }
-
-    private List<HandlerRegistration> reg = new ArrayList<>();
 }
