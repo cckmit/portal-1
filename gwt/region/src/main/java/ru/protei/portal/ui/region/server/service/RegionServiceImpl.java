@@ -83,7 +83,6 @@ public class RegionServiceImpl implements RegionService {
     public ProjectInfo getProject( Long id ) throws RequestFailedException {
         log.debug( "getProject(): id={}", id );
 
-        //TODO используется для отображения карточки проекта, думаю проверка роли PROJECT_VIEW логична
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
         CoreResponse< ProjectInfo > response = projectService.getProject( descriptor.makeAuthToken(), id );

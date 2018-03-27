@@ -25,8 +25,6 @@ public class PersonServiceImpl implements PersonService {
         log.debug( "getPersonViewList(): searchPattern={} | companyId={} | sortField={} | sortDir={}",
                 query.getSearchString(), query.getSortField(), query.getSortDir() );
 
-        //TODO используется в Селектор person PersonButtonSelector, считаю что привилегия CONTACT_VIEW не для этого
-
         CoreResponse< List< PersonShortView > > result = personService.shortViewList( query );
 
         log.debug( "result status: {}, data-amount: {}", result.getStatus(), result.isOk() ? result.getDataAmountTotal() : 0 );
