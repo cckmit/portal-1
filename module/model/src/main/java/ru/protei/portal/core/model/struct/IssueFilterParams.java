@@ -1,12 +1,15 @@
 package ru.protei.portal.core.model.struct;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import ru.protei.portal.core.model.dict.En_SortDir;
+import ru.protei.portal.core.model.view.EntityOption;
 
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Параметры фильтра обращений
@@ -40,6 +43,18 @@ public class IssueFilterParams implements Serializable {
 
     @JsonProperty("states")
     private List<Long> states;
+
+    @JsonIgnore
+    private Set<EntityOption> companyCollection;
+
+    @JsonIgnore
+    public void setCompanyCollection(Set<EntityOption> companies){
+        this.companyCollection = companies;
+    }
+
+    public Set<EntityOption> getCompanyCollection(){
+        return companyCollection;
+    }
 
     public String getDescription() {
         return description;

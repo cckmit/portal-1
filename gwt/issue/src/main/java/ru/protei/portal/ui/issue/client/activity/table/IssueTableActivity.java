@@ -245,18 +245,9 @@ public abstract class IssueTableActivity
         filterView.dateRange().getValue().to = params.getCreatedTo();
         filterView.importances().setValue( getImportances( params.getImportances() ) );
         filterView.states().setValue( getStates( params.getStates() ) );
-        filterView.companies().setValue( getCompanies( params.getCompanies()) );
-        filterView.managers().setValue( getManagers( params.getManagers()) );
-        filterView.products().setValue( getProducts( params.getProducts()) );
-    }
-
-    private Set< EntityOption > getCompanies( List< Long > companiesIdList ) {
-
-        if ( companiesIdList == null || companiesIdList.isEmpty() ) {
-            return null;
-        }
-
-        return null;
+        filterView.companies().setValue( params.getCompanyCollection() );
+//        filterView.managers().setValue( getManagers( params.getManagers()) );
+//        filterView.products().setValue( getProducts( params.getProducts()) );
     }
 
     private Set< En_ImportanceLevel > getImportances( List< Integer > importancesIdList ) {
