@@ -11,7 +11,9 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.Attachment;
+import ru.protei.portal.core.model.ent.IssueFilter;
 import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.core.model.struct.IssueFilterParams;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -24,6 +26,7 @@ import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
+import ru.protei.portal.ui.common.client.service.IssueFilterServiceAsync;
 import ru.protei.portal.ui.common.client.service.IssueServiceAsync;
 import ru.protei.portal.ui.common.client.widget.attachment.popup.AttachPopup;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
@@ -122,6 +125,39 @@ public abstract class IssueTableActivity
     }
 
     @Override
+    public void onSaveFilterClicked() {
+
+        filterService.saveIssueFilter( fillFilter(), new RequestCallback< IssueFilter >() {
+            @Override
+            public void onError( Throwable throwable ) {
+                fireEvent( new NotifyEvents.Show( lang.errSaveIssueFilter(), NotifyEvents.NotifyType.ERROR ) );
+            }
+
+            @Override
+            public void onSuccess( IssueFilter filter ) {
+                fireEvent( new NotifyEvents.Show( "SAVED", NotifyEvents.NotifyType.SUCCESS ) );
+            }
+        } );
+    }
+
+    @Override
+    public void onFilterRemoveClicked( Long id ) {
+
+        filterService.removeIssueFilter( id, new RequestCallback< Boolean >() {
+            @Override
+            public void onError( Throwable throwable ) {
+                fireEvent( new NotifyEvents.Show( lang.errNotRemoved(), NotifyEvents.NotifyType.ERROR ) );
+            }
+
+            @Override
+            public void onSuccess( Boolean aBoolean ) {
+                filterView.resetFilter();
+                //TODO crm-93 filtersSelector.setValue(null)
+            }
+        } );
+    }
+
+    @Override
     public void loadData( int offset, int limit, AsyncCallback<List<CaseShortView>> asyncCallback ) {
         CaseQuery query = getQuery();
         query.setOffset( offset );
@@ -205,6 +241,7 @@ public abstract class IssueTableActivity
     private CaseQuery getQuery() {
         CaseQuery query = new CaseQuery();
         query.setType( En_CaseType.CRM_SUPPORT );
+
         query.setSortField( filterView.sortField().getValue() );
         query.setSortDir( filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC );
 
@@ -224,64 +261,12 @@ public abstract class IssueTableActivity
             }
         }
 
-        if (filterView.companies().getValue() != null)
-        //TODO CRM-93 use stream
-        //            query.setCompanyIds(
-//                    filterView.products().getValue()
-//                            .stream()
-//                            .map( ProductShortView::getId )
-//                            .collect( Collectors.toList() ) );
-        {
-            List< Long > companies = new ArrayList< Long >();
-            for ( EntityOption option : filterView.companies().getValue() ) {
-                companies.add( option.getId() );
-            }
-            query.setCompanyIds( companies );
-        }
+        query.setCompanyIds( getCompaniesIdList() );
+        query.setProductIds( getProductsIdList());
+        query.setManagerIds( getManagersIdList() );
 
-        if ( filterView.products().getValue() != null )
-            //TODO CRM-93 use stream
-        //            query.setProductIds(
-//                    filterView.products().getValue()
-//                            .stream()
-//                            .map( ProductShortView::getId )
-//                            .collect( Collectors.toList() ) );
-        {
-            List< Long > products = new ArrayList< Long >();
-            for ( ProductShortView prd : filterView.products().getValue() ) {
-                products.add( prd.getId() );
-            }
-            query.setProductIds( products );
-        }
-
-        if ( filterView.managers().getValue() != null )
-        //TODO CRM-93 use stream
-        //            query.setManagerIds(
-//                    filterView.managers().getValue()
-//                            .stream()
-//                            .map( PersonShortView::getId )
-//                            .collect( Collectors.toList() ) );
-        {
-            List< Long > managers = new ArrayList< Long >();
-            for ( PersonShortView manager : filterView.managers().getValue() ) {
-                managers.add( manager.getId() );
-            }
-            query.setManagerIds( managers );
-        }
-
-        if(filterView.states().getValue() != null)
-            query.setStateIds(
-                    filterView.states().getValue()
-                            .stream()
-                            .map( En_CaseState::getId )
-                            .collect( Collectors.toList() ));
-
-        if(filterView.importances().getValue() != null)
-            query.setImportanceIds(
-                    filterView.importances().getValue()
-                            .stream()
-                            .map( En_ImportanceLevel::getId )
-                            .collect( Collectors.toList() ));
+        query.setImportanceIds( getImportancesIdList() );
+        query.setStates( new ArrayList<>( filterView.states().getValue() ) );
 
         DateInterval interval = filterView.dateRange().getValue();
 
@@ -291,6 +276,122 @@ public abstract class IssueTableActivity
         }
 
         return query;
+    }
+
+
+    private IssueFilter fillFilter() {
+
+        IssueFilter filter = new IssueFilter();
+        filter.setName( "test Filter1" );
+        IssueFilterParams params = new IssueFilterParams();
+        filter.setParams( params );
+
+        params.setCompanies( getCompaniesIdList());
+
+        params.setProducts( getProductsIdList() );
+
+        params.setManagers( getManagersIdList() );
+
+        params.setCreatedFrom( filterView.dateRange().getValue().from );
+        params.setCreatedTo( filterView.dateRange().getValue().to );
+        params.setDescription( filterView.searchPattern().getValue() );
+
+        params.setImportances( getImportancesIdList() );
+        params.setStates( getStatesIdList() );
+
+        params.setSort( filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC );
+
+        return filter;
+    }
+
+    private List<Integer> getImportancesIdList(){
+
+        if(filterView.importances().getValue() == null){
+            return null;
+        }
+        //TODO CRM-93 use stream
+//        return filterView.importances().getValue()
+//                .stream()
+//                .map( En_ImportanceLevel::getId )
+//                .collect( Collectors.toList() );
+
+        List< Integer > importances = new ArrayList< Integer >();
+        for ( En_ImportanceLevel option : filterView.importances().getValue() ) {
+            importances.add( option.getId() );
+        }
+        return importances;
+    }
+
+    private List<Integer> getStatesIdList(){
+
+        if(filterView.states().getValue() == null){
+            return null;
+        }
+        //TODO CRM-93 use stream
+//        return filterView.states().getValue()
+//                .stream()
+//                .map( En_CaseState::getId )
+//                .collect( Collectors.toList() );
+
+        List< Integer > states = new ArrayList< Integer >();
+        for ( En_CaseState option : filterView.states().getValue() ) {
+            states.add( option.getId() );
+        }
+        return states;
+    }
+
+    private List< Long > getCompaniesIdList() {
+
+        if ( filterView.companies().getValue() == null ) {
+            return null;
+        }
+        //TODO CRM-93 use stream
+        //            query.setCompanyIds(
+//                    filterView.products().getValue()
+//                            .stream()
+//                            .map( ProductShortView::getId )
+//                            .collect( Collectors.toList() ) );
+        List< Long > companies = new ArrayList< Long >();
+        for ( EntityOption option : filterView.companies().getValue() ) {
+            companies.add( option.getId() );
+        }
+        return companies;
+    }
+
+    private List<Long> getProductsIdList(){
+
+        if ( filterView.products().getValue() == null ) {
+            return null;
+        }
+        //TODO CRM-93 use stream
+        //            query.setProductIds(
+//                    filterView.products().getValue()
+//                            .stream()
+//                            .map( ProductShortView::getId )
+//                            .collect( Collectors.toList() ) );
+        List< Long > products = new ArrayList< Long >();
+        for ( ProductShortView prd : filterView.products().getValue() ) {
+            products.add( prd.getId() );
+        }
+        return products;
+    }
+
+    private List< Long > getManagersIdList() {
+
+        if ( filterView.managers().getValue() == null ) {
+            return null;
+        }
+        //TODO CRM-93 use stream
+        //            query.setManagerIds(
+//                    filterView.managers().getValue()
+//                            .stream()
+//                            .map( PersonShortView::getId )
+//                            .collect( Collectors.toList() ) );
+        List< Long > managers = new ArrayList< Long >();
+        for ( PersonShortView manager : filterView.managers().getValue() ) {
+            managers.add( manager.getId() );
+        }
+        return managers;
     }
 
     private void applyFilterViewPrivileges() {
@@ -321,6 +422,9 @@ public abstract class IssueTableActivity
 
     @Inject
     AttachmentServiceAsync attachmentService;
+
+    @Inject
+    IssueFilterServiceAsync filterService;
 
     @Inject
     PolicyService policyService;

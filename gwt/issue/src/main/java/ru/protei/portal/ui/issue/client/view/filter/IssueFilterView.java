@@ -109,6 +109,7 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         sortField.setValue( En_SortField.creation_date );
         sortDir.setValue( false );
         search.setText( "" );
+        //TODO crm-93 clear user filters selector
     }
 
     @Override
@@ -132,6 +133,23 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
             resetFilter();
             activity.onFilterChanged();
         }
+    }
+
+    @UiHandler( "saveBtn" )
+    public void onSaveClicked ( ClickEvent event ) {
+        if ( activity == null ) {
+            return;
+        }
+        activity.onSaveFilterClicked();
+    }
+
+    @UiHandler( "removeBtn" )
+    public void onRemoveClicked ( ClickEvent event ) {
+        if ( activity == null ) {
+            return;
+        }
+        //TODO crm-93 fill the issueFilterID
+//        activity.onFilterRemoveClicked( 1L );
     }
 
     @UiHandler( "companies" )
@@ -242,6 +260,12 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
 
     @UiField
     Button resetBtn;
+
+    @UiField
+    Button saveBtn;
+
+    @UiField
+    Button removeBtn;
 
     @Inject
     FixedPositioner positioner;

@@ -53,6 +53,8 @@
             </div>
         </div>
         <div class="footer">
+            <g:Button ui:field="saveBtn" styleName="btn btn-white" text="{lang.buttonSave}"/>
+            <g:Button ui:field="removeBtn" styleName="btn btn-white" text="{lang.buttonRemove}"/>
             <g:Button ui:field="resetBtn" styleName="btn btn-white" text="{lang.buttonReset}"/>
         </div>
     </g:HTMLPanel>

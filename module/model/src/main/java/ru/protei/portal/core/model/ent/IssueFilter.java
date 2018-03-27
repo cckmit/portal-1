@@ -21,6 +21,38 @@ public class IssueFilter implements Serializable {
     @JdbcColumn( name = "login_id" )
     private Long loginId;
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId( Long id ) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName( String name ) {
+        this.name = name;
+    }
+
+    public IssueFilterParams getParams() {
+        return params;
+    }
+
+    public void setParams( IssueFilterParams params ) {
+        this.params = params;
+    }
+
+    public Long getLoginId() {
+        return loginId;
+    }
+
+    public void setLoginId( Long loginId ) {
+        this.loginId = loginId;
+    }
+
     @Override
     public String toString() {
         return "IssueFilter{" +

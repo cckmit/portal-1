@@ -5,4 +5,8 @@ package ru.protei.portal.ui.issue.client.activity.filter;
  */
 public interface AbstractIssueFilterActivity {
     void onFilterChanged();
+
+    void onSaveFilterClicked();
+
+    void onFilterRemoveClicked( Long id );
 }

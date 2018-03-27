@@ -61,6 +61,11 @@ public class IssueFilterServiceImpl implements IssueFilterService {
             throw new RequestFailedException(En_ResultStatus.INTERNAL_ERROR);
         }
 
+        if (filter.getLoginId() == null){
+            UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+            filter.setLoginId( descriptor.getLogin().getId() );
+        }
+
         CoreResponse<IssueFilter> response = issueFilterService.saveIssueFilter( filter );
 
         log.debug("saveIssueFilter, result: {}", response.getStatus());
