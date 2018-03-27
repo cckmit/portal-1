@@ -248,9 +248,12 @@
             <version>7.2.1</version>
             <scope>test</scope>
         </dependency>
-
-
-
+        <dependency>
+            <groupId>org.tmatesoft.svnkit</groupId>
+            <artifactId>svnkit</artifactId>
+            <version>1.9.1</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
 </project>
