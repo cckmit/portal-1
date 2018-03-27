@@ -5,10 +5,7 @@ import com.taskadapter.redmineapi.bean.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.protei.portal.core.model.dao.CaseObjectDAO;
-import ru.protei.portal.core.model.dao.ExternalCaseAppDAO;
-import ru.protei.portal.core.model.dao.RedminePriorityMapEntryDAO;
-import ru.protei.portal.core.model.dao.RedmineStatusMapEntryDAO;
+import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.redmine.service.CommonService;
@@ -84,8 +81,8 @@ public final class RedmineNewIssueHandler implements RedmineEventHandler {
 
 
         logger.debug("Trying to get portal status id matching with redmine: {}", issue.getStatusId());
-        final RedmineStatusMapEntry redmineStatusMapEntry =
-                statusMapEntryDAO.getByRedmineStatusId(issue.getStatusId(), statusMapId);
+        final RedmineToCrmEntry redmineStatusMapEntry =
+                statusMapEntryDAO.getLocalStatus(statusMapId, issue.getStatusId());
         if (redmineStatusMapEntry != null) {
             logger.debug("Found status id: {}", redmineStatusMapEntry.getLocalStatusId());
             obj.setStateId(redmineStatusMapEntry.getLocalStatusId());
@@ -125,7 +122,7 @@ public final class RedmineNewIssueHandler implements RedmineEventHandler {
     private RedminePriorityMapEntryDAO priorityMapEntryDAO;
 
     @Autowired
-    private RedmineStatusMapEntryDAO statusMapEntryDAO;
+    private RedmineToCrmStatusMapEntryDAO statusMapEntryDAO;
 
     private final static Logger logger = LoggerFactory.getLogger(RedmineNewIssueHandler.class);
 }

@@ -21,6 +21,17 @@ public final class RedmineStatusMapEntry {
     @JdbcColumn(name = "LOCAL_status_name")
     private String localStatusName;
 
+    @JdbcColumn(name = "LOCAL_previous_status_id")
+    private int localOldStatusId;
+
+    public int getLocalOldStatusId() {
+        return localOldStatusId;
+    }
+
+    public void setLocalOldStatusId(int localOldStatusId) {
+        this.localOldStatusId = localOldStatusId;
+    }
+
     public long getId() {
         return id;
     }
