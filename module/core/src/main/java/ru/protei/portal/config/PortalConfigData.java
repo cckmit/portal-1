@@ -57,16 +57,22 @@ public class PortalConfigData {
     }
 
     public static class SmtpConfig {
-        String host;
-        String defaultCharset;
-        int port;
-        String fromAddress;
+        private final String host;
+        private final String defaultCharset;
+        private final int port;
+        private final String fromAddress;
+        private final boolean blockExternalRecipients;
 
         public SmtpConfig(PropertiesWrapper properties) throws ConfigException{
             host = properties.getProperty("smtp.host", "smtp.protei.ru");
             port = properties.getProperty("smtp.port", Integer.class, 2525);
             fromAddress = properties.getProperty("smtp.from", "PORTAL");
             defaultCharset = properties.getProperty("smtp.charset", "utf-8");
+            blockExternalRecipients = properties.getProperty("smtp.block_external_recipients", Boolean.class, false);
+        }
+
+        public boolean isBlockExternalRecipients() {
+            return blockExternalRecipients;
         }
 
         public String getHost() {

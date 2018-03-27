@@ -5,6 +5,8 @@ import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.LIElement;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -17,6 +19,7 @@ import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
 import ru.protei.portal.ui.issue.client.activity.comment.item.AbstractIssueCommentItemActivity;
 import ru.protei.portal.ui.issue.client.activity.comment.item.AbstractIssueCommentItemView;
+import ru.protei.portal.ui.issue.client.util.IssueCommentUtils;
 
 /**
  * Один комментарий
@@ -59,7 +62,8 @@ public class IssueCommentItemView
             this.hideOptions();
             return;
         }
-        this.message.getElement().setInnerHTML( value );
+
+        this.message.getElement().setInnerHTML( IssueCommentUtils.prewrapMessage( SafeHtmlUtils.htmlEscape( value ) ) );
         this.messageBlock.removeClassName( "hide" );
     }
 

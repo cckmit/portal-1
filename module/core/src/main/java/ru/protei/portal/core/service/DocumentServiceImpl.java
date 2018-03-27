@@ -1,6 +1,7 @@
 package ru.protei.portal.core.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.DecimalNumberDAO;
 import ru.protei.portal.core.model.dao.DocumentDAO;
@@ -13,8 +14,6 @@ import ru.protei.portal.core.model.ent.DocumentType;
 import ru.protei.portal.core.model.query.DocumentQuery;
 
 import java.util.List;
-
-import static ru.protei.portal.core.model.helper.DocumentHelper.isDocumentValid;
 
 public class DocumentServiceImpl implements DocumentService {
     @Autowired
@@ -52,20 +51,16 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
+    @Transactional
     public CoreResponse<Document> saveDocument(AuthToken token, Document document) {
-        if(!isDocumentValid(document)) {
-            return new CoreResponse<Document>().error(En_ResultStatus.VALIDATION_ERROR);
-        }
-        if (document.getDecimalNumber().getId() == null) {
-            document.getDecimalNumber().setEntityType(En_DecimalNumberEntityType.DOCUMENT);
-            if (!decimalNumberDAO.saveOrUpdate(document.getDecimalNumber())) {
-                return new CoreResponse<Document>().error(En_ResultStatus.INTERNAL_ERROR);
-            }
+        if(!document.isValid()) {
+            return new CoreResponse<Document>().error(En_ResultStatus.INCORRECT_PARAMS);
         }
         if (!documentDAO.saveOrUpdate(document)) {
             return new CoreResponse<Document>().error(En_ResultStatus.INTERNAL_ERROR);
         }
         document.getDecimalNumber().setEntityId(document.getId());
+        document.getDecimalNumber().setEntityType(En_DecimalNumberEntityType.DOCUMENT);
         if (!decimalNumberDAO.saveOrUpdate(document.getDecimalNumber())) {
             return new CoreResponse<Document>().error(En_ResultStatus.INTERNAL_ERROR);
         }

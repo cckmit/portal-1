@@ -2,11 +2,11 @@ package ru.protei.portal.ui.equipment.client.widget.selector;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.view.EquipmentShortView;
+import ru.protei.portal.ui.common.client.common.DecimalNumberFormatter;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
-import ru.protei.portal.ui.equipment.client.common.EquipmentUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,7 +35,7 @@ public class EquipmentSelector
                     if ( value.getDecimalNumbers() != null ) {
                         sb
                                 .append( " (" )
-                                .append( value.getDecimalNumbers().stream().map( EquipmentUtils:: formatNumber ).collect( Collectors.joining( ", " ) ) )
+                                .append( value.getDecimalNumbers().stream().map( DecimalNumberFormatter:: formatNumber ).collect( Collectors.joining( ", " ) ) )
                                 .append( ")" );
                     }
                 }

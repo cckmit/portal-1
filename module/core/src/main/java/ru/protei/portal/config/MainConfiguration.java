@@ -78,6 +78,15 @@ public class MainConfiguration {
         return new LDAPAuthProvider();
     }
 
+
+    @Bean
+    public SqlDefaultBuilder sqlDefaultBuilder () {
+        return new SqlDefaultBuilder();
+    }
+
+
+    /* DAO */
+
     @Bean
     public MigrationEntryDAO getMigrationEntryDAO() {
         return new MigrationEntryDAO_Impl();
@@ -273,6 +282,22 @@ public class MainConfiguration {
     public DocumentTypeDAO getDocumentTypeDAO() {
         return new DocumentTypeDAO_Impl();
     }
+
+    @Bean
+    public RedmineEndpointDAO getRedmineEndpointDAO() {
+        return new RedmineEndpointDAO_Impl();
+    }
+
+    @Bean
+    public RedmineStatusMapEntryDAO getRedmineStatusesDAO() {
+        return new RedmineStatusMapEntryDAO_Impl();
+    }
+
+    @Bean
+    public RedminePriorityMapEntryDAO getRedminePrioritiesDAO() {
+        return new RedminePriorityMapEntryDAO_Impl();
+    }
+
 /**
  *
  *

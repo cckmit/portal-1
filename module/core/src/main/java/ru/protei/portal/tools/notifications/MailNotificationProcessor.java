@@ -94,8 +94,13 @@ public class MailNotificationProcessor {
         }
 
         notifiers.forEach( (entry)->{
-            String body = bodyTemplate.getText( entry.getAddress(), entry.getLangCode() );
-            String subject = subjectTemplate.getText( entry.getAddress(), entry.getLangCode() );
+            if (!isProteiRecipient(entry) && config.data().smtp().isBlockExternalRecipients()) {
+                log.debug("block send mail to {} (external recipient)", entry.getAddress());
+                return;
+            }
+
+            String body = bodyTemplate.getText( entry.getAddress(), entry.getLangCode(), isProteiRecipient(entry) );
+            String subject = subjectTemplate.getText( entry.getAddress(), entry.getLangCode(), isProteiRecipient(entry) );
 
             try {
                 MimeMessageHelper msg = prepareMessage( subject, body );
@@ -117,21 +122,8 @@ public class MailNotificationProcessor {
         return helper;
     }
 
-//    private Person getManager( Long managerId ) {
-//        if ( managerId == null ) {
-//            return null;
-//        }
-//        CoreResponse<Person> managerResponse = employeeService.getEmployee( managerId );
-//        if ( managerResponse.isError() ) {
-//            log.error( "Failed to retrieve manager {}", managerId );
-//            return null;
-//        }
-//
-//        return managerResponse.getData();
-//    }
-
-    private List<NotificationEntry> filterProteiNotifiers(Collection<NotificationEntry> notifiers){
-        return notifiers.stream().filter(entry -> entry.getAddress().endsWith("@protei.ru")).collect(Collectors.toList());
+    private boolean isProteiRecipient(NotificationEntry entry){
+        return entry.getAddress().endsWith("@protei.ru");
     }
 
     /**
@@ -153,6 +145,8 @@ public class MailNotificationProcessor {
             );
         }
 
-        return isPrivateCase? filterProteiNotifiers(allNotifiers): allNotifiers;
+        return isPrivateCase?
+                allNotifiers.stream().filter(this::isProteiRecipient).collect(Collectors.toList()):
+                allNotifiers;
     }
 }

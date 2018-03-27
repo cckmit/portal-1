@@ -76,9 +76,9 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
-    public CoreResponse<CaseObject> getCaseObject( AuthToken token, long id ) {
+    public CoreResponse<CaseObject> getCaseObject( AuthToken token, long number ) {
 
-        CaseObject caseObject = caseObjectDAO.get( id );
+        CaseObject caseObject = caseObjectDAO.getCase( En_CaseType.CRM_SUPPORT, number );
 
         if(caseObject == null)
             return new CoreResponse().error(En_ResultStatus.NOT_FOUND);
@@ -415,13 +415,13 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     @Transactional
-    public CoreResponse<Long> bindAttachmentToCase( AuthToken token, Attachment attachment, long caseId) {
-        return attachToCase(attachment, caseId);
+    public CoreResponse<Long> bindAttachmentToCaseNumber(AuthToken token, Attachment attachment, long caseNumber) {
+        return attachToCaseId(attachment, caseObjectDAO.getCaseId(En_CaseType.CRM_SUPPORT, caseNumber));
     }
 
     @Override
     @Transactional
-    public CoreResponse<Long> attachToCase(Attachment attachment, long caseId) {
+    public CoreResponse<Long> attachToCaseId(Attachment attachment, long caseId) {
         CaseAttachment caseAttachment = new CaseAttachment(caseId, attachment.getId());
         Long caseAttachId = caseAttachmentDAO.persist(caseAttachment);
 
@@ -458,7 +458,7 @@ public class CaseServiceImpl implements CaseService {
         Set< UserRole > roles = descriptor.getLogin().getRoles();
         if ( !policyService.hasGrantAccessFor( roles, En_Privilege.ISSUE_VIEW ) ) {
             query.setCompanyId( descriptor.getCompany() == null ? null : descriptor.getCompany().getId() );
-            query.setPrivateAccess( false );
+            query.setAllowViewPrivate( false );
         }
     }
 

@@ -18,12 +18,12 @@ import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
+import ru.protei.portal.ui.common.client.common.DecimalNumberFormatter;
 import ru.protei.portal.ui.common.client.lang.En_EquipmentStageLang;
 import ru.protei.portal.ui.common.client.lang.En_EquipmentTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.equipment.client.activity.table.AbstractEquipmentTableActivity;
 import ru.protei.portal.ui.equipment.client.activity.table.AbstractEquipmentTableView;
-import ru.protei.portal.ui.equipment.client.common.EquipmentUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -139,7 +139,7 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
 
                 for ( DecimalNumber number : value.getDecimalNumbers() ) {
                     Element numElem = DOM.createDiv();
-                    numElem.setInnerHTML( EquipmentUtils.formatNumber( number ) );
+                    numElem.setInnerHTML( DecimalNumberFormatter.formatNumber( number ) );
                     if ( number.isReserve() ) {
                         Element isReserveEl = DOM.createElement("i");
                         isReserveEl.addClassName( "fa fa-flag text-danger m-l-10" );
@@ -219,7 +219,7 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
 
                 if ( value != null && value.getLinkedEquipmentDecimalNumbers() != null ) {
                     cell.setInnerHTML( HTMLHelper.wrapDiv(
-                            value.getLinkedEquipmentDecimalNumbers().stream().map( EquipmentUtils:: formatNumber ).collect( Collectors.joining(", "))
+                            value.getLinkedEquipmentDecimalNumbers().stream().map( DecimalNumberFormatter:: formatNumber ).collect( Collectors.joining(", "))
                     ));
                 }
             }

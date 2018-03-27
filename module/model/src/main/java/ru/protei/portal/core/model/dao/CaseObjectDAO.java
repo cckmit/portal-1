@@ -24,6 +24,8 @@ public interface CaseObjectDAO extends PortalBaseDAO<CaseObject> {
     CaseObject getCase(En_CaseType caseType, long number);
     Long getCaseId(En_CaseType caseType, long number);
 
+    CaseObject getByExternalAppCaseId (String externalApplicationCaseId);
+
     @SqlConditionBuilder
     SqlCondition caseQueryCondition (CaseQuery query);
 }

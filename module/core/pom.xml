@@ -109,6 +109,12 @@
             <artifactId>portal4.model</artifactId>
             <version>4.0.0</version>
         </dependency>
+
+        <dependency>
+            <groupId>ru.protei</groupId>
+            <artifactId>jmc</artifactId>
+            <version>3.6-SNAPSHOT</version>
+        </dependency>
 <!--
         <dependency>
             <groupId>ru.protei</groupId>

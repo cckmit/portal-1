@@ -33,6 +33,7 @@
                 <module>module/core</module>
                 <module>module/hpsm</module>
                 <module>module/ws-api</module>
+                <module>module/redmine</module>
                 
                 <module>skin/classic</module>
 

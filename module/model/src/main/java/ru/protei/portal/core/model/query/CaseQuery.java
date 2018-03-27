@@ -25,7 +25,7 @@ public class CaseQuery extends BaseQuery {
     /**
      * if true then both states otherwise only non-private state
      */
-    private boolean privateAccess = true;
+    private boolean allowViewPrivate = true;
 
     private Date from;
     private Date to;
@@ -40,6 +40,7 @@ public class CaseQuery extends BaseQuery {
         super(searchString, sortField, sortDir);
         this.type = type;
         this.limit = 1000;
+        this.allowViewPrivate = true;
     }
 
     public Long getId() {
@@ -104,12 +105,12 @@ public class CaseQuery extends BaseQuery {
     public void setManagerId ( Long managerId ) { this.managerId = managerId; }
 
 
-    public boolean isPrivateAccess() {
-        return privateAccess;
+    public boolean isAllowViewPrivate() {
+        return allowViewPrivate;
     }
 
-    public void setPrivateAccess(boolean isPrivateAccess) {
-        this.privateAccess = isPrivateAccess;
+    public void setAllowViewPrivate(boolean isAllowViewPrivate) {
+        this.allowViewPrivate = isAllowViewPrivate;
     }
 
     @Override
@@ -123,7 +124,7 @@ public class CaseQuery extends BaseQuery {
                 ", importanceIds=" + importanceIds +
                 ", from=" + from +
                 ", to=" + to +
-                ", privateAccess=" + privateAccess +
+                ", showPrivate=" + allowViewPrivate +
                 '}';
     }
 }

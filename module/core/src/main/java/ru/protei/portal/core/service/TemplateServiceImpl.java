@@ -50,7 +50,7 @@ public class TemplateServiceImpl implements TemplateService {
         Map<String, Object> templateModel = new HashMap<>();
 
         templateModel.put( "TextUtils", new TextUtils() );
-        templateModel.put( "linkToIssue", String.format( urlTemplate, newState.getId() ) );
+        templateModel.put( "linkToIssue", String.format( urlTemplate, newState.getCaseNumber() ) );
         templateModel.put( "isCreated", event.isCreateEvent() );
         templateModel.put( "createdByMe", false );
         templateModel.put( "case", newState );
@@ -133,6 +133,9 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     private Map<String, Object> buildAttachmentModelKeys(Collection<Attachment> existing, Collection<Attachment> added, Collection<Attachment> removed){
+        if(existing.isEmpty() && added.isEmpty() && removed.isEmpty())
+            return Collections.emptyMap();
+
         Map<String, Object> model = new HashMap<>(3);
         model.put( "attachments", existing);
         model.put( "removedAttachments", removed);

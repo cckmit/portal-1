@@ -737,5 +737,17 @@ public interface Lang extends Messages, ContactItemLang {
 
     String documentTypeNotDefined();
 
+    String errGetObject();
+    
     String uploadDocuments();
+
+    String documentDescription();
+
+    String documentProject();
+
+    String documentManager();
+
+    String documentDecimalNumber();
+
+    String documentIdentification();
 }

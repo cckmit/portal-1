@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
@@ -26,7 +27,7 @@ public class Document implements Serializable {
      * Децимальный номер
      */
     @JdbcJoinedObject(joinData = {
-            @JdbcJoinData(localColumn = "decimal_number_id", remoteColumn = "id"),
+            @JdbcJoinData(localColumn = "id", remoteColumn = "entity_id"),
             @JdbcJoinData(remoteColumn = "entity_type", value = "'DOCUMENT'")
     })
     private DecimalNumber decimalNumber;
@@ -161,5 +162,15 @@ public class Document implements Serializable {
 
     public void setDecimalNumber(DecimalNumber decimalNumber) {
         this.decimalNumber = decimalNumber;
+    }
+
+    public boolean isValid() {
+        return this.getDecimalNumber() != null &&
+                this.getType() != null &&
+                this.getManagerId() != null &&
+                this.getInventoryNumber() != null &&
+                this.getInventoryNumber() > 0 &&
+                HelperFunc.isNotEmpty(this.getProject()) &&
+                HelperFunc.isNotEmpty(this.getName());
     }
 }

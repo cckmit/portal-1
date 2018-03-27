@@ -2,6 +2,7 @@ package ru.protei.portal.ui.common.client.widget.selector.person;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
 import ru.protei.portal.ui.common.client.widget.selector.input.MultipleInputSelector;
 
@@ -16,9 +17,9 @@ public class EmployeeMultiSelector
         implements ModelSelector<PersonShortView>
 {
     @Inject
-    public void init( EmployeeModel model) {
+    public void init(EmployeeModel model, Lang lang ) {
         model.subscribe( this );
-        setAddName( "Добавить" );
+        setAddName( lang.buttonAdd() );
     }
 
     @Override

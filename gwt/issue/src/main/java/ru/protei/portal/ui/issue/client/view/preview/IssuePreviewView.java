@@ -153,8 +153,8 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     }
 
     @Override
-    public void setCaseId(Long caseId) {
-        fileUploader.autoBindingToCase(caseId);
+    public void setCaseNumber(Long caseNumber) {
+        fileUploader.autoBindingToCase(caseNumber);
     }
 
     @Override

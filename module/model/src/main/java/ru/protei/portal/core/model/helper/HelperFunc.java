@@ -46,6 +46,10 @@ public class HelperFunc {
         return Arrays.stream(arr).filter(s -> isNotEmpty(s)).collect(Collectors.joining(delim));
     }
 
+    public static String join(String delim, Collection<String> collection) {
+        return collection.stream().collect(Collectors.joining(delim));
+    }
+
     public static boolean testAllNotEmpty (String...arr) {
         for (String s : arr)
             if (isEmpty(s))

@@ -20,4 +20,6 @@ public interface AbstractDocumentTableView extends IsWidget {
     void setAnimation(TableAnimation animation);
 
     HasWidgets getFilterContainer();
+
+    HasWidgets getPreviewContainer();
 }

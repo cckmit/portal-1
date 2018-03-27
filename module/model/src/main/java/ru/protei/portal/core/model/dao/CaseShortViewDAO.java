@@ -13,8 +13,6 @@ import java.util.Map;
  * Created by michael on 19.05.16.
  */
 public interface CaseShortViewDAO extends PortalBaseDAO<CaseShortView> {
-    Map<Long,Long> getNumberToIdMap( En_CaseType caseType );
-
     List<CaseShortView> getCases( CaseQuery query );
 
     @SqlConditionBuilder

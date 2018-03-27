@@ -118,7 +118,7 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
 
     private void fillView(CaseObject value ) {
         view.setPrivateIssue( value.isPrivateCase() );
-        view.setCaseId(value.getId());
+        view.setCaseNumber(value.getCaseNumber());
         view.setHeader( value.getCaseNumber() == null ? "" : lang.issueHeader( value.getCaseNumber().toString() ) );
         view.setCreationDate( value.getCreated() == null ? "" : DateFormatter.formatDateTime( value.getCreated() ) );
         view.setState( value.getStateId() );
@@ -144,13 +144,13 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
         fireEvent( new IssueEvents.ShowComments( view.getCommentsContainer(), value.getId() ) );
     }
 
-    private void fillView( Long id ) {
-        if (id == null) {
+    private void fillView( Long number ) {
+        if (number == null) {
             fireEvent( new NotifyEvents.Show( lang.errIncorrectParams(), NotifyEvents.NotifyType.ERROR ) );
             return;
         }
 
-        issueService.getIssue( id, new RequestCallback<CaseObject>() {
+        issueService.getIssue( number, new RequestCallback<CaseObject>() {
             @Override
             public void onError( Throwable throwable ) {
                 fireEvent( new NotifyEvents.Show( lang.errNotFound(), NotifyEvents.NotifyType.ERROR ) );

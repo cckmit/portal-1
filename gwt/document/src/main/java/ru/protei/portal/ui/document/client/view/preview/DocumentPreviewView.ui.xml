@@ -1,0 +1,57 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+
+    <g:HTMLPanel styleName="preview-wrapper grid with-table-pager">
+        <g:HTMLPanel ui:field="preview" styleName="preview">
+            <fieldset class="header">
+                <legend ui:field="header"></legend>
+                <div class="col-xs-12">
+                    <label class="col-xs-5"><ui:text from="{lang.documentName}"/></label>
+                    <span class="col-xs-7" ui:field="name"></span>
+                </div>
+                <div class="col-xs-12">
+                    <label class="col-xs-5"><ui:text from="{lang.created}"/></label>
+                    <span class="col-xs-7" ui:field="created"></span>
+                </div>
+                <div class="col-xs-12">
+                    <label class="col-xs-5"><ui:text from="{lang.documentType}"/></label>
+                    <span class="col-xs-7" ui:field="type"></span>
+                </div>
+                <div class="col-xs-12">
+                    <label class="col-xs-5"><ui:text from="{lang.annotation}"/></label>
+                    <span class="col-xs-7" ui:field="annotation"></span>
+                </div>
+                <div class="col-xs-12">
+                    <label class="col-xs-5"><ui:text from="{lang.documentProject}"/></label>
+                    <span class="col-xs-7" ui:field="project"></span>
+                </div>
+                <div class="col-xs-12">
+                    <label class="col-xs-5"><ui:text from="{lang.documentManager}"/></label>
+                    <span class="col-xs-7" ui:field="manager"></span>
+                </div>
+            </fieldset>
+
+            <fieldset class="header">
+                <legend><ui:text from="{lang.documentIdentification}"/></legend>
+                <div class="col-xs-12">
+                    <label class="col-xs-5"><ui:text from="{lang.documentDecimalNumber}"/></label>
+                    <span class="col-xs-7" ui:field="numberDecimal"></span>
+                </div>
+                <div class="col-xs-12">
+                    <label class="col-xs-5"><ui:text from="{lang.inventoryNumber}"/></label>
+                    <span class="col-xs-7" ui:field="numberInventory"></span>
+                </div>
+            </fieldset>
+
+            <fieldset class="header">
+                <legend><ui:text from="{lang.documentKeywords}"/></legend>
+                <div class="col-xs-12">
+                    <span class="col-xs-12 col-md-12 equipment-number" ui:field="keyWords"></span>
+                </div>
+            </fieldset>
+
+        </g:HTMLPanel>
+    </g:HTMLPanel>
+</ui:UiBinder>

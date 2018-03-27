@@ -60,7 +60,9 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
         if(event.id == null) {
             fireEvent(new AppEvents.InitPanelName(lang.newIssue()));
-            initialView(new CaseObject());
+            CaseObject caseObject = new CaseObject();
+            caseObject.setPrivateCase( true );
+            initialView(caseObject);
         }else {
             fireEvent(new AppEvents.InitPanelName(lang.issueEdit()));
             requestIssue(event.id, this::initialView);
@@ -163,8 +165,8 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         fillView(this.issue);
     }
 
-    private void requestIssue(Long id, Consumer<CaseObject> successAction){
-        issueService.getIssue(id, new RequestCallback<CaseObject>() {
+    private void requestIssue(Long number, Consumer<CaseObject> successAction){
+        issueService.getIssue(number, new RequestCallback<CaseObject>() {
             @Override
             public void onError(Throwable throwable) {}
 
@@ -182,7 +184,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         view.privacyVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRIVACY_VIEW ) );
 
         view.attachmentsContainer().clear();
-        view.setCaseId(issue.getId());
+        view.setCaseNumber(issue.getCaseNumber());
 
         if ( issue.getId() != null ) {
             view.showComments(true);
@@ -202,6 +204,10 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         }
 
         view.name().setValue(issue.getName());
+
+        view.numberVisibility().setVisible( issue.getId() != null );
+        view.number().setValue( issue.getId() == null ? null : issue.getCaseNumber().intValue() );
+
         view.isLocal().setValue(issue.isPrivateCase());
         view.description().setText(issue.getInfo());
 

@@ -1,6 +1,8 @@
 package ru.protei.portal.ui.common.client.events;
 
+import com.google.gwt.user.client.ui.HasWidgets;
 import ru.brainworm.factory.context.client.annotation.Url;
+import ru.protei.portal.core.model.ent.Document;
 
 public class DocumentEvents {
 
@@ -8,6 +10,17 @@ public class DocumentEvents {
     public static class Show {
         public Show() {
         }
+    }
+
+    public static class ShowPreview {
+
+        public ShowPreview (HasWidgets parent, Document document) {
+            this.parent = parent;
+            this.document = document;
+        }
+
+        public Document document;
+        public HasWidgets parent;
     }
 
     @Url("doc")

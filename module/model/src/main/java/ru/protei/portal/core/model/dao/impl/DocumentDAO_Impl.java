@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class DocumentDAO_Impl extends PortalBaseJdbcDAO<Document> implements DocumentDAO {
-    private static final String JOINS = "LEFT JOIN decimal_number DN ON DN.id = document.decimal_number_id";
+    private static final String JOINS = "LEFT JOIN decimal_number DN ON DN.entity_id = document.id AND DN.entity_type=\"DOCUMENT\"";
 
     @Override
     public List<Document> getListByQuery(DocumentQuery query) {

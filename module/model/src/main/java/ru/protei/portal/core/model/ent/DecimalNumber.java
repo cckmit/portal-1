@@ -110,10 +110,6 @@ public class DecimalNumber implements Serializable {
         this.entityId = entityId;
     }
 
-    public boolean isValid() {
-        return true;
-    }
-
     public boolean isEmpty() {
         return organizationCode == null
                 || ( classifierCode == null || classifierCode < 1 )
@@ -132,6 +128,11 @@ public class DecimalNumber implements Serializable {
         this.classifierCode = classifierCode;
         this.registerNumber = registerNumber;
         this.modification = modification;
+    }
+
+    public boolean isValid() {
+        return getClassifierCode() != null &&
+                getRegisterNumber() != null;
     }
 
     public DecimalNumber() {}

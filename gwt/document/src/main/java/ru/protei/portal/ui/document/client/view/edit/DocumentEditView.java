@@ -7,22 +7,20 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_DecimalNumberEntityType;
-import ru.protei.portal.core.model.dict.En_OrganizationCode;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.DocumentType;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
+import ru.protei.portal.ui.common.client.widget.decimalnumber.single.SingleDecimalNumberInput;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
+import ru.protei.portal.ui.common.client.widget.stringselect.input.StringSelectInput;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.document.client.activity.edit.AbstractDocumentEditActivity;
 import ru.protei.portal.ui.document.client.activity.edit.AbstractDocumentEditView;
 import ru.protei.portal.ui.document.client.widget.doctype.DocumentTypeSelector;
-import ru.protei.portal.ui.document.client.widget.number.DecimalNumberInput;
-import ru.protei.portal.ui.document.client.widget.select.input.SelectInputView;
 
 import java.util.List;
 
@@ -31,15 +29,6 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
-        created.setEnabled(false);
-        DecimalNumber dn = new DecimalNumber();
-        dn.setEntityType(En_DecimalNumberEntityType.DOCUMENT);
-        dn.setOrganizationCode(En_OrganizationCode.PAMR);
-        decimalNumber.setValue(dn);
-        decimalNumber.setSingleNumberView();
-        manager.setHasNullValue(false);
-        manager.setDefaultValue(null);
-        manager.refreshValue();
     }
 
     @Override
@@ -49,7 +38,11 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
 
     @Override
     public boolean isDecimalNumbersCorrect() {
-        return decimalNumber.isCorrect();
+        if (decimalNumber.isValid()) {
+            return true;
+        }
+        decimalNumber.setValid(false);
+        return false;
     }
 
     @Override
@@ -165,11 +158,11 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
 
     @Inject
     @UiField(provided = true)
-    SelectInputView keywords;
+    StringSelectInput keywords;
 
     @Inject
     @UiField(provided = true)
-    DecimalNumberInput decimalNumber;
+    SingleDecimalNumberInput decimalNumber;
 
     @Inject
     @UiField(provided = true)

@@ -6,14 +6,15 @@ import ru.protei.portal.ui.document.client.activity.edit.AbstractDocumentEditVie
 import ru.protei.portal.ui.document.client.activity.edit.DocumentEditActivity;
 import ru.protei.portal.ui.document.client.activity.filter.AbstractDocumentFilterView;
 import ru.protei.portal.ui.document.client.activity.page.DocumentPage;
+import ru.protei.portal.ui.document.client.activity.preview.AbstractDocumentPreviewView;
+import ru.protei.portal.ui.document.client.activity.preview.DocumentPreviewActivity;
 import ru.protei.portal.ui.document.client.activity.table.AbstractDocumentTableView;
 import ru.protei.portal.ui.document.client.activity.table.DocumentTableActivity;
 import ru.protei.portal.ui.document.client.view.edit.DocumentEditView;
 import ru.protei.portal.ui.document.client.view.filter.DocumentFilterView;
+import ru.protei.portal.ui.document.client.view.preview.DocumentPreviewView;
 import ru.protei.portal.ui.document.client.view.table.DocumentTableView;
 import ru.protei.portal.ui.document.client.widget.doctype.DocumentTypeModel;
-import ru.protei.portal.ui.document.client.widget.select.item.AbstractSelectItemView;
-import ru.protei.portal.ui.document.client.widget.select.item.SelectItemView;
 
 public class DocumentClientModule extends AbstractGinModule {
     @Override
@@ -28,8 +29,9 @@ public class DocumentClientModule extends AbstractGinModule {
 
         bind(AbstractDocumentFilterView.class).to(DocumentFilterView.class).in(Singleton.class);
 
-        bind(DocumentTypeModel.class).asEagerSingleton();
+        bind(DocumentPreviewActivity.class).asEagerSingleton();
+        bind(AbstractDocumentPreviewView.class).to(DocumentPreviewView.class).in(Singleton.class);
 
-        bind(AbstractSelectItemView.class).to(SelectItemView.class);
+        bind(DocumentTypeModel.class).asEagerSingleton();
     }
 }

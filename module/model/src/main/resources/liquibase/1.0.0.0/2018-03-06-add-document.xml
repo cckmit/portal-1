@@ -81,4 +81,9 @@
         <dropForeignKeyConstraint baseTableName="decimal_number" constraintName="decimal_number_equipment_id_fk"/>
     </changeSet>
 
+    <changeSet id="remove-decimal_number_id-field" author="efremov">
+        <dropForeignKeyConstraint baseTableName="document" constraintName="documentation_decimal_number_id_fk" />
+        <dropColumn tableName="document" columnName="decimal_number_id"/>
+    </changeSet>
+
 </databaseChangeLog>

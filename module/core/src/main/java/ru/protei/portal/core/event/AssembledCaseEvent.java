@@ -56,6 +56,7 @@ public class AssembledCaseEvent extends ApplicationEvent {
         this(attachmentEvent.getCaseService(), attachmentEvent.getCaseObject(), attachmentEvent.getPerson());
         addedAttachments.addAll(attachmentEvent.getAddedAttachments());
         removedAttachments.addAll(attachmentEvent.getRemovedAttachments());
+        serviceModule = attachmentEvent.getServiceModule();
     }
 
     public AssembledCaseEvent(ServiceModule module, CaseService caseService,

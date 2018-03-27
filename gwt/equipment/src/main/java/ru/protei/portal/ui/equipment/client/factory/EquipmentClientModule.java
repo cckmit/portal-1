@@ -12,15 +12,11 @@ import ru.protei.portal.ui.equipment.client.activity.preview.AbstractEquipmentPr
 import ru.protei.portal.ui.equipment.client.activity.preview.EquipmentPreviewActivity;
 import ru.protei.portal.ui.equipment.client.activity.table.AbstractEquipmentTableView;
 import ru.protei.portal.ui.equipment.client.activity.table.EquipmentTableActivity;
-import ru.protei.portal.ui.equipment.client.common.EquipmentUtils;
-import ru.protei.portal.ui.equipment.client.provider.AbstractDecimalNumberDataProvider;
-import ru.protei.portal.ui.equipment.client.provider.DecimalNumberDataProvider;
 import ru.protei.portal.ui.equipment.client.view.copy.EquipmentCopyView;
 import ru.protei.portal.ui.equipment.client.view.edit.EquipmentEditView;
 import ru.protei.portal.ui.equipment.client.view.filter.EquipmentFilterView;
 import ru.protei.portal.ui.equipment.client.view.preview.EquipmentPreviewView;
 import ru.protei.portal.ui.equipment.client.view.table.EquipmentTableView;
-
 
 /**
  * Описание классов фабрики
@@ -41,12 +37,9 @@ public class EquipmentClientModule extends AbstractGinModule {
         bind ( AbstractEquipmentEditView.class ).to(EquipmentEditView.class).in(Singleton.class);
 
         bind ( AbstractEquipmentFilterView.class ).to( EquipmentFilterView.class ).in( Singleton.class );
-        bind ( AbstractDecimalNumberDataProvider.class ).to( DecimalNumberDataProvider.class ).in( Singleton.class );
 
         bind( EquipmentCopyActivity.class ).asEagerSingleton();
         bind( AbstractEquipmentCopyView.class ).to( EquipmentCopyView.class ).in( Singleton.class );
-
-        requestStaticInjection( EquipmentUtils.class );
     }
 }
 

@@ -1,11 +1,11 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:organization="urn:import:ru.protei.portal.ui.equipment.client.widget.organization"
+             xmlns:organization="urn:import:ru.protei.portal.ui.common.client.widget.organization"
              xmlns:person="urn:import:ru.protei.portal.ui.common.client.widget.selector.person"
              xmlns:sortfield="urn:import:ru.protei.portal.ui.common.client.widget.selector.sortfield"
              xmlns:range='urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.range'
              xmlns:doctype='urn:import:ru.protei.portal.ui.document.client.widget.doctype'
-             xmlns:keyword='urn:import:ru.protei.portal.ui.document.client.widget.select.input'
+             xmlns:keyword='urn:import:ru.protei.portal.ui.common.client.widget.stringselect.input'
 >
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
@@ -60,7 +60,7 @@
                 <label>
                     <ui:text from="{lang.documentKeywords}"/>
                 </label>
-                <keyword:SelectInputView ui:field="keywords"/>
+                <keyword:StringSelectInput ui:field="keywords"/>
             </div>
         </div>
         <div class="footer">

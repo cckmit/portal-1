@@ -104,6 +104,7 @@ public abstract class DocumentTableActivity
 
     @Override
     public void onItemClicked(Document value) {
+        showPreview(value);
     }
 
     @Override
@@ -127,7 +128,6 @@ public abstract class DocumentTableActivity
 
     private void requestTotalCount() {
         view.clearRecords();
-        //animation.closeDetails();
 
         documentService.getDocumentCount(query, new RequestCallback<Long>() {
             @Override
@@ -141,6 +141,15 @@ public abstract class DocumentTableActivity
                 pagerView.setTotalPages(view.getPageCount());
             }
         });
+    }
+
+    private void showPreview(Document document) {
+        if (document == null) {
+            animation.closeDetails();
+        } else {
+            animation.showDetails();
+            fireEvent(new DocumentEvents.ShowPreview(view.getPreviewContainer(), document));
+        }
     }
 
     private DocumentQuery makeQuery() {
