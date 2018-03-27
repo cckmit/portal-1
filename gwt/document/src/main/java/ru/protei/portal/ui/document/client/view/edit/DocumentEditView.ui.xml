@@ -63,10 +63,12 @@
                 </legend>
                 <div class="grid grid-indent">
                     <div class="form-group col-xs-12">
-                        <decnum:SingledDecimalNumberInput ui:field="decimalNumber"
-                                                          removeVisible="false"
-                                                          organizationCodeEnabled="true"
-                                                          reserveVisible="false"/>
+                        <decnum:SingleDecimalNumberInput ui:field="decimalNumber"
+                                                         removeVisible="false"
+                                                         organizationCodeEnabled="true"
+                                                         reserveVisible="false"
+                                                         nextVisible="false"
+                                                         getNextModificationMessageVisible="false"/>
                     </div>
                 </div>
 

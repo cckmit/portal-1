@@ -189,6 +189,14 @@ public class DecimalNumberBox extends Composite
         remove.setVisible(isVisible);
     }
 
+    public void setNextVisible(boolean isVisible) {
+        next.setVisible(isVisible);
+    }
+
+    public void setGetNextModificationMessageVisible(boolean isVisible) {
+        getNextModificationMessage.setVisible(isVisible);
+    }
+
     protected void resetTimer() {
         changeNumberTimer.cancel();
         changeNumberTimer.schedule(300);
@@ -260,6 +268,8 @@ public class DecimalNumberBox extends Composite
     Button next;
     @UiField
     Button remove;
+    @UiField
+    HTMLPanel getNextModificationMessage;
 
 
     private DecimalNumberBoxHandler handler;

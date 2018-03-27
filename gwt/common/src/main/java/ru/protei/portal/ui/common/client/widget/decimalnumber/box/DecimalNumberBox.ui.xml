@@ -4,7 +4,7 @@
              xmlns:mask="urn:import:ru.protei.portal.ui.common.client.widget.mask"
 >
 
-    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
     <g:HTMLPanel styleName="dn col-md-12 m-b-15">
         <div class="dn-container" ui:field="container">
@@ -17,11 +17,14 @@
             <mask:MaskedTextBox ui:field="regNum" styleName="input-field dn-register-number" mask="999"/>
             <label class="dn-separator">–</label>
             <div class="modtooltip">
-                <mask:MaskedTextBox ui:field="regNumModification" styleName="input-field dn-register-number-modifier" mask="99"/>
-                <label class="text text-info">
-                    <i class="fa fa-info-circle m-r-5 "></i>
-                    <ui:text from="{lang.equipmentGetNextModification}"></ui:text>
-                </label>
+                <mask:MaskedTextBox ui:field="regNumModification" styleName="input-field dn-register-number-modifier"
+                                    mask="99"/>
+                <g:HTMLPanel ui:field="getNextModificationMessage">
+                    <label class="text text-info">
+                        <i class="fa fa-info-circle m-r-5 "></i>
+                        <ui:text from="{lang.equipmentGetNextModification}"></ui:text>
+                    </label>
+                </g:HTMLPanel>
             </div>
             <label class="dn-separator"></label>
             <g:Button ui:field="next" styleName="btn btn-white" title="{lang.formNextMod}">
@@ -42,5 +45,5 @@
                 <g:Anchor href="#" ui:field="getNextModification" text="{lang.equipmentModification}?"></g:Anchor>
             </span>
         </small>
-       </g:HTMLPanel>
+    </g:HTMLPanel>
 </ui:UiBinder>

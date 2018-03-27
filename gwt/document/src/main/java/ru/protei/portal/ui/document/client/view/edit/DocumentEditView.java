@@ -10,7 +10,7 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.DocumentType;
 import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.ui.common.client.widget.decimalnumber.single.SingledDecimalNumberInput;
+import ru.protei.portal.ui.common.client.widget.decimalnumber.single.SingleDecimalNumberInput;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.stringselect.input.StringSelectInput;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
@@ -136,7 +136,7 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
 
     @Inject
     @UiField(provided = true)
-    SingledDecimalNumberInput decimalNumber;
+    SingleDecimalNumberInput decimalNumber;
 
     AbstractDocumentEditActivity activity;
 

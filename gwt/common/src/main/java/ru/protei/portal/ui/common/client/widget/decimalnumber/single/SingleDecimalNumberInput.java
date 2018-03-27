@@ -12,8 +12,8 @@ import ru.protei.winter.web.common.client.common.DisplayStyle;
 
 import java.util.Collections;
 
-public class SingledDecimalNumberInput extends DecimalNumberBox implements DecimalNumberBoxHandler {
-    public SingledDecimalNumberInput() {
+public class SingleDecimalNumberInput extends DecimalNumberBox implements DecimalNumberBoxHandler {
+    public SingleDecimalNumberInput() {
         setHandler(this);
     }
 

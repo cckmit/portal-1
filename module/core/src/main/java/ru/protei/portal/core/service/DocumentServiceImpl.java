@@ -51,7 +51,7 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    @Transactional // FIXME: transaction
+    @Transactional
     public CoreResponse<Document> saveDocument(AuthToken token, Document document) {
         if(!document.isValid()) {
             return new CoreResponse<Document>().error(En_ResultStatus.INCORRECT_PARAMS);
