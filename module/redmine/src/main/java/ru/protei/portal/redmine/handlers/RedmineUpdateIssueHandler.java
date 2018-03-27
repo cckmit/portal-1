@@ -66,7 +66,7 @@ public final class RedmineUpdateIssueHandler implements RedmineEventHandler {
         logger.debug("Added {} new case comments to issue with id: {}", comments.size(), object.getId());
 
         updateObject(issue, object, endpoint);
-        commonService.processAttachments(issue, object, object.getInitiator());
+        commonService.processAttachments(issue, object, object.getInitiator(), endpoint);
     }
 
     //Well, just simpliest way to update object: ignoring everything and just setting fields...

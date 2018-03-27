@@ -64,7 +64,7 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
 
         logger.debug("Trying to get redmine status id matching with portal: {}", object.getStateId());
         final RedmineStatusMapEntry redmineStatusMapEntry =
-                statusMapEntryDAO.getByRedmineStatusId(object.getStateId(), statusMapId);
+                statusMapEntryDAO.getByPortalStatusId(object.getStateId(), statusMapId);
         if (redmineStatusMapEntry != null && object.getState() != En_CaseState.VERIFIED) {
             logger.debug("Found redmine status id: {}", redmineStatusMapEntry.getRedmineStatusId());
             issue.setStatusId(redmineStatusMapEntry.getRedmineStatusId());

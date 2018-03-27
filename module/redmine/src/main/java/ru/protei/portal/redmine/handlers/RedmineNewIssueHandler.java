@@ -53,7 +53,7 @@ public final class RedmineNewIssueHandler implements RedmineEventHandler {
 
         externalCaseAppDAO.merge(appData);
 
-        commonService.processAttachments(issue, obj, contactPerson);
+        commonService.processAttachments(issue, obj, contactPerson, endpoint);
 
         handleComments(issue, contactPerson, obj, caseObjId, companyId);
 

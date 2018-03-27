@@ -29,7 +29,7 @@ public class RedmineEndpointDAO_Impl extends PortalBaseJdbcDAO<RedmineEndpoint> 
 //        RedmineEndpoint endpoint = getByCondition("COMPANY_ID = ? AND project_id = ?", companyId, projectId);
 //        endpoint.setLastUpdatedOnDate(date);
 //        saveOrUpdate(endpoint);
-//    }
+//\    }
 
     @Override
     public List<RedmineEndpoint> getByCompanyId(Long companyId) {
