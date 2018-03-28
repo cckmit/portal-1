@@ -89,7 +89,7 @@ public abstract class DocumentEditActivity
         if (doc.getType() == null) {
             return lang.documentTypeIsEmpty();
         }
-        if (HelperFunc.isEmpty(doc.getProject())) {
+        if (doc.getProjectId() == null) {
             return lang.documentProjectIsEmpty();
         }
         if (doc.getManagerId() == null) {
@@ -120,7 +120,7 @@ public abstract class DocumentEditActivity
         document.setInventoryNumber(view.inventoryNumber().getValue());
         document.setKeywords(view.keywords().getValue());
         document.setManagerId(view.manager().getValue() == null ? null : view.manager().getValue().getId());
-        document.setProject(view.project().getValue());
+        document.setProjectId(view.project().getValue().getId());
         return document;
     }
 
@@ -146,7 +146,7 @@ public abstract class DocumentEditActivity
         view.inventoryNumber().setValue(document.getInventoryNumber());
         view.keywords().setValue(document.getKeywords());
         view.manager().setValue(manager);
-        view.project().setValue(document.getProject());
+        view.project().setValue(document.getProjectInfo());
     }
 
     @Inject

@@ -9,9 +9,11 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.DocumentType;
+import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.widget.decimalnumber.single.SingleDecimalNumberInput;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.project.ProjectButtonSelector;
 import ru.protei.portal.ui.common.client.widget.stringselect.input.StringSelectInput;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.document.client.activity.edit.AbstractDocumentEditActivity;
@@ -58,7 +60,7 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     }
 
     @Override
-    public HasValue<String> project() {
+    public HasValue<ProjectInfo> project() {
         return project;
     }
 
@@ -125,8 +127,9 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     @UiField
     LongBox inventoryNumber;
 
-    @UiField
-    ValidableTextBox project;
+    @Inject
+    @UiField(provided = true)
+    ProjectButtonSelector project;
 
     @Inject
     @UiField(provided = true)

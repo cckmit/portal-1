@@ -4,6 +4,7 @@ import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.DocumentType;
+import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.view.PersonShortView;
 
 import java.util.List;
@@ -16,7 +17,7 @@ public interface AbstractDocumentEditView extends IsWidget {
 
     HasValue<DocumentType> documentType();
 
-    HasValue<String> project();
+    HasValue<ProjectInfo> project();
 
     HasValue<PersonShortView> manager();
 
@@ -31,6 +32,4 @@ public interface AbstractDocumentEditView extends IsWidget {
     HasValue<DecimalNumber> decimalNumber();
 
     boolean isDecimalNumbersCorrect();
-
-    boolean isAttached();
 }

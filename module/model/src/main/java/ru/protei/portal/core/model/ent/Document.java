@@ -1,6 +1,7 @@
 package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
@@ -58,8 +59,13 @@ public class Document implements Serializable {
     private Long managerId;
     @JdbcJoinedColumn(localColumn = "manager_id", table = "Person", remoteColumn = "id", mappedColumn = "displayShortName")
     private String managerShortName;
-    @JdbcColumn
-    private String project;
+
+    @JdbcColumn(name = "project_id")
+    private Long projectId;
+    @JdbcJoinedColumn(localColumn = "project_id", table = "case_object", remoteColumn = "id", mappedColumn = "case_name")
+    private String projectName;
+    @JdbcJoinedObject(localColumn = "project_id", table = "case_object", remoteColumn = "id")
+    private ProjectInfo projectInfo;
 
     /**
      * Дата создания
@@ -108,12 +114,12 @@ public class Document implements Serializable {
         this.managerShortName = managerShortName;
     }
 
-    public String getProject() {
-        return project;
+    public String getProjectName() {
+        return projectName;
     }
 
-    public void setProject(String project) {
-        this.project = project;
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
     }
 
     public List<String> getKeywords() {
@@ -170,7 +176,23 @@ public class Document implements Serializable {
                 this.getManagerId() != null &&
                 this.getInventoryNumber() != null &&
                 this.getInventoryNumber() > 0 &&
-                HelperFunc.isNotEmpty(this.getProject()) &&
+                this.getProjectId() != null &&
                 HelperFunc.isNotEmpty(this.getName());
+    }
+
+    public Long getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(Long projectId) {
+        this.projectId = projectId;
+    }
+
+    public ProjectInfo getProjectInfo() {
+        return projectInfo;
+    }
+
+    public void setProjectInfo(ProjectInfo projectInfo) {
+        this.projectInfo = projectInfo;
     }
 }
