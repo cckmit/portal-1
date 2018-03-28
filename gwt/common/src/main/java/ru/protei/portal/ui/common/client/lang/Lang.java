@@ -704,4 +704,10 @@ public interface Lang extends Messages, ContactItemLang {
     String errSaveIssueFilter();
 
     String issueFilter();
+
+    String issueFilterName();
+
+    String errFilterNameRequired();
+
+    String issueFilterRemoveSuccessed();
 }

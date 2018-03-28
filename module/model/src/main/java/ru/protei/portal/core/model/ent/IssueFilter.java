@@ -1,6 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.portal.core.model.struct.IssueFilterParams;
+import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.IssueFilterShortView;
 import ru.protei.winter.jdbc.annotations.*;
 
@@ -16,7 +16,7 @@ public class IssueFilter implements Serializable {
     private String name;
 
     @JdbcColumn( name = "params", converterType = ConverterType.JSON )
-    private IssueFilterParams params;
+    private CaseQuery params;
 
     @JdbcColumn( name = "login_id" )
     private Long loginId;
@@ -37,11 +37,11 @@ public class IssueFilter implements Serializable {
         this.name = name;
     }
 
-    public IssueFilterParams getParams() {
+    public CaseQuery getParams() {
         return params;
     }
 
-    public void setParams( IssueFilterParams params ) {
+    public void setParams( CaseQuery params ) {
         this.params = params;
     }
 
@@ -53,6 +53,10 @@ public class IssueFilter implements Serializable {
         this.loginId = loginId;
     }
 
+    public IssueFilterShortView toShortView() {
+        return new IssueFilterShortView( this.id, this.name );
+    }
+
     @Override
     public String toString() {
         return "IssueFilter{" +
@@ -61,9 +65,5 @@ public class IssueFilter implements Serializable {
                 ", params=" + params +
                 ", loginId=" + loginId +
                 '}';
-    }
-
-    public IssueFilterShortView toShortView() {
-        return new IssueFilterShortView( this.id, this.name );
     }
 }

@@ -4,16 +4,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.CoreResponse;
-import ru.protei.portal.core.model.dao.CompanyDAO;
 import ru.protei.portal.core.model.dao.IssueFilterDAO;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.IssueFilter;
-import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.IssueFilterShortView;
-
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -26,15 +21,12 @@ public class CrmIssueFilterServiceImpl implements CrmIssueFilterService {
     @Autowired
     IssueFilterDAO issueFilterDAO;
 
-    @Autowired
-    CompanyDAO companyDAO;
-
     @Override
     public CoreResponse< List< IssueFilterShortView > > getIssueFilterShortViewList( Long loginId ) {
 
         log.debug( "getIssueFilterShortViewList(): accountId={} ", loginId );
 
-        List<IssueFilter> list = issueFilterDAO.getFiltersByUser(loginId);
+        List<IssueFilter> list = issueFilterDAO.getListByCondition( "login_id=?", loginId );
 
         if (list == null)
             new CoreResponse<List<IssueFilterShortView>>().error(En_ResultStatus.GET_DATA_ERROR);
@@ -50,10 +42,6 @@ public class CrmIssueFilterServiceImpl implements CrmIssueFilterService {
         log.debug( "getIssueFilter(): id={} ", id );
 
         IssueFilter filter = issueFilterDAO.get(id);
-
-        List<Company> list = companyDAO.getListByKeys(filter.getParams().getCompanies());
-        Set<EntityOption> result = list.stream().map(Company::toEntityOption).collect(Collectors.toSet());
-        filter.getParams().setCompanyCollection(result);
 
         return filter != null ? new CoreResponse<IssueFilter>().success(filter)
                 : new CoreResponse<IssueFilter>().error( En_ResultStatus.NOT_FOUND);

@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.issue.client.view.filter;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -112,7 +113,9 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         sortDir.setValue( false );
         search.setText( "" );
         userFilter.setValue( null );
-        //TODO crm-93 скрыть поле имя фильтра и кнопку Удалить
+        removeBtn.setVisible( false );
+        filterNameContainer.removeClassName( "required" );
+        filterName.setValue( "" );
     }
 
     @Override
@@ -135,6 +138,34 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         return userFilter;
     }
 
+    @Override
+    public HasVisibility removeFilterBtnVisibility(){
+        return removeBtn;
+    }
+
+    @Override
+    public HasValue< String > filterName() {
+        return filterName;
+    }
+
+    @Override
+    public void setFilterNameContainerErrorStyle( boolean hasError ) {
+        if ( hasError ) {
+            filterName.addStyleName( "required" );
+        } else {
+            filterName.removeStyleName( "required" );
+        }
+    }
+
+    @Override
+    public void setFilterNameContainerVisibility( boolean isVisible ) {
+        if ( isVisible ) {
+            filterNameContainer.removeClassName( "hide" );
+        } else {
+            filterNameContainer.addClassName( "hide" );
+        }
+    }
+
     @UiHandler( "resetBtn" )
     public void onResetClicked ( ClickEvent event ) {
         if ( activity != null ) {
@@ -153,11 +184,10 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
 
     @UiHandler( "removeBtn" )
     public void onRemoveClicked ( ClickEvent event ) {
-        if ( activity == null ) {
+        if ( activity == null || userFilter.getValue() == null || userFilter.getValue().getId() == null ) {
             return;
         }
-        //TODO crm-93 fill the issueFilterID
-//        activity.onFilterRemoveClicked( 1L );
+        activity.onFilterRemoveClicked( userFilter.getValue().getId() );
     }
 
     @UiHandler( "companies" )
@@ -231,12 +261,25 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         activity.onUserFilterChanged();
     }
 
+    @UiHandler( "filterName" )
+    public void onFilterNameChanged( KeyUpEvent event ) {
+        filterNameChangedTimer.cancel();
+        filterNameChangedTimer.schedule( 300 );
+    }
+
     Timer timer = new Timer() {
         @Override
         public void run() {
             if ( activity != null ) {
                 activity.onFilterChanged();
             }
+        }
+    };
+
+    Timer filterNameChangedTimer = new Timer() {
+        @Override
+        public void run() {
+            setFilterNameContainerErrorStyle( filterName.getValue().isEmpty() );
         }
     };
 
@@ -286,6 +329,12 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
 
     @UiField
     Button removeBtn;
+
+    @UiField
+    TextBox filterName;
+
+    @UiField
+    DivElement filterNameContainer;
 
     @Inject
     FixedPositioner positioner;

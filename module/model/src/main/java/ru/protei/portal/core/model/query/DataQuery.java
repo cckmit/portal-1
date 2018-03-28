@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.query;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 
@@ -8,21 +9,30 @@ import ru.protei.portal.core.model.dict.En_SortField;
  */
 public interface DataQuery {
 
+    @JsonIgnore
     DataQuery useSort (En_SortField sortField, En_SortDir sortDir);
 
+    @JsonIgnore
     int getLimit();
 
+    @JsonIgnore
     void setLimit(int limit);
 
+    @JsonIgnore
     int getOffset();
 
+    @JsonIgnore
     void setOffset(int offset);
 
+    @JsonIgnore
     En_SortField getSortField();
 
+    @JsonIgnore
     void setSortField(En_SortField sortField);
 
+    @JsonIgnore
     En_SortDir getSortDir();
 
+    @JsonIgnore
     void setSortDir(En_SortDir sortDir);
 }
