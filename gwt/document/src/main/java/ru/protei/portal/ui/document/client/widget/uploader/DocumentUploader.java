@@ -3,6 +3,7 @@ package ru.protei.portal.ui.document.client.widget.uploader;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.user.client.ui.FormPanel;
+import ru.protei.portal.core.model.ent.Document;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.ui.common.client.widget.uploader.FileUploader;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
@@ -22,7 +23,7 @@ public class DocumentUploader extends FileUploader {
     }
 
 
-    public String geFileName() {
+    public String getFilename() {
         return fileUpload.getFilename();
     }
 
@@ -43,13 +44,21 @@ public class DocumentUploader extends FileUploader {
 
     @Override
     public void changeHandler(ChangeEvent event) {
-        String filename = fileUpload.getFilename();
-        if (HelperFunc.isNotEmpty(filename) && !form.getElement().hasClassName("attachment-uploading")) {
-            form.addStyleName("attachment-uploading");
-            form.setAction(UPLOAD_DOCUMENT_URL);
-            form.submit();
-            fileUpload.setEnabled(false);
+    }
+
+    public void uploadAndBindToDocument(Document document) {
+        if (HelperFunc.isEmpty(getFilename()) || form.getElement().hasClassName("attachment-uploading")) {
+            return;
         }
+
+        Long documentId = document.getId();
+        Long projectId = document.getProjectId();
+        String url = UPLOAD_DOCUMENT_URL + projectId + "/" + documentId;
+
+        form.addStyleName("attachment-uploading");
+        form.setAction(url);
+        form.submit();
+        fileUpload.setEnabled(false);
     }
 
     public void setUploadHandler(RequestCallback<Void> uploadHandler) {
@@ -57,5 +66,5 @@ public class DocumentUploader extends FileUploader {
     }
 
     private RequestCallback<Void> uploadHandler;
-    private static final String UPLOAD_DOCUMENT_URL = "Crm/springApi/uploadDocument";
+    private static final String UPLOAD_DOCUMENT_URL = "Crm/springApi/uploadDocument/";
 }

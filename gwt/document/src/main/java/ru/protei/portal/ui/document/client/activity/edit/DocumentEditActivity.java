@@ -24,6 +24,19 @@ public abstract class DocumentEditActivity
     @PostConstruct
     public void onInit() {
         view.setActivity(this);
+
+        view.documentUploader().setUploadHandler(new RequestCallback<Void>() {
+            @Override
+            public void onError(Throwable throwable) {
+                fireErrorMessage(lang.errSaveDocumentFile());
+            }
+
+            @Override
+            public void onSuccess(Void result) {
+                fireEvent(new DocumentEvents.ChangeModel());
+                fireEvent(new Back());
+            }
+        });
     }
 
     @Event
@@ -58,7 +71,7 @@ public abstract class DocumentEditActivity
     @Override
     public void onSaveClicked() {
         Document document = applyChanges();
-        if (!document.isValid()) {
+        if (!document.isValid() || HelperFunc.isEmpty(view.documentUploader().getFilename())) {
             fireErrorMessage(getValidationErrorMessage(document));
             return;
         } else if (!view.isDecimalNumbersCorrect()) {
@@ -68,20 +81,20 @@ public abstract class DocumentEditActivity
         documentService.saveDocument(document, new RequestCallback<Document>() {
             @Override
             public void onError(Throwable throwable) {
-                fireErrorMessage(throwable.getMessage());
+                fireErrorMessage(lang.errDocumentNotSaved());
             }
 
             @Override
             public void onSuccess(Document result) {
-                fireEvent(new DocumentEvents.ChangeModel());
-                fireEvent(new Back());
+                view.documentUploader().uploadAndBindToDocument(result);
+                // TODO: think about transactions: make sure that both document and pdf file are saved
             }
         });
     }
 
     private String getValidationErrorMessage(Document doc) {
-        if (doc.isValid()) {
-            return null;
+        if (HelperFunc.isEmpty(view.documentUploader().getFilename())) {
+            return lang.uploadingDocumentNotSet();
         }
         if (doc.getDecimalNumber() == null) {
             return lang.decimalNumberNotSet();

@@ -752,4 +752,10 @@ public interface Lang extends Messages, ContactItemLang {
     String documentIdentification();
 
     String documentUploadPlaceholder();
+
+    String uploadingDocumentNotSet();
+
+    String errSaveDocumentFile();
+
+    String errDocumentNotSaved();
 }

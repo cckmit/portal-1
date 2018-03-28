@@ -6,6 +6,7 @@ import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.DocumentType;
 import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.ui.document.client.widget.uploader.DocumentUploader;
 
 import java.util.List;
 
@@ -36,4 +37,6 @@ public interface AbstractDocumentEditView extends IsWidget {
     HasValue<DecimalNumber> decimalNumber();
 
     boolean isDecimalNumbersCorrect();
+
+    DocumentUploader documentUploader();
 }

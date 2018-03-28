@@ -31,7 +31,7 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
         initWidget(ourUiBinder.createAndBindUi(this));
         fileName.getElement().setAttribute("placeholder", lang.documentUploadPlaceholder());
         documentUploader.addChangeHandler(event ->
-                fileName.setValue(documentUploader.geFileName()));
+                fileName.setValue(documentUploader.getFilename()));
     }
 
     @Override
@@ -102,6 +102,11 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     @Override
     public HasValue<DecimalNumber> decimalNumber() {
         return decimalNumber;
+    }
+
+    @Override
+    public DocumentUploader documentUploader() {
+        return documentUploader;
     }
 
 
