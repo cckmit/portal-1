@@ -19,12 +19,10 @@
             <div class="modtooltip">
                 <mask:MaskedTextBox ui:field="regNumModification" styleName="input-field dn-register-number-modifier"
                                     mask="99"/>
-                <g:HTMLPanel ui:field="getNextModificationMessage">
-                    <label class="text text-info">
-                        <i class="fa fa-info-circle m-r-5 "></i>
-                        <ui:text from="{lang.equipmentGetNextModification}"></ui:text>
-                    </label>
-                </g:HTMLPanel>
+                <label ui:field="getNextModificationMessage" class="text text-info">
+                    <i class="fa fa-info-circle m-r-5 "></i>
+                    <ui:text from="{lang.equipmentGetNextModification}"></ui:text>
+                </label>
             </div>
             <label class="dn-separator"></label>
             <g:Button ui:field="next" styleName="btn btn-white" title="{lang.formNextMod}">
