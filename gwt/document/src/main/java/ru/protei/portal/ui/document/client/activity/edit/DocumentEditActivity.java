@@ -147,6 +147,9 @@ public abstract class DocumentEditActivity
         view.keywords().setValue(document.getKeywords());
         view.manager().setValue(manager);
         view.project().setValue(document.getProjectInfo());
+
+        view.setEnabledProject(document.getId() == null);
+        view.setVisibleUploader(document.getId() == null);
     }
 
     @Inject

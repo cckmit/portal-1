@@ -13,6 +13,10 @@ public interface AbstractDocumentEditView extends IsWidget {
 
     void setActivity(AbstractDocumentEditActivity activity);
 
+    void setEnabledProject(boolean isEnabled);
+
+    void setVisibleUploader(boolean isVisible);
+
     HasValue<String> name();
 
     HasValue<DocumentType> documentType();

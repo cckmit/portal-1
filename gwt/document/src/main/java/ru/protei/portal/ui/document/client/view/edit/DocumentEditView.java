@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.DocumentType;
 import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.decimalnumber.single.SingleDecimalNumberInput;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.project.ProjectButtonSelector;
@@ -28,6 +29,9 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        fileName.getElement().setAttribute("placeholder", lang.documentUploadPlaceholder());
+        documentUploader.addChangeHandler(event ->
+                fileName.setValue(documentUploader.geFileName()));
     }
 
     @Override
@@ -42,6 +46,17 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
         }
         decimalNumber.setValid(false);
         return false;
+    }
+
+    @Override
+    public void setEnabledProject(boolean isEnabled) {
+        project.setEnabled(isEnabled);
+    }
+
+    @Override
+    public void setVisibleUploader(boolean isVisible) {
+        documentUploader.setVisible(isVisible);
+        selectFileButton.setVisible(isVisible);
     }
 
     @Override
@@ -104,9 +119,17 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
         }
     }
 
+    @UiHandler("selectFileButton")
+    public void onSelectFileClicked(ClickEvent event) {
+        documentUploader.click();
+    }
+
 
     @UiField
     ValidableTextBox name;
+
+    @UiField
+    TextBox fileName;
 
     @Inject
     @UiField(provided = true)
@@ -145,6 +168,12 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     @Inject
     @UiField(provided = true)
     SingleDecimalNumberInput decimalNumber;
+
+    @UiField
+    Button selectFileButton;
+
+    @Inject
+    Lang lang;
 
     AbstractDocumentEditActivity activity;
 

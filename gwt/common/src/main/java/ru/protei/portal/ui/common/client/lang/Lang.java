@@ -750,4 +750,6 @@ public interface Lang extends Messages, ContactItemLang {
     String documentDecimalNumber();
 
     String documentIdentification();
+
+    String documentUploadPlaceholder();
 }
