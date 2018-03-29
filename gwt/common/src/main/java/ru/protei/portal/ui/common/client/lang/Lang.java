@@ -718,4 +718,6 @@ public interface Lang extends Messages, ContactItemLang {
     String errTooMuchProducts();
 
     String issueFilterNotDefined();
+
+    String buttonModify();
 }

@@ -44,15 +44,19 @@ public interface AbstractIssueFilterView extends IsWidget {
 
     HasVisibility removeFilterBtnVisibility();
 
+    void setSaveBtnLabel( String name );
+
     HasValue<String> filterName();
 
     void setFilterNameContainerErrorStyle( boolean hasError );
 
-    void setFilterNameContainerVisibility( boolean isVisible );
+    void setUserFilterNameVisibility( boolean hasVisible );
 
     void setCompaniesErrorStyle( boolean hasError );
 
     void setProductsErrorStyle( boolean hasError );
 
     void setManagersErrorStyle( boolean hasError );
+
+    void setUserFilterControlsVisibility( boolean hasVisible );
 }

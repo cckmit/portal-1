@@ -154,6 +154,11 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     }
 
     @Override
+    public void setSaveBtnLabel( String label){
+        saveBtn.setText( label );
+    }
+
+    @Override
     public HasValue< String > filterName() {
         return filterName;
     }
@@ -168,8 +173,8 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     }
 
     @Override
-    public void setFilterNameContainerVisibility( boolean isVisible ) {
-        if ( isVisible ) {
+    public void setUserFilterNameVisibility( boolean hasVisible ) {
+        if ( hasVisible ) {
             filterNameContainer.removeClassName( "hide" );
         } else {
             filterNameContainer.addClassName( "hide" );
@@ -203,6 +208,19 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         }
     }
 
+    @Override
+    public void setUserFilterControlsVisibility( boolean hasVisible ) {
+        if ( hasVisible ) {
+            saveBtn.removeStyleName( "hide" );
+            resetBtn.removeStyleName( "hide" );
+            removeBtn.removeStyleName( "hide" );
+        } else {
+            saveBtn.addStyleName( "hide" );
+            resetBtn.addStyleName( "hide" );
+            removeBtn.addStyleName( "hide" );
+        }
+    }
+
     @UiHandler( "resetBtn" )
     public void onResetClicked ( ClickEvent event ) {
         if ( activity != null ) {
@@ -217,6 +235,24 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
             return;
         }
         activity.onSaveFilterClicked();
+    }
+
+    @UiHandler( "okBtn" )
+    public void onOkBtnClicked ( ClickEvent event ) {
+        event.preventDefault();
+        if ( activity == null ) {
+            return;
+        }
+        activity.onOkSavingClicked();
+    }
+
+    @UiHandler( "cancelBtn" )
+    public void onCancelBtnClicked ( ClickEvent event ) {
+        event.preventDefault();
+        if ( activity == null ) {
+            return;
+        }
+        activity.onCancelSavingClicked();
     }
 
     @UiHandler( "removeBtn" )
@@ -368,6 +404,12 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     Button removeBtn;
 
     @UiField
+    Anchor okBtn;
+
+    @UiField
+    Anchor cancelBtn;
+
+    @UiField
     TextBox filterName;
 
     @UiField
@@ -383,5 +425,6 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     AbstractIssueFilterActivity activity;
 
     private static IssueFilterView.IssueFilterViewUiBinder ourUiBinder = GWT.create( IssueFilterView.IssueFilterViewUiBinder.class );
+
     interface IssueFilterViewUiBinder extends UiBinder<HTMLPanel, IssueFilterView > {}
 }

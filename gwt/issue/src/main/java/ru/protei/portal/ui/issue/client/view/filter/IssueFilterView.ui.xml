@@ -11,11 +11,14 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="panel with-table-pager">
-        <div class="body">
+    <g:HTMLPanel styleName="issue-filter panel with-table-pager">
 
+        <div class="user-filter">
             <filter:IssueFilterSelector ui:field="userFilter" header="{lang.issueFilter}"
-                                        addStyleNames="form-group col-xs-12" defaultValue="{lang.issueFilterNotDefined}"/>
+                                        defaultValue="{lang.issueFilterNotDefined}"/>
+        </div>
+
+        <div class="body">
 
             <div class="form-group local-search col-xs-12">
                 <span class="icon local-search-icon"></span>
@@ -58,11 +61,23 @@
             </div>
         </div>
         <div class="footer">
-            <div class="form-group col-xs-12" style="text-align: left;" ui:field="filterNameContainer">
-                <label><ui:text from="{lang.issueFilterName}"/></label>
-                <g:TextBox ui:field="filterName" styleName="input-field"/>
+
+            <div class="user-filter-name hide" ui:field="filterNameContainer">
+                <label class="bold">
+                    <ui:text from="{lang.issueFilterName}"/>
+                </label>
+                <div class="col-xs-12">
+                    <g:TextBox ui:field="filterName" styleName="input-field"/>
+                    <g:Anchor styleName="btn btn-default btn-sm" ui:field="okBtn">
+                        <span class="fa fa-check"/>
+                    </g:Anchor>
+                    <g:Anchor styleName="btn btn-default btn-sm" ui:field="cancelBtn">
+                        <span class="fa fa-times"/>
+                    </g:Anchor>
+                </div>
             </div>
-            <g:Button ui:field="saveBtn" styleName="btn btn-white" text="{lang.buttonSave}"/>
+
+            <g:Button ui:field="saveBtn" styleName="btn btn-white" text="{lang.buttonCreate}"/>
             <g:Button ui:field="resetBtn" styleName="btn btn-white" text="{lang.buttonReset}"/>
             <g:Button ui:field="removeBtn" styleName="btn btn-white" text="{lang.buttonRemove}"/>
         </div>

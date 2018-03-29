@@ -66,6 +66,7 @@ public abstract class IssueTableActivity
         initDetails.parent.clear();
         initDetails.parent.add( view.asWidget() );
         initDetails.parent.add( pagerView.asWidget() );
+        showUserFilterControls();
 
         fireEvent( policyService.hasPrivilegeFor( En_Privilege.ISSUE_CREATE ) ?
                 new ActionBarEvents.Add( CREATE_ACTION, UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.ISSUE ) :
@@ -123,6 +124,55 @@ public abstract class IssueTableActivity
 
     @Override
     public void onSaveFilterClicked() {
+        showUserFilterName();
+    }
+
+    @Override
+    public void onFilterRemoveClicked( Long id ) {
+
+        filterService.removeIssueFilter( id, new RequestCallback< Boolean >() {
+            @Override
+            public void onError( Throwable throwable ) {
+                fireEvent( new NotifyEvents.Show( lang.errNotRemoved(), NotifyEvents.NotifyType.ERROR ) );
+            }
+
+            @Override
+            public void onSuccess( Boolean aBoolean ) {
+
+                fireEvent(new NotifyEvents.Show(lang.issueFilterRemoveSuccessed(), NotifyEvents.NotifyType.SUCCESS));
+                fireEvent( new IssueEvents.ChangeUserFilterModel() );
+                filterView.resetFilter();
+            }
+        } );
+    }
+
+    @Override
+    public void onUserFilterChanged() {
+
+        IssueFilterShortView filter = filterView.userFilter().getValue();
+        if (filter == null){
+            filterView.resetFilter();
+            showUserFilterControls();
+            filterView.setSaveBtnLabel( lang.buttonCreate() );
+            return;
+        }
+
+        filterView.setSaveBtnLabel( lang.buttonModify() );
+        filterService.getIssueFilter( filter.getId(), new RequestCallback< IssueFilter >() {
+            @Override
+            public void onError( Throwable throwable ) {
+                fireEvent( new NotifyEvents.Show( lang.errNotFound(), NotifyEvents.NotifyType.ERROR ) );
+            }
+
+            @Override
+            public void onSuccess( IssueFilter filter ) {
+                fillFilterFields( filter );
+            }
+        } );
+    }
+
+    @Override
+    public void onOkSavingClicked() {
 
         if (filterView.filterName().getValue().isEmpty()){
             filterView.setFilterNameContainerErrorStyle( true );
@@ -154,45 +204,15 @@ public abstract class IssueTableActivity
                     filterView.changeUserFilterValueName( filterShortView );
                 }
                 filterView.removeFilterBtnVisibility().setVisible( true );
-                filterView.setFilterNameContainerVisibility( true );
+                showUserFilterControls();
             }
         } );
     }
 
     @Override
-    public void onFilterRemoveClicked( Long id ) {
-
-        filterService.removeIssueFilter( id, new RequestCallback< Boolean >() {
-            @Override
-            public void onError( Throwable throwable ) {
-                fireEvent( new NotifyEvents.Show( lang.errNotRemoved(), NotifyEvents.NotifyType.ERROR ) );
-            }
-
-            @Override
-            public void onSuccess( Boolean aBoolean ) {
-
-                fireEvent(new NotifyEvents.Show(lang.issueFilterRemoveSuccessed(), NotifyEvents.NotifyType.SUCCESS));
-                fireEvent( new IssueEvents.ChangeUserFilterModel() );
-                filterView.resetFilter();
-            }
-        } );
-    }
-
-    @Override
-    public void onUserFilterChanged() {
-
-        Long filterId = filterView.userFilter().getValue().getId();
-        filterService.getIssueFilter( filterId, new RequestCallback< IssueFilter >() {
-            @Override
-            public void onError( Throwable throwable ) {
-                fireEvent( new NotifyEvents.Show( lang.errNotFound(), NotifyEvents.NotifyType.ERROR ) );
-            }
-
-            @Override
-            public void onSuccess( IssueFilter filter ) {
-                fillFilterFields( filter );
-            }
-        } );
+    public void onCancelSavingClicked() {
+        showUserFilterControls();
+        filterView.resetFilter();
     }
 
     @Override
@@ -252,7 +272,6 @@ public abstract class IssueTableActivity
     private void fillFilterFields( IssueFilter filter ) {
 
         filterView.removeFilterBtnVisibility().setVisible( true );
-        filterView.setFilterNameContainerVisibility( true );
         filterView.filterName().setValue( filter.getName() );
 
         CaseQuery params = filter.getParams();
@@ -260,7 +279,6 @@ public abstract class IssueTableActivity
         filterView.sortDir().setValue( params.getSortDir().equals( En_SortDir.ASC ) );
         filterView.sortField().setValue( params.getSortField() );
         filterView.dateRange().setValue( new DateInterval( params.getFrom(), params.getTo() ) );
-        filterView.dateRange().getValue().to = params.getTo();
         filterView.importances().setValue( IssueFilterUtils.getImportances( params.getImportanceIds() ) );
         filterView.states().setValue( IssueFilterUtils.getStates( params.getStateIds() ) );
         filterView.companies().setValue( IssueFilterUtils.getCompanies( params.getCompanyIds()) );
@@ -375,6 +393,17 @@ public abstract class IssueTableActivity
         filterView.companiesVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_COMPANY_VIEW ) );
         filterView.productsVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_PRODUCT_VIEW ) );
         filterView.managersVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_MANAGER_VIEW ) );
+    }
+
+    private void showUserFilterName(){
+        filterView.setUserFilterControlsVisibility(false);
+        filterView.setUserFilterNameVisibility(true);
+    }
+
+
+    private void showUserFilterControls() {
+        filterView.setUserFilterControlsVisibility(true);
+        filterView.setUserFilterNameVisibility(false);
     }
 
     @Inject

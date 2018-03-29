@@ -2103,3 +2103,36 @@ div.select2-container {
     }
   }
 }
+
+.issue-filter {
+  padding-top: 0px !important;
+
+  .user-filter {
+    background: #eceeee;
+    border-bottom: 1px solid #dee4e5;
+    padding: 15px;
+  }
+
+  .user-filter-name {
+    text-align: left;
+
+    :nth-child(2) {
+      display:  inline-flex;
+
+      a {
+        border: 1px solid;
+        border-color: #ced2d7 #c5cad0 #ced2d7;
+        border-left: none;
+        width: 16px;
+
+        &:hover {
+          background-color: #dee4e5;
+        }
+
+        span {
+          margin-top: 4px;
+        }
+      }
+    }
+  }
+}
