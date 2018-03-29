@@ -2,14 +2,14 @@ package ru.protei.portal.ui.issue.client.widget.filter;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.view.IssueFilterShortView;
+import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 
 import java.util.List;
 
-    public class IssueFilterSelector extends ButtonSelector< IssueFilterShortView > implements ModelSelector< IssueFilterShortView > {
+    public class IssueFilterSelector extends ButtonSelector< CaseFilterShortView > implements ModelSelector< CaseFilterShortView > {
 
     @Inject
     public void init( IssueFilterModel model ) {
@@ -27,7 +27,7 @@ import java.util.List;
         model.requestFilters( this );
     }
 
-    public void changeValueName( IssueFilterShortView value ){
+    public void changeValueName( CaseFilterShortView value ){
 
         if (value == null){
             return;
@@ -36,7 +36,7 @@ import java.util.List;
         refreshValue();
     }
 
-    public void addDisplayOption( IssueFilterShortView value ){
+    public void addDisplayOption( CaseFilterShortView value ){
         if (itemToDisplayOptionModel == null){
             return;
         }
@@ -48,7 +48,7 @@ import java.util.List;
         this.defaultValue = value;
     }
 
-    public void fillOptions( List< IssueFilterShortView > filters ) {
+    public void fillOptions( List< CaseFilterShortView > filters ) {
         clearOptions();
 
         if ( defaultValue != null ) {

@@ -5,15 +5,15 @@ import java.io.Serializable;
 /**
  * Сокращенное представление фильтра обращений
  */
-public class IssueFilterShortView implements Serializable {
+public class CaseFilterShortView implements Serializable {
 
     private Long id;
     private String name;
 
-    public IssueFilterShortView() {
+    public CaseFilterShortView() {
     }
 
-    public IssueFilterShortView( Long id, String name ) {
+    public CaseFilterShortView( Long id, String name ) {
         this.id = id;
         this.name = name;
     }
@@ -36,8 +36,8 @@ public class IssueFilterShortView implements Serializable {
 
     @Override
     public boolean equals( Object obj ) {
-        if (obj instanceof IssueFilterShortView) {
-            Long oid = ((IssueFilterShortView)obj).getId();
+        if (obj instanceof CaseFilterShortView ) {
+            Long oid = ((CaseFilterShortView)obj).getId();
             return this.id == null ? oid == null : oid != null && this.id.equals(oid);
         }
 
@@ -51,7 +51,7 @@ public class IssueFilterShortView implements Serializable {
 
     @Override
     public String toString() {
-        return "IssueFilterShortView{" +
+        return "CaseFilterShortView{" +
                 "id=" + id +
                 ", name=" + name +
                 '}';

@@ -28,4 +28,9 @@
                 referencedColumnNames="id"/>
     </changeSet>
 
+    <changeSet author="butusov" id="2018-03-29-issue_filter_table_rename_to_case_filter">
+        <renameTable newTableName="case_filter"
+                     oldTableName="issue_filter"/>
+    </changeSet>
+
 </databaseChangeLog>

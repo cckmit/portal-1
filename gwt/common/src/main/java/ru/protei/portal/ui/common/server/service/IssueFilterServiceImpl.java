@@ -7,11 +7,10 @@ import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.dict.En_SortField;
-import ru.protei.portal.core.model.ent.IssueFilter;
+import ru.protei.portal.core.model.ent.CaseFilter;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
-import ru.protei.portal.core.model.view.IssueFilterShortView;
-import ru.protei.portal.core.service.CrmIssueFilterService;
-import ru.protei.portal.ui.common.client.service.IssueFilterService;
+import ru.protei.portal.core.model.view.CaseFilterShortView;
+import ru.protei.portal.core.service.IssueFilterService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -21,16 +20,16 @@ import java.util.List;
  * Реализация сервиса по работе с фильтрами обращений
  */
 @Service( "IssueFilterService" )
-public class IssueFilterServiceImpl implements IssueFilterService {
+public class IssueFilterServiceImpl implements ru.protei.portal.ui.common.client.service.IssueFilterService {
 
     @Override
-    public List< IssueFilterShortView > getIssueFilterShortViewListByCurrentUser() throws RequestFailedException {
+    public List< CaseFilterShortView > getIssueFilterShortViewListByCurrentUser() throws RequestFailedException {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
         log.debug( "getIssueFilterShortViewListByCurrentUser(): accountId={} ", descriptor.getLogin().getId() );
 
-        CoreResponse<List<IssueFilterShortView>> response = issueFilterService.getIssueFilterShortViewList( descriptor.getLogin().getId() );
+        CoreResponse<List<CaseFilterShortView >> response = issueFilterService.getIssueFilterShortViewList( descriptor.getLogin().getId() );
 
         if ( response.isError() ) {
             throw new RequestFailedException( response.getStatus() );
@@ -39,10 +38,10 @@ public class IssueFilterServiceImpl implements IssueFilterService {
     }
 
     @Override
-    public IssueFilter getIssueFilter( Long id ) throws RequestFailedException {
+    public CaseFilter getIssueFilter( Long id ) throws RequestFailedException {
         log.debug("getIssueFilter, id: {}", id);
 
-        CoreResponse<IssueFilter> response = issueFilterService.getIssueFilter( id );
+        CoreResponse<CaseFilter > response = issueFilterService.getIssueFilter( id );
 
         log.debug("getIssueFilter, id: {}, response: {} ", id, response.isError() ? "error" : response.getData());
 
@@ -53,7 +52,7 @@ public class IssueFilterServiceImpl implements IssueFilterService {
     }
 
     @Override
-    public IssueFilter saveIssueFilter( IssueFilter filter ) throws RequestFailedException {
+    public CaseFilter saveIssueFilter( CaseFilter filter ) throws RequestFailedException {
 
         log.debug("saveIssueFilter, filter: {}", filter);
 
@@ -68,7 +67,7 @@ public class IssueFilterServiceImpl implements IssueFilterService {
         }
 
         filter.getParams().setSortField( En_SortField.creation_date );
-        CoreResponse<IssueFilter> response = issueFilterService.saveIssueFilter( filter );
+        CoreResponse<CaseFilter > response = issueFilterService.saveIssueFilter( filter );
 
         log.debug("saveIssueFilter, result: {}", response.getStatus());
 
@@ -104,7 +103,7 @@ public class IssueFilterServiceImpl implements IssueFilterService {
     }
 
     @Autowired
-    CrmIssueFilterService issueFilterService;
+    IssueFilterService issueFilterService;
 
     @Autowired
     HttpServletRequest httpServletRequest;

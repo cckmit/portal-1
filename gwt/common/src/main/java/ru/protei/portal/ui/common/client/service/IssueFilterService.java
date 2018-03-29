@@ -2,8 +2,8 @@ package ru.protei.portal.ui.common.client.service;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
-import ru.protei.portal.core.model.ent.IssueFilter;
-import ru.protei.portal.core.model.view.IssueFilterShortView;
+import ru.protei.portal.core.model.ent.CaseFilter;
+import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
 import java.util.List;
@@ -15,13 +15,13 @@ import java.util.List;
 public interface IssueFilterService extends RemoteService {
 
     /**
-     * Получение списка сокращенного представления IssueFilter
+     * Получение списка сокращенного представления CaseFilter
      */
-    List< IssueFilterShortView > getIssueFilterShortViewListByCurrentUser() throws RequestFailedException;
+    List< CaseFilterShortView > getIssueFilterShortViewListByCurrentUser() throws RequestFailedException;
 
-    IssueFilter getIssueFilter( Long id ) throws RequestFailedException;
+    CaseFilter getIssueFilter( Long id ) throws RequestFailedException;
 
-    IssueFilter saveIssueFilter( IssueFilter filter ) throws RequestFailedException;
+    CaseFilter saveIssueFilter( CaseFilter filter ) throws RequestFailedException;
 
     boolean removeIssueFilter( Long id ) throws RequestFailedException;
 }

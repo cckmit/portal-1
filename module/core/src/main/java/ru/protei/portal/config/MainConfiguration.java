@@ -294,7 +294,7 @@ public class MainConfiguration {
     }
 
     @Bean
-    public IssueFilterDAO getIssueFilterDAO() { return new IssueFilterDAO_Impl(); }
+    public CaseFilterDAO getIssueFilterDAO() { return new CaseFilterDAO_Impl(); }
 
 /**
  *
@@ -418,8 +418,8 @@ public class MainConfiguration {
     }
 
     @Bean
-    public CrmIssueFilterService getIssueFilterService () {
-        return new CrmIssueFilterServiceImpl();
+    public IssueFilterService getIssueFilterService () {
+        return new IssueFilterServiceImpl();
     }
 
     @Bean

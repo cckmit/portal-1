@@ -1,13 +1,13 @@
 package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.query.CaseQuery;
-import ru.protei.portal.core.model.view.IssueFilterShortView;
+import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
 
-@JdbcEntity( table = "issue_filter" )
-public class IssueFilter implements Serializable {
+@JdbcEntity( table = "case_filter" )
+public class CaseFilter implements Serializable {
 
     @JdbcId( name = "id", idInsertMode = IdInsertMode.AUTO )
     private Long id;
@@ -53,13 +53,13 @@ public class IssueFilter implements Serializable {
         this.loginId = loginId;
     }
 
-    public IssueFilterShortView toShortView() {
-        return new IssueFilterShortView( this.id, this.name );
+    public CaseFilterShortView toShortView() {
+        return new CaseFilterShortView( this.id, this.name );
     }
 
     @Override
     public String toString() {
-        return "IssueFilter{" +
+        return "CaseFilter{" +
                 "id=" + id +
                 ", name=" + name +
                 ", params=" + params +

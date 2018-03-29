@@ -16,8 +16,8 @@ import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.core.model.view.IssueFilterShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
@@ -134,17 +134,17 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     }
 
     @Override
-    public HasValue<IssueFilterShortView> userFilter() {
+    public HasValue<CaseFilterShortView > userFilter() {
         return userFilter;
     }
 
     @Override
-    public void changeUserFilterValueName( IssueFilterShortView value ){
+    public void changeUserFilterValueName( CaseFilterShortView value ){
         userFilter.changeValueName( value );
     }
 
     @Override
-    public void addUserFilterDisplayOption( IssueFilterShortView value ){
+    public void addUserFilterDisplayOption( CaseFilterShortView value ){
         userFilter.addDisplayOption( value );
     }
 
@@ -327,7 +327,7 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     }
 
     @UiHandler( "userFilter" )
-    public void onKeyUpSearch( ValueChangeEvent< IssueFilterShortView > event ) {
+    public void onKeyUpSearch( ValueChangeEvent< CaseFilterShortView > event ) {
         if ( activity == null ) {
             return;
         }

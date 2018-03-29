@@ -7,8 +7,8 @@ import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.core.model.view.IssueFilterShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
 
@@ -36,11 +36,11 @@ public interface AbstractIssueFilterView extends IsWidget {
     HasVisibility productsVisibility();
     HasVisibility managersVisibility();
 
-    HasValue<IssueFilterShortView > userFilter();
+    HasValue<CaseFilterShortView > userFilter();
 
-    void changeUserFilterValueName( IssueFilterShortView value );
+    void changeUserFilterValueName( CaseFilterShortView value );
 
-    void addUserFilterDisplayOption( IssueFilterShortView value );
+    void addUserFilterDisplayOption( CaseFilterShortView value );
 
     HasVisibility removeFilterBtnVisibility();
 

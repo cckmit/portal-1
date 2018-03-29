@@ -11,10 +11,10 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.Attachment;
-import ru.protei.portal.core.model.ent.IssueFilter;
+import ru.protei.portal.core.model.ent.CaseFilter;
 import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.model.view.CaseShortView;
-import ru.protei.portal.core.model.view.IssueFilterShortView;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -149,7 +149,7 @@ public abstract class IssueTableActivity
     @Override
     public void onUserFilterChanged() {
 
-        IssueFilterShortView filter = filterView.userFilter().getValue();
+        CaseFilterShortView filter = filterView.userFilter().getValue();
         if (filter == null){
             filterView.resetFilter();
             showUserFilterControls();
@@ -158,14 +158,14 @@ public abstract class IssueTableActivity
         }
 
         filterView.setSaveBtnLabel( lang.buttonModify() );
-        filterService.getIssueFilter( filter.getId(), new RequestCallback< IssueFilter >() {
+        filterService.getIssueFilter( filter.getId(), new RequestCallback< CaseFilter >() {
             @Override
             public void onError( Throwable throwable ) {
                 fireEvent( new NotifyEvents.Show( lang.errNotFound(), NotifyEvents.NotifyType.ERROR ) );
             }
 
             @Override
-            public void onSuccess( IssueFilter filter ) {
+            public void onSuccess( CaseFilter filter ) {
                 fillFilterFields( filter );
             }
         } );
@@ -181,22 +181,22 @@ public abstract class IssueTableActivity
         }
 
         boolean isNew = filterView.userFilter().getValue() == null;
-        IssueFilter userFilter = fillUserFilter();
+        CaseFilter userFilter = fillUserFilter();
         if ( !isNew ){
             userFilter.setId( filterView.userFilter().getValue().getId() );
         }
 
-        filterService.saveIssueFilter( userFilter, new RequestCallback< IssueFilter >() {
+        filterService.saveIssueFilter( userFilter, new RequestCallback< CaseFilter >() {
             @Override
             public void onError( Throwable throwable ) {
                 fireEvent( new NotifyEvents.Show( lang.errSaveIssueFilter(), NotifyEvents.NotifyType.ERROR ) );
             }
 
             @Override
-            public void onSuccess( IssueFilter filter ) {
+            public void onSuccess( CaseFilter filter ) {
                 fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
 
-                IssueFilterShortView filterShortView = filter.toShortView();
+                CaseFilterShortView filterShortView = filter.toShortView();
                 if ( isNew ){
                     filterView.userFilter().setValue( filterShortView );
                     filterView.addUserFilterDisplayOption( filterShortView );
@@ -269,7 +269,7 @@ public abstract class IssueTableActivity
     }
 
 
-    private void fillFilterFields( IssueFilter filter ) {
+    private void fillFilterFields( CaseFilter filter ) {
 
         filterView.removeFilterBtnVisibility().setVisible( true );
         filterView.filterName().setValue( filter.getName() );
@@ -336,9 +336,9 @@ public abstract class IssueTableActivity
         return query;
     }
 
-    private IssueFilter fillUserFilter() {
+    private CaseFilter fillUserFilter() {
 
-        IssueFilter filter = new IssueFilter();
+        CaseFilter filter = new CaseFilter();
         filter.setName( filterView.filterName().getValue() );
         CaseQuery query = new CaseQuery();
         filter.setParams( query );
