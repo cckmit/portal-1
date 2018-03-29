@@ -1,9 +1,7 @@
 package ru.protei.portal.ui.issue.client.activity.table;
 
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.regexp.shared.MatchResult;
 import com.google.gwt.regexp.shared.RegExp;
-import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
@@ -16,6 +14,7 @@ import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.IssueFilter;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseShortView;
+import ru.protei.portal.core.model.view.IssueFilterShortView;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -131,8 +130,9 @@ public abstract class IssueTableActivity
             return;
         }
 
+        boolean isNew = filterView.userFilter().getValue() == null;
         IssueFilter userFilter = fillUserFilter();
-        if ( filterView.userFilter().getValue() != null ){
+        if ( !isNew ){
             userFilter.setId( filterView.userFilter().getValue().getId() );
         }
 
@@ -145,10 +145,14 @@ public abstract class IssueTableActivity
             @Override
             public void onSuccess( IssueFilter filter ) {
                 fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-                fireEvent( new IssueEvents.ChangeUserFilterModel() );
 
-                //TODO crm-93 селектор сохраненных фильтров наполнится асинхронно, стопать таймер чтобы засетить значение в виджет?
-                filterView.userFilter().setValue( filter.toShortView() );
+                IssueFilterShortView filterShortView = filter.toShortView();
+                if ( isNew ){
+                    filterView.userFilter().setValue( filterShortView );
+                    filterView.addUserFilterDisplayOption( filterShortView );
+                } else {
+                    filterView.changeUserFilterValueName( filterShortView );
+                }
                 filterView.removeFilterBtnVisibility().setVisible( true );
                 filterView.setFilterNameContainerVisibility( true );
             }

@@ -15,7 +15,7 @@
         <div class="body">
 
             <filter:IssueFilterSelector ui:field="userFilter" header="{lang.issueFilter}"
-                                        addStyleNames="form-group col-xs-12" defaultValue="{lang.selectorAny}"/>
+                                        addStyleNames="form-group col-xs-12" defaultValue="{lang.issueFilterNotDefined}"/>
 
             <div class="form-group local-search col-xs-12">
                 <span class="icon local-search-icon"></span>

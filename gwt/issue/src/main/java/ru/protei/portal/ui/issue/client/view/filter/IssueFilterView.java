@@ -139,6 +139,16 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     }
 
     @Override
+    public void changeUserFilterValueName( IssueFilterShortView value ){
+        userFilter.changeValueName( value );
+    }
+
+    @Override
+    public void addUserFilterDisplayOption( IssueFilterShortView value ){
+        userFilter.addDisplayOption( value );
+    }
+
+    @Override
     public HasVisibility removeFilterBtnVisibility(){
         return removeBtn;
     }

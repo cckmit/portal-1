@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.IssueFilterShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
+
 import java.util.Set;
 
 /**
@@ -36,6 +37,10 @@ public interface AbstractIssueFilterView extends IsWidget {
     HasVisibility managersVisibility();
 
     HasValue<IssueFilterShortView > userFilter();
+
+    void changeUserFilterValueName( IssueFilterShortView value );
+
+    void addUserFilterDisplayOption( IssueFilterShortView value );
 
     HasVisibility removeFilterBtnVisibility();
 

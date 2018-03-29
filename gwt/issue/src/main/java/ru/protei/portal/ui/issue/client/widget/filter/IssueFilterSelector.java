@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.issue.client.widget.filter;
 
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.view.IssueFilterShortView;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
@@ -8,15 +9,39 @@ import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 
 import java.util.List;
 
-public class IssueFilterSelector extends ButtonSelector< IssueFilterShortView > implements ModelSelector< IssueFilterShortView > {
+    public class IssueFilterSelector extends ButtonSelector< IssueFilterShortView > implements ModelSelector< IssueFilterShortView > {
 
     @Inject
-    public void init( IssueFilterModel productModel ) {
+    public void init( IssueFilterModel model ) {
 
-        productModel.subscribe( this );
+        this.model = model;
+        model.subscribe( this );
         setSearchEnabled( true );
         setSearchAutoFocus( true );
         setDisplayOptionCreator( value -> new DisplayOption( value == null ? defaultValue : value.getName() ) );
+    }
+
+    @Override
+    public void onBtnClick( ClickEvent event ) {
+        super.onBtnClick( event );
+        model.requestFilters( this );
+    }
+
+    public void changeValueName( IssueFilterShortView value ){
+
+        if (value == null){
+            return;
+        }
+        itemToDisplayOptionModel.get( value ).setName( value.getName() );
+        refreshValue();
+    }
+
+    public void addDisplayOption( IssueFilterShortView value ){
+        if (itemToDisplayOptionModel == null){
+            return;
+        }
+
+        itemToDisplayOptionModel.put( value, new DisplayOption( value.getName() ) );
     }
 
     public void setDefaultValue( String value ) {
@@ -34,4 +59,5 @@ public class IssueFilterSelector extends ButtonSelector< IssueFilterShortView > 
     }
 
     private String defaultValue = null;
+    private IssueFilterModel model;
 }

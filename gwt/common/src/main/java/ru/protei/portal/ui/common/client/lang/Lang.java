@@ -716,4 +716,6 @@ public interface Lang extends Messages, ContactItemLang {
     String errTooMuchManagers();
 
     String errTooMuchProducts();
+
+    String issueFilterNotDefined();
 }
