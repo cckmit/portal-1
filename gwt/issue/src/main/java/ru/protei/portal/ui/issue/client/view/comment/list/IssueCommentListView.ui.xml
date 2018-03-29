@@ -1,7 +1,8 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:fileuploader='urn:import:ru.protei.portal.ui.common.client.widget.uploader'
-             xmlns:attachment='urn:import:ru.protei.portal.ui.common.client.widget.attachment.list'>
+             xmlns:attachment='urn:import:ru.protei.portal.ui.common.client.widget.attachment.list'
+             xmlns:autoresizetextarea="urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
@@ -11,7 +12,10 @@
         </div>
         <div class="panel-footer">
             <div class="chats-footer">
-                <g:TextArea ui:field="comment" styleName="input-field form-group"/>
+                <autoresizetextarea:AutoResizeTextArea
+                        ui:field="comment"
+                        styleName="input-field form-group"
+                        minRows="5" maxRows="20"/>
                 <span class="">
                     <g:Button styleName="btn btn-success" ui:field="send" text="{lang.commentSendMessage}"/>
                     <fileuploader:AttachmentUploader ui:field="fileUploader" styleName="inline-block vertical-middle">

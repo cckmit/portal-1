@@ -16,6 +16,7 @@ import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.HasAttachmentListHandlers;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveHandler;
+import ru.protei.portal.ui.common.client.widget.autoresizetextarea.AutoResizeTextArea;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.issue.client.activity.comment.list.AbstractIssueCommentListActivity;
 import ru.protei.portal.ui.issue.client.activity.comment.list.AbstractIssueCommentListView;
@@ -28,13 +29,13 @@ public class IssueCommentListView
         implements AbstractIssueCommentListView, HasAttachmentListHandlers {
 
     @Inject
-    public void onInit( ) {
-        initWidget( ourUiBinder.createAndBindUi( this ) );
-        comment.getElement().setAttribute( "placeholder", lang.commentAddMessagePlaceholder() );
+    public void onInit() {
+        initWidget(ourUiBinder.createAndBindUi(this));
+        comment.getElement().setAttribute("placeholder", lang.commentAddMessagePlaceholder());
     }
 
     @Override
-    public void setActivity( AbstractIssueCommentListActivity activity ) {
+    public void setActivity(AbstractIssueCommentListActivity activity) {
         this.activity = activity;
     }
 
@@ -100,7 +101,7 @@ public class IssueCommentListView
     @UiField
     HTMLPanel root;
     @UiField
-    TextArea comment;
+    AutoResizeTextArea comment;
     @UiField
     HTMLPanel commentsContainer;
     @UiField
