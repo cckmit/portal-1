@@ -24,15 +24,11 @@ public interface DataQuery {
     @JsonIgnore
     void setOffset(int offset);
 
-    @JsonIgnore
     En_SortField getSortField();
 
-    @JsonIgnore
     void setSortField(En_SortField sortField);
 
-    @JsonIgnore
     En_SortDir getSortDir();
 
-    @JsonIgnore
     void setSortDir(En_SortDir sortDir);
 }

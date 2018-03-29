@@ -76,10 +76,9 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
     private CaseQuery generateActiveRecordsQuery(){
         CaseQuery query = new CaseQuery(En_CaseType.CRM_SUPPORT, null, En_SortField.last_update, En_SortDir.DESC);
         query.setStates( issueStates.getActiveStates() );
-        //TODO CRM-93
         List<Long> productIds = null;
         if (policyService.getProfile() != null){
-            productIds = new ArrayList<Long>();
+            productIds = new ArrayList<>();
             productIds.add( policyService.getProfile().getId() );
         }
         query.setManagerIds( productIds );
@@ -90,8 +89,7 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
     private CaseQuery generateNewRecordsQuery(){
         CaseQuery query = new CaseQuery(En_CaseType.CRM_SUPPORT, null, En_SortField.last_update, En_SortDir.DESC);
         query.setStates(issueStates.getActiveStates());
-        //TODO CRM-93
-        List<Long> productIds = new ArrayList<Long>();
+        List<Long> productIds = new ArrayList<>();
         productIds.add( -1L );
         query.setManagerIds( productIds );
 
@@ -103,10 +101,9 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
         List<En_CaseState> inactiveStates = new ArrayList<>(issueStates.getInactiveStates());
         inactiveStates.remove(En_CaseState.VERIFIED);
         query.setStates(inactiveStates);
-        //TODO CRM-93
         List<Long> productIds = null;
         if (policyService.getProfile() != null){
-            productIds = new ArrayList<Long>();
+            productIds = new ArrayList<>();
             productIds.add( policyService.getProfile().getId() );
         }
         query.setManagerIds( productIds );

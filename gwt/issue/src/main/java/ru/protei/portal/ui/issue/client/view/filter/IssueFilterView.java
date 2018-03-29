@@ -114,7 +114,7 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         search.setText( "" );
         userFilter.setValue( null );
         removeBtn.setVisible( false );
-        filterNameContainer.removeClassName( "required" );
+        filterName.removeStyleName( "required" );
         filterName.setValue( "" );
     }
 
@@ -163,6 +163,33 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
             filterNameContainer.removeClassName( "hide" );
         } else {
             filterNameContainer.addClassName( "hide" );
+        }
+    }
+
+    @Override
+    public void setCompaniesErrorStyle( boolean hasError ) {
+        if (hasError){
+            companies.addStyleName( "required" );
+        } else {
+            companies.removeStyleName( "required" );
+        }
+    }
+
+    @Override
+    public void setProductsErrorStyle( boolean hasError ) {
+        if (hasError){
+            products.addStyleName( "required" );
+        } else {
+            products.removeStyleName( "required" );
+        }
+    }
+
+    @Override
+    public void setManagersErrorStyle( boolean hasError ) {
+        if (hasError){
+            managers.addStyleName( "required" );
+        } else {
+            managers.removeStyleName( "required" );
         }
     }
 

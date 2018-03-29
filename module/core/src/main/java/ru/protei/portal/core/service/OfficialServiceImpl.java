@@ -28,10 +28,9 @@ public class OfficialServiceImpl implements OfficialService {
         caseQuery.setFrom(query.getFrom());
         caseQuery.setTo(query.getTo());
         caseQuery.setType( En_CaseType.OFFICIAL );
-        //TODO CRM-93
         List<Long> productIds = null;
         if (query.getProductId() != null){
-            productIds = new ArrayList<Long>();
+            productIds = new ArrayList<>();
             productIds.add( query.getProductId() );
         }
         caseQuery.setProductIds( productIds );

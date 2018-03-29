@@ -738,8 +738,18 @@ label.bordered:after{
 }
 
 .input-field.required,
-.btn.required{
+.btn.required
+{
   border: 1px solid #f54646 !important;
+}
+
+.filter-container .form-group.required {
+  .multi-input-select {
+    border: 1px solid #f54646 !important;
+  }
+  label {
+    color: #f54646 !important
+  }
 }
 
 /*  auto-add-value-comment widget */

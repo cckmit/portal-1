@@ -1,7 +1,9 @@
 package ru.protei.portal.ui.issue.client.activity.table;
 
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.regexp.shared.MatchResult;
 import com.google.gwt.regexp.shared.RegExp;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
@@ -14,9 +16,6 @@ import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.IssueFilter;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseShortView;
-import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -29,11 +28,9 @@ import ru.protei.portal.ui.common.client.widget.attachment.popup.AttachPopup;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterActivity;
 import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterView;
+import ru.protei.portal.ui.issue.client.util.IssueFilterUtils;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Активность таблицы обращений
@@ -119,6 +116,9 @@ public abstract class IssueTableActivity
 
     @Override
     public void onFilterChanged() {
+        if ( !validateMultiSelectorsTotalCount() ){
+            return;
+        }
         requestIssuesCount();
     }
 
@@ -131,7 +131,12 @@ public abstract class IssueTableActivity
             return;
         }
 
-        filterService.saveIssueFilter( fillFilter(), new RequestCallback< IssueFilter >() {
+        IssueFilter userFilter = fillUserFilter();
+        if ( filterView.userFilter().getValue() != null ){
+            userFilter.setId( filterView.userFilter().getValue().getId() );
+        }
+
+        filterService.saveIssueFilter( userFilter, new RequestCallback< IssueFilter >() {
             @Override
             public void onError( Throwable throwable ) {
                 fireEvent( new NotifyEvents.Show( lang.errSaveIssueFilter(), NotifyEvents.NotifyType.ERROR ) );
@@ -141,6 +146,8 @@ public abstract class IssueTableActivity
             public void onSuccess( IssueFilter filter ) {
                 fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                 fireEvent( new IssueEvents.ChangeUserFilterModel() );
+
+                //TODO crm-93 селектор сохраненных фильтров наполнится асинхронно, стопать таймер чтобы засетить значение в виджет?
                 filterView.userFilter().setValue( filter.toShortView() );
                 filterView.removeFilterBtnVisibility().setVisible( true );
                 filterView.setFilterNameContainerVisibility( true );
@@ -247,13 +254,14 @@ public abstract class IssueTableActivity
         CaseQuery params = filter.getParams();
         filterView.searchPattern().setValue( params.getSearchString() );
         filterView.sortDir().setValue( params.getSortDir().equals( En_SortDir.ASC ) );
-        filterView.dateRange().getValue().from = params.getFrom();
+        filterView.sortField().setValue( params.getSortField() );
+        filterView.dateRange().setValue( new DateInterval( params.getFrom(), params.getTo() ) );
         filterView.dateRange().getValue().to = params.getTo();
-        filterView.importances().setValue( getImportances( params.getImportanceIds() ) );
-        filterView.states().setValue( getStates( params.getStateIds() ) );
-        filterView.companies().setValue( getCompanies( params.getCompanyIds()) );
-        filterView.managers().setValue( getManagers(params.getManagerIds()) );
-        filterView.products().setValue( getProducts(params.getProductIds()) );
+        filterView.importances().setValue( IssueFilterUtils.getImportances( params.getImportanceIds() ) );
+        filterView.states().setValue( IssueFilterUtils.getStates( params.getStateIds() ) );
+        filterView.companies().setValue( IssueFilterUtils.getCompanies( params.getCompanyIds()) );
+        filterView.managers().setValue( IssueFilterUtils.getManagers(params.getManagerIds()) );
+        filterView.products().setValue( IssueFilterUtils.getProducts(params.getProductIds()) );
     }
 
     private void requestIssuesCount() {
@@ -287,10 +295,6 @@ public abstract class IssueTableActivity
     private CaseQuery getQuery() {
         CaseQuery query = new CaseQuery();
         query.setType( En_CaseType.CRM_SUPPORT );
-
-        query.setSortField( filterView.sortField().getValue() );
-        query.setSortDir( filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC );
-
         String value = filterView.searchPattern().getValue();
 
         if (value == null || value.isEmpty()) {
@@ -306,228 +310,61 @@ public abstract class IssueTableActivity
                 query.setSearchString( value );
             }
         }
-
-        query.setCompanyIds( getCompaniesIdList() );
-        query.setProductIds( getProductsIdList());
-        query.setManagerIds( getManagersIdList() );
-
-        query.setImportanceIds( getImportancesIdList() );
-        query.setStates( new ArrayList<>( filterView.states().getValue() ) );
-
-        DateInterval interval = filterView.dateRange().getValue();
-
-        if(interval != null) {
-            query.setFrom( interval.from );
-            query.setTo( interval.to );
-        }
-
+        setQueryFields(query);
         return query;
     }
 
-
-    private IssueFilter fillFilter() {
+    private IssueFilter fillUserFilter() {
 
         IssueFilter filter = new IssueFilter();
         filter.setName( filterView.filterName().getValue() );
-        CaseQuery params = new CaseQuery();
-        filter.setParams( params );
-
-        params.setCompanyIds( getCompaniesIdList());
-
-        params.setProductIds( getProductsIdList() );
-
-        params.setManagerIds( getManagersIdList() );
-
-        params.setFrom( filterView.dateRange().getValue().from );
-        params.setTo( filterView.dateRange().getValue().to );
-        params.setSearchString( filterView.searchPattern().getValue() );
-
-        params.setImportanceIds( getImportancesIdList() );
-        params.setStates( getStateList() );
-
-        params.setSortDir( filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC );
-
+        CaseQuery query = new CaseQuery();
+        filter.setParams( query );
+        query.setSearchString( filterView.searchPattern().getValue() );
+        setQueryFields(query);
         return filter;
     }
 
-    private List< Integer > getImportancesIdList() {
+    private void setQueryFields( CaseQuery query ) {
+        query.setSortField( filterView.sortField().getValue() );
+        query.setSortDir( filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC );
+        query.setCompanyIds( IssueFilterUtils.getCompaniesIdList( filterView.companies().getValue() ) );
+        query.setProductIds( IssueFilterUtils.getProductsIdList( filterView.products().getValue() ) );
+        query.setManagerIds( IssueFilterUtils.getManagersIdList( filterView.managers().getValue() ) );
+        query.setImportanceIds( IssueFilterUtils.getImportancesIdList( filterView.importances().getValue() ) );
+        query.setStates( IssueFilterUtils.getStateList( filterView.states().getValue() ) );
 
-        if ( filterView.importances().getValue() == null || filterView.importances().getValue().isEmpty() ) {
-            return null;
+        DateInterval interval = filterView.dateRange().getValue();
+        if ( interval != null ) {
+            query.setFrom( interval.from );
+            query.setTo( interval.to );
         }
-        //TODO CRM-93 use stream
-//        return filterView.importances().getValue()
-//                .stream()
-//                .map( En_ImportanceLevel::getId )
-//                .collect( Collectors.toList() );
-
-        List< Integer > importances = new ArrayList< Integer >();
-        for ( En_ImportanceLevel option : filterView.importances().getValue() ) {
-            importances.add( option.getId() );
-        }
-        return importances;
     }
 
-    private Set< En_ImportanceLevel > getImportances( List< Integer > importancesIdList ) {
-        if ( importancesIdList == null || importancesIdList.isEmpty() ) {
-            return null;
+    private boolean validateMultiSelectorsTotalCount() {
+        boolean isValid = true;
+        if (filterView.companies().getValue().size() > 50){
+            fireEvent( new NotifyEvents.Show( lang.errTooMuchCompanies(), NotifyEvents.NotifyType.ERROR ) );
+            filterView.setCompaniesErrorStyle(true);
+            isValid =  false;
+        } else {
+            filterView.setCompaniesErrorStyle(false);
         }
-
-        //TODO CRM-93 use stream
-//        return importancesIdList
-//                .stream()
-//                .map( En_ImportanceLevel::getById )
-//                .collect( Collectors.toSet() );
-
-        Set< En_ImportanceLevel > importances = new HashSet<>();
-        for ( Integer id : importancesIdList ) {
-            importances.add( En_ImportanceLevel.getById( id ) );
+        if (filterView.products().getValue().size() > 50){
+            fireEvent( new NotifyEvents.Show( lang.errTooMuchProducts(), NotifyEvents.NotifyType.ERROR ) );
+            filterView.setProductsErrorStyle(true);
+            isValid = false;
+        } else {
+            filterView.setProductsErrorStyle(false);
         }
-        return importances;
-    }
-
-    private Set< En_CaseState > getStates( List< Integer > statesIdList ) {
-        if ( statesIdList == null || statesIdList.isEmpty() ) {
-            return null;
+        if (filterView.managers().getValue().size() > 50){
+            fireEvent( new NotifyEvents.Show( lang.errTooMuchManagers(), NotifyEvents.NotifyType.ERROR ) );
+            filterView.setManagersErrorStyle(true);
+            isValid = false;
+        } else {
+            filterView.setManagersErrorStyle(false);
         }
-
-        //TODO CRM-93 use stream
-//        return importancesIdList
-//                .stream()
-//                .map( En_ImportanceLevel::getById )
-//                .collect( Collectors.toSet() );
-
-        Set< En_CaseState > states = new HashSet<>();
-        for ( Integer id : statesIdList ) {
-            states.add( En_CaseState.getById( Long.valueOf( id ) ) );
-        }
-        return states;
-    }
-
-    private List<En_CaseState> getStateList(){
-
-        if(filterView.states().getValue() == null || filterView.states().getValue().isEmpty()){
-            return null;
-        }
-        //TODO CRM-93 use stream
-//        return filterView.states().getValue()
-//                .stream()
-//                .map( En_CaseState::getId )
-//                .collect( Collectors.toList() );
-
-        return new ArrayList(filterView.states().getValue());
-    }
-
-    private List< Long > getCompaniesIdList() {
-
-        if ( filterView.companies().getValue() == null || filterView.companies().getValue().isEmpty() ) {
-            return null;
-        }
-        //TODO CRM-93 use stream
-        //            query.setCompanyIds(
-//                    filterView.products().getValue()
-//                            .stream()
-//                            .map( ProductShortView::getId )
-//                            .collect( Collectors.toList() ) );
-        List< Long > companies = new ArrayList< Long >();
-        for ( EntityOption option : filterView.companies().getValue() ) {
-            companies.add( option.getId() );
-        }
-        return companies;
-    }
-
-    private Set< EntityOption > getCompanies( List< Long > companyIds ) {
-
-        if ( companyIds == null || companyIds.isEmpty() ) {
-            return null;
-        }
-        //TODO CRM-93 use stream
-        //            query.setCompanyIds(
-//                    filterView.products().getValue()
-//                            .stream()
-//                            .map( ProductShortView::getId )
-//                            .collect( Collectors.toList() ) );
-        Set< EntityOption > companies = new HashSet<>();
-        for ( Long id : companyIds ) {
-            companies.add( new EntityOption( "", id ) );
-        }
-        return companies;
-    }
-
-    private List<Long> getProductsIdList(){
-
-        if ( filterView.products().getValue() == null || filterView.products().getValue().isEmpty() ) {
-            return null;
-        }
-        //TODO CRM-93 use stream
-        //            query.setProductIds(
-//                    filterView.products().getValue()
-//                            .stream()
-//                            .map( ProductShortView::getId )
-//                            .collect( Collectors.toList() ) );
-        List< Long > products = new ArrayList< Long >();
-        for ( ProductShortView prd : filterView.products().getValue() ) {
-            products.add( prd.getId() );
-        }
-        return products;
-    }
-
-    private Set<ProductShortView> getProducts( List< Long > managerIds ){
-
-        if ( managerIds == null || managerIds.isEmpty() ) {
-            return null;
-        }
-        //TODO CRM-93 use stream
-        //            query.setProductIds(
-//                    filterView.products().getValue()
-//                            .stream()
-//                            .map( ProductShortView::getId )
-//                            .collect( Collectors.toList() ) );
-        Set< ProductShortView > products = new HashSet<>();
-        for ( Long id : managerIds ) {
-            ProductShortView prd = new ProductShortView();
-            prd.setId( id );
-            products.add( prd );
-        }
-        return products;
-    }
-
-    private List< Long > getManagersIdList() {
-
-        if ( filterView.managers().getValue() == null || filterView.managers().getValue().isEmpty() ) {
-            return null;
-        }
-        //TODO CRM-93 use stream
-        //            query.setManagerIds(
-//                    filterView.managers().getValue()
-//                            .stream()
-//                            .map( PersonShortView::getId )
-//                            .collect( Collectors.toList() ) );
-        List< Long > managers = new ArrayList< Long >();
-        for ( PersonShortView manager : filterView.managers().getValue() ) {
-            managers.add( manager.getId() );
-        }
-        return managers;
-    }
-
-    private Set<PersonShortView> getManagers( List< Long > managerIds ){
-
-        if ( managerIds == null || managerIds.isEmpty() ) {
-            return null;
-        }
-        //TODO CRM-93 use stream
-        //            query.setProductIds(
-//                    filterView.products().getValue()
-//                            .stream()
-//                            .map( ProductShortView::getId )
-//                            .collect( Collectors.toList() ) );
-        Set< PersonShortView > managers = new HashSet<>();
-        for ( Long id : managerIds ) {
-            PersonShortView person = new PersonShortView();
-            person.setId( id );
-            managers.add( person );
-        }
-        return managers;
+        return isValid;
     }
 
     private void applyFilterViewPrivileges() {

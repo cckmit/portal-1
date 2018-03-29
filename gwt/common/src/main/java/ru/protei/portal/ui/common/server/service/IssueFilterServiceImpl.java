@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.IssueFilter;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.view.IssueFilterShortView;
@@ -66,6 +67,7 @@ public class IssueFilterServiceImpl implements IssueFilterService {
             filter.setLoginId( descriptor.getLogin().getId() );
         }
 
+        filter.getParams().setSortField( En_SortField.creation_date );
         CoreResponse<IssueFilter> response = issueFilterService.saveIssueFilter( filter );
 
         log.debug("saveIssueFilter, result: {}", response.getStatus());

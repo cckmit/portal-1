@@ -44,4 +44,10 @@ public interface AbstractIssueFilterView extends IsWidget {
     void setFilterNameContainerErrorStyle( boolean hasError );
 
     void setFilterNameContainerVisibility( boolean isVisible );
+
+    void setCompaniesErrorStyle( boolean hasError );
+
+    void setProductsErrorStyle( boolean hasError );
+
+    void setManagersErrorStyle( boolean hasError );
 }

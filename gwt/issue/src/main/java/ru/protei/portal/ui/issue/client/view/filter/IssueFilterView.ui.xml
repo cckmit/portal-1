@@ -58,13 +58,13 @@
             </div>
         </div>
         <div class="footer">
+            <div class="form-group col-xs-12" style="text-align: left;" ui:field="filterNameContainer">
+                <label><ui:text from="{lang.issueFilterName}"/></label>
+                <g:TextBox ui:field="filterName" styleName="input-field"/>
+            </div>
             <g:Button ui:field="saveBtn" styleName="btn btn-white" text="{lang.buttonSave}"/>
             <g:Button ui:field="resetBtn" styleName="btn btn-white" text="{lang.buttonReset}"/>
             <g:Button ui:field="removeBtn" styleName="btn btn-white" text="{lang.buttonRemove}"/>
-            <div class="form-group col-xs-12" ui:field="filterNameContainer">
-                <label style="text-align: left;"><ui:text from="{lang.issueFilterName}"/></label>
-                <g:TextBox ui:field="filterName" styleName="input-field"/>
-            </div>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>

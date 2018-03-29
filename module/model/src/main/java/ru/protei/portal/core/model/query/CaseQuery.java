@@ -3,6 +3,7 @@ package ru.protei.portal.core.model.query;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_SortDir;
@@ -52,9 +53,6 @@ public class CaseQuery extends BaseQuery {
 
     @JsonProperty("createdTo")
     private Date to;
-
-    @JsonIgnore
-    public En_SortField sortField;
 
     public CaseQuery() {}
 
@@ -111,7 +109,10 @@ public class CaseQuery extends BaseQuery {
 
     @JsonIgnore
     public void setStates(List<En_CaseState> states) {
-        List<Integer> stateIds = states.stream().map(En_CaseState::getId).collect(Collectors.toList());
+        List<Integer> stateIds = null;
+        if (states != null && !states.isEmpty()){
+            stateIds = states.stream().map(En_CaseState::getId).collect(Collectors.toList());
+        }
         this.setStateIds(stateIds);
     }
 

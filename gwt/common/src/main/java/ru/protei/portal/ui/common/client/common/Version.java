@@ -83,9 +83,10 @@ package ru.protei.portal.ui.common.client.common;
  * 4.0.37.41 - CRM-76 Устранение замечаний в email уведомлениях
  * 4.0.37.42 - Временно убрать ссылку на обращение при рассылке оповещений
  * 4.0.38.42 - CRM-85 Доработки/замечания по новому CRM (этап 2)
+ * 4.0.39.42 - CRM-93 Возможность сохранять фильтры для обращений
  */
 public class Version {
     public static String getVersion() {
-        return "4.0.38.42";
+        return "4.0.39.42";
     }
 }

@@ -67,10 +67,9 @@ public class ProjectServiceImpl implements ProjectService {
 //                .collect( Collectors.toList() )
 //        );
 
-        //TODO CRM-93
         List<Long> productIds = null;
         if (query.getDirectionId() != null){
-            productIds = new ArrayList<Long>();
+            productIds = new ArrayList<>();
             productIds.add( query.getDirectionId() );
         }
         caseQuery.setProductIds( productIds );
@@ -106,10 +105,9 @@ public class ProjectServiceImpl implements ProjectService {
                 .map( ( state ) -> new Long( state.getId() ).intValue() )
                 .collect( Collectors.toList() )
         );
-        //TODO CRM-93
         List<Long> productIds = null;
         if (query.getDirectionId() != null){
-            productIds = new ArrayList<Long>();
+            productIds = new ArrayList<>();
             productIds.add( query.getDirectionId() );
         }
         caseQuery.setProductIds( productIds );

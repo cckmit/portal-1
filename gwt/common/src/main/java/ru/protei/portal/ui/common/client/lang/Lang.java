@@ -710,4 +710,10 @@ public interface Lang extends Messages, ContactItemLang {
     String errFilterNameRequired();
 
     String issueFilterRemoveSuccessed();
+
+    String errTooMuchCompanies();
+
+    String errTooMuchManagers();
+
+    String errTooMuchProducts();
 }
