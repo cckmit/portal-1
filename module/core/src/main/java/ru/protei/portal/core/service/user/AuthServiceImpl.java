@@ -44,7 +44,7 @@ public class AuthServiceImpl implements AuthService {
     private Map<String, UserSessionDescriptor> sessionCache;
 
     @Autowired
-    PortalConfig config;
+    private PortalConfig config;
 
     public AuthServiceImpl() {
         this.sessionCache = new HashMap<>();
@@ -127,9 +127,9 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public CoreResponse<UserSessionDescriptor> login(String appSessionId, String ulogin, String pwd, String ip, String userAgent) {
 
-        String loginSuffix = config.data().getLoginSuffixConfig();
+        String loginSuffix = config.data().getLoginSuffix();
         if (!ulogin.contains("@") && !loginSuffix.isEmpty()) {
-            logger.debug("login [" + ulogin + "] missed suffix [" + loginSuffix + "], forced to use suffix");
+            logger.debug("login [{}] missed suffix [{}], forced to use suffix", ulogin, loginSuffix);
             ulogin += loginSuffix;
         }
 

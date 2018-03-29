@@ -50,7 +50,7 @@ public class PortalConfigData {
         return crmCaseUrl;
     }
 
-    public String getLoginSuffixConfig() {
+    public String getLoginSuffix() {
         return loginSuffixConfig;
     }
 
