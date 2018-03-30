@@ -110,6 +110,7 @@ public final class RedmineServiceImpl implements RedmineService {
         try {
             Date lastUpdatedOn = endpoint.getLastUpdatedOnDate();
             final List<Issue> issues = getIssuesUpdatedAfterDate(updated, projectId, endpoint);
+            issues.addAll(getClosedIssuesAfterDate(updated, projectId, endpoint));
             if (!issues.isEmpty()) {
                 logger.debug("got {} updated issues from {}", issues.size(), endpoint.getServerAddress());
 
@@ -158,6 +159,16 @@ public final class RedmineServiceImpl implements RedmineService {
                 .filter(x -> x.getLastName().equals(person.getLastName()))
                 .filter(x -> x.getMail().equals(email))
                 .findFirst().get();
+    }
+
+    private List<Issue> getClosedIssuesAfterDate(String date, String projectName, RedmineEndpoint endpoint) throws RedmineException {
+        final RedmineManager manager = RedmineManagerFactory.createWithApiKey(endpoint.getServerAddress(), endpoint.getApiKey());
+        final Params params = new Params()
+                .add("status_id", "closed")
+                .add("updated_on", date)
+                .add("project_id", projectName);
+
+        return manager.getIssueManager().getIssues(params).getResults();
     }
 
     private List<Issue> getIssuesCreatedAfterDate(String date, String projectName, RedmineEndpoint endpoint) throws RedmineException {
