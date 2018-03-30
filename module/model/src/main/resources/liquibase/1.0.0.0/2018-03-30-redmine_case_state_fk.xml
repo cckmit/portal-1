@@ -6,15 +6,20 @@
 
     <changeSet author="svitkov" id="2018-03-30-redmine-006">
 
-        <addForeignKeyConstraint constraintName="FK_RDMINE_TO_CRM_STATUS"
+        <modifyDataType tableName="redmine_status_map_entry" columnName="LOCAL_status_id" newDataType="INT"/>
+        <modifyDataType tableName="redmine_status_map_entry" columnName="LOCAL_previous_status_id" newDataType="INT"/>
+        <modifyDataType tableName="redmine_to_crm_status_map_entry" columnName="LOCAL_status_id" newDataType="INT"/>
+
+
+        <addForeignKeyConstraint constraintName="FK_RDMINE_TO_CRM_STATUS" onDelete="NO ACTION"
                                  baseColumnNames="LOCAL_status_id" baseTableName="redmine_status_map_entry"
                                  referencedColumnNames="ID" referencedTableName="case_state"/>
 
-        <addForeignKeyConstraint constraintName="FK_RDMINE_TO_OLD_CRM_STATUS"
+        <addForeignKeyConstraint constraintName="FK_RDMINE_TO_OLD_CRM_STATUS" onDelete="NO ACTION"
                                  baseColumnNames="LOCAL_previous_status_id" baseTableName="redmine_status_map_entry"
                                  referencedColumnNames="ID" referencedTableName="case_state"/>
 
-        <addForeignKeyConstraint constraintName="FK_RDMINE_TO_CRM_BACKWARD_STATUS"
+        <addForeignKeyConstraint constraintName="FK_RDMINE_TO_CRM_BACKWARD_STATUS" onDelete="NO ACTION"
                                  baseColumnNames="LOCAL_status_id" baseTableName="redmine_to_crm_status_map_entry"
                                  referencedColumnNames="ID" referencedTableName="case_state"/>
 
