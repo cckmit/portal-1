@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.query;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_SortDir;
@@ -14,13 +15,22 @@ import java.util.stream.Collectors;
  */
 public class CaseQuery extends BaseQuery {
 
+    @JsonIgnore
     private Long id;
+
+    @JsonIgnore
     private Long caseNo;
-    private Long companyId;
-    private Long productId;
-    private Long managerId;
+
+    private List<Long> companyIds;
+
+    private List<Long> productIds;
+
+    private List<Long> managerIds;
+
     private En_CaseType type;
+
     private List<Integer> stateIds;
+
     private List<Integer> importanceIds;
     /**
      * if true then both states otherwise only non-private state
@@ -28,6 +38,7 @@ public class CaseQuery extends BaseQuery {
     private boolean allowViewPrivate = true;
 
     private Date from;
+
     private Date to;
 
     public CaseQuery() {}
@@ -55,19 +66,19 @@ public class CaseQuery extends BaseQuery {
 
     public void setCaseNo ( Long caseNo ) { this.caseNo = caseNo; }
 
-    public Long getCompanyId() {
-        return companyId;
+    public List<Long> getCompanyIds() {
+        return companyIds;
     }
 
-    public void setCompanyId(Long companyId) {
-        this.companyId = companyId;
+    public void setCompanyIds( List<Long> companyIds) {
+        this.companyIds = companyIds;
     }
 
-    public Long getProductId() {
-        return productId;
+    public List<Long> getProductIds() {
+        return productIds;
     }
 
-    public void setProductId(Long productId) { this.productId = productId; }
+    public void setProductIds( List<Long> productIds ) { this.productIds = productIds; }
 
     public En_CaseType getType() {
         return type;
@@ -83,8 +94,12 @@ public class CaseQuery extends BaseQuery {
 
     public void setStateIds(List<Integer> stateIds) { this.stateIds = stateIds; }
 
+    @JsonIgnore
     public void setStates(List<En_CaseState> states) {
-        List<Integer> stateIds = states.stream().map(En_CaseState::getId).collect(Collectors.toList());
+        List<Integer> stateIds = null;
+        if (states != null && !states.isEmpty()){
+            stateIds = states.stream().map(En_CaseState::getId).collect(Collectors.toList());
+        }
         this.setStateIds(stateIds);
     }
 
@@ -100,10 +115,9 @@ public class CaseQuery extends BaseQuery {
 
     public void setTo( Date to ) { this.to = to; }
 
-    public Long getManagerId () { return managerId; }
+    public List<Long> getManagerIds() { return managerIds; }
 
-    public void setManagerId ( Long managerId ) { this.managerId = managerId; }
-
+    public void setManagerIds( List<Long> managerIds ) { this.managerIds = managerIds; }
 
     public boolean isAllowViewPrivate() {
         return allowViewPrivate;
@@ -116,9 +130,9 @@ public class CaseQuery extends BaseQuery {
     @Override
     public String toString () {
         return "CaseQuery{" +
-                "companyId=" + companyId +
-                ", productId=" + productId +
-                ", managerId=" + managerId +
+                "companyIds=" + companyIds +
+                ", productIds=" + productIds +
+                ", managerIds=" + managerIds +
                 ", type=" + type +
                 ", stateIds=" + stateIds +
                 ", importanceIds=" + importanceIds +

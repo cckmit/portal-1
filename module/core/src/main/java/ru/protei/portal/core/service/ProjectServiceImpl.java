@@ -66,7 +66,13 @@ public class ProjectServiceImpl implements ProjectService {
 //                .map( (state)->new Long(state.getId()).intValue() )
 //                .collect( Collectors.toList() )
 //        );
-        caseQuery.setProductId( query.getDirectionId() );
+
+        List<Long> productIds = null;
+        if (query.getDirectionId() != null){
+            productIds = new ArrayList<>();
+            productIds.add( query.getDirectionId() );
+        }
+        caseQuery.setProductIds( productIds );
 
         List< CaseObject > projects = caseObjectDAO.listByQuery( caseQuery );
         projects.forEach( ( project ) -> {
@@ -99,7 +105,12 @@ public class ProjectServiceImpl implements ProjectService {
                 .map( ( state ) -> new Long( state.getId() ).intValue() )
                 .collect( Collectors.toList() )
         );
-        caseQuery.setProductId( query.getDirectionId() );
+        List<Long> productIds = null;
+        if (query.getDirectionId() != null){
+            productIds = new ArrayList<>();
+            productIds.add( query.getDirectionId() );
+        }
+        caseQuery.setProductIds( productIds );
 
         List< CaseObject > projects = caseObjectDAO.listByQuery( caseQuery );
         projects.forEach( ( project ) -> {

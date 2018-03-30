@@ -76,8 +76,7 @@ public class ButtonSelector<T> extends Selector<T> implements HasValidable, HasE
     }
 
     @UiHandler( "button" )
-    public void onBtnClick (ClickEvent event)
-    {
+    public void onBtnClick (ClickEvent event) {
         showPopup(button);
     }
 

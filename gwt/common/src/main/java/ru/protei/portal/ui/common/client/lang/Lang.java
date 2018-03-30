@@ -748,4 +748,24 @@ public interface Lang extends Messages, ContactItemLang {
     String documentDecimalNumber();
 
     String documentIdentification();
+
+    String errSaveIssueFilter();
+
+    String issueFilter();
+
+    String issueFilterName();
+
+    String errFilterNameRequired();
+
+    String issueFilterRemoveSuccessed();
+
+    String errTooMuchCompanies();
+
+    String errTooMuchManagers();
+
+    String errTooMuchProducts();
+
+    String issueFilterNotDefined();
+
+    String buttonModify();
 }

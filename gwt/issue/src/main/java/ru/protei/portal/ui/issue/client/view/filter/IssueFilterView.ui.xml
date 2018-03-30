@@ -6,12 +6,19 @@
              xmlns:sortfieldselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.sortfield'
              xmlns:importance='urn:import:ru.protei.portal.ui.issue.client.widget.importance.btngroup'
              xmlns:state='urn:import:ru.protei.portal.ui.issue.client.widget.state.option'
+             xmlns:filter='urn:import:ru.protei.portal.ui.issue.client.widget.filter'
              xmlns:range='urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.range'>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="panel with-table-pager">
+    <g:HTMLPanel styleName="issue-filter panel with-table-pager">
+
+        <div class="user-filter">
+            <filter:IssueFilterSelector ui:field="userFilter" defaultValue="{lang.issueFilterNotDefined}"/>
+        </div>
+
         <div class="body">
+
             <div class="form-group local-search col-xs-12">
                 <span class="icon local-search-icon"></span>
                 <g:TextBox ui:field="search" styleName="input-field"/>
@@ -30,15 +37,15 @@
                 </div>
             </div>
 
-            <companyselector:CompanySelector ui:field="company"
+            <companyselector:CompanyMultiSelector ui:field="companies"
                                              header="{lang.issueCompany}"
                                              addStyleNames="form-group col-xs-12"/>
 
-            <productselector:ProductButtonSelector ui:field="product"
-                                                   header="{lang.issueProduct}"
-                                                   addStyleNames="form-group col-xs-12"/>
+            <productselector:ProductMultiSelector ui:field="products"
+                                                  header="{lang.issueProduct}"
+                                                  addStyleNames="form-group col-xs-12"/>
 
-            <person:EmployeeButtonSelector ui:field="manager"
+            <person:EmployeeMultiSelector ui:field="managers"
                                            header="{lang.issueManager}"
                                            addStyleNames="form-group col-xs-12"/>
 
@@ -53,7 +60,25 @@
             </div>
         </div>
         <div class="footer">
+
+            <div class="user-filter-name hide" ui:field="filterNameContainer">
+                <label class="bold">
+                    <ui:text from="{lang.issueFilterName}"/>
+                </label>
+                <div class="col-xs-12">
+                    <g:TextBox ui:field="filterName" styleName="input-field"/>
+                    <g:Anchor styleName="btn btn-default btn-sm" ui:field="okBtn">
+                        <span class="fa fa-check"/>
+                    </g:Anchor>
+                    <g:Anchor styleName="btn btn-default btn-sm" ui:field="cancelBtn">
+                        <span class="fa fa-times"/>
+                    </g:Anchor>
+                </div>
+            </div>
+
+            <g:Button ui:field="saveBtn" styleName="btn btn-white" text="{lang.buttonCreate}"/>
             <g:Button ui:field="resetBtn" styleName="btn btn-white" text="{lang.buttonReset}"/>
+            <g:Button ui:field="removeBtn" styleName="btn btn-white" text="{lang.buttonRemove}"/>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>

@@ -56,7 +56,6 @@ public class ProductServiceImpl implements ProductService {
 
         log.debug( "getProduct(): id={}", productId );
 
-        //TODO используется для отображения карточки продукта, думаю проверка роли PRODUCT_VIEW логична
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
         CoreResponse< DevUnit > response = productService.getProduct( descriptor.makeAuthToken(), productId );
@@ -116,8 +115,6 @@ public class ProductServiceImpl implements ProductService {
         log.debug( "getProductViewList(): searchPattern={} | showDeprecated={} | sortField={} | sortDir={}",
                 query.getSearchString(), query.getState(), query.getSortField(), query.getSortDir() );
 
-        //TODO используется в Button селектор с продуктами ProductButtonSelector, считаю что привилегия PRODUCT_VIEW не для этого
-
         CoreResponse< List<ProductShortView> > result = productService.shortViewList( getDescriptorAndCheckSession().makeAuthToken(), query );
 
         log.debug( "result status: {}, data-amount: {}", result.getStatus(), result.isOk() ? result.getDataAmountTotal() : 0 );
@@ -132,8 +129,6 @@ public class ProductServiceImpl implements ProductService {
     public List<ProductDirectionInfo> getProductDirectionList( ProductDirectionQuery query ) throws RequestFailedException {
 
         log.debug( "getProductDirectionList(): query={}", query );
-
-        //TODO используется в Button селектор с продуктами ProductDirectionInputSelector, считаю что привилегия PRODUCT_VIEW не для этого
 
         String[] names = new String[] {
                 "Система 112", "Call Center", "Видеонаблюдение", "Видеоаналитика"

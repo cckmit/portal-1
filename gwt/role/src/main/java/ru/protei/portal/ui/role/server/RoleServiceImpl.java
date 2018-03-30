@@ -44,7 +44,6 @@ public class RoleServiceImpl implements RoleService {
     public UserRole getRole(Long id) throws RequestFailedException {
         log.debug("get role, id: {}", id);
 
-        //TODO используется для отображения карточки роли, думаю проверка роли ROLE_VIEW логична
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
         CoreResponse<UserRole> response = roleService.getUserRole( descriptor.makeAuthToken(), id );

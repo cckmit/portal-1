@@ -32,9 +32,7 @@ public class ToggleBtnGroupMulti<T>
 
     @Override
     public void setValue( Set< T > values, boolean fireEvents ) {
-        if ( values != null ) {
-            selected = values;
-        }
+        selected = values == null ? new HashSet<>() : values;
 
         for (Map.Entry<ToggleButton, T> entry : itemViewToModel.entrySet()) {
             entry.getKey().setValue(selected.contains(entry.getValue()));

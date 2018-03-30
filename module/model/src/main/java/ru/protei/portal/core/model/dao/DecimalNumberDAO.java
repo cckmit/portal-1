@@ -17,4 +17,6 @@ public interface DecimalNumberDAO extends PortalBaseDAO<DecimalNumber> {
     Integer getNextAvailableRegNumber(DecimalNumberQuery filter);
 
     Integer getNextAvailableModification(DecimalNumberQuery filter);
+
+    void updateAllNumbersWithEmptyEntityType();
 }

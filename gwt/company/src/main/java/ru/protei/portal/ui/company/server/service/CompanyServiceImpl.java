@@ -117,7 +117,6 @@ public class CompanyServiceImpl implements CompanyService {
         log.debug( "getCompany(): id={}", id );
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-        //TODO используется для отображения карточки компании, думаю проверка роли COMPANY_VIEW логична
 
         CoreResponse<Company> response = companyService.getCompany( descriptor.makeAuthToken(),  id );
 

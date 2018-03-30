@@ -41,7 +41,6 @@ public class AccountServiceImpl implements AccountService {
     public UserLogin getAccount( long id ) throws RequestFailedException {
         log.debug( "getAccount(): id={}", id );
 
-        //TODO используется для отображения карточки аккаунта, думаю проверка роли ACCOUNT_VIEW логична
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
         CoreResponse< UserLogin > response = accountService.getAccount( descriptor.makeAuthToken(), id );
@@ -55,7 +54,6 @@ public class AccountServiceImpl implements AccountService {
     public UserLogin getAccountByPersonId( long personId ) throws RequestFailedException {
         log.debug( "getAccount(): personId={}", personId );
 
-        //TODO используется для отображения аккаунта при редактировании контакта, думаю проверка роли ACCOUNT_VIEW логична
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
         CoreResponse< UserLogin > response = accountService.getAccountByPersonId( descriptor.makeAuthToken(), personId );

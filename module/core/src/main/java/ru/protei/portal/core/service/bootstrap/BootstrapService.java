@@ -2,6 +2,7 @@ package ru.protei.portal.core.service.bootstrap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.protei.portal.core.model.dao.DecimalNumberDAO;
 import ru.protei.portal.core.model.dao.UserRoleDAO;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.UserRole;
@@ -32,11 +33,21 @@ public class BootstrapService {
     @Inject
     private UserRoleDAO userRoleDAO;
 
+    @Inject
+    private DecimalNumberDAO decimalNumberDAO;
+
     @PostConstruct
     public void init() {
         migrateUserRoleScopeToSingleValue();
         removeObsoletePrivileges();
-        autoPatchDefaultRoles();
+        autoPatchDecimalNumbers();
+//        autoPatchDefaultRoles();
+    }
+
+    private void autoPatchDecimalNumbers() {
+        // после рефакторинга таблицы децимальных номеров, связанного с добалением раздела документации
+        // требуется для всех номеров с не заполненным entityType установить entityType=equipment
+        decimalNumberDAO.updateAllNumbersWithEmptyEntityType();
     }
 
     private void autoPatchDefaultRoles () {

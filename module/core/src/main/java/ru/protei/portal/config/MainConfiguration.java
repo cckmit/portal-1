@@ -298,6 +298,9 @@ public class MainConfiguration {
         return new RedminePriorityMapEntryDAO_Impl();
     }
 
+    @Bean
+    public CaseFilterDAO getIssueFilterDAO() { return new CaseFilterDAO_Impl(); }
+
 /**
  *
  *
@@ -417,6 +420,11 @@ public class MainConfiguration {
     @Bean
     public DocumentService getDocumentService() {
         return new DocumentServiceImpl();
+    }
+
+    @Bean
+    public IssueFilterService getIssueFilterService () {
+        return new IssueFilterServiceImpl();
     }
 
     @Bean

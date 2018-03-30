@@ -205,19 +205,13 @@ public abstract class Selector<T>
 
     protected void showPopup(IsWidget relative) {
         this.relative = relative;
-        GWT.log( "1" );
         popup.setSearchVisible(searchEnabled);
-        GWT.log( "2" );
         popup.setSearchAutoFocus(searchAutoFocusEnabled);
 
-        GWT.log( "3" );
         popup.showNear(relative);
-        GWT.log( "4" );
         popup.addValueChangeHandler(this);
-        GWT.log( "5" );
         popup.clearSearchField();
 
-        GWT.log( "6" );
         if (!searchEnabled) {
             selectFirstElement();
         }

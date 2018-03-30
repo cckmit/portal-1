@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.query;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 
@@ -11,13 +12,18 @@ import java.io.Serializable;
 public class BaseQuery implements Serializable, DataQuery {
 
     public String searchString;
+
     public En_SortField sortField;
+
     public En_SortDir sortDir;
+
+    @JsonIgnore
     public int limit;
+
+    @JsonIgnore
     public int offset = 0;
 
-    public BaseQuery() {
-    }
+    public BaseQuery() {}
 
     public BaseQuery(String searchString, En_SortField sortField, En_SortDir sortDir) {
         this.searchString = searchString;

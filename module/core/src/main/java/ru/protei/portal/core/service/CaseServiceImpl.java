@@ -457,8 +457,18 @@ public class CaseServiceImpl implements CaseService {
         UserSessionDescriptor descriptor = authService.findSession( token );
         Set< UserRole > roles = descriptor.getLogin().getRoles();
         if ( !policyService.hasGrantAccessFor( roles, En_Privilege.ISSUE_VIEW ) ) {
-            query.setCompanyId( descriptor.getCompany() == null ? null : descriptor.getCompany().getId() );
+            query.setCompanyIds( getDescriptorCompany(descriptor) );
             query.setAllowViewPrivate( false );
+        }
+    }
+
+    private List<Long> getDescriptorCompany( UserSessionDescriptor descriptor ){
+        if (descriptor.getCompany() == null){
+            return null;
+        } else {
+            List<Long> companies = new ArrayList<>(  );
+            companies.add( descriptor.getCompany().getId() );
+            return companies;
         }
     }
 
