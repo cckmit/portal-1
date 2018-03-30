@@ -14,8 +14,7 @@
     <g:HTMLPanel styleName="issue-filter panel with-table-pager">
 
         <div class="user-filter">
-            <filter:IssueFilterSelector ui:field="userFilter" header="{lang.issueFilter}"
-                                        defaultValue="{lang.issueFilterNotDefined}"/>
+            <filter:IssueFilterSelector ui:field="userFilter" defaultValue="{lang.issueFilterNotDefined}"/>
         </div>
 
         <div class="body">

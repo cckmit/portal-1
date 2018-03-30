@@ -154,6 +154,8 @@ public abstract class IssueTableActivity
             filterView.resetFilter();
             showUserFilterControls();
             filterView.setSaveBtnLabel( lang.buttonCreate() );
+
+            onFilterChanged();
             return;
         }
 
@@ -167,13 +169,13 @@ public abstract class IssueTableActivity
             @Override
             public void onSuccess( CaseFilter filter ) {
                 fillFilterFields( filter );
+                onFilterChanged();
             }
         } );
     }
 
     @Override
     public void onOkSavingClicked() {
-
         if (filterView.filterName().getValue().isEmpty()){
             filterView.setFilterNameContainerErrorStyle( true );
             fireEvent( new NotifyEvents.Show( lang.errFilterNameRequired(), NotifyEvents.NotifyType.ERROR ) );
@@ -200,6 +202,7 @@ public abstract class IssueTableActivity
                 if ( isNew ){
                     filterView.userFilter().setValue( filterShortView );
                     filterView.addUserFilterDisplayOption( filterShortView );
+                    filterView.setSaveBtnLabel( lang.buttonModify() );
                 } else {
                     filterView.changeUserFilterValueName( filterShortView );
                 }

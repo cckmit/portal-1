@@ -53,7 +53,6 @@ import java.util.List;
 
         if ( defaultValue != null ) {
             addOption( null );
-            setValue( null );
         }
         filters.forEach( this::addOption );
     }
