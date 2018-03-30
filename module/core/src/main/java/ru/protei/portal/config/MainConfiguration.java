@@ -289,12 +289,17 @@ public class MainConfiguration {
     }
 
     @Bean
-    public RedmineStatusMapEntryDAO getRedmineStatusesDAO() {
+    public RedmineStatusMapEntryDAO getRedmineStatusMapEntryDAO() {
         return new RedmineStatusMapEntryDAO_Impl();
     }
 
     @Bean
-    public RedminePriorityMapEntryDAO getRedminePrioritiesDAO() {
+    public RedmineToCrmStatusMapEntryDAO getRedmineToCrmStatusMapEntryDAO() {
+        return new RedmineToCrmStatusMapEntryDAO_Impl();
+    }
+
+    @Bean
+    public RedminePriorityMapEntryDAO getRedminePriorityMapEntryDAO() {
         return new RedminePriorityMapEntryDAO_Impl();
     }
 

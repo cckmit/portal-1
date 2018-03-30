@@ -6,10 +6,7 @@ import com.taskadapter.redmineapi.bean.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.protei.portal.core.model.dao.CaseCommentDAO;
-import ru.protei.portal.core.model.dao.CaseObjectDAO;
-import ru.protei.portal.core.model.dao.RedminePriorityMapEntryDAO;
-import ru.protei.portal.core.model.dao.RedmineStatusMapEntryDAO;
+import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.service.EventAssemblerService;
 import ru.protei.portal.redmine.service.CommonService;
@@ -66,7 +63,7 @@ public final class RedmineUpdateIssueHandler implements RedmineEventHandler {
         logger.debug("Added {} new case comments to issue with id: {}", comments.size(), object.getId());
 
         updateObject(issue, object, endpoint);
-        commonService.processAttachments(issue, object, object.getInitiator());
+        commonService.processAttachments(issue, object, object.getInitiator(), endpoint);
     }
 
     //Well, just simpliest way to update object: ignoring everything and just setting fields...
@@ -86,11 +83,11 @@ public final class RedmineUpdateIssueHandler implements RedmineEventHandler {
             logger.debug("Status was not found");
 
         logger.debug("Trying to get portal status id matching with redmine: {}", issue.getStatusId());
-        final RedmineStatusMapEntry redmineStatusMapEntry =
-                statusMapEntryDAO.getByRedmineStatusId(issue.getStatusId(), statusMapId);
-        if (redmineStatusMapEntry != null) {
-            logger.debug("Found status id: {}", redmineStatusMapEntry.getLocalStatusId());
-            object.setStateId(redmineStatusMapEntry.getLocalStatusId());
+        final RedmineToCrmEntry redmineStatusEntry =
+                statusMapEntryDAO.getLocalStatus(statusMapId, issue.getStatusId());
+        if (redmineStatusEntry != null) {
+            logger.debug("Found status id: {}", redmineStatusEntry.getLocalStatusId());
+            object.setStateId(redmineStatusEntry.getLocalStatusId());
         } else
             logger.debug("Status was not found");
 
@@ -114,7 +111,7 @@ public final class RedmineUpdateIssueHandler implements RedmineEventHandler {
     private RedminePriorityMapEntryDAO priorityMapEntryDAO;
 
     @Autowired
-    private RedmineStatusMapEntryDAO statusMapEntryDAO;
+    private RedmineToCrmStatusMapEntryDAO statusMapEntryDAO;
 
     private final Logger logger = LoggerFactory.getLogger(RedmineUpdateIssueHandler.class);
 }
