@@ -24,6 +24,7 @@ import ru.protei.portal.core.service.AttachmentService;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.service.EventAssemblerService;
 import ru.protei.portal.core.service.user.AuthService;
+import ru.protei.winter.core.utils.mime.MimeUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -110,7 +111,9 @@ public class FileController {
         response.setContentType(file.getContentType());
         response.setHeader("Content-Transfer-Encoding", "binary");
         response.setHeader("Cache-Control", "max-age=86400, must-revalidate"); // 1 day
-        response.setHeader("Content-Disposition", "filename=" + extractRealFileName(fileName));
+//        response.setHeader("Content-Disposition", "filename=" + extractRealFileName(fileName));
+        response.setHeader("Content-Disposition", "attachment; filename*=UTF-8''" +
+                encodeToRFC2231(extractRealFileName(fileName)));
         IOUtils.copy(file.getData(), response.getOutputStream());
     }
 
@@ -195,5 +198,30 @@ public class FileController {
             logger.debug("Unsupported encoding");
         }*/
         return val + fileExt;
+    }
+
+
+    public String encodeToRFC2231(String value) {
+        StringBuilder buf = new StringBuilder();
+        byte[] bytes;
+        try {
+            bytes = value.getBytes("UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            // cannot happen with UTF-8
+            bytes = new byte[]{ '?' };
+        }
+        for (byte b : bytes) {
+            if (b < '+' || b == ';' || b == ',' || b == '\\' || b > 'z') {
+                buf.append('%');
+                String s = Integer.toHexString(b & 0xff).toUpperCase();
+                if (s.length() < 2) {
+                    buf.append('0');
+                }
+                buf.append(s);
+            } else {
+                buf.append((char) b);
+            }
+        }
+        return buf.toString();
     }
 }
