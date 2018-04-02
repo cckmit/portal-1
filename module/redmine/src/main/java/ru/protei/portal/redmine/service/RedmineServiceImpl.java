@@ -95,6 +95,7 @@ public final class RedmineServiceImpl implements RedmineService {
 
         } catch (RedmineException re) {
             //do some stuff
+
             logger.debug("Failed when getting issues created after date: {} from project with id: {}", created, projectId, re);
         }
     }

@@ -25,8 +25,10 @@ public final class RedmineUpdateIssueHandler implements RedmineEventHandler {
             compareAndUpdate(issue, object, endpoint);
             caseObjectDAO.saveOrUpdate(object);
             logger.debug("Object with id {} saved", object.getId());
-        } else
-            logger.debug("Object with external app id {} is not found", issue.getId());
+        } else {
+            logger.debug("Object with external app id {} is not found; strating it's creation", issue.getId());
+            newIssueHandler.handle(user, issue, endpoint);
+        }
     }
 
     private void compareAndUpdate(Issue issue, CaseObject object, RedmineEndpoint endpoint) {
@@ -112,6 +114,9 @@ public final class RedmineUpdateIssueHandler implements RedmineEventHandler {
 
     @Autowired
     private RedmineToCrmStatusMapEntryDAO statusMapEntryDAO;
+
+    @Autowired
+    private RedmineNewIssueHandler newIssueHandler;
 
     private final Logger logger = LoggerFactory.getLogger(RedmineUpdateIssueHandler.class);
 }

@@ -28,7 +28,9 @@ import ru.protei.portal.core.service.user.AuthService;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
+import java.util.Base64;
 import java.util.Collections;
 
 @RestController
@@ -108,7 +110,7 @@ public class FileController {
         response.setContentType(file.getContentType());
         response.setHeader("Content-Transfer-Encoding", "binary");
         response.setHeader("Cache-Control", "max-age=86400, must-revalidate"); // 1 day
-        response.setHeader("Content-Disposition", "filename="+ extractRealFileName(fileName));
+        response.setHeader("Content-Disposition", "filename=" + extractRealFileName(fileName));
         IOUtils.copy(file.getData(), response.getOutputStream());
     }
 
@@ -181,6 +183,17 @@ public class FileController {
     }
 
     private String extractRealFileName(String fileName){
-        return fileName.substring(fileName.indexOf('_') + 1);
+        final Base64.Decoder decoder = Base64.getUrlDecoder();
+        final int underscorePos = fileName.indexOf('_');
+        final int dotLastPos = fileName.lastIndexOf('.');
+        final String encodedPart = fileName.substring(underscorePos + 1, dotLastPos);
+        final String fileExt = fileName.substring(dotLastPos);
+        String val = new String(decoder.decode(encodedPart));
+        /*try {
+            val = new String(decoder.decode(encodedPart), "UTF8");
+        } catch (UnsupportedEncodingException e) {
+            logger.debug("Unsupported encoding");
+        }*/
+        return val + fileExt;
     }
 }
