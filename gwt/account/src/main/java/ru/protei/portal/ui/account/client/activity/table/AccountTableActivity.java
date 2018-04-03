@@ -45,7 +45,6 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
         filterView.setActivity( this );
         view.getFilterContainer().add( filterView.asWidget() );
 
-        pagerView.setPageSize( view.getPageSize() );
         pagerView.setActivity( this );
     }
 
@@ -179,6 +178,7 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
             public void onSuccess( Long count ) {
                 view.setRecordCount( count );
                 pagerView.setTotalPages( view.getPageCount() );
+                pagerView.setTotalCount( count );
             }
         });
     }

@@ -8,9 +8,9 @@ import com.google.gwt.user.client.ui.IsWidget;
 public interface AbstractPagerView extends IsWidget {
     void setActivity( AbstractPagerActivity activity );
 
-    void setPageSize( int value );
-
     void setCurrentPage( int value );
 
-    void setTotalPages( int value );
+    void setTotalCount( long value);
+
+    void setTotalPages(int value);
 }

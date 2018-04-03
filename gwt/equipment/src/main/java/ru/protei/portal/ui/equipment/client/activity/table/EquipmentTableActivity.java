@@ -41,7 +41,6 @@ public abstract class EquipmentTableActivity
         filterView.setActivity( this );
         view.getFilterContainer().add( filterView.asWidget() );
 
-        pagerView.setPageSize( view.getPageSize() );
         pagerView.setActivity( this );
     }
 
@@ -145,6 +144,7 @@ public abstract class EquipmentTableActivity
             public void onSuccess(Long count) {
                 view.setRecordCount( count );
                 pagerView.setTotalPages( view.getPageCount() );
+                pagerView.setTotalCount( count );
             }
         });
     }

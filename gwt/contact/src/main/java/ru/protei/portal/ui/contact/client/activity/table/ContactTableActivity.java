@@ -43,7 +43,6 @@ public abstract class ContactTableActivity
         filterView.setActivity( this );
         view.getFilterContainer().add( filterView.asWidget() );
 
-        pagerView.setPageSize( view.getPageSize() );
         pagerView.setActivity( this );
     }
 
@@ -166,6 +165,7 @@ public abstract class ContactTableActivity
             public void onSuccess(Long count) {
                 view.setRecordCount( count );
                 pagerView.setTotalPages( view.getPageCount() );
+                pagerView.setTotalCount( count );
             }
         });
     }

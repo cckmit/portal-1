@@ -38,7 +38,6 @@ public abstract class DocumentTableActivity
         filterView.setActivity(this);
         view.getFilterContainer().add(filterView.asWidget());
 
-        pagerView.setPageSize(view.getPageSize());
         pagerView.setActivity(this);
 
     }
@@ -139,6 +138,7 @@ public abstract class DocumentTableActivity
             public void onSuccess(Long result) {
                 view.setRecordCount(result);
                 pagerView.setTotalPages(view.getPageCount());
+                pagerView.setTotalCount( result );
             }
         });
     }

@@ -30,7 +30,6 @@ public abstract class CompanyTableActivity implements
     public void init() {
         view.setActivity( this );
         view.setAnimation( animation );
-        pagerView.setPageSize( view.getPageSize() );
         pagerView.setActivity( this );
     }
 
@@ -130,6 +129,7 @@ public abstract class CompanyTableActivity implements
             public void onSuccess( Long count ) {
                 view.setCompaniesCount( count );
                 pagerView.setTotalPages( view.getPageCount() );
+                pagerView.setTotalCount( count );
             }
         });
     }

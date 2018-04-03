@@ -78,7 +78,7 @@ public class Equipment extends AuditableObject {
      * Привязанные децимальные номера
      */
     @JdbcOneToMany(table = "decimal_number", localColumn = "id", remoteColumn = "entity_id", additionalConditions = {
-            @JdbcManyJoinData(remoteColumn = "entity_type", value = "'EQUIPMENT'", valueClass = String.class)
+            @JdbcManyJoinData(remoteColumn = "entity_type", value = "EQUIPMENT", valueClass = String.class)
     })
     private List<DecimalNumber> decimalNumbers;
 
@@ -90,7 +90,7 @@ public class Equipment extends AuditableObject {
 
 
     @JdbcOneToMany(table = "decimal_number", localColumn = "linked_equipment_id", remoteColumn = "entity_id", additionalConditions = {
-            @JdbcManyJoinData(remoteColumn = "entity_type", value = "'EQUIPMENT'", valueClass = String.class)
+            @JdbcManyJoinData(remoteColumn = "entity_type", value = "EQUIPMENT", valueClass = String.class)
     })
     private List<DecimalNumber> linkedEquipmentDecimalNumbers;
 
