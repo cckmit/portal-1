@@ -104,7 +104,13 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
             @Override
             public void onSuccess(CaseObject caseObject) {
-                fireEvent(new IssueEvents.SaveComment(caseObject.getId()));
+                if (issue.getId() != null) {
+                    fireEvent(new IssueEvents.SaveComment(caseObject.getId()));
+                } else {
+                    fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+                    fireEvent(new IssueEvents.ChangeModel());
+                    fireEvent(new Back());
+                }
             }
         });
     }
@@ -190,7 +196,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             view.showComments(true);
             view.attachmentsContainer().add(issue.getAttachments());
             fireEvent( new IssueEvents.ShowComments( view.getCommentsContainer(), issue.getId()) );
-        }else {
+        } else {
             view.showComments(false);
             view.getCommentsContainer().clear();
         }

@@ -66,7 +66,7 @@ public abstract class IssueCommentListActivity
 
         event.parent.clear();
         event.parent.add(view.asWidget());
-        view.message().setValue( null );
+        view.message().setValue(null);
         view.attachmentContainer().clear();
         view.getCommentsContainer().clear();
 
