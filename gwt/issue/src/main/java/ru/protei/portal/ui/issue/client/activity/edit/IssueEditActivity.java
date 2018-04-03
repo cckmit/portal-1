@@ -104,7 +104,13 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
             @Override
             public void onSuccess(CaseObject caseObject) {
-                fireEvent(new IssueEvents.SaveComment(caseObject.getId()));
+                if (issue.getId() != null) {
+                    fireEvent(new IssueEvents.SaveComment(caseObject.getId()));
+                } else {
+                    fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+                    fireEvent(new IssueEvents.ChangeModel());
+                    fireEvent(new Back());
+                }
             }
         });
     }
@@ -193,7 +199,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         } else {
             view.showComments(false);
             view.getCommentsContainer().clear();
-            fireEvent(new IssueEvents.ClearComments());
         }
 
         if(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_MANAGER_VIEW)) { //TODO change rule

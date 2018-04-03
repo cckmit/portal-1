@@ -66,8 +66,9 @@ public abstract class IssueCommentListActivity
 
         event.parent.clear();
         event.parent.add(view.asWidget());
-
-        clearView();
+        view.message().setValue(null);
+        view.attachmentContainer().clear();
+        view.getCommentsContainer().clear();
 
         requestData( event.caseId );
     }
@@ -79,11 +80,6 @@ public abstract class IssueCommentListActivity
         else{
             issueSavedAlso(true);
         }
-    }
-
-    @Event
-    public void onClearComments(IssueEvents.ClearComments event) {
-        clearView();
     }
 
     @Override
@@ -421,12 +417,6 @@ public abstract class IssueCommentListActivity
         fireEvent(new IssueEvents.ChangeModel());
         if(withComeback)
             fireEvent(new Back());
-    }
-
-    private void clearView() {
-        view.message().setValue(null);
-        view.attachmentContainer().clear();
-        view.getCommentsContainer().clear();
     }
 
     @Inject

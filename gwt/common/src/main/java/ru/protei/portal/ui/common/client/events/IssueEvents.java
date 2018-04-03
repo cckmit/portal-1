@@ -109,8 +109,6 @@ public class IssueEvents {
         public Long id;
     }
 
-    public static class ClearComments {}
-
     /**
      * Изменилась модель фильтров пользователя
      */
