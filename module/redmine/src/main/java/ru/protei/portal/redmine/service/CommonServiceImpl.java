@@ -24,8 +24,10 @@ import ru.protei.portal.core.service.EventPublisherService;
 import ru.protei.portal.redmine.handlers.RedmineNewIssueHandler;
 import ru.protei.portal.redmine.utils.HttpInputSource;
 
+import java.lang.reflect.Array;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public final class CommonServiceImpl implements CommonService {
 

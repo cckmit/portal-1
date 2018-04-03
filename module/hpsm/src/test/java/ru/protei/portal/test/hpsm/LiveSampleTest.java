@@ -41,6 +41,29 @@ public class LiveSampleTest {
     }
 
     @Test
+    public void backChannelFactoryTest() throws Exception {
+        TestServiceInstance testServiceInstance = ctx.getBean(TestServiceInstance.class);
+        InboundMainMessageHandler handler = ctx.getBean(InboundMainMessageHandler.class);
+        CaseObjectDAO caseObjectDAO = ctx.getBean(CaseObjectDAO.class);
+        ExternalCaseAppDAO externalCaseAppDAO = ctx.getBean(ExternalCaseAppDAO.class);
+        PersonDAO personDAO = ctx.getBean(PersonDAO.class);
+        CaseService caseService = ctx.getBean(CaseService.class);
+        HpsmTestUtils testUtils = ctx.getBean(HpsmTestUtils.class);
+        CaseCommentDAO commentDAO = ctx.getBean(CaseCommentDAO.class);
+
+        ExternalCaseAppData appData = externalCaseAppDAO.getByExternalAppId(HPSM_TEST_CASE_ID1);
+
+        Assert.assertNotNull(appData);
+
+        CaseObject resultCase = caseObjectDAO.get(appData.getId());
+        Person testPerson = personDAO.getEmployee(LOCAL_PERSON_ID);
+
+        caseService.updateCaseObject(resultCase, testPerson);
+
+        MimeMessage responseMail = testServiceInstance.getSentMessage();
+    }
+
+    @Test
     public void test001 () throws Exception {
 /*
   prepare test env
