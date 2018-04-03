@@ -190,9 +190,10 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             view.showComments(true);
             view.attachmentsContainer().add(issue.getAttachments());
             fireEvent( new IssueEvents.ShowComments( view.getCommentsContainer(), issue.getId()) );
-        }else {
+        } else {
             view.showComments(false);
             view.getCommentsContainer().clear();
+            fireEvent(new IssueEvents.ClearComments());
         }
 
         if(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_MANAGER_VIEW)) { //TODO change rule
