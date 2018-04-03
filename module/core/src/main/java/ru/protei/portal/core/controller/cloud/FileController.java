@@ -31,8 +31,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
-import java.util.Base64;
-import java.util.Collections;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RestController
 public class FileController {
@@ -56,7 +57,6 @@ public class FileController {
     private static final Logger logger = Logger.getLogger(FileStorage.class);
     private ObjectMapper mapper = new ObjectMapper();
     private ServletFileUpload upload = new ServletFileUpload(new DiskFileItemFactory());
-
 
     @RequestMapping(value = "/uploadFile", method = RequestMethod.POST)
     @ResponseBody
@@ -191,12 +191,7 @@ public class FileController {
         final int dotLastPos = fileName.lastIndexOf('.');
         final String encodedPart = fileName.substring(underscorePos + 1, dotLastPos);
         final String fileExt = fileName.substring(dotLastPos);
-        String val = new String(decoder.decode(encodedPart));
-        /*try {
-            val = new String(decoder.decode(encodedPart), "UTF8");
-        } catch (UnsupportedEncodingException e) {
-            logger.debug("Unsupported encoding");
-        }*/
+        final String val = new String(decoder.decode(encodedPart));
         return val + fileExt;
     }
 

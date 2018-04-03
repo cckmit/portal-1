@@ -30,7 +30,7 @@ public final class RedmineServiceImpl implements RedmineService {
     @Override
     @EventListener
     public void onAssembledCaseEvent(AssembledCaseEvent event) {
-        if (event.getServiceModule() == ServiceModule.REDMINE) {
+        if (event.getServiceModule() == ServiceModule.REDMINE || event.getServiceModule() == ServiceModule.HPSM) {
             logger.debug("skip handle self-published event for {}", event.getCaseObject().getExtId());
             return;
         }
@@ -103,6 +103,7 @@ public final class RedmineServiceImpl implements RedmineService {
     @Override
     public void checkForUpdatedIssues(RedmineEndpoint endpoint) {
         final String updated = RedmineUtils.parseDateToAfter(endpoint.getLastUpdatedOnDate());
+
         final String projectId = endpoint.getProjectId();
 
         logger.debug("updated issues poll from redmine endpoint {}, company {}, project {}, check updated from {}",
