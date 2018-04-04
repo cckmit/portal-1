@@ -27,19 +27,19 @@ public class PagerView extends Composite implements ru.protei.portal.ui.common.c
     }
 
     @Override
-    public void setPageSize( int value ) {
-        pageSize = value;
-        updateLabel();
-    }
-
-    @Override
     public void setCurrentPage( int value ) {
         currentPage = value;
         updateLabel();
     }
 
     @Override
-    public void setTotalPages( int value ) {
+    public void setTotalCount(long value) {
+        totalCount = value;
+        updateLabel();
+    }
+
+    @Override
+    public void setTotalPages(int value) {
         totalPages = value;
         updateLabel();
     }
@@ -57,7 +57,7 @@ public class PagerView extends Composite implements ru.protei.portal.ui.common.c
     }
 
     private void updateLabel() {
-        label.setInnerText( lang.pagerLabel( currentPage, totalPages, pageSize ) );
+        label.setInnerText( lang.pagerLabel( currentPage, totalPages, totalCount ) );
     }
 
     @UiField
@@ -72,9 +72,9 @@ public class PagerView extends Composite implements ru.protei.portal.ui.common.c
 
     AbstractPagerActivity activity;
 
-    int pageSize = 0;
     int currentPage = 0;
     int totalPages = 0;
+    long totalCount = 0;
 
     interface PagerUiBinder extends UiBinder< HTMLPanel, PagerView> {}
     private static PagerUiBinder ourUiBinder = GWT.create( PagerUiBinder.class );

@@ -49,7 +49,6 @@ public abstract class IssueTableActivity
         filterView.setActivity( this );
         view.getFilterContainer().add( filterView.asWidget() );
 
-        pagerView.setPageSize( view.getPageSize() );
         pagerView.setActivity( this );
     }
 
@@ -303,6 +302,7 @@ public abstract class IssueTableActivity
                 public void onSuccess( Long issuesCount ) {
                     view.setIssuesCount( issuesCount );
                     pagerView.setTotalPages( view.getPageCount() );
+                    pagerView.setTotalCount( issuesCount );
                 }
             } );
     }

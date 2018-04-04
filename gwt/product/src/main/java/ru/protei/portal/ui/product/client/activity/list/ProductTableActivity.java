@@ -30,7 +30,6 @@ public abstract class ProductTableActivity implements
     public void init() {
         view.setActivity( this );
         view.setAnimation( animation );
-        pagerView.setPageSize( view.getPageSize() );
         pagerView.setActivity( this );
     }
 
@@ -121,6 +120,7 @@ public abstract class ProductTableActivity implements
             public void onSuccess( Long count ) {
                 view.setProductsCount( count );
                 pagerView.setTotalPages( view.getPageCount() );
+                pagerView.setTotalCount( count );
             }
         });
     }
