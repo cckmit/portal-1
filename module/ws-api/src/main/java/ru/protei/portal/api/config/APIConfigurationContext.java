@@ -1,5 +1,6 @@
 package ru.protei.portal.api.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.*;
 import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -9,10 +10,16 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import ru.protei.portal.api.model.*;
+import ru.protei.portal.config.MainConfiguration;
+import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
 import ru.protei.portal.core.model.struct.Photo;
+import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
+import ru.protei.portal.tools.migrate.sybase.SybConnProvider;
+import ru.protei.portal.tools.migrate.sybase.SybConnWrapperImpl;
 import ru.protei.winter.core.CoreConfigurationContext;
+import ru.protei.winter.core.utils.config.exception.ConfigException;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import java.util.List;
@@ -59,6 +66,29 @@ public class APIConfigurationContext extends WebMvcConfigurerAdapter {
     public AuditObjectDAO getAuditDAO() {
         return new AuditObjectDAO_Impl();
     }
+
+/**
+     * Config
+     * @return
+     */
+
+    @Bean
+    public PortalConfig getPortalConfig () throws ConfigException {
+        return new PortalConfig("portal.properties");
+    }
+
+    @Bean
+    public SybConnProvider getSybConnProvider (@Autowired PortalConfig config) throws Throwable {
+        return new SybConnWrapperImpl(
+                config.data().legacySysConfig().getJdbcDriver(),
+                config.data().legacySysConfig().getJdbcURL(),
+                config.data().legacySysConfig().getLogin(),
+                config.data().legacySysConfig().getPasswd()
+        );
+    }
+
+    @Bean
+    public LegacySystemDAO getLegacySystemDAO () { return new LegacySystemDAO(); }
 
 /*
     @Bean

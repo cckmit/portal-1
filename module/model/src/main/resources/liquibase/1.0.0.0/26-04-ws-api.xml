@@ -4,7 +4,6 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
-<!--
     <changeSet author="turik" id="addCompanies">
         <update tableName="company">
             <column name="cname" value='Протей' type="varchar(512)"/>
@@ -23,7 +22,6 @@
             <column name="contactInfo" value='{"items": []}' />
         </insert>
     </changeSet>
--->
 
     <changeSet author="turik" id="addMainIdToCompanyGroupHome">
         <addColumn tableName="company_group_home">
@@ -46,7 +44,6 @@
                                tableName="company_group_home"/>
     </changeSet>
 
-<!--
     <changeSet author="turik" id="updateCompanyGroupHome">
         <update tableName="company_group_home">
             <column name="external_code" type="varchar(512)"/>
@@ -67,6 +64,36 @@
             update company set category_id = (select id from company_category where category_name = 'Домашняя компания' ) where cname  = 'Протей СТ';
         </sql>
     </changeSet>
--->
+
+    <changeSet author="turik" id="updateCompanies">
+
+        <delete tableName="company_group_home">
+            <where>companyId=(select id from company where cname = 'НТЦ Протей')</where>
+        </delete>
+
+        <delete tableName="company">
+            <where>cname = 'НТЦ Протей'</where>
+        </delete>
+
+        <update tableName="company">
+            <column name="cname" value='НТЦ Протей' type="varchar(512)"/>
+            <where>id=1</where>
+        </update>
+
+        <insert tableName="company">
+            <column name="created" value="now()" />
+            <column name="cname" value="Протей" />
+            <column name="contactInfo" value='{"items": []}' />
+        </insert>
+
+        <sql>
+            update company set category_id = (select id from company_category where category_name = 'Домашняя компания' ) where cname  = 'Протей';
+        </sql>
+
+        <sql>
+            insert into company_group_home (companyId, external_code, mainId) select id, 'protei', 1 from company where cname = 'Протей';
+        </sql>
+
+    </changeSet>
 
 </databaseChangeLog>

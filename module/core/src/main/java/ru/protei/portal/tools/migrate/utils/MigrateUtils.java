@@ -72,7 +72,6 @@ public class MigrateUtils {
         if (!homeDAO.checkIfHome(1L)) {
             CompanyHomeGroupItem protei_entry = new CompanyHomeGroupItem();
             protei_entry.setCompanyId(1L);
-            protei_entry.setExternalCode("protei");
             homeDAO.persist(protei_entry);
         }
     }
