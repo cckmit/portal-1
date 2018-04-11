@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.core.Lang;
@@ -34,6 +35,7 @@ import ru.protei.winter.core.utils.config.exception.ConfigException;
 @Configuration
 @EnableAspectJAutoProxy
 @EnableTransactionManagement
+@EnableScheduling
 public class MainConfiguration {
 
     /**
