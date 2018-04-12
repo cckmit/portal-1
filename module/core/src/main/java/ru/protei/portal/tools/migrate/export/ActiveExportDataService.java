@@ -171,7 +171,12 @@ public class ActiveExportDataService implements ExportDataService {
     @Override
     public En_ResultStatus exportPerson(Person person) {
         if (personDAO.isEmployee(person)) {
-            return legacyDAO.saveExternalEmployee(person, person.getDepartment(), person.getPosition());
+            /**
+             * Теперь этим занимается новое API для 1C
+             */
+            return En_ResultStatus.OK;
+//            return legacyDAO.saveExternalEmployee(person, person.getDepartment(), person.getPosition());
+//
         }
 
         try {

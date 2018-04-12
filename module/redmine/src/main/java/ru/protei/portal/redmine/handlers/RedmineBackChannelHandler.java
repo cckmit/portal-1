@@ -21,7 +21,18 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
             return;
         final long caseId = event.getCaseObject().getId();
         final CaseObject actualCaseObject = caseObjectDAO.get(caseId);
-        final int issueId = Integer.parseInt(externalCaseAppDAO.get(caseId).getExtAppCaseId());
+        String extAppId = externalCaseAppDAO.get(caseId).getExtAppCaseId();
+        if (extAppId == null) {
+            logger.debug("case {} has no ext-app-id", caseId);
+            return;
+        }
+
+        if (!extAppId.matches("^[0-9]+$")) {
+            logger.debug("case {} has invalid ext-app-id : {}", caseId, extAppId);
+            return;
+        }
+
+        final int issueId = Integer.parseInt(extAppId);
         final String projectId = externalCaseAppDAO.get(caseId).getExtAppData();
         final long companyId = actualCaseObject.getInitiatorCompanyId();
 
