@@ -19,11 +19,11 @@
                 <span class="">
                     <g:Button styleName="btn btn-success" ui:field="send" text="{lang.commentSendMessage}"/>
                     <fileuploader:AttachmentUploader ui:field="fileUploader" styleName="inline-block vertical-middle">
-                        <button class="btn btn-white attach-add-btn">
+                        <div class="btn btn-white attach-add-btn">
                             <ui:text from='{lang.addAttachmentBtn}'/>
                             <i class="ion-plus"/>
                             <i class="icon-verifiable"/>
-                        </button>
+                        </div>
                     </fileuploader:AttachmentUploader>
                     <attachment:AttachmentList ui:field="attachmentList" simpleMode="true" styleName="inline-block attachment-list-simple"/>
                 </span>
