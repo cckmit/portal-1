@@ -45,4 +45,6 @@
   <include file="2018-03-22-redmine_statuses_add_column.xml" relativeToChangelogFile="true" />
   <include file="2018-03-27-redmine_new_table.xml" relativeToChangelogFile="true" />
   <include file="2018-03-30-redmine_case_state_fk.xml" relativeToChangelogFile="true" />
+  <include file="2018-04-19-redmine_ext_app.xml" relativeToChangelogFile="true" />
+  <include file="2018-04-19-redmine_ext_app_fix.xml" relativeToChangelogFile="true" />
 </databaseChangeLog>

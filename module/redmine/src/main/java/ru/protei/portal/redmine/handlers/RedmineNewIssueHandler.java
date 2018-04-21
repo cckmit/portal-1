@@ -29,7 +29,8 @@ public final class RedmineNewIssueHandler implements RedmineEventHandler {
 
     private CaseObject createCaseObject(User user, Issue issue, RedmineEndpoint endpoint) {
         final long companyId = endpoint.getCompanyId();
-        CaseObject testExists = caseObjectDAO.getByExternalAppCaseId(issue.getId().toString());
+        final CaseObject testExists = caseObjectDAO.getByExternalAppCaseId(issue.getId().toString()
+                + "_" + companyId );
         if (testExists != null) {
             logger.debug("issue {} is already created as case-object {}", issue.getId(), testExists.defGUID());
             return testExists;
@@ -44,7 +45,7 @@ public final class RedmineNewIssueHandler implements RedmineEventHandler {
         final CaseObject obj = buildCaseObject(issue, contactPerson, endpoint);
         final long caseObjId = caseObjectDAO.insertCase(obj);
         final ExternalCaseAppData appData = new ExternalCaseAppData(obj);
-        appData.setExtAppCaseId(String.valueOf(issue.getId()));
+        appData.setExtAppCaseId(issue.getId() + "_" + companyId);
         appData.setExtAppData(String.valueOf(issue.getProjectId()));
         logger.debug("create redmine-case id={}, ext={}, data={}", appData.getId(), appData.getExtAppCaseId(), appData.getExtAppData());
 
@@ -66,6 +67,7 @@ public final class RedmineNewIssueHandler implements RedmineEventHandler {
         obj.setModified(issue.getUpdatedOn());
         obj.setInitiator(contactPerson);
         obj.setCaseType(En_CaseType.CRM_SUPPORT);
+        obj.setExtAppType("redmine");
 
         logger.debug("Trying to get portal priority level id matching with redmine: {}", issue.getPriorityId());
         String redminePriorityName = issue.getCustomFieldById(RedmineUtils.REDMINE_CUSTOM_FIELD_ID).getValue();

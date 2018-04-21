@@ -19,22 +19,31 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
     public void handle(AssembledCaseEvent event) {
         if (!portalConfig.data().integrationConfig().isRedmineEnabled())
             return;
+
         final long caseId = event.getCaseObject().getId();
-        final CaseObject actualCaseObject = caseObjectDAO.get(caseId);
+
+        final CaseObject caseObject = event.getCaseObject();
+        caseObjectDAO.saveOrUpdate(caseObject);
+
         String extAppId = externalCaseAppDAO.get(caseId).getExtAppCaseId();
         if (extAppId == null) {
             logger.debug("case {} has no ext-app-id", caseId);
             return;
         }
 
-        if (!extAppId.matches("^[0-9]+$")) {
+        final String[] issueAndCompanyIds = extAppId.split("_");
+
+        if (issueAndCompanyIds.length != 2
+                || !issueAndCompanyIds[0].matches("^[0-9]+$")
+                || !issueAndCompanyIds[1].matches("^[0-9]+$")) {
+
             logger.debug("case {} has invalid ext-app-id : {}", caseId, extAppId);
             return;
         }
 
-        final int issueId = Integer.parseInt(extAppId);
+        final int issueId = Integer.parseInt(issueAndCompanyIds[0]);
         final String projectId = externalCaseAppDAO.get(caseId).getExtAppData();
-        final long companyId = actualCaseObject.getInitiatorCompanyId();
+        final long companyId = Long.parseLong(issueAndCompanyIds[1]);
 
         final RedmineEndpoint endpoint = endpointDAO.getByCompanyIdAndProjectId(companyId,
                 projectId);
@@ -42,6 +51,7 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
             logger.debug("Endpoint was not found for companyId {} and projectId {}", companyId, projectId);
             return;
         }
+
         final Issue issue = service.getIssueById(issueId, endpoint);
         if (issue == null) {
             logger.debug("Issue with id {} was not found", issueId);
@@ -85,7 +95,6 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
         } else
             logger.debug("Redmine status not found");
 
-        issue.setProjectId(Integer.valueOf(externalCaseAppDAO.get(newObj.getId()).getExtAppData()));
         issue.setDescription(newObj.getInfo());
         issue.setSubject(newObj.getName());
     }
