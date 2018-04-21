@@ -31,7 +31,7 @@ public final class RedmineUpdateIssueHandler implements RedmineEventHandler {
             caseObjectDAO.saveOrUpdate(object);
             logger.debug("Object with id {} saved", object.getId());
         } else {
-            logger.debug("Object with external app id {} is not found; strating it's creation", issue.getId());
+            logger.debug("Object with external app id {} is not found; starting it's creation", issue.getId());
             newIssueHandler.handle(user, issue, endpoint);
         }
     }
