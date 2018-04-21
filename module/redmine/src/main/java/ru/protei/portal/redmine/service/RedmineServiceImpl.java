@@ -17,6 +17,8 @@ import ru.protei.portal.redmine.handlers.RedmineNewIssueHandler;
 import ru.protei.portal.redmine.handlers.RedmineUpdateIssueHandler;
 import ru.protei.portal.redmine.utils.RedmineUtils;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -117,11 +119,17 @@ public final class RedmineServiceImpl implements RedmineService {
                 logger.debug("got {} updated issues from {}", issues.size(), endpoint.getServerAddress());
 
                 for (Issue issue : issues) {
-                    if (issue.getCreatedOn().after(endpoint.getLastUpdatedOnDate())) {
+                    if (Math.abs(issue.getUpdatedOn().getTime() - issue.getCreatedOn().getTime()) < DELAY) {
                         logger.debug("Skipping recently created issue with id {}", issue.getId());
                         continue;
                     }
                     User user = getUser(issue.getAuthorId(), endpoint);
+
+                    if (user == null) {
+                        logger.debug("User with id {} not found, skipping it", issue.getAuthorId());
+                        continue;
+                    }
+
                     logger.debug("try update issue from {}, issue-id: {}", userInfo(user), issue.getId());
                     updateHandler.handle(user, issue, endpoint);
                     lastUpdatedOn = RedmineUtils.maxDate(issue.getUpdatedOn(), lastUpdatedOn);
@@ -231,4 +239,7 @@ public final class RedmineServiceImpl implements RedmineService {
     private RedmineBackChannelHandler redmineBackChannelHandler;
 
     private final static org.slf4j.Logger logger = LoggerFactory.getLogger(RedmineServiceImpl.class);
+
+    //5 mins in ms
+    private static final long DELAY = 300000L;
 }

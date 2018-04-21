@@ -90,9 +90,10 @@ package ru.protei.portal.ui.common.client.common;
  * 4.0.39.3 - CRM-99 Автоматически подставляется в новую задачу последний комментарий из предыдущей
  * 4.0.39.4 - CRM-104 Не соответствие CRM-36
  * 4.0.39.5 - CRM-175, а также исправлена проблема с redmine-plugin (это WA), исправлен формат даты (Саша)
+ * 4.0.39.6 - CRM-123 исправлен редмайн плагин, см. описание задачи.
  */
 public class Version {
     public static String getVersion() {
-        return "4.0.39.5";
+        return "4.0.39.6";
     }
 }
