@@ -17,6 +17,9 @@ public class DocumentType implements Serializable {
     @JdbcColumn
     private String name;
 
+    @JdbcColumn(name = "short_name")
+    private String shortName;
+
     @JdbcColumn(name = "document_category")
     @JdbcEnumerated(EnumType.STRING)
     private En_DocumentCategory documentCategory;
@@ -46,5 +49,13 @@ public class DocumentType implements Serializable {
 
     public void setDocumentCategory(En_DocumentCategory documentCategory) {
         this.documentCategory = documentCategory;
+    }
+
+    public String getShortName() {
+        return shortName;
+    }
+
+    public void setShortName(String shortName) {
+        this.shortName = shortName;
     }
 }

@@ -9,4 +9,10 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="add-short_name-column-to-document_type" author="efremov">
+        <addColumn tableName="document_type">
+            <column name="short_name" type="VARCHAR(16)"/>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

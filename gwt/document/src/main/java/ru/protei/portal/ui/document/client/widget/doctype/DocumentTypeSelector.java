@@ -2,6 +2,7 @@ package ru.protei.portal.ui.document.client.widget.doctype;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.DocumentType;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
@@ -21,7 +22,11 @@ public class DocumentTypeSelector
             if (val == null) {
                 return new DisplayOption(defaultValue);
             }
-            return new DisplayOption(val.getName());
+            String text = val.getName();
+            if (HelperFunc.isNotEmpty(val.getShortName())) {
+                text += " (" + val.getShortName() + ")";
+            }
+            return new DisplayOption(text);
         });
     }
 
