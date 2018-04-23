@@ -165,13 +165,25 @@ public class CaseServiceImpl implements CaseService {
             return new CoreResponse<CaseObject>().success( caseObject ); //ignore
 
         caseObject.setModified(new Date());
-        if(CollectionUtils.isNotEmpty(caseObject.getNotifiers())) {
+
+        if (CollectionUtils.isNotEmpty(caseObject.getNotifiers())) {
+            // persist notifiers that not already persisted before
+            List<CaseNotifier> notifiers = caseObject.getNotifiers()
+                    .stream()
+                    .map(person -> new CaseNotifier(caseObject.getId(), person.getId()))
+                    .collect(Collectors.toList());
+            Collection<CaseNotifier> persistedNotifiers = caseNotifierDAO.getByCaseId(caseObject.getId());
+            for (CaseNotifier notifier : persistedNotifiers) {
+                notifiers.remove(notifier);
+            }
+            caseNotifierDAO.persistBatch(notifiers);
+
             // update partially filled objects
-            caseObject.setNotifiers(
-                    new HashSet<>(personDAO.partialGetListByKeys(
-                            caseObject.getNotifiers().stream().map(Person::getId).collect(Collectors.toList()
-                            ), "id", "contactInfo"))
-            );
+            caseObject.setNotifiers(new HashSet<>(
+                    personDAO.partialGetListByKeys(
+                            caseObject.getNotifiers().stream().map(Person::getId).collect(Collectors.toList()),
+                            "id", "contactInfo")
+            ));
         }
 
         boolean isUpdated = caseObjectDAO.merge(caseObject);
@@ -496,7 +508,6 @@ public class CaseServiceImpl implements CaseService {
     }
 
     private boolean isCaseHasNoChanges(CaseObject co1, CaseObject co2){
-        //without notifiers
         return
                 Objects.equals(co1.getName(), co2.getName())
                 && Objects.equals(co1.getInfo(), co2.getInfo())
@@ -506,7 +517,8 @@ public class CaseServiceImpl implements CaseService {
                 && Objects.equals(co1.getInitiatorCompanyId(), co2.getInitiatorCompanyId())
                 && Objects.equals(co1.getInitiatorId(), co2.getInitiatorId())
                 && Objects.equals(co1.getProductId(), co2.getProductId())
-                && Objects.equals(co1.getManagerId(), co2.getManagerId());
+                && Objects.equals(co1.getManagerId(), co2.getManagerId())
+                && Objects.equals(co1.getNotifiers(), co2.getNotifiers());
     }
 
     static final long CHANGE_LIMIT_TIME = 300000;  // 5 минут  (в мсек)
