@@ -17,6 +17,7 @@ import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.DocumentServiceAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
+import ru.protei.portal.ui.document.client.widget.uploader.DocumentUploader;
 
 public abstract class DocumentEditActivity
         implements Activity, AbstractDocumentEditActivity {
@@ -25,14 +26,14 @@ public abstract class DocumentEditActivity
     public void onInit() {
         view.setActivity(this);
 
-        view.documentUploader().setUploadHandler(new RequestCallback<Void>() {
+        view.documentUploader().setUploadHandler(new DocumentUploader.UploadHandler() {
             @Override
-            public void onError(Throwable throwable) {
+            public void onError() {
                 fireErrorMessage(lang.errSaveDocumentFile());
             }
 
             @Override
-            public void onSuccess(Void result) {
+            public void onSuccess() {
                 fireEvent(new DocumentEvents.ChangeModel());
                 fireEvent(new Back());
             }
@@ -70,6 +71,8 @@ public abstract class DocumentEditActivity
 
     @Override
     public void onSaveClicked() {
+        boolean isNew = document.getId() == null;
+
         Document document = applyChanges();
         if (!document.isValid() || HelperFunc.isEmpty(view.documentUploader().getFilename())) {
             fireErrorMessage(getValidationErrorMessage(document));
@@ -86,7 +89,11 @@ public abstract class DocumentEditActivity
 
             @Override
             public void onSuccess(Document result) {
-                view.documentUploader().uploadAndBindToDocument(result);
+                if (isNew) {
+                    view.documentUploader().uploadBindToDocument(result);
+                } else {
+                    fireEvent(new Back());
+                }
                 // TODO: think about transactions: make sure that both document and pdf file are saved
             }
         });
@@ -163,6 +170,8 @@ public abstract class DocumentEditActivity
 
         view.setEnabledProject(document.getId() == null);
         view.setVisibleUploader(document.getId() == null);
+
+        view.nameValidator().setValid(true);
     }
 
     @Inject

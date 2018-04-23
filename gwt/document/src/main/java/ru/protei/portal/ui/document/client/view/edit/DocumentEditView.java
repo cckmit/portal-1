@@ -16,6 +16,7 @@ import ru.protei.portal.ui.common.client.widget.decimalnumber.single.SingleDecim
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.project.ProjectButtonSelector;
 import ru.protei.portal.ui.common.client.widget.stringselect.input.StringSelectInput;
+import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.document.client.activity.edit.AbstractDocumentEditActivity;
 import ru.protei.portal.ui.document.client.activity.edit.AbstractDocumentEditView;
@@ -61,6 +62,11 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
 
     @Override
     public HasValue<String> name() {
+        return name;
+    }
+
+    @Override
+    public HasValidable nameValidator() {
         return name;
     }
 

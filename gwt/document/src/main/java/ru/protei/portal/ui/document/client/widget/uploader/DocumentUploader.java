@@ -6,7 +6,6 @@ import com.google.gwt.user.client.ui.FormPanel;
 import ru.protei.portal.core.model.ent.Document;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.ui.common.client.widget.uploader.FileUploader;
-import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 public class DocumentUploader extends FileUploader {
 
@@ -33,20 +32,18 @@ public class DocumentUploader extends FileUploader {
         fileUpload.setEnabled(true);
         if (uploadHandler == null)
             return;
-        //handler.onSuccess(null);
-        uploadHandler.onError(null);
-//        Attachment attachment = createAttachment(event.getResults());
-//        if(attachment == null)
-//            uploadHandler.onError();
-//        else
-//            uploadHandler.onSuccess(attachment);
+        if ("error".equals(event.getResults())) {
+            uploadHandler.onError();
+        } else {
+            uploadHandler.onSuccess();
+        }
     }
 
     @Override
     public void changeHandler(ChangeEvent event) {
     }
 
-    public void uploadAndBindToDocument(Document document) {
+    public void uploadBindToDocument(Document document) {
         if (HelperFunc.isEmpty(getFilename()) || form.getElement().hasClassName("attachment-uploading")) {
             return;
         }
@@ -61,10 +58,17 @@ public class DocumentUploader extends FileUploader {
         fileUpload.setEnabled(false);
     }
 
-    public void setUploadHandler(RequestCallback<Void> uploadHandler) {
+    public void setUploadHandler(UploadHandler uploadHandler) {
         this.uploadHandler = uploadHandler;
     }
 
-    private RequestCallback<Void> uploadHandler;
+    private UploadHandler uploadHandler;
     private static final String UPLOAD_DOCUMENT_URL = "Crm/springApi/uploadDocument/";
+
+    public interface UploadHandler {
+
+        void onError();
+
+        void onSuccess();
+    }
 }

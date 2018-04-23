@@ -29,7 +29,7 @@ public class Document implements Serializable {
      */
     @JdbcJoinedObject(joinData = {
             @JdbcJoinData(localColumn = "id", remoteColumn = "entity_id"),
-            @JdbcJoinData(remoteColumn = "entity_type", value = "DOCUMENT")
+            @JdbcJoinData(remoteColumn = "entity_type", value = "\"DOCUMENT\"")
     })
     private DecimalNumber decimalNumber;
 

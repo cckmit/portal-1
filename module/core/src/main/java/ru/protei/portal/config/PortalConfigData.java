@@ -19,6 +19,7 @@ public class PortalConfigData {
     private final EventAssemblyConfig eventAssemblyConfig;
     private final LegacySystemConfig legacySystemConfig;
     private final IntegrationConfig integrationConfig;
+    private final SvnConfig svnConfig;
 
     private final String crmCaseUrl;
     private final String loginSuffixConfig;
@@ -29,6 +30,7 @@ public class PortalConfigData {
         eventAssemblyConfig = new EventAssemblyConfig(wrapper);
         legacySystemConfig = new LegacySystemConfig(wrapper);
         integrationConfig = new IntegrationConfig(wrapper);
+        svnConfig = new SvnConfig(wrapper);
 
         crmCaseUrl = wrapper.getProperty( "crm.case.url", "http://127.0.0.1:8888/crm.html#issues/issue:id=%d;" );
         loginSuffixConfig = wrapper.getProperty("auth.login.suffix", "");
@@ -60,6 +62,10 @@ public class PortalConfigData {
 
     public EventAssemblyConfig eventAssemblyConfig() {
         return eventAssemblyConfig;
+    }
+
+    public SvnConfig svn() {
+        return svnConfig;
     }
 
     public static class SmtpConfig {
@@ -234,6 +240,28 @@ public class PortalConfigData {
 
         public boolean isRedmineEnabled() {
             return redmineEnabled;
+        }
+    }
+
+    public static class SvnConfig {
+        private final String url, username, password;
+
+        public SvnConfig(PropertiesWrapper properties) throws ConfigException {
+            this.url = properties.getProperty("svn.url");
+            this.username = properties.getProperty("svn.username");
+            this.password = properties.getProperty("svn.password");
+        }
+
+        public String getUrl() {
+            return url;
+        }
+
+        public String getPassword() {
+            return password;
+        }
+
+        public String getUsername() {
+            return username;
         }
     }
 }
