@@ -21,6 +21,7 @@ public class PortalConfigData {
     private final IntegrationConfig integrationConfig;
 
     private final String crmCaseUrl;
+    private final String loginSuffixConfig;
 
     public PortalConfigData (PropertiesWrapper wrapper) throws ConfigException {
         smtpConfig = new SmtpConfig(wrapper);
@@ -30,6 +31,7 @@ public class PortalConfigData {
         integrationConfig = new IntegrationConfig(wrapper);
 
         crmCaseUrl = wrapper.getProperty( "crm.case.url", "http://127.0.0.1:8888/crm.html#issues/issue:id=%d;" );
+        loginSuffixConfig = wrapper.getProperty("auth.login.suffix", "");
     }
 
     public IntegrationConfig integrationConfig() {
@@ -46,6 +48,10 @@ public class PortalConfigData {
 
     public String getCrmCaseUrl() {
         return crmCaseUrl;
+    }
+
+    public String getLoginSuffix() {
+        return loginSuffixConfig;
     }
 
     public CloudConfig cloud() {

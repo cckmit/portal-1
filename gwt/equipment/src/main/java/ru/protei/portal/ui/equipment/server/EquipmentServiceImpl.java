@@ -63,7 +63,6 @@ public class EquipmentServiceImpl implements EquipmentService {
     public Equipment getEquipment(long id) throws RequestFailedException {
         log.debug("get equipment, id: {}", id);
 
-        //TODO используется для отображения карточки оборудования, думаю проверка роли EQUIPMENT_VIEW логична
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
         CoreResponse<Equipment> response = equipmentService.getEquipment( descriptor.makeAuthToken(), id );
@@ -108,7 +107,6 @@ public class EquipmentServiceImpl implements EquipmentService {
     public Long copyEquipment( Long equipmentId, String newName ) throws RequestFailedException {
         log.debug( "copy equipment: id: {}, newName = {}", equipmentId, newName );
 
-        //TODO используется для копирования оборудования, думаю проверка роли EQUIPMENT_CREATE логична
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
         UserSessionDescriptor session = sessionService.getUserSessionDescriptor( httpRequest );

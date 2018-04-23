@@ -1,9 +1,7 @@
 package ru.protei.portal.ui.common.client.widget.decimalnumber.box;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.DivElement;
-import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.SpanElement;
+import com.google.gwt.dom.client.*;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -194,7 +192,7 @@ public class DecimalNumberBox extends Composite
     }
 
     public void setGetNextModificationMessageVisible(boolean isVisible) {
-        getNextModificationMessage.setVisible(isVisible);
+        getNextModificationMessage.getStyle().setVisibility(isVisible ? Style.Visibility.VISIBLE : Style.Visibility.HIDDEN);
     }
 
     protected void resetTimer() {
@@ -269,7 +267,7 @@ public class DecimalNumberBox extends Composite
     @UiField
     Button remove;
     @UiField
-    HTMLPanel getNextModificationMessage;
+    LabelElement getNextModificationMessage;
 
 
     private DecimalNumberBoxHandler handler;

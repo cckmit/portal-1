@@ -89,7 +89,7 @@ public class WorkerController {
                     item -> new WorkerRecord(workerEntryDAO.getByExternalId(id.trim(), item.getCompanyId())));
 
         } catch (Throwable e) {
-            logger.error("error while get worker", e);
+            logger.error("error while get worker", e.getMessage());
         }
         return null;
     }
@@ -170,6 +170,9 @@ public class WorkerController {
                     Person person = null;
                     if (rec.getId() != null) {
                         person = personDAO.get(rec.getId());
+                        if (person == null) {
+                            person = personDAO.getByCondition("company_id=1 and isfired=0 and isdeleted=0 and firstname=? and lastname=? and birthday=?", rec.getFirstName().trim(), rec.getLastName().trim(), rec.getBirthday() );
+                        }
                     }
 
                     if (person == null) {

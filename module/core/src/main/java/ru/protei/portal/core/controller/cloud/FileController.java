@@ -24,12 +24,16 @@ import ru.protei.portal.core.service.AttachmentService;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.service.EventAssemblerService;
 import ru.protei.portal.core.service.user.AuthService;
+import ru.protei.winter.core.utils.mime.MimeUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
-import java.util.Collections;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RestController
 public class FileController {
@@ -53,7 +57,6 @@ public class FileController {
     private static final Logger logger = Logger.getLogger(FileStorage.class);
     private ObjectMapper mapper = new ObjectMapper();
     private ServletFileUpload upload = new ServletFileUpload(new DiskFileItemFactory());
-
 
     @RequestMapping(value = "/uploadFile", method = RequestMethod.POST)
     @ResponseBody
@@ -108,7 +111,9 @@ public class FileController {
         response.setContentType(file.getContentType());
         response.setHeader("Content-Transfer-Encoding", "binary");
         response.setHeader("Cache-Control", "max-age=86400, must-revalidate"); // 1 day
-        response.setHeader("Content-Disposition", "filename="+ extractRealFileName(fileName));
+//        response.setHeader("Content-Disposition", "filename=" + extractRealFileName(fileName));
+        response.setHeader("Content-Disposition", "attachment; filename*=UTF-8''" +
+                encodeToRFC2231(extractRealFileName(fileName)));
         IOUtils.copy(file.getData(), response.getOutputStream());
     }
 
@@ -181,6 +186,37 @@ public class FileController {
     }
 
     private String extractRealFileName(String fileName){
-        return fileName.substring(fileName.indexOf('_') + 1);
+        final Base64.Decoder decoder = Base64.getUrlDecoder();
+        final int underscorePos = fileName.indexOf('_');
+        final int dotLastPos = fileName.lastIndexOf('.');
+        final String encodedPart = fileName.substring(underscorePos + 1, dotLastPos);
+        final String fileExt = fileName.substring(dotLastPos);
+        final String val = new String(decoder.decode(encodedPart));
+        return val + fileExt;
+    }
+
+
+    public String encodeToRFC2231(String value) {
+        StringBuilder buf = new StringBuilder();
+        byte[] bytes;
+        try {
+            bytes = value.getBytes("UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            // cannot happen with UTF-8
+            bytes = new byte[]{ '?' };
+        }
+        for (byte b : bytes) {
+            if (b < '+' || b == ';' || b == ',' || b == '\\' || b > 'z') {
+                buf.append('%');
+                String s = Integer.toHexString(b & 0xff).toUpperCase();
+                if (s.length() < 2) {
+                    buf.append('0');
+                }
+                buf.append(s);
+            } else {
+                buf.append((char) b);
+            }
+        }
+        return buf.toString();
     }
 }

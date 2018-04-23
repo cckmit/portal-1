@@ -60,7 +60,11 @@ public class MailNotificationProcessor {
     public void onCaseChanged(AssembledCaseEvent event){
         Set<NotificationEntry> defaultNotifiers = subscriptionService.subscribers( event );
         Collection<NotificationEntry> notifiers =
-                formNotifiers(defaultNotifiers, event.getInitiator(), event.getCaseObject().getManager(), event.getCaseObject().isPrivateCase());
+                formNotifiers(defaultNotifiers,
+                        event.getInitiator(),
+                        event.getCaseObject().getCreator(),
+                        event.getCaseObject().getManager(),
+                        event.getCaseObject().isPrivateCase());
 
         if(!notifiers.isEmpty())
             performNotification( event, notifiers );
@@ -127,11 +131,18 @@ public class MailNotificationProcessor {
     }
 
     /**
-     * Form case notifiers with creator and manager
+     * Form case notifiers with initiator, creator and manager
      */
-    private Collection<NotificationEntry> formNotifiers(Set<NotificationEntry> allNotifiers, Person creator, Person manager, boolean isPrivateCase){
-        String creatorEmail = new PlainContactInfoFacade( creator.getContactInfo() ).getEmail();
+    private Collection<NotificationEntry> formNotifiers(Set<NotificationEntry> allNotifiers, Person initiator, Person creator, Person manager, boolean isPrivateCase){
+        String initiatorEmail = new PlainContactInfoFacade( initiator.getContactInfo() ).getEmail();
+        String creatorEmail = creator == null? null: new PlainContactInfoFacade( creator.getContactInfo() ).getEmail();
         String managerEmail = manager == null? null: new PlainContactInfoFacade( manager.getContactInfo() ).getEmail();
+
+        if( !(initiatorEmail == null || initiatorEmail.isEmpty()) ){
+            allNotifiers.add(
+                    new NotificationEntry(initiatorEmail, En_ContactItemType.EMAIL,  "ru")
+            );
+        }
 
         if( !(creatorEmail == null || creatorEmail.isEmpty()) ){
             allNotifiers.add(

@@ -1,0 +1,28 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet author="svitkov" id="2018-03-30-redmine-006">
+
+        <modifyDataType tableName="redmine_status_map_entry" columnName="LOCAL_status_id" newDataType="INT"/>
+        <modifyDataType tableName="redmine_status_map_entry" columnName="LOCAL_previous_status_id" newDataType="INT"/>
+        <modifyDataType tableName="redmine_to_crm_status_map_entry" columnName="LOCAL_status_id" newDataType="INT"/>
+
+
+        <addForeignKeyConstraint constraintName="FK_RDMINE_TO_CRM_STATUS" onDelete="NO ACTION"
+                                 baseColumnNames="LOCAL_status_id" baseTableName="redmine_status_map_entry"
+                                 referencedColumnNames="ID" referencedTableName="case_state"/>
+
+        <addForeignKeyConstraint constraintName="FK_RDMINE_TO_OLD_CRM_STATUS" onDelete="NO ACTION"
+                                 baseColumnNames="LOCAL_previous_status_id" baseTableName="redmine_status_map_entry"
+                                 referencedColumnNames="ID" referencedTableName="case_state"/>
+
+        <addForeignKeyConstraint constraintName="FK_RDMINE_TO_CRM_BACKWARD_STATUS" onDelete="NO ACTION"
+                                 baseColumnNames="LOCAL_status_id" baseTableName="redmine_to_crm_status_map_entry"
+                                 referencedColumnNames="ID" referencedTableName="case_state"/>
+
+    </changeSet>
+
+</databaseChangeLog>

@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.winter.jdbc.annotations.JdbcColumn;
 import ru.protei.winter.jdbc.annotations.JdbcEntity;
 
@@ -20,6 +21,17 @@ public final class RedmineStatusMapEntry {
 
     @JdbcColumn(name = "LOCAL_status_name")
     private String localStatusName;
+
+    @JdbcColumn(name = "LOCAL_previous_status_id")
+    private int localOldStatusId;
+
+    public int getLocalOldStatusId() {
+        return localOldStatusId;
+    }
+
+    public void setLocalOldStatusId(int localOldStatusId) {
+        this.localOldStatusId = localOldStatusId;
+    }
 
     public long getId() {
         return id;
@@ -55,5 +67,13 @@ public final class RedmineStatusMapEntry {
 
     public void setLocalStatusName(String localStatusName) {
         this.localStatusName = localStatusName;
+    }
+
+    public En_CaseState getLocalStatus() {
+        return En_CaseState.getById((long) localStatusId);
+    }
+
+    public En_CaseState getOldLocalStatus() {
+        return En_CaseState.getById((long) localOldStatusId);
     }
 }

@@ -22,9 +22,12 @@ import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.service.EventPublisherService;
 import ru.protei.portal.redmine.handlers.RedmineNewIssueHandler;
+import ru.protei.portal.redmine.utils.HttpInputSource;
 
+import java.lang.reflect.Array;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public final class CommonServiceImpl implements CommonService {
 
@@ -41,7 +44,7 @@ public final class CommonServiceImpl implements CommonService {
     }
 
     @Override
-    public void processAttachments(Issue issue, CaseObject obj, Person contactPerson) {
+    public void processAttachments(Issue issue, CaseObject obj, Person contactPerson, RedmineEndpoint endpoint) {
         final long caseObjId = obj.getId();
         final Set<String> existingAttachmentsNames = getExistingAttachmentsNames(obj.getId());
         final Collection<Attachment> addedAttachments = new ArrayList<>(issue.getAttachments().size());
@@ -62,10 +65,12 @@ public final class CommonServiceImpl implements CommonService {
                         addedAttachments.add(a);
                         try {
                             logger.debug("invoke file controller to store attachment {} (size={})", x.getFileName(), x.getFileSize());
-                            Long caId = fileController.saveAttachment(a, new UrlResource(x.getContentURL()), caseObjId);
+                            Long caId = fileController.saveAttachment(a,
+                                    new HttpInputSource(x.getContentURL(), endpoint.getApiKey()), caseObjId);
                             logger.debug("result from file controller = {} for {} (size={})", caId, x.getFileName(), x.getFileSize());
-
-                            if (caId != null) {
+                            final boolean isAlreadyExists =
+                                    caseAttachmentDAO.getByCondition("CASE_ID = ? and ATT_ID = ?", caseObjId, a.getId()) != null;
+                            if (caId != null && !isAlreadyExists) {
                                 caseAttachments.add(new CaseAttachment(caseObjId, a.getId()));
                             }
                         } catch (Exception e) {
@@ -131,7 +136,6 @@ public final class CommonServiceImpl implements CommonService {
             person.setCreated(new Date());
             person.setCreator("redmine");
             person.setCompanyId(companyId);
-
             if (HelperFunc.isEmpty(user.getFirstName()) && HelperFunc.isEmpty(user.getLastName())) {
                 person.setFirstName("?");
                 person.setLastName("?");

@@ -107,9 +107,9 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errInternalError();
 
-    String errDatabaseError ();
+    String errDatabaseError();
 
-    String errDatabaseTempError ();
+    String errDatabaseTempError();
 
     String errUnknownResult();
 
@@ -136,63 +136,86 @@ public interface Lang extends Messages, ContactItemLang {
     String contactDepartment();
 
     String address();
-    
+
     String productDescription();
 
     String edit();
 
     String companyAdditionalInfoHeader();
 
-    String newContact ();
+    String newContact();
 
-    String editContactHeader (String contactName);
+    String editContactHeader(String contactName);
 
-    String firstName ();
+    String firstName();
 
-    String lastName ();
+    String lastName();
 
-    String secondName ();
+    String secondName();
 
-    String displayName ();
+    String displayName();
 
-    String displayShortName ();
+    String displayShortName();
 
-    String birthday ();
+    String birthday();
 
-    String gender ();
+    String gender();
 
-    String genderMale ();
-    String genderFemale ();
-    String genderUndefined ();
+    String genderMale();
 
-    String personalData ();
-    String contactInfo ();
-    String advPersonalData ();
-    String workPhone ();
-    String workEmail ();
-    String personalEmail ();
-    String primaryFax ();
-    String secondaryFax ();
+    String genderFemale();
+
+    String genderUndefined();
+
+    String personalData();
+
+    String contactInfo();
+
+    String advPersonalData();
+
+    String workPhone();
+
+    String workEmail();
+
+    String personalEmail();
+
+    String primaryFax();
+
+    String secondaryFax();
 
     String contactFax();
+
     String contactMobilePhone();
+
     String contactPersonalPhone();
+
     String contactEmail();
+
     String contactActualAddress();
+
     String contactLegalAddress();
+
     String contactIcq();
+
     String contactJabber();
+
     String contactSkype();
+
     String contactWebSite();
+
     String contactSocialNet();
 
-    String workAddress ();
-    String homeAddress ();
-    String department ();
+    String workAddress();
 
-    String errorCompanyRequired ();
+    String homeAddress();
+
+    String department();
+
+    String errorCompanyRequired();
+
     String errorFirstNameRequired();
-    String errorLastNameRequired ();
+
+    String errorLastNameRequired();
 
     String companyCategory();
 
@@ -201,81 +224,134 @@ public interface Lang extends Messages, ContactItemLang {
     String companyEdit();
 
     String noCompanyGroup();
-    String companyGroupLabel ();
+
+    String companyGroupLabel();
 
     String issues();
+
     String issueNumber();
+
     String issueProduct();
+
     String issueContacts();
+
     String issueInfo();
+
     String issueCreationDate();
+
     String issueManager();
+
     String issueName();
+
     String issueState();
+
     String issueImportance();
+
     String issueCompany();
+
     String issueInitiator();
+
     String issuePrivate();
-    String issueHeader( String issueNumber );
+
+    String issueHeader(String issueNumber);
+
     String issueCurrentStateHeader();
+
     String issueContactHeader();
+
     String issueInfoHeader();
+
     String issueCriticality();
+
     String newIssue();
+
     String issueEdit();
+
     String selectIssueState();
+
     String selectIssueImportance();
+
     String selectIssueCompany();
+
     String selectIssueInitiator();
+
     String selectIssueProduct();
+
     String selectIssueManager();
+
     String issueAttachments();
 
     String createdCaseState();
+
     String openedCaseState();
+
     String closedCaseState();
+
     String pausedCaseState();
+
     String verifiedCaseState();
+
     String reopenedCaseState();
+
     String ignoredCaseState();
+
     String assignedCaseState();
+
     String estimatedCaseState();
+
     String discussCaseState();
+
     String plannedCaseState();
+
     String activeCaseState();
+
     String doneCaseState();
+
     String testCaseState();
+
     String testLocalCaseState();
+
     String testCustCaseState();
+
     String designCaseState();
+
     String solvedNoapCaseState();
+
     String solvedFixCaseState();
+
     String solvedDupCaseState();
-    String workaroundCaseState ();
-    String requestInfoCaseState ();
+
+    String workaroundCaseState();
+
+    String requestInfoCaseState();
 
     String criticalImportance();
+
     String importantImportance();
+
     String basicImportance();
+
     String cosmeticImportance();
 
-    String comments ();
+    String comments();
 
-    String product ();
+    String product();
 
     String buttonReset();
 
-    String selectContactCompany ();
+    String selectContactCompany();
 
     String selectDate();
 
     String email();
+
     String personalPhone();
 
-    String separatorText( int page, int pageCount );
-    String dataPageNumber (int page);
+    String separatorText(int page, int pageCount);
 
-    String pagerLabel( int currentPage, int totalPages, int pageSize );
+    String dataPageNumber(int page);
+
+    String pagerLabel(int currentPage, int totalPages, long totalCount);
 
     String commentSendMessage();
 
@@ -288,16 +364,18 @@ public interface Lang extends Messages, ContactItemLang {
     String errEditIssueComment();
 
     String selectCompanyGroup();
-    
+
     String activeRecords();
+
     String newRecords();
+
     String inactiveRecords();
 
     String dashboard();
 
     String issueCommentChangeStatusTo();
 
-    String errNotRemoved ();
+    String errNotRemoved();
 
     String errEditIssueCommentEmpty();
 
@@ -359,7 +437,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String projectManagers();
 
-    String projectHeader( String s );
+    String projectHeader(String s);
 
     String projectCreationDate();
 
@@ -537,7 +615,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String roles();
 
-    String role( Long id );
+    String role(Long id);
 
     String privilegeCategoryCommon();
 
@@ -679,7 +757,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String table();
 
-    String issueNameHeader ();
+    String issueNameHeader();
 
     String noChanges();
 
@@ -738,7 +816,7 @@ public interface Lang extends Messages, ContactItemLang {
     String documentTypeNotDefined();
 
     String errGetObject();
-    
+
     String uploadDocuments();
 
     String documentDescription();
@@ -757,5 +835,26 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errSaveDocumentFile();
 
+    String errSaveIssueFilter();
+
+    String issueFilterName();
+
+    String issueFilter();
+
     String errDocumentNotSaved();
+
+    String errFilterNameRequired();
+
+    String issueFilterRemoveSuccessed();
+
+    String errTooMuchCompanies();
+
+    String errTooMuchManagers();
+
+    String errTooMuchProducts();
+
+    String issueFilterNotDefined();
+
+    String buttonModify();
+
 }

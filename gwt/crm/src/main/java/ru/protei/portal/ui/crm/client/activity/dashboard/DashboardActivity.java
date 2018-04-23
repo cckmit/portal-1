@@ -10,10 +10,8 @@ import ru.protei.portal.ui.common.client.common.IssueStates;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.winter.web.common.client.events.SectionEvents;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -78,7 +76,12 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
     private CaseQuery generateActiveRecordsQuery(){
         CaseQuery query = new CaseQuery(En_CaseType.CRM_SUPPORT, null, En_SortField.last_update, En_SortDir.DESC);
         query.setStates( issueStates.getActiveStates() );
-        query.setManagerId( policyService.getProfile().getId() );
+        List<Long> productIds = null;
+        if (policyService.getProfile() != null){
+            productIds = new ArrayList<>();
+            productIds.add( policyService.getProfile().getId() );
+        }
+        query.setManagerIds( productIds );
 
         return query;
     }
@@ -86,7 +89,9 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
     private CaseQuery generateNewRecordsQuery(){
         CaseQuery query = new CaseQuery(En_CaseType.CRM_SUPPORT, null, En_SortField.last_update, En_SortDir.DESC);
         query.setStates(issueStates.getActiveStates());
-        query.setManagerId(-1L);
+        List<Long> productIds = new ArrayList<>();
+        productIds.add( -1L );
+        query.setManagerIds( productIds );
 
         return query;
     }
@@ -96,7 +101,12 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
         List<En_CaseState> inactiveStates = new ArrayList<>(issueStates.getInactiveStates());
         inactiveStates.remove(En_CaseState.VERIFIED);
         query.setStates(inactiveStates);
-        query.setManagerId( policyService.getProfile().getId() );
+        List<Long> productIds = null;
+        if (policyService.getProfile() != null){
+            productIds = new ArrayList<>();
+            productIds.add( policyService.getProfile().getId() );
+        }
+        query.setManagerIds( productIds );
 
         return query;
     }

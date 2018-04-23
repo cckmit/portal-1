@@ -41,6 +41,10 @@
   <include file="2018-03-02-redmine_statuses_and_priorities.xml" relativeToChangelogFile="true" />
   <include file="2018-03-06-add-document.xml" relativeToChangelogFile="true"/>
   <include file="2018-03-15-redmine_priorities_add_column.xml" relativeToChangelogFile="true" />
+  <include file="2018-03-21-issue_filter_table_create.xml" relativeToChangelogFile="true" />
+  <include file="2018-03-22-redmine_statuses_add_column.xml" relativeToChangelogFile="true" />
+  <include file="2018-03-27-redmine_new_table.xml" relativeToChangelogFile="true" />
   <include file="2018-03-28-edit_document.xml" relativeToChangelogFile="true"/>
-  <include file="2018-04-23-add_document_category.xml" relativeToChangelogFile="true"/>
+  <include file="2018-03-30-redmine_case_state_fk.xml" relativeToChangelogFile="true" />
+  <include file="2018-04-23-add_document_category.xml" relativeToChangelogFile="true"/>  
 </databaseChangeLog>

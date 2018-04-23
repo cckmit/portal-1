@@ -2,6 +2,7 @@ package ru.protei.portal.core.model.dao.impl;
 
 import org.apache.commons.collections4.CollectionUtils;
 import ru.protei.portal.core.model.dao.DecimalNumberDAO;
+import ru.protei.portal.core.model.dict.En_DecimalNumberEntityType;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.struct.DecimalNumberQuery;
 
@@ -99,4 +100,8 @@ public class DecimalNumberDAO_Impl extends PortalBaseJdbcDAO<DecimalNumber > imp
                 filter.getNumber().getOrganizationCode().name(), filter.getNumber().getClassifierCode(), filter.getNumber().getRegisterNumber());
    }
 
+    @Override
+    public void updateAllNumbersWithEmptyEntityType() {
+        jdbcTemplate.batchUpdate("UPDATE " + getTableName() + " SET entity_type='" + En_DecimalNumberEntityType.EQUIPMENT.name() + "' WHERE entity_type IS NULL OR entity_type=''");
+    }
 }

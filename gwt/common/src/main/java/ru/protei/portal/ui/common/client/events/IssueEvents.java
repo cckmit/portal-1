@@ -108,5 +108,10 @@ public class IssueEvents {
         }
         public Long id;
     }
+
+    /**
+     * Изменилась модель фильтров пользователя
+     */
+    public static class ChangeUserFilterModel{}
 }
 

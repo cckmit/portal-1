@@ -108,7 +108,8 @@ public abstract class AppActivity
         pingService.ping( new AsyncCallback<Void>() {
             @Override
             public void onFailure( Throwable caught ) {
-                fireEvent( new NotifyEvents.Show( lang.messageServerConnectionLost() ) );
+                stopPingServerTimer();
+                fireEvent(new AuthEvents.Show());
             }
             @Override
             public void onSuccess( Void result ) {}
@@ -116,8 +117,12 @@ public abstract class AppActivity
     }
 
     private void startPingServerTimer() {
-        pingTimer.cancel();
+        stopPingServerTimer();
         pingTimer.scheduleRepeating( 60000 );
+    }
+
+    private void stopPingServerTimer() {
+        pingTimer.cancel();
     }
 
     @Inject

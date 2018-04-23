@@ -78,12 +78,15 @@ public class ImportDataServiceImpl implements ImportDataService {
             importProducts(transaction);
             importContacts(transaction);
 
-            if (portalConfig.data().legacySysConfig().isImportEmployeesEnabled()) {
-                importEmployes(transaction);
-            }
-            else {
-                logger.debug("import of employees from legacy db is disabled, skip");
-            }
+            /**
+             * Теперь это делает API для 1C
+             */
+//            if (portalConfig.data().legacySysConfig().isImportEmployeesEnabled()) {
+//                importEmployes(transaction);
+//            }
+//            else {
+//                logger.debug("import of employees from legacy db is disabled, skip");
+//            }
 
             CaseImport caseImport = new CaseImport();
             caseImport.loadIncremental(transaction);
@@ -171,37 +174,40 @@ public class ImportDataServiceImpl implements ImportDataService {
 
 
     private void importEmployes(LegacyDAO_Transaction transaction) throws SQLException {
-        logger.debug("incremental import, employees");
-
-        ImportPersonBatch importPersonBatch = new ImportPersonBatch(userRoleDAO.getDefaultEmployeeRoles(),
-                userRoleDAO.getDefaultManagerRoles(),
-                new StrictLoginUniqueController());
-
-            MigrationEntry migrationEntry = migrationEntryDAO.getOrCreateEntry(En_MigrationEntry.PERSON_EMPLOYEE);
-
-            List<ExternalPerson> processList = transaction.dao(ExternalPerson.class).list("nID > ? and nCompanyID=?", migrationEntry.getLastId(), 1L);
-
-            if (processList.isEmpty()) {
-                logger.debug("No new employees in legacy db, exit now");
-                return;
-            }
-
-            logger.debug("got new external person list, size = {}", processList.size());
-
-            migrationEntry = migrationEntryDAO.updateEntry(En_MigrationEntry.PERSON_EMPLOYEE, HelperFunc.last(processList));
-
-            processList.removeIf(e -> personDAO.existsByLegacyId(e.getId()));
-
-            logger.debug("external person list after filtering, size = {}", processList.size());
-
-            HelperFunc.splitBatch(
-                    processList,
-                    100, list -> importPersonBatch.doImport(transaction, list)
-            );
-
-            logger.debug("processed new employees records: {}, last-id: {}", processList.size(), migrationEntry.getLastId());
-
-        logger.debug("incremental import, employees, done");
+        /**
+         * Теперь это делает API
+         */
+//        logger.debug("incremental import, employees");
+//
+//        ImportPersonBatch importPersonBatch = new ImportPersonBatch(userRoleDAO.getDefaultEmployeeRoles(),
+//                userRoleDAO.getDefaultManagerRoles(),
+//                new StrictLoginUniqueController());
+//
+//            MigrationEntry migrationEntry = migrationEntryDAO.getOrCreateEntry(En_MigrationEntry.PERSON_EMPLOYEE);
+//
+//            List<ExternalPerson> processList = transaction.dao(ExternalPerson.class).list("nID > ? and nCompanyID=?", migrationEntry.getLastId(), 1L);
+//
+//            if (processList.isEmpty()) {
+//                logger.debug("No new employees in legacy db, exit now");
+//                return;
+//            }
+//
+//            logger.debug("got new external person list, size = {}", processList.size());
+//
+//            migrationEntry = migrationEntryDAO.updateEntry(En_MigrationEntry.PERSON_EMPLOYEE, HelperFunc.last(processList));
+//
+//            processList.removeIf(e -> personDAO.existsByLegacyId(e.getId()));
+//
+//            logger.debug("external person list after filtering, size = {}", processList.size());
+//
+//            HelperFunc.splitBatch(
+//                    processList,
+//                    100, list -> importPersonBatch.doImport(transaction, list)
+//            );
+//
+//            logger.debug("processed new employees records: {}, last-id: {}", processList.size(), migrationEntry.getLastId());
+//
+//        logger.debug("incremental import, employees, done");
     }
 
 

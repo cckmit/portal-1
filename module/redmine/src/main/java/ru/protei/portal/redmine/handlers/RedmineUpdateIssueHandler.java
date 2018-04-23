@@ -2,18 +2,19 @@ package ru.protei.portal.redmine.handlers;
 
 import com.taskadapter.redmineapi.bean.Issue;
 import com.taskadapter.redmineapi.bean.Journal;
+import com.taskadapter.redmineapi.bean.JournalDetail;
 import com.taskadapter.redmineapi.bean.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
-import ru.protei.portal.core.model.dao.RedminePriorityMapEntryDAO;
-import ru.protei.portal.core.model.dao.RedmineStatusMapEntryDAO;
-import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.service.EventAssemblerService;
+import ru.protei.portal.core.model.ent.CaseComment;
+import ru.protei.portal.core.model.ent.CaseObject;
+import ru.protei.portal.core.model.ent.RedmineEndpoint;
+import ru.protei.portal.redmine.enums.RedmineChangeType;
+import ru.protei.portal.redmine.factory.CaseUpdaterFactory;
 import ru.protei.portal.redmine.service.CommonService;
-import ru.protei.portal.redmine.utils.RedmineUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -22,14 +23,41 @@ public final class RedmineUpdateIssueHandler implements RedmineEventHandler {
 
     @Override
     public void handle(User user, Issue issue, RedmineEndpoint endpoint) {
-        final CaseObject object = caseObjectDAO.getByExternalAppCaseId(issue.getId().toString());
+        final CaseObject object = caseObjectDAO.getByExternalAppCaseId(issue.getId() + "_"
+                + endpoint.getCompanyId());
         if (object != null) {
             logger.debug("Found case object with id {}", object.getId());
             compareAndUpdate(issue, object, endpoint);
             caseObjectDAO.saveOrUpdate(object);
             logger.debug("Object with id {} saved", object.getId());
-        } else
-            logger.debug("Object with external app id {} is not found", issue.getId());
+        } else {
+            logger.debug("Object with external app id {} is not found; starting it's creation", issue.getId());
+            newIssueHandler.handle(user, issue, endpoint);
+        }
+    }
+
+    /**
+     * Finding changes made after last update querying.
+     * FIltering out comments, getting lists of details, parsing them to change types, distinct and returning it
+     * @param journals see redmine api
+     * @return list of changes since last check
+     */
+    private List<RedmineChangeType> parseJournals(List<Journal> journals) {
+        List<JournalDetail> details = journals.stream()
+                .filter(x -> x.getNotes() == null || x.getNotes().isEmpty())
+                .flatMap(x -> x.getDetails().stream())
+                .collect(Collectors.toList());
+
+        List<Optional<RedmineChangeType>> changes =  details.stream()
+                .map(JournalDetail::getName)
+                .map(RedmineChangeType::findByName)
+                .collect(Collectors.toList());
+
+        return changes.stream()
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .distinct()
+                .collect(Collectors.toList());
     }
 
     private void compareAndUpdate(Issue issue, CaseObject object, RedmineEndpoint endpoint) {
@@ -48,6 +76,12 @@ public final class RedmineUpdateIssueHandler implements RedmineEventHandler {
         logger.debug("last comment was synced on: {}, with id {}", latestCreated);
         logger.debug("starting adding new comments");
 
+        final List<Journal> latestJournals = issue.getJournals()
+                .stream()
+                .filter(x -> x.getCreatedOn() != null
+                        && x.getCreatedOn().compareTo(endpoint.getLastUpdatedOnDate()) > 0)
+                .collect(Collectors.toList());
+
         final List<Journal> nonEmptyJournals = issue.getJournals()
                 .stream()
                 .filter(Objects::nonNull)
@@ -65,37 +99,9 @@ public final class RedmineUpdateIssueHandler implements RedmineEventHandler {
 
         logger.debug("Added {} new case comments to issue with id: {}", comments.size(), object.getId());
 
-        updateObject(issue, object, endpoint);
-        commonService.processAttachments(issue, object, object.getInitiator());
-    }
+        parseJournals(latestJournals).stream().map(caseUpdaterFactory::getUpdater).forEach(x -> x.apply(object, issue, endpoint));
 
-    //Well, just simpliest way to update object: ignoring everything and just setting fields...
-    private void updateObject(Issue issue, CaseObject object, RedmineEndpoint endpoint) {
-        final long priorityMapId = endpoint.getPriorityMapId();
-        final long statusMapId = endpoint.getStatusMapId();
-
-        logger.debug("Trying to get portal priority level id matching with redmine: {}",
-                issue.getCustomFieldById(RedmineUtils.REDMINE_CUSTOM_FIELD_ID).getValue());
-        final String redminePriorityName = issue.getCustomFieldById(RedmineUtils.REDMINE_CUSTOM_FIELD_ID).getValue();
-        final RedminePriorityMapEntry priorityMapEntry =
-                priorityMapEntryDAO.getByRedminePriorityName(redminePriorityName, priorityMapId);
-        if (priorityMapEntry != null) {
-            logger.debug("Found priority level id: {}", priorityMapEntry.getLocalPriorityId());
-            object.setImpLevel(priorityMapEntry.getLocalPriorityId());
-        } else
-            logger.debug("Status was not found");
-
-        logger.debug("Trying to get portal status id matching with redmine: {}", issue.getStatusId());
-        final RedmineStatusMapEntry redmineStatusMapEntry =
-                statusMapEntryDAO.getByRedmineStatusId(issue.getStatusId(), statusMapId);
-        if (redmineStatusMapEntry != null) {
-            logger.debug("Found status id: {}", redmineStatusMapEntry.getLocalStatusId());
-            object.setStateId(redmineStatusMapEntry.getLocalStatusId());
-        } else
-            logger.debug("Status was not found");
-
-        object.setInfo(issue.getDescription());
-        object.setName(issue.getSubject());
+        commonService.processAttachments(issue, object, object.getInitiator(), endpoint);
     }
 
     @Autowired
@@ -108,13 +114,10 @@ public final class RedmineUpdateIssueHandler implements RedmineEventHandler {
     private CommonService commonService;
 
     @Autowired
-    EventAssemblerService assemblerService;
+    private CaseUpdaterFactory caseUpdaterFactory;
 
     @Autowired
-    private RedminePriorityMapEntryDAO priorityMapEntryDAO;
-
-    @Autowired
-    private RedmineStatusMapEntryDAO statusMapEntryDAO;
+    private RedmineNewIssueHandler newIssueHandler;
 
     private final Logger logger = LoggerFactory.getLogger(RedmineUpdateIssueHandler.class);
 }

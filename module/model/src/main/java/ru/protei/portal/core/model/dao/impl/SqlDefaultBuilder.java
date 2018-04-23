@@ -32,23 +32,16 @@ public class SqlDefaultBuilder {
                 args.add( query.getCaseNo() );
             }
 
-            if ( query.getCompanyId() != null ) {
-                condition.append( " and initiator_company=?" );
-                args.add( query.getCompanyId() );
+            if ( query.getCompanyIds() != null && !query.getCompanyIds().isEmpty() ) {
+                condition.append(" and initiator_company in (" + query.getCompanyIds().stream().map(Object::toString).collect( Collectors.joining(",")) + ")");
             }
 
-            if ( query.getProductId() != null ) {
-                condition.append( " and product_id=?" );
-                args.add( query.getProductId() );
+            if ( query.getProductIds() != null && !query.getProductIds().isEmpty() ) {
+                condition.append(" and product_id in (" + query.getProductIds().stream().map(Object::toString).collect( Collectors.joining(",")) + ")");
             }
 
-            if ( query.getManagerId() != null) {
-                if(query.getManagerId() > 0) {
-                    condition.append(" and manager=?");
-                    args.add(query.getManagerId());
-                }else{
-                    condition.append( " and manager is null" );
-                }
+            if ( query.getManagerIds() != null && !query.getManagerIds().isEmpty() ) {
+                condition.append(" and manager in (" + query.getManagerIds().stream().map(Object::toString).collect( Collectors.joining(",")) + ")");
             }
 
             if ( query.getStateIds() != null && !query.getStateIds().isEmpty() ) {

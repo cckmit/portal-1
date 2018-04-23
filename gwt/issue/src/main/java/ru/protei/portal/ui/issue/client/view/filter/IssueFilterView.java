@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.issue.client.view.filter;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -15,19 +16,21 @@ import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
-import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
-import ru.protei.portal.ui.common.client.widget.selector.product.ProductButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.company.CompanyMultiSelector;
+import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterActivity;
 import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterView;
+import ru.protei.portal.ui.issue.client.widget.filter.IssueFilterSelector;
 import ru.protei.portal.ui.issue.client.widget.importance.btngroup.ImportanceBtnGroupMulti;
+import ru.protei.portal.ui.common.client.widget.selector.product.ProductMultiSelector;
 import ru.protei.portal.ui.issue.client.widget.state.option.IssueStatesOptionList;
 
 import java.util.Set;
@@ -42,9 +45,6 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         search.getElement().setPropertyString( "placeholder", lang.search() );
         sortField.setType( ModuleType.ISSUE );
         sortDir.setValue( false );
-        company.setDefaultValue( lang.selectIssueCompany() );
-        product.setDefaultValue( lang.selectIssueProduct() );
-        manager.setDefaultValue( lang.selectIssueManager() );
         dateRange.setPlaceholder( lang.selectDate() );
    }
 
@@ -67,17 +67,17 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     }
 
     @Override
-    public HasValue<EntityOption> company() {
-        return company;
+    public HasValue<Set<EntityOption>> companies() {
+        return companies;
     }
 
     @Override
-    public HasValue<ProductShortView> product() {
-        return product;
+    public HasValue<Set<ProductShortView>> products() {
+        return products;
     }
 
     @Override
-    public HasValue<PersonShortView> manager () { return manager; }
+    public HasValue<Set<PersonShortView>> managers() { return managers; }
 
     @Override
     public HasValue< Set <En_CaseState > > states() { return state; }
@@ -103,30 +103,122 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
 
     @Override
     public void resetFilter() {
-        company.setValue( null );
-        product.setValue( null );
-        manager.setValue( null );
+        companies.setValue( null );
+        products.setValue( null );
+        managers.setValue( null );
         importance.setValue(null);
         state.setValue( null );
         dateRange.setValue( null );
         sortField.setValue( En_SortField.creation_date );
         sortDir.setValue( false );
         search.setText( "" );
+        userFilter.setValue( null );
+        removeBtn.setVisible( false );
+        filterName.removeStyleName( "required" );
+        filterName.setValue( "" );
     }
 
     @Override
-    public HasVisibility managerVisibility() {
-        return manager;
+    public HasVisibility managersVisibility() {
+        return managers;
     }
 
     @Override
-    public HasVisibility companyVisibility() {
-        return company;
+    public HasVisibility companiesVisibility() {
+        return companies;
     }
 
     @Override
-    public HasVisibility productVisibility() {
-        return product;
+    public HasVisibility productsVisibility() {
+        return products;
+    }
+
+    @Override
+    public HasValue<CaseFilterShortView > userFilter() {
+        return userFilter;
+    }
+
+    @Override
+    public void changeUserFilterValueName( CaseFilterShortView value ){
+        userFilter.changeValueName( value );
+    }
+
+    @Override
+    public void addUserFilterDisplayOption( CaseFilterShortView value ){
+        userFilter.addDisplayOption( value );
+    }
+
+    @Override
+    public HasVisibility removeFilterBtnVisibility(){
+        return removeBtn;
+    }
+
+    @Override
+    public void setSaveBtnLabel( String label){
+        saveBtn.setText( label );
+    }
+
+    @Override
+    public HasValue< String > filterName() {
+        return filterName;
+    }
+
+    @Override
+    public void setFilterNameContainerErrorStyle( boolean hasError ) {
+        if ( hasError ) {
+            filterName.addStyleName( "required" );
+        } else {
+            filterName.removeStyleName( "required" );
+        }
+    }
+
+    @Override
+    public void setUserFilterNameVisibility( boolean hasVisible ) {
+        if ( hasVisible ) {
+            filterNameContainer.removeClassName( "hide" );
+        } else {
+            filterNameContainer.addClassName( "hide" );
+        }
+    }
+
+    @Override
+    public void setCompaniesErrorStyle( boolean hasError ) {
+        if (hasError){
+            companies.addStyleName( "required" );
+        } else {
+            companies.removeStyleName( "required" );
+        }
+    }
+
+    @Override
+    public void setProductsErrorStyle( boolean hasError ) {
+        if (hasError){
+            products.addStyleName( "required" );
+        } else {
+            products.removeStyleName( "required" );
+        }
+    }
+
+    @Override
+    public void setManagersErrorStyle( boolean hasError ) {
+        if (hasError){
+            managers.addStyleName( "required" );
+        } else {
+            managers.removeStyleName( "required" );
+        }
+    }
+
+    @Override
+    public void setUserFilterControlsVisibility( boolean hasVisible ) {
+        if ( hasVisible ) {
+            saveBtn.removeStyleName( "hide" );
+            resetBtn.removeStyleName( "hide" );
+            removeBtn.removeStyleName( "hide" );
+        } else {
+            saveBtn.addStyleName( "hide" );
+            resetBtn.addStyleName( "hide" );
+            removeBtn.addStyleName( "hide" );
+        }
     }
 
     @UiHandler( "resetBtn" )
@@ -137,22 +229,56 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         }
     }
 
-    @UiHandler( "company" )
-    public void onCompanySelected( ValueChangeEvent<EntityOption> event ) {
+    @UiHandler( "saveBtn" )
+    public void onSaveClicked ( ClickEvent event ) {
+        if ( activity == null ) {
+            return;
+        }
+        activity.onSaveFilterClicked();
+    }
+
+    @UiHandler( "okBtn" )
+    public void onOkBtnClicked ( ClickEvent event ) {
+        event.preventDefault();
+        if ( activity == null ) {
+            return;
+        }
+        activity.onOkSavingClicked();
+    }
+
+    @UiHandler( "cancelBtn" )
+    public void onCancelBtnClicked ( ClickEvent event ) {
+        event.preventDefault();
+        if ( activity == null ) {
+            return;
+        }
+        activity.onCancelSavingClicked();
+    }
+
+    @UiHandler( "removeBtn" )
+    public void onRemoveClicked ( ClickEvent event ) {
+        if ( activity == null || userFilter.getValue() == null || userFilter.getValue().getId() == null ) {
+            return;
+        }
+        activity.onFilterRemoveClicked( userFilter.getValue().getId() );
+    }
+
+    @UiHandler( "companies" )
+    public void onCompaniesSelected( ValueChangeEvent<Set<EntityOption>> event ) {
         if ( activity != null ) {
             activity.onFilterChanged();
         }
     }
 
-    @UiHandler( "product" )
-    public void onProductSelected( ValueChangeEvent<ProductShortView> event ) {
+    @UiHandler( "products" )
+    public void onProductsSelected( ValueChangeEvent<Set<ProductShortView>> event ) {
         if ( activity != null ) {
             activity.onFilterChanged();
         }
     }
 
-    @UiHandler( "manager" )
-    public void onManagerSelected( ValueChangeEvent<PersonShortView> event ) {
+    @UiHandler( "managers" )
+    public void onManagersSelected( ValueChangeEvent<Set<PersonShortView>> event ) {
         if ( activity != null ) {
             activity.onFilterChanged();
         }
@@ -200,6 +326,20 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         timer.schedule( 300 );
     }
 
+    @UiHandler( "userFilter" )
+    public void onKeyUpSearch( ValueChangeEvent< CaseFilterShortView > event ) {
+        if ( activity == null ) {
+            return;
+        }
+        activity.onUserFilterChanged();
+    }
+
+    @UiHandler( "filterName" )
+    public void onFilterNameChanged( KeyUpEvent event ) {
+        filterNameChangedTimer.cancel();
+        filterNameChangedTimer.schedule( 300 );
+    }
+
     Timer timer = new Timer() {
         @Override
         public void run() {
@@ -209,17 +349,24 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         }
     };
 
+    Timer filterNameChangedTimer = new Timer() {
+        @Override
+        public void run() {
+            setFilterNameContainerErrorStyle( filterName.getValue().isEmpty() );
+        }
+    };
+
     @Inject
     @UiField( provided = true )
-    CompanySelector company;
+    CompanyMultiSelector companies;
 
     @Inject
     @UiField ( provided = true )
-    ProductButtonSelector product;
+    ProductMultiSelector products;
 
     @Inject
     @UiField ( provided = true )
-    EmployeeButtonSelector manager;
+    EmployeeMultiSelector managers;
 
     @Inject
     @UiField ( provided = true )
@@ -237,6 +384,10 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     @UiField( provided = true )
     SortFieldSelector sortField;
 
+    @Inject
+    @UiField( provided = true )
+    IssueFilterSelector userFilter;
+
     @UiField
     ToggleButton sortDir;
 
@@ -245,6 +396,24 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
 
     @UiField
     Button resetBtn;
+
+    @UiField
+    Button saveBtn;
+
+    @UiField
+    Button removeBtn;
+
+    @UiField
+    Anchor okBtn;
+
+    @UiField
+    Anchor cancelBtn;
+
+    @UiField
+    TextBox filterName;
+
+    @UiField
+    DivElement filterNameContainer;
 
     @Inject
     FixedPositioner positioner;
@@ -256,5 +425,6 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     AbstractIssueFilterActivity activity;
 
     private static IssueFilterView.IssueFilterViewUiBinder ourUiBinder = GWT.create( IssueFilterView.IssueFilterViewUiBinder.class );
+
     interface IssueFilterViewUiBinder extends UiBinder<HTMLPanel, IssueFilterView > {}
 }

@@ -19,11 +19,31 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
     public void handle(AssembledCaseEvent event) {
         if (!portalConfig.data().integrationConfig().isRedmineEnabled())
             return;
+
         final long caseId = event.getCaseObject().getId();
-        final CaseObject actualCaseObject = caseObjectDAO.get(caseId);
-        final int issueId = Integer.parseInt(externalCaseAppDAO.get(caseId).getExtAppCaseId());
+
+        final CaseObject caseObject = event.getCaseObject();
+        caseObjectDAO.saveOrUpdate(caseObject);
+
+        String extAppId = externalCaseAppDAO.get(caseId).getExtAppCaseId();
+        if (extAppId == null) {
+            logger.debug("case {} has no ext-app-id", caseId);
+            return;
+        }
+
+        final String[] issueAndCompanyIds = extAppId.split("_");
+
+        if (issueAndCompanyIds.length != 2
+                || !issueAndCompanyIds[0].matches("^[0-9]+$")
+                || !issueAndCompanyIds[1].matches("^[0-9]+$")) {
+
+            logger.debug("case {} has invalid ext-app-id : {}", caseId, extAppId);
+            return;
+        }
+
+        final int issueId = Integer.parseInt(issueAndCompanyIds[0]);
         final String projectId = externalCaseAppDAO.get(caseId).getExtAppData();
-        final long companyId = actualCaseObject.getInitiatorCompanyId();
+        final long companyId = Long.parseLong(issueAndCompanyIds[1]);
 
         final RedmineEndpoint endpoint = endpointDAO.getByCompanyIdAndProjectId(companyId,
                 projectId);
@@ -31,6 +51,7 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
             logger.debug("Endpoint was not found for companyId {} and projectId {}", companyId, projectId);
             return;
         }
+
         final Issue issue = service.getIssueById(issueId, endpoint);
         if (issue == null) {
             logger.debug("Issue with id {} was not found", issueId);
@@ -38,7 +59,7 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
         }
 
         updateComments(issue, event.getCaseComment(), endpoint);
-        updateIssueProps(issue, actualCaseObject, endpoint);
+        updateIssueProps(issue, event, endpoint);
 
         try {
             service.updateIssue(issue, endpoint);
@@ -48,13 +69,16 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
         }
     }
 
-    private void updateIssueProps(Issue issue, CaseObject object, RedmineEndpoint endpoint) {
+    private void updateIssueProps(Issue issue, AssembledCaseEvent event, RedmineEndpoint endpoint) {
         final long priorityMapId = endpoint.getPriorityMapId();
         final long statusMapId = endpoint.getStatusMapId();
 
-        logger.debug("Trying to get redmine priority level id matching with portal: {}", object.getImpLevel());
+        final CaseObject oldObj = event.getInitState();
+        final CaseObject newObj = event.getLastState();
+
+        logger.debug("Trying to get redmine priority level id matching with portal: {}", newObj.getImpLevel());
         final RedminePriorityMapEntry redminePriorityMapEntry =
-                priorityMapEntryDAO.getByPortalPriorityId(object.getImpLevel(), priorityMapId);
+                priorityMapEntryDAO.getByPortalPriorityId(newObj.getImpLevel(), priorityMapId);
         if (redminePriorityMapEntry != null) {
             logger.debug("Found redmine priority level name: {}", redminePriorityMapEntry.getRedminePriorityName());
             issue.getCustomFieldById(RedmineUtils.REDMINE_CUSTOM_FIELD_ID)
@@ -62,18 +86,17 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
         } else
             logger.debug("Redmine priority level not found");
 
-        logger.debug("Trying to get redmine status id matching with portal: {}", object.getStateId());
+        logger.debug("Trying to get redmine status id matching with portal: {} -> {}", oldObj.getStateId(), newObj.getStateId());
         final RedmineStatusMapEntry redmineStatusMapEntry =
-                statusMapEntryDAO.getByRedmineStatusId(object.getStateId(), statusMapId);
-        if (redmineStatusMapEntry != null && object.getState() != En_CaseState.VERIFIED) {
+                statusMapEntryDAO.getRedmineStatus(oldObj.getState(), newObj.getState(), statusMapId);
+        if (redmineStatusMapEntry != null && newObj.getState() != En_CaseState.VERIFIED) {
             logger.debug("Found redmine status id: {}", redmineStatusMapEntry.getRedmineStatusId());
             issue.setStatusId(redmineStatusMapEntry.getRedmineStatusId());
         } else
             logger.debug("Redmine status not found");
 
-        issue.setProjectId(Integer.valueOf(externalCaseAppDAO.get(object.getId()).getExtAppData()));
-        issue.setDescription(object.getInfo());
-        issue.setSubject(object.getName());
+        issue.setDescription(newObj.getInfo());
+        issue.setSubject(newObj.getName());
     }
 
     private void updateComments(Issue issue, CaseComment comment, RedmineEndpoint endpoint) {

@@ -1,0 +1,24 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet author="svitkov" id="2018-03-27-redmine-005">
+
+        <createTable tableName="redmine_to_crm_status_map_entry">
+            <column name="id" autoIncrement="true" type="BIGINT">
+                <constraints primaryKey="true" uniqueConstraintName="PK_redmine_to_crm_status_map_entry"/>
+            </column>
+            <column name="MAP_ID" type="BIGINT" />
+            <column name="RM_status_id" type="BIGINT"/>
+            <column name="LOCAL_status_id" type="BIGINT"/>
+        </createTable>
+
+        <addForeignKeyConstraint constraintName="FK_RDMINE_TO_CRM_EP_STATUS_ENTRY" onDelete="CASCADE"
+                                 baseColumnNames="MAP_ID" baseTableName="redmine_to_crm_status_map_entry"
+                                 referencedColumnNames="id" referencedTableName="redmine_status_map"/>
+
+    </changeSet>
+
+</databaseChangeLog>

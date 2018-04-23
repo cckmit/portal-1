@@ -25,5 +25,5 @@ public class DateFormatter {
     }
 
     private static DateTimeFormat format = DateTimeFormat.getFormat( "dd.MM.yyyy" );
-    private static DateTimeFormat dateTimeFormat = DateTimeFormat.getFormat( "dd.MM.yyyy hh:mm" );
+    private static DateTimeFormat dateTimeFormat = DateTimeFormat.getFormat( "dd.MM.yyyy HH:mm" );
 }

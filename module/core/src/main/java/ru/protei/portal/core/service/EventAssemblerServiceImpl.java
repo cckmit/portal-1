@@ -12,9 +12,7 @@ import ru.protei.portal.core.event.CaseCommentEvent;
 import ru.protei.portal.core.event.CaseObjectEvent;
 import ru.protei.portal.core.model.ent.Person;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -23,6 +21,11 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
     @Override
     @EventListener
     public void publishEvent(CaseObjectEvent event) {
+        if (EAGER_PUSH.contains(event.getCaseObject().getExtAppType())) {
+            publisherService.publishEvent(new AssembledCaseEvent(event));
+            return;
+        }
+
         Person eventRelatedPerson = event.getPerson();
         Tuple<Person, Long> key = new Tuple<>(eventRelatedPerson, event.getCaseObject().getId());
         if (assembledEventsMap.containsKey(key)) {
@@ -45,6 +48,11 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
     @Override
     @EventListener
     public void publishEvent(CaseCommentEvent event) {
+        if (EAGER_PUSH.contains(event.getCaseObject().getExtAppType())) {
+            publisherService.publishEvent(new AssembledCaseEvent(event));
+            return;
+        }
+
         Person eventRelatedPerson = event.getPerson();
         Tuple<Person, Long> key = new Tuple<>(eventRelatedPerson, event.getCaseObject().getId());
 
@@ -80,6 +88,11 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
     @Override
     @EventListener
     public void publishEvent(CaseAttachmentEvent event) {
+        if (EAGER_PUSH.contains(event.getCaseObject().getExtAppType())) {
+            publisherService.publishEvent(new AssembledCaseEvent(event));
+            return;
+        }
+
         Person eventRelatedPerson = event.getPerson();
         Tuple<Person, Long> key = new Tuple<>(eventRelatedPerson, event.getCaseObject().getId());
         logger.debug("onCaseAttachmentEvent, adding attachments on case {}", event.getCaseObject().defGUID());
@@ -137,6 +150,11 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
     private final Map<Tuple<Person, Long>, AssembledCaseEvent> assembledEventsMap = new ConcurrentHashMap<>();
     //Time interval for events checking, MS
     private final static long SCHEDULE_TIME = 5000;
+
+    //app types for eager push
+    private final static Set<String> EAGER_PUSH = new HashSet<String>() {{
+        add("redmine");
+    }};
 
     private static Logger logger = LoggerFactory.getLogger(EventAssemblerServiceImpl.class);
 
