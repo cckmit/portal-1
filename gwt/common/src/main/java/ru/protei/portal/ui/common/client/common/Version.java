@@ -91,9 +91,10 @@ package ru.protei.portal.ui.common.client.common;
  * 4.0.39.4 - CRM-104 Не соответствие CRM-36
  * 4.0.39.5 - CRM-175, а также исправлена проблема с redmine-plugin (это WA), исправлен формат даты (Саша)
  * 4.0.39.6 - CRM-123 исправлен редмайн плагин, см. описание задачи.
+ * 4.0.39.7 - CRM-125 Невозможно поменять список уведомляемых по уже созданному обращению.
  */
 public class Version {
     public static String getVersion() {
-        return "4.0.39.6";
+        return "4.0.39.7";
     }
 }
