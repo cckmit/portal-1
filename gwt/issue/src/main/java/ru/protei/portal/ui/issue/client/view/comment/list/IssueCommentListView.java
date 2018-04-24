@@ -1,6 +1,8 @@
 package ru.protei.portal.ui.issue.client.view.comment.list;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.dom.client.UListElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
@@ -40,11 +42,6 @@ public class IssueCommentListView
     }
 
     @Override
-    public HasWidgets getCommentsContainer() {
-        return commentsContainer;
-    }
-
-    @Override
     public HasValue< String > message() {
         return comment;
     }
@@ -68,6 +65,22 @@ public class IssueCommentListView
     public void enabledNewComment( boolean value ) {
         comment.setVisible( value );
         send.setVisible( value );
+    }
+
+    @Override
+    public void clearCommentsContainer() {
+        commentsContainer.clear();
+        commentsContainer.add( newMessage );
+    }
+
+    @Override
+    public void addCommentToFront(IsWidget comment) {
+        commentsContainer.insert( comment.asWidget(), 1 );
+    }
+
+    @Override
+    public void removeComment(IsWidget comment) {
+        commentsContainer.remove( comment.asWidget() );
     }
 
     @UiHandler( "send" )
@@ -103,7 +116,7 @@ public class IssueCommentListView
     @UiField
     AutoResizeTextArea comment;
     @UiField
-    HTMLPanel commentsContainer;
+    FlowPanel commentsContainer;
     @UiField
     Button send;
     @Inject
@@ -114,6 +127,8 @@ public class IssueCommentListView
     AttachmentUploader fileUploader;
     @UiField
     Lang lang;
+    @UiField
+    HTMLPanel newMessage;
 
     private AbstractIssueCommentListActivity activity;
 

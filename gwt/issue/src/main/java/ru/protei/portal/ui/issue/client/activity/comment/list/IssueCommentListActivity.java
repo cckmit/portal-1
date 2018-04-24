@@ -68,7 +68,7 @@ public abstract class IssueCommentListActivity
         event.parent.add(view.asWidget());
         view.message().setValue(null);
         view.attachmentContainer().clear();
-        view.getCommentsContainer().clear();
+        view.clearCommentsContainer();
 
         requestData( event.caseId );
     }
@@ -83,7 +83,7 @@ public abstract class IssueCommentListActivity
     }
 
     @Override
-    public void onRemoveClicked( AbstractIssueCommentItemView itemView ) {
+    public void onRemoveClicked(final AbstractIssueCommentItemView itemView ) {
         CaseComment caseComment = itemViewToModel.get( itemView );
 
         if(caseComment == comment) {
@@ -124,7 +124,7 @@ public abstract class IssueCommentListActivity
                 if(!commentAttachments.isEmpty())
                     fireEvent(new AttachmentEvents.Remove(show.caseId, commentAttachments));
 
-                view.getCommentsContainer().remove( itemView.asWidget() );
+                view.removeComment( itemView );
                 itemViewToModel.remove(itemView);
                 fireEvent( new IssueEvents.ChangeModel() );
             }
@@ -249,20 +249,21 @@ public abstract class IssueCommentListActivity
             }
 
             @Override
-            public void onSuccess( List<CaseComment> comments ) {
-                fillView( comments );
+            public void onSuccess( List<CaseComment> cm ) {
+                comments = cm;
+                fillView();
             }
         } );
     }
 
-    private void fillView( List<CaseComment> comments ){
+    private void fillView(){
         itemViewToModel.clear();
-        view.getCommentsContainer().clear();
+        view.clearCommentsContainer();
         view.enabledNewComment( policyService.hasEveryPrivilegeOf( En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT ) );
 
-        for ( CaseComment value : comments ) {
+        for (CaseComment value : comments) {
             AbstractIssueCommentItemView itemView = makeCommentView( value );
-            view.getCommentsContainer().add( itemView.asWidget() );
+            view.addCommentToFront( itemView.asWidget() );
         }
     }
 
@@ -379,6 +380,7 @@ public abstract class IssueCommentListActivity
 
             @Override
             public void onSuccess( CaseComment result ) {
+
                 if(isIssueSavedAlso){
                     issueSavedAlso(true);
                     return;
@@ -400,7 +402,7 @@ public abstract class IssueCommentListActivity
                     fireEvent(new AttachmentEvents.Add(show.caseId, tempAttachments));
                     AbstractIssueCommentItemView itemView = makeCommentView( result );
                     lastCommentView = itemView;
-                    view.getCommentsContainer().add( itemView.asWidget() );
+                    view.addCommentToFront( itemView.asWidget() );
                 }
 
                 comment = null;
@@ -439,4 +441,5 @@ public abstract class IssueCommentListActivity
     private IssueEvents.ShowComments show;
     private Map<AbstractIssueCommentItemView, CaseComment> itemViewToModel = new HashMap<>();
     private Collection<Attachment> tempAttachments = new ArrayList<>();
+    private List<CaseComment> comments = new ArrayList<CaseComment>();
 }

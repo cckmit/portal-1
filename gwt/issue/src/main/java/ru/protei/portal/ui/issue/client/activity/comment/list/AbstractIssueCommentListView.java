@@ -1,9 +1,6 @@
 package ru.protei.portal.ui.issue.client.activity.comment.list;
 
-import com.google.gwt.user.client.ui.HasValue;
-import com.google.gwt.user.client.ui.HasVisibility;
-import com.google.gwt.user.client.ui.HasWidgets;
-import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 
@@ -14,7 +11,11 @@ public interface AbstractIssueCommentListView extends IsWidget {
 
     void setActivity( AbstractIssueCommentListActivity activity );
 
-    HasWidgets getCommentsContainer();
+    void clearCommentsContainer();
+
+    void addCommentToFront( IsWidget comment );
+
+    void removeComment( IsWidget comment );
 
     HasValue<String> message();
 
