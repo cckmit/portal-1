@@ -8,7 +8,7 @@ import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.DocumentEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.DocumentServiceAsync;
+import ru.protei.portal.ui.common.client.service.DocumentTypeServiceAsync;
 import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
@@ -40,7 +40,7 @@ public abstract class DocumentTypeModel implements Activity {
     }
 
     private void refreshOptions() {
-        documentService.getDocumentTypeList(new RequestCallback<List<DocumentType>>() {
+        documentTypeService.getDocumentTypes(new RequestCallback<List<DocumentType>>() {
             @Override
             public void onError(Throwable throwable) {
                 fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
@@ -56,7 +56,7 @@ public abstract class DocumentTypeModel implements Activity {
     }
 
     @Inject
-    DocumentServiceAsync documentService;
+    DocumentTypeServiceAsync documentTypeService;
 
     @Inject
     Lang lang;

@@ -8,11 +8,12 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.DocumentType;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
-import ru.protei.portal.ui.common.client.events.ActionBarEvents;
-import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.AuthEvents;
-import ru.protei.portal.ui.common.client.events.DocumentTypeEvents;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.DocumentTypeServiceAsync;
+import ru.protei.portal.ui.common.shared.model.RequestCallback;
+
+import java.util.List;
 
 public abstract class DocumentTypeTableActivity implements AbstractDocumentTypeTableActivity, Activity {
 
@@ -36,6 +37,8 @@ public abstract class DocumentTypeTableActivity implements AbstractDocumentTypeT
                 new ActionBarEvents.Add(CREATE_ACTION, UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.DOCUMENT_TYPE) :
                 new ActionBarEvents.Clear()
         );
+
+        requestDocumentTypes();
     }
 
     @Event
@@ -65,12 +68,32 @@ public abstract class DocumentTypeTableActivity implements AbstractDocumentTypeT
         fireEvent(new DocumentTypeEvents.Edit(value.getId()));
     }
 
+    private void requestDocumentTypes() {
+        view.clearRecords();
+
+        documentTypeService.getDocumentTypes(new RequestCallback<List<DocumentType>>() {
+            @Override
+            public void onError(Throwable throwable) {
+                fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
+            }
+
+            @Override
+            public void onSuccess(List<DocumentType> result) {
+                view.clearRecords();
+                result.forEach(view::addRow);
+            }
+        });
+    }
+
 
     private static String CREATE_ACTION;
     private AppEvents.InitDetails initDetails;
 
     @Inject
     PolicyService policyService;
+
+    @Inject
+    DocumentTypeServiceAsync documentTypeService;
 
     @Inject
     Lang lang;

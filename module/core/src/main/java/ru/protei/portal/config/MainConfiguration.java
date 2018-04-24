@@ -430,6 +430,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public DocumentTypeService getDocumentTypeService() {
+        return new DocumentTypeServiceImpl();
+    }
+
+    @Bean
     public IssueFilterService getIssueFilterService () {
         return new IssueFilterServiceImpl();
     }
