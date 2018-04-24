@@ -20,6 +20,7 @@ public class UiConstants {
         String ROLE = "fa fa-user";
         String OFFICIAL = "fa fa-book";
         String DOCUMENT = "fa fa-server";
+        String DOCUMENT_TYPE = "fa fa-server";
     }
 
     public interface ActionBarIcons {
@@ -43,6 +44,7 @@ public class UiConstants {
         String ROLE = "role";
         String OFFICIAL = "official";
         String DOCUMENT = "document";
+        String DOCUMENT_TYPE = "document";
     }
 
     public interface UserIcon {
