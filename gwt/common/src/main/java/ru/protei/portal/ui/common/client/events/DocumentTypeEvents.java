@@ -12,7 +12,7 @@ public class DocumentTypeEvents {
 
     public static class ShowPreview {
 
-        public ShowPreview (HasWidgets parent, DocumentType doctype) {
+        public ShowPreview(HasWidgets parent, DocumentType doctype) {
             this.parent = parent;
             this.doctype = doctype;
         }
@@ -40,5 +40,16 @@ public class DocumentTypeEvents {
     }
 
     public static class ChangeModel {
+    }
+
+    public static class Changed {
+        public Changed() {
+        }
+
+        public Changed(DocumentType doctype) {
+            this.doctype = doctype;
+        }
+
+        public DocumentType doctype;
     }
 }

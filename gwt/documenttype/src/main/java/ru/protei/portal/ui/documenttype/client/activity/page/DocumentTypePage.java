@@ -18,7 +18,7 @@ public abstract class DocumentTypePage implements Activity {
 
     @PostConstruct
     public void onInit() {
-        TAB = lang.documentType();
+        TAB = lang.documentTypes();
     }
 
     @Event
