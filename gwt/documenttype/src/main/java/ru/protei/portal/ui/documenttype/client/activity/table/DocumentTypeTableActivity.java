@@ -7,6 +7,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.DocumentType;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -21,6 +22,7 @@ public abstract class DocumentTypeTableActivity implements AbstractDocumentTypeT
     public void onInit() {
         CREATE_ACTION = lang.buttonCreate();
         view.setActivity(this);
+        view.setAnimation(animation);
     }
 
     @Event
@@ -61,6 +63,12 @@ public abstract class DocumentTypeTableActivity implements AbstractDocumentTypeT
 
     @Override
     public void onItemClicked(DocumentType value) {
+        if ( value == null ) {
+            animation.closeDetails();
+        } else {
+            animation.showDetails();
+            fireEvent( new DocumentTypeEvents.ShowPreview( view.getPreviewContainer(), value.getId() ) );
+        }
     }
 
     @Override
@@ -97,6 +105,9 @@ public abstract class DocumentTypeTableActivity implements AbstractDocumentTypeT
 
     @Inject
     Lang lang;
+
+    @Inject
+    TableAnimation animation;
 
     @Inject
     AbstractDocumentTypeTableView view;

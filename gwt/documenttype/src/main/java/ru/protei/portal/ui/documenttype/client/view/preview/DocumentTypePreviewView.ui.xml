@@ -1,0 +1,9 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+>
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+    <g:HTMLPanel styleName="preview-wrapper grid with-table-pager">
+        <g:HTMLPanel ui:field="preview" styleName="preview project">
+        </g:HTMLPanel>
+    </g:HTMLPanel>
+</ui:UiBinder>

@@ -9,6 +9,8 @@
             <g:HTMLPanel ui:field="tableContainer" styleName="global-table-container col-xs-9">
                 <table:TableWidget ui:field="table" styleName="table-hover doctypes"/>
             </g:HTMLPanel>
+            <g:HTMLPanel ui:field="previewContainer" styleName="preview-container no-width"/>
+            <g:HTMLPanel ui:field="filterContainer" styleName="filter-container col-xs-3"/>
         </div>
      </g:HTMLPanel>
 </ui:UiBinder>

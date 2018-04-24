@@ -10,6 +10,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.TableWidget;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.DocumentType;
+import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
@@ -50,10 +51,24 @@ public class DocumentTypeTableView extends Composite implements AbstractDocument
         table.addRow(row);
     }
 
-
     @Override
     public void updateRow(DocumentType doctype) {
         table.updateRow(doctype);
+    }
+
+    @Override
+    public void setAnimation(TableAnimation animation) {
+        animation.setContainers(tableContainer, previewContainer, filterContainer);
+    }
+
+    @Override
+    public HTMLPanel getFilterContainer() {
+        return filterContainer;
+    }
+
+    @Override
+    public HTMLPanel getPreviewContainer() {
+        return previewContainer;
     }
 
     private void initTable() {
@@ -66,6 +81,13 @@ public class DocumentTypeTableView extends Composite implements AbstractDocument
 
         columns.forEach(c -> table.addColumn(c.header, c.values));
     }
+
+    @UiField
+    HTMLPanel tableContainer;
+    @UiField
+    HTMLPanel previewContainer;
+    @UiField
+    HTMLPanel filterContainer;
 
     @Inject
     @UiField

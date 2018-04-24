@@ -12,12 +12,12 @@ public class DocumentTypeEvents {
 
     public static class ShowPreview {
 
-        public ShowPreview(HasWidgets parent, DocumentType doctype) {
+        public ShowPreview(HasWidgets parent, Long id) {
             this.parent = parent;
-            this.doctype = doctype;
+            this.id = id;
         }
 
-        public DocumentType doctype;
+        public Long id;
         public HasWidgets parent;
     }
 
@@ -51,5 +51,13 @@ public class DocumentTypeEvents {
         }
 
         public DocumentType doctype;
+    }
+
+    public static class ShowFullScreen {
+        public Long id;
+
+        public ShowFullScreen(Long id) {
+            this.id = id;
+        }
     }
 }
