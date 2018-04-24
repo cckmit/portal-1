@@ -165,13 +165,14 @@ public class CaseServiceImpl implements CaseService {
             return new CoreResponse<CaseObject>().success( caseObject ); //ignore
 
         caseObject.setModified(new Date());
-        if(CollectionUtils.isNotEmpty(caseObject.getNotifiers())) {
+
+        if (CollectionUtils.isNotEmpty(caseObject.getNotifiers())) {
             // update partially filled objects
-            caseObject.setNotifiers(
-                    new HashSet<>(personDAO.partialGetListByKeys(
-                            caseObject.getNotifiers().stream().map(Person::getId).collect(Collectors.toList()
-                            ), "id", "contactInfo"))
-            );
+            caseObject.setNotifiers(new HashSet<>(
+                    personDAO.partialGetListByKeys(
+                            caseObject.getNotifiers().stream().map(Person::getId).collect(Collectors.toList()),
+                            "id", "contactInfo")
+            ));
         }
 
         boolean isUpdated = caseObjectDAO.merge(caseObject);
@@ -260,7 +261,8 @@ public class CaseServiceImpl implements CaseService {
         //below building event
 
         CaseObject caseObject = caseObjectDAO.get(comment.getCaseId());
-        jdbcManyRelationsHelper.fill( caseObject, "attachments");
+        jdbcManyRelationsHelper.fill(caseObject, "attachments");
+        jdbcManyRelationsHelper.fill(caseObject, "notifiers");
 
         Collection<Long> addedAttachmentsIds = comment.getCaseAttachments()
                 .stream()
@@ -496,7 +498,7 @@ public class CaseServiceImpl implements CaseService {
     }
 
     private boolean isCaseHasNoChanges(CaseObject co1, CaseObject co2){
-        //without notifiers
+        // without notifiers
         return
                 Objects.equals(co1.getName(), co2.getName())
                 && Objects.equals(co1.getInfo(), co2.getInfo())
