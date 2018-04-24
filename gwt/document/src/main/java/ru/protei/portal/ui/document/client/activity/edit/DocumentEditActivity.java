@@ -17,6 +17,7 @@ import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.DocumentServiceAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
+import ru.protei.portal.ui.document.client.widget.uploader.UploadHandler;
 
 public abstract class DocumentEditActivity
         implements Activity, AbstractDocumentEditActivity {
@@ -24,6 +25,19 @@ public abstract class DocumentEditActivity
     @PostConstruct
     public void onInit() {
         view.setActivity(this);
+
+        view.documentUploader().setUploadHandler(new UploadHandler() {
+            @Override
+            public void onError() {
+                fireErrorMessage(lang.errSaveDocumentFile());
+            }
+
+            @Override
+            public void onSuccess() {
+                fireEvent(new DocumentEvents.ChangeModel());
+                fireEvent(new Back());
+            }
+        });
     }
 
     @Event
@@ -57,9 +71,11 @@ public abstract class DocumentEditActivity
 
     @Override
     public void onSaveClicked() {
+        boolean isNew = document.getId() == null;
+
         Document document = applyChanges();
-        if (!document.isValid()) {
-            fireEvent(new NotifyEvents.Show(getValidationErrorMessage(document), NotifyEvents.NotifyType.ERROR));
+        if (!document.isValid() || isUploadingDocumentNotValid(document)) {
+            fireErrorMessage(getValidationErrorMessage(document));
             return;
         } else if (!view.isDecimalNumbersCorrect()) {
             return;
@@ -68,20 +84,28 @@ public abstract class DocumentEditActivity
         documentService.saveDocument(document, new RequestCallback<Document>() {
             @Override
             public void onError(Throwable throwable) {
-                fireErrorMessage(throwable.getMessage());
+                fireErrorMessage(lang.errDocumentNotSaved());
             }
 
             @Override
             public void onSuccess(Document result) {
-                fireEvent(new DocumentEvents.ChangeModel());
-                fireEvent(new Back());
+                if (isNew) {
+                    view.documentUploader().uploadBindToDocument(result);
+                } else {
+                    fireEvent(new Back());
+                }
+                // TODO: think about transactions: make sure that both document and pdf file are saved
             }
         });
     }
 
+    private boolean isUploadingDocumentNotValid(Document doc) {
+        return HelperFunc.isEmpty(view.documentUploader().getFilename()) && doc.getId() == null;
+    }
+
     private String getValidationErrorMessage(Document doc) {
-        if (doc.isValid()) {
-            return null;
+        if (isUploadingDocumentNotValid(doc)) {
+            return lang.uploadingDocumentNotSet();
         }
         if (doc.getDecimalNumber() == null) {
             return lang.decimalNumberNotSet();
@@ -89,7 +113,7 @@ public abstract class DocumentEditActivity
         if (doc.getType() == null) {
             return lang.documentTypeIsEmpty();
         }
-        if (HelperFunc.isEmpty(doc.getProject())) {
+        if (doc.getProjectId() == null) {
             return lang.documentProjectIsEmpty();
         }
         if (doc.getManagerId() == null) {
@@ -120,7 +144,7 @@ public abstract class DocumentEditActivity
         document.setInventoryNumber(view.inventoryNumber().getValue());
         document.setKeywords(view.keywords().getValue());
         document.setManagerId(view.manager().getValue() == null ? null : view.manager().getValue().getId());
-        document.setProject(view.project().getValue());
+        document.setProjectId(view.project().getValue().getId());
         return document;
     }
 
@@ -142,11 +166,18 @@ public abstract class DocumentEditActivity
         view.annotation().setValue(document.getAnnotation());
         view.created().setValue(DateFormatter.formatDateTime(document.getCreated()));
         view.decimalNumber().setValue(document.getDecimalNumber());
-        view.documentType().setValue(document.getType());
+        view.documentCategory().setValue(document.getType() == null ? null : document.getType().getDocumentCategory(), true);
+        view.documentType().setValue(document.getType(), true);
         view.inventoryNumber().setValue(document.getInventoryNumber());
         view.keywords().setValue(document.getKeywords());
         view.manager().setValue(manager);
-        view.project().setValue(document.getProject());
+        view.project().setValue(document.getProjectInfo());
+
+        view.setEnabledProject(document.getId() == null);
+        view.setVisibleUploader(document.getId() == null);
+
+        view.nameValidator().setValid(true);
+        view.decimalNumberValidator().setValid(true);
     }
 
     @Inject

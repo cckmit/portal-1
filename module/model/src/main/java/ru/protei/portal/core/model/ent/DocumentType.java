@@ -1,12 +1,13 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.winter.jdbc.annotations.IdInsertMode;
-import ru.protei.winter.jdbc.annotations.JdbcColumn;
-import ru.protei.winter.jdbc.annotations.JdbcEntity;
-import ru.protei.winter.jdbc.annotations.JdbcId;
+import ru.protei.portal.core.model.dict.En_DocumentCategory;
+import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
 
+/**
+ * Вид документа
+ */
 @JdbcEntity(table = "document_type")
 public class DocumentType implements Serializable {
 
@@ -15,6 +16,13 @@ public class DocumentType implements Serializable {
 
     @JdbcColumn
     private String name;
+
+    @JdbcColumn(name = "short_name")
+    private String shortName;
+
+    @JdbcColumn(name = "document_category")
+    @JdbcEnumerated(EnumType.STRING)
+    private En_DocumentCategory documentCategory;
 
     public DocumentType() {
     }
@@ -33,5 +41,21 @@ public class DocumentType implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public En_DocumentCategory getDocumentCategory() {
+        return documentCategory;
+    }
+
+    public void setDocumentCategory(En_DocumentCategory documentCategory) {
+        this.documentCategory = documentCategory;
+    }
+
+    public String getShortName() {
+        return shortName;
+    }
+
+    public void setShortName(String shortName) {
+        this.shortName = shortName;
     }
 }

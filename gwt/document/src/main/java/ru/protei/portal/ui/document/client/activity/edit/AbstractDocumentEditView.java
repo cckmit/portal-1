@@ -2,9 +2,13 @@ package ru.protei.portal.ui.document.client.activity.edit;
 
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
+import ru.protei.portal.core.model.dict.En_DocumentCategory;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.DocumentType;
+import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
+import ru.protei.portal.ui.document.client.widget.uploader.AbstractDocumentUploader;
 
 import java.util.List;
 
@@ -12,13 +16,19 @@ public interface AbstractDocumentEditView extends IsWidget {
 
     void setActivity(AbstractDocumentEditActivity activity);
 
+    void setEnabledProject(boolean isEnabled);
+
+    void setVisibleUploader(boolean isVisible);
+
     HasValue<String> name();
 
     HasValue<DocumentType> documentType();
 
-    HasValue<String> project();
+    HasValue<ProjectInfo> project();
 
     HasValue<PersonShortView> manager();
+
+    HasValue<En_DocumentCategory> documentCategory();
 
     HasValue<String> annotation();
 
@@ -31,4 +41,10 @@ public interface AbstractDocumentEditView extends IsWidget {
     HasValue<DecimalNumber> decimalNumber();
 
     boolean isDecimalNumbersCorrect();
+
+    AbstractDocumentUploader documentUploader();
+
+    HasValidable nameValidator();
+
+    HasValidable decimalNumberValidator();
 }

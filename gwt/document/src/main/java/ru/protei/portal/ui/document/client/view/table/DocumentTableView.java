@@ -153,8 +153,8 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
             @Override
             public void fillColumnValue(Element cell, Document value) {
                 String html = "";
-                if (value.getManagerShortName() != null && value.getProject() != null) {
-                    html = value.getProject() + "<div><i><small><i class='fa fa-user-o m-r-5'></i>" + value.getManagerShortName() + "</small></i></div>";
+                if (value.getManagerShortName() != null && value.getProjectName() != null) {
+                    html = value.getProjectName() + "<div><i><small><i class='fa fa-user-o m-r-5'></i>" + value.getManagerShortName() + "</small></i></div>";
                 }
                 cell.setInnerHTML(HTMLHelper.wrapDiv(html));
             }
