@@ -17,7 +17,7 @@ import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.DocumentServiceAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
-import ru.protei.portal.ui.document.client.widget.uploader.DocumentUploader;
+import ru.protei.portal.ui.document.client.widget.uploader.UploadHandler;
 
 public abstract class DocumentEditActivity
         implements Activity, AbstractDocumentEditActivity {
@@ -26,7 +26,7 @@ public abstract class DocumentEditActivity
     public void onInit() {
         view.setActivity(this);
 
-        view.documentUploader().setUploadHandler(new DocumentUploader.UploadHandler() {
+        view.documentUploader().setUploadHandler(new UploadHandler() {
             @Override
             public void onError() {
                 fireErrorMessage(lang.errSaveDocumentFile());

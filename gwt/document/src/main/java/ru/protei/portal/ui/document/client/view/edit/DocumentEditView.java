@@ -24,6 +24,7 @@ import ru.protei.portal.ui.document.client.activity.edit.AbstractDocumentEditAct
 import ru.protei.portal.ui.document.client.activity.edit.AbstractDocumentEditView;
 import ru.protei.portal.ui.document.client.widget.doccategory.DocumentCategorySelector;
 import ru.protei.portal.ui.document.client.widget.doctype.DocumentTypeSelector;
+import ru.protei.portal.ui.document.client.widget.uploader.AbstractDocumentUploader;
 import ru.protei.portal.ui.document.client.widget.uploader.DocumentUploader;
 
 import java.util.List;
@@ -124,7 +125,7 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     }
 
     @Override
-    public DocumentUploader documentUploader() {
+    public AbstractDocumentUploader documentUploader() {
         return documentUploader;
     }
 

@@ -7,7 +7,7 @@ import ru.protei.portal.core.model.ent.Document;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.ui.common.client.widget.uploader.FileUploader;
 
-public class DocumentUploader extends FileUploader {
+public class DocumentUploader extends FileUploader implements AbstractDocumentUploader {
 
     public DocumentUploader() {
         fileUpload.getElement().setAttribute("accept", "application/pdf");
@@ -22,6 +22,7 @@ public class DocumentUploader extends FileUploader {
     }
 
 
+    @Override
     public String getFilename() {
         return fileUpload.getFilename();
     }
@@ -43,6 +44,7 @@ public class DocumentUploader extends FileUploader {
     public void changeHandler(ChangeEvent event) {
     }
 
+    @Override
     public void uploadBindToDocument(Document document) {
         if (HelperFunc.isEmpty(getFilename()) || form.getElement().hasClassName("attachment-uploading")) {
             return;
@@ -58,17 +60,11 @@ public class DocumentUploader extends FileUploader {
         fileUpload.setEnabled(false);
     }
 
+    @Override
     public void setUploadHandler(UploadHandler uploadHandler) {
         this.uploadHandler = uploadHandler;
     }
 
     private UploadHandler uploadHandler;
     private static final String UPLOAD_DOCUMENT_URL = "Crm/springApi/uploadDocument/";
-
-    public interface UploadHandler {
-
-        void onError();
-
-        void onSuccess();
-    }
 }
