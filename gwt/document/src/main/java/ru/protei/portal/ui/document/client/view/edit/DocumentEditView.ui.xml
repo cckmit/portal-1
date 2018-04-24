@@ -16,14 +16,14 @@
                     <ui:text from="{lang.documentCommonHeader}"/>
                 </legend>
                 <div class="grid grid-indent">
-                    <div class="form-group col-xs-5">
+                    <g:HTMLPanel styleName="form-group col-xs-5" ui:field="nameContainer">
                         <label>
                             <ui:text from="{lang.documentName}"/>
                         </label>
                         <validatefield:ValidableTextBox ui:field="name" styleName="input-field" notNull="true"/>
-                    </div>
+                    </g:HTMLPanel>
 
-                    <div class="form-group col-xs-3">
+                    <g:HTMLPanel styleName="form-group col-xs-3" ui:field="selectFileContainer">
                         <label>
                             <ui:text from="{lang.uploadDocuments}"/>
                         </label>
@@ -31,13 +31,12 @@
                             <g:TextBox ui:field="fileName" styleName="input-field" enabled="false"/>
                             <div class="input-group-btn">
                                 <g:Button ui:field="selectFileButton" styleName="btn btn-white">
-                                    <i class="ion-plus"/>
-                                    <i class="icon-verifiable"/>
+                                    <i class="ion-upload"/>
                                 </g:Button>
                             </div>
                             <fileuploader:DocumentUploader ui:field="documentUploader" visible="false"/>
                         </div>
-                    </div>
+                    </g:HTMLPanel>
 
                     <div class="form-group col-xs-4">
                         <label>

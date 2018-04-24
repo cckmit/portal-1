@@ -56,8 +56,8 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
 
     @Override
     public void setVisibleUploader(boolean isVisible) {
-        documentUploader.setVisible(isVisible);
-        selectFileButton.setVisible(isVisible);
+        selectFileContainer.setVisible(isVisible);
+        nameContainer.getElement().setClassName("form-group " + (isVisible ? "col-xs-5" : "col-xs-8"));
     }
 
     @Override
@@ -140,6 +140,9 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     ValidableTextBox name;
 
     @UiField
+    HTMLPanel nameContainer;
+
+    @UiField
     TextBox fileName;
 
     @Inject
@@ -182,6 +185,9 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
 
     @UiField
     Button selectFileButton;
+
+    @UiField
+    HTMLPanel selectFileContainer;
 
     @Inject
     Lang lang;
