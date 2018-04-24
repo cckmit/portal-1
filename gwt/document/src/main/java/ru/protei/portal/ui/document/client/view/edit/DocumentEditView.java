@@ -2,11 +2,13 @@ package ru.protei.portal.ui.document.client.view.edit;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.dict.En_DocumentCategory;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.DocumentType;
 import ru.protei.portal.core.model.struct.ProjectInfo;
@@ -20,6 +22,7 @@ import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.document.client.activity.edit.AbstractDocumentEditActivity;
 import ru.protei.portal.ui.document.client.activity.edit.AbstractDocumentEditView;
+import ru.protei.portal.ui.document.client.widget.doccategory.DocumentCategorySelector;
 import ru.protei.portal.ui.document.client.widget.doctype.DocumentTypeSelector;
 import ru.protei.portal.ui.document.client.widget.uploader.DocumentUploader;
 
@@ -57,7 +60,7 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     @Override
     public void setVisibleUploader(boolean isVisible) {
         selectFileContainer.setVisible(isVisible);
-        nameContainer.getElement().setClassName("form-group " + (isVisible ? "col-xs-5" : "col-xs-8"));
+        nameContainer.getElement().setClassName("form-group " + (isVisible ? "col-xs-6" : "col-xs-9"));
     }
 
     @Override
@@ -135,6 +138,15 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
         documentUploader.click();
     }
 
+    @UiHandler("documentCategory")
+    public void onCategoryChanged(ValueChangeEvent<En_DocumentCategory> event) {
+        documentType.setEnabled(true);
+        documentType.setCategoryFilter(event.getValue());
+        if (!documentType.getValue().getDocumentCategory().equals(event.getValue())) {
+            documentType.setValue(null);
+        }
+    }
+
 
     @UiField
     ValidableTextBox name;
@@ -152,6 +164,10 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     @Inject
     @UiField(provided = true)
     DocumentTypeSelector documentType;
+
+    @Inject
+    @UiField(provided = true)
+    DocumentCategorySelector documentCategory;
 
     @UiField
     TextArea annotation;

@@ -857,4 +857,15 @@ public interface Lang extends Messages, ContactItemLang {
 
     String buttonModify();
 
+    String documentCategory();
+
+    String tpDocumentCategory();
+
+    String kdDocumentCategory();
+
+    String pdDocumentCategory();
+
+    String edDocumentCategory();
+
+    String tdDocumentCategory();
 }
