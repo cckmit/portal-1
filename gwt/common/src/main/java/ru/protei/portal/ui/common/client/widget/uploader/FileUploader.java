@@ -60,16 +60,16 @@ public abstract class FileUploader extends Composite implements HasHTML, HasSafe
         visibleContent.getElement().setInnerText(text);
     }
 
-    abstract void submitCompleteHandler(FormPanel.SubmitCompleteEvent event);
+    protected abstract void submitCompleteHandler(FormPanel.SubmitCompleteEvent event);
 
-    abstract void changeHandler(ChangeEvent event);
+    protected abstract void changeHandler(ChangeEvent event);
 
     @UiField
-    FormPanel form;
+    protected FormPanel form;
     @UiField
-    FileUpload fileUpload;
+    protected FileUpload fileUpload;
     @UiField
-    HTMLPanel visibleContent;
+    protected HTMLPanel visibleContent;
 
     interface FileUploaderUiBinder extends UiBinder<HTMLPanel, FileUploader> {}
     private static FileUploaderUiBinder ourUiBinder = GWT.create(FileUploaderUiBinder.class);
