@@ -261,7 +261,8 @@ public class CaseServiceImpl implements CaseService {
         //below building event
 
         CaseObject caseObject = caseObjectDAO.get(comment.getCaseId());
-        jdbcManyRelationsHelper.fill( caseObject, "attachments");
+        jdbcManyRelationsHelper.fill(caseObject, "attachments");
+        jdbcManyRelationsHelper.fill(caseObject, "notifiers");
 
         Collection<Long> addedAttachmentsIds = comment.getCaseAttachments()
                 .stream()
