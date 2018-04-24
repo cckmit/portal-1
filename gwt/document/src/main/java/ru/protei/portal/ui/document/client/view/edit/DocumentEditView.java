@@ -79,6 +79,11 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     }
 
     @Override
+    public HasValue<En_DocumentCategory> documentCategory() {
+        return documentCategory;
+    }
+
+    @Override
     public HasValue<String> annotation() {
         return annotation;
     }
@@ -114,6 +119,11 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     }
 
     @Override
+    public HasValidable decimalNumberValidator() {
+        return decimalNumber;
+    }
+
+    @Override
     public DocumentUploader documentUploader() {
         return documentUploader;
     }
@@ -142,7 +152,7 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     public void onCategoryChanged(ValueChangeEvent<En_DocumentCategory> event) {
         documentType.setEnabled(true);
         documentType.setCategoryFilter(event.getValue());
-        if (!documentType.getValue().getDocumentCategory().equals(event.getValue())) {
+        if (documentType.getValue() != null && !documentType.getValue().getDocumentCategory().equals(event.getValue())) {
             documentType.setValue(null);
         }
     }

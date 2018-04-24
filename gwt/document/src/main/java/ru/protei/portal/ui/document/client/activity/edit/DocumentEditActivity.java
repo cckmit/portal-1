@@ -74,7 +74,7 @@ public abstract class DocumentEditActivity
         boolean isNew = document.getId() == null;
 
         Document document = applyChanges();
-        if (!document.isValid() || HelperFunc.isEmpty(view.documentUploader().getFilename())) {
+        if (!document.isValid() || isUploadingDocumentNotValid(document)) {
             fireErrorMessage(getValidationErrorMessage(document));
             return;
         } else if (!view.isDecimalNumbersCorrect()) {
@@ -99,8 +99,12 @@ public abstract class DocumentEditActivity
         });
     }
 
+    private boolean isUploadingDocumentNotValid(Document doc) {
+        return HelperFunc.isEmpty(view.documentUploader().getFilename()) && doc.getId() == null;
+    }
+
     private String getValidationErrorMessage(Document doc) {
-        if (HelperFunc.isEmpty(view.documentUploader().getFilename())) {
+        if (isUploadingDocumentNotValid(doc)) {
             return lang.uploadingDocumentNotSet();
         }
         if (doc.getDecimalNumber() == null) {
@@ -162,7 +166,8 @@ public abstract class DocumentEditActivity
         view.annotation().setValue(document.getAnnotation());
         view.created().setValue(DateFormatter.formatDateTime(document.getCreated()));
         view.decimalNumber().setValue(document.getDecimalNumber());
-        view.documentType().setValue(document.getType());
+        view.documentCategory().setValue(document.getType() == null ? null : document.getType().getDocumentCategory(), true);
+        view.documentType().setValue(document.getType(), true);
         view.inventoryNumber().setValue(document.getInventoryNumber());
         view.keywords().setValue(document.getKeywords());
         view.manager().setValue(manager);
@@ -172,6 +177,7 @@ public abstract class DocumentEditActivity
         view.setVisibleUploader(document.getId() == null);
 
         view.nameValidator().setValid(true);
+        view.decimalNumberValidator().setValid(true);
     }
 
     @Inject

@@ -58,7 +58,7 @@
                         <label>
                             <ui:text from="{lang.documentType}"/>
                         </label>
-                        <doctype:DocumentTypeSelector ui:field="documentType" enabled="false"/>
+                        <doctype:DocumentTypeSelector ui:field="documentType"/>
                     </div>
 
                     <div class="form-group col-xs-3">
