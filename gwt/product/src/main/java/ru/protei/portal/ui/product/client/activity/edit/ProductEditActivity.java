@@ -15,7 +15,11 @@ import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.ProductEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ProductServiceAsync;
+import ru.protei.portal.ui.common.client.widget.subscription.model.Subscription;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
+
+import java.util.Collections;
+import java.util.stream.Collectors;
 
 /**
  * Активность карточки создания и редактирования продуктов
@@ -93,6 +97,10 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
 
         product.setName(view.name().getValue().trim());
         product.setInfo(view.info().getValue().trim());
+        product.setSubscriptions(view.productSubscriptions().getValue().stream()
+                .map( Subscription::toProductSubscription )
+                .collect(Collectors.toList())
+        );
 
         productService.saveProduct(product, new RequestCallback<Boolean>() {
             @Override
@@ -136,6 +144,7 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         view.name().setValue("");
         view.info().setValue("");
         view.state().setVisible(false);
+        view.productSubscriptions().setValue(Collections.emptyList());
     }
 
     private void fillView(DevUnit devUnit) {
@@ -143,6 +152,11 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         view.info().setValue(devUnit.getInfo());
         view.state().setVisible( true );
         view.setStateBtnText(devUnit.isActiveUnit() ? lang.productToArchive() : lang.productFromArchive());
+        view.productSubscriptions().setValue(
+                devUnit.getSubscriptions().stream()
+                        .map( Subscription::fromProductSubscription )
+                        .collect(Collectors.toList())
+        );
     }
 
     private void resetValidationStatus(){

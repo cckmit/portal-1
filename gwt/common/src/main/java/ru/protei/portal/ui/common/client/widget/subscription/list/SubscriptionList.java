@@ -9,8 +9,8 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import ru.protei.portal.core.model.ent.CompanySubscription;
-import ru.protei.portal.ui.common.client.widget.subscription.item.CompanySubscriptionItem;
+import ru.protei.portal.ui.common.client.widget.subscription.item.SubscriptionItem;
+import ru.protei.portal.ui.common.client.widget.subscription.model.Subscription;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 import java.util.*;
@@ -20,26 +20,26 @@ import static java.util.stream.Collectors.toMap;
 /**
  * Список подписчиков на рассылку для компании
  */
-public class CompanySubscriptionList
+public class SubscriptionList
         extends Composite
-        implements HasValue<List<CompanySubscription>>, HasValidable
+        implements HasValue<List<Subscription>>, HasValidable
 {
-    public CompanySubscriptionList() {
+    public SubscriptionList() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
     }
 
     @Override
-    public List<CompanySubscription> getValue() {
+    public List<Subscription> getValue() {
         return prepareValue();
     }
 
     @Override
-    public void setValue( List<CompanySubscription> value ) {
+    public void setValue( List<Subscription> value ) {
         setValue( value, false );
     }
 
     @Override
-    public void setValue( List<CompanySubscription > values, boolean fireEvents ) {
+    public void setValue( List<Subscription > values, boolean fireEvents ) {
         clear();
         this.value = values == null ? new ArrayList<>() : values;
         value.forEach( this :: makeItemAndFillValue );
@@ -57,7 +57,7 @@ public class CompanySubscriptionList
 
     @Override
     public boolean isValid() {
-        return modelToView.keySet().stream().allMatch(CompanySubscriptionItem::isValid);
+        return modelToView.keySet().stream().allMatch(SubscriptionItem::isValid);
     }
 
     public void clear() {
@@ -67,19 +67,19 @@ public class CompanySubscriptionList
     }
 
     @Override
-    public HandlerRegistration addValueChangeHandler( ValueChangeHandler<List<CompanySubscription>> handler ) {
+    public HandlerRegistration addValueChangeHandler( ValueChangeHandler<List<Subscription>> handler ) {
         return addHandler( handler, ValueChangeEvent.getType() );
     }
 
-    private void makeItemAndFillValue( CompanySubscription subscription ) {
-        CompanySubscriptionItem subscriptionItemWidget = itemProvider.get();
+    private void makeItemAndFillValue( Subscription subscription ) {
+        SubscriptionItem subscriptionItemWidget = itemProvider.get();
         subscriptionItemWidget.setValue( subscription );
         subscriptionItemWidget.addCloseHandler( event -> {
             if ( container.getWidgetCount() == 1 ) {
                 return;
             }
             container.remove( event.getTarget() );
-            CompanySubscription remove = modelToView.remove( event.getTarget() );
+            Subscription remove = modelToView.remove( event.getTarget() );
             value.remove( remove );
             boolean isHasEmptyItem = modelToView.values().stream().anyMatch(s -> s.getEmail() == null || s.getEmail().isEmpty());
             if(!isHasEmptyItem)
@@ -96,14 +96,14 @@ public class CompanySubscriptionList
     }
 
     private void addEmptyItem() {
-        CompanySubscription subscription = new CompanySubscription();
+        Subscription subscription = new Subscription();
         makeItemAndFillValue( subscription );
     }
 
-    private List<CompanySubscription> prepareValue() {
-        Collection<CompanySubscription> c = value.stream()
+    private List<Subscription> prepareValue() {
+        Collection<Subscription> c = value.stream()
                 .filter(value -> value.getEmail() != null && !value.getEmail().isEmpty() )
-                .collect(toMap( CompanySubscription::getEmail, p -> p, (p, q) -> p)) //filter by unique email
+                .collect(toMap( Subscription::getEmail, p -> p, (p, q) -> p)) //filter by unique email
                 .values();
 
         return new ArrayList<>(c);
@@ -112,12 +112,12 @@ public class CompanySubscriptionList
     @UiField
     HTMLPanel container;
     @Inject
-    Provider<CompanySubscriptionItem > itemProvider;
+    Provider<SubscriptionItem> itemProvider;
 
-    List<CompanySubscription> value = new ArrayList<>();
-    Map<CompanySubscriptionItem, CompanySubscription> modelToView = new HashMap<>();
+    List<Subscription> value = new ArrayList<>();
+    Map<SubscriptionItem, Subscription> modelToView = new HashMap<>();
 
-    interface SubscriptionListUiBinder extends UiBinder< HTMLPanel, CompanySubscriptionList > {}
+    interface SubscriptionListUiBinder extends UiBinder< HTMLPanel, SubscriptionList> {}
     private static SubscriptionListUiBinder ourUiBinder = GWT.create( SubscriptionListUiBinder.class );
 
 }

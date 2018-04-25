@@ -4,6 +4,7 @@ import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.ent.CompanySubscription;
+import ru.protei.portal.ui.common.client.widget.subscription.model.Subscription;
 
 import java.util.List;
 
@@ -14,7 +15,7 @@ public interface AbstractProfilePageView extends IsWidget {
 
     void setActivity( AbstractProfilePageActivity activity );
 
-    HasValue<List<CompanySubscription>> companySubscription();
+    HasValue<List<Subscription>> companySubscription();
 
     void setName( String name );
 

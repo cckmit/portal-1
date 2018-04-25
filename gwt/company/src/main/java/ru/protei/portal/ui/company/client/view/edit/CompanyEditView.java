@@ -10,10 +10,10 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.ent.CompanySubscription;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.subscription.model.Subscription;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextArea;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
@@ -21,7 +21,7 @@ import ru.protei.portal.ui.company.client.activity.edit.AbstractCompanyEditActiv
 import ru.protei.portal.ui.company.client.activity.edit.AbstractCompanyEditView;
 import ru.protei.portal.ui.company.client.widget.category.buttonselector.CategoryButtonSelector;
 import ru.protei.portal.ui.company.client.widget.group.buttonselector.GroupButtonSelector;
-import ru.protei.portal.ui.common.client.widget.subscription.list.CompanySubscriptionList;
+import ru.protei.portal.ui.common.client.widget.subscription.list.SubscriptionList;
 
 import java.util.List;
 
@@ -97,7 +97,7 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     }
 
     @Override
-    public HasValue<List<CompanySubscription> > companySubscriptions() {
+    public HasValue<List<Subscription> > companySubscriptions() {
         return subscriptions;
     }
 
@@ -189,7 +189,7 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
 
     @Inject
     @UiField( provided = true )
-    CompanySubscriptionList subscriptions;
+    SubscriptionList subscriptions;
 
     Timer timer = new Timer() {
         @Override

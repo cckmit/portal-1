@@ -1,20 +1,25 @@
 package ru.protei.portal.core.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.DevUnitDAO;
+import ru.protei.portal.core.model.dao.ProductSubscriptionDAO;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.ent.DevUnit;
-import ru.protei.portal.core.model.ent.UserRole;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.ProductDirectionQuery;
 import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.ProductShortView;
+import ru.protei.winter.core.utils.collections.CollectionUtils;
+import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -35,6 +40,12 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     PolicyService policyService;
+
+    @Autowired
+    JdbcManyRelationsHelper helper;
+
+    @Autowired
+    ProductSubscriptionDAO productSubscriptionDAO;
 
     @Override
     public CoreResponse<List<ProductShortView>> shortViewList(AuthToken token, ProductQuery query ) {
@@ -84,11 +95,13 @@ public class ProductServiceImpl implements ProductService {
         if (product == null)
             new CoreResponse().error(En_ResultStatus.NOT_FOUND);
 
+        product = helper.fillAll( product );
         return new CoreResponse<DevUnit>().success(product);
     }
 
 
     @Override
+    @Transactional
     public CoreResponse<Long> createProduct( AuthToken token, DevUnit product) {
 
         if (product == null)
@@ -106,11 +119,14 @@ public class ProductServiceImpl implements ProductService {
         if (productId == null)
             new CoreResponse().error(En_ResultStatus.NOT_CREATED);
 
+        updateProductSubscriptions( product.getId(), product.getSubscriptions() );
+
         return new CoreResponse<Long>().success(productId);
 
     }
 
     @Override
+    @Transactional
     public CoreResponse<Boolean> updateProduct( AuthToken token, DevUnit product ) {
 
         if( product == null || product.getId() == null )
@@ -122,6 +138,8 @@ public class ProductServiceImpl implements ProductService {
         Boolean result = devUnitDAO.merge(product);
         if ( !result )
             new CoreResponse().error(En_ResultStatus.NOT_UPDATED);
+
+        updateProductSubscriptions( product.getId(), product.getSubscriptions() );
 
         return new CoreResponse<Boolean>().success(result);
     }
@@ -150,4 +168,50 @@ public class ProductServiceImpl implements ProductService {
     public CoreResponse<Long> count(AuthToken token, ProductQuery query) {
         return new CoreResponse<Long>().success(devUnitDAO.count(query));
     }
+
+    private boolean updateProductSubscriptions( Long devUnitId, List<DevUnitSubscription> devUnitSubscriptions ) {
+        log.info( "binding update to linked product subscription for devUnitId = {}", devUnitId );
+
+        List<Long> toRemoveNumberIds = productSubscriptionDAO.listIdsByDevUnitId( devUnitId );
+        if ( CollectionUtils.isEmpty(devUnitSubscriptions) && CollectionUtils.isEmpty(toRemoveNumberIds) ) {
+            return true;
+        }
+
+        List<DevUnitSubscription> newSubscriptions = new ArrayList<>();
+        List<DevUnitSubscription> oldSubscriptions = new ArrayList<>();
+        devUnitSubscriptions.forEach( subscription -> {
+            if ( subscription.getId() == null ) {
+                subscription.setDevUnitId( devUnitId );
+                newSubscriptions.add( subscription );
+            } else {
+                oldSubscriptions.add( subscription );
+            }
+        } );
+
+        toRemoveNumberIds.removeAll( oldSubscriptions.stream().map(DevUnitSubscription::getId).collect( Collectors.toList() ) );
+        if ( !CollectionUtils.isEmpty( toRemoveNumberIds ) ) {
+            log.info( "remove devunit subscriptions = {}", toRemoveNumberIds );
+            int countRemoved = productSubscriptionDAO.removeByKeys( toRemoveNumberIds );
+            if ( countRemoved != toRemoveNumberIds.size() ) {
+                return false;
+            }
+        }
+
+        if ( !CollectionUtils.isEmpty( newSubscriptions ) ) {
+            log.info( "persist product subscriptions = {}", newSubscriptions );
+            productSubscriptionDAO.persistBatch( newSubscriptions );
+        }
+
+        if ( !CollectionUtils.isEmpty( oldSubscriptions ) ) {
+            log.info( "merge product subscriptions = {}cre", oldSubscriptions );
+            int countMerged = productSubscriptionDAO.mergeBatch( oldSubscriptions );
+            if ( countMerged != oldSubscriptions.size() ) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private final static Logger log = LoggerFactory.getLogger( ProductService.class );
 }

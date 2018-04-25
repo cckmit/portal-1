@@ -308,6 +308,11 @@ public class MainConfiguration {
     @Bean
     public CaseFilterDAO getIssueFilterDAO() { return new CaseFilterDAO_Impl(); }
 
+    @Bean
+    public ProductSubscriptionDAO getProductSubscriptionDAO() {
+        return new ProductSubscriptionDAO_Impl();
+    }
+
 /**
  *
  *

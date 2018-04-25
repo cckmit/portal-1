@@ -23,7 +23,7 @@
                                 <h4 class="title">
                                     <ui:text from="{lang.companySubscription}"/>
                                 </h4>
-                                <list:CompanySubscriptionList ui:field="subscriptions"/>
+                                <list:SubscriptionList ui:field="subscriptions"/>
                             </div>
                         </div>
                     </div>

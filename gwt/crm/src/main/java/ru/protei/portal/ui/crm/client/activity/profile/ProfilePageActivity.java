@@ -18,6 +18,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CompanyService;
 import ru.protei.portal.ui.common.client.service.CompanyServiceAsync;
 import ru.protei.portal.ui.common.client.service.ContactServiceAsync;
+import ru.protei.portal.ui.common.client.widget.subscription.model.Subscription;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
@@ -51,7 +52,10 @@ public abstract class ProfilePageActivity implements Activity, AbstractProfilePa
 
     @Override
     public void onSaveSubscriptionClicked() {
-        companyService.updateSelfCompanySubscription( view.companySubscription().getValue(), new RequestCallback<List<CompanySubscription>>() {
+        companyService.updateSelfCompanySubscription( view.companySubscription().getValue().stream()
+                .map(Subscription::toCompanySubscription)
+                .collect(Collectors.toList()),
+                new RequestCallback<List<CompanySubscription>>() {
             @Override
             public void onError( Throwable throwable ) {}
 
@@ -68,7 +72,10 @@ public abstract class ProfilePageActivity implements Activity, AbstractProfilePa
         view.setIcon( UserIconUtils.getGenderIcon(value.getGender() ) );
         if ( value.getCompany() != null ) {
             view.setCompany( value.getCompany().getCname() );
-            view.companySubscription().setValue( value.getCompany().getSubscriptions() );
+            view.companySubscription().setValue( value.getCompany().getSubscriptions().stream()
+                    .map( Subscription::fromCompanySubscription )
+                    .collect(Collectors.toList())
+            );
         }
 
         view.saveButtonVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.COMMON_PROFILE_EDIT ));
