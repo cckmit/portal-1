@@ -1,13 +1,18 @@
 package ru.protei.portal.ui.crm.server.service;
 
+import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.protei.portal.core.model.dao.UserSessionDAO;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.ent.UserSessionDescriptor;
+import ru.protei.portal.core.service.user.AuthService;
 import ru.protei.portal.ui.common.client.service.PingService;
 import ru.protei.portal.ui.common.server.service.SessionService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
 
 /**
  * Пингер
@@ -17,9 +22,12 @@ public class PingServiceImpl implements PingService {
 
     @Override
     public void ping() throws RequestFailedException {
-        if ( sessionService.getUserSessionDescriptor( httpRequest ) == null ) {
+        UserSessionDescriptor usd = sessionService.getUserSessionDescriptor( httpRequest );
+        if ( usd == null ) {
             throw new RequestFailedException( En_ResultStatus.INVALID_SESSION_ID );
         }
+
+        usd.getSession().setExpired(DateUtils.addHours(new Date(), 3));
     }
 
     @Autowired
@@ -27,4 +35,7 @@ public class PingServiceImpl implements PingService {
 
     @Autowired
     SessionService sessionService;
+
+    @Autowired
+    UserSessionDAO sessionDAO;
 }
