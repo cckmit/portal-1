@@ -2,9 +2,12 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:validatefield="urn:import:ru.protei.portal.ui.common.client.widget.validatefield"
              xmlns:doctype="urn:import:ru.protei.portal.ui.document.client.widget.doctype"
+             xmlns:doccategory="urn:import:ru.protei.portal.ui.document.client.widget.doccategory"
              xmlns:person="urn:import:ru.protei.portal.ui.common.client.widget.selector.person"
              xmlns:keyword='urn:import:ru.protei.portal.ui.common.client.widget.stringselect.input'
-             xmlns:decnum='urn:import:ru.protei.portal.ui.common.client.widget.decimalnumber.single'>
+             xmlns:decnum='urn:import:ru.protei.portal.ui.common.client.widget.decimalnumber.single'
+             xmlns:fileuploader='urn:import:ru.protei.portal.ui.document.client.widget.uploader'
+             xmlns:project="urn:import:ru.protei.portal.ui.common.client.widget.selector.project">
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
     <g:HTMLPanel styleName="main-content">
@@ -14,40 +17,62 @@
                     <ui:text from="{lang.documentCommonHeader}"/>
                 </legend>
                 <div class="grid grid-indent">
-                    <div class="form-group col-xs-8">
+                    <g:HTMLPanel styleName="form-group col-xs-6" ui:field="nameContainer">
                         <label>
                             <ui:text from="{lang.documentName}"/>
                         </label>
                         <validatefield:ValidableTextBox ui:field="name" styleName="input-field" notNull="true"/>
+                    </g:HTMLPanel>
+
+                    <g:HTMLPanel styleName="form-group col-xs-3" ui:field="selectFileContainer">
+                        <label>
+                            <ui:text from="{lang.uploadDocuments}"/>
+                        </label>
+                        <div class="input-group">
+                            <g:TextBox ui:field="fileName" styleName="input-field" enabled="false"/>
+                            <div class="input-group-btn">
+                                <g:Button ui:field="selectFileButton" styleName="btn btn-white">
+                                    <i class="ion-upload"/>
+                                </g:Button>
+                            </div>
+                            <fileuploader:DocumentUploader ui:field="documentUploader" visible="false"/>
+                        </div>
+                    </g:HTMLPanel>
+
+                    <div class="form-group col-xs-3">
+                        <label>
+                            <ui:text from="{lang.customer}"/>
+                        </label>
+                        <person:EmployeeButtonSelector ui:field="manager"
+                                                       hasNullValue="false"/>
                     </div>
 
-                    <div class="form-group col-xs-4">
+                    <div class="form-group col-xs-3">
+                        <label>
+                            <ui:text from="{lang.documentCategory}"/>
+                        </label>
+                        <doccategory:DocumentCategorySelector ui:field="documentCategory"/>
+                    </div>
+
+                    <div class="form-group col-xs-3">
                         <label>
                             <ui:text from="{lang.documentType}"/>
                         </label>
                         <doctype:DocumentTypeSelector ui:field="documentType"/>
                     </div>
 
-                    <div class="form-group col-xs-2">
+                    <div class="form-group col-xs-3">
                         <label>
                             <ui:text from="{lang.inventoryNumber}"/>
                         </label>
                         <g:LongBox ui:field="inventoryNumber" styleName="input-field"/>
                     </div>
 
-                    <div class="form-group col-xs-4">
+                    <div class="form-group col-xs-3">
                         <label>
                             <ui:text from="{lang.equipmentProject}"/>
                         </label>
-                        <validatefield:ValidableTextBox ui:field="project" styleName="input-field"/>
-                    </div>
-
-                    <div class="form-group col-xs-4">
-                        <label>
-                            <ui:text from="{lang.customer}"/>
-                        </label>
-                        <person:EmployeeButtonSelector ui:field="manager"
-                                                       hasNullValue="false"/>
+                        <project:ProjectButtonSelector ui:field="project"/>
                     </div>
 
                     <div class="form-group col-xs-2">

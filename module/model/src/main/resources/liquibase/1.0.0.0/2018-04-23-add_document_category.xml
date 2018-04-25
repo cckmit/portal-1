@@ -1,0 +1,18 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+    <changeSet id="add-document_category" author="efremov">
+        <addColumn tableName="document_type">
+            <column name="document_category" type="VARCHAR(2)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="add-short_name-column-to-document_type" author="efremov">
+        <addColumn tableName="document_type">
+            <column name="short_name" type="VARCHAR(16)"/>
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>
