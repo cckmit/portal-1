@@ -10,5 +10,7 @@ import java.util.List;
  */
 public interface ProductSubscriptionDAO extends PortalBaseDAO<DevUnitSubscription> {
 
+    List<DevUnitSubscription> listByDevUnitId(Long devUnitId);
+
     List<Long> listIdsByDevUnitId(Long devUnitId);
 }

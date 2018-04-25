@@ -4,10 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.model.dao.CompanyGroupHomeDAO;
 import ru.protei.portal.core.model.dao.CompanySubscriptionDAO;
+import ru.protei.portal.core.model.dao.ProductSubscriptionDAO;
 import ru.protei.portal.core.model.dict.En_ContactDataAccess;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.CompanySubscription;
+import ru.protei.portal.core.model.ent.DevUnitSubscription;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.core.model.struct.NotificationEntry;
@@ -23,6 +25,9 @@ public class CaseSubscriptionServiceImpl implements CaseSubscriptionService {
     CompanySubscriptionDAO companySubscriptionDAO;
 
     @Autowired
+    ProductSubscriptionDAO productSubscriptionDAO;
+
+    @Autowired
     CompanyGroupHomeDAO companyGroupHomeDAO;
 
 
@@ -34,6 +39,7 @@ public class CaseSubscriptionServiceImpl implements CaseSubscriptionService {
     private Set<NotificationEntry> getByCase (CaseObject caseObject){
         Set<NotificationEntry> result = new HashSet<>();
         appendCompanySubscriptions(caseObject.getInitiatorCompanyId(), result);
+        appendProductSubscriptions(caseObject.getProductId(), result);
         if(caseObject.getNotifiers() != null){
             for(Person notifier: caseObject.getNotifiers()){
                 ContactItem email = notifier.getContactInfo().findFirst(En_ContactItemType.EMAIL, En_ContactDataAccess.PUBLIC);
@@ -51,8 +57,17 @@ public class CaseSubscriptionServiceImpl implements CaseSubscriptionService {
         return companyId == null ? Collections.emptyList() : companySubscriptionDAO.listByCompanyId(companyId);
     }
 
+    private List<DevUnitSubscription> safeGetByDevUnit(Long devUnitId) {
+        return devUnitId == null ? Collections.emptyList() : productSubscriptionDAO.listByDevUnitId(devUnitId);
+    }
+
     private void appendCompanySubscriptions(Long companyId, Set<NotificationEntry> result) {
         safeGetByCompany(companyId)
+                .forEach(s -> result.add(NotificationEntry.email(s.getEmail(), s.getLangCode())));
+    }
+
+    private void appendProductSubscriptions( Long devUnitId, Set<NotificationEntry> result ) {
+        safeGetByDevUnit(devUnitId)
                 .forEach(s -> result.add(NotificationEntry.email(s.getEmail(), s.getLangCode())));
     }
 }

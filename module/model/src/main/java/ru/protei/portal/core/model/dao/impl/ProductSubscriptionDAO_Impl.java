@@ -12,6 +12,11 @@ import java.util.List;
  */
 public class ProductSubscriptionDAO_Impl extends PortalBaseJdbcDAO<DevUnitSubscription> implements ProductSubscriptionDAO {
     @Override
+    public List<DevUnitSubscription> listByDevUnitId( Long devUnitId) {
+        return getListByCondition("dev_unit_id=?", devUnitId);
+    }
+
+    @Override
     public List<Long> listIdsByDevUnitId(Long devUnitId) {
         StringBuilder sql = new StringBuilder("select id from ").append(getTableName()).append( " where dev_unit_id=?" );
         return jdbcTemplate.queryForList(sql.toString(), Long.class, devUnitId);
