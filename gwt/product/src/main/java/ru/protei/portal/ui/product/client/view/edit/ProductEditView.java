@@ -13,10 +13,14 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.subscription.list.SubscriptionList;
+import ru.protei.portal.ui.common.client.widget.subscription.model.Subscription;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.product.client.activity.edit.AbstractProductEditActivity;
 import ru.protei.portal.ui.product.client.activity.edit.AbstractProductEditView;
+
+import java.util.List;
 
 /**
  * Вид карточки создания/редактирования продукта
@@ -37,6 +41,15 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     @Override
     public HasValidable nameValidator() { return name; }
 
+    @Override
+    public HasValue<List<Subscription>> productSubscriptions() {
+        return subscriptions;
+    }
+
+    @Override
+    public HasValidable productSubscriptionsValidator() {
+        return subscriptions;
+    }
 
     @Override
     public HasValue<String> info() { return info; }
@@ -126,6 +139,9 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     @Inject
     @UiField
     Lang lang;
+    @Inject
+    @UiField( provided = true )
+    SubscriptionList subscriptions;
 
 
     AbstractProductEditActivity activity;

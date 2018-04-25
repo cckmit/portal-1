@@ -8,16 +8,19 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanyCategory;
+import ru.protei.portal.core.model.ent.CompanySubscription;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CompanyServiceAsync;
+import ru.protei.portal.ui.common.client.widget.subscription.model.Subscription;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Активность создания и редактирования компании
@@ -150,7 +153,11 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         view.comment().setText(company.getInfo());
         view.companyCategory().setValue(EntityOption.fromCompanyCategory(company.getCategory()));
         view.companyGroup().setValue(EntityOption.fromCompanyGroup(company.getCompanyGroup()));
-        view.companySubscriptions().setValue(company.getSubscriptions());
+        view.companySubscriptions().setValue(
+                company.getSubscriptions().stream()
+                        .map( Subscription::fromCompanySubscription )
+                        .collect(Collectors.toList())
+        );
 
         view.webSite().setText(infoFacade.getWebSite());
 
@@ -173,7 +180,10 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         else {
             company.setGroupId(null);
         }
-        company.setSubscriptions(view.companySubscriptions().getValue());
+        company.setSubscriptions(view.companySubscriptions().getValue().stream()
+                .map( Subscription::toCompanySubscription )
+                .collect(Collectors.toList())
+        );
         infoFacade.setWebSite(view.webSite().getText());
     }
 
