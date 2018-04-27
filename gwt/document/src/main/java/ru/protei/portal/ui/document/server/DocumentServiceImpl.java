@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.Document;
-import ru.protei.portal.core.model.ent.DocumentType;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.DocumentQuery;
@@ -78,19 +77,6 @@ public class DocumentServiceImpl implements DocumentService {
 
         log.debug("get document count(): query={}", query);
         return documentService.count(descriptor.makeAuthToken(), query).getData();
-    }
-
-    @Override
-    public List<DocumentType> getDocumentTypeList() throws RequestFailedException {
-        log.debug("get document type list");
-
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-        CoreResponse<List<DocumentType>> response = documentService.documentTypeList(descriptor.makeAuthToken());
-
-        if (response.isError()) {
-            throw new RequestFailedException(response.getStatus());
-        }
-        return response.getData();
     }
 
     private UserSessionDescriptor getDescriptorAndCheckSession() throws RequestFailedException {

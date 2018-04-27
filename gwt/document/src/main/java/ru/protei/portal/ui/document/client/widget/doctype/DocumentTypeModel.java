@@ -4,11 +4,12 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.ent.DocumentType;
+import ru.protei.portal.core.model.query.DocumentTypeQuery;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.DocumentEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.DocumentServiceAsync;
+import ru.protei.portal.ui.common.client.service.DocumentTypeServiceAsync;
 import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
@@ -40,7 +41,7 @@ public abstract class DocumentTypeModel implements Activity {
     }
 
     private void refreshOptions() {
-        documentService.getDocumentTypeList(new RequestCallback<List<DocumentType>>() {
+        documentTypeService.getDocumentTypes(query, new RequestCallback<List<DocumentType>>() {
             @Override
             public void onError(Throwable throwable) {
                 fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
@@ -56,12 +57,13 @@ public abstract class DocumentTypeModel implements Activity {
     }
 
     @Inject
-    DocumentServiceAsync documentService;
+    DocumentTypeServiceAsync documentTypeService;
 
     @Inject
     Lang lang;
 
     private List<DocumentType> list = new LinkedList<>();
+    private DocumentTypeQuery query = new DocumentTypeQuery();
 
     List<ModelSelector<DocumentType>> subscribers = new LinkedList<>();
 }

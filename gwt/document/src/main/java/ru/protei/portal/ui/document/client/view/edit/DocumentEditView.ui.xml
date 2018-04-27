@@ -41,7 +41,7 @@
 
                     <div class="form-group col-xs-3">
                         <label>
-                            <ui:text from="{lang.customer}"/>
+                            <ui:text from="{lang.documentManager}"/>
                         </label>
                         <person:EmployeeButtonSelector ui:field="manager"
                                                        hasNullValue="false"/>
