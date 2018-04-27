@@ -10,10 +10,12 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.TableWidget;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.DocumentType;
+import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
+import ru.protei.portal.ui.common.client.columns.RemoveClickColumn;
 import ru.protei.portal.ui.common.client.lang.En_DocumentCategoryLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.documenttype.client.activity.table.AbstractDocumentTypeTableActivity;
@@ -34,7 +36,10 @@ public class DocumentTypeTableView extends Composite implements AbstractDocument
     public void setActivity(AbstractDocumentTypeTableActivity activity) {
         this.activity = activity;
 
+        editClickColumn.setHandler( activity );
         editClickColumn.setEditHandler(activity);
+        removeClickColumn.setColumnProvider( columnProvider );
+        removeClickColumn.setRemoveHandler( activity );
         columns.forEach(c -> {
             c.setHandler(activity);
             c.setColumnProvider(columnProvider);
@@ -73,11 +78,13 @@ public class DocumentTypeTableView extends Composite implements AbstractDocument
 
     private void initTable() {
         editClickColumn.setPrivilege( En_Privilege.DOCUMENT_TYPE_EDIT);
+        removeClickColumn.setPrivilege( En_Privilege.DOCUMENT_TYPE_REMOVE );
 
         columns.add(name);
         columns.add(shortName);
         columns.add(category);
         columns.add(editClickColumn);
+        columns.add(removeClickColumn);
 
         columns.forEach(c -> table.addColumn(c.header, c.values));
     }
@@ -132,20 +139,19 @@ public class DocumentTypeTableView extends Composite implements AbstractDocument
         }
     };
 
-    private Collection<ClickColumn<DocumentType>> columns = new LinkedList<>();
+    @Inject
+    private EditClickColumn<DocumentType> editClickColumn;
+    @Inject
+    private En_DocumentCategoryLang documentCategoryLang;
+    @Inject
+    private RemoveClickColumn<DocumentType> removeClickColumn;
 
+    private Collection<ClickColumn<DocumentType>> columns = new LinkedList<>();
     private ClickColumnProvider<DocumentType> columnProvider = new ClickColumnProvider<>();
 
-    @Inject
-    EditClickColumn<DocumentType> editClickColumn;
 
-    @Inject
-    En_DocumentCategoryLang documentCategoryLang;
-
-    AbstractDocumentTypeTableActivity activity;
-
+    private AbstractDocumentTypeTableActivity activity;
     private static DocumentTypeTableViewUiBinder ourUiBinder = GWT.create(DocumentTypeTableViewUiBinder.class);
 
-    interface DocumentTypeTableViewUiBinder extends UiBinder<HTMLPanel, DocumentTypeTableView> {
-    }
+    interface DocumentTypeTableViewUiBinder extends UiBinder<HTMLPanel, DocumentTypeTableView> { }
 }

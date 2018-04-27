@@ -35,11 +35,6 @@ public abstract class DocumentTypePage implements Activity {
     }
 
     @Event
-    public void onEdit(DocumentTypeEvents.Edit event) {
-        fireSelectTab();
-    }
-
-    @Event
     public void onClickSection(SectionEvents.Clicked event) {
         if (!TAB.equals(event.identity)) {
             return;

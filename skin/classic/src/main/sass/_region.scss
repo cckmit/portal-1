@@ -110,25 +110,27 @@
 
 .preview.project {
   input {
+    font-size: 1em;
+    padding: 2px;
+    border: 1px solid rgb(255, 255, 255);
+    margin-bottom: 5px;
+
+    &:hover {
+      border: 1px solid rgb(197, 202, 208);
+    }
+    &:focus {
+      border: 1px solid rgb(197, 202, 208);
+      background-color: white;
+      outline: none;
+    }
+
     &.project-name {
       font-size: 1.5em;
-      padding: 2px;
-      border: 1px solid rgb(255, 255, 255);
-      margin-bottom: 5px;
-
-      &:hover {
-        border: 1px solid rgb(197, 202, 208);
-      }
-      &:focus {
-        border: 1px solid rgb(197, 202, 208);
-        background-color: white;
-        outline: none;
-      }
     }
   }
 
   button.btn > span {
-    line-height: 0px;
+    line-height: 17px;
   }
 
   textarea {

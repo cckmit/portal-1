@@ -11,6 +11,8 @@ import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.DocumentTypeEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.DocumentTypeServiceAsync;
+import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 /**
  * Активность превью проекта
@@ -23,59 +25,45 @@ public abstract class DocumentTypePreviewActivity implements AbstractDocumentTyp
     }
 
     @Event
-    public void onInit( AppEvents.InitDetails event ) {
-        this.initDetails = event;
-    }
-
-    @Event
     public void onShow( DocumentTypeEvents.ShowPreview event ) {
         event.parent.clear();
         event.parent.add( view.asWidget() );
 
-        this.typeId = event.id;
+        this.documentType = event.type;
 
-        fillView(typeId);
-    }
-
-    @Event
-    public void onShow( DocumentTypeEvents.ShowFullScreen event ) {
-        initDetails.parent.clear();
-        initDetails.parent.add( view.asWidget() );
-
-        this.typeId = event.id;
-
-        fillView(typeId);
+        fillView();
     }
 
     @Override
-    public void onFullScreenPreviewClicked() {
-        fireEvent( new DocumentTypeEvents.ShowFullScreen(typeId) );
-    }
-
-    @Override
-    public void onProjectChanged() {
+    public void onFieldsChanged() {
         if ( !policyService.hasPrivilegeFor( En_Privilege.DOCUMENT_TYPE_EDIT ) ) {
             return;
         }
 
-        readView();
+        documentType.setDocumentCategory(view.category().getValue());
+        documentType.setShortName(view.shortName().getValue());
+        documentType.setName(view.name().getValue());
 
+        service.saveDocumentType(documentType, new RequestCallback<DocumentType>() {
+            @Override
+            public void onError(Throwable throwable) {}
+
+            @Override
+            public void onSuccess(DocumentType type) {
+                fireEvent( new DocumentTypeEvents.Changed(type));
+            }
+        });
     }
 
-    private void fillView( Long id ) {
-        if (id == null) {
-            fireEvent( new NotifyEvents.Show( lang.errIncorrectParams(), NotifyEvents.NotifyType.ERROR ) );
+    private void fillView() {
+        if (documentType == null) {
+            documentType = new DocumentType();
             return;
         }
 
-    }
-
-    private void fillView( DocumentType value ) {
-
-    }
-
-    private void readView() {
-
+        view.name().setValue(documentType.getName());
+        view.shortName().setValue(documentType.getShortName());
+        view.category().setValue(documentType.getDocumentCategory());
     }
 
     @Inject
@@ -84,9 +72,8 @@ public abstract class DocumentTypePreviewActivity implements AbstractDocumentTyp
     AbstractDocumentTypePreviewView view;
     @Inject
     PolicyService policyService;
+    @Inject
+    DocumentTypeServiceAsync service;
 
-    private Long typeId;
-    DocumentType documentType;
-
-    private AppEvents.InitDetails initDetails;
+    private DocumentType documentType;
 }

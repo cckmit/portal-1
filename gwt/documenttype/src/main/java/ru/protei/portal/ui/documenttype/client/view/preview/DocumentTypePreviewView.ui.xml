@@ -1,9 +1,25 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
->
+             xmlns:doccategory="urn:import:ru.protei.portal.ui.document.client.widget.doccategory">
+
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+
     <g:HTMLPanel styleName="preview-wrapper grid with-table-pager">
         <g:HTMLPanel ui:field="preview" styleName="preview project">
+            <fieldset class="header">
+                <legend><ui:text from="{lang.documentCategory}"/></legend>
+                <doccategory:DocumentCategorySelector ui:field="documentCategory"/>
+            </fieldset>
+
+            <fieldset class="header">
+                <legend><ui:text from="{lang.documentTypeName}"/></legend>
+                <g:TextBox ui:field="name" styleName="col-xs-12" />
+            </fieldset>
+
+            <fieldset class="header">
+                <legend><ui:text from="{lang.documentTypeShortName}"/></legend>
+                <g:TextBox ui:field="shortName" styleName="col-xs-12" />
+            </fieldset>
         </g:HTMLPanel>
     </g:HTMLPanel>
 </ui:UiBinder>

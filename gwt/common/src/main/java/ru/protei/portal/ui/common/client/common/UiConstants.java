@@ -44,7 +44,7 @@ public class UiConstants {
         String ROLE = "role";
         String OFFICIAL = "official";
         String DOCUMENT = "document";
-        String DOCUMENT_TYPE = "document";
+        String DOCUMENT_TYPE = "document_type";
     }
 
     public interface UserIcon {

@@ -4,12 +4,13 @@ import ru.protei.portal.core.model.dict.En_DocumentCategory;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * Вид документа
  */
 @JdbcEntity(table = "document_type")
-public class DocumentType implements Serializable {
+public class DocumentType implements Serializable, Removable {
 
     @JdbcId(idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -57,5 +58,23 @@ public class DocumentType implements Serializable {
 
     public void setShortName(String shortName) {
         this.shortName = shortName;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof DocumentType)) return false;
+        DocumentType that = (DocumentType) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+    @Override
+    public boolean isAllowedRemove() {
+        return true;
     }
 }

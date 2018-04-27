@@ -8,6 +8,7 @@ import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.DocumentType;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
+import ru.protei.portal.core.model.query.DocumentTypeQuery;
 import ru.protei.portal.ui.common.client.service.DocumentTypeService;
 import ru.protei.portal.ui.common.server.service.SessionService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
@@ -21,17 +22,54 @@ public class DocumentTypeServiceImpl implements DocumentTypeService {
     private static final Logger log = LoggerFactory.getLogger("web");
 
     @Override
-    public List<DocumentType> getDocumentTypes() throws RequestFailedException {
+    public List<DocumentType> getDocumentTypes(DocumentTypeQuery query) throws RequestFailedException {
         log.debug("get document type list");
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-        CoreResponse<List<DocumentType>> response = documentTypeService.documentTypeList(descriptor.makeAuthToken());
+        CoreResponse<List<DocumentType>> response = documentTypeService.documentTypeList(descriptor.makeAuthToken(), query);
 
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());
         }
         return response.getData();
     }
+
+    @Override
+    public DocumentType saveDocumentType(DocumentType type) throws RequestFailedException {
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
+        if (type == null) {
+            log.warn("null type in request");
+            throw new RequestFailedException(En_ResultStatus.INTERNAL_ERROR);
+        }
+
+        CoreResponse<DocumentType> response = documentTypeService.saveDocumentType( descriptor.makeAuthToken(), type );
+        log.debug("store document type, result: {}", response.isOk() ? "ok" : response.getStatus());
+
+        if (response.isOk()) {
+            log.debug("store document type, applied id: {}", response.getData().getId());
+            return response.getData();
+        }
+
+        throw new RequestFailedException(response.getStatus());
+    }
+
+    @Override
+    public boolean removeDocumentType(Long id)throws RequestFailedException {
+        log.debug( "removeDocumentType(): id={}", id );
+
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
+        CoreResponse< Boolean > response = documentTypeService.removeDocumentType( descriptor.makeAuthToken(), id );
+        log.debug( "removeDocumentType(): result={}", response.isOk() ? "ok" : response.getStatus() );
+
+        if (response.isOk()) {
+            return response.getData();
+        }
+
+        throw new RequestFailedException(response.getStatus());
+    }
+
 
     private UserSessionDescriptor getDescriptorAndCheckSession() throws RequestFailedException {
         UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor(httpRequest);

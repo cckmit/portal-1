@@ -874,4 +874,12 @@ public interface Lang extends Messages, ContactItemLang {
     String documentTypeName();
 
     String documentTypeShortName();
+
+    String documentTypeRemoveSuccessed();
+
+    String documentTypeRemoveConfirmMessage();
+
+    String documentNameNew();
+
+    String privilegeDocumentType();
 }
