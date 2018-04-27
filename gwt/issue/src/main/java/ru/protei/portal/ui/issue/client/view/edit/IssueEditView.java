@@ -12,9 +12,11 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
+import ru.protei.portal.ui.common.client.events.ContactEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
@@ -219,6 +221,14 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
                 local.setVisible( b );
             }
         };
+    }
+
+    @UiHandler( "initiator" )
+    public void onChangeInitiator(ValueChangeEvent< PersonShortView > event) {
+        if (CrmConstants.Person.CREATE_NEW_PERSON_ID.equals(event.getValue().getId()) && company.getValue() != null) {
+            Company c = Company.fromEntityOption(company.getValue());
+            activity.onCreateContact(c.getId());
+        }
     }
 
     @UiHandler( "company" )

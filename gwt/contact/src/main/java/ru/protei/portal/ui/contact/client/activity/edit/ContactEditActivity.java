@@ -8,6 +8,7 @@ import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.helper.HelperFunc;
@@ -19,6 +20,7 @@ import ru.protei.portal.ui.common.client.events.ContactEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AccountServiceAsync;
+import ru.protei.portal.ui.common.client.service.CompanyServiceAsync;
 import ru.protei.portal.ui.common.client.service.ContactServiceAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
@@ -43,11 +45,14 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
 
-        if(event.id == null) {
+        if (event.id == null) {
             this.fireEvent(new AppEvents.InitPanelName(lang.newContact()));
             Person newPerson = new Person();
             newPerson.setCompanyId(event.companyId);
             initialView(newPerson, new UserLogin());
+            if (event.companyId != null) {
+                requestCompany(event.companyId);
+            }
         }
         else {
             contactService.getContact(event.id, new AsyncCallback<Person>() {
@@ -247,6 +252,20 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
                         view.password().getText().equals(view.confirmPassword().getText()));
     }
 
+    private void requestCompany(Long companyId) {
+        companyService.getCompany(companyId, new RequestCallback<Company>() {
+            @Override
+            public void onError (Throwable throwable) {}
+
+            @Override
+            public void onSuccess (Company company) {
+                if (view.company().getValue() == null) {
+                    view.company().setValue(company.toEntityOption());
+                }
+            }
+        });
+    }
+
     @Inject
     AbstractContactEditView view;
     @Inject
@@ -258,6 +277,8 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
 
     @Inject
     AccountServiceAsync accountService;
+    @Inject
+    CompanyServiceAsync companyService;
 
     private Person contact;
     private UserLogin account;

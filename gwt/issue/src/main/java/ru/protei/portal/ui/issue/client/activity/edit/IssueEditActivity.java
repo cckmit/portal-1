@@ -13,10 +13,7 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
-import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.AttachmentEvents;
-import ru.protei.portal.ui.common.client.events.IssueEvents;
-import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
 import ru.protei.portal.ui.common.client.service.CompanyServiceAsync;
@@ -58,12 +55,18 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
 
-        if(event.id == null) {
+        if (event.id == null) {
             fireEvent(new AppEvents.InitPanelName(lang.newIssue()));
-            CaseObject caseObject = new CaseObject();
-            caseObject.setPrivateCase( true );
-            initialView(caseObject);
-        }else {
+            if (issueSaved != null) {
+                issue = issueSaved.clone();
+                issueSaved = null;
+                initialView(issue);
+            } else {
+                CaseObject caseObject = new CaseObject();
+                caseObject.setPrivateCase(true);
+                initialView(caseObject);
+            }
+        } else {
             fireEvent(new AppEvents.InitPanelName(lang.issueEdit()));
             requestIssue(event.id, this::initialView);
         }
@@ -164,6 +167,13 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                 }
             });
         }
+    }
+
+    @Override
+    public void onCreateContact(Long companyId) {
+        fillIssueObject(issue);
+        issueSaved = issue.clone();
+        fireEvent(new ContactEvents.Edit(null, companyId));
     }
 
     private void initialView(CaseObject issue){
@@ -279,4 +289,5 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
     private AppEvents.InitDetails initDetails;
     private CaseObject issue;
+    private static CaseObject issueSaved;
 }

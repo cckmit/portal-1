@@ -2,8 +2,12 @@ package ru.protei.portal.ui.common.client.widget.selector.person;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
+import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 
 import java.util.List;
@@ -11,7 +15,7 @@ import java.util.List;
 /**
  * Селектор person
  */
-public class PersonButtonSelector extends ButtonSelector< PersonShortView > {
+public class PersonButtonSelector extends ButtonSelector< PersonShortView > implements ModelSelector<PersonShortView> {
 
     @Inject
     public void init() {
@@ -41,9 +45,11 @@ public class PersonButtonSelector extends ButtonSelector< PersonShortView > {
     public void fillOptions( List< PersonShortView > persons ){
         clearOptions();
 
-        if( defaultValue != null ) {
-            addOption( null );
+        if (defaultValue != null) {
+            addOption(null);
         }
+
+        addOption(new PersonShortView(lang.personCreateNew(), CrmConstants.Person.CREATE_NEW_PERSON_ID, false));
 
         persons.forEach(this::addOption);
 
@@ -69,6 +75,9 @@ public class PersonButtonSelector extends ButtonSelector< PersonShortView > {
     private void updatePersons(){
         personModel.requestPersonList( company, fired, this::fillOptions );
     }
+
+    @Inject
+    Lang lang;
 
     @Inject
     PersonModel personModel;

@@ -423,6 +423,39 @@ public class CaseObject extends AuditableObject {
     }
 
     @Override
+    public CaseObject clone() {
+        CaseObject caseObject = new CaseObject();
+        caseObject.setId(id);
+        caseObject.setTypeId(typeId);
+        caseObject.setCaseNumber(caseNumber);
+        caseObject.setCreated(created);
+        caseObject.setModified(modified);
+        caseObject.setName(name);
+        caseObject.setExtId(extId);
+        caseObject.setInfo(info);
+        caseObject.setStateId(stateId);
+        caseObject.setImpLevel(impLevel);
+        caseObject.setCreatorId(creatorId);
+        caseObject.setCreatorIp(creatorIp);
+        caseObject.setInitiatorId(initiatorId);
+        caseObject.setInitiatorCompanyId(initiatorCompanyId);
+        caseObject.setInitiatorCompany(initiatorCompany);
+        caseObject.setProductId(productId);
+        caseObject.setProduct(product);
+        caseObject.setManagerId(managerId);
+        caseObject.setManager(manager);
+        caseObject.setKeywords(keywords);
+        caseObject.setLocal(local);
+        caseObject.setEmails(emails);
+        caseObject.setCreatorInfo(creatorInfo);
+        caseObject.setDeleted(deleted);
+        caseObject.setPrivateCase(privateCase);
+        caseObject.setLocations(locations);
+        caseObject.setMembers(members);
+        return caseObject;
+    }
+
+    @Override
     public String toString() {
         return "CaseObject{" +
                 "id=" + id +

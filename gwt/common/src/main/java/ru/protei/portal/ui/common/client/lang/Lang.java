@@ -870,4 +870,6 @@ public interface Lang extends Messages, ContactItemLang {
     String tdDocumentCategory();
 
     String productWithout();
+
+    String personCreateNew();
 }
