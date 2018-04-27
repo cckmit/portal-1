@@ -21,6 +21,7 @@ public class ProductMultiSelector extends MultipleInputSelector< ProductShortVie
 
     public void fillOptions( List< ProductShortView > options ) {
         clearOptions();
+        addOption(lang.productWithout(), new ProductShortView(null, lang.productWithout(), 0));
         for ( ProductShortView option : options ) {
             addOption( option.getName(), option );
         }
@@ -30,4 +31,7 @@ public class ProductMultiSelector extends MultipleInputSelector< ProductShortVie
     public void refreshValue() {
 
     }
+
+    @Inject
+    private Lang lang;
 }

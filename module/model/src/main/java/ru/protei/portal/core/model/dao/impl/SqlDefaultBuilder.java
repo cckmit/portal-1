@@ -37,7 +37,15 @@ public class SqlDefaultBuilder {
             }
 
             if ( query.getProductIds() != null && !query.getProductIds().isEmpty() ) {
-                condition.append(" and product_id in (" + query.getProductIds().stream().map(Object::toString).collect( Collectors.joining(",")) + ")");
+                if (query.getProductIds().remove(null)) {
+                    condition.append(" and (product_id is null");
+                    if (!query.getProductIds().isEmpty()) {
+                        condition.append(" or product_id in (" + query.getProductIds().stream().map(Object::toString).collect( Collectors.joining(",")) + ")");
+                    }
+                    condition.append(")");
+                } else {
+                    condition.append(" and product_id in (" + query.getProductIds().stream().map(Object::toString).collect( Collectors.joining(",")) + ")");
+                }
             }
 
             if ( query.getManagerIds() != null && !query.getManagerIds().isEmpty() ) {
