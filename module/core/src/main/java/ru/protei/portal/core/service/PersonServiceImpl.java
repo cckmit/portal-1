@@ -42,4 +42,15 @@ public class PersonServiceImpl implements PersonService {
         list.forEach(a -> names.put(a.getId(), a.getDisplayName()));
         return new CoreResponse<Map<Long, String>>().success( names );
     }
+
+    @Override
+    public CoreResponse<Person> getPerson(Long id) {
+        Person person = personDAO.getPerson(id);
+
+        if (person == null) {
+            return new CoreResponse<Person>().error(En_ResultStatus.GET_DATA_ERROR);
+        }
+
+        return new CoreResponse<Person>().success(person);
+    }
 }

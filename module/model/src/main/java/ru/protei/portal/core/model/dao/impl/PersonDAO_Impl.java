@@ -174,6 +174,11 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
         return listByQuery( query );
     }
 
+    @Override
+    public Person getPerson(long id) {
+        return get(id);
+    }
+
 
     /**
      * Query Condition builders

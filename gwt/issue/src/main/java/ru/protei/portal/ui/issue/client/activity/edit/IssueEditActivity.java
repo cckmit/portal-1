@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.issue.client.activity.edit;
 
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -15,9 +16,7 @@ import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
-import ru.protei.portal.ui.common.client.service.CompanyServiceAsync;
-import ru.protei.portal.ui.common.client.service.IssueServiceAsync;
+import ru.protei.portal.ui.common.client.service.*;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
@@ -57,14 +56,17 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
         if (event.id == null) {
             fireEvent(new AppEvents.InitPanelName(lang.newIssue()));
-            if (issueSaved != null) {
-                issue = issueSaved.clone();
+            if (issueSaved != null && event.initiatorId != null) {
+                issue = issueSaved.copy();
                 issueSaved = null;
                 initialView(issue);
             } else {
                 CaseObject caseObject = new CaseObject();
                 caseObject.setPrivateCase(true);
                 initialView(caseObject);
+            }
+            if (event.initiatorId != null) {
+                requestInitiator(event.initiatorId);
             }
         } else {
             fireEvent(new AppEvents.InitPanelName(lang.issueEdit()));
@@ -172,8 +174,9 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     @Override
     public void onCreateContact(Long companyId) {
         fillIssueObject(issue);
-        issueSaved = issue.clone();
-        fireEvent(new ContactEvents.Edit(null, companyId));
+        issueSaved = issue.copy();
+        issueSaved.setInitiator(null);
+        fireEvent(new ContactEvents.Edit(null, companyId, "issue"));
     }
 
     private void initialView(CaseObject issue){
@@ -274,6 +277,21 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         issue.setAttachmentExists(true);
     }
 
+    private void requestInitiator(Long initiatorId) {
+        personService.getPerson(initiatorId, new AsyncCallback<Person>() {
+            @Override
+            public void onFailure(Throwable throwable) {}
+
+            @Override
+            public void onSuccess(Person person) {
+                view.initiator().setValue(person.toFullNameShortView());
+                if (person.getCompany() != null) {
+                    view.company().setValue(person.getCompany().toEntityOption());
+                }
+            }
+        });
+    }
+
     @Inject
     AbstractIssueEditView view;
     @Inject
@@ -286,6 +304,8 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     PolicyService policyService;
     @Inject
     CompanyServiceAsync companyService;
+    @Inject
+    PersonServiceAsync personService;
 
     private AppEvents.InitDetails initDetails;
     private CaseObject issue;

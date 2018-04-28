@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.service;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.view.PersonShortView;
 
@@ -21,4 +22,6 @@ public interface PersonServiceAsync {
     void getPersonViewList( PersonQuery query, AsyncCallback< List< PersonShortView > > callback );
 
     void getPersonNames(Collection<Long> ids, AsyncCallback<Map<Long, String>> async);
+
+    void getPerson(Long id, AsyncCallback<Person> callback);
 }

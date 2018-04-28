@@ -422,8 +422,7 @@ public class CaseObject extends AuditableObject {
         return "CaseObject";
     }
 
-    @Override
-    public CaseObject clone() {
+    public CaseObject copy() {
         CaseObject caseObject = new CaseObject();
         caseObject.setId(id);
         caseObject.setTypeId(typeId);
@@ -438,6 +437,7 @@ public class CaseObject extends AuditableObject {
         caseObject.setCreatorId(creatorId);
         caseObject.setCreatorIp(creatorIp);
         caseObject.setInitiatorId(initiatorId);
+        caseObject.setInitiator(initiator);
         caseObject.setInitiatorCompanyId(initiatorCompanyId);
         caseObject.setInitiatorCompany(initiatorCompany);
         caseObject.setProductId(productId);
@@ -450,8 +450,12 @@ public class CaseObject extends AuditableObject {
         caseObject.setCreatorInfo(creatorInfo);
         caseObject.setDeleted(deleted);
         caseObject.setPrivateCase(privateCase);
+        caseObject.setAttachmentExists(isAttachmentExists);
+        caseObject.setAttachments(attachments);
         caseObject.setLocations(locations);
         caseObject.setMembers(members);
+        caseObject.setExtAppType(extAppType);
+        caseObject.setNotifiers(notifiers);
         return caseObject;
     }
 

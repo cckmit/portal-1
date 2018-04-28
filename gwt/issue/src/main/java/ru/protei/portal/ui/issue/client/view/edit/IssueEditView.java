@@ -50,6 +50,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         company.setDefaultValue(lang.selectIssueCompany());
         product.setDefaultValue(lang.selectIssueProduct());
         manager.setDefaultValue(lang.selectIssueManager());
+        initiator.setAddPersonOptionAvailable(true);
     }
 
     @Override

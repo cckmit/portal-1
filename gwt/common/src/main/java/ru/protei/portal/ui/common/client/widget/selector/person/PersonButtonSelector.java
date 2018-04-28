@@ -49,7 +49,9 @@ public class PersonButtonSelector extends ButtonSelector< PersonShortView > impl
             addOption(null);
         }
 
-        addOption(new PersonShortView(lang.personCreateNew(), CrmConstants.Person.CREATE_NEW_PERSON_ID, false));
+        if (isAddPersonOptionAvailable) {
+            addOption(new PersonShortView(lang.personCreateNew(), CrmConstants.Person.CREATE_NEW_PERSON_ID, false));
+        }
 
         persons.forEach(this::addOption);
 
@@ -59,6 +61,10 @@ public class PersonButtonSelector extends ButtonSelector< PersonShortView > impl
 
     public void setDefaultValue( String value ) {
         this.defaultValue = value;
+    }
+
+    public void setAddPersonOptionAvailable(boolean is) {
+        this.isAddPersonOptionAvailable = is;
     }
 
     public void setFired ( Boolean value ) { this.fired = value; }
@@ -87,4 +93,5 @@ public class PersonButtonSelector extends ButtonSelector< PersonShortView > impl
     private Company company;
     private String defaultValue;
     private Boolean fired = null;
+    private boolean isAddPersonOptionAvailable = false;
 }
