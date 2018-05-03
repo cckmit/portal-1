@@ -12,17 +12,16 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
-import ru.protei.portal.ui.common.client.events.ContactEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.dict.ImportanceButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.event.SelectorAddEvent;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonButtonSelector;
@@ -39,7 +38,7 @@ import java.util.Set;
 /**
  * Вид создания и редактирования обращения
  */
-public class IssueEditView extends Composite implements AbstractIssueEditView {
+public class IssueEditView extends Composite implements AbstractIssueEditView, SelectorAddEvent {
 
     @Inject
     public void onInit() {
@@ -50,7 +49,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         company.setDefaultValue(lang.selectIssueCompany());
         product.setDefaultValue(lang.selectIssueProduct());
         manager.setDefaultValue(lang.selectIssueManager());
-        initiator.setAddPersonOptionAvailable(true);
+        initiator.setAddButtonEnabled(true, lang.personCreateNew(), this);
     }
 
     @Override
@@ -224,14 +223,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         };
     }
 
-    @UiHandler( "initiator" )
-    public void onChangeInitiator(ValueChangeEvent< PersonShortView > event) {
-        if (CrmConstants.Person.CREATE_NEW_PERSON_ID.equals(event.getValue().getId()) && company.getValue() != null) {
-            Company c = Company.fromEntityOption(company.getValue());
-            activity.onCreateContact(c.getId());
-        }
-    }
-
     @UiHandler( "company" )
     public void onChangeCompany( ValueChangeEvent< EntityOption > event ){
         Company company = Company.fromEntityOption( event.getValue() );
@@ -273,6 +264,13 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
             comments.addClassName("hide");
     }
 
+    @Override
+    public void onAddClicked() {
+        if (company.getValue() != null) {
+            Company c = Company.fromEntityOption(company.getValue());
+            activity.onCreateContact(c.getId());
+        }
+    }
 
     @UiField
     ValidableTextBox name;

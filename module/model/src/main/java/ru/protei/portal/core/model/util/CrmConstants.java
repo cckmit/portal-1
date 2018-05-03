@@ -13,8 +13,4 @@ public class CrmConstants {
     public interface Product {
         Long UNDEFINED = -1L;
     }
-
-    public interface Person {
-        Long CREATE_NEW_PERSON_ID = -1L;
-    }
 }

@@ -1,7 +1,8 @@
 package ru.protei.portal.ui.issue.client.activity.edit;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.HasValue;
 import com.google.inject.Inject;
+import ru.brainworm.factory.context.client.annotation.ContextAware;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -56,17 +57,12 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
         if (event.id == null) {
             fireEvent(new AppEvents.InitPanelName(lang.newIssue()));
-            if (issueSaved != null && event.initiatorId != null) {
-                issue = issueSaved.copy();
-                issueSaved = null;
+            if (issue != null) {
                 initialView(issue);
             } else {
                 CaseObject caseObject = new CaseObject();
                 caseObject.setPrivateCase(true);
                 initialView(caseObject);
-            }
-            if (event.initiatorId != null) {
-                requestInitiator(event.initiatorId);
             }
         } else {
             fireEvent(new AppEvents.InitPanelName(lang.issueEdit()));
@@ -87,6 +83,23 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             event.attachments.forEach(view.attachmentsContainer()::remove);
             issue.getAttachments().removeAll(event.attachments);
             issue.setAttachmentExists(!issue.getAttachments().isEmpty());
+        }
+    }
+
+    @Event
+    public void onFillPerson(PersonEvents.PersonCreated event) {
+        if (receivePersonCreatedEvent && issue != null && event.person != null) {
+            receivePersonCreatedEvent = false;
+            issue.setInitiator(event.person);
+            issue.setInitiatorId(event.person.getId());
+            issue.setInitiatorCompany(event.person.getCompany());
+            issue.setInitiatorCompanyId(event.person.getCompanyId());
+            if (issue.getInitiatorCompany() != null) {
+                view.company().setValue(EntityOption.fromCompany(issue.getInitiatorCompany()), true);
+            }
+            if (issue.getInitiator() != null) {
+                view.initiator().setValue(PersonShortView.fromPerson(issue.getInitiator()));
+            }
         }
     }
 
@@ -173,10 +186,9 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
     @Override
     public void onCreateContact(Long companyId) {
+        receivePersonCreatedEvent = true;
         fillIssueObject(issue);
-        issueSaved = issue.copy();
-        issueSaved.setInitiator(null);
-        fireEvent(new ContactEvents.Edit(null, companyId, "issue"));
+        fireEvent(new ContactEvents.Edit(null, companyId, true));
     }
 
     private void initialView(CaseObject issue){
@@ -277,21 +289,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         issue.setAttachmentExists(true);
     }
 
-    private void requestInitiator(Long initiatorId) {
-        personService.getPerson(initiatorId, new AsyncCallback<Person>() {
-            @Override
-            public void onFailure(Throwable throwable) {}
-
-            @Override
-            public void onSuccess(Person person) {
-                view.initiator().setValue(person.toFullNameShortView());
-                if (person.getCompany() != null) {
-                    view.company().setValue(person.getCompany().toEntityOption());
-                }
-            }
-        });
-    }
-
     @Inject
     AbstractIssueEditView view;
     @Inject
@@ -308,6 +305,8 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     PersonServiceAsync personService;
 
     private AppEvents.InitDetails initDetails;
-    private CaseObject issue;
-    private static CaseObject issueSaved;
+    @ContextAware
+    CaseObject issue;
+    @ContextAware
+    boolean receivePersonCreatedEvent = false;
 }

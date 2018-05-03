@@ -74,17 +74,17 @@ public class ContactEvents {
         public Long id;
         @Name("company")
         public Long companyId;
-        public String back;
+        public Boolean notify = false;
 
         public Edit() { this.id = null; }
         public Edit (Long id, Long companyId) {
             this.id = id;
             this.companyId = companyId;
         }
-        public Edit (Long id, Long companyId, String back) {
+        public Edit (Long id, Long companyId, Boolean notify) {
             this.id = id;
             this.companyId = companyId;
-            this.back = back;
+            this.notify = notify;
         }
 
         public static Edit byId (Long id) {

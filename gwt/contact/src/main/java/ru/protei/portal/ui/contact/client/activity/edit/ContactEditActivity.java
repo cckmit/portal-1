@@ -5,7 +5,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
-import ru.brainworm.factory.context.client.events.ReplaceLastEvent;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
@@ -16,10 +15,7 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.NameStatus;
-import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.ContactEvents;
-import ru.protei.portal.ui.common.client.events.IssueEvents;
-import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AccountServiceAsync;
 import ru.protei.portal.ui.common.client.service.CompanyServiceAsync;
@@ -47,7 +43,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
 
-        eventBack = event.back;
+        notifyWhenPersonCreated = event.notify;
 
         if (event.id == null) {
             this.fireEvent(new AppEvents.InitPanelName(lang.newContact()));
@@ -57,8 +53,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
             if (event.companyId != null) {
                 requestCompany(event.companyId);
             }
-        }
-        else {
+        } else {
             contactService.getContact(event.id, new AsyncCallback<Person>() {
                 @Override
                 public void onFailure(Throwable throwable) {
@@ -121,8 +116,8 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
                     @Override
                     public void onSuccess(Boolean result) {
                         fireEvent(new Back());
-                        if ("issue".equals(eventBack)) {
-                            fireEvent(new ReplaceLastEvent(IssueEvents.Edit.byInitiatorId(person.getId())));
+                        if (notifyWhenPersonCreated) {
+                            fireEvent(new PersonEvents.PersonCreated(person));
                         }
                     }
                 } );
@@ -290,5 +285,5 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
     private Person contact;
     private UserLogin account;
     private AppEvents.InitDetails initDetails;
-    private String eventBack;
+    private boolean notifyWhenPersonCreated = false;
 }

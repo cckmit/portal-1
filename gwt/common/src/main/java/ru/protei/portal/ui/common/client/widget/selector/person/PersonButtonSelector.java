@@ -2,8 +2,6 @@ package ru.protei.portal.ui.common.client.widget.selector.person;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.core.model.util.CrmConstants;
-import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
@@ -49,10 +47,6 @@ public class PersonButtonSelector extends ButtonSelector< PersonShortView > impl
             addOption(null);
         }
 
-        if (isAddPersonOptionAvailable) {
-            addOption(new PersonShortView(lang.personCreateNew(), CrmConstants.Person.CREATE_NEW_PERSON_ID, false));
-        }
-
         persons.forEach(this::addOption);
 
         super.setValue( deferred );
@@ -61,10 +55,6 @@ public class PersonButtonSelector extends ButtonSelector< PersonShortView > impl
 
     public void setDefaultValue( String value ) {
         this.defaultValue = value;
-    }
-
-    public void setAddPersonOptionAvailable(boolean is) {
-        this.isAddPersonOptionAvailable = is;
     }
 
     public void setFired ( Boolean value ) { this.fired = value; }
@@ -93,5 +83,4 @@ public class PersonButtonSelector extends ButtonSelector< PersonShortView > impl
     private Company company;
     private String defaultValue;
     private Boolean fired = null;
-    private boolean isAddPersonOptionAvailable = false;
 }

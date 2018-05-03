@@ -3,6 +3,7 @@ package ru.protei.portal.ui.common.client.widget.selector.popup;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Style;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.*;
@@ -15,6 +16,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.selector.event.SelectorAddEvent;
 import ru.protei.portal.ui.common.client.widget.selector.item.SelectorItem;
 
 /**
@@ -94,6 +96,23 @@ public class SelectorPopup
         searchContainer.addClassName( "hide" );
     }
 
+    public void setAddButton(boolean addVisible) {
+        this.addVisible = addVisible;
+        if (addVisible) {
+            addContainer.removeClassName("hide");
+        } else {
+            addContainer.addClassName("hide");
+        }
+    }
+
+    public void setAddButton(boolean addVisible, String text) {
+        addButton.setText(text);
+        setAddButton(addVisible);
+    }
+
+    public void setAddEvent(SelectorAddEvent addEvent) {
+        this.addEvent = addEvent;
+    }
 
     @UiHandler( "search" )
     public void onSearchInputChanged( KeyUpEvent event ) {
@@ -107,6 +126,13 @@ public class SelectorPopup
             return;
         }
         fireChangeValueTimer();
+    }
+
+    @UiHandler("addButton")
+    public void onAddButtonClick(ClickEvent event) {
+        if (addEvent != null) {
+            addEvent.onAddClicked();
+        }
     }
 
     @Override
@@ -145,15 +171,23 @@ public class SelectorPopup
     IsWidget relative;
     ResizeHandler resizeHandler;
     HandlerRegistration resizeHandlerReg;
-    boolean searchAutoFocus = false;
 
+    boolean searchAutoFocus = false;
     boolean searchVisible = false;
+    boolean addVisible = false;
+
+    SelectorAddEvent addEvent;
+
     @UiField
     public HTMLPanel childContainer;
     @UiField
     public TextBox search;
     @UiField
+    public Button addButton;
+    @UiField
     DivElement searchContainer;
+    @UiField
+    DivElement addContainer;
     @UiField
     HTMLPanel root;
 

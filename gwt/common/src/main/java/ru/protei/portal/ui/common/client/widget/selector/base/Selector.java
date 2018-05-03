@@ -1,7 +1,9 @@
 package ru.protei.portal.ui.common.client.widget.selector.base;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.*;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
@@ -12,6 +14,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.event.HasSelectorChangeValHandlers;
+import ru.protei.portal.ui.common.client.widget.selector.event.SelectorAddEvent;
 import ru.protei.portal.ui.common.client.widget.selector.event.SelectorChangeValEvent;
 import ru.protei.portal.ui.common.client.widget.selector.event.SelectorChangeValHandler;
 import ru.protei.portal.ui.common.client.widget.selector.item.SelectorItem;
@@ -79,7 +82,17 @@ public abstract class Selector<T>
         this.hasNullValue = hasNullValue;
     }
 
-     public void addOption( T value ) {
+    public void setAddButtonEnabled(boolean isEnabled) {
+        setAddButtonEnabled(isEnabled, null, null);
+    }
+
+    public void setAddButtonEnabled(boolean isEnabled, String addButtonText, SelectorAddEvent addEvent) {
+        this.addButtonEnabled = isEnabled;
+        this.addButtonText = addButtonText;
+        popup.setAddEvent(addEvent);
+    }
+
+    public void addOption( T value ) {
         if ( displayOptionCreator == null ) {
             return;
         }
@@ -207,6 +220,7 @@ public abstract class Selector<T>
         this.relative = relative;
         popup.setSearchVisible(searchEnabled);
         popup.setSearchAutoFocus(searchAutoFocusEnabled);
+        popup.setAddButton(addButtonEnabled, addButtonText);
 
         popup.showNear(relative);
         popup.addValueChangeHandler(this);
@@ -285,6 +299,8 @@ public abstract class Selector<T>
     protected boolean hasNullValue = true;
     private boolean searchEnabled = false;
     private boolean searchAutoFocusEnabled = false;
+    private boolean addButtonEnabled = false;
+    private String addButtonText;
     private IsWidget relative;
     private T selectedOption = null;
     private SelectorItem nullItemView;

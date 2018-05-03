@@ -55,8 +55,6 @@ public class IssueEvents {
 
         public Long id;
         public Long issueId;
-        @Name("initiator")
-        public Long initiatorId;
 
         public Edit() { this.id = null; }
         public Edit (Long id, Long issueId ) {
@@ -66,12 +64,6 @@ public class IssueEvents {
 
         public static Edit byId (Long id) {
             return new Edit(id, null);
-        }
-
-        public static Edit byInitiatorId (Long initiatorId) {
-            Edit edit = new Edit();
-            edit.initiatorId = initiatorId;
-            return edit;
         }
 
         public static Edit newItem (EntityOption option) {

@@ -1223,6 +1223,15 @@ td.info {
   top: 5px;
 }
 
+.dropdown-addbutton {
+  position: relative;
+}
+
+.dropdown-addbutton > button {
+  width: 100%;
+  text-align: left;
+}
+
 
 /* issue editing */
 
