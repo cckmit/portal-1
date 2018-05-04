@@ -10,6 +10,7 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_Scope;
 import ru.protei.portal.ui.common.client.widget.privilege.list.PrivilegeList;
+import ru.protei.portal.ui.common.client.widget.switcher.Switcher;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.role.client.activity.edit.AbstractRoleEditActivity;
 import ru.protei.portal.ui.role.client.activity.edit.AbstractRoleEditView;
@@ -52,6 +53,11 @@ public class RoleEditView extends Composite implements AbstractRoleEditView {
         return scope;
     }
 
+    @Override
+    public HasValue<Boolean> defaultForContact() {
+        return defaultForContact;
+    }
+
     @UiHandler( "saveButton" )
     public void onSaveClicked( ClickEvent event ) {
         if ( activity != null ) {
@@ -81,6 +87,8 @@ public class RoleEditView extends Composite implements AbstractRoleEditView {
     @Inject
     @UiField(provided = true)
     ScopeBtnGroup scope;
+    @UiField
+    Switcher defaultForContact;
 
     AbstractRoleEditActivity activity;
 

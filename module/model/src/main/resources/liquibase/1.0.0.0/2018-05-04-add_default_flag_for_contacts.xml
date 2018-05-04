@@ -1,0 +1,21 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+
+    <changeSet id="2018-05-04-user_role-add-default-flag" author="buchmastov">
+        <addColumn tableName="user_role">
+            <column name="default_for_contact" type="BOOLEAN" defaultValueBoolean="false"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="2018-05-04-user_role-set-default-flag" author="buchmastov">
+        <update tableName="user_role">
+            <column name="default_for_contact" type="BOOLEAN" valueBoolean="true"/>
+            <where>scopes = 'COMPANY'</where>
+        </update>
+    </changeSet>
+
+</databaseChangeLog>
