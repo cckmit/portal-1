@@ -102,6 +102,10 @@ public class AccountServiceImpl implements AccountService {
             return new CoreResponse< UserLogin >().error( En_ResultStatus.ALREADY_EXIST );
         }
 
+        if (userLogin.getRoles() == null || userLogin.getRoles().size() == 0) {
+            return new CoreResponse< UserLogin >().error( En_ResultStatus.INCORRECT_PARAMS );
+        }
+
         userLogin.setUlogin( userLogin.getUlogin().trim() );
 
         UserLogin account = userLogin.getId() == null ? null : getAccount( token, userLogin.getId() ).getData();
@@ -117,11 +121,49 @@ public class AccountServiceImpl implements AccountService {
             userLogin.setAdminStateId( En_AdminState.UNLOCKED.getId() );
         }
 
+        if ( userLoginDAO.saveOrUpdate( userLogin ) ) {
+            jdbcManyRelationsHelper.persist( userLogin, "roles" );
+
+            return new CoreResponse< UserLogin >().success( userLogin );
+        }
+
+        return new CoreResponse< UserLogin >().error( En_ResultStatus.INTERNAL_ERROR );
+    }
+
+    @Override
+    @Transactional
+    public CoreResponse<UserLogin> saveContactAccount(AuthToken token, UserLogin userLogin) {
+
+        UserRoleQuery userRoleQuery = new UserRoleQuery();
+        userRoleQuery.setDefaultForContact(true);
+        Set<UserRole> userRoles = new HashSet<>(userRoleDAO.listByQuery(userRoleQuery));
+
+        userLogin.setRoles(userRoles);
+
+        if ( !isValidLogin( userLogin ) )
+            return new CoreResponse< UserLogin >().error( En_ResultStatus.VALIDATION_ERROR );
+
+        if ( !isUniqueLogin( userLogin.getUlogin(), userLogin.getId() ) ) {
+            return new CoreResponse< UserLogin >().error( En_ResultStatus.ALREADY_EXIST );
+        }
+
         if (userLogin.getRoles() == null || userLogin.getRoles().size() == 0) {
-            UserRoleQuery userRoleQuery = new UserRoleQuery();
-            userRoleQuery.setDefaultForContact(true);
-            Set<UserRole> userRoles = new HashSet<>(userRoleDAO.listByQuery(userRoleQuery));
-            userLogin.setRoles(userRoles);
+            return new CoreResponse< UserLogin >().error( En_ResultStatus.INCORRECT_PARAMS );
+        }
+
+        userLogin.setUlogin( userLogin.getUlogin().trim() );
+
+        UserLogin account = userLogin.getId() == null ? null : getAccount( token, userLogin.getId() ).getData();
+
+        if ( account == null || ( account.getUpass() == null && userLogin.getUpass() != null ) ||
+                ( account.getUpass() != null && userLogin.getUpass() != null && !account.getUpass().equalsIgnoreCase( userLogin.getUpass().trim() ) ) ) {
+            userLogin.setUpass( DigestUtils.md5DigestAsHex( userLogin.getUpass().trim().getBytes() ) );
+        }
+
+        if( userLogin.getId() == null ) {
+            userLogin.setCreated( new Date() );
+            userLogin.setAuthTypeId( En_AuthType.LOCAL.getId() );
+            userLogin.setAdminStateId( En_AdminState.UNLOCKED.getId() );
         }
 
         if ( userLoginDAO.saveOrUpdate( userLogin ) ) {

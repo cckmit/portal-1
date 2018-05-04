@@ -186,7 +186,6 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
     }
 
     private UserLogin applyChangesLogin() {
-        /*@todo аккаунт заказчика надо создавать с соответствующей ролью */
         account.setUlogin(view.login().getText());
         if (!HelperFunc.isEmpty(view.password().getText())) {
             account.setUpass(view.password().getText());

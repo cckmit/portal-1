@@ -38,9 +38,9 @@ public class UserRoleDAO_impl extends PortalBaseJdbcDAO<UserRole> implements Use
                 condition.append( " )");
             }
 
-            if (query.getDefaultForContact() != null) {
+            if (query.isDefaultForContact() != null) {
                 condition.append(" and default_for_contact = ");
-                condition.append(query.getDefaultForContact() ? "true" : "false");
+                condition.append(query.isDefaultForContact() ? "true" : "false");
             }
         });
     }

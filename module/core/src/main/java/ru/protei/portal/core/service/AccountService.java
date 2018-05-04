@@ -31,6 +31,10 @@ public interface AccountService {
     @Auditable( En_AuditType.ACCOUNT_MODIFY )
     CoreResponse< UserLogin > saveAccount( AuthToken token, UserLogin userLogin );
 
+    @Privileged( requireAny = { En_Privilege.ACCOUNT_EDIT, En_Privilege.ACCOUNT_CREATE })
+    @Auditable( En_AuditType.ACCOUNT_MODIFY )
+    CoreResponse< UserLogin > saveContactAccount( AuthToken token, UserLogin userLogin );
+
     CoreResponse< Boolean > checkUniqueLogin( String login, Long excludeId );
 
     @Privileged({ En_Privilege.ACCOUNT_REMOVE })

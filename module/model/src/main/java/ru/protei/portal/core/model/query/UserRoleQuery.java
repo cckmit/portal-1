@@ -13,7 +13,7 @@ public class UserRoleQuery extends BaseQuery {
      */
     private List<Long> roleIds;
 
-    private Boolean defaultForContact;
+    private Boolean isDefaultForContact;
 
     public List< Long > getRoleIds() {
         return roleIds;
@@ -23,11 +23,11 @@ public class UserRoleQuery extends BaseQuery {
         this.roleIds = roleIds;
     }
 
-    public Boolean getDefaultForContact() {
-        return defaultForContact;
+    public Boolean isDefaultForContact() {
+        return isDefaultForContact;
     }
 
     public void setDefaultForContact(Boolean defaultForContact) {
-        this.defaultForContact = defaultForContact;
+        this.isDefaultForContact = defaultForContact;
     }
 }

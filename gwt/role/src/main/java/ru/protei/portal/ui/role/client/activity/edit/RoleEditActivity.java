@@ -110,7 +110,7 @@ public abstract class RoleEditActivity implements AbstractRoleEditActivity, Acti
         view.description().setValue(role.getInfo());
         view.privileges().setValue(role.getPrivileges());
         view.scope().setValue( role.getScope() );
-        view.defaultForContact().setValue(role.getDefaultForContact());
+        view.defaultForContact().setValue(role.isDefaultForContact());
     }
 
     @Inject
