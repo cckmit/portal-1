@@ -88,11 +88,9 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
     @Event
     public void onFillPerson(PersonEvents.PersonCreated event) {
-        if (CrmConstants.Origin.ISSUE_EDIT.equals(event.origin) && issue != null && event.person != null) {
+        if (CrmConstants.Issue.CREATE_CONTACT_IDENTITY.equals(event.origin) && issue != null && event.person != null) {
             issue.setInitiator(event.person);
             issue.setInitiatorId(event.person.getId());
-            issue.setInitiatorCompany(event.person.getCompany());
-            issue.setInitiatorCompanyId(event.person.getCompanyId());
             if (issue.getInitiator() != null) {
                 view.initiator().setValue(PersonShortView.fromPerson(issue.getInitiator()));
             }
@@ -181,9 +179,11 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     }
 
     @Override
-    public void onCreateContact(Company company) {
-        fillIssueObject(issue);
-        fireEvent(new ContactEvents.Edit(null, company, CrmConstants.Origin.ISSUE_EDIT));
+    public void onCreateContactClicked() {
+        if (view.company().getValue() != null) {
+            fillIssueObject(issue);
+            fireEvent(new ContactEvents.Edit(null, Company.fromEntityOption(view.company().getValue()), CrmConstants.Issue.CREATE_CONTACT_IDENTITY));
+        }
     }
 
     private void initialView(CaseObject issue){

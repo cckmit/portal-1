@@ -106,7 +106,7 @@ public class ContactServiceImpl implements ContactService {
             p.setGender(En_Gender.UNDEFINED);
 
         if (personDAO.saveOrUpdate(p)) {
-            return new CoreResponse<Person>().success(personDAO.get(p.getId()));
+            return new CoreResponse<Person>().success(p);
         }
 
         return new CoreResponse<Person>().error(En_ResultStatus.INTERNAL_ERROR);

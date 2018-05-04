@@ -16,7 +16,6 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.events.AddEvent;
-import ru.protei.portal.ui.common.client.events.AddHandler;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
@@ -39,7 +38,7 @@ import java.util.Set;
 /**
  * Вид создания и редактирования обращения
  */
-public class IssueEditView extends Composite implements AbstractIssueEditView, AddHandler {
+public class IssueEditView extends Composite implements AbstractIssueEditView {
 
     @Inject
     public void onInit() {
@@ -52,7 +51,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView, A
         initiator.setDefaultValue(lang.selectIssueInitiator());
         initiator.setAddButtonText(lang.personCreateNew());
         initiator.setAddButtonVisible(true);
-        initiator.setAddButtonHandler(this);
     }
 
     @Override
@@ -258,6 +256,10 @@ public class IssueEditView extends Composite implements AbstractIssueEditView, A
         activity.removeAttachment(event.getAttachment());
     }
 
+    @UiHandler("initiator")
+    public void onAddContactEvent(AddEvent event) {
+        activity.onCreateContactClicked();
+    }
 
     @Override
     public void showComments(boolean isShow) {
@@ -265,13 +267,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView, A
             comments.removeClassName("hide");
         else
             comments.addClassName("hide");
-    }
-
-    @Override
-    public void onAdd(AddEvent event) {
-        if (company.getValue() != null) {
-            activity.onCreateContact(Company.fromEntityOption(company.getValue()));
-        }
     }
 
     @UiField

@@ -210,6 +210,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
 
     private void fillView(Person person, UserLogin userLogin){
         view.company().setValue(person.getCompany() == null ? null : person.getCompany().toEntityOption());
+        // lock company field if provided person already contains defined company. Added with CRM-103 task.
         view.companyEnabled().setEnabled(person.getId() == null && person.getCompany() == null);
         view.gender().setValue(person.getGender());
         view.firstName().setValue(person.getFirstName());

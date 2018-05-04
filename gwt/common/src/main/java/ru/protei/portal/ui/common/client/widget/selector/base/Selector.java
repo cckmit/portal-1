@@ -13,6 +13,7 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.protei.portal.ui.common.client.events.AddHandler;
+import ru.protei.portal.ui.common.client.events.HasAddHandlers;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.event.HasSelectorChangeValHandlers;
 import ru.protei.portal.ui.common.client.widget.selector.event.SelectorChangeValEvent;
@@ -31,7 +32,8 @@ public abstract class Selector<T>
         implements HasValue<T>,
         ClickHandler, ValueChangeHandler<String>,
         Window.ScrollHandler,
-        HasSelectorChangeValHandlers {
+        HasSelectorChangeValHandlers,
+        HasAddHandlers {
 
     public void setValue(T value) {
         setValue(value, false);
@@ -90,10 +92,6 @@ public abstract class Selector<T>
         this.addButtonText = addButtonText;
     }
 
-    public void setAddButtonHandler(AddHandler handler) {
-        popup.addAddHandler(handler);
-    }
-
     public void addOption( T value ) {
         if ( displayOptionCreator == null ) {
             return;
@@ -150,6 +148,10 @@ public abstract class Selector<T>
         return addHandler(handler, ValueChangeEvent.getType());
     }
 
+    @Override
+    public HandlerRegistration addAddHandler(AddHandler handler) {
+        return popup.addAddHandler(handler);
+    }
 
     @Override
     public void onValueChange(ValueChangeEvent<String> event) {

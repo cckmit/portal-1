@@ -12,5 +12,5 @@ public interface AbstractIssueEditActivity {
     void onCancelClicked();
     void removeAttachment(Attachment attachment);
     void onCompanyChanged();
-    void onCreateContact(Company company);
+    void onCreateContactClicked();
 }
