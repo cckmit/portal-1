@@ -15,6 +15,7 @@ import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.AccountQuery;
+import ru.protei.portal.core.model.query.UserRoleQuery;
 import ru.protei.portal.core.service.user.AuthService;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
@@ -114,6 +115,13 @@ public class AccountServiceImpl implements AccountService {
             userLogin.setCreated( new Date() );
             userLogin.setAuthTypeId( En_AuthType.LOCAL.getId() );
             userLogin.setAdminStateId( En_AdminState.UNLOCKED.getId() );
+        }
+
+        if (userLogin.getRoles() == null || userLogin.getRoles().size() == 0) {
+            UserRoleQuery userRoleQuery = new UserRoleQuery();
+            userRoleQuery.setDefaultForContact(true);
+            Set<UserRole> userRoles = new HashSet<>(userRoleDAO.listByQuery(userRoleQuery));
+            userLogin.setRoles(userRoles);
         }
 
         if ( userLoginDAO.saveOrUpdate( userLogin ) ) {
