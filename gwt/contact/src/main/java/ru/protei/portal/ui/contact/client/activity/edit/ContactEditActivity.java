@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.contact.client.activity.edit;
 
-
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
@@ -8,7 +7,6 @@ import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.helper.HelperFunc;
@@ -43,16 +41,14 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
 
-        notifyWhenPersonCreated = event.notify;
+        origin = event.origin;
 
         if (event.id == null) {
             this.fireEvent(new AppEvents.InitPanelName(lang.newContact()));
             Person newPerson = new Person();
             newPerson.setCompanyId(event.companyId);
+            newPerson.setCompany(event.company);
             initialView(newPerson, new UserLogin());
-            if (event.companyId != null) {
-                requestCompany(event.companyId);
-            }
         } else {
             contactService.getContact(event.id, new AsyncCallback<Person>() {
                 @Override
@@ -116,9 +112,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
                     @Override
                     public void onSuccess(Boolean result) {
                         fireEvent(new Back());
-                        if (notifyWhenPersonCreated) {
-                            fireEvent(new PersonEvents.PersonCreated(person));
-                        }
+                        fireEvent(new PersonEvents.PersonCreated(person, origin));
                     }
                 } );
             }
@@ -216,7 +210,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
 
     private void fillView(Person person, UserLogin userLogin){
         view.company().setValue(person.getCompany() == null ? null : person.getCompany().toEntityOption());
-        view.companyEnabled().setEnabled(person.getId() == null);
+        view.companyEnabled().setEnabled(person.getId() == null && person.getCompany() == null);
         view.gender().setValue(person.getGender());
         view.firstName().setValue(person.getFirstName());
         view.lastName().setValue(person.getLastName());
@@ -254,20 +248,6 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
                         view.password().getText().equals(view.confirmPassword().getText()));
     }
 
-    private void requestCompany(Long companyId) {
-        companyService.getCompany(companyId, new RequestCallback<Company>() {
-            @Override
-            public void onError (Throwable throwable) {}
-
-            @Override
-            public void onSuccess (Company company) {
-                if (view.company().getValue() == null) {
-                    view.company().setValue(company.toEntityOption());
-                }
-            }
-        });
-    }
-
     @Inject
     AbstractContactEditView view;
     @Inject
@@ -285,5 +265,5 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
     private Person contact;
     private UserLogin account;
     private AppEvents.InitDetails initDetails;
-    private boolean notifyWhenPersonCreated = false;
+    private String origin;
 }

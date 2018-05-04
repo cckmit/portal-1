@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
-import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.service.PersonService;
@@ -47,21 +46,6 @@ public class PersonServiceImpl implements PersonService {
 
         if ( result.isError() )
             throw new RequestFailedException( result.getStatus() );
-
-        return result.getData();
-    }
-
-    @Override
-    public Person getPerson(Long id) throws RequestFailedException {
-        log.debug("getPerson: id={}", id);
-
-        CoreResponse<Person> result = personService.getPerson(id);
-
-        log.debug("result status: {}", result.getStatus());
-
-        if (result.isError()) {
-            throw new RequestFailedException(result.getStatus());
-        }
 
         return result.getData();
     }

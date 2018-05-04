@@ -15,8 +15,10 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.ui.common.client.events.AddEvent;
+import ru.protei.portal.ui.common.client.events.AddHandler;
+import ru.protei.portal.ui.common.client.events.HasAddHandlers;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.selector.event.SelectorAddEvent;
 import ru.protei.portal.ui.common.client.widget.selector.item.SelectorItem;
 
 /**
@@ -24,7 +26,7 @@ import ru.protei.portal.ui.common.client.widget.selector.item.SelectorItem;
  */
 public class SelectorPopup
         extends PopupPanel
-        implements HasValueChangeHandlers<String>
+        implements HasValueChangeHandlers<String>, HasAddHandlers
 {
 
     public SelectorPopup() {
@@ -45,6 +47,11 @@ public class SelectorPopup
     @Override
     public HandlerRegistration addValueChangeHandler( ValueChangeHandler< String > handler ) {
         return addHandler( handler, ValueChangeEvent.getType() );
+    }
+
+    @Override
+    public HandlerRegistration addAddHandler(AddHandler handler) {
+        return addHandler(handler, AddEvent.getType());
     }
 
     public HasWidgets getChildContainer() {
@@ -110,10 +117,6 @@ public class SelectorPopup
         setAddButton(addVisible);
     }
 
-    public void setAddEvent(SelectorAddEvent addEvent) {
-        this.addEvent = addEvent;
-    }
-
     @UiHandler( "search" )
     public void onSearchInputChanged( KeyUpEvent event ) {
         if(event.getNativeKeyCode() == KeyCodes.KEY_DOWN) {
@@ -130,9 +133,7 @@ public class SelectorPopup
 
     @UiHandler("addButton")
     public void onAddButtonClick(ClickEvent event) {
-        if (addEvent != null) {
-            addEvent.onAddClicked();
-        }
+        AddEvent.fire(this);
     }
 
     @Override
@@ -175,8 +176,6 @@ public class SelectorPopup
     boolean searchAutoFocus = false;
     boolean searchVisible = false;
     boolean addVisible = false;
-
-    SelectorAddEvent addEvent;
 
     @UiField
     public HTMLPanel childContainer;

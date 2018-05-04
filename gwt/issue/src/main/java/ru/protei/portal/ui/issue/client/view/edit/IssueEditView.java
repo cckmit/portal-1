@@ -15,13 +15,14 @@ import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
+import ru.protei.portal.ui.common.client.events.AddEvent;
+import ru.protei.portal.ui.common.client.events.AddHandler;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.dict.ImportanceButtonSelector;
-import ru.protei.portal.ui.common.client.widget.selector.event.SelectorAddEvent;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonButtonSelector;
@@ -38,18 +39,20 @@ import java.util.Set;
 /**
  * Вид создания и редактирования обращения
  */
-public class IssueEditView extends Composite implements AbstractIssueEditView, SelectorAddEvent {
+public class IssueEditView extends Composite implements AbstractIssueEditView, AddHandler {
 
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         state.setDefaultValue(lang.selectIssueState());
         importance.setDefaultValue(lang.selectIssueImportance());
-        initiator.setDefaultValue(lang.selectIssueInitiator());
         company.setDefaultValue(lang.selectIssueCompany());
         product.setDefaultValue(lang.selectIssueProduct());
         manager.setDefaultValue(lang.selectIssueManager());
-        initiator.setAddButtonEnabled(true, lang.personCreateNew(), this);
+        initiator.setDefaultValue(lang.selectIssueInitiator());
+        initiator.setAddButtonText(lang.personCreateNew());
+        initiator.setAddButtonVisible(true);
+        initiator.setAddButtonHandler(this);
     }
 
     @Override
@@ -265,10 +268,9 @@ public class IssueEditView extends Composite implements AbstractIssueEditView, S
     }
 
     @Override
-    public void onAddClicked() {
+    public void onAdd(AddEvent event) {
         if (company.getValue() != null) {
-            Company c = Company.fromEntityOption(company.getValue());
-            activity.onCreateContact(c.getId());
+            activity.onCreateContact(Company.fromEntityOption(company.getValue()));
         }
     }
 

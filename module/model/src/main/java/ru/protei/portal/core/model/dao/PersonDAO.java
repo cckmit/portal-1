@@ -35,8 +35,6 @@ public interface PersonDAO extends PortalBaseDAO<Person> {
 
     List<Person> getPersons(PersonQuery query);
 
-    Person getPerson(long id);
-
     @SqlConditionBuilder
     SqlCondition createContactSqlCondition(ContactQuery query);
 

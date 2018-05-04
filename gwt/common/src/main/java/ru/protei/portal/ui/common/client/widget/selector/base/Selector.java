@@ -12,9 +12,9 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import ru.protei.portal.ui.common.client.events.AddHandler;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.event.HasSelectorChangeValHandlers;
-import ru.protei.portal.ui.common.client.widget.selector.event.SelectorAddEvent;
 import ru.protei.portal.ui.common.client.widget.selector.event.SelectorChangeValEvent;
 import ru.protei.portal.ui.common.client.widget.selector.event.SelectorChangeValHandler;
 import ru.protei.portal.ui.common.client.widget.selector.item.SelectorItem;
@@ -82,14 +82,16 @@ public abstract class Selector<T>
         this.hasNullValue = hasNullValue;
     }
 
-    public void setAddButtonEnabled(boolean isEnabled) {
-        setAddButtonEnabled(isEnabled, null, null);
+    public void setAddButtonVisible(boolean isVisible) {
+        this.addButtonVisible = isVisible;
     }
 
-    public void setAddButtonEnabled(boolean isEnabled, String addButtonText, SelectorAddEvent addEvent) {
-        this.addButtonEnabled = isEnabled;
+    public void setAddButtonText(String addButtonText) {
         this.addButtonText = addButtonText;
-        popup.setAddEvent(addEvent);
+    }
+
+    public void setAddButtonHandler(AddHandler handler) {
+        popup.addAddHandler(handler);
     }
 
     public void addOption( T value ) {
@@ -220,7 +222,7 @@ public abstract class Selector<T>
         this.relative = relative;
         popup.setSearchVisible(searchEnabled);
         popup.setSearchAutoFocus(searchAutoFocusEnabled);
-        popup.setAddButton(addButtonEnabled, addButtonText);
+        popup.setAddButton(addButtonVisible, addButtonText);
 
         popup.showNear(relative);
         popup.addValueChangeHandler(this);
@@ -299,7 +301,7 @@ public abstract class Selector<T>
     protected boolean hasNullValue = true;
     private boolean searchEnabled = false;
     private boolean searchAutoFocusEnabled = false;
-    private boolean addButtonEnabled = false;
+    private boolean addButtonVisible = false;
     private String addButtonText;
     private IsWidget relative;
     private T selectedOption = null;

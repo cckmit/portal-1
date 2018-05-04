@@ -1230,8 +1230,27 @@ td.info {
 .dropdown-addbutton > button {
   width: 100%;
   text-align: left;
+  background: white;
+  border-color: transparent;
+  color: #3c8dbc;
+  padding: 6px 6px 6px 28px;
+  font: 400 12px system-ui;
+  cursor: pointer;
 }
 
+.dropdown-addbutton > button:before {
+  font: normal normal normal 22px/1 FontAwesome;
+  content: "\002B";
+  position: absolute;
+  left: 0;
+  top: 0;
+  padding: 1px 8px 6px 8px;
+  color: #47cfa9;
+}
+
+.dropdown-addbutton > button:hover, .dropdown-addbutton > button:active {
+  background-color: #f5f5f5;
+}
 
 /* issue editing */
 

@@ -20,8 +20,13 @@ public class PersonEvents {
 
     public static class PersonCreated {
         public Person person;
+        public String origin;
         public PersonCreated(Person person) {
             this.person = person;
+        }
+        public PersonCreated(Person person, String origin) {
+            this.person = person;
+            this.origin = origin;
         }
     }
 }

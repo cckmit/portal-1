@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.issue.client.activity.edit;
 
-import com.google.gwt.user.client.ui.HasValue;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.annotation.ContextAware;
 import ru.brainworm.factory.context.client.events.Back;
@@ -11,6 +10,7 @@ import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
@@ -88,15 +88,11 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
     @Event
     public void onFillPerson(PersonEvents.PersonCreated event) {
-        if (receivePersonCreatedEvent && issue != null && event.person != null) {
-            receivePersonCreatedEvent = false;
+        if (CrmConstants.Origin.ISSUE_EDIT.equals(event.origin) && issue != null && event.person != null) {
             issue.setInitiator(event.person);
             issue.setInitiatorId(event.person.getId());
             issue.setInitiatorCompany(event.person.getCompany());
             issue.setInitiatorCompanyId(event.person.getCompanyId());
-            if (issue.getInitiatorCompany() != null) {
-                view.company().setValue(EntityOption.fromCompany(issue.getInitiatorCompany()), true);
-            }
             if (issue.getInitiator() != null) {
                 view.initiator().setValue(PersonShortView.fromPerson(issue.getInitiator()));
             }
@@ -185,10 +181,9 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     }
 
     @Override
-    public void onCreateContact(Long companyId) {
-        receivePersonCreatedEvent = true;
+    public void onCreateContact(Company company) {
         fillIssueObject(issue);
-        fireEvent(new ContactEvents.Edit(null, companyId, true));
+        fireEvent(new ContactEvents.Edit(null, company, CrmConstants.Origin.ISSUE_EDIT));
     }
 
     private void initialView(CaseObject issue){
@@ -307,6 +302,4 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     private AppEvents.InitDetails initDetails;
     @ContextAware
     CaseObject issue;
-    @ContextAware
-    boolean receivePersonCreatedEvent = false;
 }

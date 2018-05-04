@@ -2,7 +2,9 @@ package ru.protei.portal.ui.common.client.events;
 
 import com.google.gwt.user.client.ui.HasWidgets;
 import ru.brainworm.factory.context.client.annotation.Name;
+import ru.brainworm.factory.context.client.annotation.Omit;
 import ru.brainworm.factory.context.client.annotation.Url;
+import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.view.EntityOption;
 
@@ -72,19 +74,20 @@ public class ContactEvents {
     public static class Edit {
 
         public Long id;
-        @Name("company")
         public Long companyId;
-        public Boolean notify = false;
+        @Omit
+        public Company company;
+        public String origin;
 
         public Edit() { this.id = null; }
         public Edit (Long id, Long companyId) {
             this.id = id;
             this.companyId = companyId;
         }
-        public Edit (Long id, Long companyId, Boolean notify) {
+        public Edit (Long id, Company company, String origin) {
             this.id = id;
-            this.companyId = companyId;
-            this.notify = notify;
+            this.company = company;
+            this.origin = origin;
         }
 
         public static Edit byId (Long id) {

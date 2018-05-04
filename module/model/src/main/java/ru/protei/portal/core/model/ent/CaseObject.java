@@ -422,43 +422,6 @@ public class CaseObject extends AuditableObject {
         return "CaseObject";
     }
 
-    public CaseObject copy() {
-        CaseObject caseObject = new CaseObject();
-        caseObject.setId(id);
-        caseObject.setTypeId(typeId);
-        caseObject.setCaseNumber(caseNumber);
-        caseObject.setCreated(created);
-        caseObject.setModified(modified);
-        caseObject.setName(name);
-        caseObject.setExtId(extId);
-        caseObject.setInfo(info);
-        caseObject.setStateId(stateId);
-        caseObject.setImpLevel(impLevel);
-        caseObject.setCreatorId(creatorId);
-        caseObject.setCreatorIp(creatorIp);
-        caseObject.setInitiatorId(initiatorId);
-        caseObject.setInitiator(initiator);
-        caseObject.setInitiatorCompanyId(initiatorCompanyId);
-        caseObject.setInitiatorCompany(initiatorCompany);
-        caseObject.setProductId(productId);
-        caseObject.setProduct(product);
-        caseObject.setManagerId(managerId);
-        caseObject.setManager(manager);
-        caseObject.setKeywords(keywords);
-        caseObject.setLocal(local);
-        caseObject.setEmails(emails);
-        caseObject.setCreatorInfo(creatorInfo);
-        caseObject.setDeleted(deleted);
-        caseObject.setPrivateCase(privateCase);
-        caseObject.setAttachmentExists(isAttachmentExists);
-        caseObject.setAttachments(attachments);
-        caseObject.setLocations(locations);
-        caseObject.setMembers(members);
-        caseObject.setExtAppType(extAppType);
-        caseObject.setNotifiers(notifiers);
-        return caseObject;
-    }
-
     @Override
     public String toString() {
         return "CaseObject{" +

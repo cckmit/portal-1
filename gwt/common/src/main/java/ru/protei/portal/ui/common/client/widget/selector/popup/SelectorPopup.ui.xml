@@ -2,11 +2,11 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'>
 
     <g:HTMLPanel styleName="dropdown-menu" ui:field="root" >
+        <div class="dropdown-addbutton hide" ui:field="addContainer">
+            <g:Button ui:field="addButton"/>
+        </div>
         <div class="dropdown-searchbox hide" ui:field="searchContainer">
             <g:TextBox ui:field="search" styleName="input-field"/>
-        </div>
-        <div class="dropdown-addbutton hide" ui:field="addContainer">
-            <g:Button ui:field="addButton" styleName="btn btn-white"/>
         </div>
         <g:HTMLPanel ui:field="childContainer" tag="ul"/>
     </g:HTMLPanel>
