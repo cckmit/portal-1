@@ -13,4 +13,8 @@ public class CrmConstants {
     public interface Product {
         Long UNDEFINED = -1L;
     }
+
+    public interface Issue {
+        String CREATE_CONTACT_IDENTITY = "issue-edit";
+    }
 }

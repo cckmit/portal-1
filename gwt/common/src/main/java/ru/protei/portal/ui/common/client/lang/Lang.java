@@ -884,4 +884,6 @@ public interface Lang extends Messages, ContactItemLang {
     String privilegeDocumentType();
 
     String productWithout();
+
+    String personCreateNew();
 }

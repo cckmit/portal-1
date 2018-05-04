@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.contact.client.activity.edit;
 
-
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
@@ -14,11 +13,10 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.NameStatus;
-import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.ContactEvents;
-import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AccountServiceAsync;
+import ru.protei.portal.ui.common.client.service.CompanyServiceAsync;
 import ru.protei.portal.ui.common.client.service.ContactServiceAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
@@ -43,13 +41,15 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
 
-        if(event.id == null) {
+        origin = event.origin;
+
+        if (event.id == null) {
             this.fireEvent(new AppEvents.InitPanelName(lang.newContact()));
             Person newPerson = new Person();
             newPerson.setCompanyId(event.companyId);
+            newPerson.setCompany(event.company);
             initialView(newPerson, new UserLogin());
-        }
-        else {
+        } else {
             contactService.getContact(event.id, new AsyncCallback<Person>() {
                 @Override
                 public void onFailure(Throwable throwable) {
@@ -112,6 +112,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
                     @Override
                     public void onSuccess(Boolean result) {
                         fireEvent(new Back());
+                        fireEvent(new PersonEvents.PersonCreated(person, origin));
                     }
                 } );
             }
@@ -209,7 +210,8 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
 
     private void fillView(Person person, UserLogin userLogin){
         view.company().setValue(person.getCompany() == null ? null : person.getCompany().toEntityOption());
-        view.companyEnabled().setEnabled(person.getId() == null);
+        // lock company field if provided person already contains defined company. Added with CRM-103 task.
+        view.companyEnabled().setEnabled(person.getId() == null && person.getCompany() == null);
         view.gender().setValue(person.getGender());
         view.firstName().setValue(person.getFirstName());
         view.lastName().setValue(person.getLastName());
@@ -258,8 +260,11 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
 
     @Inject
     AccountServiceAsync accountService;
+    @Inject
+    CompanyServiceAsync companyService;
 
     private Person contact;
     private UserLogin account;
     private AppEvents.InitDetails initDetails;
+    private String origin;
 }
