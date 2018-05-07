@@ -42,7 +42,7 @@ public class UserRoleDAO_impl extends PortalBaseJdbcDAO<UserRole> implements Use
     }
 
     @Override
-    public List<UserRole> getDefaultForContact() {
+    public List<UserRole> getDefaultContactRoles() {
         return getListByCondition("is_default_for_contact=true");
     }
 

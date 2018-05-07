@@ -31,7 +31,7 @@ public interface AccountService {
     @Auditable( En_AuditType.ACCOUNT_MODIFY )
     CoreResponse< UserLogin > saveAccount( AuthToken token, UserLogin userLogin );
 
-    @Privileged( requireAny = { En_Privilege.ACCOUNT_EDIT, En_Privilege.ACCOUNT_CREATE })
+    @Privileged( requireAny = { En_Privilege.CONTACT_EDIT, En_Privilege.CONTACT_CREATE })
     @Auditable( En_AuditType.ACCOUNT_MODIFY )
     CoreResponse< UserLogin > saveContactAccount( AuthToken token, UserLogin userLogin );
 

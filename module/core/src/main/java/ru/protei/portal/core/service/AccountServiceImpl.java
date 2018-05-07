@@ -15,7 +15,6 @@ import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.AccountQuery;
-import ru.protei.portal.core.model.query.UserRoleQuery;
 import ru.protei.portal.core.service.user.AuthService;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
@@ -131,40 +130,14 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    @Transactional
     public CoreResponse<UserLogin> saveContactAccount(AuthToken token, UserLogin userLogin) {
-        if ( !isValidLogin( userLogin ) )
-            return new CoreResponse< UserLogin >().error( En_ResultStatus.VALIDATION_ERROR );
 
-        if ( !isUniqueLogin( userLogin.getUlogin(), userLogin.getId() ) ) {
-            return new CoreResponse< UserLogin >().error( En_ResultStatus.ALREADY_EXIST );
+        if (userLogin.getRoles() == null || userLogin.getRoles().size() == 0) {
+            Set<UserRole> userRoles = new HashSet<>(userRoleDAO.getDefaultContactRoles());
+            userLogin.setRoles(userRoles);
         }
 
-        Set<UserRole> userRoles = new HashSet<>(userRoleDAO.getDefaultForContact());
-        userLogin.setRoles(userRoles);
-
-        userLogin.setUlogin( userLogin.getUlogin().trim() );
-
-        UserLogin account = userLogin.getId() == null ? null : getAccount( token, userLogin.getId() ).getData();
-
-        if ( account == null || ( account.getUpass() == null && userLogin.getUpass() != null ) ||
-                ( account.getUpass() != null && userLogin.getUpass() != null && !account.getUpass().equalsIgnoreCase( userLogin.getUpass().trim() ) ) ) {
-            userLogin.setUpass( DigestUtils.md5DigestAsHex( userLogin.getUpass().trim().getBytes() ) );
-        }
-
-        if( userLogin.getId() == null ) {
-            userLogin.setCreated( new Date() );
-            userLogin.setAuthTypeId( En_AuthType.LOCAL.getId() );
-            userLogin.setAdminStateId( En_AdminState.UNLOCKED.getId() );
-        }
-
-        if ( userLoginDAO.saveOrUpdate( userLogin ) ) {
-            jdbcManyRelationsHelper.persist( userLogin, "roles" );
-
-            return new CoreResponse< UserLogin >().success( userLogin );
-        }
-
-        return new CoreResponse< UserLogin >().error( En_ResultStatus.INTERNAL_ERROR );
+        return saveAccount(token, userLogin);
     }
 
     @Override
