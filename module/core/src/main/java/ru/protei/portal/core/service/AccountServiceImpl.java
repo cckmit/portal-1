@@ -132,7 +132,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public CoreResponse<UserLogin> saveContactAccount(AuthToken token, UserLogin userLogin) {
 
-        if (userLogin.getRoles() == null || userLogin.getRoles().size() == 0) {
+        if (userLogin.getId() == null) {
             Set<UserRole> userRoles = new HashSet<>(userRoleDAO.getDefaultContactRoles());
             userLogin.setRoles(userRoles);
         }
