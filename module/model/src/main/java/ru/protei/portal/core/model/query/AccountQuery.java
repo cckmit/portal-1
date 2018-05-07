@@ -21,8 +21,8 @@ public class AccountQuery extends BaseQuery {
 
     public AccountQuery() {}
 
-    public AccountQuery( Set< En_AuthType > types, List<Long> roleIds, String searchString, En_SortField sortField, En_SortDir sortDir ) {
-        super ( searchString, sortField, sortDir );
+    public AccountQuery( Set< En_AuthType > types, List<Long> roleIds, String searchString, En_SortField sortField, String sortFieldAlias, En_SortDir sortDir ) {
+        super ( searchString, sortField, sortFieldAlias, sortDir );
         this.types = types;
         this.roleIds = roleIds;
     }

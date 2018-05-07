@@ -15,6 +15,8 @@ public class BaseQuery implements Serializable, DataQuery {
 
     public En_SortField sortField;
 
+    public String sortFieldAlias;
+
     public En_SortDir sortDir;
 
     @JsonIgnore
@@ -24,6 +26,13 @@ public class BaseQuery implements Serializable, DataQuery {
     public int offset = 0;
 
     public BaseQuery() {}
+
+    public BaseQuery(String searchString, En_SortField sortField, String sortFieldAlias, En_SortDir sortDir) {
+        this.searchString = searchString;
+        this.sortField = sortField;
+        this.sortFieldAlias = sortFieldAlias;
+        this.sortDir = sortDir;
+    }
 
     public BaseQuery(String searchString, En_SortField sortField, En_SortDir sortDir) {
         this.searchString = searchString;
@@ -79,6 +88,16 @@ public class BaseQuery implements Serializable, DataQuery {
     @Override
     public void setSortField(En_SortField sortField) {
         this.sortField = sortField;
+    }
+
+    @Override
+    public String getSortFieldAlias() {
+        return sortFieldAlias;
+    }
+
+    @Override
+    public void setSortFieldAlias(String sortFieldAlias) {
+        this.sortFieldAlias = sortFieldAlias;
     }
 
     @Override
