@@ -12,6 +12,7 @@ import ru.protei.winter.core.utils.collections.CollectionUtils;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -38,6 +39,11 @@ public class UserRoleDAO_impl extends PortalBaseJdbcDAO<UserRole> implements Use
                 condition.append( " )");
             }
         });
+    }
+
+    @Override
+    public List<UserRole> getDefaultContactRoles() {
+        return getListByCondition("is_default_for_contact=true");
     }
 
 

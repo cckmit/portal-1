@@ -133,7 +133,7 @@ public class ContactServiceImpl implements ContactService {
             if ( !isLoginUnique( userLogin.getUlogin(), userLogin.getId() ) )
                 throw new RequestFailedException ( En_ResultStatus.ALREADY_EXIST );
 
-            CoreResponse< UserLogin > response = accountService.saveAccount( descriptor.makeAuthToken(), userLogin );
+            CoreResponse< UserLogin > response = accountService.saveContactAccount( descriptor.makeAuthToken(), userLogin );
 
             log.debug( "store account, result: {}", response.isOk() ? "ok" : response.getStatus() );
 
