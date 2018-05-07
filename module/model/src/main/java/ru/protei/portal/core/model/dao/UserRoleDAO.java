@@ -18,6 +18,8 @@ public interface UserRoleDAO extends PortalBaseDAO<UserRole> {
     @SqlConditionBuilder
     SqlCondition createSqlCondition( UserRoleQuery query);
 
+    List<UserRole> getDefaultForContact();
+
     UserRole ensureExists ( String code, En_Scope scope, En_Privilege...privileges);
 
     Set<UserRole> getDefaultEmployeeRoles ();

@@ -133,13 +133,6 @@ public class AccountServiceImpl implements AccountService {
     @Override
     @Transactional
     public CoreResponse<UserLogin> saveContactAccount(AuthToken token, UserLogin userLogin) {
-
-        UserRoleQuery userRoleQuery = new UserRoleQuery();
-        userRoleQuery.setDefaultForContact(true);
-        Set<UserRole> userRoles = new HashSet<>(userRoleDAO.listByQuery(userRoleQuery));
-
-        userLogin.setRoles(userRoles);
-
         if ( !isValidLogin( userLogin ) )
             return new CoreResponse< UserLogin >().error( En_ResultStatus.VALIDATION_ERROR );
 
@@ -147,9 +140,8 @@ public class AccountServiceImpl implements AccountService {
             return new CoreResponse< UserLogin >().error( En_ResultStatus.ALREADY_EXIST );
         }
 
-        if (userLogin.getRoles() == null || userLogin.getRoles().size() == 0) {
-            return new CoreResponse< UserLogin >().error( En_ResultStatus.INCORRECT_PARAMS );
-        }
+        Set<UserRole> userRoles = new HashSet<>(userRoleDAO.getDefaultForContact());
+        userLogin.setRoles(userRoles);
 
         userLogin.setUlogin( userLogin.getUlogin().trim() );
 
