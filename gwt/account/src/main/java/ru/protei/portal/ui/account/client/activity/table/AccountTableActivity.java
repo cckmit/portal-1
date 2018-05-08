@@ -204,7 +204,6 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
                 roles,
                 filterView.searchPattern().getValue(),
                 filterView.sortField().getValue(),
-                En_SortField.person_full_name.equals(filterView.sortField().getValue()) ? "p" : null, // p: alias at UserLogin.person
                 filterView.sortDir().getValue() ? En_SortDir.ASC: En_SortDir.DESC
         );
     }

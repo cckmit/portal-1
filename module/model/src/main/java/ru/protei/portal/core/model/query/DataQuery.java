@@ -28,10 +28,6 @@ public interface DataQuery {
 
     void setSortField(En_SortField sortField);
 
-    String getSortFieldAlias();
-
-    void setSortFieldAlias(String sortFieldAlias);
-
     En_SortDir getSortDir();
 
     void setSortDir(En_SortDir sortDir);
