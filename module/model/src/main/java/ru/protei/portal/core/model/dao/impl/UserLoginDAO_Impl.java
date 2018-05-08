@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.UserLoginDAO;
 import ru.protei.portal.core.model.dict.En_AuthType;
+import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.AccountQuery;
@@ -69,7 +70,10 @@ public class UserLoginDAO_Impl extends PortalBaseJdbcDAO<UserLogin> implements U
         parameters.withJoins( join );
         parameters.withOffset( query.getOffset() );
         parameters.withLimit( query.getLimit() );
-        parameters.withSort( TypeConverters.createSort( query ) );
+        parameters.withSort( TypeConverters.createSort(
+                query,
+                query.getSortField() == En_SortField.person_full_name ? "p" : null // p: alias for UserLogin.person
+        ));
         return getList( parameters );
     }
 
