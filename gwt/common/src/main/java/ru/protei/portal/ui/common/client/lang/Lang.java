@@ -888,4 +888,6 @@ public interface Lang extends Messages, ContactItemLang {
     String personCreateNew();
 
     String roleDefaultForContact();
+
+    String mobilePhone();
 }
