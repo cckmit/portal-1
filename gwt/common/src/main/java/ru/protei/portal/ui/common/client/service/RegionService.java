@@ -32,4 +32,6 @@ public interface RegionService extends RemoteService {
     void saveProject( ProjectInfo project ) throws RequestFailedException;
 
     long createNewProject() throws RequestFailedException;
+
+    List<ProjectInfo> getProjectsList() throws RequestFailedException;
 }

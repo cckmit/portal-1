@@ -22,6 +22,8 @@ public interface RegionServiceAsync {
 
     void getProjectsByRegions( ProjectQuery query, AsyncCallback<Map<String,List<ProjectInfo>>> callback );
 
+    void getProjectsList( AsyncCallback<List<ProjectInfo>> callback );
+
     void getProject( Long id, AsyncCallback<ProjectInfo> callback );
 
     void saveProject( ProjectInfo project, AsyncCallback<Void> callback );

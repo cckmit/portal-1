@@ -53,4 +53,6 @@ public interface ProjectService {
      */
     @Privileged( En_Privilege.PROJECT_CREATE )
     CoreResponse<Long> createProject( AuthToken token, Long creatorId );
+
+    CoreResponse<List<ProjectInfo>> listProjects(AuthToken authToken);
 }
