@@ -191,6 +191,8 @@ public class CompanyServiceImpl implements CompanyService {
             throw new RequestFailedException( updateResult.getStatus() );
         }
 
+        descriptor.getCompany().setSubscriptions(companySubscriptionResult.getData());
+
         return companySubscriptionResult.getData();
     }
 
