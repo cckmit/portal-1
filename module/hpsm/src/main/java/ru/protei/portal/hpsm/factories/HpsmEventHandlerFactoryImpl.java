@@ -23,6 +23,7 @@ import ru.protei.portal.core.service.EventPublisherService;
 import ru.protei.portal.hpsm.api.HpsmSeverity;
 import ru.protei.portal.hpsm.api.HpsmStatus;
 import ru.protei.portal.hpsm.handlers.HpsmEventHandler;
+import ru.protei.portal.hpsm.handlers.HpsmStatusHandler;
 import ru.protei.portal.hpsm.logic.HpsmEvent;
 import ru.protei.portal.hpsm.logic.ServiceInstance;
 import ru.protei.portal.hpsm.struct.HpsmAttachment;
@@ -200,7 +201,8 @@ public class HpsmEventHandlerFactoryImpl implements HpsmEventHandlerFactory{
 
 
             if (request.getSubject().getStatus() != null) {
-                statusHandlerFactory.createHandler(currState, request.getSubject().getStatus());
+                HpsmStatusHandler handler = statusHandlerFactory.createHandler(currState, request.getSubject().getStatus());
+                handler.handle(object, comment);
             }
 
             currState.updateCustomerFields(request.getHpsmMessage());
