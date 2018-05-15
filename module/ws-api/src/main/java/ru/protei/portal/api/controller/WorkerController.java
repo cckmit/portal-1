@@ -265,6 +265,7 @@ public class WorkerController {
                         if (!workerEntryDAO.checkExistsByPersonId(person.getId())) {
                             person.setFired(rec.isFired());
                             person.setDeleted(rec.isDeleted());
+                            person.setIpAddress(person.getIpAddress().replace(".", "_"));
                         }
 
                         mergePerson(person);
@@ -290,7 +291,7 @@ public class WorkerController {
                     mergeWorker(worker);
 
                     if (WSConfig.getInstance().isEnableMigration()) {
-                        migrationManager.saveExternalEmployee(person, worker.getDepartment().getName(), position.getName());
+                        migrationManager.saveExternalEmployee(person, operationData.department().getName(), position.getName());
                     }
 
                     logger.debug("success result, workerRowId={}", worker.getId());
