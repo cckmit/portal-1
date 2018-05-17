@@ -313,6 +313,11 @@ public class MainConfiguration {
         return new ProductSubscriptionDAO_Impl();
     }
 
+    @Bean
+    public ReportDAO getReportDAO() {
+        return new ReportDAO_Impl();
+    }
+
 /**
  *
  *
