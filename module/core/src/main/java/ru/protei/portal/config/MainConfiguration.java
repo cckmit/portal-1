@@ -464,6 +464,16 @@ public class MainConfiguration {
         return new ImportDataServiceImpl();
     }
 
+    @Bean
+    public ReportService getReportService() {
+        return new ReportServiceImpl();
+    }
+
+    @Bean
+    public ReportControlService getReportControlService() {
+        return new ReportControlServiceImpl();
+    }
+
     /** ASPECT/INTERCEPTORS **/
     @Bean
     public ServiceLayerInterceptor getServiceLayerInterceptor () {

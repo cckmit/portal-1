@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.utils.TypeConverters;
 import ru.protei.winter.jdbc.JdbcQueryParameters;
 
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,6 +31,18 @@ public class ReportDAO_Impl extends PortalBaseJdbcDAO<Report> implements ReportD
     @Override
     public List<Report> getReportsToProcess(int limit) {
         return getListByCondition("status = ? limit ?", En_ReportStatus.CREATED.name(), limit);
+    }
+
+    @Override
+    public List<Report> getOutdatedReports(long liveTime) {
+        Date date = new Date(System.currentTimeMillis() - liveTime);
+        return getListByCondition("status in (?, ?) and modified < ?", En_ReportStatus.READY.name(), En_ReportStatus.ERROR.name(), date);
+    }
+
+    @Override
+    public List<Report> getHangReports(long hangInterval) {
+        Date date = new Date(System.currentTimeMillis() - hangInterval);
+        return getListByCondition("status = ? and modified < ?", En_ReportStatus.PROCESS.ordinal(), date);
     }
 
     @Override
