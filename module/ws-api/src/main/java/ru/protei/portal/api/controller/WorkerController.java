@@ -265,7 +265,7 @@ public class WorkerController {
                         if (!workerEntryDAO.checkExistsByPersonId(person.getId())) {
                             person.setFired(rec.isFired());
                             person.setDeleted(rec.isDeleted());
-                            person.setIpAddress(person.getIpAddress().replace(".", "_"));
+                            person.setIpAddress(person.getIpAddress() == null ? null : person.getIpAddress().replace(".", "_"));
                         }
 
                         mergePerson(person);
