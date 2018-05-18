@@ -1,47 +1,64 @@
 package ru.protei.portal.core.model.dao;
 
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
+import ru.protei.portal.core.model.dict.En_ReportStatus;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.query.ReportQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 public interface ReportDAO extends PortalBaseDAO<Report> {
 
     /**
+     * Получить отчет по идентификатору
+     *
+     * @param creatorId идентификатор профиля, который является создателем отчета
+     * @param reportId  идентификатор отчета
+     * @return отчет
+     */
+    Report getReport(Long creatorId, Long reportId);
+
+    /**
      * Получить информацию об отчетах по фильтру
      *
-     * @param creatorId идентификатор профиля, который является создателем отчетов
-     * @param query     фильтр для выборки отчетов
+     * @param creatorId  идентификатор профиля, который является создателем отчетов
+     * @param query      фильтр для выборки отчетов
+     * @param excludeIds не выбирать указанные идентификаторы
      * @return список отчетов
      */
-    List<Report> getReportsByQuery(Long creatorId, ReportQuery query);
+    List<Report> getReportsByQuery(Long creatorId, ReportQuery query, Set<Long> excludeIds);
 
     /**
-     * Получить отчеты, которые следует обработать
+     * Получить информацию об отчетах по фильтру
      *
-     * @param limit лимит на количество отчетов для обработки
+     * @param creatorId  идентификатор профиля, который является создателем отчетов
+     * @param includeIds выбирать указанные идентификаторы
+     * @param excludeIds не выбирать указанные идентификаторы
      * @return список отчетов
      */
-    List<Report> getReportsToProcess(int limit);
+    List<Report> getReportsByIds(Long creatorId, Set<Long> includeIds, Set<Long> excludeIds);
 
     /**
-     * Получить отчеты с истекшим сроком жизни
+     * Получить отчеты с указанным статусом
      *
-     * @param liveTime время жизни отчета (в миллисекундах)
+     * @param statuses статусы отчетов
+     * @param limit    лимит на количество отчетов для обработки
      * @return список отчетов
      */
-    List<Report> getOutdatedReports(long liveTime);
+    List<Report> getReportsByStatuses(List<En_ReportStatus> statuses, int limit);
 
     /**
-     * Получить подвисшие отчеты
+     * Получить отчеты с указанным статусом
      *
-     * @param hangInterval время через которое отчет считается подвисшим (в миллисекундах)
+     * @param statuses           статусы отчетов
+     * @param lastModifiedBefore дата до которой были последние изменения
      * @return список отчетов
      */
-    List<Report> getHangReports(long hangInterval);
+    List<Report> getReportsByStatuses(List<En_ReportStatus> statuses, Date lastModifiedBefore);
 
     @SqlConditionBuilder
-    SqlCondition createSqlCondition(Long creatorId, ReportQuery query);
+    SqlCondition createSqlCondition(Long creatorId, ReportQuery query, Set<Long> includeIds, Set<Long> excludeIds);
 }

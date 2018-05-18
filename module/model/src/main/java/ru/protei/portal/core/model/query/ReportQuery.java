@@ -11,22 +11,26 @@ public class ReportQuery extends BaseQuery {
 
     private String locale;
 
-    private Date fromDate;
+    private Date fromCreated;
 
-    private Date toDate;
+    private Date toCreated;
+
+    private Date fromModified;
+
+    private Date toModified;
 
     public ReportQuery() {}
 
-    public ReportQuery(List<En_ReportStatus> statuses, String name, String locale, Date fromDate, Date toDate) {
-        this(statuses, name, locale, fromDate, toDate, 0, -1);
+    public ReportQuery(List<En_ReportStatus> statuses, String name, String locale, Date fromCreated, Date toCreated) {
+        this(statuses, name, locale, fromCreated, toCreated, 0, -1);
     }
 
-    public ReportQuery(List<En_ReportStatus> statuses, String name, String locale, Date fromDate, Date toDate, int offset, int limit) {
+    public ReportQuery(List<En_ReportStatus> statuses, String name, String locale, Date fromCreated, Date toCreated, int offset, int limit) {
         super(name, null, null);
         this.statuses = statuses;
         this.locale = locale;
-        this.fromDate = fromDate;
-        this.toDate = toDate;
+        this.fromCreated = fromCreated;
+        this.toCreated = toCreated;
         this.offset = offset;
         this.limit = limit;
     }
@@ -47,20 +51,36 @@ public class ReportQuery extends BaseQuery {
         this.locale = locale;
     }
 
-    public Date getFromDate() {
-        return fromDate;
+    public Date getFromCreated() {
+        return fromCreated;
     }
 
-    public void setFromDate(Date fromDate) {
-        this.fromDate = fromDate;
+    public void setFromCreated(Date fromCreated) {
+        this.fromCreated = fromCreated;
     }
 
-    public Date getToDate() {
-        return toDate;
+    public Date getToCreated() {
+        return toCreated;
     }
 
-    public void setToDate(Date toDate) {
-        this.toDate = toDate;
+    public void setToCreated(Date toCreated) {
+        this.toCreated = toCreated;
+    }
+
+    public Date getFromModified() {
+        return fromModified;
+    }
+
+    public void setFromModified(Date fromModified) {
+        this.fromModified = fromModified;
+    }
+
+    public Date getToModified() {
+        return toModified;
+    }
+
+    public void setToModified(Date toModified) {
+        this.toModified = toModified;
     }
 
     @Override
@@ -69,8 +89,10 @@ public class ReportQuery extends BaseQuery {
                 "statuses=" + statuses +
                 ", name=" + searchString +
                 ", locale=" + locale +
-                ", fromDate=" + fromDate +
-                ", toDate=" + toDate +
+                ", fromCreated=" + fromCreated +
+                ", toCreated=" + toCreated +
+                ", fromModified=" + fromModified +
+                ", toModified=" + toModified +
                 ", offset=" + offset +
                 ", limit=" + limit +
                 '}';

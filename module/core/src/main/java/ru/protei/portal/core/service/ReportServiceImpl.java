@@ -1,43 +1,137 @@
 package ru.protei.portal.core.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.core.model.dao.ReportDAO;
+import ru.protei.portal.core.model.dict.En_ReportStatus;
+import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Report;
+import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.query.ReportQuery;
+import ru.protei.portal.core.service.user.AuthService;
 import ru.protei.winter.repo.model.dto.Content;
+import ru.protei.winter.repo.model.jdbc.OwnerInfo;
+import ru.protei.winter.repo.services.RepoService;
 
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class ReportServiceImpl implements ReportService {
 
+    private final static String LOCALE_RU = Locale.forLanguageTag("ru").toString();
+
+    @Autowired
+    ReportDAO reportDAO;
+
+    @Autowired
+    ReportControlService reportControlService;
+
+    @Autowired
+    AuthService authService;
+
+    @Autowired
+    RepoService repoService;
+
     @Override
-    public CoreResponse<Long> createReport(AuthToken authToken, Report report) {
-        return null;
+    public CoreResponse<Long> createReport(AuthToken token, Report report) {
+        if (report == null) {
+            return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        UserSessionDescriptor descriptor = authService.findSession(token);
+
+        Date now = new Date();
+        report.setCreatorId(descriptor.getPerson().getId());
+        report.setCreated(now);
+        report.setModified(now);
+        report.setStatus(En_ReportStatus.CREATED);
+        if (report.getLocale() == null) {
+            report.setLocale(LOCALE_RU);
+        }
+
+        Long id = reportDAO.persist(report);
+
+        reportControlService.processNewReports();
+
+        return new CoreResponse<Long>().success(id);
     }
 
     @Override
-    public CoreResponse<Report> getReport(AuthToken authToken, Long id) {
-        return null;
+    public CoreResponse<Report> getReport(AuthToken token, Long id) {
+        if (id == null) {
+            return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        UserSessionDescriptor descriptor = authService.findSession(token);
+        Report report = reportDAO.getReport(descriptor.getPerson().getId(), id);
+
+        return new CoreResponse<Report>().success(report);
     }
 
     @Override
-    public CoreResponse<List<Report>> getReportsByQuery(Long creatorId, ReportQuery query) {
-        return null;
+    public CoreResponse<List<Report>> getReportsByQuery(AuthToken token, ReportQuery query) {
+
+        UserSessionDescriptor descriptor = authService.findSession(token);
+        List<Report> reports = reportDAO.getReportsByQuery(descriptor.getPerson().getId(), query, null);
+
+        return new CoreResponse<List<Report>>().success(reports);
     }
 
     @Override
-    public CoreResponse<Content> downloadReport(AuthToken authToken, Long id) {
-        return null;
+    public CoreResponse<Content> downloadReport(AuthToken token, Long id) {
+        if (id == null) {
+            return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        UserSessionDescriptor descriptor = authService.findSession(token);
+        Report report = reportDAO.getReport(descriptor.getPerson().getId(), id);
+
+        if (report == null) {
+            return new CoreResponse().error(En_ResultStatus.NOT_FOUND);
+        }
+        if (report.getStatus() != En_ReportStatus.READY) {
+            return new CoreResponse().error(En_ResultStatus.NOT_AVAILABLE);
+        }
+
+        Content content = repoService.getContent(report.getContentId());
+
+        return new CoreResponse<Content>().success(content);
     }
 
     @Override
-    public CoreResponse removeReports(AuthToken authToken, Set<Long> include, Set<Long> exclude) {
-        return null;
+    public CoreResponse removeReports(AuthToken token, Set<Long> include, Set<Long> exclude) {
+
+        UserSessionDescriptor descriptor = authService.findSession(token);
+        List<Report> reports = reportDAO.getReportsByIds(descriptor.getPerson().getId(), include, exclude);
+        removeReports(reports);
+
+        return new CoreResponse<>().success(null);
     }
 
     @Override
-    public CoreResponse removeReports(AuthToken authToken, ReportQuery query, Set<Long> exclude) {
-        return null;
+    public CoreResponse removeReports(AuthToken token, ReportQuery query, Set<Long> exclude) {
+
+        UserSessionDescriptor descriptor = authService.findSession(token);
+        List<Report> reports = reportDAO.getReportsByQuery(descriptor.getPerson().getId(), query, exclude);
+        removeReports(reports);
+
+        return new CoreResponse<>().success(null);
+    }
+
+    private void removeReports(List<Report> reports) {
+        List<Long> contentIdsToRemove = new ArrayList<>();
+        List<Long> reportIdsToRemove = new ArrayList<>();
+        for (Report report : reports) {
+            if (report.getContentId() != null) {
+                contentIdsToRemove.add(report.getContentId());
+            }
+            reportIdsToRemove.add(report.getId());
+        }
+        repoService.removeContent(contentIdsToRemove, buildOwnerInfo(0L));
+        reportDAO.removeByKeys(reportIdsToRemove);
+    }
+
+    private OwnerInfo buildOwnerInfo(Long reportId) {
+        return new OwnerInfo("sb-report", reportId.toString());
     }
 }

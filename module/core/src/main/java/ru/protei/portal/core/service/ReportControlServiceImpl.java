@@ -89,7 +89,10 @@ public class ReportControlServiceImpl implements ReportControlService {
 
     private CoreResponse<List<Report>> getReportsToProcess(final int limit) {
         try {
-            List<Report> reports = reportDAO.getReportsToProcess(limit);
+            List<Report> reports = reportDAO.getReportsByStatuses(
+                    Collections.singletonList(En_ReportStatus.CREATED),
+                    limit
+            );
             if (CollectionUtils.isEmpty(reports)) {
                 return new CoreResponse<List<Report>>().success(reports);
             }
@@ -179,7 +182,10 @@ public class ReportControlServiceImpl implements ReportControlService {
 
     @Override
     public CoreResponse processOldReports() {
-        List<Report> reports = reportDAO.getOutdatedReports(config.data().reportConfig().getLiveTime());
+        List<Report> reports = reportDAO.getReportsByStatuses(
+                Arrays.asList(En_ReportStatus.READY, En_ReportStatus.ERROR),
+                new Date(System.currentTimeMillis() - config.data().reportConfig().getLiveTime())
+        );
         if (CollectionUtils.isEmpty(reports)) {
             log.debug("old reports to process : 0");
             return new CoreResponse().success(null);
@@ -217,7 +223,10 @@ public class ReportControlServiceImpl implements ReportControlService {
     @Override
     public CoreResponse processHangReports() {
         synchronized (reportsInProcess) {
-            List<Report> reports = reportDAO.getHangReports(config.data().reportConfig().getHangInterval());
+            List<Report> reports = reportDAO.getReportsByStatuses(
+                    Collections.singletonList(En_ReportStatus.PROCESS),
+                    new Date(System.currentTimeMillis() - config.data().reportConfig().getHangInterval())
+            );
             if (CollectionUtils.isEmpty(reports)) {
                 log.debug("hang reports to process : 0");
                 return new CoreResponse().success(null);

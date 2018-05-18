@@ -35,11 +35,11 @@ public interface ReportService {
     /**
      * Получение информации об отчетах по фильтру
      *
-     * @param creatorId идентификатор профиля, который является создателем отчетов
+     * @param authToken токен авторизации
      * @param query     фильтр для выборки отчетов
      * @return список отчетов
      */
-    CoreResponse<List<Report>> getReportsByQuery(Long creatorId, ReportQuery query);
+    CoreResponse<List<Report>> getReportsByQuery(AuthToken authToken, ReportQuery query);
 
     /**
      * Получение файла отчета
