@@ -37,6 +37,11 @@ public class UserLoginDAO_Impl extends PortalBaseJdbcDAO<UserLogin> implements U
     }
 
     @Override
+    public UserLogin findLDAPByPersonId(Long id) {
+        return getByCondition("personId=? and authType=?", id, En_AuthType.LDAP.getId());
+    }
+
+    @Override
     public UserLogin checkExistsByLogin(String login) {
         return getByCondition("ulogin=?", login );
     }

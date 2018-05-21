@@ -11,25 +11,20 @@ import org.springframework.web.bind.annotation.*;
 import protei.sql.query.Tm_SqlQueryHelper;
 import ru.protei.portal.api.config.WSConfig;
 import ru.protei.portal.api.model.*;
+import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.struct.*;
 import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
 import ru.protei.portal.tools.migrate.HelperService;
 import ru.protei.portal.core.model.dao.*;
-import ru.protei.portal.core.model.dict.En_AuditType;
-import ru.protei.portal.core.model.dict.En_Gender;
-import ru.protei.portal.core.model.dict.En_SortDir;
-import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.EmployeeQuery;
-import ru.protei.portal.core.model.struct.AuditObject;
-import ru.protei.portal.core.model.struct.AuditableObject;
-import ru.protei.portal.core.model.struct.Photo;
-import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 
 import java.io.*;
 import java.net.Inet4Address;
 import java.text.ParseException;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -47,6 +42,12 @@ public class WorkerController {
 
     @Autowired
     private CompanyDepartmentDAO companyDepartmentDAO;
+
+    @Autowired
+    private UserLoginDAO userLoginDAO;
+
+    @Autowired
+    private UserRoleDAO userRoleDAO;
 
     @Autowired
     private WorkerPositionDAO workerPositionDAO;
@@ -191,6 +192,13 @@ public class WorkerController {
                         mergePerson(person);
                     }
 
+                    UserLogin userLogin = userLoginDAO.findLDAPByPersonId(person.getId());
+                    if (userLogin == null) userLogin = createLDAPAccount(person);
+                    if (userLogin != null) {
+                        userLogin.setAdminStateId(En_AdminState.UNLOCKED.getId());
+                        saveAccount(userLogin);
+                    }
+
                     WorkerPosition position = getValidPosition(rec.getPositionName(), operationData.homeItem().getCompanyId());
 
                     WorkerEntry worker = new WorkerEntry();
@@ -244,7 +252,8 @@ public class WorkerController {
                     .requireHomeItem()
                     .requireDepartment(null)
                     .requirePerson(null)
-                    .requireWorker(null);
+                    .requireWorker(null)
+                    .requireAccount(null);
 
             if (!operationData.isValid())
                 return operationData.failResult();
@@ -255,6 +264,7 @@ public class WorkerController {
 
                     Person person = operationData.person();
                     WorkerEntry worker = operationData.worker();
+                    UserLogin userLogin = operationData.account();
 
                     convert(rec, person);
 
@@ -270,6 +280,15 @@ public class WorkerController {
 
                         mergePerson(person);
 
+                        if(userLogin != null) {
+                            if (person.isDeleted()) {
+                                removeAccount(userLogin);
+                            } else {
+                                userLogin.setAdminStateId(En_AdminState.LOCKED.getId());
+                                saveAccount(userLogin);
+                            }
+                        }
+
                         if (WSConfig.getInstance().isEnableMigration()) {
                             migrationManager.saveExternalEmployee(person, "", "");
                         }
@@ -279,6 +298,12 @@ public class WorkerController {
                     }
 
                     mergePerson(person);
+
+                    if (userLogin == null) userLogin = createLDAPAccount(person);
+                    if (userLogin != null) {
+                        userLogin.setAdminStateId(En_AdminState.UNLOCKED.getId());
+                        saveAccount(userLogin);
+                    }
 
                     WorkerPosition position = getValidPosition(rec.getPositionName(), operationData.homeItem().getCompanyId());
 
@@ -705,6 +730,25 @@ public class WorkerController {
         return position;
     }
 
+    private UserLogin createLDAPAccount(Person person) throws Exception {
+
+        ContactItem email = person.getContactInfo().findFirst(En_ContactItemType.EMAIL, En_ContactDataAccess.PUBLIC);
+        if (!email.isEmpty()) {
+            String login = email.value().substring(0, email.value().indexOf("@"));
+            if (!userLoginDAO.isUnique(login.trim())) {
+                logger.debug("error: Login already exist.");
+                return null;
+            }
+
+            UserLogin userLogin = userLoginDAO.createNewUserLogin(person);
+            userLogin.setUlogin(login.trim());
+            userLogin.setAuthTypeId(En_AuthType.LDAP.getId());
+            userLogin.setRoles(new HashSet<>(userRoleDAO.getDefaultEmployeeRoles()));
+            return userLogin;
+        }
+        return null;
+    }
+
     private String makeFileName(Long id) {
         String fileName = WSConfig.getInstance().getDirPhotos() + id + ".jpg";
         logger.debug("name of file: {} ", fileName);
@@ -732,8 +776,8 @@ public class WorkerController {
     }
 
     private void removeWorker(WorkerEntry worker) throws Exception {
-        workerEntryDAO.remove(worker);
-        makeAudit(new LongAuditableObject(worker.getId()), En_AuditType.WORKER_REMOVE);
+        if (workerEntryDAO.remove(worker))
+            makeAudit(new LongAuditableObject(worker.getId()), En_AuditType.WORKER_REMOVE);
     }
 
     private void persistDepartment(CompanyDepartment department) throws Exception {
@@ -747,8 +791,8 @@ public class WorkerController {
     }
 
     private void removeDepartment(CompanyDepartment department) throws Exception {
-        companyDepartmentDAO.remove(department);
-        makeAudit(new LongAuditableObject(department.getId()), En_AuditType.DEPARTMENT_REMOVE);
+        if (companyDepartmentDAO.remove(department))
+            makeAudit(new LongAuditableObject(department.getId()), En_AuditType.DEPARTMENT_REMOVE);
     }
 
     private void persistPosition(WorkerPosition position) throws Exception {
@@ -762,8 +806,18 @@ public class WorkerController {
     }
 
     private void removePosition(WorkerPosition position) throws Exception {
-        workerPositionDAO.remove(position);
-        makeAudit(new LongAuditableObject(position.getId()), En_AuditType.POSITION_REMOVE);
+        if (workerPositionDAO.remove(position))
+            makeAudit(new LongAuditableObject(position.getId()), En_AuditType.POSITION_REMOVE);
+    }
+
+    private void saveAccount(UserLogin userLogin) throws Exception {
+        if (userLoginDAO.saveOrUpdate(userLogin))
+            makeAudit(userLogin, userLogin.getId() == null ? En_AuditType.ACCOUNT_CREATE : En_AuditType.ACCOUNT_MODIFY);
+    }
+
+    private void removeAccount(UserLogin userLogin) throws Exception {
+        if (userLoginDAO.remove(userLogin))
+            makeAudit(new LongAuditableObject(userLogin.getId()), En_AuditType.ACCOUNT_REMOVE);
     }
 
     private void makeAudit(AuditableObject object, En_AuditType type) throws Exception {
@@ -791,6 +845,7 @@ public class WorkerController {
         WorkerEntry worker;
         Person person;
         WorkerPosition position;
+        UserLogin account;
 
         Record record;
 
@@ -848,18 +903,16 @@ public class WorkerController {
 
         public OperationData requireParentDepartment(Supplier<CompanyDepartment> optional) {
             requireHomeItem();
-            if (isValid())
-                this.parentDepartment = handle(record.getParentDepartmentId() == null ? null :
-                        companyDepartmentDAO.getByExternalId(record.getParentDepartmentId().trim(), homeGroupItem.getCompanyId()), optional, En_ErrorCode.UNKNOWN_PAR_DEP, true);
+            if (isValid() && record.getParentDepartmentId() != null)
+                this.parentDepartment = handle(companyDepartmentDAO.getByExternalId(record.getParentDepartmentId().trim(), homeGroupItem.getCompanyId()), optional, En_ErrorCode.UNKNOWN_PAR_DEP);
 
             return this;
         }
 
         public OperationData requireHeadDepartment(Supplier<WorkerEntry> optional) {
             requireHomeItem();
-            if (isValid())
-                this.headDepartment = handle(record.getHeadDepartmentId() == null ? null :
-                        workerEntryDAO.getByExternalId(record.getHeadDepartmentId().trim(), homeGroupItem.getCompanyId()), optional, En_ErrorCode.UNKNOWN_WOR, true);
+            if (isValid() && record.getHeadDepartmentId() != null)
+                this.headDepartment = handle(workerEntryDAO.getByExternalId(record.getHeadDepartmentId().trim(), homeGroupItem.getCompanyId()), optional, En_ErrorCode.UNKNOWN_WOR);
 
             return this;
         }
@@ -868,6 +921,13 @@ public class WorkerController {
             requireHomeItem();
             if (isValid())
                 this.position = handle(workerPositionDAO.getByName(record.getPositionName().trim(), homeGroupItem.getCompanyId()), optional, En_ErrorCode.UNKNOWN_POS);
+
+            return this;
+        }
+
+        public OperationData requireAccount(Supplier<UserLogin> optional) {
+            if (isValid())
+                this.account = handle(userLoginDAO.findLDAPByPersonId(record.getPersonId()), optional, null, true);
 
             return this;
         }
@@ -989,6 +1049,10 @@ public class WorkerController {
 
         public WorkerPosition position() {
             return position;
+        }
+
+        public UserLogin account() {
+            return account;
         }
 
         public class Record {
