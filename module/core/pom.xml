@@ -128,11 +128,6 @@
             <version>${project.winter.version}</version>
         </dependency>
 -->
-        <dependency>
-            <groupId>ru.protei</groupId>
-            <artifactId>winter.repo</artifactId>
-            <version>${project.winter.version}</version>
-        </dependency>
 
         <dependency>
             <groupId>org.jxls</groupId>

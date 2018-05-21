@@ -15,16 +15,12 @@ import ru.protei.portal.core.model.dict.En_ReportStatus;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Report;
+import ru.protei.portal.core.model.struct.ReportContent;
 import ru.protei.portal.core.utils.JXLSHelper;
-import ru.protei.winter.repo.model.dto.Content;
-import ru.protei.winter.repo.model.jdbc.OwnerInfo;
-import ru.protei.winter.repo.services.RepoService;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -35,7 +31,6 @@ public class ReportControlServiceImpl implements ReportControlService {
     private final ThreadPoolExecutor reportExecutorService = (ThreadPoolExecutor) Executors.newCachedThreadPool();
     private final Object sync = new Object();
     private final Set<Long> reportsInProcess = new HashSet<>();
-    private final DateFormat nameDateFormat = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
 
     @Autowired
     PortalConfig config;
@@ -47,12 +42,13 @@ public class ReportControlServiceImpl implements ReportControlService {
     CaseObjectDAO caseObjectDAO;
 
     @Autowired
-    RepoService repoService;
+    ReportStorageService reportStorageService;
 
     // -------------------
     // Process new reports
     // -------------------
 
+    @Override
     @Scheduled(fixedRate = 30 * 1000) // every 30 seconds
     public void processNewReportsSchedule() {
         CoreResponse response = processNewReports();
@@ -116,25 +112,32 @@ public class ReportControlServiceImpl implements ReportControlService {
         }
         try {
             log.debug("start process report : reportId={}", report.getId());
-            Long contentId = null;
+            boolean saved = false;
             ByteArrayOutputStream buffer = new ByteArrayOutputStream();
             try {
 
                 writeIssuesReport(report, buffer);
 
-                Content content = new Content(makeReportFileName(report), new ByteArrayInputStream(buffer.toByteArray()));
-                contentId = repoService.loadContentWithBind(content, buildOwnerInfo(report.getId()), true);
+                ReportContent reportContent = new ReportContent(report.getId(), new ByteArrayInputStream(buffer.toByteArray()));
+                CoreResponse result = reportStorageService.saveContent(reportContent);
 
-                report.setContentId(contentId);
-                report.setStatus(En_ReportStatus.READY);
-                report.setModified(new Date());
+                if (result.isOk()) {
+                    saved = true;
 
-                reportDAO.merge(report);
+                    report.setStatus(En_ReportStatus.READY);
+                    report.setModified(new Date());
 
-                log.debug("successful process report : reportId={}", report.getId());
+                    reportDAO.merge(report);
+
+                    log.debug("successful process report : reportId={}", report.getId());
+                } else {
+
+                    log.debug("unsuccessful process report : reportId={}", report.getId());
+                }
+
             } catch (Throwable th) {
-                if (contentId != null) {
-                    repoService.removeContent(contentId, buildOwnerInfo(report.getId()));
+                if (saved) {
+                    reportStorageService.removeContent(report.getId());
                 }
                 log.warn("fail process report : reportId={} {}", report.getId(), th);
                 report.setStatus(En_ReportStatus.ERROR);
@@ -144,14 +147,6 @@ public class ReportControlServiceImpl implements ReportControlService {
         } finally {
             reportsInProcess.remove(report.getId());
         }
-    }
-
-    private String makeReportFileName(final Report report) {
-        return "issue-report-" + nameDateFormat.format(report.getCreated()) + ".xlsx";
-    }
-
-    private OwnerInfo buildOwnerInfo(Long reportId) {
-        return new OwnerInfo("sb-report", reportId.toString());
     }
 
     private void writeIssuesReport(final Report report, ByteArrayOutputStream buffer) throws IOException {
@@ -170,6 +165,7 @@ public class ReportControlServiceImpl implements ReportControlService {
     // Process old reports
     // -------------------
 
+    @Override
     @Scheduled(cron = "0 0 5 * * ?") // at 05:00:00 am every day
     public void processOldReportsSchedule() {
         CoreResponse response = processOldReports();
@@ -194,22 +190,19 @@ public class ReportControlServiceImpl implements ReportControlService {
     }
 
     private void removeReports(List<Report> reports) {
-        List<Long> contentIdsToRemove = new ArrayList<>();
-        List<Long> reportIdsToRemove = new ArrayList<>();
+        List<Long> idsToRemove = new ArrayList<>();
         for (Report report : reports) {
-            if (report.getContentId() != null) {
-                contentIdsToRemove.add(report.getContentId());
-            }
-            reportIdsToRemove.add(report.getId());
+            idsToRemove.add(report.getId());
         }
-        repoService.removeContent(contentIdsToRemove, buildOwnerInfo(0L));
-        reportDAO.removeByKeys(reportIdsToRemove);
+        reportStorageService.removeContent(idsToRemove);
+        reportDAO.removeByKeys(idsToRemove);
     }
 
     // --------------------
     // Process hang reports
     // --------------------
 
+    @Override
     @Scheduled(fixedRate = 60 * 60 * 1000) // every hour
     public void processHangReportsSchedule() {
         CoreResponse response = processHangReports();

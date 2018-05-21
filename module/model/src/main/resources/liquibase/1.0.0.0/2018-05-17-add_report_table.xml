@@ -13,7 +13,6 @@
             <column name="status" type="VARCHAR(16)">
                 <constraints nullable="false"/>
             </column>
-            <column name="content_id" type="BIGINT"/>
             <column name="case_query" type="VARCHAR(8192)">
                 <constraints nullable="false"/>
             </column>

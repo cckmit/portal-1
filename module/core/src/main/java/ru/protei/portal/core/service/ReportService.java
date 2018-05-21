@@ -4,7 +4,7 @@ import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.query.ReportQuery;
-import ru.protei.winter.repo.model.dto.Content;
+import ru.protei.portal.core.model.struct.ReportContent;
 
 import java.util.List;
 import java.util.Set;
@@ -48,7 +48,7 @@ public interface ReportService {
      * @param id        идентификатор отчета
      * @return файловый контент
      */
-    CoreResponse<Content> downloadReport(AuthToken authToken, Long id);
+    CoreResponse<ReportContent> downloadReport(AuthToken authToken, Long id);
 
     /**
      * Запрос на удаление отчётов по идентификаторам

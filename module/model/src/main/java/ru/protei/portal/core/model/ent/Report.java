@@ -12,6 +12,7 @@ public class Report implements Serializable {
 
     /**
      * Уникальный идентификатор отчета
+     * Идентификатор содержимого файла в хранилище (Имеет смысл только при En_ReportStatus.READY)
      */
     @JdbcId(name = "id")
     private Long id;
@@ -28,13 +29,6 @@ public class Report implements Serializable {
     @JdbcColumn(name = "status")
     @JdbcEnumerated(EnumType.STRING)
     private En_ReportStatus status;
-
-    /**
-     * Идентификатор содержимого файла в хранилище
-     * Имеет смысл только при En_ReportStatus.READY
-     */
-    @JdbcColumn(name = "content_id")
-    private Long contentId;
 
     /**
      * Фильтр по обращениям
@@ -93,14 +87,6 @@ public class Report implements Serializable {
         this.status = status;
     }
 
-    public Long getContentId() {
-        return contentId;
-    }
-
-    public void setContentId(Long contentId) {
-        this.contentId = contentId;
-    }
-
     public CaseQuery getCaseQuery() {
         return caseQuery;
     }
@@ -154,7 +140,6 @@ public class Report implements Serializable {
         return "Report{" +
                 "id=" + id +
                 ", status='" + status + '\'' +
-                ", contentId=" + contentId +
                 ", caseQuery='" + caseQuery + '\'' +
                 ", creatorId=" + creatorId +
                 ", creator='" + creator + '\'' +

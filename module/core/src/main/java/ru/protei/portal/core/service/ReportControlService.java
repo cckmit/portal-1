@@ -27,4 +27,15 @@ public interface ReportControlService {
      * @return результат выполнения операции
      */
     CoreResponse processHangReports();
+
+    // Методы для автоматической обработки, контролирования и управления отчетами
+
+    /** @hide */
+    void processNewReportsSchedule();
+
+    /** @hide */
+    void processOldReportsSchedule();
+
+    /** @hide */
+    void processHangReportsSchedule();
 }

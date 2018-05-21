@@ -6,9 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
+import ru.protei.portal.core.model.struct.ReportContent;
 import ru.protei.portal.core.service.ReportService;
+import ru.protei.portal.core.service.ReportStorageService;
 import ru.protei.portal.ui.common.server.service.SessionService;
-import ru.protei.winter.repo.model.dto.Content;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -29,6 +30,9 @@ public class ReportDownloadServlet extends HttpServlet {
     @Autowired
     ReportService reportService;
 
+    @Autowired
+    ReportStorageService reportStorageService;
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         Long reportId;
@@ -42,18 +46,19 @@ public class ReportDownloadServlet extends HttpServlet {
 
         UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor(httpServletRequest);
 
-        CoreResponse<Content> response = reportService.downloadReport(descriptor.makeAuthToken(), reportId);
+        CoreResponse<ReportContent> response = reportService.downloadReport(descriptor.makeAuthToken(), reportId);
 
         if (response.isError()) {
             throw new ServletException(response.getStatus().name());
         }
 
-        String name;
+        String name = null;
         CoreResponse<Report> responseReport = reportService.getReport(descriptor.makeAuthToken(), reportId);
-        if (responseReport.isError() || responseReport.getData().getName() == null) {
-            name = response.getData().getName();
-        } else {
+        if (responseReport.isOk()) {
             name = responseReport.getData().getName();
+        }
+        if (name == null || name.isEmpty()) {
+            name = reportStorageService.getFileName(String.valueOf(reportId)).getData();
         }
 
         BufferedInputStream is = null;

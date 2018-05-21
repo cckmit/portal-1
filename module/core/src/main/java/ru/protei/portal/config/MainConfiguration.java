@@ -465,6 +465,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public ReportStorageService getReportStorageService() {
+        return new ReportStorageServiceImpl();
+    }
+
+    @Bean
     public ReportService getReportService() {
         return new ReportServiceImpl();
     }

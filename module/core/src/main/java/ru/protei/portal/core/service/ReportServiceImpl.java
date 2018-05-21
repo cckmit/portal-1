@@ -9,10 +9,8 @@ import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.query.ReportQuery;
+import ru.protei.portal.core.model.struct.ReportContent;
 import ru.protei.portal.core.service.user.AuthService;
-import ru.protei.winter.repo.model.dto.Content;
-import ru.protei.winter.repo.model.jdbc.OwnerInfo;
-import ru.protei.winter.repo.services.RepoService;
 
 import java.util.*;
 
@@ -30,7 +28,7 @@ public class ReportServiceImpl implements ReportService {
     AuthService authService;
 
     @Autowired
-    RepoService repoService;
+    ReportStorageService reportStorageService;
 
     @Override
     public CoreResponse<Long> createReport(AuthToken token, Report report) {
@@ -78,7 +76,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    public CoreResponse<Content> downloadReport(AuthToken token, Long id) {
+    public CoreResponse<ReportContent> downloadReport(AuthToken token, Long id) {
         if (id == null) {
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
         }
@@ -93,9 +91,7 @@ public class ReportServiceImpl implements ReportService {
             return new CoreResponse().error(En_ResultStatus.NOT_AVAILABLE);
         }
 
-        Content content = repoService.getContent(report.getContentId());
-
-        return new CoreResponse<Content>().success(content);
+        return reportStorageService.getContent(report.getId());
     }
 
     @Override
@@ -119,19 +115,11 @@ public class ReportServiceImpl implements ReportService {
     }
 
     private void removeReports(List<Report> reports) {
-        List<Long> contentIdsToRemove = new ArrayList<>();
-        List<Long> reportIdsToRemove = new ArrayList<>();
+        List<Long> idsToRemove = new ArrayList<>();
         for (Report report : reports) {
-            if (report.getContentId() != null) {
-                contentIdsToRemove.add(report.getContentId());
-            }
-            reportIdsToRemove.add(report.getId());
+            idsToRemove.add(report.getId());
         }
-        repoService.removeContent(contentIdsToRemove, buildOwnerInfo(0L));
-        reportDAO.removeByKeys(reportIdsToRemove);
-    }
-
-    private OwnerInfo buildOwnerInfo(Long reportId) {
-        return new OwnerInfo("sb-report", reportId.toString());
+        reportStorageService.removeContent(idsToRemove);
+        reportDAO.removeByKeys(idsToRemove);
     }
 }
