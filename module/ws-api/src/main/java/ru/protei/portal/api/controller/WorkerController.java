@@ -12,6 +12,7 @@ import protei.sql.query.Tm_SqlQueryHelper;
 import ru.protei.portal.api.config.WSConfig;
 import ru.protei.portal.api.model.*;
 import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.query.WorkerEntryQuery;
 import ru.protei.portal.core.model.struct.*;
 import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
 import ru.protei.portal.tools.migrate.HelperService;
@@ -19,14 +20,17 @@ import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.EmployeeQuery;
+import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.io.*;
 import java.net.Inet4Address;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "/api/worker", headers = "Accept=application/xml")
@@ -54,6 +58,9 @@ public class WorkerController {
 
     @Autowired
     private WorkerEntryDAO workerEntryDAO;
+
+    @Autowired
+    JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
     @Autowired
     TransactionTemplate transactionTemplate;
@@ -215,7 +222,10 @@ public class WorkerController {
                     persistWorker(worker);
 
                     if (WSConfig.getInstance().isEnableMigration()) {
-                        migrationManager.saveExternalEmployee(person, operationData.department().getName(), position.getName());
+                        ActiveWorkers activeWorkers = new ActiveWorkers(person.getId());
+                        String departmentName = worker.getActiveFlag() == 1 ? operationData.department().getName() : activeWorkers.requireWorkers().getDepartment(operationData.department().getName());
+                        String positionName = worker.getActiveFlag() == 1 ? position.getName() : activeWorkers.getPosition(position.getName());
+                        migrationManager.saveExternalEmployee(person, departmentName, positionName);
                     }
 
 
@@ -316,7 +326,10 @@ public class WorkerController {
                     mergeWorker(worker);
 
                     if (WSConfig.getInstance().isEnableMigration()) {
-                        migrationManager.saveExternalEmployee(person, operationData.department().getName(), position.getName());
+                        ActiveWorkers activeWorkers = new ActiveWorkers(person.getId());
+                        String departmentName = worker.getActiveFlag() == 1 ? operationData.department().getName() : activeWorkers.requireWorkers().getDepartment(operationData.department().getName());
+                        String positionName = worker.getActiveFlag() == 1 ? position.getName() : activeWorkers.getPosition(position.getName());
+                        migrationManager.saveExternalEmployee(person, departmentName, positionName);
                     }
 
                     logger.debug("success result, workerRowId={}", worker.getId());
@@ -374,13 +387,20 @@ public class WorkerController {
 
                     WorkerEntry worker = operationData.worker();
                     Long personId = worker.getPersonId();
+                    UserLogin userLogin = userLoginDAO.findLDAPByPersonId(personId);
 
                     removeWorker(worker);
 
                     if (!workerEntryDAO.checkExistsByPersonId(personId)) {
                         Person person = personDAO.get(personId);
                         person.setDeleted(true);
+                        person.setIpAddress(person.getIpAddress() == null ? null : person.getIpAddress().replace(".", "_"));
+
                         mergePerson(person);
+
+                        if(userLogin != null) {
+                            removeAccount(userLogin);
+                        }
 
                         if (WSConfig.getInstance().isEnableMigration()) {
                             migrationManager.deleteExternalEmployee(person);
@@ -811,8 +831,10 @@ public class WorkerController {
     }
 
     private void saveAccount(UserLogin userLogin) throws Exception {
-        if (userLoginDAO.saveOrUpdate(userLogin))
+        if (userLoginDAO.saveOrUpdate(userLogin)) {
+            jdbcManyRelationsHelper.persist( userLogin, "roles" );
             makeAudit(userLogin, userLogin.getId() == null ? En_AuditType.ACCOUNT_CREATE : En_AuditType.ACCOUNT_MODIFY);
+        }
     }
 
     private void removeAccount(UserLogin userLogin) throws Exception {
@@ -1119,6 +1141,33 @@ public class WorkerController {
             public String getNewPositionName() {
                 return newPositionName;
             }
+        }
+    }
+
+    public class ActiveWorkers {
+
+        List<WorkerEntry> activeWorkers;
+        Long personId;
+
+        public ActiveWorkers(Long personId) {
+            this.personId = personId;
+        }
+
+        public ActiveWorkers requireWorkers() {
+            if (activeWorkers == null)
+                activeWorkers = workerEntryDAO.getWorkers(new WorkerEntryQuery(personId, 1));
+
+            return this;
+        }
+
+        public String getDepartment(String def) {
+            if (activeWorkers == null || activeWorkers.isEmpty()) return def;
+            return activeWorkers.get(0).getDepartment().getName();
+        }
+
+        public String getPosition(String def) {
+            if (activeWorkers == null || activeWorkers.isEmpty()) return def;
+            return activeWorkers.get(0).getPosition().getName();
         }
     }
 }
