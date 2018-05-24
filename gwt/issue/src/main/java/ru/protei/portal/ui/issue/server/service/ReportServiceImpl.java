@@ -65,6 +65,17 @@ public class ReportServiceImpl implements ru.protei.portal.ui.common.client.serv
     }
 
     @Override
+    public Long getReportsCount(ReportQuery query) {
+        log.debug("getReportsByQuery(): query={}", query);
+
+        UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor(httpServletRequest);
+
+        CoreResponse<Long> result = reportService.count(descriptor.makeAuthToken(), query);
+
+        return result.isOk() ? result.getData() : 0L;
+    }
+
+    @Override
     public void removeReports(Set<Long> include, Set<Long> exclude) throws RequestFailedException {
         log.debug("removeReports(): include={} | exclude={}",
                 include == null ? "" : CollectionUtils.joinIter(include, ","),

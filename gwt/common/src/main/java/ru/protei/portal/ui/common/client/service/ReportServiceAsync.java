@@ -13,5 +13,7 @@ public interface ReportServiceAsync {
 
     void getReportsByQuery(ReportQuery query, AsyncCallback<List<Report>> async);
 
+    void getReportsCount(ReportQuery query, AsyncCallback<Long> async);
+
     void removeReports(Set<Long> include, Set<Long> exclude, AsyncCallback<Void> async);
 }

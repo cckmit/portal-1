@@ -892,4 +892,34 @@ public interface Lang extends Messages, ContactItemLang {
     String mobilePhone();
 
     String errNotAvailable();
+
+    String from();
+
+    String to();
+
+    String asc();
+
+    String desc();
+
+    String download();
+
+    String issueReports();
+
+    String issueReportsNumber();
+
+    String issueReportsInfo();
+
+    String issueReportsFilter();
+
+    String issueReportsNotDeleted();
+
+    String issueReportsDeleted();
+
+    String issueReportsCreated();
+
+    String issueReportsProcess();
+
+    String issueReportsReady();
+
+    String issueReportsError();
 }

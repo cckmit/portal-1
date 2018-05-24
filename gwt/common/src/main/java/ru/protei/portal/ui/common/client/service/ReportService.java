@@ -19,5 +19,7 @@ public interface ReportService extends RemoteService {
 
     List<Report> getReportsByQuery(ReportQuery query) throws RequestFailedException;
 
+    Long getReportsCount(ReportQuery query);
+
     void removeReports(Set<Long> include, Set<Long> exclude) throws RequestFailedException;
 }

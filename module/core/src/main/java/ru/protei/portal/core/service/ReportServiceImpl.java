@@ -76,6 +76,18 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
+    public CoreResponse<Long> count(AuthToken authToken, ReportQuery query) {
+
+        Long count = reportDAO.count(query);
+
+        if (count == null) {
+            return new CoreResponse<Long>().error(En_ResultStatus.GET_DATA_ERROR, 0L);
+        }
+
+        return new CoreResponse<Long>().success(count);
+    }
+
+    @Override
     public CoreResponse<ReportContent> downloadReport(AuthToken token, Long id) {
         if (id == null) {
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);

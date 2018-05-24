@@ -8,7 +8,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 @JdbcEntity(table = "report")
-public class Report implements Serializable {
+public class Report implements Removable, Downloadable, Serializable {
 
     /**
      * Уникальный идентификатор отчета
@@ -62,6 +62,16 @@ public class Report implements Serializable {
      */
     @JdbcColumn
     private String locale;
+
+    @Override
+    public boolean isAllowedRemove() {
+        return status != En_ReportStatus.PROCESS;
+    }
+
+    @Override
+    public boolean isAllowedDownload() {
+        return status == En_ReportStatus.READY;
+    }
 
     public Long getId() {
         return id;
