@@ -50,6 +50,21 @@ public class ReportServiceImpl implements ru.protei.portal.ui.common.client.serv
     }
 
     @Override
+    public Report getReport(Long id) throws RequestFailedException {
+        log.debug("getReport(): id={}", id);
+
+        UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor(httpServletRequest);
+
+        CoreResponse<Report> response = reportService.getReport(descriptor.makeAuthToken(), id);
+
+        if (response.isError()) {
+            throw new RequestFailedException(response.getStatus());
+        }
+
+        return response.getData();
+    }
+
+    @Override
     public List<Report> getReportsByQuery(ReportQuery query) throws RequestFailedException {
         log.debug("getReportsByQuery(): query={}", query);
 
@@ -70,7 +85,7 @@ public class ReportServiceImpl implements ru.protei.portal.ui.common.client.serv
 
         UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor(httpServletRequest);
 
-        CoreResponse<Long> result = reportService.count(descriptor.makeAuthToken(), query);
+        CoreResponse<Long> result = reportService.countReportsByQuery(descriptor.makeAuthToken(), query);
 
         return result.isOk() ? result.getData() : 0L;
     }

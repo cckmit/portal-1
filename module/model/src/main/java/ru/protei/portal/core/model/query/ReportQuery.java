@@ -4,6 +4,7 @@ import ru.protei.portal.core.model.dict.En_ReportStatus;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 public class ReportQuery extends BaseQuery {
 
@@ -18,6 +19,12 @@ public class ReportQuery extends BaseQuery {
     private Date fromModified;
 
     private Date toModified;
+
+    private Long creatorId;
+
+    private Set<Long> includeIds;
+
+    private Set<Long> excludeIds;
 
     public ReportQuery() {}
 
@@ -83,6 +90,30 @@ public class ReportQuery extends BaseQuery {
         this.toModified = toModified;
     }
 
+    public Long getCreatorId() {
+        return creatorId;
+    }
+
+    public void setCreatorId(Long creatorId) {
+        this.creatorId = creatorId;
+    }
+
+    public Set<Long> getIncludeIds() {
+        return includeIds;
+    }
+
+    public void setIncludeIds(Set<Long> includeIds) {
+        this.includeIds = includeIds;
+    }
+
+    public Set<Long> getExcludeIds() {
+        return excludeIds;
+    }
+
+    public void setExcludeIds(Set<Long> excludeIds) {
+        this.excludeIds = excludeIds;
+    }
+
     @Override
     public String toString () {
         return "ReportQuery{" +
@@ -95,6 +126,9 @@ public class ReportQuery extends BaseQuery {
                 ", toModified=" + toModified +
                 ", offset=" + offset +
                 ", limit=" + limit +
+                ", creatorId=" + creatorId +
+                ", includeIds=" + includeIds +
+                ", excludeIds=" + excludeIds +
                 '}';
     }
 }

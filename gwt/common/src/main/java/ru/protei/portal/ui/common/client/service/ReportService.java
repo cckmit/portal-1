@@ -17,6 +17,8 @@ public interface ReportService extends RemoteService {
 
     Long createReport(Report report) throws RequestFailedException;
 
+    Report getReport(Long id) throws RequestFailedException;
+
     List<Report> getReportsByQuery(ReportQuery query) throws RequestFailedException;
 
     Long getReportsCount(ReportQuery query);

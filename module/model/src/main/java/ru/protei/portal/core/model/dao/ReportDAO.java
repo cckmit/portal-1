@@ -32,6 +32,16 @@ public interface ReportDAO extends PortalBaseDAO<Report> {
     List<Report> getReportsByQuery(Long creatorId, ReportQuery query, Set<Long> excludeIds);
 
     /**
+     * Получить количество отчетов по фильтру
+     *
+     * @param creatorId  идентификатор профиля, который является создателем отчетов
+     * @param query      фильтр для выборки отчетов
+     * @param excludeIds не выбирать указанные идентификаторы
+     * @return количество отчетов
+     */
+    Long countReportsByQuery(Long creatorId, ReportQuery query, Set<Long> excludeIds);
+
+    /**
      * Получить информацию об отчетах по фильтру
      *
      * @param creatorId  идентификатор профиля, который является создателем отчетов
@@ -60,5 +70,5 @@ public interface ReportDAO extends PortalBaseDAO<Report> {
     List<Report> getReportsByStatuses(List<En_ReportStatus> statuses, Date lastModifiedBefore);
 
     @SqlConditionBuilder
-    SqlCondition createSqlCondition(Long creatorId, ReportQuery query, Set<Long> includeIds, Set<Long> excludeIds);
+    SqlCondition createSqlCondition(ReportQuery query);
 }

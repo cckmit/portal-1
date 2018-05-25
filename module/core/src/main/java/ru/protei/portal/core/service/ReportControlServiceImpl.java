@@ -132,6 +132,11 @@ public class ReportControlServiceImpl implements ReportControlService {
                     log.debug("successful process report : reportId={}", report.getId());
                 } else {
 
+                    report.setStatus(En_ReportStatus.ERROR);
+                    report.setModified(new Date());
+
+                    reportDAO.merge(report);
+
                     log.debug("unsuccessful process report : reportId={}", report.getId());
                 }
 

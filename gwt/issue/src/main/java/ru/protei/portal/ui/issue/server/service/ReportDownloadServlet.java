@@ -3,6 +3,7 @@ package ru.protei.portal.ui.issue.server.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
@@ -11,6 +12,7 @@ import ru.protei.portal.core.service.ReportService;
 import ru.protei.portal.core.service.ReportStorageService;
 import ru.protei.portal.ui.common.server.service.SessionService;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -34,6 +36,12 @@ public class ReportDownloadServlet extends HttpServlet {
     ReportStorageService reportStorageService;
 
     @Override
+    public void init(ServletConfig config) throws ServletException {
+        super.init(config);
+        SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(this, config.getServletContext());
+    }
+
+    @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         Long reportId;
         try {
@@ -55,7 +63,7 @@ public class ReportDownloadServlet extends HttpServlet {
         String name = null;
         CoreResponse<Report> responseReport = reportService.getReport(descriptor.makeAuthToken(), reportId);
         if (responseReport.isOk()) {
-            name = responseReport.getData().getName();
+            name = responseReport.getData().getName() + ".xlsx";
         }
         if (name == null || name.isEmpty()) {
             name = reportStorageService.getFileName(String.valueOf(reportId)).getData();

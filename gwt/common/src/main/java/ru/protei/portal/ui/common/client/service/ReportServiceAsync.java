@@ -11,6 +11,8 @@ public interface ReportServiceAsync {
 
     void createReport(Report report, AsyncCallback<Long> async);
 
+    void getReport(Long id, AsyncCallback<Report> async);
+
     void getReportsByQuery(ReportQuery query, AsyncCallback<List<Report>> async);
 
     void getReportsCount(ReportQuery query, AsyncCallback<Long> async);

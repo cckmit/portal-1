@@ -15,10 +15,10 @@ public class En_ReportStatusLang {
         }
 
         switch (state){
-            case CREATED: lang.issueReportsCreated();
-            case PROCESS: lang.issueReportsProcess();
-            case READY: lang.issueReportsReady();
-            case ERROR: lang.issueReportsError();
+            case CREATED: return lang.issueReportsCreated();
+            case PROCESS: return lang.issueReportsProcess();
+            case READY: return lang.issueReportsReady();
+            case ERROR: return lang.issueReportsError();
             default: return lang.errUnknownResult();
         }
     }

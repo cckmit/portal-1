@@ -54,7 +54,7 @@ public interface ReportService {
      * @return количество отчетов
      */
     @Privileged({ En_Privilege.ISSUE_EXPORT })
-    CoreResponse<Long> count(AuthToken authToken, ReportQuery query);
+    CoreResponse<Long> countReportsByQuery(AuthToken authToken, ReportQuery query);
 
     /**
      * Получение файла отчета

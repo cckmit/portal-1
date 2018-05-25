@@ -8,4 +8,17 @@ public class IssueReportEvents {
     public static class Show {
         public Show () {}
     }
+
+    @Url(value = "issue_report")
+    public static class Edit {
+
+        public Edit () {
+            this.reportId = null;
+        }
+        public Edit (Long reportId) {
+            this.reportId = reportId;
+        }
+
+        public Long reportId;
+    }
 }

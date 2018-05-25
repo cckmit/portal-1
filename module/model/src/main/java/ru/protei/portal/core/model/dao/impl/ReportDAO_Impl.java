@@ -1,6 +1,7 @@
 package ru.protei.portal.core.model.dao.impl;
 
 import org.apache.commons.collections4.CollectionUtils;
+import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.ReportDAO;
 import ru.protei.portal.core.model.dict.En_ReportStatus;
 import ru.protei.portal.core.model.ent.Report;
@@ -14,18 +15,19 @@ import ru.protei.winter.jdbc.JdbcQueryParameters;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class ReportDAO_Impl extends PortalBaseJdbcDAO<Report> implements ReportDAO {
 
     @Override
     public Report getReport(Long creatorId, Long reportId) {
-        return getByCondition("creator = ? and id = ?", creatorId, reportId);
+        return getByCondition("report.creator = ? and report.id = ?", creatorId, reportId);
     }
 
     @Override
     public List<Report> getReportsByQuery(Long creatorId, ReportQuery query, Set<Long> excludeIds) {
-        SqlCondition where = createSqlCondition(creatorId, query, null, excludeIds);
+        query.setCreatorId(creatorId);
+        query.setExcludeIds(excludeIds);
+        SqlCondition where = createSqlCondition(query);
         return getList(new JdbcQueryParameters()
                 .withCondition(where.condition, where.args)
                 .withDistinct(true)
@@ -36,8 +38,19 @@ public class ReportDAO_Impl extends PortalBaseJdbcDAO<Report> implements ReportD
     }
 
     @Override
+    public Long countReportsByQuery(Long creatorId, ReportQuery query, Set<Long> excludeIds) {
+        query.setCreatorId(creatorId);
+        query.setExcludeIds(excludeIds);
+        return count(query);
+    }
+
+    @Override
     public List<Report> getReportsByIds(Long creatorId, Set<Long> includeIds, Set<Long> excludeIds) {
-        SqlCondition where = createSqlCondition(creatorId, null, includeIds, excludeIds);
+        ReportQuery query = new ReportQuery();
+        query.setCreatorId(creatorId);
+        query.setIncludeIds(includeIds);
+        query.setExcludeIds(excludeIds);
+        SqlCondition where = createSqlCondition(query);
         return getList(new JdbcQueryParameters()
                 .withCondition(where.condition, where.args)
                 .withDistinct(true)
@@ -49,7 +62,7 @@ public class ReportDAO_Impl extends PortalBaseJdbcDAO<Report> implements ReportD
         ReportQuery query = new ReportQuery();
         query.setStatuses(statuses);
         query.setLimit(limit);
-        SqlCondition where = createSqlCondition(null, query, null, null);
+        SqlCondition where = createSqlCondition(query);
         return getList(new JdbcQueryParameters()
                 .withCondition(where.condition, where.args)
                 .withDistinct(true)
@@ -62,7 +75,7 @@ public class ReportDAO_Impl extends PortalBaseJdbcDAO<Report> implements ReportD
         ReportQuery query = new ReportQuery();
         query.setStatuses(statuses);
         query.setToModified(lastModifiedBefore);
-        SqlCondition where = createSqlCondition(null, query, null, null);
+        SqlCondition where = createSqlCondition(query);
         return getList(new JdbcQueryParameters()
                 .withCondition(where.condition, where.args)
                 .withDistinct(true)
@@ -70,64 +83,61 @@ public class ReportDAO_Impl extends PortalBaseJdbcDAO<Report> implements ReportD
     }
 
     @Override
-    public SqlCondition createSqlCondition(Long creatorId, ReportQuery query, Set<Long> includeIds, Set<Long> excludeIds) {
+    @SqlConditionBuilder
+    public SqlCondition createSqlCondition(ReportQuery query) {
         return new SqlCondition().build((condition, args) -> {
 
             condition.append("1=1");
 
-            if (creatorId != null) {
-                condition.append(" and creator = ?");
-                args.add(creatorId);
+            if (query == null) {
+                return;
             }
 
-            if (query != null) {
-
-                if (query.getSearchString() != null) {
-                    condition.append(" and name like ?");
-                    args.add(HelperFunc.makeLikeArg(query.getSearchString(), true));
-                }
-
-                if (query.getLocale() != null) {
-                    condition.append(" and locale = ?");
-                    args.add(query.getLocale());
-                }
-
-                if (CollectionUtils.isNotEmpty(query.getStatuses())) {
-                    condition.append(" and status in ( ");
-                    condition.append(query.getStatuses().stream()
-                            .map(En_ReportStatus::name)
-                            .collect(Collectors.joining(","))
-                    );
-                    condition.append(" )");
-                }
-
-                if (query.getFromCreated() != null) {
-                    condition.append(" and created >= ?");
-                    args.add(query.getFromCreated());
-                }
-
-                if (query.getToCreated() != null) {
-                    condition.append(" and created < ?");
-                    args.add(query.getToCreated());
-                }
-
-                if (query.getFromModified() != null) {
-                    condition.append(" and modified >= ?");
-                    args.add(query.getFromModified());
-                }
-
-                if (query.getToModified() != null) {
-                    condition.append(" and modified < ?");
-                    args.add(query.getToModified());
-                }
+            if (query.getCreatorId() != null) {
+                condition.append(" and report.creator = ?");
+                args.add(query.getCreatorId());
             }
 
-            if (CollectionUtils.isNotEmpty(includeIds)) {
-                condition.append(" and id in ").append(JdbcHelper.makeSqlStringCollection(includeIds, args, null));
+            if (query.getSearchString() != null) {
+                condition.append(" and report.name like ?");
+                args.add(HelperFunc.makeLikeArg(query.getSearchString(), true));
             }
 
-            if (CollectionUtils.isNotEmpty(excludeIds)) {
-                condition.append(" and id not in ").append(JdbcHelper.makeSqlStringCollection(excludeIds, args, null));
+            if (query.getLocale() != null) {
+                condition.append(" and report.locale = ?");
+                args.add(query.getLocale());
+            }
+
+            if (CollectionUtils.isNotEmpty(query.getStatuses())) {
+                condition.append(" and report.status in ").append(JdbcHelper.makeSqlStringCollection(query.getStatuses(), args, null));
+            }
+
+            if (query.getFromCreated() != null) {
+                condition.append(" and report.created >= ?");
+                args.add(query.getFromCreated());
+            }
+
+            if (query.getToCreated() != null) {
+                condition.append(" and report.created < ?");
+                args.add(query.getToCreated());
+            }
+
+            if (query.getFromModified() != null) {
+                condition.append(" and report.modified >= ?");
+                args.add(query.getFromModified());
+            }
+
+            if (query.getToModified() != null) {
+                condition.append(" and report.modified < ?");
+                args.add(query.getToModified());
+            }
+
+            if (CollectionUtils.isNotEmpty(query.getIncludeIds())) {
+                condition.append(" and report.id in ").append(JdbcHelper.makeSqlStringCollection(query.getIncludeIds(), args, null));
+            }
+
+            if (CollectionUtils.isNotEmpty(query.getExcludeIds())) {
+                condition.append(" and report.id not in ").append(JdbcHelper.makeSqlStringCollection(query.getExcludeIds(), args, null));
             }
         });
     }

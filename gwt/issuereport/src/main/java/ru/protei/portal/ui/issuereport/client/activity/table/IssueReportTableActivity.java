@@ -12,7 +12,6 @@ import ru.protei.portal.core.model.query.ReportQuery;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
-import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -32,7 +31,6 @@ public abstract class IssueReportTableActivity implements
         CREATE_ACTION = lang.buttonCreate();
 
         view.setActivity(this);
-        view.setAnimation(animation);
 
         pagerView.setActivity(this);
     }
@@ -59,7 +57,7 @@ public abstract class IssueReportTableActivity implements
             return;
         }
 
-        //fireEvent(new IssueReportEvents.Edit());
+        fireEvent(new IssueReportEvents.Edit());
     }
 
     @Event
@@ -71,7 +69,9 @@ public abstract class IssueReportTableActivity implements
     public void onItemClicked(Report value) {}
 
     @Override
-    public void onEditClicked(Report value) {}
+    public void onEditClicked(Report value) {
+        fireEvent(new IssueReportEvents.Edit(value.getId()));
+    }
 
     @Override
     public void onRemoveClicked(Report value) {
@@ -136,7 +136,6 @@ public abstract class IssueReportTableActivity implements
 
     private void requestReportsCount() {
         view.clearRecords();
-        animation.closeDetails();
         reportService.getReportsCount(getQuery(), new RequestCallback<Long>() {
             @Override
             public void onError(Throwable throwable) {
@@ -167,9 +166,6 @@ public abstract class IssueReportTableActivity implements
 
     @Inject
     Lang lang;
-
-    @Inject
-    TableAnimation animation;
 
     @Inject
     AbstractPagerView pagerView;

@@ -141,7 +141,7 @@ public final class JXLSHelper {
             }
             @Override
             public String[] getColumnNames() {
-                return new String[]{ "TITLE" };
+                return new String[]{ "ir_title" };
             }
             @Override
             public Object[] getColumnValues(CaseObject issue) {

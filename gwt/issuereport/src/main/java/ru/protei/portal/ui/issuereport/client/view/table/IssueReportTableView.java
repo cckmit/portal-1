@@ -5,12 +5,10 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.AbstractColumn;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.protei.portal.core.model.ent.Report;
-import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.DownloadClickColumn;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
@@ -58,24 +56,9 @@ public class IssueReportTableView extends Composite implements AbstractIssueRepo
     }
 
     @Override
-    public void setAnimation(TableAnimation animation) {
-        animation.setContainers(tableContainer, previewContainer, filterContainer);
-    }
-
-    @Override
     public void clearRecords() {
         table.clearCache();
         table.clearRows();
-    }
-
-    @Override
-    public HasWidgets getPreviewContainer() {
-        return previewContainer;
-    }
-
-    @Override
-    public HasWidgets getFilterContainer() {
-        return filterContainer;
     }
 
     @Override
@@ -133,10 +116,6 @@ public class IssueReportTableView extends Composite implements AbstractIssueRepo
     InfiniteTableWidget<Report> table;
     @UiField
     HTMLPanel tableContainer;
-    @UiField
-    HTMLPanel previewContainer;
-    @UiField
-    HTMLPanel filterContainer;
 
     @Inject
     private EditClickColumn<Report> editClickColumn;

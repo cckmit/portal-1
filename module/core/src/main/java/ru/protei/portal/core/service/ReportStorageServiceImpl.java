@@ -25,11 +25,15 @@ public class ReportStorageServiceImpl implements ReportStorageService {
         FileOutputStream outputStream = null;
         try {
             File file = new File(reportPath);
-            File path = file.getParentFile();
-            path.mkdirs();
-            file.createNewFile();
-            outputStream = new FileOutputStream(file, false);
-            IOUtils.copy(reportContent.getContent(), outputStream);
+            if (file.getParentFile() != null) {
+                file.getParentFile().mkdirs();
+            }
+            if (file.createNewFile() || file.isFile()) {
+                outputStream = new FileOutputStream(file, false);
+                IOUtils.copy(reportContent.getContent(), outputStream);
+            } else {
+                throw new IOException("Provided file not created or it is a directory");
+            }
         } catch (IOException e) {
             logger.warn("Failed to save content", e);
             return new CoreResponse().error(En_ResultStatus.NOT_CREATED);
@@ -87,8 +91,8 @@ public class ReportStorageServiceImpl implements ReportStorageService {
     private String makeReportPath(Long reportId, String rootPath) {
         String idStr = String.format("%010d", reportId);
         String fileName = getFileName(idStr).getData();
-        StringBuilder sb = new StringBuilder(rootPath.length() + 12 + fileName.length());
-        sb.append(rootPath);
+        StringBuilder sb = new StringBuilder(rootPath.length() + 13 + fileName.length());
+        sb.append(rootPath).append('/');
         sb.append(idStr, 0, 2).append('/');
         sb.append(idStr, 2, 4).append('/');
         sb.append(idStr, 4, 6).append('/');

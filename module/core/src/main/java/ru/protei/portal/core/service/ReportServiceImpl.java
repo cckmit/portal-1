@@ -76,9 +76,11 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    public CoreResponse<Long> count(AuthToken authToken, ReportQuery query) {
+    public CoreResponse<Long> countReportsByQuery(AuthToken token, ReportQuery query) {
 
-        Long count = reportDAO.count(query);
+        UserSessionDescriptor descriptor = authService.findSession(token);
+
+        Long count = reportDAO.countReportsByQuery(descriptor.getPerson().getId(), query, null);
 
         if (count == null) {
             return new CoreResponse<Long>().error(En_ResultStatus.GET_DATA_ERROR, 0L);

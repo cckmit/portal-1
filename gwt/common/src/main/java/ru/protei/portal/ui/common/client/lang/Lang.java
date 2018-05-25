@@ -922,4 +922,10 @@ public interface Lang extends Messages, ContactItemLang {
     String issueReportsReady();
 
     String issueReportsError();
+
+    String issueReportsTitle();
+
+    String issueReportsNew();
+
+    String issueReportsView();
 }

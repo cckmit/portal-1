@@ -285,7 +285,7 @@ public class PortalConfigData {
                 this.threadsNumber = properties.getProperty("report.threads", Integer.class, 6);
                 this.liveTime = DurationUtils.getDuration(properties.getProperty("report.live_time_duration", "3d"), TimeUnit.MILLISECONDS);
                 this.hangInterval = TimeUnit.SECONDS.toMillis(properties.getProperty("report.hang_interval_sec", Integer.class, 30 * 60));
-                this.storagePath = properties.getProperty("report.storage.path", "/reports/");
+                this.storagePath = properties.getProperty("report.storage.path", "reports");
             } catch (IncorrectDurationException e) {
                 throw new ConfigException(e);
             }

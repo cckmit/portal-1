@@ -149,6 +149,7 @@ public class Report implements Removable, Downloadable, Serializable {
     public String toString() {
         return "Report{" +
                 "id=" + id +
+                ", name='" + name + '\'' +
                 ", status='" + status + '\'' +
                 ", caseQuery='" + caseQuery + '\'' +
                 ", creatorId=" + creatorId +
