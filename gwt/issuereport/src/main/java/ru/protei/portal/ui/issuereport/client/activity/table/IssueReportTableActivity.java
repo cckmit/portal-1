@@ -91,6 +91,7 @@ public abstract class IssueReportTableActivity implements
             @Override
             public void onSuccess(Void result) {
                 fireEvent(new NotifyEvents.Show(lang.issueReportsDeleted(), NotifyEvents.NotifyType.SUCCESS));
+                fireEvent(new IssueReportEvents.Show());
             }
         });
     }
