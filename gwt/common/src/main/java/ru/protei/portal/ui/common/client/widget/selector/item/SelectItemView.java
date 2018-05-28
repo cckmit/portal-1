@@ -10,13 +10,24 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.HasEnabled;
 
 /**
  * Один элемент инпут-селектора
  */
-public class SelectItemView extends Composite {
+public class SelectItemView extends Composite implements HasEnabled {
     public SelectItemView() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return isEnabled;
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        isEnabled = enabled;
     }
 
     public static interface CloseHandler {
@@ -39,6 +50,9 @@ public class SelectItemView extends Composite {
     @UiHandler( "close" )
     public void onCloseClicked( ClickEvent event ) {
         event.preventDefault();
+        if (!isEnabled) {
+            return;
+        }
         handler.onCloseClicked( this );
     }
 
@@ -50,6 +64,8 @@ public class SelectItemView extends Composite {
 
     String curValue = null;
     CloseHandler handler;
+
+    private boolean isEnabled = true;
 
     interface SelectItemViewUiBinder extends UiBinder< HTMLPanel, SelectItemView > {}
     private static SelectItemViewUiBinder ourUiBinder = GWT.create( SelectItemViewUiBinder.class );
