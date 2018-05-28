@@ -1,7 +1,9 @@
 package ru.protei.portal.core.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.model.dao.ReportDAO;
 import ru.protei.portal.core.model.dict.En_ReportStatus;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
@@ -12,11 +14,14 @@ import ru.protei.portal.core.model.query.ReportQuery;
 import ru.protei.portal.core.model.struct.ReportContent;
 import ru.protei.portal.core.service.user.AuthService;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class ReportServiceImpl implements ReportService {
 
     private final static String LOCALE_RU = Locale.forLanguageTag("ru").toString();
+    private final static DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
 
     @Autowired
     ReportDAO reportDAO;
@@ -45,6 +50,9 @@ public class ReportServiceImpl implements ReportService {
         report.setStatus(En_ReportStatus.CREATED);
         if (report.getLocale() == null) {
             report.setLocale(LOCALE_RU);
+        }
+        if (report.getName() == null) {
+            report.setName(getLang().getFor(Locale.forLanguageTag(report.getLocale())).get("report_at") + " " + dateFormat.format(new Date()));
         }
 
         Long id = reportDAO.persist(report);
@@ -135,5 +143,12 @@ public class ReportServiceImpl implements ReportService {
         }
         reportStorageService.removeContent(idsToRemove);
         reportDAO.removeByKeys(idsToRemove);
+    }
+
+    private Lang getLang() {
+        ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+        messageSource.setBasenames("Lang");
+        messageSource.setDefaultEncoding("UTF-8");
+        return new Lang(messageSource);
     }
 }

@@ -175,13 +175,32 @@ public class IssueReportEditView extends Composite implements AbstractIssueRepor
         return requestButton;
     }
 
+    @Override
+    public HasVisibility downloadButtonVisibility() {
+        return downloadButton;
+    }
+
     @UiHandler("requestButton")
     public void requestButtonClick(ClickEvent event) {
+        if (activity == null) {
+            return;
+        }
         activity.onRequestClicked();
+    }
+
+    @UiHandler("downloadButton")
+    public void downloadButtonClick(ClickEvent event) {
+        if (activity == null) {
+            return;
+        }
+        activity.onDownloadClicked();
     }
 
     @UiHandler("cancelButton")
     public void cancelButtonClick(ClickEvent event) {
+        if (activity == null) {
+            return;
+        }
         activity.onCancelClicked();
     }
 
@@ -231,6 +250,9 @@ public class IssueReportEditView extends Composite implements AbstractIssueRepor
 
     @UiField
     Button requestButton;
+
+    @UiField
+    Button downloadButton;
 
     @UiField
     Button cancelButton;

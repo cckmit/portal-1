@@ -211,10 +211,12 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     @Override
     public void setUserFilterControlsVisibility( boolean hasVisible ) {
         if ( hasVisible ) {
+            reportBtn.removeStyleName( "hide" );
             saveBtn.removeStyleName( "hide" );
             resetBtn.removeStyleName( "hide" );
             removeBtn.removeStyleName( "hide" );
         } else {
+            reportBtn.addStyleName( "hide" );
             saveBtn.addStyleName( "hide" );
             resetBtn.addStyleName( "hide" );
             removeBtn.addStyleName( "hide" );
@@ -261,6 +263,15 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
             return;
         }
         activity.onFilterRemoveClicked( userFilter.getValue().getId() );
+    }
+
+    @UiHandler("reportBtn")
+    public void onReportClicked(ClickEvent event) {
+        event.preventDefault();
+        if ( activity == null ) {
+            return;
+        }
+        activity.onCreateReportClicked();
     }
 
     @UiHandler( "companies" )
@@ -402,6 +413,9 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
 
     @UiField
     Button removeBtn;
+
+    @UiField
+    Button reportBtn;
 
     @UiField
     Anchor okBtn;

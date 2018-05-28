@@ -46,4 +46,5 @@ public interface AbstractIssueReportEditView extends IsWidget {
     HasVisibility managersVisibility();
 
     HasVisibility requestButtonVisibility();
+    HasVisibility downloadButtonVisibility();
 }

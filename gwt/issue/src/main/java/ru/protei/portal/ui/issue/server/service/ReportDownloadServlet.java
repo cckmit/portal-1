@@ -54,6 +54,10 @@ public class ReportDownloadServlet extends HttpServlet {
 
         UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor(httpServletRequest);
 
+        if (descriptor == null) {
+            throw new ServletException("Not authorized");
+        }
+
         CoreResponse<ReportContent> response = reportService.downloadReport(descriptor.makeAuthToken(), reportId);
 
         if (response.isError()) {

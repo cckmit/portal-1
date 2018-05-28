@@ -905,6 +905,10 @@ public interface Lang extends Messages, ContactItemLang {
 
     String selected();
 
+    String buttonReport();
+
+    String buttonDownload();
+
     String issueReports();
 
     String issueReportsNumber();
@@ -930,4 +934,6 @@ public interface Lang extends Messages, ContactItemLang {
     String issueReportsNew();
 
     String issueReportsView();
+
+    String reportRequested();
 }

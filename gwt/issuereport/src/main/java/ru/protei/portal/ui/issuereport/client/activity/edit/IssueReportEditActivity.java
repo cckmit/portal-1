@@ -1,5 +1,7 @@
 package ru.protei.portal.ui.issuereport.client.activity.edit;
 
+import com.google.gwt.i18n.client.LocaleInfo;
+import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
@@ -9,6 +11,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ReportStatus;
 import ru.protei.portal.core.model.dict.En_SortDir;
+import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -47,6 +50,7 @@ public abstract class IssueReportEditActivity implements AbstractIssueReportEdit
             Report report = new Report();
             report.setStatus(En_ReportStatus.CREATED);
             report.setCaseQuery(new CaseQuery());
+            report.setLocale(LocaleInfo.getCurrentLocale().getLocaleName());
             initialView(report);
         } else {
             fireEvent(new AppEvents.InitPanelName(lang.issueReportsView()));
@@ -71,10 +75,18 @@ public abstract class IssueReportEditActivity implements AbstractIssueReportEdit
 
             @Override
             public void onSuccess(Long result) {
-                fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+                fireEvent(new NotifyEvents.Show(lang.reportRequested(), NotifyEvents.NotifyType.SUCCESS));
                 fireEvent(new Back());
             }
         });
+    }
+
+    @Override
+    public void onDownloadClicked() {
+        if (report.getId() == null || !report.isReady()) {
+            return;
+        }
+        Window.open("/Crm/download/report?id=" + report.getId().toString(), "_blank", "");
     }
 
     @Override
@@ -114,6 +126,7 @@ public abstract class IssueReportEditActivity implements AbstractIssueReportEdit
         view.importanceEnabled().setEnabled(notReadOnly);
         view.stateEnabled().setEnabled(notReadOnly);
         view.requestButtonVisibility().setVisible(notReadOnly);
+        view.downloadButtonVisibility().setVisible(report.isReady());
 
         CaseQuery query = report.getCaseQuery();
 
@@ -123,7 +136,7 @@ public abstract class IssueReportEditActivity implements AbstractIssueReportEdit
         view.locale().setValue(report.getLocale());
         view.search().setText(query.getSearchString());
         view.dateRange().setValue(new DateInterval(query.getFrom(), query.getTo()));
-        view.sortField().setValue(query.getSortField());
+        view.sortField().setValue(query.getSortField() != null ? query.getSortField() : En_SortField.creation_date);
         view.sortDir().setValue(query.getSortDir() == En_SortDir.ASC);
         view.companies().setValue(IssueFilterUtils.getCompanies(query.getCompanyIds()));
         view.managers().setValue(IssueFilterUtils.getManagers(query.getManagerIds()));

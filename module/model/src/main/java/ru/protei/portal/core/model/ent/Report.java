@@ -145,6 +145,10 @@ public class Report implements Removable, Downloadable, Serializable {
         this.locale = locale;
     }
 
+    public boolean isReady() {
+        return status == En_ReportStatus.READY;
+    }
+
     @Override
     public String toString() {
         return "Report{" +

@@ -13,12 +13,16 @@ import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
-import ru.protei.portal.ui.common.client.events.*;
+import ru.protei.portal.ui.common.client.events.ActionBarEvents;
+import ru.protei.portal.ui.common.client.events.AppEvents;
+import ru.protei.portal.ui.common.client.events.IssueReportEvents;
+import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ReportServiceAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 
 public abstract class IssueReportTableActivity implements
@@ -78,11 +82,10 @@ public abstract class IssueReportTableActivity implements
         if (value.getId() == null) {
             return;
         }
-        reportService.removeReports(Collections.singleton(value.getId()), null, new RequestCallback<Void>() {
+        reportService.removeReports(new HashSet<>(Collections.singletonList(value.getId())), null, new RequestCallback<Void>() {
             @Override
             public void onError(Throwable throwable) {
                 fireEvent(new NotifyEvents.Show(lang.issueReportsNotDeleted(), NotifyEvents.NotifyType.ERROR));
-
             }
 
             @Override

@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.issue.client.activity.table;
 
+import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.regexp.shared.MatchResult;
 import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -12,6 +13,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.CaseFilter;
+import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.model.view.CaseShortView;
@@ -215,6 +217,24 @@ public abstract class IssueTableActivity
     public void onCancelSavingClicked() {
         showUserFilterControls();
         filterView.resetFilter();
+    }
+
+    @Override
+    public void onCreateReportClicked() {
+        Report report = new Report();
+        report.setCaseQuery(getQuery());
+        report.setLocale(LocaleInfo.getCurrentLocale().getLocaleName());
+        reportService.createReport(report, new RequestCallback<Long>() {
+            @Override
+            public void onError(Throwable throwable) {
+                fireEvent(new NotifyEvents.Show(throwable.getMessage(), NotifyEvents.NotifyType.ERROR));
+            }
+
+            @Override
+            public void onSuccess(Long result) {
+                fireEvent(new NotifyEvents.Show(lang.reportRequested(), NotifyEvents.NotifyType.SUCCESS));
+            }
+        });
     }
 
     @Override
@@ -437,6 +457,9 @@ public abstract class IssueTableActivity
 
     @Inject
     PolicyService policyService;
+
+    @Inject
+    ReportServiceAsync reportService;
 
     private static String CREATE_ACTION;
     private AppEvents.InitDetails initDetails;
