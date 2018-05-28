@@ -59,10 +59,10 @@ public class FilterColumn extends ClickColumn<Report> {
             StringBuilder sb = new StringBuilder();
             sb.append(lang.created()).append(": ");
             if (caseQuery.getFrom() != null) {
-                sb.append(lang.from().toLowerCase()).append(" ").append(DateFormatter.formatDateTime(caseQuery.getFrom()));
+                sb.append(lang.from().toLowerCase()).append(" ").append(DateFormatter.formatDateTime(caseQuery.getFrom())).append(" ");
             }
             if (caseQuery.getTo() != null) {
-                sb.append(lang.to().toLowerCase()).append(" ").append(DateFormatter.formatDateTime(caseQuery.getTo()));
+                sb.append(lang.to().toLowerCase()).append(" ").append(DateFormatter.formatDateTime(caseQuery.getTo())).append(" ");
             }
             managerElement.setInnerText(sb.toString());
             divElement.appendChild(managerElement);
@@ -72,7 +72,7 @@ public class FilterColumn extends ClickColumn<Report> {
         if (caseQuery.getSortField() != null) {
             Element managerElement = DOM.createElement("p");
             StringBuilder sb = new StringBuilder();
-            sb.append(lang.sortBy()).append(": ").append(sortFieldLang.getName(caseQuery.getSortField()));
+            sb.append(lang.sortBy()).append(": ").append(sortFieldLang.getName(caseQuery.getSortField()).toLowerCase());
             if (caseQuery.getSortDir() != null) {
                 sb.append(" ").append(sortDirLang.getName(caseQuery.getSortDir()).toLowerCase());
             }
@@ -109,21 +109,21 @@ public class FilterColumn extends ClickColumn<Report> {
         // companies
         if (caseQuery.getCompanyIds() != null && !caseQuery.getCompanyIds().isEmpty()) {
             Element managerElement = DOM.createElement("p");
-            managerElement.setInnerText(lang.issueCompany() + ": " + caseQuery.getCompanyIds().size());
+            managerElement.setInnerText(lang.issueCompany() + ": " + caseQuery.getCompanyIds().size() + " " + lang.selected().toLowerCase());
             divElement.appendChild(managerElement);
         }
 
         // products
         if (caseQuery.getProductIds() != null && !caseQuery.getProductIds().isEmpty()) {
             Element managerElement = DOM.createElement("p");
-            managerElement.setInnerText(lang.issueProduct() + ": " + caseQuery.getProductIds().size());
+            managerElement.setInnerText(lang.issueProduct() + ": " + caseQuery.getProductIds().size() + " " + lang.selected().toLowerCase());
             divElement.appendChild(managerElement);
         }
 
         // managers
         if (caseQuery.getManagerIds() != null && !caseQuery.getManagerIds().isEmpty()) {
             Element managerElement = DOM.createElement("p");
-            managerElement.setInnerText(lang.issueManager() + ": " + caseQuery.getManagerIds().size());
+            managerElement.setInnerText(lang.issueManager() + ": " + caseQuery.getManagerIds().size() + " " + lang.selected().toLowerCase());
             divElement.appendChild(managerElement);
         }
 

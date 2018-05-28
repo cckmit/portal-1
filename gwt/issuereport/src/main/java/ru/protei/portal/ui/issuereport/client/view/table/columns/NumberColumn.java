@@ -42,7 +42,7 @@ public class NumberColumn extends ClickColumn<Report> {
         divElement.appendChild(numberElement);
 
         com.google.gwt.dom.client.Element stateElement = DOM.createElement("p");
-        stateElement.addClassName("label label-" + value.getStatus().toString().toLowerCase());
+        stateElement.addClassName("label label-report-" + value.getStatus().toString().toLowerCase());
         stateElement.setInnerText(reportStatusLang.getStateName(value.getStatus()));
         divElement.appendChild(stateElement);
 

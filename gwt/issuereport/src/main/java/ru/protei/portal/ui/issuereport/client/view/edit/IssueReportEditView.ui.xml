@@ -15,12 +15,11 @@
         <div class="body">
             <div class="grid grid-indent">
                 <div class="form-group col-xs-12">
-                    <label><ui:text from="{lang.issueReportsTitle}"/></label>
+                    <label class="col-xs-12"><ui:text from="{lang.issueReportsTitle}"/></label>
+                    <g:TextBox ui:field="status" styleName="col-xs-1 input-field input-field-col"/>
+                    <lang:LocaleButtonSelector ui:field="locale" addStyleNames="col-xs-1"/>
+                    <validablefield:ValidableTextBox ui:field="title" styleName="col-xs-10 input-field input-field-col" notNull="true"/>
                 </div>
-                <g:HTMLPanel ui:field="nameContainer" styleName="form-group col-xs-12">
-                    <lang:LocaleButtonSelector ui:field="locale" addStyleNames="form-group col-xs-1"/>
-                    <validablefield:ValidableTextBox ui:field="title" styleName="input-field form-group col-xs-11" notNull="true"/>
-                </g:HTMLPanel>
             </div>
             <div class="grid grid-indent">
 

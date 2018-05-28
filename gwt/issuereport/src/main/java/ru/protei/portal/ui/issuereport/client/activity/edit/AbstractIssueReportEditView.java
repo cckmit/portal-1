@@ -15,6 +15,7 @@ public interface AbstractIssueReportEditView extends IsWidget {
 
     void setActivity(AbstractIssueReportEditActivity activity);
 
+    HasText status();
     HasValue<String> title();
     HasValue<String> locale();
     HasText search();
@@ -27,6 +28,7 @@ public interface AbstractIssueReportEditView extends IsWidget {
     HasValue<Set<En_ImportanceLevel>> importance();
     HasValue<Set<En_CaseState>> state();
 
+    HasEnabled statusEnabled();
     HasEnabled titleEnabled();
     HasEnabled localeEnabled();
     HasEnabled searchEnabled();
@@ -44,5 +46,4 @@ public interface AbstractIssueReportEditView extends IsWidget {
     HasVisibility managersVisibility();
 
     HasVisibility requestButtonVisibility();
-
 }

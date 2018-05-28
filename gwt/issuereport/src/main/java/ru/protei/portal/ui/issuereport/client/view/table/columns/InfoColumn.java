@@ -30,11 +30,12 @@ public class InfoColumn extends ClickColumn<Report> {
         Element divElement = DOM.createDiv();
 
         Element locale = DOM.createElement("p");
-        locale.addClassName("fa fa-fw");
+        locale.addClassName("fa fa-fw locale-box");
         locale.setInnerText(value == null ? "" : value.getLocale() == null ? "" : value.getLocale());
         divElement.appendChild(locale);
 
         Element title = DOM.createLabel();
+        title.addClassName("report-title");
         title.setInnerText(value == null ? "" : value.getName() == null ? "" : value.getName());
         divElement.appendChild(title);
 

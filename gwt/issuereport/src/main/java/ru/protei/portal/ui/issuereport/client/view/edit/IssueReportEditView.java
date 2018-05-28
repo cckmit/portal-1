@@ -36,6 +36,11 @@ public class IssueReportEditView extends Composite implements AbstractIssueRepor
     }
 
     @Override
+    public HasText status() {
+        return status;
+    }
+
+    @Override
     public HasValue<String> title() {
         return title;
     }
@@ -88,6 +93,11 @@ public class IssueReportEditView extends Composite implements AbstractIssueRepor
     @Override
     public HasValue<Set<En_CaseState>> state() {
         return state;
+    }
+
+    @Override
+    public HasEnabled statusEnabled() {
+        return status;
     }
 
     @Override
@@ -174,6 +184,9 @@ public class IssueReportEditView extends Composite implements AbstractIssueRepor
     public void cancelButtonClick(ClickEvent event) {
         activity.onCancelClicked();
     }
+
+    @UiField
+    TextBox status;
 
     @Inject
     @UiField(provided = true)

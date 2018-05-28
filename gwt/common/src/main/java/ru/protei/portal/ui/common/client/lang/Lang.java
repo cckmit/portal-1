@@ -903,6 +903,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String download();
 
+    String selected();
+
     String issueReports();
 
     String issueReportsNumber();

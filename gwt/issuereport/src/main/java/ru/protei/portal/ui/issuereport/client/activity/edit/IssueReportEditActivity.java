@@ -7,14 +7,15 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dict.En_ReportStatus;
 import ru.protei.portal.core.model.dict.En_SortDir;
-import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.IssueReportEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.lang.En_ReportStatusLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ReportServiceAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
@@ -43,7 +44,10 @@ public abstract class IssueReportEditActivity implements AbstractIssueReportEdit
 
         if (event.reportId == null) {
             fireEvent(new AppEvents.InitPanelName(lang.issueReportsNew()));
-            initialView(new Report());
+            Report report = new Report();
+            report.setStatus(En_ReportStatus.CREATED);
+            report.setCaseQuery(new CaseQuery());
+            initialView(report);
         } else {
             fireEvent(new AppEvents.InitPanelName(lang.issueReportsView()));
             requestReport(event.reportId, this::initialView);
@@ -110,6 +114,22 @@ public abstract class IssueReportEditActivity implements AbstractIssueReportEdit
         view.importanceEnabled().setEnabled(notReadOnly);
         view.stateEnabled().setEnabled(notReadOnly);
         view.requestButtonVisibility().setVisible(notReadOnly);
+
+        CaseQuery query = report.getCaseQuery();
+
+        view.statusEnabled().setEnabled(false);
+        view.status().setText(reportStatusLang.getStateName(report.getStatus()));
+        view.title().setValue(report.getName());
+        view.locale().setValue(report.getLocale());
+        view.search().setText(query.getSearchString());
+        view.dateRange().setValue(new DateInterval(query.getFrom(), query.getTo()));
+        view.sortField().setValue(query.getSortField());
+        view.sortDir().setValue(query.getSortDir() == En_SortDir.ASC);
+        view.companies().setValue(IssueFilterUtils.getCompanies(query.getCompanyIds()));
+        view.managers().setValue(IssueFilterUtils.getManagers(query.getManagerIds()));
+        view.products().setValue(IssueFilterUtils.getProducts(query.getProductIds()));
+        view.importance().setValue(IssueFilterUtils.getImportances(query.getImportanceIds()));
+        view.state().setValue(IssueFilterUtils.getStates(query.getStateIds()));
     }
 
     private void fillReportObject(Report report) {
@@ -143,6 +163,9 @@ public abstract class IssueReportEditActivity implements AbstractIssueReportEdit
 
     @Inject
     Lang lang;
+
+    @Inject
+    En_ReportStatusLang reportStatusLang;
 
     @Inject
     ReportServiceAsync reportService;
