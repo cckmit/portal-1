@@ -61,7 +61,7 @@ public final class JXLSHelper {
     }
 
     private static DateFormat getDateFormat() {
-        return new SimpleDateFormat("dd.MM.yyyy HH.mm.ss");
+        return new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
     }
 
     private static void setColumnsWidth(Sheet sheet, int[] columnsWidth) {
@@ -133,19 +133,54 @@ public final class JXLSHelper {
 
     public static void writeIssuesReport(List<CaseObject> issues, OutputStream outputStream, Lang.LocalizedLang lang) throws IOException {
         final DateFormat dateFormat = getDateFormat();
-        // TODO BUKH fill columns
         writeReport(issues, outputStream, lang, new ReportWriter<CaseObject>() {
             @Override
             public int[] getColumnsWidth() {
-                return new int[]{ 6000 };
+                return new int[] {
+                        3650,
+                        3430,
+                        8570,
+                        4590,
+                        4000,
+                        3430,
+                        6000,
+                        6000,
+                        6000,
+                        6000,
+                        15000
+                };
             }
             @Override
             public String[] getColumnNames() {
-                return new String[]{ "ir_title" };
+                return new String[] {
+                        "ir_caseno",
+                        "ir_private",
+                        "ir_name",
+                        "ir_created",
+                        "ir_state",
+                        "ir_importance",
+                        "ir_company",
+                        "ir_initiator",
+                        "ir_product",
+                        "ir_manager",
+                        "ir_info"
+                };
             }
             @Override
             public Object[] getColumnValues(CaseObject issue) {
-                return new Object[]{ issue.getName() };
+                return new Object[] {
+                        "CRM-" + issue.getCaseNumber(),
+                        lang.get(issue.isPrivateCase() ? "yes" : "no"),
+                        issue.getName(),
+                        dateFormat.format(issue.getCreated()),
+                        lang.get("case_state_" + String.valueOf(issue.getState().getId())),
+                        lang.get("importance_" + String.valueOf(issue.getImpLevel())),
+                        issue.getInitiatorCompany() != null ? issue.getInitiatorCompany().getCname() : "",
+                        issue.getInitiator() != null ? issue.getInitiator().getDisplayShortName() : "",
+                        issue.getProduct() != null ? issue.getProduct().getName() : "",
+                        issue.getManager() != null ? issue.getManager().getDisplayShortName() : "",
+                        issue.getInfo()
+                };
             }
             @Override
             public Object[] getSumValues() {
