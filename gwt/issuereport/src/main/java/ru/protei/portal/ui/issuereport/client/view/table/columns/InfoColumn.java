@@ -43,11 +43,10 @@ public class InfoColumn extends ClickColumn<Report> {
         if (created != null) {
             divElement.appendChild(created);
         }
-
-        Element modified = getDateElement(value == null ? null : value.getModified());
-        if (modified != null) {
-            divElement.appendChild(modified);
-        }
+//        Element modified = getDateElement(value == null ? null : value.getModified());
+//        if (modified != null) {
+//            divElement.appendChild(modified);
+//        }
 
         cell.appendChild(divElement);
     }

@@ -10,6 +10,7 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.gwt.version>2.8.2</project.gwt.version>
         <project.gin.version>2.1.2</project.gin.version>
         <project.factory.version>2.3-SNAPSHOT</project.factory.version>

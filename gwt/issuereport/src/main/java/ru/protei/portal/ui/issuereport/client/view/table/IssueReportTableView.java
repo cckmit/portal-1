@@ -109,7 +109,7 @@ public class IssueReportTableView extends Composite implements AbstractIssueRepo
 
         table.addColumn(removeClickColumn.header, removeClickColumn.values);
         table.addColumn(downloadClickColumn.header, downloadClickColumn.values);
-        table.addColumn(editClickColumn.header, editClickColumn.values);
+//        table.addColumn(editClickColumn.header, editClickColumn.values);
     }
 
     @UiField
