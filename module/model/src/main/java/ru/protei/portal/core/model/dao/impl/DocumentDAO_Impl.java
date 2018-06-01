@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class DocumentDAO_Impl extends PortalBaseJdbcDAO<Document> implements DocumentDAO {
-    private static final String JOINS = "LEFT JOIN decimal_number DN ON DN.entity_id = document.id AND DN.entity_type=\"DOCUMENT\"";
+    private static final String JOINS = "LEFT JOIN decimal_number DN ON DN.entity_id = document.id AND DN.entity_type=\"DOCUMENT\" LEFT JOIN case_object CO ON CO.id = document.project_id";
 
     @Override
     public List<Document> getListByQuery(DocumentQuery query) {
@@ -42,7 +42,7 @@ public class DocumentDAO_Impl extends PortalBaseJdbcDAO<Document> implements Doc
             condition.append("1=1");
 
             if (StringUtils.isNotEmpty(query.getSearchString())) {
-                condition.append(" and (document.name like ? or document.project like ?)");
+                condition.append(" and (document.name like ? or CO.case_name like ?)");
                 String likeArg = HelperFunc.makeLikeArg(query.getSearchString(), true);
                 args.add(likeArg);
                 args.add(likeArg);
