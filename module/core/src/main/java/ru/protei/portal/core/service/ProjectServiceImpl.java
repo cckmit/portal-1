@@ -22,6 +22,8 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toList;
+
 /**
  * Реализация сервиса управления проектами
  */
@@ -90,7 +92,7 @@ public class ProjectServiceImpl implements ProjectService {
 
                     return query.getStates().contains( regionInfo.state );
                 } )
-                .collect( Collectors.toList() );
+                .collect( toList() );
 
         return new CoreResponse< List< RegionInfo > >().success( result );
     }
@@ -103,7 +105,7 @@ public class ProjectServiceImpl implements ProjectService {
         caseQuery.setType( En_CaseType.PROJECT );
         caseQuery.setStateIds( query.getStates().stream()
                 .map( ( state ) -> new Long( state.getId() ).intValue() )
-                .collect( Collectors.toList() )
+                .collect( toList() )
         );
         List<Long> productIds = null;
         if (query.getDirectionId() != null){
@@ -176,6 +178,18 @@ public class ProjectServiceImpl implements ProjectService {
 
         Long newId = caseObjectDAO.persist( caseObject );
         return new CoreResponse< Long >().success( newId );
+    }
+
+    @Override
+    public CoreResponse<List<ProjectInfo>> listProjects(AuthToken authToken) {
+
+        CaseQuery caseQuery = new CaseQuery();
+        caseQuery.setType(En_CaseType.PROJECT);
+
+        List<CaseObject> projects = caseObjectDAO.listByQuery(caseQuery);
+        List<ProjectInfo> result = projects.stream()
+                .map(ProjectInfo::fromCaseObject).collect(toList());
+        return new CoreResponse<List<ProjectInfo>>().success( result );
     }
 
     private void updateManagers( CaseObject caseObject, PersonShortView headManager, List< PersonShortView > deployManagers ) {

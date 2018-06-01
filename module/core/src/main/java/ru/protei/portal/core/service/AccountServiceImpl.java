@@ -101,6 +101,10 @@ public class AccountServiceImpl implements AccountService {
             return new CoreResponse< UserLogin >().error( En_ResultStatus.ALREADY_EXIST );
         }
 
+        if (userLogin.getRoles() == null || userLogin.getRoles().size() == 0) {
+            return new CoreResponse< UserLogin >().error( En_ResultStatus.INCORRECT_PARAMS );
+        }
+
         userLogin.setUlogin( userLogin.getUlogin().trim() );
 
         UserLogin account = userLogin.getId() == null ? null : getAccount( token, userLogin.getId() ).getData();
@@ -123,6 +127,17 @@ public class AccountServiceImpl implements AccountService {
         }
 
         return new CoreResponse< UserLogin >().error( En_ResultStatus.INTERNAL_ERROR );
+    }
+
+    @Override
+    public CoreResponse<UserLogin> saveContactAccount(AuthToken token, UserLogin userLogin) {
+
+        if (userLogin.getId() == null) {
+            Set<UserRole> userRoles = new HashSet<>(userRoleDAO.getDefaultContactRoles());
+            userLogin.setRoles(userRoles);
+        }
+
+        return saveAccount(token, userLogin);
     }
 
     @Override

@@ -7,7 +7,6 @@ import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Document;
-import ru.protei.portal.core.model.ent.DocumentType;
 import ru.protei.portal.core.model.query.DocumentQuery;
 
 import java.util.List;
@@ -19,8 +18,6 @@ public interface DocumentService {
 
     @Privileged(En_Privilege.DOCUMENT_VIEW)
     CoreResponse<List<Document>> documentList(AuthToken token, DocumentQuery query);
-
-    CoreResponse<List<DocumentType>> documentTypeList(AuthToken token);
 
     @Privileged(En_Privilege.DOCUMENT_VIEW)
     CoreResponse<Document> getDocument(AuthToken token, Long id);

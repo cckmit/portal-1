@@ -46,5 +46,7 @@
   <include file="2018-03-27-redmine_new_table.xml" relativeToChangelogFile="true" />
   <include file="2018-03-28-edit_document.xml" relativeToChangelogFile="true"/>
   <include file="2018-03-30-redmine_case_state_fk.xml" relativeToChangelogFile="true" />
-  <include file="2018-04-23-add_document_category.xml" relativeToChangelogFile="true"/>  
+  <include file="2018-04-23-add_document_category.xml" relativeToChangelogFile="true"/>
+  <include file="2018-04-24-devunit_subscription.xml" relativeToChangelogFile="true" />
+  <include file="2018-05-04-add_default_flag_for_contacts.xml" relativeToChangelogFile="true" />
 </databaseChangeLog>

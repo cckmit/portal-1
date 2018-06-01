@@ -23,5 +23,4 @@ public interface PersonService extends RemoteService {
     List< PersonShortView > getPersonViewList( PersonQuery query ) throws RequestFailedException;
 
     Map<Long, String> getPersonNames(Collection<Long> ids) throws RequestFailedException;
-
 }

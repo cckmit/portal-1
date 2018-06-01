@@ -2,6 +2,7 @@ package ru.protei.portal.ui.common.client.widget.selector.product;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.view.ProductShortView;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
 import ru.protei.portal.ui.common.client.widget.selector.input.MultipleInputSelector;
@@ -21,6 +22,7 @@ public class ProductMultiSelector extends MultipleInputSelector< ProductShortVie
 
     public void fillOptions( List< ProductShortView > options ) {
         clearOptions();
+        addOption(lang.productWithout(), new ProductShortView(CrmConstants.Product.UNDEFINED, lang.productWithout(), 0));
         for ( ProductShortView option : options ) {
             addOption( option.getName(), option );
         }
@@ -30,4 +32,7 @@ public class ProductMultiSelector extends MultipleInputSelector< ProductShortVie
     public void refreshValue() {
 
     }
+
+    @Inject
+    private Lang lang;
 }

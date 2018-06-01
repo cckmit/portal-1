@@ -14,6 +14,7 @@
     <inherits name="ru.protei.portal.ui.role.Role" />
     <inherits name="ru.protei.portal.ui.official.Official"/>
     <inherits name="ru.protei.portal.ui.document.Document"/>
+    <inherits name="ru.protei.portal.ui.documenttype.DocumentType"/>
 
     <entry-point class='ru.protei.portal.ui.crm.client.Main'/>
 

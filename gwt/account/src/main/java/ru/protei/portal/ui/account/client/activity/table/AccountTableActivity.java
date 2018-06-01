@@ -21,9 +21,7 @@ import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AccountServiceAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
-import ru.protei.winter.web.common.client.events.SectionEvents;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -200,9 +198,13 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
                 .map( UserRole::getId )
                 .collect( Collectors.toList());
 
-        return new AccountQuery( filterView.types().getValue(), roles, filterView.searchPattern().getValue(), filterView.sortField().getValue(),
-                filterView.sortDir().getValue()? En_SortDir.ASC: En_SortDir.DESC );
-
+        return new AccountQuery(
+                filterView.types().getValue(),
+                roles,
+                filterView.searchPattern().getValue(),
+                filterView.sortField().getValue(),
+                filterView.sortDir().getValue() ? En_SortDir.ASC: En_SortDir.DESC
+        );
     }
 
     @Inject

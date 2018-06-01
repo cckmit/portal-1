@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.issue.client.activity.edit;
 
 import com.google.inject.Inject;
+import ru.brainworm.factory.context.client.annotation.ContextAware;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -9,18 +10,14 @@ import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
-import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.AttachmentEvents;
-import ru.protei.portal.ui.common.client.events.IssueEvents;
-import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
-import ru.protei.portal.ui.common.client.service.CompanyServiceAsync;
-import ru.protei.portal.ui.common.client.service.IssueServiceAsync;
+import ru.protei.portal.ui.common.client.service.*;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
@@ -58,12 +55,16 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
 
-        if(event.id == null) {
+        if (event.id == null) {
             fireEvent(new AppEvents.InitPanelName(lang.newIssue()));
-            CaseObject caseObject = new CaseObject();
-            caseObject.setPrivateCase( true );
-            initialView(caseObject);
-        }else {
+            if (issue != null) {
+                initialView(issue);
+            } else {
+                CaseObject caseObject = new CaseObject();
+                caseObject.setPrivateCase(true);
+                initialView(caseObject);
+            }
+        } else {
             fireEvent(new AppEvents.InitPanelName(lang.issueEdit()));
             requestIssue(event.id, this::initialView);
         }
@@ -82,6 +83,17 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             event.attachments.forEach(view.attachmentsContainer()::remove);
             issue.getAttachments().removeAll(event.attachments);
             issue.setAttachmentExists(!issue.getAttachments().isEmpty());
+        }
+    }
+
+    @Event
+    public void onFillPerson(PersonEvents.PersonCreated event) {
+        if (CrmConstants.Issue.CREATE_CONTACT_IDENTITY.equals(event.origin) && issue != null && event.person != null) {
+            issue.setInitiator(event.person);
+            issue.setInitiatorId(event.person.getId());
+            if (issue.getInitiator() != null) {
+                view.initiator().setValue(PersonShortView.fromPerson(issue.getInitiator()));
+            }
         }
     }
 
@@ -163,6 +175,14 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                                     .collect( Collectors.joining( ", " ) ) );
                 }
             });
+        }
+    }
+
+    @Override
+    public void onCreateContactClicked() {
+        if (view.company().getValue() != null) {
+            fillIssueObject(issue);
+            fireEvent(new ContactEvents.Edit(null, Company.fromEntityOption(view.company().getValue()), CrmConstants.Issue.CREATE_CONTACT_IDENTITY));
         }
     }
 
@@ -276,7 +296,10 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     PolicyService policyService;
     @Inject
     CompanyServiceAsync companyService;
+    @Inject
+    PersonServiceAsync personService;
 
     private AppEvents.InitDetails initDetails;
-    private CaseObject issue;
+    @ContextAware
+    CaseObject issue;
 }

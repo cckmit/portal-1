@@ -11,8 +11,8 @@ import ru.protei.portal.core.model.dict.En_PrivilegeEntity;
 import ru.protei.portal.core.model.dict.En_Scope;
 import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.ui.common.server.service.SessionService;
-import ru.protei.portal.ui.common.server.util.SystemConstants;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.crm.client.service.AuthService;
@@ -39,7 +39,7 @@ public class AuthServiceImpl implements AuthService {
 
         log.debug( "authentificate: login={}", login );
 
-        CoreResponse< UserSessionDescriptor > result = authService.login( httpRequest.getSession().getId(), login, password, httpRequest.getRemoteAddr(), httpRequest.getHeader( SystemConstants.USER_AGENT_HEADER ) );
+        CoreResponse< UserSessionDescriptor > result = authService.login( httpRequest.getSession().getId(), login, password, httpRequest.getRemoteAddr(), httpRequest.getHeader( CrmConstants.Header.USER_AGENT ) );
         if ( result.isError() ) {
             throw new RequestFailedException( result.getStatus() );
         }
@@ -52,7 +52,7 @@ public class AuthServiceImpl implements AuthService {
     public void logout() {
         UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor( httpRequest );
         if ( descriptor != null ) {
-            authService.logout( httpRequest.getSession().getId(), httpRequest.getRemoteAddr(), httpRequest.getHeader( SystemConstants.USER_AGENT_HEADER ) );
+            authService.logout( httpRequest.getSession().getId(), httpRequest.getRemoteAddr(), httpRequest.getHeader( CrmConstants.Header.USER_AGENT ) );
             sessionService.setUserSessionDescriptor( httpRequest, null );
         }
     }

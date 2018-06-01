@@ -1,7 +1,12 @@
 package ru.protei.portal.core.model.dao.impl;
 
+import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.WorkerEntryDAO;
 import ru.protei.portal.core.model.ent.WorkerEntry;
+import ru.protei.portal.core.model.query.SqlCondition;
+import ru.protei.portal.core.model.query.WorkerEntryQuery;
+
+import java.util.List;
 
 /**
  * Created by turik on 19.08.16.
@@ -40,5 +45,25 @@ public class WorkerEntryDAO_Impl extends PortalBaseJdbcDAO<WorkerEntry> implemen
     @Override
     public WorkerEntry getByExternalId(String extId, Long companyId) {
         return getByCondition ("worker_entry.worker_extId=? and worker_entry.companyId=?", extId, companyId);
+    }
+
+    @Override
+    public List< WorkerEntry > getWorkers(WorkerEntryQuery query) {
+        return listByQuery(query);
+    }
+
+    @SqlConditionBuilder
+    public SqlCondition createSqlCondition(WorkerEntryQuery query) {
+        return new SqlCondition().build((condition, args) -> {
+            condition.append("1=1");
+            if (query.getPersonId() != null) {
+                condition.append(" and worker_entry.personId = ?");
+                args.add(query.getPersonId());
+            }
+            if (query.getActive() != null) {
+                condition.append(" and worker_entry.active = ?");
+                args.add(query.getActive());
+            }
+        });
     }
 }

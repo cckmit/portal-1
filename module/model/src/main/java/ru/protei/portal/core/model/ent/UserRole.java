@@ -33,6 +33,8 @@ public class UserRole extends AuditableObject implements EntityOptionSupport, Re
     @JdbcColumn(name = "scopes")
     private En_Scope scope;
 
+    @JdbcColumn(name = "is_default_for_contact")
+    private boolean isDefaultForContact;
 
     public Long getId() {
         return id;
@@ -83,6 +85,14 @@ public class UserRole extends AuditableObject implements EntityOptionSupport, Re
 
     public void setScope( En_Scope scope ) {
         this.scope = scope;
+    }
+
+    public boolean isDefaultForContact() {
+        return isDefaultForContact;
+    }
+
+    public void setDefaultForContact(boolean defaultForContact) {
+        this.isDefaultForContact = defaultForContact;
     }
 
     public static UserRole fromEntityOption( EntityOption entityOption){

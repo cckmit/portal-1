@@ -3,7 +3,6 @@ package ru.protei.portal.ui.crm.client.view.profile;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.ImageElement;
-import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -13,7 +12,8 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.CompanySubscription;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.subscription.list.CompanySubscriptionList;
+import ru.protei.portal.ui.common.client.widget.subscription.list.SubscriptionList;
+import ru.protei.portal.ui.common.client.widget.subscription.model.Subscription;
 import ru.protei.portal.ui.crm.client.activity.profile.AbstractProfilePageView;
 import ru.protei.portal.ui.crm.client.activity.profile.AbstractProfilePageActivity;
 
@@ -47,7 +47,7 @@ public class ProfilePageView extends Composite implements AbstractProfilePageVie
     }
 
     @Override
-    public HasValue<List<CompanySubscription>> companySubscription() {
+    public HasValue<List<Subscription>> companySubscription() {
         return subscriptions;
     }
 
@@ -83,7 +83,7 @@ public class ProfilePageView extends Composite implements AbstractProfilePageVie
     Lang lang;
     @Inject
     @UiField(provided = true)
-    CompanySubscriptionList subscriptions;
+    SubscriptionList subscriptions;
     @UiField
     InlineLabel name;
     @UiField

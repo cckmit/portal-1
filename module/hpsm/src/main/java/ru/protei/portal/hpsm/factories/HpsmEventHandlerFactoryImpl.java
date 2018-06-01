@@ -5,7 +5,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.controller.cloud.FileController;
 import ru.protei.portal.core.event.CaseCommentEvent;
@@ -200,7 +199,8 @@ public class HpsmEventHandlerFactoryImpl implements HpsmEventHandlerFactory{
 
 
             if (request.getSubject().getStatus() != null) {
-                statusHandlerFactory.createHandler(currState, request.getSubject().getStatus());
+                statusHandlerFactory.createHandler(currState, request.getSubject().getStatus())
+                        .handle(object, comment);
             }
 
             currState.updateCustomerFields(request.getHpsmMessage());

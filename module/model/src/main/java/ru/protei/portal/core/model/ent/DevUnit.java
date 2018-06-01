@@ -7,12 +7,10 @@ import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.core.model.view.ProductShortViewSupport;
-import ru.protei.winter.jdbc.annotations.IdInsertMode;
-import ru.protei.winter.jdbc.annotations.JdbcColumn;
-import ru.protei.winter.jdbc.annotations.JdbcEntity;
-import ru.protei.winter.jdbc.annotations.JdbcId;
+import ru.protei.winter.jdbc.annotations.*;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by michael on 23.05.16.
@@ -46,6 +44,9 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
 
     @JdbcColumn(name = "old_id")
     private Long oldId;
+
+    @JdbcOneToMany(table = "DevUnitSubscription", localColumn = "id", remoteColumn = "dev_unit_id" )
+    private List<DevUnitSubscription> subscriptions;
 
     public static DevUnit fromProductShortView(ProductShortView productShortView){
         if(productShortView == null)
@@ -184,18 +185,27 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
         return new ProductDirectionInfo( this.id, this.name );
     }
 
+    public List<DevUnitSubscription> getSubscriptions() {
+        return subscriptions;
+    }
+
+    public void setSubscriptions(List<DevUnitSubscription> subscriptions) {
+        this.subscriptions = subscriptions;
+    }
+
     @Override
     public String toString() {
         return "DevUnit{" +
                 "id=" + id +
                 ", typeId=" + typeId +
                 ", created=" + created +
-                ", name='" + name + '\"' +
-                ", info='" + info + '\"' +
+                ", name='" + name + '\'' +
+                ", info='" + info + '\'' +
                 ", lastUpdate=" + lastUpdate +
                 ", creatorId=" + creatorId +
                 ", stateId=" + stateId +
                 ", oldId=" + oldId +
+                ", subscriptions=" + subscriptions +
                 '}';
     }
 }

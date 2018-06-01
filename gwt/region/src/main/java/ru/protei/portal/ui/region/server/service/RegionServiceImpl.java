@@ -122,6 +122,19 @@ public class RegionServiceImpl implements RegionService {
         return response.getData();
     }
 
+    @Override
+    public List<ProjectInfo> getProjectsList() throws RequestFailedException {
+        log.debug( "getProjectsList()");
+
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
+        CoreResponse< List< ProjectInfo > > response = projectService.listProjects( descriptor.makeAuthToken() );
+        if ( response.isError() )
+            throw new RequestFailedException( response.getStatus() );
+
+        return response.getData();
+    }
+
     private UserSessionDescriptor getDescriptorAndCheckSession() throws RequestFailedException {
         UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor( httpServletRequest );
         log.info( "userSessionDescriptor={}", descriptor );

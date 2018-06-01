@@ -6,4 +6,5 @@
     <source path='struct'/>
     <source path='helper'/>
     <source path='query'/>
+    <source path='util'/>
 </module>

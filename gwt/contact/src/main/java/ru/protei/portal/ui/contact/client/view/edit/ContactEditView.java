@@ -84,6 +84,11 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     }
 
     @Override
+    public HasText mobilePhone() {
+        return mobilePhone;
+    }
+
+    @Override
     public HasText workEmail() {
         return workEmail;
     }
@@ -245,6 +250,9 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
 
     @UiField
     TextBox homePhone;
+
+    @UiField
+    TextBox mobilePhone;
 
     @UiField
     TextBox workEmail;

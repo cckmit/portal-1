@@ -72,7 +72,7 @@
                         <label><ui:text from="{lang.companySubscription}"/></label>
                     </div>
 
-                    <list:CompanySubscriptionList ui:field="subscriptions"/>
+                    <list:SubscriptionList ui:field="subscriptions"/>
 
                     <div class="form-group col-xs-12">
                         <label class="bordered">

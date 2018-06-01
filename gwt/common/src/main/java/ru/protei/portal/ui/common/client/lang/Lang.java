@@ -868,4 +868,26 @@ public interface Lang extends Messages, ContactItemLang {
     String edDocumentCategory();
 
     String tdDocumentCategory();
+
+    String documentTypes();
+
+    String documentTypeName();
+
+    String documentTypeShortName();
+
+    String documentTypeRemoveSuccessed();
+
+    String documentTypeRemoveConfirmMessage();
+
+    String documentNameNew();
+
+    String privilegeDocumentType();
+
+    String productWithout();
+
+    String personCreateNew();
+
+    String roleDefaultForContact();
+
+    String mobilePhone();
 }

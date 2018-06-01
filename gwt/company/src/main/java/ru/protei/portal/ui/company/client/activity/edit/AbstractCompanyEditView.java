@@ -7,6 +7,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.ent.CompanySubscription;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.common.NameStatus;
+import ru.protei.portal.ui.common.client.widget.subscription.model.Subscription;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 import java.util.List;
@@ -32,7 +33,7 @@ public interface AbstractCompanyEditView extends IsWidget {
     HasValue<EntityOption> companyGroup();
     HasValue<EntityOption> companyCategory();
 
-    HasValue<List<CompanySubscription> > companySubscriptions();
+    HasValue<List<Subscription> > companySubscriptions();
     HasValidable companySubscriptionsValidator();
 
     HasWidgets phonesContainer();

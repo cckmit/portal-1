@@ -21,7 +21,13 @@ public class TypeConverters {
     }
 
     public static JdbcSort createSort (DataQuery query) {
-        return  query.getSortField() == null ? null :
-                new JdbcSort(toWinter(query.getSortDir(), JdbcSort.Direction.ASC), query.getSortField().getFieldName());
+        return createSort(query, null);
+    }
+
+    public static JdbcSort createSort (DataQuery query, String sortFieldAlias) {
+        return query.getSortField() == null ? null : new JdbcSort(
+                toWinter(query.getSortDir(), JdbcSort.Direction.ASC),
+                (sortFieldAlias != null ? sortFieldAlias + "." : "") + query.getSortField().getFieldName()
+        );
     }
 }

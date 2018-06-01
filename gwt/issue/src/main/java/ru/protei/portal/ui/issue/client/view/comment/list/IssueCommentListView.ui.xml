@@ -8,26 +8,33 @@
 
     <g:HTMLPanel ui:field="root" styleName="panel">
         <div class="body">
-            <g:HTMLPanel ui:field="commentsContainer" tag="ul" styleName="chats"/>
-        </div>
-        <div class="panel-footer">
-            <div class="chats-footer">
-                <autoresizetextarea:AutoResizeTextArea
-                        ui:field="comment"
-                        styleName="input-field form-group"
-                        minRows="5" maxRows="20"/>
-                <span class="">
-                    <g:Button styleName="btn btn-success" ui:field="send" text="{lang.commentSendMessage}"/>
-                    <fileuploader:AttachmentUploader ui:field="fileUploader" styleName="inline-block vertical-middle">
-                        <div class="btn btn-white attach-add-btn">
-                            <ui:text from='{lang.addAttachmentBtn}'/>
-                            <i class="ion-plus"/>
-                            <i class="icon-verifiable"/>
+            <g:FlowPanel ui:field="commentsContainer" tag="ul" styleName="chats">
+                <g:HTMLPanel tag="li" ui:field="newMessage" styleName="left new-message">
+
+                    <div ui:field="messageBlock">
+                        <a href="javascript:;" class="image">
+                            <img alt="" src="./images/user-icon-m.png" ui:field="icon"></img>
+                        </a>
+
+                        <div class="message">
+                            <autoresizetextarea:AutoResizeTextArea
+                                    ui:field="comment"
+                                    styleName="input-field form-group"
+                                    minRows="5" maxRows="20"/>
+
+                            <g:Button styleName="btn btn-success" ui:field="send" text="{lang.commentSendMessage}"/>
+                            <fileuploader:AttachmentUploader ui:field="fileUploader" styleName="inline-block">
+                                <div class="btn btn-white attach-add-btn">
+                                    <ui:text from='{lang.addAttachmentBtn}'/>
+                                    <i class="ion-plus"/>
+                                    <i class="icon-verifiable"/>
+                                </div>
+                            </fileuploader:AttachmentUploader>
+                            <attachment:AttachmentList ui:field="attachmentList" simpleMode="true" styleName="inline-block attachment-list-simple"/>
                         </div>
-                    </fileuploader:AttachmentUploader>
-                    <attachment:AttachmentList ui:field="attachmentList" simpleMode="true" styleName="inline-block attachment-list-simple"/>
-                </span>
-            </div>
+                    </div>
+                </g:HTMLPanel>
+            </g:FlowPanel>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>

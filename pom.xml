@@ -50,6 +50,7 @@
                 <module>gwt/role</module>
                 <module>gwt/official</module>
                 <module>gwt/document</module>
+                <module>gwt/documenttype</module>
                 <!--<module>app/crm</module>-->
             </modules>
         </profile>

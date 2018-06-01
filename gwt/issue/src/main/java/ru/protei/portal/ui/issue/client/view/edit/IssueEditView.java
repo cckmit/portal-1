@@ -15,6 +15,7 @@ import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
+import ru.protei.portal.ui.common.client.events.AddEvent;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
@@ -44,10 +45,12 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         initWidget(ourUiBinder.createAndBindUi(this));
         state.setDefaultValue(lang.selectIssueState());
         importance.setDefaultValue(lang.selectIssueImportance());
-        initiator.setDefaultValue(lang.selectIssueInitiator());
         company.setDefaultValue(lang.selectIssueCompany());
         product.setDefaultValue(lang.selectIssueProduct());
         manager.setDefaultValue(lang.selectIssueManager());
+        initiator.setDefaultValue(lang.selectIssueInitiator());
+        initiator.setAddButtonText(lang.personCreateNew());
+        initiator.setAddButtonVisible(true);
     }
 
     @Override
@@ -253,6 +256,10 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         activity.removeAttachment(event.getAttachment());
     }
 
+    @UiHandler("initiator")
+    public void onAddContactEvent(AddEvent event) {
+        activity.onCreateContactClicked();
+    }
 
     @Override
     public void showComments(boolean isShow) {
@@ -261,7 +268,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         else
             comments.addClassName("hide");
     }
-
 
     @UiField
     ValidableTextBox name;

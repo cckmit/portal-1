@@ -3,6 +3,7 @@ package ru.protei.portal.core.model.dao.impl;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
+import ru.protei.portal.core.model.util.CrmConstants;
 
 import java.util.stream.Collectors;
 
@@ -37,7 +38,15 @@ public class SqlDefaultBuilder {
             }
 
             if ( query.getProductIds() != null && !query.getProductIds().isEmpty() ) {
-                condition.append(" and product_id in (" + query.getProductIds().stream().map(Object::toString).collect( Collectors.joining(",")) + ")");
+                if (query.getProductIds().remove(CrmConstants.Product.UNDEFINED)) {
+                    condition.append(" and (product_id is null");
+                    if (!query.getProductIds().isEmpty()) {
+                        condition.append(" or product_id in (" + query.getProductIds().stream().map(Object::toString).collect( Collectors.joining(",")) + ")");
+                    }
+                    condition.append(")");
+                } else {
+                    condition.append(" and product_id in (" + query.getProductIds().stream().map(Object::toString).collect( Collectors.joining(",")) + ")");
+                }
             }
 
             if ( query.getManagerIds() != null && !query.getManagerIds().isEmpty() ) {
