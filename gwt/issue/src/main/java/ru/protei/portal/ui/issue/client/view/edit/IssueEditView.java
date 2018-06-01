@@ -26,6 +26,8 @@ import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSe
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.ProductButtonSelector;
+import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
+import ru.protei.portal.ui.common.client.widget.timefield.TimeTextBox;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
@@ -84,6 +86,16 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
+    public HasTime timeEstimated() {
+        return timeEstimated;
+    }
+
+    @Override
+    public HasTime timeElapsed() {
+        return timeElapsed;
+    }
+
+    @Override
     public HasValue<EntityOption> company() {
         return company;
     }
@@ -126,6 +138,16 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @Override
     public HasValidable importanceValidator() {
         return importance;
+    }
+
+    @Override
+    public HasValidable timeEstimatedValidator() {
+        return timeEstimated;
+    }
+
+    @Override
+    public HasValidable timeElapsedValidator() {
+        return timeElapsed;
     }
 
     @Override
@@ -187,6 +209,16 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @Override
     public HasVisibility saveVisibility() {
         return saveButton;
+    }
+
+    @Override
+    public HasEnabled timeEstimatedEnabled() {
+        return timeEstimated;
+    }
+
+    @Override
+    public HasEnabled timeElapsedEnabled() {
+        return timeElapsed;
     }
 
     @Override
@@ -288,6 +320,14 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @Inject
     @UiField(provided = true)
     ImportanceButtonSelector importance;
+
+    @Inject
+    @UiField(provided = true)
+    TimeTextBox timeEstimated;
+
+    @Inject
+    @UiField(provided = true)
+    TimeTextBox timeElapsed;
 
     @Inject
     @UiField(provided = true)

@@ -890,4 +890,14 @@ public interface Lang extends Messages, ContactItemLang {
     String roleDefaultForContact();
 
     String mobilePhone();
+
+    String timeDayLiteral();
+
+    String timeHourLiteral();
+
+    String timeMinuteLiteral();
+
+    String timeEstimated();
+
+    String timeElapsed();
 }

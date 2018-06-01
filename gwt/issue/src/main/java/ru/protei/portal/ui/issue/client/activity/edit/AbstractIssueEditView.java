@@ -7,6 +7,7 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
+import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
@@ -23,6 +24,8 @@ public interface AbstractIssueEditView extends IsWidget {
     HasText description();
     HasValue<En_CaseState> state();
     HasValue<En_ImportanceLevel> importance();
+    HasTime timeEstimated();
+    HasTime timeElapsed();
     HasValue<EntityOption> company();
     HasValue<PersonShortView> initiator();
     HasValue<PersonShortView> manager();
@@ -33,6 +36,8 @@ public interface AbstractIssueEditView extends IsWidget {
     HasValidable nameValidator();
     HasValidable stateValidator();
     HasValidable importanceValidator();
+    HasValidable timeEstimatedValidator();
+    HasValidable timeElapsedValidator();
     HasValidable companyValidator();
     HasValidable initiatorValidator();
     HasValidable productValidator();
@@ -57,6 +62,8 @@ public interface AbstractIssueEditView extends IsWidget {
 
     HasVisibility saveVisibility();
 
+    HasEnabled timeEstimatedEnabled();
+    HasEnabled timeElapsedEnabled();
     HasEnabled companyEnabled();
     HasEnabled productEnabled();
     HasEnabled managerEnabled();

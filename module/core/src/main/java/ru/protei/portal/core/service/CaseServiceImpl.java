@@ -505,6 +505,7 @@ public class CaseServiceImpl implements CaseService {
                 && Objects.equals(co1.isPrivateCase(), co2.isPrivateCase())
                 && Objects.equals(co1.getState(), co2.getState())
                 && Objects.equals(co1.getImpLevel(), co2.getImpLevel())
+                && Objects.equals(co1.getTimeEstimated(), co2.getTimeEstimated())
                 && Objects.equals(co1.getInitiatorCompanyId(), co2.getInitiatorCompanyId())
                 && Objects.equals(co1.getInitiatorId(), co2.getInitiatorId())
                 && Objects.equals(co1.getProductId(), co2.getProductId())
