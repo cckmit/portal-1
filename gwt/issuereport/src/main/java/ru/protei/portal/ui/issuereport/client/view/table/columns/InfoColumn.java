@@ -39,19 +39,15 @@ public class InfoColumn extends ClickColumn<Report> {
         title.setInnerText(value == null ? "" : value.getName() == null ? "" : value.getName());
         divElement.appendChild(title);
 
-        Element created = getDateElement(value == null ? null : value.getCreated());
+        Element created = renderDate(value == null ? null : value.getCreated());
         if (created != null) {
             divElement.appendChild(created);
         }
-//        Element modified = getDateElement(value == null ? null : value.getModified());
-//        if (modified != null) {
-//            divElement.appendChild(modified);
-//        }
 
         cell.appendChild(divElement);
     }
 
-    private Element getDateElement(Date date) {
+    private Element renderDate(Date date) {
         if (date == null) {
             return null;
         }

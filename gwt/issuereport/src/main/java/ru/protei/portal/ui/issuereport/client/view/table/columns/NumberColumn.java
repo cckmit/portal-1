@@ -3,6 +3,7 @@ package ru.protei.portal.ui.issuereport.client.view.table.columns;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.inject.Inject;
+import ru.brainworm.factory.widget.table.client.helper.StaticColumn;
 import ru.protei.portal.core.model.dict.En_ReportStatus;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
@@ -13,21 +14,16 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 /**
  * Колонка "Номер"
  */
-public class NumberColumn extends ClickColumn<Report> {
+public class NumberColumn extends StaticColumn<Report> {
 
     @Inject
     public NumberColumn(Lang lang, En_ReportStatusLang reportStatusLang) {
+        super(lang.issueReportsNumber());
         this.lang = lang;
         this.reportStatusLang = reportStatusLang;
     }
 
-    @Override
-    protected void fillColumnHeader(Element columnHeader) {
-        columnHeader.addClassName("number");
-        columnHeader.setInnerText(lang.issueReportsNumber());
-    }
-
-    @Override
+   @Override
     public void fillColumnValue(Element cell, Report value) {
         if (value == null) {
             return;

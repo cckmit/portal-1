@@ -1,12 +1,9 @@
 package ru.protei.portal.ui.issuereport.client.factory;
 
 import com.google.gwt.inject.client.AbstractGinModule;
-import ru.protei.portal.ui.issuereport.client.activity.edit.AbstractIssueReportEditView;
-import ru.protei.portal.ui.issuereport.client.activity.edit.IssueReportEditActivity;
 import ru.protei.portal.ui.issuereport.client.activity.page.IssueReportPage;
 import ru.protei.portal.ui.issuereport.client.activity.table.AbstractIssueReportTableView;
 import ru.protei.portal.ui.issuereport.client.activity.table.IssueReportTableActivity;
-import ru.protei.portal.ui.issuereport.client.view.edit.IssueReportEditView;
 import ru.protei.portal.ui.issuereport.client.view.table.IssueReportTableView;
 
 public class IssueReportClientModule extends AbstractGinModule {
@@ -17,8 +14,5 @@ public class IssueReportClientModule extends AbstractGinModule {
 
         bind(IssueReportTableActivity.class).asEagerSingleton();
         bind(AbstractIssueReportTableView.class).to(IssueReportTableView.class);
-
-        bind(IssueReportEditActivity.class).asEagerSingleton();
-        bind(AbstractIssueReportEditView.class).to(IssueReportEditView.class);
     }
 }

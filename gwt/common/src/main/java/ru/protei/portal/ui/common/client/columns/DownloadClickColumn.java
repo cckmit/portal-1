@@ -61,7 +61,7 @@ public class DownloadClickColumn<T> extends ClickColumn<T> {
         this.privilege = privilege;
     }
 
-    public void setRemoveHandler(DownloadHandler<T> downloadHandler) {
+    public void setDownloadHandler(DownloadHandler<T> downloadHandler) {
         this.downloadHandler = downloadHandler;
     }
 

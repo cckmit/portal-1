@@ -32,10 +32,7 @@ public abstract class IssueReportTableActivity implements
 
     @PostConstruct
     public void onInit() {
-        CREATE_ACTION = lang.buttonCreate();
-
         view.setActivity(this);
-
         pagerView.setActivity(this);
     }
 
@@ -43,38 +40,18 @@ public abstract class IssueReportTableActivity implements
     public void onShow(IssueReportEvents.Show event) {
         fireEvent(new AppEvents.InitPanelName(lang.issueReports()));
 
+        fireEvent( new ActionBarEvents.Clear());
+
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
         initDetails.parent.add(pagerView.asWidget());
-
-        fireEvent(policyService.hasPrivilegeFor(En_Privilege.ISSUE_EXPORT) ?
-                new ActionBarEvents.Add(CREATE_ACTION, UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.ISSUE_REPORTS) :
-                new ActionBarEvents.Clear()
-        );
 
         requestReportsCount();
     }
 
     @Event
-    public void onCreateClicked(ActionBarEvents.Clicked event) {
-        if (!UiConstants.ActionBarIdentity.ISSUE_REPORTS.equals(event.identity)) {
-            return;
-        }
-
-        fireEvent(new IssueReportEvents.Edit());
-    }
-
-    @Event
     public void onInitDetails(AppEvents.InitDetails initDetails) {
         this.initDetails = initDetails;
-    }
-
-    @Override
-    public void onItemClicked(Report value) {}
-
-    @Override
-    public void onEditClicked(Report value) {
-        fireEvent(new IssueReportEvents.Edit(value.getId()));
     }
 
     @Override
@@ -163,9 +140,6 @@ public abstract class IssueReportTableActivity implements
     AbstractIssueReportTableView view;
 
     @Inject
-    PolicyService policyService;
-
-    @Inject
     ReportServiceAsync reportService;
 
     @Inject
@@ -174,6 +148,5 @@ public abstract class IssueReportTableActivity implements
     @Inject
     AbstractPagerView pagerView;
 
-    private static String CREATE_ACTION;
     private AppEvents.InitDetails initDetails;
 }
