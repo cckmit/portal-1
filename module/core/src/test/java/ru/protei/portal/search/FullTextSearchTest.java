@@ -90,7 +90,10 @@ public class FullTextSearchTest {
     public void index(IndexWriter writer, String... paths) throws IOException {
         for (String path : paths) {
             String content = getPdfContent(path);
-            index(writer, path, content);
+            Document document = new Document();
+            document.add(new StringField("name", path, Field.Store.YES));
+            document.add(new TextField("content", content, Field.Store.YES));
+            writer.addDocument(document);
         }
         writer.close();
     }
@@ -100,14 +103,6 @@ public class FullTextSearchTest {
                 new RAMDirectory(),
                 new IndexWriterConfig(new StandardAnalyzer())
         );
-    }
-
-    public static void index(IndexWriter writer, String name, String content) throws IOException {
-        Document document = new Document();
-        document.add(new StringField("name", name, Field.Store.YES));
-        document.add(new TextField("content", content, Field.Store.YES));
-        writer.addDocument(document);
-
     }
 
     public String getPdfContent(String path) throws IOException {

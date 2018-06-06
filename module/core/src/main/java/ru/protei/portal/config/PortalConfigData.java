@@ -20,6 +20,7 @@ public class PortalConfigData {
     private final LegacySystemConfig legacySystemConfig;
     private final IntegrationConfig integrationConfig;
     private final SvnConfig svnConfig;
+    private final FullTextSearchConfig fullTextSearchConfig;
 
     private final String crmCaseUrl;
     private final String loginSuffixConfig;
@@ -31,6 +32,7 @@ public class PortalConfigData {
         legacySystemConfig = new LegacySystemConfig(wrapper);
         integrationConfig = new IntegrationConfig(wrapper);
         svnConfig = new SvnConfig(wrapper);
+        fullTextSearchConfig = new FullTextSearchConfig(wrapper);
 
         crmCaseUrl = wrapper.getProperty( "crm.case.url", "http://127.0.0.1:8888/crm.html#issues/issue:id=%d;" );
         loginSuffixConfig = wrapper.getProperty("auth.login.suffix", "");
@@ -66,6 +68,10 @@ public class PortalConfigData {
 
     public SvnConfig svn() {
         return svnConfig;
+    }
+
+    public FullTextSearchConfig fullTextSearch() {
+        return fullTextSearchConfig;
     }
 
     public static class SmtpConfig {
@@ -262,6 +268,18 @@ public class PortalConfigData {
 
         public String getUsername() {
             return username;
+        }
+    }
+
+    public static class FullTextSearchConfig {
+        private final String indexPath;
+
+        public FullTextSearchConfig(PropertiesWrapper propertiesWrapper) {
+            this.indexPath = propertiesWrapper.getProperty("fulltextsearch.index_path", "./index");
+        }
+
+        public String getIndexPath() {
+            return indexPath;
         }
     }
 }

@@ -11,6 +11,8 @@ import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.aspect.ServiceLayerInterceptor;
 import ru.protei.portal.core.controller.auth.AuthInterceptor;
+import ru.protei.portal.core.controller.document.DocumentStorage;
+import ru.protei.portal.core.controller.document.DocumentStorageImpl;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
 import ru.protei.portal.core.service.*;
@@ -51,6 +53,11 @@ public class MainConfiguration {
     public FileStorage getFileStorage (@Autowired PortalConfig config){
         PortalConfigData.CloudConfig cloud = config.data().cloud();
         return new FileStorage(cloud.getStoragePath(), cloud.getUser(), cloud.getPassword());
+    }
+
+    @Bean
+    public DocumentStorage getDocumentStorage() {
+        return new DocumentStorageImpl();
     }
 
     @Bean

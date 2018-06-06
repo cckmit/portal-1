@@ -84,13 +84,3 @@ public class DocumentDAO_Impl extends PortalBaseJdbcDAO<Document> implements Doc
         }));
     }
 }
-/*
-
-select count(distinct document.id) from document
-left outer join decimal_number decimal_number_1 on document.id = decimal_number_1.entity_id and decimal_number_1.entity_type = DOCUMENT
-left outer join Person Person_2 on document.manager_id = Person_2.id
-left outer join document_type document_type_3 on document.type_id = document_type_3.id
-left outer join case_object case_object_4 on document.project_id = case_object_4.id
-LEFT JOIN decimal_number DN ON DN.entity_id = document.id AND DN.entity_type="DOCUMENT"
-where 1=1
- */

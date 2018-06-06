@@ -6,6 +6,8 @@ import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.log4j.Logger;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.text.PDFTextStripper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.tmatesoft.svn.core.SVNException;
@@ -39,6 +41,10 @@ public class DocumentController {
     @Autowired
     PortalConfig config;
 
+    @Autowired
+    DocumentStorage documentStorage;
+
+
     @RequestMapping(value = "/uploadDocument/{projectId:[0-9]+}/{documentId:[0-9]+}", method = RequestMethod.POST)
     @ResponseBody
     public String uploadFileToCase(HttpServletRequest request, @PathVariable("projectId") Long projectId, @PathVariable("documentId") Long documentId) {
@@ -60,6 +66,8 @@ public class DocumentController {
             for (FileItem item : upload.parseRequest(request)) {
                 if (item.isFormField())
                     continue;
+
+                addToIndex(projectId, documentId, item.getInputStream());
                 return saveInRepository(projectId.toString(), documentId.toString() + ".pdf", item.getInputStream());
             }
         } catch (FileUploadException | IOException | SVNException e) {
@@ -91,5 +99,12 @@ public class DocumentController {
         editor.closeDir();
         editor.closeEdit();
         return dirName + "/" + fileName;
+    }
+
+    private void addToIndex(Long projectId, Long documentId, InputStream stream) throws IOException {
+        try (PDDocument doc = PDDocument.load(stream)) {
+            String content = new PDFTextStripper().getText(doc);
+            documentStorage.addDocument(content, documentId, projectId);
+        }
     }
 }
