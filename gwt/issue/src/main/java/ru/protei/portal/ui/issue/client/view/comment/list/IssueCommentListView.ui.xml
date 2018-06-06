@@ -22,15 +22,17 @@
                                     styleName="input-field form-group"
                                     minRows="5" maxRows="20"/>
 
-                            <g:Button styleName="btn btn-success" ui:field="send" text="{lang.commentSendMessage}"/>
-                            <fileuploader:AttachmentUploader ui:field="fileUploader" styleName="inline-block">
-                                <div class="btn btn-white attach-add-btn">
-                                    <ui:text from='{lang.addAttachmentBtn}'/>
-                                    <i class="ion-plus"/>
-                                    <i class="icon-verifiable"/>
-                                </div>
-                            </fileuploader:AttachmentUploader>
-                            <attachment:AttachmentList ui:field="attachmentList" simpleMode="true" styleName="inline-block attachment-list-simple"/>
+                            <div class="attachments">
+                                <g:Button styleName="btn btn-success" ui:field="send" text="{lang.commentSendMessage}"/>
+                                <fileuploader:AttachmentUploader ui:field="fileUploader" styleName="inline-block">
+                                    <div class="btn btn-white attach-add-btn">
+                                        <ui:text from='{lang.addAttachmentBtn}'/>
+                                        <i class="ion-plus"/>
+                                        <i class="icon-verifiable"/>
+                                    </div>
+                                </fileuploader:AttachmentUploader>
+                                <attachment:AttachmentList ui:field="attachmentList" simpleMode="true" styleName="inline-block attachment-list-simple"/>
+                            </div>
                         </div>
                     </div>
                 </g:HTMLPanel>

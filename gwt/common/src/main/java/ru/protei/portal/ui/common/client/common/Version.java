@@ -102,9 +102,10 @@ package ru.protei.portal.ui.common.client.common;
  * 4.0.41.5 - CRM-155 Создание/удаление аккаунта из API
  * 4.0.41.6 - CRM-130 Не меняется статус после получения "В работе".
  * 4.0.42.6 - CRM-145 сортировать созданные фильтры по алфавиту
+ * 4.0.43.6 - CRM-146 поправить кнопки в поле ввода комментария
  */
 public class Version {
     public static String getVersion() {
-        return "4.0.42.6";
+        return "4.0.43.6";
     }
 }
