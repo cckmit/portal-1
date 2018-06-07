@@ -62,7 +62,8 @@ public class UserLoginDAO_Impl extends PortalBaseJdbcDAO<UserLogin> implements U
         }
 
         String join = "";
-        if ( StringUtils.isNotEmpty( query.getSearchString() ) ) {
+        if ( StringUtils.isNotEmpty( query.getSearchString())
+                || query.getCompanyId() != null ) {
             distinct = true;
             join += " LEFT JOIN person ON user_login.personId = person.id";
         }
@@ -87,7 +88,8 @@ public class UserLoginDAO_Impl extends PortalBaseJdbcDAO<UserLogin> implements U
         String join = "";
         boolean distinct = false;
 
-        if ( StringUtils.isNotEmpty( query.getSearchString() ) ) {
+        if ( StringUtils.isNotEmpty( query.getSearchString() )
+                || query.getCompanyId() != null ) {
             join += " LEFT JOIN person ON user_login.personId = person.id";
             distinct = true;
         }
@@ -125,6 +127,10 @@ public class UserLoginDAO_Impl extends PortalBaseJdbcDAO<UserLogin> implements U
                         .map( String::valueOf )
                         .collect( Collectors.joining(",")));
                 condition.append( " )");
+            }
+
+            if ( query.getCompanyId() != null ) {
+                condition.append(" and person.company_id = " + query.getCompanyId());
             }
         });
     }
