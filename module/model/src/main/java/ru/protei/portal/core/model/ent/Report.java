@@ -8,7 +8,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 @JdbcEntity(table = "report")
-public class Report implements Removable, Downloadable, Serializable {
+public class Report implements Removable, Downloadable, Refreshable, Serializable {
 
     /**
      * Уникальный идентификатор отчета
@@ -71,6 +71,11 @@ public class Report implements Removable, Downloadable, Serializable {
     @Override
     public boolean isAllowedDownload() {
         return status == En_ReportStatus.READY;
+    }
+
+    @Override
+    public boolean isAllowedRefresh() {
+        return status == En_ReportStatus.ERROR;
     }
 
     public Long getId() {
@@ -143,10 +148,6 @@ public class Report implements Removable, Downloadable, Serializable {
 
     public void setLocale(String locale) {
         this.locale = locale;
-    }
-
-    public boolean isReady() {
-        return status == En_ReportStatus.READY;
     }
 
     @Override

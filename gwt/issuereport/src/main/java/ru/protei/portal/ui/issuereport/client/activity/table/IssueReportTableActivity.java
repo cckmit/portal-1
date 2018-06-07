@@ -7,6 +7,8 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dict.En_SortDir;
+import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.query.ReportQuery;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
@@ -82,6 +84,25 @@ public abstract class IssueReportTableActivity implements
     }
 
     @Override
+    public void onRefreshClicked(Report value) {
+        if (!value.isAllowedRefresh()) {
+            return;
+        }
+        reportService.recreateReport(value.getId(), new AsyncCallback<Void>() {
+            @Override
+            public void onFailure(Throwable throwable) {
+                fireEvent(new NotifyEvents.Show(throwable.getMessage(), NotifyEvents.NotifyType.ERROR));
+            }
+
+            @Override
+            public void onSuccess(Void result) {
+                fireEvent(new NotifyEvents.Show(lang.reportRequested(), NotifyEvents.NotifyType.SUCCESS));
+                fireEvent(new IssueReportEvents.Show());
+            }
+        });
+    }
+
+    @Override
     public void loadData(int offset, int limit, AsyncCallback<List<Report>> asyncCallback) {
         ReportQuery query = getQuery();
         query.setOffset(offset);
@@ -133,7 +154,10 @@ public abstract class IssueReportTableActivity implements
     }
 
     private ReportQuery getQuery() {
-        return new ReportQuery();
+        ReportQuery query = new ReportQuery();
+        query.setSortField(En_SortField.creation_date);
+        query.setSortDir(En_SortDir.DESC);
+        return query;
     }
 
     @Inject

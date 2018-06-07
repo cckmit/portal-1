@@ -21,7 +21,7 @@ import java.util.*;
 public class ReportServiceImpl implements ReportService {
 
     private final static String LOCALE_RU = Locale.forLanguageTag("ru").toString();
-    private final static DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+    private final static DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm");
 
     @Autowired
     ReportDAO reportDAO;
@@ -60,6 +60,29 @@ public class ReportServiceImpl implements ReportService {
         reportControlService.processNewReports();
 
         return new CoreResponse<Long>().success(id);
+    }
+
+    @Override
+    public CoreResponse recreateReport(AuthToken token, Long id) {
+        if (id == null) {
+            return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        UserSessionDescriptor descriptor = authService.findSession(token);
+        Report report = reportDAO.getReport(descriptor.getPerson().getId(), id);
+
+        if (report == null || report.getStatus() != En_ReportStatus.ERROR) {
+            return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        report.setStatus(En_ReportStatus.CREATED);
+        report.setModified(new Date());
+
+        reportDAO.merge(report);
+
+        reportControlService.processNewReports();
+
+        return new CoreResponse<>().success(null);
     }
 
     @Override

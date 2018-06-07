@@ -4,13 +4,13 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.Report;
-import ru.protei.portal.ui.common.client.columns.ClickColumn;
+import ru.protei.portal.ui.common.client.columns.StaticColumn;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
 import java.util.Date;
 
-public class InfoColumn extends ClickColumn<Report> {
+public class InfoColumn extends StaticColumn<Report> {
 
     @Inject
     public InfoColumn(Lang lang) {
@@ -53,7 +53,7 @@ public class InfoColumn extends ClickColumn<Report> {
         }
 
         Element group = DOM.createElement("p");
-        group.addClassName("text-semimuted");
+        group.addClassName("text-semimuted pull-right");
 
         Element clock = DOM.createElement("i");
         clock.addClassName("fa fa-clock-o");

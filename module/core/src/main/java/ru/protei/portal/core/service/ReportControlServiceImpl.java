@@ -9,10 +9,12 @@ import org.springframework.scheduling.annotation.Scheduled;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.Lang;
+import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.ReportDAO;
 import ru.protei.portal.core.model.dict.En_ReportStatus;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.struct.ReportContent;
@@ -40,6 +42,9 @@ public class ReportControlServiceImpl implements ReportControlService {
 
     @Autowired
     CaseObjectDAO caseObjectDAO;
+
+    @Autowired
+    CaseCommentDAO caseCommentDAO;
 
     @Autowired
     ReportStorageService reportStorageService;
@@ -156,7 +161,11 @@ public class ReportControlServiceImpl implements ReportControlService {
 
     private void writeIssuesReport(final Report report, ByteArrayOutputStream buffer) throws IOException {
         List<CaseObject> issues = caseObjectDAO.getCases(report.getCaseQuery());
-        JXLSHelper.writeIssuesReport(issues, buffer, getLang().getFor(Locale.forLanguageTag(report.getLocale())));
+        List<List<CaseComment>> issuesComments = new ArrayList<>();
+        for (CaseObject issue : issues) {
+            issuesComments.add(caseCommentDAO.getCaseComments(issue.getId()));
+        }
+        JXLSHelper.writeIssuesReport(issues, issuesComments, buffer, getLang().getFor(Locale.forLanguageTag(report.getLocale())));
     }
 
     private Lang getLang() {

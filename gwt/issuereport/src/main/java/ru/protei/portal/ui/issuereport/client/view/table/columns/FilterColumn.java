@@ -3,12 +3,12 @@ package ru.protei.portal.ui.issuereport.client.view.table.columns;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.inject.Inject;
-import ru.brainworm.factory.widget.table.client.helper.StaticColumn;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.ui.common.client.columns.StaticColumn;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.lang.*;
 
@@ -19,13 +19,17 @@ public class FilterColumn extends StaticColumn<Report> {
     @Inject
     public FilterColumn(Lang lang, En_SortFieldLang sortFieldLang, En_SortDirLang sortDirLang,
                         En_CaseImportanceLang caseImportanceLang, En_CaseStateLang caseStateLang ) {
-        super(lang.issueReportsFilter());
-
         this.lang = lang;
         this.sortFieldLang = sortFieldLang;
         this.sortDirLang = sortDirLang;
         this.caseImportanceLang = caseImportanceLang;
         this.caseStateLang = caseStateLang;
+    }
+
+    @Override
+    protected void fillColumnHeader(Element columnHeader) {
+        columnHeader.addClassName("filter");
+        columnHeader.setInnerText(lang.issueReportsFilter());
     }
 
     @Override

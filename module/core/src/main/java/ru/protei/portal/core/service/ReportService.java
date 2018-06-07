@@ -27,6 +27,16 @@ public interface ReportService {
     CoreResponse<Long> createReport(AuthToken authToken, Report report);
 
     /**
+     * Запрос повторного создания отчета, если он не создался
+     *
+     * @param authToken токен авторизации
+     * @param id        идентификатор отчета
+     * @return идентификатор отчета
+     */
+    @Privileged({ En_Privilege.ISSUE_EXPORT })
+    CoreResponse recreateReport(AuthToken authToken, Long id);
+
+    /**
      * Получение отчёта по идентификатору
      *
      * @param authToken токен авторизации

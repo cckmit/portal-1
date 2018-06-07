@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.net.URLEncoder;
 
 public class ReportDownloadServlet extends HttpServlet {
 
@@ -76,7 +77,9 @@ public class ReportDownloadServlet extends HttpServlet {
         BufferedInputStream is = null;
         BufferedOutputStream os = null;
         resp.setContentType("application/octet-stream");
-        resp.setHeader("Content-Disposition", "inline; filename=\"" + name + "\"");
+        resp.setHeader("Content-Disposition", "attachment; filename*=utf-8''" +
+                URLEncoder.encode(name, "UTF-8").replaceAll("\\+", "%20")
+        );
         try {
             is = new BufferedInputStream(response.getData().getContent());
             os = new BufferedOutputStream(resp.getOutputStream());

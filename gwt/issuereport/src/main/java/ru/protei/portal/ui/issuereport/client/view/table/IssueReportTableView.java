@@ -9,6 +9,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.ui.common.client.columns.DownloadClickColumn;
+import ru.protei.portal.ui.common.client.columns.RefreshClickColumn;
 import ru.protei.portal.ui.common.client.columns.RemoveClickColumn;
 import ru.protei.portal.ui.common.client.lang.*;
 import ru.protei.portal.ui.issuereport.client.activity.table.AbstractIssueReportTableActivity;
@@ -29,6 +30,7 @@ public class IssueReportTableView extends Composite implements AbstractIssueRepo
     public void setActivity(AbstractIssueReportTableActivity activity) {
         downloadClickColumn.setDownloadHandler(activity);
         removeClickColumn.setRemoveHandler(activity);
+        refreshClickColumn.setRefreshHandler(activity);
 
         table.setLoadHandler(activity);
         table.setPagerListener(activity);
@@ -76,6 +78,7 @@ public class IssueReportTableView extends Composite implements AbstractIssueRepo
         table.addColumn(infoColumn.header, infoColumn.values);
         table.addColumn(filterColumn.header, filterColumn.values);
 
+        table.addColumn(refreshClickColumn.header, refreshClickColumn.values);
         table.addColumn(removeClickColumn.header, removeClickColumn.values);
         table.addColumn(downloadClickColumn.header, downloadClickColumn.values);
     }
@@ -92,6 +95,8 @@ public class IssueReportTableView extends Composite implements AbstractIssueRepo
     private RemoveClickColumn<Report> removeClickColumn;
     @Inject
     private DownloadClickColumn<Report> downloadClickColumn;
+    @Inject
+    private RefreshClickColumn<Report> refreshClickColumn;
     @Inject
     private En_ReportStatusLang reportStatusLang;
     @Inject

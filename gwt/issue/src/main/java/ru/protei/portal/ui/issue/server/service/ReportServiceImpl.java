@@ -105,4 +105,17 @@ public class ReportServiceImpl implements ru.protei.portal.ui.common.client.serv
             throw new RequestFailedException(response.getStatus());
         }
     }
+
+    @Override
+    public void recreateReport(Long id) throws RequestFailedException {
+        log.debug("createReport(): id={}", id);
+
+        UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor(httpServletRequest);
+
+        CoreResponse response = reportService.recreateReport(descriptor.makeAuthToken(), id);
+
+        if (response.isError()) {
+            throw new RequestFailedException(response.getStatus());
+        }
+    }
 }

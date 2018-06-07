@@ -6,9 +6,10 @@ import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.ui.common.client.columns.*;
 
 public interface AbstractIssueReportTableActivity extends
-        RemoveClickColumn.RemoveHandler<Report>, DownloadClickColumn.DownloadHandler<Report>,
+        RemoveClickColumn.RemoveHandler<Report>, DownloadClickColumn.DownloadHandler<Report>, RefreshClickColumn.RefreshHandler<Report>,
         InfiniteLoadHandler<Report>, InfiniteTableWidget.PagerListener
 {
     void onRemoveClicked(Report value);
     void onDownloadClicked(Report value);
+    void onRefreshClicked(Report value);
 }

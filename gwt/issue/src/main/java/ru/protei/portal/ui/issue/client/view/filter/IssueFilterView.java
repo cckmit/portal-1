@@ -211,15 +211,29 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     @Override
     public void setUserFilterControlsVisibility( boolean hasVisible ) {
         if ( hasVisible ) {
-            reportBtn.removeStyleName( "hide" );
+            if (reportBtnVisible) {
+                reportBtn.removeStyleName( "hide" );
+            }
             saveBtn.removeStyleName( "hide" );
             resetBtn.removeStyleName( "hide" );
             removeBtn.removeStyleName( "hide" );
         } else {
-            reportBtn.addStyleName( "hide" );
+            if (reportBtnVisible) {
+                reportBtn.addStyleName( "hide" );
+            }
             saveBtn.addStyleName( "hide" );
             resetBtn.addStyleName( "hide" );
             removeBtn.addStyleName( "hide" );
+        }
+    }
+
+    @Override
+    public void setReportButtonVisibility(boolean hasVisible) {
+        reportBtnVisible = hasVisible;
+        if (reportBtnVisible) {
+            reportBtn.removeStyleName( "hide" );
+        } else {
+            reportBtn.addStyleName( "hide" );
         }
     }
 
@@ -437,6 +451,7 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     Lang lang;
 
     AbstractIssueFilterActivity activity;
+    private boolean reportBtnVisible = true;
 
     private static IssueFilterView.IssueFilterViewUiBinder ourUiBinder = GWT.create( IssueFilterView.IssueFilterViewUiBinder.class );
 

@@ -18,4 +18,6 @@ public interface ReportServiceAsync {
     void getReportsCount(ReportQuery query, AsyncCallback<Long> async);
 
     void removeReports(Set<Long> include, Set<Long> exclude, AsyncCallback<Void> async);
+
+    void recreateReport(Long id, AsyncCallback<Void> async);
 }

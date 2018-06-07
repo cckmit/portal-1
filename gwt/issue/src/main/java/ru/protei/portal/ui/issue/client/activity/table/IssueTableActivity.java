@@ -14,6 +14,7 @@ import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.CaseFilter;
 import ru.protei.portal.core.model.ent.Report;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.model.view.CaseShortView;
@@ -73,6 +74,9 @@ public abstract class IssueTableActivity
                 new ActionBarEvents.Add( CREATE_ACTION, UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.ISSUE ) :
                 new ActionBarEvents.Clear()
         );
+
+        filterView.setReportButtonVisibility(policyService.hasPrivilegeFor(En_Privilege.ISSUE_EXPORT));
+
         requestIssuesCount();
     }
 
@@ -221,9 +225,14 @@ public abstract class IssueTableActivity
 
     @Override
     public void onCreateReportClicked() {
+
         Report report = new Report();
         report.setCaseQuery(getQuery());
         report.setLocale(LocaleInfo.getCurrentLocale().getLocaleName());
+        if (!HelperFunc.isEmpty(filterView.filterName().getValue())) {
+            report.setName(filterView.filterName().getValue());
+        }
+
         reportService.createReport(report, new RequestCallback<Long>() {
             @Override
             public void onError(Throwable throwable) {
