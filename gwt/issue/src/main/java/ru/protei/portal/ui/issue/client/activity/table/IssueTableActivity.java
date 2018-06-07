@@ -351,7 +351,7 @@ public abstract class IssueTableActivity
         return filter;
     }
 
-    private void setQueryFields( CaseQuery query ) {
+    private void    setQueryFields( CaseQuery query ) {
         query.setSortField( filterView.sortField().getValue() );
         query.setSortDir( filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC );
         query.setCompanyIds( IssueFilterUtils.getCompaniesIdList( filterView.companies().getValue() ) );
