@@ -103,9 +103,10 @@ package ru.protei.portal.ui.common.client.common;
  * 4.0.41.6 - CRM-130 Не меняется статус после получения "В работе".
  * 4.0.42.6 - CRM-145 сортировать созданные фильтры по алфавиту
  * 4.0.43.6 - CRM-146 поправить кнопки в поле ввода комментария
+ * 4.0.44.6 - CRM-152 Поиск аккаунтов по компании
  */
 public class Version {
     public static String getVersion() {
-        return "4.0.43.6";
+        return "4.0.44.6";
     }
 }
