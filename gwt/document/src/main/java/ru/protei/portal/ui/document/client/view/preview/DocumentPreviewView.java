@@ -5,6 +5,7 @@ import com.google.gwt.dom.client.LegendElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.inject.Inject;
@@ -86,6 +87,13 @@ public class DocumentPreviewView extends Composite implements AbstractDocumentPr
         this.keyWords.setInnerText(keyWords);
     }
 
+    @Override
+    public void setDownloadLink(String link) {
+        downloadButton.setHref(link);
+    }
+
+
+    @UiField Anchor downloadButton;
     @UiField LegendElement header;
     @UiField SpanElement name;
     @UiField SpanElement created;
