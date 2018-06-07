@@ -20,14 +20,16 @@ public class DocumentDAO_Impl extends PortalBaseJdbcDAO<Document> implements Doc
     @Override
     public List<Document> getListByQuery(DocumentQuery query) {
         SqlCondition where = createSqlCondition(query);
-        return getList(new JdbcQueryParameters()
+        JdbcQueryParameters queryParameters = new JdbcQueryParameters()
                 .withJoins(JOINS)
                 .withCondition(where.condition, where.args)
                 .withDistinct(true)
-                .withOffset(query.getOffset())
-                .withLimit(query.getLimit())
                 .withSort(TypeConverters.createSort(query))
-        );
+                .withOffset(query.getOffset());
+        if (query.limit > 0) {
+            queryParameters = queryParameters.withLimit(query.getLimit());
+        }
+        return getList(queryParameters);
     }
 
     @Override

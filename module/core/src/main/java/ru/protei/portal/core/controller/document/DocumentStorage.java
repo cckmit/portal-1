@@ -7,7 +7,7 @@ import java.util.List;
 public interface DocumentStorage {
     void addDocument(String body, Long documentId, Long projectId) throws IOException;
 
-    List<Long> getDocumentsByQuery(List<Long> searchIds, String contentQuery) throws IOException;
+    List<Long> getDocumentsByQuery(List<Long> searchIds, String contentQuery, int offset, int limit) throws IOException;
 
     int countDocumentsByQuery(List<Long> searchIds, String contentQuery) throws IOException;
 }

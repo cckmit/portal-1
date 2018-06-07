@@ -50,17 +50,23 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     public CoreResponse<List<Document>> documentList(AuthToken token, DocumentQuery query) {
+        int limit = query.limit, offset = query.offset;
+        boolean withFullTextSearch = !isEmptyOrWhitespaceOnly(query.getContent());
+        if(withFullTextSearch) {
+            query.offset = 0;
+            query.limit = -1;
+        }
         List<Document> list = documentDAO.getListByQuery(query);
         if (list == null) {
             return new CoreResponse<List<Document>>().error(En_ResultStatus.GET_DATA_ERROR);
         }
-        if(isEmptyOrWhitespaceOnly(query.getContent())) {
+        if (!withFullTextSearch) {
             return new CoreResponse<List<Document>>().success(list);
         }
         List<Long> ids = list.stream().map(Document::getId).collect(Collectors.toList());
         List<Long> resultIds;
         try {
-            resultIds = documentStorage.getDocumentsByQuery(ids, query.getContent());
+            resultIds = documentStorage.getDocumentsByQuery(ids, query.getContent(), offset, limit);
         } catch (IOException e) {
             return new CoreResponse<List<Document>>().error(En_ResultStatus.INTERNAL_ERROR);
         }

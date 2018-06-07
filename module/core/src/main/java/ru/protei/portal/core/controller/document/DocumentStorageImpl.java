@@ -71,15 +71,16 @@ public class DocumentStorageImpl implements DocumentStorage {
     }
 
     @Override
-    public List<Long> getDocumentsByQuery(List<Long> searchIds, String contentQuery) throws IOException {
+    public List<Long> getDocumentsByQuery(List<Long> searchIds, String contentQuery, int offset, int limit) throws IOException {
         Query query = getQuery(searchIds, contentQuery);
         IndexReader reader = DirectoryReader.open(indexWriter);
         IndexSearcher searcher = new IndexSearcher(reader);
 
         List<Long> idList = new LinkedList<>();
-        TopDocs topDocs = searcher.search(query, 10);
+        TopDocs topDocs = searcher.search(query, limit + offset);
 
         Arrays.stream(topDocs.scoreDocs)
+                .skip(offset)
                 .forEach(scoreDoc -> {
                     int id = scoreDoc.doc;
                     try {
@@ -87,8 +88,10 @@ public class DocumentStorageImpl implements DocumentStorage {
                         idList.add(docId);
                     } catch (IOException e) {
                         log.error("Failed to find doc #" + id, e);
+                        throw new RuntimeException(e);
                     } catch (NumberFormatException e) {
                         log.error("Failed to parse id field in doc #" + id, e);
+                        throw new RuntimeException(e);
                     }
                 });
         return idList;
