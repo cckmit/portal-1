@@ -44,6 +44,10 @@ public abstract class ClickColumn<T> {
 
             com.google.gwt.dom.client.Element target = event.getEventTarget().cast();
             if ( "a".equalsIgnoreCase( target.getNodeName() ) ) {
+                if (actionClickHandler != null) {
+                    event.preventDefault();
+                    actionClickHandler.onItemClicked(value);
+                }
                 return;
             }
 
@@ -53,8 +57,8 @@ public abstract class ClickColumn<T> {
             }
 
            columnProvider.changeSelection( value );
-            if ( handler != null ) {
-                handler.onItemClicked( columnProvider.getSelected() );
+            if ( columnClickHandler != null ) {
+                columnClickHandler.onItemClicked( columnProvider.getSelected() );
             }
         }
 
@@ -76,7 +80,11 @@ public abstract class ClickColumn<T> {
     public abstract void fillColumnValue( Element cell, T value );
 
     public void setHandler( Handler<T> handler ) {
-        this.handler = handler;
+        this.columnClickHandler = handler;
+    }
+
+    public void setActionHandler( Handler<T> handler ) {
+        this.actionClickHandler = handler;
     }
 
     public void setColumnProvider( ClickColumnProvider< T > columnProvider ) {
@@ -84,6 +92,7 @@ public abstract class ClickColumn<T> {
         columnProvider.setSelectRowHandler( values.getSelectRowHandler() );
     }
 
-    Handler<T> handler;
+    Handler<T> columnClickHandler;
+    Handler<T> actionClickHandler;
     ClickColumnProvider<T> columnProvider;
 }
