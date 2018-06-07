@@ -277,7 +277,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
     private void addAttachmentsToCase(Collection<Attachment> attachments){
         view.attachmentsContainer().add(attachments);
-        if(issue.getAttachments() == null)
+        if(issue.getAttachments() == null || issue.getAttachments().isEmpty())
             issue.setAttachments(new ArrayList<>());
 
         issue.getAttachments().addAll(attachments);
