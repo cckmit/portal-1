@@ -66,7 +66,6 @@ public class IssueFilterServiceImpl implements ru.protei.portal.ui.common.client
             filter.setLoginId( descriptor.getLogin().getId() );
         }
 
-        filter.getParams().setSortField( En_SortField.creation_date );
         CoreResponse<CaseFilter > response = issueFilterService.saveIssueFilter( filter );
 
         log.debug("saveIssueFilter, result: {}", response.getStatus());
