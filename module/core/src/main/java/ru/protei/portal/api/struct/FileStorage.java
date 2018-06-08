@@ -1,6 +1,8 @@
 package ru.protei.portal.api.struct;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.http.Header;
+import org.apache.http.HeaderElement;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -41,22 +43,31 @@ public class FileStorage {
      * @return Saved file's path or IOException
      */
     public String save(String fileName, InputStream data) throws IOException{
+
+        logger.debug("save: fileName=" + fileName);
+
         try (CloseableHttpClient httpClient = HttpClients.createDefault()){
 
             String currentYearMonth = YearMonth.now().toString();
             String filePath = currentYearMonth +"/"+ encodePath(fileName);
             HttpUriRequest fileCreationRequest = buildFileCreationRequest(filePath, data);
 
-            int fileCreationStatus = getStatus(httpClient.execute(fileCreationRequest));
+            CloseableHttpResponse fileCreationResponse = httpClient.execute(fileCreationRequest);
+            logFileCreationResponse(fileName, "1", fileCreationResponse);
+            int fileCreationStatus = getStatus(fileCreationResponse);
 
             if(fileCreationStatus == HttpStatus.NOT_FOUND.value()){ //folder not exists
                 HttpUriRequest folderCreationRequest = buildFolderCreationRequest(currentYearMonth);
                 int folderCreationStatus = getStatus(httpClient.execute(folderCreationRequest));
+                logger.debug("save: fileName=" + fileName + ", folderCreationRequest, statusCode=" + folderCreationStatus);
 
-                if(folderCreationStatus == HttpStatus.CREATED.value())
-                    fileCreationStatus = getStatus(httpClient.execute(fileCreationRequest));
-                else
-                    throw new IOException("Unable create folder on fileStorage. status code "+ folderCreationStatus);
+                if (folderCreationStatus == HttpStatus.CREATED.value()) {
+                    fileCreationResponse = httpClient.execute(fileCreationRequest);
+                    logFileCreationResponse(fileName, "2", fileCreationResponse);
+                    fileCreationStatus = getStatus(fileCreationResponse);
+                } else {
+                    throw new IOException("Unable create folder on fileStorage. status code " + folderCreationStatus);
+                }
             }
 
             if(fileCreationStatus == HttpStatus.CREATED.value())
@@ -88,11 +99,17 @@ public class FileStorage {
      * @return {@link FileStorage.File} or NULL otherwise
      */
     public File getFile(String filePath){
+
+        logger.debug("getFile: filePath=" + filePath);
+
         HttpURLConnection conn = null;
         try {
             conn = (HttpURLConnection) new URL(storagePath + filePath).openConnection();
             conn.setRequestProperty("Authorization", "Basic "+ authentication);
             conn.connect();
+
+            logger.debug("getFile: filePath=" + filePath + ", statusCode=" + conn.getResponseCode());
+
             if(conn.getResponseCode() == HttpStatus.OK.value())
                 return new File(conn.getContentType(), IOUtils.toBufferedInputStream(conn.getInputStream()));
 
@@ -110,12 +127,18 @@ public class FileStorage {
      * @return true if file deleted or false otherwise
      */
     public boolean deleteFile(String filePath){
+
+        logger.debug("deleteFile: filePath=" + filePath);
+
         try (CloseableHttpClient httpClient = HttpClients.createDefault()){
             RequestBuilder request = RequestBuilder.create("DELETE");
             request.setUri(storagePath + filePath);
             request.addHeader("Authorization", "Basic " + authentication);
 
             CloseableHttpResponse response = httpClient.execute(request.build());
+
+            logger.debug("deleteFile: filePath=" + filePath + ", statusCode=" + getStatus(response));
+
             return HttpStatus.valueOf(getStatus(response)).is2xxSuccessful();
         }catch (IOException e){
             logger.error(e);
@@ -153,4 +176,25 @@ public class FileStorage {
         return response.getStatusLine().getStatusCode();
     }
 
+    private void logFileCreationResponse(String fileName, String attempt, CloseableHttpResponse fileCreationResponse) {
+        StringBuilder sb = new StringBuilder();
+        int statusCode = getStatus(fileCreationResponse);
+        sb.append("save: fileName=").append(fileName);
+        sb.append(", fileCreationResponse#").append(attempt);
+        sb.append(", statusCode=").append(statusCode);
+        if (statusCode != HttpStatus.CREATED.value()) {
+            sb.append(", headers={");
+            for (Header header : fileCreationResponse.getAllHeaders()) {
+                for (HeaderElement element : header.getElements()) {
+                    sb.append("(");
+                    sb.append(element.getName());
+                    sb.append(":");
+                    sb.append(element.getValue());
+                    sb.append("), ");
+                }
+            }
+            sb.append("}");
+        }
+        logger.debug(sb.toString());
+    }
 }
