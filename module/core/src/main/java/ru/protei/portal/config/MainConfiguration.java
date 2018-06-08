@@ -11,8 +11,8 @@ import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.aspect.ServiceLayerInterceptor;
 import ru.protei.portal.core.controller.auth.AuthInterceptor;
-import ru.protei.portal.core.controller.document.DocumentStorage;
-import ru.protei.portal.core.controller.document.DocumentStorageImpl;
+import ru.protei.portal.core.controller.document.DocumentIndex;
+import ru.protei.portal.core.controller.document.DocumentIndexImpl;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
 import ru.protei.portal.core.service.*;
@@ -32,6 +32,8 @@ import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
 import ru.protei.portal.tools.migrate.sybase.SybConnProvider;
 import ru.protei.portal.tools.migrate.sybase.SybConnWrapperImpl;
 import ru.protei.winter.core.utils.config.exception.ConfigException;
+import ru.protei.winter.core.utils.services.lock.LockService;
+import ru.protei.winter.core.utils.services.lock.impl.LockServiceImpl;
 
 
 @Configuration
@@ -56,8 +58,8 @@ public class MainConfiguration {
     }
 
     @Bean
-    public DocumentStorage getDocumentStorage() {
-        return new DocumentStorageImpl();
+    public DocumentIndex getDocumentStorage() {
+        return new DocumentIndexImpl();
     }
 
     @Bean
@@ -464,6 +466,11 @@ public class MainConfiguration {
     @Bean
     public ImportDataService getImportDataService (@Autowired PortalConfig config) {
         return new ImportDataServiceImpl();
+    }
+
+    @Bean
+    public LockService getLockService() {
+        return new LockServiceImpl();
     }
 
     /** ASPECT/INTERCEPTORS **/

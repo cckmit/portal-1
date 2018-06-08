@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.helper;
 
+import java.io.UnsupportedEncodingException;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -163,11 +164,48 @@ public class HelperFunc {
         }
     }
 
-    public static String makeInArg(Collection<String> col) {
+    public static String makeInArg(Collection<?> col) {
         return "(" +
                 col.stream()
                         .map(s -> "'" + s + "'")
                         .collect(Collectors.joining(","))
                 + ")";
+    }
+
+    public static String makeInArg(Collection<?> col, boolean needQuotation) {
+        if (needQuotation) {
+            return makeInArg(col);
+        }
+        return "(" +
+                col.stream()
+                        .map(Object::toString)
+                        .collect(Collectors.joining(","))
+                + ")";
+    }
+
+
+
+    public static String encodeToRFC2231(String value) {
+        StringBuilder buf = new StringBuilder();
+        byte[] bytes;
+        try {
+            bytes = value.getBytes("UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            // cannot happen with UTF-8
+            bytes = new byte[]{ '?' };
+        }
+        for (byte b : bytes) {
+            if (b < '+' || b == ';' || b == ',' || b == '\\' || b > 'z') {
+                buf.append('%');
+                String s = Integer.toHexString(b & 0xff).toUpperCase();
+                if (s.length() < 2) {
+                    buf.append('0');
+                }
+                buf.append(s);
+            } else {
+                buf.append((char) b);
+            }
+        }
+        return buf.toString();
     }
 }

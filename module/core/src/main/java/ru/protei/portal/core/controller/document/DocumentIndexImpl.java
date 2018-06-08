@@ -25,9 +25,9 @@ import java.util.List;
 
 import static ru.protei.portal.core.model.helper.HelperFunc.isEmpty;
 
-public class DocumentStorageImpl implements DocumentStorage {
+public class DocumentIndexImpl implements DocumentIndex {
 
-    private static final Logger log = LoggerFactory.getLogger(DocumentStorageImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(DocumentIndexImpl.class);
 
     private static final String ID_FIELD_NAME = "id";
     private static final String PROJECT_ID_FIELD_NAME = "project_id";
@@ -62,6 +62,11 @@ public class DocumentStorageImpl implements DocumentStorage {
     }
 
     @Override
+    public void removeDocument(long documentId) throws IOException {
+        indexWriter.deleteDocuments(new Term(ID_FIELD_NAME, String.valueOf(documentId)));
+    }
+
+    @Override
     public void addDocument(String body, Long documentId, Long projectId) throws IOException {
         Document document = new Document();
         document.add(new StringField(ID_FIELD_NAME, Long.toString(documentId), Field.Store.YES));
@@ -71,16 +76,19 @@ public class DocumentStorageImpl implements DocumentStorage {
     }
 
     @Override
-    public List<Long> getDocumentsByQuery(List<Long> searchIds, String contentQuery, int offset, int limit) throws IOException {
+    public List<Long> getDocumentsByQuery(List<Long> searchIds, String contentQuery, int maxHits) throws IOException {
         Query query = getQuery(searchIds, contentQuery);
         IndexReader reader = DirectoryReader.open(indexWriter);
         IndexSearcher searcher = new IndexSearcher(reader);
 
         List<Long> idList = new LinkedList<>();
-        TopDocs topDocs = searcher.search(query, limit + offset);
+
+         if (maxHits <= 0) {
+             maxHits = Integer.MAX_VALUE;
+         }
+        TopDocs topDocs = searcher.search(query, maxHits);
 
         Arrays.stream(topDocs.scoreDocs)
-                .skip(offset)
                 .forEach(scoreDoc -> {
                     int id = scoreDoc.doc;
                     try {
@@ -102,7 +110,9 @@ public class DocumentStorageImpl implements DocumentStorage {
         Query query = getQuery(searchIds, contentQuery);
         IndexReader reader = DirectoryReader.open(indexWriter);
         IndexSearcher searcher = new IndexSearcher(reader);
-        return searcher.count(query);
+        int result =  searcher.count(query);
+        reader.close();
+        return result;
     }
 
 

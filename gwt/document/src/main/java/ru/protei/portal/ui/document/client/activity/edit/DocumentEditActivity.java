@@ -94,7 +94,6 @@ public abstract class DocumentEditActivity
                 } else {
                     fireEvent(new Back());
                 }
-                // TODO: think about transactions: make sure that both document and pdf file are saved
             }
         });
     }

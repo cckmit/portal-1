@@ -1,7 +1,9 @@
 package ru.protei.portal.core.model.dao.impl;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
+import ru.protei.portal.core.model.dao.DecimalNumberDAO;
 import ru.protei.portal.core.model.dao.DocumentDAO;
 import ru.protei.portal.core.model.ent.Document;
 import ru.protei.portal.core.model.helper.HelperFunc;
@@ -16,6 +18,9 @@ import java.util.stream.Collectors;
 
 public class DocumentDAO_Impl extends PortalBaseJdbcDAO<Document> implements DocumentDAO {
     private static final String JOINS = "LEFT JOIN decimal_number DN ON DN.entity_id = document.id AND DN.entity_type=\"DOCUMENT\" LEFT JOIN case_object CO ON CO.id = document.project_id";
+
+    @Autowired
+    DecimalNumberDAO decimalNumberDAO;
 
     @Override
     public List<Document> getListByQuery(DocumentQuery query) {
@@ -33,6 +38,13 @@ public class DocumentDAO_Impl extends PortalBaseJdbcDAO<Document> implements Doc
     }
 
     @Override
+    public boolean removeByKey(Long key) {
+        boolean result = super.removeByKey(key);
+        int removes = decimalNumberDAO.removeByCondition("entity_id=" + key + " and entity_type='DOCUMENT'");
+        return result && removes == 1;
+    }
+
+    @Override
     public Long countByQuery(DocumentQuery query) {
         SqlCondition where = createSqlCondition(query);
         return (long) getObjectsCount(where.condition, where.args, JOINS, true);
@@ -41,6 +53,11 @@ public class DocumentDAO_Impl extends PortalBaseJdbcDAO<Document> implements Doc
     @SqlConditionBuilder
     public SqlCondition createSqlCondition(DocumentQuery query) {
         return new SqlCondition().build(((condition, args) -> {
+            if (query.getOnlyIds() != null && query.getOnlyIds().isEmpty()) {
+                condition.append("false");
+                return;
+            }
+
             condition.append("1=1");
 
             if (StringUtils.isNotEmpty(query.getSearchString())) {
@@ -82,6 +99,11 @@ public class DocumentDAO_Impl extends PortalBaseJdbcDAO<Document> implements Doc
                         .map(Enum::toString)
                         .collect(Collectors.toSet()));
                 condition.append(" and DN.org_code in " + orgCodes);
+            }
+
+            if (query.getOnlyIds() != null) {
+                String ids = HelperFunc.makeInArg(query.getOnlyIds(), false);
+                condition.append(" and document.id in " + ids);
             }
         }));
     }

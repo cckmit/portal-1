@@ -20,16 +20,22 @@ import org.tmatesoft.svn.core.io.SVNRepository;
 import org.tmatesoft.svn.core.io.diff.SVNDeltaGenerator;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
 import ru.protei.portal.config.PortalConfig;
-import ru.protei.portal.core.model.ent.UserSessionDescriptor;
+import ru.protei.portal.core.model.dao.DocumentDAO;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.service.user.AuthService;
+import ru.protei.winter.core.utils.services.lock.LockService;
+import ru.protei.winter.core.utils.services.lock.LockStrategy;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
+
+import static ru.protei.portal.core.model.helper.HelperFunc.encodeToRFC2231;
 
 @RestController
 public class DocumentController {
@@ -47,7 +53,13 @@ public class DocumentController {
     PortalConfig config;
 
     @Autowired
-    DocumentStorage documentStorage;
+    DocumentIndex documentStorage;
+
+    @Autowired
+    DocumentDAO documentDAO;
+
+    @Autowired
+    LockService lockService;
 
 
     @RequestMapping(value = "/uploadDocument/{projectId:\\d+}/{documentId:\\d+}", method = RequestMethod.POST)
@@ -61,24 +73,48 @@ public class DocumentController {
             logger.error("document id is null");
             return "error";
         }
-
-        UserSessionDescriptor ud = authService.getUserSessionDescriptor(request);
-
-        if (ud == null) {
+        if (authService.getUserSessionDescriptor(request) == null) {
             return "error";
         }
-        try {
-            for (FileItem item : upload.parseRequest(request)) {
-                if (item.isFormField())
-                    continue;
 
-                addToIndex(projectId, documentId, item.getInputStream());
-                return saveInRepository(projectId.toString(), getFileName(projectId, documentId), item.getInputStream());
-            }
-        } catch (FileUploadException | IOException | SVNException e) {
-            logger.error(e);
+        List<FileItem> fileItems;
+        try {
+            fileItems = upload.parseRequest(request);
+        } catch (FileUploadException e) {
+            logger.error("failed to parse request", e);
+            return "error";
         }
-        return "error";
+        Optional<FileItem> item = fileItems.stream().filter(i -> !i.isFormField()).findAny();
+        if (!item.isPresent()) {
+            logger.error("no file items in request");
+            return "error";
+        }
+
+        return lockService.doWithLock(DocumentIndex.class, "", LockStrategy.TRANSACTION, TimeUnit.SECONDS, 5, () -> {
+            try {
+                addToIndex(projectId, documentId, item.get().getInputStream());
+            } catch (IOException e) {
+                logger.error("failed to add file to the index", e);
+                documentDAO.removeByKey(documentId);
+                return "error";
+            }
+            try {
+                return saveInRepository(projectId.toString(), getFileName(projectId, documentId), item.get().getInputStream());
+            } catch (SVNException | IOException e) {
+                logger.error("failed to save in the repository", e);
+                try {
+                    removeFromIndex(documentId);
+                } catch (IOException e1) {
+                    logger.error("failed to delete document from the index");
+                }
+                documentDAO.removeByKey(documentId);
+                return "error";
+            }
+        });
+    }
+
+    private void removeFromIndex(long documentId) throws IOException {
+        documentStorage.removeDocument(documentId);
     }
 
     @RequestMapping(value = "/document/{projectId:\\d+}/{documentId:\\d+}", method = RequestMethod.GET)
@@ -97,34 +133,8 @@ public class DocumentController {
         response.setStatus(HttpStatus.OK.value());
         response.setContentType("application/pdf");
         response.setHeader("Content-Transfer-Encoding", "binary");
-        response.setHeader("Cache-Control", "max-age=86400, must-revalidate"); // 1 day
         response.setHeader("Content-Disposition", "filename=" + documentId + ".pdf");
-        response.setHeader("Content-Disposition", "attachment; filename*=UTF-8''" +
-                encodeToRFC2231(documentId + ".pdf"));
-    }
-
-    public String encodeToRFC2231(String value) {
-        StringBuilder buf = new StringBuilder();
-        byte[] bytes;
-        try {
-            bytes = value.getBytes("UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            // cannot happen with UTF-8
-            bytes = new byte[]{'?'};
-        }
-        for (byte b : bytes) {
-            if (b < '+' || b == ';' || b == ',' || b == '\\' || b > 'z') {
-                buf.append('%');
-                String s = Integer.toHexString(b & 0xff).toUpperCase();
-                if (s.length() < 2) {
-                    buf.append('0');
-                }
-                buf.append(s);
-            } else {
-                buf.append((char) b);
-            }
-        }
-        return buf.toString();
+        response.setHeader("Content-Disposition", "attachment; filename*=UTF-8''" + encodeToRFC2231(documentId + ".pdf"));
     }
 
     private String saveInRepository(String dirName, String fileName, InputStream fileData) throws SVNException {
