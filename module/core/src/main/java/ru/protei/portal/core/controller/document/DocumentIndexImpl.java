@@ -6,7 +6,10 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
-import org.apache.lucene.index.*;
+import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.search.*;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.NIOFSDirectory;
@@ -45,7 +48,8 @@ public class DocumentIndexImpl implements DocumentIndex {
     public void init() {
         String indexPath = config.data().fullTextSearch().getIndexPath();
         try {
-            index = new NIOFSDirectory(Paths.get(indexPath));
+            indexWriterConfig.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
+            index = NIOFSDirectory.open(Paths.get(indexPath));
             indexWriter = new IndexWriter(index, indexWriterConfig);
         } catch (IOException e) {
             log.error("Failed to init index directory (path: " + indexPath + ")", e);
@@ -73,12 +77,13 @@ public class DocumentIndexImpl implements DocumentIndex {
         document.add(new StringField(PROJECT_ID_FIELD_NAME, Long.toString(projectId), Field.Store.YES));
         document.add(new TextField(CONTENT_FIELD_NAME, body, Field.Store.NO));
         indexWriter.addDocument(document);
+        indexWriter.commit();
     }
 
     @Override
     public List<Long> getDocumentsByQuery(List<Long> searchIds, String contentQuery, int maxHits) throws IOException {
         Query query = getQuery(searchIds, contentQuery);
-        IndexReader reader = DirectoryReader.open(indexWriter);
+        DirectoryReader reader = DirectoryReader.open(index);
         IndexSearcher searcher = new IndexSearcher(reader);
 
         List<Long> idList = new LinkedList<>();
@@ -102,13 +107,14 @@ public class DocumentIndexImpl implements DocumentIndex {
                         throw new RuntimeException(e);
                     }
                 });
+        reader.close();
         return idList;
     }
 
     @Override
     public int countDocumentsByQuery(List<Long> searchIds, String contentQuery) throws IOException {
         Query query = getQuery(searchIds, contentQuery);
-        IndexReader reader = DirectoryReader.open(indexWriter);
+        DirectoryReader reader = DirectoryReader.open(index);
         IndexSearcher searcher = new IndexSearcher(reader);
         int result =  searcher.count(query);
         reader.close();
