@@ -108,9 +108,10 @@ package ru.protei.portal.ui.common.client.common;
  * 4.0.44.8 - CRM-150 Ошибка при удалении вложения
  * 4.0.45.0 - CRM-148 Экспорт тикетов
  * 4.0.45.1 - CRM-163 Кодировка при добавлении файлов
+ * 4.0.45.2 - CRM-114 Статус verified не перемещает задачу в "Мои завершенные"
  */
 public class Version {
     public static String getVersion() {
-        return "4.0.45.1";
+        return "4.0.45.2";
     }
 }
