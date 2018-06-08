@@ -224,6 +224,20 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         };
     }
 
+    @Override
+    public int getPanelHeight() {
+        return root.getOffsetHeight();
+    }
+
+    @Override
+    public void setFooterFixed(boolean isFixed) {
+        if (isFixed) {
+            root.addStyleName("footer-fixed");
+        } else {
+            root.removeStyleName("footer-fixed");
+        }
+    }
+
     @UiHandler( "company" )
     public void onChangeCompany( ValueChangeEvent< EntityOption > event ){
         Company company = Company.fromEntityOption( event.getValue() );
@@ -268,6 +282,9 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         else
             comments.addClassName("hide");
     }
+
+    @UiField
+    HTMLPanel root;
 
     @UiField
     ValidableTextBox name;

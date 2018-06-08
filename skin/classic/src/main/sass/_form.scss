@@ -75,6 +75,20 @@ textarea.input-field[disabled]{
   padding: 0 15px 15px 15px;
 }
 
+.panel.footer-fixable.footer-fixed .body {
+  margin-bottom: 25px !important;
+}
+
+.panel.footer-fixable.footer-fixed .footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: calc(100% - 30px);
+  padding: 15px;
+  background-color: #ededed;
+  border-top: 1px solid #dadada;
+}
+
 .panel.panel-default {
   background: white;
 }

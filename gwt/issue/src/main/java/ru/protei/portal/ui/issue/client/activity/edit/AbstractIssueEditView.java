@@ -62,4 +62,7 @@ public interface AbstractIssueEditView extends IsWidget {
     HasEnabled managerEnabled();
     HasVisibility caseSubscriptionContainer();
     HasVisibility privacyVisibility();
+
+    int getPanelHeight();
+    void setFooterFixed(boolean isFixed);
 }

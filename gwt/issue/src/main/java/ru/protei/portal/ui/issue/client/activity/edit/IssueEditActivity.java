@@ -1,5 +1,9 @@
 package ru.protei.portal.ui.issue.client.activity.edit;
 
+import com.google.gwt.event.logical.shared.ResizeEvent;
+import com.google.gwt.event.logical.shared.ResizeHandler;
+import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.annotation.ContextAware;
 import ru.brainworm.factory.context.client.events.Back;
@@ -28,7 +32,7 @@ import java.util.stream.Collectors;
 /**
  * Активность создания и редактирования обращения
  */
-public abstract class IssueEditActivity implements AbstractIssueEditActivity, Activity {
+public abstract class IssueEditActivity implements AbstractIssueEditActivity, Activity, ResizeHandler {
 
     @PostConstruct
     public void onInit() {
@@ -43,6 +47,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                 fireEvent(new NotifyEvents.Show(lang.uploadFileError(), NotifyEvents.NotifyType.ERROR));
             }
         });
+        Window.addResizeHandler(this);
     }
 
     @Event
@@ -186,6 +191,11 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         }
     }
 
+    @Override
+    public void onResize(ResizeEvent event) {
+        setFooterFixed();
+    }
+
     private void initialView(CaseObject issue){
         this.issue = issue;
         fillView(this.issue);
@@ -250,6 +260,8 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         view.product().setValue( ProductShortView.fromProduct( issue.getProduct() ) );
         view.manager().setValue( PersonShortView.fromPerson( issue.getManager() ) );
         view.saveVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_EDIT ) );
+
+        requestFooterResize();
     }
 
     private void fillIssueObject(CaseObject issue){
@@ -284,6 +296,20 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         issue.setAttachmentExists(true);
     }
 
+    private void requestFooterResize() {
+        footerTimer.cancel();
+        footerTimer.schedule(50);
+    }
+
+    private void setFooterFixed() {
+        if (footerTimer.isRunning()) {
+            footerTimer.cancel();
+        }
+        int wHeight = Window.getClientHeight();
+        int pHeight = view.getPanelHeight();
+        view.setFooterFixed(pHeight - DIFF_BEFORE_FOOTER_FIXED > wHeight);
+    }
+
     @Inject
     AbstractIssueEditView view;
     @Inject
@@ -298,6 +324,15 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     CompanyServiceAsync companyService;
     @Inject
     PersonServiceAsync personService;
+
+    private static final int DIFF_BEFORE_FOOTER_FIXED = 200;
+
+    private Timer footerTimer = new Timer() {
+        @Override
+        public void run() {
+            setFooterFixed();
+        }
+    };
 
     private AppEvents.InitDetails initDetails;
     @ContextAware
