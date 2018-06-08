@@ -7,25 +7,19 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.HasValue;
+import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.protei.portal.ui.common.client.widget.optionlist.item.OptionItem;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Список чекбоксов с заголовом
  */
 public class OptionList<T>
         extends Composite
-        implements HasValue<Set<T>>, ValueChangeHandler<Boolean>
+        implements HasValue<Set<T>>, ValueChangeHandler<Boolean>, HasEnabled
 {
     public OptionList() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
@@ -61,6 +55,7 @@ public class OptionList<T>
         OptionItem itemView = itemFactory.get();
         itemView.setName( name );
         itemView.addValueChangeHandler( this );
+        itemView.setEnabled(isEnabled);
         itemViewToModel.put( itemView, value );
         itemToViewModel.put( value, itemView );
         itemToNameModel.put( value, name );
@@ -107,6 +102,17 @@ public class OptionList<T>
         return addHandler( handler, ValueChangeEvent.getType() );
     }
 
+    @Override
+    public boolean isEnabled() {
+        return isEnabled;
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        isEnabled = enabled;
+        itemViewToModel.forEach((k, v) -> k.setEnabled(isEnabled));
+    }
+
     @UiField
     FlowPanel container;
     @UiField
@@ -119,7 +125,9 @@ public class OptionList<T>
     Map<OptionItem, T> itemViewToModel = new HashMap< OptionItem, T >();
     Map<T, OptionItem> itemToViewModel = new HashMap< T, OptionItem >();
     Map<T, String> itemToNameModel = new HashMap< T, String >();
-    
+
+    private boolean isEnabled = true;
+
     interface OptionListUiBinder extends UiBinder< HTMLPanel, OptionList > {}
     private static OptionListUiBinder ourUiBinder = GWT.create( OptionListUiBinder.class );
 

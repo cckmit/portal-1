@@ -1050,6 +1050,54 @@ label.bordered:after{
   }
 }
 
+.issue-reports {
+  table {
+    tbody {
+      tr {
+        td {
+          height: 70px;
+
+          div {
+            height: 70px;
+            max-height: 70px;
+            white-space: pre-line;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+
+          small {
+            font-size: 85%;
+          }
+
+          p {
+            margin: 0;
+            font-size: 85%;
+          }
+
+          label {
+            font-weight: 600;
+            line-height: inherit;
+            vertical-align: inherit;
+          }
+        }
+      }
+    }
+    .number {
+      width: 10%;
+      text-align: center;
+      .number-size {
+        font-size: 22px;
+      }
+    }
+    .info {
+      width: 35%;
+    }
+    .filter {
+      width: 40%;
+    }
+  }
+}
+
 /* table expandable width */
 
 .no-width {
@@ -1470,6 +1518,26 @@ td.info {
   white-space: nowrap;
   border-radius: .25em;
   font-size: 76%;
+}
+
+.label-report-created,
+.option-report-created {
+  background-color: #ef5350;
+}
+
+.label-report-process,
+.option-report-process {
+  background-color: #42a5f5;
+}
+
+.label-report-ready,
+.option-report-ready {
+  background-color: #4caf50;
+}
+
+.label-report-error,
+.option-report-error {
+  background-color: #906094;
 }
 
   /****************/
@@ -2163,4 +2231,21 @@ div.select2-container {
       }
     }
   }
+}
+
+.locale-box {
+  display: inline-block;
+  padding: 3px 2px;
+  margin: 0 4px 0 0 !important;
+  border-radius: 2px;
+  background-color: #dadada;
+  vertical-align: middle;
+}
+
+.report-title {
+  vertical-align: middle;
+}
+
+.input-field-col {
+  padding: 0 10px !important;
 }

@@ -313,6 +313,11 @@ public class MainConfiguration {
         return new ProductSubscriptionDAO_Impl();
     }
 
+    @Bean
+    public ReportDAO getReportDAO() {
+        return new ReportDAO_Impl();
+    }
+
 /**
  *
  *
@@ -457,6 +462,21 @@ public class MainConfiguration {
     @Bean
     public ImportDataService getImportDataService (@Autowired PortalConfig config) {
         return new ImportDataServiceImpl();
+    }
+
+    @Bean
+    public ReportStorageService getReportStorageService() {
+        return new ReportStorageServiceImpl();
+    }
+
+    @Bean
+    public ReportService getReportService() {
+        return new ReportServiceImpl();
+    }
+
+    @Bean
+    public ReportControlService getReportControlService() {
+        return new ReportControlServiceImpl();
     }
 
     /** ASPECT/INTERCEPTORS **/

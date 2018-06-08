@@ -211,13 +211,29 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     @Override
     public void setUserFilterControlsVisibility( boolean hasVisible ) {
         if ( hasVisible ) {
+            if (reportBtnVisible) {
+                reportBtn.removeStyleName( "hide" );
+            }
             saveBtn.removeStyleName( "hide" );
             resetBtn.removeStyleName( "hide" );
             removeBtn.removeStyleName( "hide" );
         } else {
+            if (reportBtnVisible) {
+                reportBtn.addStyleName( "hide" );
+            }
             saveBtn.addStyleName( "hide" );
             resetBtn.addStyleName( "hide" );
             removeBtn.addStyleName( "hide" );
+        }
+    }
+
+    @Override
+    public void setReportButtonVisibility(boolean hasVisible) {
+        reportBtnVisible = hasVisible;
+        if (reportBtnVisible) {
+            reportBtn.removeStyleName( "hide" );
+        } else {
+            reportBtn.addStyleName( "hide" );
         }
     }
 
@@ -261,6 +277,15 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
             return;
         }
         activity.onFilterRemoveClicked( userFilter.getValue().getId() );
+    }
+
+    @UiHandler("reportBtn")
+    public void onReportClicked(ClickEvent event) {
+        event.preventDefault();
+        if ( activity == null ) {
+            return;
+        }
+        activity.onCreateReportClicked();
     }
 
     @UiHandler( "companies" )
@@ -404,6 +429,9 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     Button removeBtn;
 
     @UiField
+    Button reportBtn;
+
+    @UiField
     Anchor okBtn;
 
     @UiField
@@ -423,6 +451,7 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     Lang lang;
 
     AbstractIssueFilterActivity activity;
+    private boolean reportBtnVisible = true;
 
     private static IssueFilterView.IssueFilterViewUiBinder ourUiBinder = GWT.create( IssueFilterView.IssueFilterViewUiBinder.class );
 

@@ -12,6 +12,7 @@ import ru.protei.portal.ui.document.client.factory.DocumentClientModule;
 import ru.protei.portal.ui.documenttype.client.factory.DocumentTypeClientModule;
 import ru.protei.portal.ui.equipment.client.factory.EquipmentClientModule;
 import ru.protei.portal.ui.issue.client.factory.IssueClientModule;
+import ru.protei.portal.ui.issuereport.client.factory.IssueReportClientModule;
 import ru.protei.portal.ui.official.client.factory.OfficialClientModule;
 import ru.protei.portal.ui.product.client.factory.ProductClientModule;
 import ru.protei.portal.ui.project.client.factory.ProjectClientModule;
@@ -24,7 +25,7 @@ import ru.protei.portal.ui.role.client.factory.RoleClientModule;
 @GinModules({
         ClientModule.class, CommonClientModule.class, CompanyClientModule.class, ContactClientModule.class,
         ProductClientModule.class, ProjectClientModule.class, RegionClientModule.class,
-        IssueClientModule.class, EquipmentClientModule.class, RoleClientModule.class, AccountClientModule.class,
+        IssueClientModule.class, IssueReportClientModule.class, EquipmentClientModule.class, RoleClientModule.class, AccountClientModule.class,
         OfficialClientModule.class, DocumentClientModule.class, DocumentTypeClientModule.class
 })
 public interface ClientFactory

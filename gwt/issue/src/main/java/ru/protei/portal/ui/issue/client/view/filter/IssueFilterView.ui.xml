@@ -76,6 +76,7 @@
                 </div>
             </div>
 
+            <g:Button ui:field="reportBtn" styleName="btn btn-white" text="{lang.buttonReport}"/>
             <g:Button ui:field="saveBtn" styleName="btn btn-white" text="{lang.buttonCreate}"/>
             <g:Button ui:field="resetBtn" styleName="btn btn-white" text="{lang.buttonReset}"/>
             <g:Button ui:field="removeBtn" styleName="btn btn-white" text="{lang.buttonRemove}"/>

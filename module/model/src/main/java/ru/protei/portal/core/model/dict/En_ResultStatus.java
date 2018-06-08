@@ -56,6 +56,11 @@ public enum En_ResultStatus {
     NOT_REMOVED,
 
     /**
+     * действие недоступно
+     */
+    NOT_AVAILABLE,
+
+    /**
      * объект не определен
      */
     UNDEFINED_OBJECT,

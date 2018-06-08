@@ -15,4 +15,6 @@ public interface AbstractIssueFilterActivity {
     void onOkSavingClicked();
 
     void onCancelSavingClicked();
+
+    void onCreateReportClicked();
 }

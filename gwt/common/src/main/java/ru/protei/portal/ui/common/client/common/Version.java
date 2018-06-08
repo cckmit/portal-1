@@ -106,9 +106,10 @@ package ru.protei.portal.ui.common.client.common;
  * 4.0.44.6 - CRM-152 Поиск аккаунтов по компании
  * 4.0.44.7 - CRM-157 Не работает функция изменения фильтра
  * 4.0.44.8 - CRM-150 Ошибка при удалении вложения
+ * 4.0.45.0 - CRM-148 Экспорт тикетов
  */
 public class Version {
     public static String getVersion() {
-        return "4.0.44.8";
+        return "4.0.45.0";
     }
 }

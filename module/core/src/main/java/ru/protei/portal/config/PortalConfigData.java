@@ -4,8 +4,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.protei.winter.core.utils.config.exception.ConfigException;
 import ru.protei.winter.core.utils.config.utils.PropertiesWrapper;
+import ru.protei.winter.core.utils.duration.DurationUtils;
+import ru.protei.winter.core.utils.duration.IncorrectDurationException;
 
 import java.net.Inet4Address;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by michael on 31.05.17.
@@ -20,6 +23,7 @@ public class PortalConfigData {
     private final LegacySystemConfig legacySystemConfig;
     private final IntegrationConfig integrationConfig;
     private final SvnConfig svnConfig;
+    private final ReportConfig reportConfig;
 
     private final String crmCaseUrl;
     private final String loginSuffixConfig;
@@ -31,6 +35,7 @@ public class PortalConfigData {
         legacySystemConfig = new LegacySystemConfig(wrapper);
         integrationConfig = new IntegrationConfig(wrapper);
         svnConfig = new SvnConfig(wrapper);
+        reportConfig = new ReportConfig(wrapper);
 
         crmCaseUrl = wrapper.getProperty( "crm.case.url", "http://127.0.0.1:8888/crm.html#issues/issue:id=%d;" );
         loginSuffixConfig = wrapper.getProperty("auth.login.suffix", "");
@@ -66,6 +71,10 @@ public class PortalConfigData {
 
     public SvnConfig svn() {
         return svnConfig;
+    }
+
+    public ReportConfig reportConfig() {
+        return reportConfig;
     }
 
     public static class SmtpConfig {
@@ -262,6 +271,40 @@ public class PortalConfigData {
 
         public String getUsername() {
             return username;
+        }
+    }
+
+    public static class ReportConfig {
+        private final int threadsNumber;
+        private final long liveTime;
+        private final long hangInterval;
+        private final String storagePath;
+
+        public ReportConfig(PropertiesWrapper properties) throws ConfigException {
+            try {
+                this.threadsNumber = properties.getProperty("report.threads", Integer.class, 6);
+                this.liveTime = DurationUtils.getDuration(properties.getProperty("report.live_time_duration", "3d"), TimeUnit.MILLISECONDS);
+                this.hangInterval = TimeUnit.SECONDS.toMillis(properties.getProperty("report.hang_interval_sec", Integer.class, 30 * 60));
+                this.storagePath = properties.getProperty("report.storage.path", "reports");
+            } catch (IncorrectDurationException e) {
+                throw new ConfigException(e);
+            }
+        }
+
+        public int getThreadsNumber() {
+            return threadsNumber;
+        }
+
+        public long getLiveTime() {
+            return liveTime;
+        }
+
+        public long getHangInterval() {
+            return hangInterval;
+        }
+
+        public String getStoragePath() {
+            return storagePath;
         }
     }
 }
