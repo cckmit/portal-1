@@ -14,6 +14,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamSource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.api.struct.FileStorage;
@@ -60,14 +61,16 @@ public class FileController {
 
     @RequestMapping(value = "/uploadFile", method = RequestMethod.POST)
     @ResponseBody
-    public String uploadFile(HttpServletRequest request){
-        return uploadFileToCase(request, null);
+    public String uploadFile(HttpServletRequest request, HttpServletResponse response){
+        return uploadFileToCase(request, null, response);
     }
 
     @RequestMapping(value = "/uploadFileToCase{caseNumber:[0-9]+}", method = RequestMethod.POST)
     @ResponseBody
-    public String uploadFileToCase (HttpServletRequest request, @PathVariable("caseNumber") Long caseNumber){
+    public String uploadFileToCase (HttpServletRequest request, @PathVariable("caseNumber") Long caseNumber, HttpServletResponse response){
         UserSessionDescriptor ud = authService.getUserSessionDescriptor(request);
+
+        response.setContentType(MediaType.TEXT_HTML_VALUE + "; charset=utf-8");
 
         if(ud != null) {
             try {
