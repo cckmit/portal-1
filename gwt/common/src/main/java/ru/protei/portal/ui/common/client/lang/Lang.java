@@ -938,4 +938,6 @@ public interface Lang extends Messages, ContactItemLang {
     String issueReportsView();
 
     String reportRequested();
+
+    String errProductNotSelected();
 }

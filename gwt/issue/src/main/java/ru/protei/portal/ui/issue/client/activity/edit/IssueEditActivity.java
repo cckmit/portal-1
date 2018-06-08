@@ -25,6 +25,8 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.dict.En_CaseState.CREATED;
+
 /**
  * Активность создания и редактирования обращения
  */
@@ -99,13 +101,10 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
     @Override
     public void onSaveClicked() {
-        if(!isFieldsValid()){
+        if(!validateView()){
             return;
         }
-        if(view.manager().getValue() != null && view.state().getValue() == En_CaseState.CREATED){
-            fireEvent(new NotifyEvents.Show(lang.errCreatedStateSelected(), NotifyEvents.NotifyType.ERROR));
-            return;
-        }
+
         fillIssueObject(issue);
 
         issueService.saveIssue(issue, new RequestCallback<CaseObject>() {
@@ -237,7 +236,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         view.isLocal().setValue(issue.isPrivateCase());
         view.description().setText(issue.getInfo());
 
-        view.state().setValue(issue.getId() == null ? En_CaseState.CREATED : En_CaseState.getById(issue.getStateId()));
+        view.state().setValue(issue.getId() == null ? CREATED : En_CaseState.getById(issue.getStateId()));
         view.importance().setValue(issue.getId() == null ? En_ImportanceLevel.BASIC : En_ImportanceLevel.getById(issue.getImpLevel()));
 
         Company initiatorCompany = issue.getInitiatorCompany();
@@ -267,12 +266,24 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         issue.setNotifiers(view.notifiers().getValue().stream().map(Person::fromPersonShortView).collect(Collectors.toSet()));
     }
 
-    private boolean isFieldsValid(){
-        return view.nameValidator().isValid() &&
+    private boolean validateView() {
+        boolean isFieldsValid = view.nameValidator().isValid() &&
                 view.stateValidator().isValid() &&
                 view.importanceValidator().isValid() &&
                 view.companyValidator().isValid();
-//        && view.initiatorValidator().isValid();
+
+        if(!isFieldsValid) return false;
+
+        if(view.manager().getValue() != null && view.state().getValue() == CREATED){
+            fireEvent(new NotifyEvents.Show(lang.errCreatedStateSelected(), NotifyEvents.NotifyType.ERROR));
+            return false;
+        }
+        if(CREATED != view.state().getValue() && view.product().getValue() == null){
+            fireEvent(new NotifyEvents.Show(lang.errProductNotSelected(), NotifyEvents.NotifyType.ERROR));
+            return false;
+        }
+
+        return true;
     }
 
     private void addAttachmentsToCase(Collection<Attachment> attachments){
@@ -296,8 +307,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     PolicyService policyService;
     @Inject
     CompanyServiceAsync companyService;
-    @Inject
-    PersonServiceAsync personService;
 
     private AppEvents.InitDetails initDetails;
     @ContextAware
