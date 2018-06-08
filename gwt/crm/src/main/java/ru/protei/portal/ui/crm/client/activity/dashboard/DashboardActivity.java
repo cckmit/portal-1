@@ -99,7 +99,6 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
     private CaseQuery generateInactiveRecordsQuery(){
         CaseQuery query = new CaseQuery(En_CaseType.CRM_SUPPORT, null, En_SortField.last_update, En_SortDir.DESC);
         List<En_CaseState> inactiveStates = new ArrayList<>(issueStates.getInactiveStates());
-        inactiveStates.remove(En_CaseState.VERIFIED);
         query.setStates(inactiveStates);
         List<Long> productIds = null;
         if (policyService.getProfile() != null){
