@@ -22,14 +22,14 @@ public class IssueEvents {
      */
     public static class ShowPreview {
 
-        public ShowPreview ( HasWidgets parent, Long issueId )
+        public ShowPreview ( HasWidgets parent, Long issueCaseNumber )
         {
             this.parent = parent;
-            this.issueId = issueId;
+            this.issueCaseNumber = issueCaseNumber;
         }
 
         public HasWidgets parent;
-        public Long issueId;
+        public Long issueCaseNumber;
 
     }
 
@@ -41,13 +41,13 @@ public class IssueEvents {
 
         public ShowFullScreen() {}
 
-        public ShowFullScreen ( Long id )
+        public ShowFullScreen ( Long issueCaseNumber )
         {
-            this.issueId = id;
+            this.issueCaseNumber = issueCaseNumber;
         }
 
         @Name( "id" )
-        public Long issueId;
+        public Long issueCaseNumber;
     }
 
     @Url( value = "issue", primary = false )

@@ -20,6 +20,7 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -50,13 +51,13 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
 
     @Event
     public void onAddingAttachments( AttachmentEvents.Add event ) {
-        if(view.isAttached() && issueId.equals(event.caseId))
+        if(view.isAttached() && Objects.equals(issueId, event.issueId))
             addAttachments(event.attachments);
     }
 
     @Event
     public void onRemovingAttachments( AttachmentEvents.Remove event ) {
-        if(view.isAttached() && issueId.equals(event.caseId)){
+        if(view.isAttached() &&  Objects.equals(issueId, event.issueId)){
             event.attachments.forEach(view.attachmentsContainer()::remove);
 
             if(view.attachmentsContainer().isEmpty())
@@ -69,9 +70,10 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
         event.parent.clear();
         event.parent.add( view.asWidget() );
 
-        this.issueId = event.issueId;
+        this.issueCaseNumber = event.issueCaseNumber;
+        issueId = null;
 
-        fillView( issueId );
+        fillView(issueCaseNumber);
         view.watchForScroll( true );
         view.showFullScreen( false );
     }
@@ -81,9 +83,10 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
         initDetails.parent.clear();
         initDetails.parent.add( view.asWidget() );
 
-        this.issueId = event.issueId;
+        this.issueCaseNumber = event.issueCaseNumber;
+        issueId = null;
 
-        fillView( issueId );
+        fillView(issueCaseNumber);
         view.showFullScreen( true );
     }
 
@@ -106,14 +109,14 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
                 if(view.attachmentsContainer().isEmpty())
                     fireEvent(new IssueEvents.ChangeIssue(issueId));
 
-                fireEvent( new IssueEvents.ShowComments( view.getCommentsContainer(), issueId ) );
+                fireEvent( new IssueEvents.ShowComments( view.getCommentsContainer(), issueId) );
             }
         });
     }
 
     @Override
     public void onFullScreenPreviewClicked() {
-        fireEvent( new IssueEvents.ShowFullScreen( issueId ) );
+        fireEvent( new IssueEvents.ShowFullScreen(issueCaseNumber) );
     }
 
     private void fillView(CaseObject value ) {
@@ -159,6 +162,7 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
             @Override
             public void onSuccess( CaseObject caseObject ) {
                 fireEvent( new AppEvents.InitPanelName( caseObject.getCaseNumber().toString() ) );
+                if(caseObject!=null) issueId = caseObject.getId();
                 fillView( caseObject );
             }
         } );
@@ -197,6 +201,7 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
     @Inject
     PolicyService policyService;
 
+    private Long issueCaseNumber;
     private Long issueId;
     private AppEvents.InitDetails initDetails;
 }
