@@ -109,9 +109,10 @@ package ru.protei.portal.ui.common.client.common;
  * 4.0.45.0 - CRM-148 Экспорт тикетов
  * 4.0.45.1 - CRM-163 Кодировка при добавлении файлов
  * 4.0.45.2 - CRM-114 Статус verified не перемещает задачу в "Мои завершенные"
+ * 4.0.46.2 - CRM-139 Есть возможность создать задачу или перевести из статуса new в open без указания продукта.
  */
 public class Version {
     public static String getVersion() {
-        return "4.0.45.2";
+        return "4.0.46.2";
     }
 }
