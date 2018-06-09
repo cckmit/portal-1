@@ -49,7 +49,9 @@ public class SqlDefaultBuilder {
                 }
             }
 
-            if ( query.getManagerIds() != null && !query.getManagerIds().isEmpty() ) {
+            if(query.isWithoutManager()){
+                condition.append(" and manager is null" );
+            }else  if ( query.getManagerIds() != null && !query.getManagerIds().isEmpty() ) {
                 condition.append(" and manager in (" + query.getManagerIds().stream().map(Object::toString).collect( Collectors.joining(",")) + ")");
             }
 
