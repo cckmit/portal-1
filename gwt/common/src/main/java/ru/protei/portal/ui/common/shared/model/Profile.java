@@ -32,6 +32,10 @@ public class Profile implements Serializable {
 
     private Company company;
 
+    private String shortName;
+
+    private boolean fired;
+
     public Set<UserRole> getRoles() {
         return roles;
     }
@@ -70,6 +74,22 @@ public class Profile implements Serializable {
 
     public void setFullName( String fullName ) {
         this.fullName = fullName;
+    }
+
+    public String getShortName() {
+        return shortName;
+    }
+
+    public void setShortName(String shortName) {
+        this.shortName = shortName;
+    }
+
+    public void setIsFired(boolean fired) {
+        this.fired = fired;
+    }
+
+    public boolean isFired() {
+        return fired;
     }
 
     public Set< En_Privilege > getPrivileges() {

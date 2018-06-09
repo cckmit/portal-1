@@ -19,6 +19,7 @@ import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.*;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
+import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.*;
@@ -245,7 +246,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         }
 
         view.company().setValue(EntityOption.fromCompany(initiatorCompany), true);
-        view.initiator().setValue( PersonShortView.fromPerson( issue.getInitiator() ) );
+        view.initiator().setValue( decideInitiator(issue) );
         view.product().setValue( ProductShortView.fromProduct( issue.getProduct() ) );
         view.manager().setValue( PersonShortView.fromPerson( issue.getManager() ) );
         view.saveVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_EDIT ) );
@@ -293,6 +294,18 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
         issue.getAttachments().addAll(attachments);
         issue.setAttachmentExists(true);
+    }
+
+    private PersonShortView decideInitiator(CaseObject issue) {
+        if (isNew(issue)) {
+            Profile profile = policyService.getProfile();
+            return new PersonShortView(profile.getShortName(), profile.getId(), profile.isFired());
+        }
+        return PersonShortView.fromPerson(issue.getInitiator());
+    }
+
+    private boolean isNew(CaseObject issue) {
+        return issue.getId() == null;
     }
 
     @Inject
