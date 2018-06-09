@@ -27,6 +27,8 @@ public class CaseQuery extends BaseQuery {
 
     private List<Long> managerIds;
 
+    private boolean withoutManager;
+
     private En_CaseType type;
 
     private List<Integer> stateIds;
@@ -119,6 +121,14 @@ public class CaseQuery extends BaseQuery {
 
     public void setManagerIds( List<Long> managerIds ) { this.managerIds = managerIds; }
 
+    public boolean isWithoutManager() {
+        return withoutManager;
+    }
+
+    public void setWithoutManager(boolean withoutManager) {
+        this.withoutManager = withoutManager;
+    }
+
     public boolean isAllowViewPrivate() {
         return allowViewPrivate;
     }
@@ -133,6 +143,7 @@ public class CaseQuery extends BaseQuery {
                 "companyIds=" + companyIds +
                 ", productIds=" + productIds +
                 ", managerIds=" + managerIds +
+                ", withoutManager=" + withoutManager +
                 ", type=" + type +
                 ", stateIds=" + stateIds +
                 ", importanceIds=" + importanceIds +
