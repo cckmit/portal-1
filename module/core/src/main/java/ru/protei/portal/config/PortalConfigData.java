@@ -20,7 +20,7 @@ public class PortalConfigData {
     private final LegacySystemConfig legacySystemConfig;
     private final IntegrationConfig integrationConfig;
     private final SvnConfig svnConfig;
-    private final FullTextSearchConfig fullTextSearchConfig;
+    private final LuceneConfig luceneConfig;
 
     private final String crmCaseUrl;
     private final String loginSuffixConfig;
@@ -32,7 +32,7 @@ public class PortalConfigData {
         legacySystemConfig = new LegacySystemConfig(wrapper);
         integrationConfig = new IntegrationConfig(wrapper);
         svnConfig = new SvnConfig(wrapper);
-        fullTextSearchConfig = new FullTextSearchConfig(wrapper);
+        luceneConfig = new LuceneConfig(wrapper);
 
         crmCaseUrl = wrapper.getProperty( "crm.case.url", "http://127.0.0.1:8888/crm.html#issues/issue:id=%d;" );
         loginSuffixConfig = wrapper.getProperty("auth.login.suffix", "");
@@ -70,8 +70,8 @@ public class PortalConfigData {
         return svnConfig;
     }
 
-    public FullTextSearchConfig fullTextSearch() {
-        return fullTextSearchConfig;
+    public LuceneConfig lucene() {
+        return luceneConfig;
     }
 
     public static class SmtpConfig {
@@ -250,12 +250,13 @@ public class PortalConfigData {
     }
 
     public static class SvnConfig {
-        private final String url, username, password;
+        private final String url, username, password, commitMessage;
 
         public SvnConfig(PropertiesWrapper properties) throws ConfigException {
             this.url = properties.getProperty("svn.url");
             this.username = properties.getProperty("svn.username");
             this.password = properties.getProperty("svn.password");
+            this.commitMessage = properties.getProperty("svn.commit_message", "Add document №%2$s to project №%1$s");
         }
 
         public String getUrl() {
@@ -269,13 +270,17 @@ public class PortalConfigData {
         public String getUsername() {
             return username;
         }
+
+        public String getCommitMessage() {
+            return commitMessage;
+        }
     }
 
-    public static class FullTextSearchConfig {
+    public static class LuceneConfig {
         private final String indexPath;
 
-        public FullTextSearchConfig(PropertiesWrapper propertiesWrapper) {
-            this.indexPath = propertiesWrapper.getProperty("fulltextsearch.index_path", "./index");
+        public LuceneConfig(PropertiesWrapper propertiesWrapper) {
+            this.indexPath = propertiesWrapper.getProperty("lucene.index_path", "./index");
         }
 
         public String getIndexPath() {

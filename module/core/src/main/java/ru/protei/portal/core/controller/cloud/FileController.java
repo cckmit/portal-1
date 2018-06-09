@@ -32,7 +32,7 @@ import java.sql.SQLException;
 import java.util.Base64;
 import java.util.Collections;
 
-import static ru.protei.portal.core.model.helper.HelperFunc.encodeToRFC2231;
+import static ru.protei.portal.util.StringUtils.encodeToRFC2231;
 
 @RestController
 public class FileController {

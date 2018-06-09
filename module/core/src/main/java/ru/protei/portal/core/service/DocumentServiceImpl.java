@@ -3,7 +3,7 @@ package ru.protei.portal.core.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
-import ru.protei.portal.core.controller.document.DocumentIndex;
+import ru.protei.portal.core.controller.document.DocumentStorageIndex;
 import ru.protei.portal.core.model.dao.DecimalNumberDAO;
 import ru.protei.portal.core.model.dao.DocumentDAO;
 import ru.protei.portal.core.model.dict.En_DecimalNumberEntityType;
@@ -25,7 +25,7 @@ public class DocumentServiceImpl implements DocumentService {
     DecimalNumberDAO decimalNumberDAO;
 
     @Autowired
-    DocumentIndex documentIndex;
+    DocumentStorageIndex documentStorageIndex;
 
 
     @Override
@@ -55,7 +55,7 @@ public class DocumentServiceImpl implements DocumentService {
 
     private void checkApplyFullTextSearchFilter(DocumentQuery query)  throws IOException {
         if (!isEmptyOrWhitespaceOnly(query.getInTextQuery())) {
-            query.setOnlyIds(documentIndex.getDocumentsByQuery(null, query.getInTextQuery(), query.limit));
+            query.setOnlyIds(documentStorageIndex.getDocumentsByQuery(query.getInTextQuery(), query.limit));
         }
     }
 

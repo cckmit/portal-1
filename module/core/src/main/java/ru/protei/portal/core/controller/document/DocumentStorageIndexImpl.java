@@ -10,9 +10,14 @@ import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.*;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.PhraseQuery;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.NIOFSDirectory;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.text.PDFTextStripper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,16 +26,15 @@ import ru.protei.portal.config.PortalConfig;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import static ru.protei.portal.core.model.helper.HelperFunc.isEmpty;
+public class DocumentStorageIndexImpl implements DocumentStorageIndex {
 
-public class DocumentIndexImpl implements DocumentIndex {
-
-    private static final Logger log = LoggerFactory.getLogger(DocumentIndexImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(DocumentStorageIndexImpl.class);
 
     private static final String ID_FIELD_NAME = "id";
     private static final String PROJECT_ID_FIELD_NAME = "project_id";
@@ -46,7 +50,7 @@ public class DocumentIndexImpl implements DocumentIndex {
 
     @PostConstruct
     public void init() {
-        String indexPath = config.data().fullTextSearch().getIndexPath();
+        String indexPath = config.data().lucene().getIndexPath();
         try {
             indexWriterConfig.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
             index = NIOFSDirectory.open(Paths.get(indexPath));
@@ -81,8 +85,16 @@ public class DocumentIndexImpl implements DocumentIndex {
     }
 
     @Override
-    public List<Long> getDocumentsByQuery(List<Long> searchIds, String contentQuery, int maxHits) throws IOException {
-        Query query = getQuery(searchIds, contentQuery);
+    public void addPdfDocument(InputStream stream, Long documentId, Long projectId) throws IOException {
+        try (PDDocument doc = PDDocument.load(stream)) {
+            String content = new PDFTextStripper().getText(doc);
+            addDocument(content, documentId, projectId);
+        }
+    }
+
+    @Override
+    public List<Long> getDocumentsByQuery(String contentQuery, int maxHits) throws IOException {
+        Query query = new PhraseQuery(CONTENT_FIELD_NAME, contentQuery);
         DirectoryReader reader = DirectoryReader.open(index);
         IndexSearcher searcher = new IndexSearcher(reader);
 
@@ -109,35 +121,5 @@ public class DocumentIndexImpl implements DocumentIndex {
                 });
         reader.close();
         return idList;
-    }
-
-    @Override
-    public int countDocumentsByQuery(List<Long> searchIds, String contentQuery) throws IOException {
-        Query query = getQuery(searchIds, contentQuery);
-        DirectoryReader reader = DirectoryReader.open(index);
-        IndexSearcher searcher = new IndexSearcher(reader);
-        int result =  searcher.count(query);
-        reader.close();
-        return result;
-    }
-
-
-    private Query getQuery(List<Long> searchIds, String contentQuery) {
-        if (searchIds == null || searchIds.isEmpty()) {
-            return new PhraseQuery(CONTENT_FIELD_NAME, contentQuery);
-        }
-        BooleanQuery.Builder idQuery = new BooleanQuery.Builder();
-        searchIds.forEach(id ->
-                idQuery.add(new TermQuery(new Term(ID_FIELD_NAME, String.valueOf(id))), BooleanClause.Occur.SHOULD)
-        );
-
-        if (isEmpty(contentQuery)) {
-            return idQuery.build();
-        }
-
-        return new BooleanQuery.Builder()
-                .add(new PhraseQuery(CONTENT_FIELD_NAME, contentQuery), BooleanClause.Occur.MUST)
-                .add(idQuery.build(), BooleanClause.Occur.MUST)
-                .build();
     }
 }

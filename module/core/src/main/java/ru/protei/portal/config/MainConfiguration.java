@@ -11,8 +11,8 @@ import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.aspect.ServiceLayerInterceptor;
 import ru.protei.portal.core.controller.auth.AuthInterceptor;
-import ru.protei.portal.core.controller.document.DocumentIndex;
-import ru.protei.portal.core.controller.document.DocumentIndexImpl;
+import ru.protei.portal.core.controller.document.DocumentStorageIndex;
+import ru.protei.portal.core.controller.document.DocumentStorageIndexImpl;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
 import ru.protei.portal.core.service.*;
@@ -58,8 +58,8 @@ public class MainConfiguration {
     }
 
     @Bean
-    public DocumentIndex getDocumentStorage() {
-        return new DocumentIndexImpl();
+    public DocumentStorageIndex getDocumentStorage() {
+        return new DocumentStorageIndexImpl();
     }
 
     @Bean
@@ -471,6 +471,11 @@ public class MainConfiguration {
     @Bean
     public LockService getLockService() {
         return new LockServiceImpl();
+    }
+
+    @Bean
+    public DocumentSvnService getDocumentSvnService() {
+        return new DocumentSvnServiceImpl();
     }
 
     /** ASPECT/INTERCEPTORS **/
