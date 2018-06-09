@@ -143,6 +143,7 @@ public class CaseQuery extends BaseQuery {
                 "companyIds=" + companyIds +
                 ", productIds=" + productIds +
                 ", managerIds=" + managerIds +
+                ", withoutManager=" + withoutManager +
                 ", type=" + type +
                 ", stateIds=" + stateIds +
                 ", importanceIds=" + importanceIds +
