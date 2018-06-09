@@ -75,14 +75,14 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
     @Event
     public void onAddingAttachments( AttachmentEvents.Add event ) {
-        if(view.isAttached() && issue.getId().equals(event.caseId)) {
+        if(view.isAttached() && issue.getId().equals(event.issueId)) {
             addAttachmentsToCase(event.attachments);
         }
     }
 
     @Event
     public void onRemovingAttachments( AttachmentEvents.Remove event ) {
-        if(view.isAttached() && issue.getId().equals(event.caseId)) {
+        if(view.isAttached() && issue.getId().equals(event.issueId)) {
             event.attachments.forEach(view.attachmentsContainer()::remove);
             issue.getAttachments().removeAll(event.attachments);
             issue.setAttachmentExists(!issue.getAttachments().isEmpty());
