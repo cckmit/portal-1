@@ -110,6 +110,11 @@ public class IssueEvents {
     }
 
     /**
+     * Обновилось отображение комментариев
+     */
+    public static class ChangeCommentsView{}
+
+    /**
      * Изменилась модель фильтров пользователя
      */
     public static class ChangeUserFilterModel{}

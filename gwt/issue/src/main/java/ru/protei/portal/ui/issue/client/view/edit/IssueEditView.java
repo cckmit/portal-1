@@ -1,12 +1,14 @@
 package ru.protei.portal.ui.issue.client.view.edit;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseState;
@@ -225,12 +227,18 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
-    public int getPanelHeight() {
-        return root.getOffsetHeight();
+    public void scheduleFooterFix() {
+        Scheduler.get().scheduleDeferred(this::requestFooterFix);
     }
 
     @Override
-    public void setFooterFixed(boolean isFixed) {
+    public void requestFooterFix() {
+        int wHeight = Window.getClientHeight();
+        int pHeight = root.getOffsetHeight();
+        setFooterFixed(pHeight - DIFF_BEFORE_FOOTER_FIXED > wHeight);
+    }
+
+    private void setFooterFixed(boolean isFixed) {
         if (isFixed) {
             root.addStyleName("footer-fixed");
         } else {
@@ -352,6 +360,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @UiField
     HTMLPanel caseSubscriptionContainers;
 
+    private static final int DIFF_BEFORE_FOOTER_FIXED = 200;
 
     private AbstractIssueEditActivity activity;
 

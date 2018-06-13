@@ -265,6 +265,8 @@ public abstract class IssueCommentListActivity
             AbstractIssueCommentItemView itemView = makeCommentView( value );
             view.addCommentToFront( itemView.asWidget() );
         }
+
+        fireEvent( new IssueEvents.ChangeCommentsView() );
     }
 
     private AbstractIssueCommentItemView makeCommentView( CaseComment value ) {
