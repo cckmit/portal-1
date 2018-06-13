@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.issuereport.client.activity.table;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
@@ -80,7 +81,7 @@ public abstract class IssueReportTableActivity implements
         if (value.getId() == null) {
             return;
         }
-        Window.open("/Crm/download/report?id=" + value.getId().toString(), "_blank", "");
+        Window.open(GWT.getModuleBaseURL() + "download/report?id=" + value.getId().toString(), "_blank", "");
     }
 
     @Override
