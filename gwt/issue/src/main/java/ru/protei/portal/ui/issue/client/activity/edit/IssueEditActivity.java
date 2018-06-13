@@ -1,9 +1,5 @@
 package ru.protei.portal.ui.issue.client.activity.edit;
 
-import com.google.gwt.event.logical.shared.ResizeEvent;
-import com.google.gwt.event.logical.shared.ResizeHandler;
-import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.annotation.ContextAware;
 import ru.brainworm.factory.context.client.events.Back;
@@ -32,7 +28,7 @@ import java.util.stream.Collectors;
 /**
  * Активность создания и редактирования обращения
  */
-public abstract class IssueEditActivity implements AbstractIssueEditActivity, Activity, ResizeHandler {
+public abstract class IssueEditActivity implements AbstractIssueEditActivity, Activity {
 
     @PostConstruct
     public void onInit() {
@@ -47,7 +43,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                 fireEvent(new NotifyEvents.Show(lang.uploadFileError(), NotifyEvents.NotifyType.ERROR));
             }
         });
-        Window.addResizeHandler(this);
     }
 
     @Event
@@ -196,14 +191,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         }
     }
 
-    @Override
-    public void onResize(ResizeEvent event) {
-        if (resizeFinishedTimer.isRunning()) {
-            resizeFinishedTimer.cancel();
-        }
-        resizeFinishedTimer.schedule(200);
-    }
-
     private void initialView(CaseObject issue){
         this.issue = issue;
         fillView(this.issue);
@@ -318,13 +305,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     CompanyServiceAsync companyService;
     @Inject
     PersonServiceAsync personService;
-
-    private Timer resizeFinishedTimer = new Timer() {
-        @Override
-        public void run() {
-            view.refreshFooterBtnPosition();
-        }
-    };
 
     private AppEvents.InitDetails initDetails;
     @ContextAware
