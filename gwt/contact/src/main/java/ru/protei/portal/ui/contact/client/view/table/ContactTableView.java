@@ -47,9 +47,12 @@ public class ContactTableView extends Composite implements AbstractContactTableV
         editClickColumn.setHandler( activity );
         editClickColumn.setEditHandler( activity );
         editClickColumn.setColumnProvider( columnProvider );
+
         removeClickColumn.setHandler( activity );
         removeClickColumn.setRemoveHandler( activity );
         removeClickColumn.setColumnProvider( columnProvider );
+        removeClickColumn.setPrivilege( En_Privilege.CONTACT_REMOVE );
+
         columns.forEach( clickColumn -> {
             clickColumn.setHandler( activity );
             clickColumn.setColumnProvider( columnProvider );

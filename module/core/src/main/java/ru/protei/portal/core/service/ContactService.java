@@ -35,6 +35,6 @@ public interface ContactService {
     @Privileged( En_Privilege.CONTACT_EDIT )
     CoreResponse fireContact( AuthToken token, long id );
 
-    @Privileged( En_Privilege.CONTACT_EDIT )
+    @Privileged( En_Privilege.CONTACT_REMOVE )
     CoreResponse removeContact( AuthToken token, long id );
 }
