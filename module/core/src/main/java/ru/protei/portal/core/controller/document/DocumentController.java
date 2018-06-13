@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
-import static ru.protei.portal.util.StringUtils.encodeToRFC2231;
+import static ru.protei.portal.util.EncodeUtils.encodeToRFC2231;
 
 @RestController
 public class DocumentController {

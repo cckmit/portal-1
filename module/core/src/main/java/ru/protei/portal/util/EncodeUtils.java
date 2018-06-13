@@ -2,7 +2,7 @@ package ru.protei.portal.util;
 
 import java.io.UnsupportedEncodingException;
 
-public class StringUtils {
+public class EncodeUtils {
     public static String encodeToRFC2231(String value) {
         StringBuilder buf = new StringBuilder();
         byte[] bytes;
